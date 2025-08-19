@@ -74,7 +74,7 @@ public class HelixController implements Runnable {
     }
 
     public void start() throws Exception {
-        Thread controllerThread = new Thread(this);
+        Thread controllerThread = new Thread(this, this.getClass().getSimpleName());
         controllerThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread(controllerThread::interrupt));
     }

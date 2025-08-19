@@ -57,6 +57,7 @@ public class ServerSettings extends ApplicationSettings {
 
     // email-based monitoring configurations
     private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
+    private static final String EMAIL_BASED_MONITOR_HOST = "email.based.monitor.host";
     private static final String EMAIL_BASED_MONITOR_ADDRESS = "email.based.monitor.address";
     private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
     private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
@@ -176,6 +177,10 @@ public class ServerSettings extends ApplicationSettings {
     public static int getEmailMonitorPeriod() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(EMAIL_BASED_MONITORING_PERIOD, "100000"));
     }
+
+    public static String getEmailBasedMonitorHost() throws ApplicationSettingsException {
+      return getSetting(EMAIL_BASED_MONITOR_HOST);
+  }
 
     public static String getEmailBasedMonitorAddress() throws ApplicationSettingsException {
         return getSetting(EMAIL_BASED_MONITOR_ADDRESS);

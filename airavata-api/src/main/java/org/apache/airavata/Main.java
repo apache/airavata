@@ -20,6 +20,7 @@
 package org.apache.airavata;
 
 import org.apache.airavata.api.AiravataAPIServer;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.db.event.manager.DBEventManagerRunner;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
@@ -27,6 +28,7 @@ import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.airavata.monitor.cluster.ClusterStatusMonitorJobScheduler;
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 
 public class Main {
@@ -69,5 +71,20 @@ public class Main {
         var jobScheduler = new ClusterStatusMonitorJobScheduler();
         assert jobScheduler != null;
         // jobScheduler.scheduleClusterStatusMonitoring();
+
+        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
+            var monitoringServer = new MonitoringServer(
+                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
+                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
+            monitoringServer.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+        }
+
+        try {
+          Thread.currentThread().join();
+        } catch (InterruptedException ex) {
+          System.out.println("Main thread is interrupted! reason: " + ex);
+          ServerSettings.setStopAllThreads(true);
+        }
     }
 }

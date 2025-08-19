@@ -80,7 +80,7 @@ public class DBEventManagerRunner implements IServer {
 
             // start the worker thread
             log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
+            new Thread(runner, this.getClass().getSimpleName()).start();
             setStatus(ServerStatus.STARTED);
         } catch (Exception ex) {
             log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);

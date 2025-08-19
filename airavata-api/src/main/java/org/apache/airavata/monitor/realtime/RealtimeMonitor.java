@@ -64,20 +64,35 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
-        final Consumer<String, String> consumer = createConsumer();
+    private void runConsumer() {
+        final Consumer<String, String> consumer;
+        try {
+            consumer = createConsumer();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error while creating consumer", e);
+            return;
+        }
 
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Iface registry = getRegistry();
-            consumerRecords.forEach(record -> {
-                try {
-                    process(record.key(), record.value(), registry);
-                } catch (Exception e) {
-                    logger.error("Error while processing message {}", record.value(), e);
-                }
-            });
-            consumer.commitAsync();
+        try {
+          while (true) {
+              final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
+              RegistryService.Iface registry = getRegistry();
+              consumerRecords.forEach(record -> {
+                  try {
+                      process(record.key(), record.value(), registry);
+                  } catch (Exception e) {
+                      logger.error("Error while processing message {}", record.value(), e);
+                  }
+              });
+              consumer.commitAsync();
+              if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("RealtimeMonitor is interrupted!");
+              }
+          }
+        } catch (InterruptedException ex) {
+          logger.error("RealtimeMonitor is interrupted! reason: " + ex, ex);
+        } finally {
+          consumer.close();
         }
     }
 
@@ -94,10 +109,8 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     @Override
     public void run() {
-        try {
-            runConsumer();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while running consumer", e);
-        }
+        var thread = new Thread(this::runConsumer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 }

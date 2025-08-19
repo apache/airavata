@@ -37,11 +37,11 @@ public class MonitoringServer {
         this.port = port;
     }
 
-    public void start() throws IOException {
+    public void start() {
         try {
             logger.info("Starting the monitoring server");
             httpServer = new HTTPServer(host, port, true);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to start the monitoring server on host {} na port {}", host, port, e);
         }
     }
@@ -49,7 +49,7 @@ public class MonitoringServer {
     public void stop() {
         if (httpServer != null) {
             logger.info("Stopping the monitor server");
-            httpServer.stop();
+            httpServer.close();
         }
     }
 }

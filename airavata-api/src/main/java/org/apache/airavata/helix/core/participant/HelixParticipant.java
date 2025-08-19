@@ -135,7 +135,14 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         return taskRegistry;
     }
 
+    @Override
     public void run() {
+        var thread = new Thread(this::start, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
+    }
+
+    private void start() {
         ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin.Builder().setZkAddress(zkAddress).build();
         try {
             List<String> nodesInCluster = zkHelixAdmin.getInstancesInCluster(clusterName);
@@ -165,7 +172,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                     logger.warn("Participant: " + participantName + " was not disabled normally", e);
                 }
                 disconnect();
-            }));
+            }, this.getClass().getSimpleName() + ".ShutdownHook"));
 
             // connect the participant manager
             connect();
@@ -195,16 +202,12 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             zkHelixManager.connect();
             logger.info("Participant: " + participantName + ", has connected to cluster: " + clusterName);
 
-            if (ServerSettings.getBooleanSetting("api.monitoring.enabled")) {
-              System.out.println("Starting participant monitoring server .......");
-              var monitoringServer = new MonitoringServer(
-                      ServerSettings.getSetting("api.monitoring.host"),
-                      ServerSettings.getIntSetting("api.monitoring.port"));
-              monitoringServer.start();
-              Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+            try {
+              Thread.currentThread().join();
+            } catch (InterruptedException ex) {
+              logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
             }
-            Thread.currentThread().join();
-            
+
         } catch (InterruptedException ex) {
             logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
         } catch (Exception ex) {

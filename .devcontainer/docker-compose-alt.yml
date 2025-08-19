@@ -159,7 +159,6 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
-      - email.based.monitor.address=CHANGEME
       - realtime.monitor.enabled=false
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-participant/bin/participant.sh"]
 
@@ -177,6 +176,7 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - api.server.port=8970
+      - email.based.monitor.host=CHANGEME
       - email.based.monitor.address=CHANGEME
       - email.based.monitor.password=CHANGEME
       - kafka.broker.url=kafka:9092

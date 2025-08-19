@@ -75,9 +75,16 @@ public class PreWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
     }
 
-    public void startServer() throws Exception {
+    public void startServer() {
+      try {
         super.initComponents();
         initLaunchSubscriber();
+        Thread.currentThread().join();
+      } catch (InterruptedException ex) {
+        logger.error("PreWorkflowManager is interrupted! reason: " + ex, ex);
+      } catch (Exception e) {
+        logger.error("Error starting PreWorkflowManager", e);
+      }
     }
 
     public void stopServer() {}
@@ -284,11 +291,9 @@ public class PreWorkflowManager extends WorkflowManager {
 
     @Override
     public void run() {
-        try {
-            startServer();
-        } catch (Exception e) {
-            logger.error("Error starting PreWorkflowManager", e);
-        }
+        var thread = new Thread(this::startServer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

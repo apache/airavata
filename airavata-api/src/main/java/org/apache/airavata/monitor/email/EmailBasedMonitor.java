@@ -69,7 +69,7 @@ public class EmailBasedMonitor extends AbstractMonitor {
 
     private void init() throws Exception {
         loadContext();
-        host = ServerSettings.getApiServerHost();
+        host = ServerSettings.getEmailBasedMonitorHost();
         emailAddress = ServerSettings.getEmailBasedMonitorAddress();
         password = ServerSettings.getEmailBasedMonitorPassword();
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
@@ -139,7 +139,7 @@ public class EmailBasedMonitor extends AbstractMonitor {
     }
 
     public void monitor(String jobId) {
-        log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
+        log.info("Added monitor Id : {} to email based monitor map", jobId);
     }
 
     private JobStatusResult parse(Message message, String publisherId) throws MessagingException, AiravataException {
@@ -148,7 +148,7 @@ public class EmailBasedMonitor extends AbstractMonitor {
         ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
         EmailParser emailParser = emailParserMap.get(jobMonitorType);
         if (emailParser == null) {
-            throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
+            throw new AiravataException("Un-handle resource job manager type: " + jobMonitorType.toString()
                     + " for email monitoring -->  " + addressStr);
         }
         RegistryService.Iface registry = getRegistry();
@@ -167,79 +167,90 @@ public class EmailBasedMonitor extends AbstractMonitor {
                 return addressEntry.getValue();
             }
         }
-        throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+        throw new AiravataException("Couldn't identify Resource job manager type from address " + addressStr);
+    }
+
+    private void runEmailMonitor() {
+        Session session = null;
+        SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+        while (!ServerSettings.isStopAllThreads()) {
+            try {
+                if (session == null) {
+                    session = Session.getDefaultInstance(properties);
+                }
+                if (store == null || !store.isConnected()) {
+                    store = session.getStore(storeProtocol);
+                    store.connect(host, emailAddress, password);
+                }
+                if (emailFolder == null || !emailFolder.isOpen()) {
+                    emailFolder = store.getFolder(folderName);
+                }
+
+                log.info("Retrieving unseen emails");
+                if (emailFolder == null) {
+                    return;
+                }
+                emailFolder.open(Folder.READ_WRITE);
+                if (emailFolder.isOpen()) {
+                    // flush if any message left in flushUnseenMessage
+                    if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+                        try {
+                            emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                            flushUnseenMessages = null;
+                        } catch (MessagingException e) {
+                            if (!store.isConnected()) {
+                                store.connect();
+                                emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                flushUnseenMessages = null;
+                            }
+                        }
+                    }
+                    Message[] searchMessages = emailFolder.search(unseenBefore);
+                    if (searchMessages == null || searchMessages.length == 0) {
+                        log.info("No new email messages");
+                    } else {
+                        log.info("{} new email/s received", searchMessages.length);
+                        processMessages(searchMessages);
+                    }
+                    emailFolder.close(false);
+                }
+                if (Thread.currentThread().isInterrupted()) {
+                  throw new InterruptedException("EmailBasedMonitor is interrupted!");
+                }
+            } catch (InterruptedException ex) {
+              log.error("EmailBasedMonitor is interrupted! reason: " + ex, ex);
+            } catch (MessagingException e) {
+                log.error("Couldn't connect to the store ", e);
+            } catch (Throwable e) {
+                log.error("Caught a throwable ", e);
+            } finally {
+                try {
+                    if (emailFolder != null && emailFolder.isOpen()) {
+                        emailFolder.close(false);
+                    }
+                    if (store != null && store.isConnected()) {
+                        store.close();
+                    }
+                } catch (MessagingException e) {
+                    log.error("Store close operation failed, couldn't close store", e);
+                }
+                try {
+                  Thread.sleep(ServerSettings.getEmailMonitorPeriod());
+                } catch (InterruptedException e) {
+                  log.error("interrupted while sleeping ", e);
+                } catch (Exception e) {
+                  log.error("exception thrown when attempting to sleep ", e);
+                }
+            }
+        }
+        log.info("Email monitoring daemon stopped");
     }
 
     @Override
     public void run() {
-
-        while (!ServerSettings.isStopAllThreads()) {
-            try {
-                Session session = Session.getDefaultInstance(properties);
-                store = session.getStore(storeProtocol);
-                store.connect(host, emailAddress, password);
-                emailFolder = store.getFolder(folderName);
-                // first we search for all unread messages.
-                SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                while (!ServerSettings.isStopAllThreads()) {
-                    Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep for long enough
-                    if (!store.isConnected()) {
-                        store.connect();
-                        emailFolder = store.getFolder(folderName);
-                    }
-                    log.info("[EJM]: Retrieving unseen emails");
-                    if (emailFolder == null) {
-                        return;
-                    }
-                    emailFolder.open(Folder.READ_WRITE);
-                    if (emailFolder.isOpen()) {
-                        // flush if any message left in flushUnseenMessage
-                        if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
-                            try {
-                                emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
-                                flushUnseenMessages = null;
-                            } catch (MessagingException e) {
-                                if (!store.isConnected()) {
-                                    store.connect();
-                                    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
-                                    flushUnseenMessages = null;
-                                }
-                            }
-                        }
-                        Message[] searchMessages = emailFolder.search(unseenBefore);
-                        if (searchMessages == null || searchMessages.length == 0) {
-                            log.info("[EJM]: No new email messages");
-                        } else {
-                            log.info("[EJM]: {} new email/s received", searchMessages.length);
-                            processMessages(searchMessages);
-                        }
-                        emailFolder.close(false);
-                    }
-                }
-            } catch (MessagingException e) {
-                log.error("[EJM]: Couldn't connect to the store ", e);
-            } catch (InterruptedException e) {
-                log.error("[EJM]: Interrupt exception while sleep ", e);
-            } catch (AiravataException e) {
-                log.error("[EJM]: UnHandled arguments ", e);
-            } catch (Throwable e) {
-                log.error("[EJM]: Caught a throwable ", e);
-            } finally {
-                try {
-                    if (emailFolder != null) {
-                        emailFolder.close(false);
-                    }
-                    if (store != null) {
-                        store.close();
-                    }
-                } catch (MessagingException e) {
-                    log.error("[EJM]: Store close operation failed, couldn't close store", e);
-                } catch (Throwable e) {
-                    log.error("[EJM]: Caught a throwable while closing email store ", e);
-                }
-            }
-        }
-        log.info("[EJM]: Email monitoring daemon stopped");
+        var thread = new Thread(this::runEmailMonitor, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 
     private void processMessages(Message[] searchMessages) throws MessagingException {

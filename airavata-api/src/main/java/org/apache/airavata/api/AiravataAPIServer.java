@@ -161,7 +161,7 @@ public class AiravataAPIServer implements IServer {
                 server.serve();
                 setStatus(ServerStatus.STOPPED);
                 logger.info("Airavata Thrift API Stopped.");
-            }).start();
+            }, this.getClass().getSimpleName()).start();
 
             // Monitor server startup
             new Thread(() -> {
@@ -180,7 +180,7 @@ public class AiravataAPIServer implements IServer {
                         ServiceName.SHARING_REGISTRY.toString(), ServiceName.ORCHESTRATOR.toString(), ServiceName.USER_PROFILE.toString(),
                         ServiceName.TENANT_PROFILE.toString(), ServiceName.IAM_ADMIN_SERVICES.toString(), ServiceName.GROUP_MANAGER.toString());
                 }
-            }).start();
+            }, this.getClass().getSimpleName() + ".Monitor").start();
 
         } catch (TTransportException e) {
             logger.error("Failed to start Airavata Thrift API", e);
