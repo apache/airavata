@@ -28,7 +28,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.IdentityContext;

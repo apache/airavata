@@ -24,11 +24,11 @@ import java.sql.SQLException;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
+import org.apache.airavata.credential.store.handler.CredentialStoreServerHandler;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.registry.handler.RegistryServerHandler;
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 
 public class AiravataServiceFactory {
 

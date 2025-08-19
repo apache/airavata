@@ -56,24 +56,6 @@ public class RabbitMQListener {
     private static String jobId = "*";
     private static LEVEL level = LEVEL.ALL;
 
-    public static void main(String[] args) {
-        File file = new File("/tmp/latency_client");
-        parseArguments(args);
-        try {
-            FileOutputStream fos = new FileOutputStream(file, false);
-            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-            String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            System.out.println("broker url " + brokerUrl);
-            final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            List<String> routingKeys = getRoutingKeys(level);
-            Subscriber subscriber = MessagingFactory.getSubscriber(message -> {}, routingKeys, Type.STATUS);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error reading airavata server properties", e);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
     private static MessageHandler getMessageHandler(final BufferedWriter bw) {
         return message -> {
             try {

@@ -19,28 +19,24 @@
 ###########################################################################
 #  Registry Server Configurations
 ###########################################################################
-regserver.server.host={{ registry_host }}
-regserver.server.port={{ registry_port }}
+api.server.host={{ registry_host }}
+api.server.port={{ registry_port }}
 
 ###########################################################################
 # Credential Store module Configuration
 ###########################################################################
-credential.store.server.host={{ cred_store_server_host }}
-credential.store.server.port={{ cred_store_port }}
 security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
 
 ###########################################################################
 # Profile Server Configuration
 ###########################################################################
-profile.service.server.host={{ profile_service_host }}
-profile.service.server.port={{ profile_service_port }}
 
 ###########################################################################
 # Monitoring module Configuration
 ###########################################################################
 email.based.monitor.address={{ monitor_email_address }}
 job.notification.emailids=
-job.notification.enable=true
+job.notification.enabled=true
 
 ###########################################################################
 # Helix workflow manager configurations
@@ -78,9 +74,9 @@ data.parser.broker.publisher.id={{ parser_broker_publisher_id }}
 ###########################################################################
 # Job Submission Task Level Configurations
 ###########################################################################
-enable.realtime.monitor=true
+realtime.monitor.enabled=true
 
-local.data.location={{ local_data_location }}
+data.local.path={{ local_data_location }}
 
 ###########################################################################
 # Data Parsing Task Level Configurations
@@ -90,7 +86,7 @@ data.parser.delete.container=True
 ###########################################################################
 # Data Staging Task Level Configurations
 ###########################################################################
-enable.streaming.transfer=False
+data.streaming.enabled=False
 max.archive.size={{ max_archive_size }}
 
 ###########################################################################
@@ -102,6 +98,5 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 ###########################################################################
 # Platform Monitoring Configuration
 ###########################################################################
-participant.monitoring.enabled={{ participant_monitoring_enabled }}
-participant.monitoring.host={{ participant_monitoring_host }}
-participant.monitoring.port={{ participant_monitoring_port }}
+api.monitoring.enabled={{ participant_monitoring_enabled }}
+api.monitoring.port={{ participant_monitoring_port }}

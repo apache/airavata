@@ -69,7 +69,7 @@ public class EmailBasedMonitor extends AbstractMonitor {
 
     private void init() throws Exception {
         loadContext();
-        host = ServerSettings.getEmailBasedMonitorHost();
+        host = ServerSettings.getApiServerHost();
         emailAddress = ServerSettings.getEmailBasedMonitorAddress();
         password = ServerSettings.getEmailBasedMonitorPassword();
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
@@ -292,9 +292,4 @@ public class EmailBasedMonitor extends AbstractMonitor {
             }
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        new EmailBasedMonitor().run();
-    }
-
 }

@@ -37,12 +37,12 @@ public class FileServerConfiguration {
         return AdaptorSupportImpl.getInstance();
     }
 
-    // regserver.server.host
-    @Value("${regserver.server.host:localhost}")
+    // api.server.host
+    @Value("${api.server.host:localhost}")
     private String registryServerHost;
     
-    // regserver.server.port
-    @Value("${regserver.server.port:8970}")
+    // api.server.port
+    @Value("${api.server.port:8970}")
     private int registryServerPort;
 
     @Bean

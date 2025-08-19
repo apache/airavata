@@ -286,20 +286,12 @@ public class ApplicationSettings {
         return getSetting("credential.store.keystore.password");
     }
 
-    public static String getCredentialStoreServerHost() throws ApplicationSettingsException {
-        return getSetting("credential.store.server.host");
+    public static String getApiServerHost() throws ApplicationSettingsException {
+        return getSetting("api.server.host");
     }
 
-    public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
-        return getSetting("credential.store.server.port");
-    }
-
-    public static String getRegistryServerPort() throws ApplicationSettingsException {
-        return getSetting("regserver.server.port");
-    }
-
-    public static String getRegistryServerHost() throws ApplicationSettingsException {
-        return getSetting("regserver.server.host");
+    public static String getApiServerPort() throws ApplicationSettingsException {
+        return getSetting("api.server.port");
     }
 
     public static String getSuperTenantGatewayId() throws ApplicationSettingsException {
@@ -307,39 +299,23 @@ public class ApplicationSettings {
     }
 
     public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
-        return getSetting("cluster.status.monitoring.repeat.time");
+        return getSetting("cluster.monitor.repeat.time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
-        return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+        return getSetting("cluster.monitor.enabled").equalsIgnoreCase("true");
     }
 
     public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
-        return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
+        return getSetting("scheduler.job.scanning.enabled").equalsIgnoreCase("true");
     }
 
     public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
-        return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
-    }
-
-    public static String getProfileServiceServerHost() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
-    }
-
-    public static String getProfileServiceServerPort() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_PORT);
+        return getSetting("data.interpreter.enabled").equalsIgnoreCase("true");
     }
 
     public static String getIamServerUrl() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_URL);
-    }
-
-    public static void mergeSettingsCommandLineArgs(String[] args) {
-        getInstance().mergeSettingsCommandLineArgsImpl(args);
-    }
-
-    public static ShutdownStrategy getShutdownStrategy() throws Exception {
-        return getInstance().getShutdownStrategyImpl();
     }
 
     public static URL loadFile(String fileName) {

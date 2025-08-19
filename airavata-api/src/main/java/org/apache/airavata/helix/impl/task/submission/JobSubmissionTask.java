@@ -23,10 +23,10 @@ import java.io.File;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.AgentException;
+import org.apache.airavata.datatransfer.api.CommandOutput;
+import org.apache.airavata.datatransfer.api.JobSubmissionOutput;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -59,7 +59,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration =
                 JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryServiceClient(),
+                        getRegistry(),
                         getTaskContext().getJobSubmissionProtocol(),
                         getTaskContext().getPreferredJobSubmissionInterface()));
 
@@ -175,7 +175,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration =
                 JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryServiceClient(),
+                        getRegistry(),
                         getTaskContext().getJobSubmissionProtocol(),
                         getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(
@@ -187,7 +187,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobId) throws Exception {
 
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
-                getRegistryServiceClient(),
+                getRegistry(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
 
@@ -208,7 +208,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
 
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
-                getRegistryServiceClient(),
+                getRegistry(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
 
@@ -227,7 +227,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     public void saveJobModel(JobModel jobModel) throws TException {
-        getRegistryServiceClient().addJob(jobModel, getProcessId());
+        getRegistry().addJob(jobModel, getProcessId());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -253,7 +253,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
+            getRegistry().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             /*JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 
@@ -269,7 +269,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
 
-        if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
+        if (Boolean.parseBoolean(ServerSettings.getSetting("realtime.monitor.enabled"))) {
             if (mapData.getPreJobCommands() == null) {
                 mapData.setPreJobCommands(new ArrayList<>());
             }

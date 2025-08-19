@@ -41,7 +41,7 @@ registry.jdbc.password={{ db_password }}
 start.derby.server.mode=false
 validationQuery=SELECT 1 from CONFIGURATION
 #jpa.connection.properties=MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000,testWhileIdle=true,testOnBorrow=true
-enable.sharing={{enable_sharing}}
+sharing.enabled={{enable_sharing}}
 
 # Properties for default user mode
 default.registry.user={{ default_registry_user }}
@@ -102,13 +102,6 @@ sharingcatalog.jdbc.password={{ db_password }}
 sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
 
 ###########################################################################
-#  Sharing Registry Server Configuration
-###########################################################################
-sharing_server=org.apache.airavata.sharing.registry.server.SharingRegistryServer
-sharing.registry.server.host={{ sharing_registry_host }}
-sharing.registry.server.port={{ sharing_registry_port }}
-
-###########################################################################
 #  Server module Configuration
 ###########################################################################
 #credential store server should be started before API server
@@ -119,28 +112,21 @@ sharing.registry.server.port={{ sharing_registry_port }}
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
-apiserver.host={{ api_server_host }}
-apiserver.port={{ api_server_port }}
 
 ###########################################################################
 #  Orchestrator Server Configurations
 ###########################################################################
-orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
-orchestrator.server.host={{ orchestrator_host }}
-orchestrator.server.port={{ orchestrator_port }}
-orchestrator.server.min.threads=50
+api.server.min.threads=50
 job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
-enable.validation=true
+job.validators.enabled=true
 host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
 
 ###########################################################################
 #  Registry Server Configurations
 ###########################################################################
-regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
-regserver.server.host={{registry_host}}
-regserver.server.port={{registry_port}}
-regserver.server.min.threads=50
+api.server.host={{registry_host}}
+api.server.port={{registry_port}}
+api.server.min.threads=50
 
 ###########################################################################
 #  Job Scheduler can send informative email messages to you about the status of your job.
@@ -149,7 +135,7 @@ regserver.server.min.threads=50
 # and "e" (send mail when job terminates).  The default is "a" if not specified.
 ###########################################################################
 
-job.notification.enable=true
+job.notification.enabled=true
 #Provide comma separated email ids as a string if more than one
 job.notification.emailids=
 
@@ -163,9 +149,6 @@ credential.store.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ credential_stor
 credential.store.jdbc.user={{ db_user }}
 credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=org.mariadb.jdbc.Driver
-credential.store.server.host={{ cred_store_server_host }}
-credential.store.server.port={{ cred_store_port }}
-credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
 credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
@@ -196,7 +179,6 @@ credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 monitors=org.apache.airavata.gfac.monitor.impl.pull.qstat.QstatMonitor,org.apache.airavata.gfac.monitor.impl.LocalJobMonitor
 
 #These properties will used to enable email base monitoring
-email.based.monitor.host=imap.gmail.com
 email.based.monitor.address={{ monitor_email_address }}
 email.based.monitor.password={{ monitor_email_password }}
 email.based.monitor.folder.name=INBOX
@@ -245,9 +227,6 @@ in.memory.cache.size=1000
 ###########################################################################
 # Profile Service Configuration
 ###########################################################################
-profile.service.server.host={{ profile_service_host }}
-profile.service.server.port={{ profile_service_port }}
-profile_service.class=org.apache.airavata.service.profile.server.ProfileServiceServer
 # MariaDB properties
 profile.service.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ profile_service }}
 profile.service.jdbc.user={{ db_user }}
@@ -263,11 +242,6 @@ iam.server.super.admin.username={{ iam_server_super_admin_username }}
 iam.server.super.admin.password={{ iam_server_super_admin_password }}
 
 ###########################################################################
-# DB Event Manager Runner
-###########################################################################
-db_event_manager.class=org.apache.airavata.db.event.manager.DBEventManagerRunner
-
-###########################################################################
 # ThriftClientPool Configuration
 ###########################################################################
 thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
@@ -277,15 +251,13 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 # Platform Monitoring Configuration
 ###########################################################################
 api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
-api.server.monitoring.host={{ api_server_monitoring_host }}
-api.server.monitoring.port={{ api_server_monitoring_port }}
 
 
 ###########################################################################
 # Metascheduler And Compute Resource Monitoring Configuration
 ###########################################################################
-cluster.status.monitoring.enable={{ cluster_monitoring_enabled }}
-cluster.status.monitoring.repeat.time=18000
+cluster.monitor.enabled={{ cluster_monitoring_enabled }}
+cluster.monitor.repeat.time=18000
 compute.resource.selection.policy.class={{ metascheduler_resource_selection_policy_class }}
 metascheduler.gateway={{ metascheduler_gateway }}
 metascheduler.group.resource.profile={{ metascheduler_group_resource_profile }}
@@ -293,14 +265,14 @@ metascheduler.username={{ metascheduler_username }}
 cluster.scanning.interval={{ cluster_scanning_interval }}
 job.scanning.interval={{job_scanning_interval}}
 cluster.scanning.parallel.jobs={{ cluster_scanning_parallel_jobs }}
-metaschedluer.job.scanning.enable={{ metaschedluer_job_scanning_enable }}
+scheduler.job.scanning.enabled={{ metaschedluer_job_scanning_enable }}
 metascheduler.maximum.rescheduler.threshold = {{ metascheduler_maximum_rescheduler_threshold }}
 compute.resource.rescheduler.policy.class = {{ compute_resource_rescheduler_policy_class }}
 data.analyzer.scanning.interval=3600
 data.analyzer.scanning.parallel.jobs=1
 data.analyzer.enabled.gateways=dev-ultrascan
 data.analyzer.time.step.seconds=5
-data.analyzer.job.scanning.enable=False
+data.interpreter.enabled=False
 metascheduler.multiple.cr.enabling.factor=1
 
 

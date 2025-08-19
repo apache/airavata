@@ -21,8 +21,8 @@ package org.apache.airavata.helix.impl.task.submission;
 
 import java.io.*;
 import java.util.*;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
@@ -33,7 +33,7 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
-import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            List<JobModel> jobsOfTask = getTaskContext().getRegistryClient().getJobs("taskId", getTaskId());
+            List<JobModel> jobsOfTask = getTaskContext().getRegistry().getJobs("taskId", getTaskId());
 
             if (jobsOfTask.size() > 0) {
                 logger.warn("A job is already available for task " + getTaskId());
@@ -202,11 +202,11 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 // usage reporting as the last step of job submission task
                 try {
                     mapData.setJobId(jobId);
-                    boolean reportingAvailable = getRegistryServiceClient()
+                    boolean reportingAvailable = getRegistry()
                             .isGatewayUsageReportingAvailable(getGatewayId(), taskContext.getComputeResourceId());
 
                     if (reportingAvailable) {
-                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient()
+                        GatewayUsageReportingCommand reportingCommand = getRegistry()
                                 .getGatewayReportingCommand(getGatewayId(), taskContext.getComputeResourceId());
 
                         String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());

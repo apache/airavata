@@ -20,11 +20,12 @@
 package org.apache.airavata.profile.handlers;
 
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.dbevent.CrudType;
@@ -33,7 +34,6 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
@@ -52,8 +52,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
 
-    private UserProfileRepository userProfileRepository;
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
+    private final UserProfileRepository userProfileRepository;
+    private final DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     public UserProfileServiceHandler() {
 
@@ -250,14 +250,12 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException | ApplicationSettingsException e) {
+            final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
+            final String serverHost = ServerSettings.getApiServerHost();
+            return AiravataClientFactory.createIamAdminServiceClient(serverHost, serverPort);
+        } catch (IamAdminServicesException e) {
             logger.error("Failed to create IAM Admin Services client", e);
-            UserProfileServiceException ex =
-                    new UserProfileServiceException("Failed to create IAM Admin Services client");
-            throw ex;
+            throw new UserProfileServiceException("Failed to create IAM Admin Services client");
         }
     }
 }

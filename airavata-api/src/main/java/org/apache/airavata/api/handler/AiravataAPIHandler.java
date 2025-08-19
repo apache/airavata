@@ -28,6 +28,7 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
+import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -95,8 +96,8 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
-import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.catalog.sharing.models.*;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2183,7 +2184,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
     //	    try {
     //		    final String serverHost = ServerSettings.getOrchestratorServerHost();
     //		    final int serverPort = ServerSettings.getOrchestratorServerPort();
-    //		    return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+    //		    return AiravataClientFactory.createOrchestratorClient(serverHost, serverPort);
     //	    } catch (AiravataException e) {
     //		    throw new TException(e);
     //	    }

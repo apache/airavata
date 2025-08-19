@@ -47,8 +47,8 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -83,10 +83,6 @@ public class PostWorkflowManager extends WorkflowManager {
         } catch (Exception e) {
             logger.error("Error starting PreWorkflowManager", e);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        new PostWorkflowManager().run();
     }
 
     private void init() throws Exception {

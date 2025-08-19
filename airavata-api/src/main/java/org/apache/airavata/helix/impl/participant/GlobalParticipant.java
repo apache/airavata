@@ -22,10 +22,8 @@ package org.apache.airavata.helix.impl.participant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,29 +68,5 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     @SuppressWarnings("WeakerAccess")
     public GlobalParticipant() throws ApplicationSettingsException {
         super(GlobalParticipant.taskClasses, null);
-    }
-
-    public void startServer() {
-        Thread t = new Thread(this);
-        t.start();
-    }
-
-    public void stopServer() {}
-
-    public static void main(String args[]) {
-        logger.info("Starting global participant");
-        try {
-            if (ServerSettings.getBooleanSetting("participant.monitoring.enabled")) {
-                MonitoringServer monitoringServer = new MonitoringServer(
-                        ServerSettings.getSetting("participant.monitoring.host"),
-                        ServerSettings.getIntSetting("participant.monitoring.port"));
-                monitoringServer.start();
-                Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-            }
-            GlobalParticipant participant = new GlobalParticipant();
-            participant.startServer();
-        } catch (Exception e) {
-            logger.error("Failed to start global participant", e);
-        }
     }
 }

@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.helix.InstanceType;
 import org.apache.helix.constants.InstanceConstants.InstanceOperation;
 import org.apache.helix.examples.OnlineOfflineStateModelFactory;
@@ -195,11 +195,11 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             zkHelixManager.connect();
             logger.info("Participant: " + participantName + ", has connected to cluster: " + clusterName);
 
-            if (ServerSettings.getBooleanSetting("participant.monitoring.enabled")) {
+            if (ServerSettings.getBooleanSetting("api.monitoring.enabled")) {
               System.out.println("Starting participant monitoring server .......");
               var monitoringServer = new MonitoringServer(
-                      ServerSettings.getSetting("participant.monitoring.host"),
-                      ServerSettings.getIntSetting("participant.monitoring.port"));
+                      ServerSettings.getSetting("api.monitoring.host"),
+                      ServerSettings.getIntSetting("api.monitoring.port"));
               monitoringServer.start();
               Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
             }

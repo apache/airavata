@@ -56,15 +56,15 @@ services:
       - registry.jdbc.password=123456
       - start.derby.server.mode=false
       - validationQuery=SELECT 1 from CONFIGURATION
-      - enable.sharing=true
+      - sharing.enabled=true
       - default.registry.user=default-admin
       - default.registry.password=123456
       - default.registry.gateway=default
       - default.registry.oauth.client.id=pga
       - default.registry.oauth.client.secret=9790c8c4-7d9b-4ccc-a820-ca5aac38d2ad
       - super.tenant.gatewayId=default
-      - cluster.status.monitoring.enable=false
-      - cluster.status.monitoring.repeat.time=18000
+      - cluster.monitor.enabled=false
+      - cluster.monitor.repeat.time=18000
       - appcatalog.jdbc.driver=org.mariadb.jdbc.Driver
       - appcatalog.jdbc.url=jdbc:mariadb://db:3306/app_catalog
       - appcatalog.jdbc.user=root
@@ -85,24 +85,14 @@ services:
       - sharingcatalog.jdbc.user=root
       - sharingcatalog.jdbc.password=123456
       - sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
-      - sharing_server=org.apache.airavata.sharing.registry.server.SharingRegistryServer
-      - sharing.registry.server.host=0.0.0.0
-      - sharing.registry.server.port=7878
-      - apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
-      - apiserver.host=0.0.0.0
-      - apiserver.port=8930
-      - orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
-      - orchestrator.server.host=0.0.0.0
-      - orchestrator.server.port=8940
-      - orchestrator.server.min.threads=50
+      - api.server.min.threads=50
       - job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
-      - enable.validation=true
+      - job.validators.enabled=true
       - host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
-      - regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
-      - regserver.server.host=localhost
-      - regserver.server.port=8970
-      - regserver.server.min.threads=50
-      - job.notification.enable=true
+      - api.server.host=apiserver
+      - api.server.port=8970
+      - api.server.min.threads=50
+      - job.notification.enabled=true
       - job.notification.emailids=
       - credential.store.keystore.url=/opt/keystores/airavata.sym.p12
       - credential.store.keystore.alias=airavata
@@ -111,9 +101,6 @@ services:
       - credential.store.jdbc.user=root
       - credential.store.jdbc.password=123456
       - credential.store.jdbc.driver=org.mariadb.jdbc.Driver
-      - credential.store.server.host=0.0.0.0
-      - credential.store.server.port=8960
-      - credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
       - credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - rabbitmq.status.exchange.name=status_exchange
@@ -131,9 +118,6 @@ services:
       - authz.cache.enabled=true
       - authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
       - in.memory.cache.size=1000
-      - profile.service.server.host=0.0.0.0
-      - profile.service.server.port=8962
-      - profile_service.class=org.apache.airavata.service.profile.server.ProfileServiceServer
       - profile.service.jdbc.url=jdbc:mariadb://db:3306/profile_service
       - profile.service.jdbc.user=root
       - profile.service.jdbc.password=123456
@@ -142,8 +126,6 @@ services:
       - iam.server.url=https://airavata.host:8443
       - iam.server.super.admin.username=admin
       - iam.server.super.admin.password=admin
-      - db_event_manager.class=org.apache.airavata.db.event.manager.DBEventManagerRunner
-      - thrift.client.pool.abandoned.removal.enabled=true
     command: ["/tmp/wait-for-it.sh", "db:3306", "--", "/tmp/wait-for-it.sh", "rabbitmq:5672", "--" , "/opt/apache-airavata-api-server/bin/airavata-server-start.sh", "api-orch"]
 
   prewm:
@@ -158,7 +140,7 @@ services:
       - rabbitmq
     environment:
       - zookeeper.server.connection=zookeeper:2181
-      - regserver.server.host=apiserver
+      - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - pre.workflow.manager.loadbalance.clusters=false
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
@@ -175,13 +157,10 @@ services:
       - rabbitmq
     environment:
       - zookeeper.server.connection=zookeeper:2181
-      - regserver.server.host=apiserver
+      - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
-      - credential.store.server.host=apiserver
       - email.based.monitor.address=CHANGEME
-      - enable.realtime.monitor=false
-      - profile.service.server.host=apiserver
-      - profile.service.server.port=8962
+      - realtime.monitor.enabled=false
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-participant/bin/participant.sh"]
 
   emailmonitor:
@@ -196,8 +175,8 @@ services:
       - rabbitmq
     environment:
       - zookeeper.server.connection=zookeeper:2181
-      - regserver.server.host=apiserver
-      - regserver.server.port=8970
+      - api.server.host=apiserver
+      - api.server.port=8970
       - email.based.monitor.address=CHANGEME
       - email.based.monitor.password=CHANGEME
       - kafka.broker.url=kafka:9092
@@ -269,7 +248,7 @@ services:
       - rabbitmq
     environment:
       - zookeeper.server.connection=zookeeper:2181
-      - regserver.server.host=apiserver
+      - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - post.workflow.manager.loadbalance.clusters=false
       - kafka.broker.url=kafka:9092

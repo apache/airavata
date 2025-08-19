@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.*;
-import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.datatransfer.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;

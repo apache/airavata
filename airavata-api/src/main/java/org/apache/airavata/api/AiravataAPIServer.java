@@ -29,16 +29,16 @@ import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
+import org.apache.airavata.credential.store.handler.CredentialStoreServerHandler;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
+import org.apache.airavata.orchestrator.handler.OrchestratorServerHandler;
 import org.apache.airavata.profile.handlers.GroupManagerServiceHandler;
 import org.apache.airavata.profile.handlers.IamAdminServicesHandler;
 import org.apache.airavata.profile.handlers.TenantProfileServiceHandler;
 import org.apache.airavata.profile.handlers.UserProfileServiceHandler;
 import org.apache.airavata.profile.user.core.utils.UserProfileCatalogDBInitConfig;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.registry.handler.RegistryServerHandler;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
@@ -46,9 +46,9 @@ import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -59,8 +59,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Airavata Thrift API Server that combines all Airavata services into a single server
- * using the orchestrator's host and port configuration.
+ * Airavata API multiplexes several services over a single Thrift server
+ * - Airavata Service
+ * - Registry Service
+ * - Credential Store Service
+ * - Sharing Registry Service
+ * - Orchestrator Service
+ * - User Profile Service
+ * - Tenant Profile Service
+ * - IAM Admin Service
+ * - Group Manager Service
  */
 public class AiravataAPIServer implements IServer {
     private static final Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
@@ -69,17 +77,6 @@ public class AiravataAPIServer implements IServer {
 
     private ServerStatus status;
     private TServer server;
-
-    // Service names for multiplexing
-    public static final String AIRAVATA_API_SERVICE = "AiravataAPI";
-    public static final String REGISTRY_SERVICE = "RegistryAPI";
-    public static final String CREDENTIAL_STORE_SERVICE = "CredentialStore";
-    public static final String SHARING_REGISTRY_SERVICE = "SharingRegistry";
-    public static final String ORCHESTRATOR_SERVICE = "Orchestrator";
-    public static final String USER_PROFILE_SERVICE = "UserProfile";
-    public static final String TENANT_PROFILE_SERVICE = "TenantProfile";
-    public static final String IAM_ADMIN_SERVICES = "IamAdminServices";
-    public static final String GROUP_MANAGER_SERVICE = "GroupManager";
 
     public AiravataAPIServer() {
         setStatus(ServerStatus.STOPPED);
@@ -108,6 +105,7 @@ public class AiravataAPIServer implements IServer {
                 new ReplicaCatalogDBInitConfig(),
                 new UserProfileCatalogDBInitConfig(),
                 new SharingRegistryDBInitConfig()
+                // new WorkflowCatalogDBInitConfig()
             );
             
             for (DBInitConfig dbInitConfig : dbInitConfigs) {
@@ -116,8 +114,8 @@ public class AiravataAPIServer implements IServer {
             logger.info("Databases initialized successfully");
 
             // Use orchestrator's host and port configuration
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting("orchestrator.server.port", "8940"));
-            final String serverHost = ServerSettings.getSetting("orchestrator.server.host", "localhost");
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting("api.server.port", "8930"));
+            final String serverHost = ServerSettings.getSetting("api.server.host", "localhost");
 
             // Create processors for each service
             var airavataAPIProcessor = new Airavata.Processor<>(new AiravataAPIHandler());
@@ -134,15 +132,15 @@ public class AiravataAPIServer implements IServer {
             TMultiplexedProcessor multiplexedProcessor = new TMultiplexedProcessor();
             
             // Register all processors with their service names
-            multiplexedProcessor.registerProcessor(AIRAVATA_API_SERVICE, airavataAPIProcessor);
-            multiplexedProcessor.registerProcessor(REGISTRY_SERVICE, registryProcessor);
-            multiplexedProcessor.registerProcessor(CREDENTIAL_STORE_SERVICE, credentialStoreProcessor);
-            multiplexedProcessor.registerProcessor(SHARING_REGISTRY_SERVICE, sharingRegistryProcessor);
-            multiplexedProcessor.registerProcessor(ORCHESTRATOR_SERVICE, orchestratorProcessor);
-            multiplexedProcessor.registerProcessor(USER_PROFILE_SERVICE, userProfileProcessor);
-            multiplexedProcessor.registerProcessor(TENANT_PROFILE_SERVICE, tenantProfileProcessor);
-            multiplexedProcessor.registerProcessor(IAM_ADMIN_SERVICES, iamAdminServicesProcessor);
-            multiplexedProcessor.registerProcessor(GROUP_MANAGER_SERVICE, groupManagerProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.AIRAVATA_API.toString(), airavataAPIProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.REGISTRY.toString(), registryProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.CREDENTIAL_STORE.toString(), credentialStoreProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.SHARING_REGISTRY.toString(), sharingRegistryProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.ORCHESTRATOR.toString(), orchestratorProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.USER_PROFILE.toString(), userProfileProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.TENANT_PROFILE.toString(), tenantProfileProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.IAM_ADMIN_SERVICES.toString(), iamAdminServicesProcessor);
+            multiplexedProcessor.registerProcessor(ServiceName.GROUP_MANAGER.toString(), groupManagerProcessor);
 
             // Create server transport
             TServerTransport serverTransport;
@@ -155,7 +153,7 @@ public class AiravataAPIServer implements IServer {
 
             // Create and start server
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting("orchestrator.server.min.threads", "30"));
+            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting("api.server.min.threads", "30"));
             server = new TThreadPoolServer(options.processor(multiplexedProcessor));
 
             // Start server in background thread
@@ -178,9 +176,9 @@ public class AiravataAPIServer implements IServer {
                     setStatus(ServerStatus.STARTED);
                     logger.info("Started Airavata Thrift API on {}:{}", serverHost, serverPort);
                     logger.info("Registered services: {}, {}, {}, {}, {}, {}, {}, {}, {}", 
-                        AIRAVATA_API_SERVICE, REGISTRY_SERVICE, CREDENTIAL_STORE_SERVICE, 
-                        SHARING_REGISTRY_SERVICE, ORCHESTRATOR_SERVICE, USER_PROFILE_SERVICE,
-                        TENANT_PROFILE_SERVICE, IAM_ADMIN_SERVICES, GROUP_MANAGER_SERVICE);
+                        ServiceName.AIRAVATA_API.toString(), ServiceName.REGISTRY.toString(), ServiceName.CREDENTIAL_STORE.toString(),
+                        ServiceName.SHARING_REGISTRY.toString(), ServiceName.ORCHESTRATOR.toString(), ServiceName.USER_PROFILE.toString(),
+                        ServiceName.TENANT_PROFILE.toString(), ServiceName.IAM_ADMIN_SERVICES.toString(), ServiceName.GROUP_MANAGER.toString());
                 }
             }).start();
 

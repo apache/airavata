@@ -25,7 +25,9 @@ import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
 import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
+import org.apache.airavata.monitor.cluster.ClusterStatusMonitorJobScheduler;
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 
 public class Main {
 
@@ -58,5 +60,14 @@ public class Main {
         System.out.println("Starting Email Based Monitor .......");
         var emailBasedMonitor = new EmailBasedMonitor();
         emailBasedMonitor.run();
+
+        System.out.println("Starting RealTime Monitor .......");
+        var realTimeMonitor = new RealtimeMonitor();
+        realTimeMonitor.run();
+
+        System.out.println("Starting Cluster Status Monitor .......");
+        var jobScheduler = new ClusterStatusMonitorJobScheduler();
+        assert jobScheduler != null;
+        // jobScheduler.scheduleClusterStatusMonitoring();
     }
 }

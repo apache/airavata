@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
@@ -64,9 +66,21 @@ public abstract class WorkflowManager implements Runnable {
 
     protected void initComponents() throws Exception {
         this.registry = AiravataServiceFactory.getRegistry();
+        this.initMonitoring();
         initHelixAdmin();
         initWorkflowOperators();
         initStatusPublisher();
+    }
+
+    private void initMonitoring() throws ApplicationSettingsException, IOException {
+        if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
+            MonitoringServer monitoringServer = new MonitoringServer(
+                    ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
+                    ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
+            monitoringServer.start();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+        }
     }
 
     private void initWorkflowOperators() throws Exception {

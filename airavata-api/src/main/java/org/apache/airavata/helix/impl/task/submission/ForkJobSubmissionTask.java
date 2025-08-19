@@ -20,8 +20,8 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import java.util.Collections;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;

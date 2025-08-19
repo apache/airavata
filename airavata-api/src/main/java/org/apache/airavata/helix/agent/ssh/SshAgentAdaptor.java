@@ -24,7 +24,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.datatransfer.api.*;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.credential.store.SSHCredential;

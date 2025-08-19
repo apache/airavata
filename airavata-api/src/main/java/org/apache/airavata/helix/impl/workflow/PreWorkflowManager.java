@@ -55,8 +55,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -290,20 +289,6 @@ public class PreWorkflowManager extends WorkflowManager {
         } catch (Exception e) {
             logger.error("Error starting PreWorkflowManager", e);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
-        new PreWorkflowManager().run();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

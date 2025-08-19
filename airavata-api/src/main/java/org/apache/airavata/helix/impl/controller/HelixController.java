@@ -78,13 +78,4 @@ public class HelixController implements Runnable {
         controllerThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread(controllerThread::interrupt));
     }
-
-    public static void main(String args[]) {
-        try {
-            logger.info("Starting helix controller");
-            new HelixController().start();
-        } catch (Exception e) {
-            logger.error("Failed to start the helix controller", e);
-        }
-    }
 }

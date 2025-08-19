@@ -31,10 +31,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -71,7 +70,6 @@ import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -144,15 +142,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            final RegistryService.Client registryClient = getRegistryServiceClient();
-                            try {
-                                registryClient.addErrors(
-                                        OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
-                            } finally {
-                                if (registryClient != null) {
-                                    ThriftUtils.close(registryClient);
-                                }
-                            }
+                            final RegistryService.Iface registryClient = getRegistry();
+                            registryClient.addErrors(
+                                    OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
                         } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
                             throw new RuntimeException("Error while saving error details to registry", e);
@@ -220,15 +212,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            final RegistryService.Client registryClient = getRegistryServiceClient();
-                            try {
-                                registryClient.addErrors(
-                                        OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
-                            } finally {
-                                if (registryClient != null) {
-                                    ThriftUtils.close(registryClient);
-                                }
-                            }
+                            final RegistryService.Iface registryClient = getRegistry();
+                            registryClient.addErrors(
+                                    OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
                         } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
                             throw new RuntimeException("Error while saving error details to registry", e);
@@ -257,10 +243,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
         logger.info("Terminating experiment " + experiment.getExperimentId());
-        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        RegistryService.Iface registry = getRegistry();
 
         try {
-            List<String> processIds = registryServiceClient.getProcessIds(experiment.getExperimentId());
+            List<String> processIds = registry.getProcessIds(experiment.getExperimentId());
             if (processIds != null && processIds.size() > 0) {
                 for (String processId : processIds) {
                     logger.info("Terminating process " + processId + " of experiment " + experiment.getExperimentId());
@@ -275,33 +261,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     "Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
         }
     }
-
-    public ExecutorService getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(ExecutorService executor) {
-        this.executor = executor;
-    }
-
-    public JobSubmitter getJobSubmitter() {
-        return jobSubmitter;
-    }
-
-    public void setJobSubmitter(JobSubmitter jobSubmitter) {
-        this.jobSubmitter = jobSubmitter;
-    }
-
     public void initialize() throws OrchestratorException {}
 
     public List<ProcessModel> createProcesses(String experimentId, String gatewayId) throws OrchestratorException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registry = getRegistry();
         try {
-            ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
-            List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+            ExperimentModel experimentModel = registry.getExperiment(experimentId);
+            List<ProcessModel> processModels = registry.getProcessList(experimentId);
             if (processModels == null || processModels.isEmpty()) {
                 ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
-                String processId = registryClient.addProcess(processModel, experimentId);
+                String processId = registry.addProcess(processModel, experimentId);
                 processModel.setProcessId(processId);
                 processModels = new ArrayList<>();
                 processModels.add(processModel);
@@ -309,15 +278,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             return processModels;
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
         }
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registry = getRegistry();
         try {
             GroupComputeResourcePreference preference =
                     OrchestratorUtils.getGroupComputeResourcePreference(processModel);
@@ -342,29 +307,25 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE
                 // here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(
-                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                        registry, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
-                taskIdList.addAll(createAndSaveEnvSetupTask(registryClient, gatewayId, processModel, resourceType));
+                taskIdList.addAll(createAndSaveEnvSetupTask(registry, gatewayId, processModel, resourceType));
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId, resourceType));
                 taskIdList.addAll(createAndSaveSubmissionTasks(
-                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                        registry, preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId, resourceType));
             }
             // update process scheduling
-            registryClient.updateProcess(processModel, processModel.getProcessId());
+            registry.updateProcess(processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
         }
     }
 
     public String createAndSaveIntermediateOutputFetchingTasks(
             String gatewayId, ProcessModel processModel, ProcessModel parentProcess) throws OrchestratorException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registry = getRegistry();
         try {
             GroupComputeResourcePreference preference =
                     OrchestratorUtils.getGroupComputeResourcePreference(processModel);
@@ -372,14 +333,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             List<String> taskIdList = new ArrayList<>(createAndSaveIntermediateOutputDataStagingTasks(
                     processModel, gatewayId, parentProcess, resourceType));
             // update process scheduling
-            registryClient.updateProcess(processModel, processModel.getProcessId());
+            registry.updateProcess(processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
         }
     }
 
@@ -396,7 +353,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private List<String> createAndSaveEnvSetupTask(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             String gatewayId,
             ProcessModel processModel,
             ResourceType resourceType)
@@ -422,7 +379,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         envSetupTask.setSubTaskModel(envSetupSub);
         envSetupTask.setMaxRetry(3);
         envSetupTask.setCurrentRetry(0);
-        String envSetupTaskId = registryClient.addTask(envSetupTask, processModel.getProcessId());
+        String envSetupTaskId = registry.addTask(envSetupTask, processModel.getProcessId());
         envSetupTask.setTaskId(envSetupTaskId);
         envTaskIds.add(envSetupTaskId);
 
@@ -454,19 +411,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                                     processInput.getName());
                             break;
                         }
-                        final RegistryService.Client registryClient = getRegistryServiceClient();
+                        final RegistryService.Iface registry = getRegistry();
                         try {
                             TaskModel inputDataStagingTask = getInputDataStagingTask(
-                                    registryClient, processModel, processInput, gatewayId, resourceType);
-                            String taskId = registryClient.addTask(inputDataStagingTask, processModel.getProcessId());
+                                    registry, processModel, processInput, gatewayId, resourceType);
+                            String taskId = registry.addTask(inputDataStagingTask, processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
                         } catch (Exception e) {
                             throw new AiravataException("Error while serializing data staging sub task model", e);
-                        } finally {
-                            if (registryClient != null) {
-                                ThriftUtils.close(registryClient);
-                            }
                         }
                         break;
                     default:
@@ -480,72 +433,66 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public List<String> createAndSaveOutputDataStagingTasks(
             ProcessModel processModel, String gatewayId, ResourceType resourceType)
-            throws AiravataException, TException, OrchestratorException {
+            throws AiravataException, OrchestratorException {
 
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registry = getRegistry();
         List<String> dataStagingTaskIds = new ArrayList<>();
-        try {
-            List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-            String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
-            if (processOutputs != null) {
-                for (OutputDataObjectType processOutput : processOutputs) {
-                    DataType type = processOutput.getType();
-                    switch (type) {
-                        case STDOUT:
-                            if (null == processOutput.getValue()
-                                    || processOutput.getValue().trim().isEmpty()) {
-                                processOutput.setValue(appName + ".stdout");
-                            }
-                            createOutputDataSatagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        case STDERR:
-                            if (null == processOutput.getValue()
-                                    || processOutput.getValue().trim().isEmpty()) {
-                                processOutput.setValue(appName + ".stderr");
-                            }
-                            createOutputDataSatagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        case URI:
-                        case URI_COLLECTION:
-                            createOutputDataSatagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        default:
-                            // nothing to do
-                            break;
-                    }
+        List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
+        String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
+        if (processOutputs != null) {
+            for (OutputDataObjectType processOutput : processOutputs) {
+                DataType type = processOutput.getType();
+                switch (type) {
+                    case STDOUT:
+                        if (null == processOutput.getValue()
+                                || processOutput.getValue().trim().isEmpty()) {
+                            processOutput.setValue(appName + ".stdout");
+                        }
+                        createOutputDataSatagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    case STDERR:
+                        if (null == processOutput.getValue()
+                                || processOutput.getValue().trim().isEmpty()) {
+                            processOutput.setValue(appName + ".stderr");
+                        }
+                        createOutputDataSatagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    case URI:
+                    case URI_COLLECTION:
+                        createOutputDataSatagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    default:
+                        // nothing to do
+                        break;
                 }
             }
+        }
 
-            try {
-                if (isArchive(registryClient, processModel)) {
-                    createArchiveDataStatgingTask(
-                            registryClient, processModel, gatewayId, dataStagingTaskIds, resourceType);
-                }
-            } catch (Exception e) {
-                throw new AiravataException("Error! Application interface retrieval failed", e);
+        try {
+            if (isArchive(registry, processModel)) {
+                createArchiveDataStatgingTask(
+                        registry, processModel, gatewayId, dataStagingTaskIds, resourceType);
             }
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+        } catch (Exception e) {
+            throw new AiravataException("Error! Application interface retrieval failed", e);
         }
         return dataStagingTaskIds;
     }
@@ -554,77 +501,70 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ResourceType resourceType)
             throws AiravataException, TException, OrchestratorException {
 
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registry = getRegistry();
         List<String> dataStagingTaskIds = new ArrayList<>();
-        try {
-            List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-            String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
-            if (processOutputs != null) {
-                for (OutputDataObjectType processOutput : processOutputs) {
-                    DataType type = processOutput.getType();
-                    switch (type) {
-                        case STDOUT:
-                            if (null == processOutput.getValue()
-                                    || processOutput.getValue().trim().isEmpty()) {
-                                processOutput.setValue(appName + ".stdout");
-                            }
-                            createIntermediateOutputDataStagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    parentProcess,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        case STDERR:
-                            if (null == processOutput.getValue()
-                                    || processOutput.getValue().trim().isEmpty()) {
-                                processOutput.setValue(appName + ".stderr");
-                            }
-                            createIntermediateOutputDataStagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    parentProcess,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        case URI:
-                        case URI_COLLECTION:
-                            createIntermediateOutputDataStagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    parentProcess,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        default:
-                            // nothing to do
-                            break;
-                    }
+        List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
+        String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
+        if (processOutputs != null) {
+            for (OutputDataObjectType processOutput : processOutputs) {
+                DataType type = processOutput.getType();
+                switch (type) {
+                    case STDOUT:
+                        if (null == processOutput.getValue()
+                                || processOutput.getValue().trim().isEmpty()) {
+                            processOutput.setValue(appName + ".stdout");
+                        }
+                        createIntermediateOutputDataStagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                parentProcess,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    case STDERR:
+                        if (null == processOutput.getValue()
+                                || processOutput.getValue().trim().isEmpty()) {
+                            processOutput.setValue(appName + ".stderr");
+                        }
+                        createIntermediateOutputDataStagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                parentProcess,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    case URI:
+                    case URI_COLLECTION:
+                        createIntermediateOutputDataStagingTasks(
+                                registry,
+                                processModel,
+                                gatewayId,
+                                parentProcess,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    default:
+                        // nothing to do
+                        break;
                 }
-            }
-
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
             }
         }
         return dataStagingTaskIds;
     }
 
-    private boolean isArchive(RegistryService.Client registryClient, ProcessModel processModel) throws TException {
+    private boolean isArchive(RegistryService.Iface registry, ProcessModel processModel) throws TException {
         ApplicationInterfaceDescription appInterface =
-                registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
+                registry.getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.isArchiveWorkingDirectory();
     }
 
     private void createArchiveDataStatgingTask(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             ProcessModel processModel,
             String gatewayId,
             List<String> dataStagingTaskIds,
@@ -632,17 +572,17 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             throws AiravataException, TException, OrchestratorException {
         TaskModel archiveTask;
         try {
-            archiveTask = getOutputDataStagingTask(registryClient, processModel, null, gatewayId, null, resourceType);
+            archiveTask = getOutputDataStagingTask(registry, processModel, null, gatewayId, null, resourceType);
         } catch (TException e) {
             throw new AiravataException("Error! DataStaging sub task serialization failed", e);
         }
-        String taskId = registryClient.addTask(archiveTask, processModel.getProcessId());
+        String taskId = registry.addTask(archiveTask, processModel.getProcessId());
         archiveTask.setTaskId(taskId);
         dataStagingTaskIds.add(archiveTask.getTaskId());
     }
 
     private void createOutputDataSatagingTasks(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             ProcessModel processModel,
             String gatewayId,
             List<String> dataStagingTaskIds,
@@ -651,8 +591,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
-                    registryClient, processModel, processOutput, gatewayId, null, resourceType);
-            String taskId = registryClient.addTask(outputDataStagingTask, processModel.getProcessId());
+                    registry, processModel, processOutput, gatewayId, null, resourceType);
+            String taskId = registry.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
         } catch (TException e) {
@@ -661,7 +601,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private void createIntermediateOutputDataStagingTasks(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             ProcessModel processModel,
             String gatewayId,
             ProcessModel parentProcess,
@@ -671,9 +611,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
-                    registryClient, processModel, processOutput, gatewayId, parentProcess, resourceType);
+                    registry, processModel, processOutput, gatewayId, parentProcess, resourceType);
             outputDataStagingTask.setTaskType(TaskTypes.OUTPUT_FETCHING);
-            String taskId = registryClient.addTask(outputDataStagingTask, processModel.getProcessId());
+            String taskId = registry.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
         } catch (TException e) {
@@ -682,7 +622,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private List<String> createAndSaveSubmissionTasks(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             JobSubmissionInterface jobSubmissionInterface,
             ProcessModel processModel,
             int wallTime)
@@ -732,7 +672,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel.setMaxRetry(1);
         taskModel.setCurrentRetry(0);
 
-        String taskId = registryClient.addTask(taskModel, processModel.getProcessId());
+        String taskId = registry.addTask(taskModel, processModel.getProcessId());
         taskModel.setTaskId(taskId);
         submissionTaskIds.add(taskModel.getTaskId());
 
@@ -754,7 +694,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             monitorSubTaskModel.setMonitorMode(monitorMode);
             monitorTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(monitorSubTaskModel));
 
-            String mTaskId = registryClient.addTask(monitorTaskModel, processModel.getProcessId());
+            String mTaskId = registry.addTask(monitorTaskModel, processModel.getProcessId());
             monitorTaskModel.setTaskId(mTaskId);
             submissionTaskIds.add(monitorTaskModel.getTaskId());
         }
@@ -772,7 +712,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private TaskModel getInputDataStagingTask(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             ProcessModel processModel,
             InputDataObjectType processInput,
             String gatewayId,
@@ -790,7 +730,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
         ComputeResourceDescription computeResource =
-                registryClient.getComputeResource(processModel.getComputeResourceId());
+                registry.getComputeResource(processModel.getComputeResourceId());
 
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir =
@@ -832,7 +772,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private TaskModel getOutputDataStagingTask(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             ProcessModel processModel,
             OutputDataObjectType processOutput,
             String gatewayId,
@@ -852,7 +792,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
 
             ComputeResourceDescription computeResource =
-                    registryClient.getComputeResource(processModel.getComputeResourceId());
+                    registry.getComputeResource(processModel.getComputeResourceId());
             DataStagingTaskModel submodel = new DataStagingTaskModel();
 
             String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId)
@@ -906,13 +846,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    private RegistryService.Client getRegistryServiceClient() {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistry() {
+        return AiravataServiceFactory.getRegistry();
     }
 }

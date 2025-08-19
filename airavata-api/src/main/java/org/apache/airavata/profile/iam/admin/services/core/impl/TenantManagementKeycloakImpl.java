@@ -870,14 +870,4 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
         return null;
     }
-
-    public static void main(String[] args) throws IamAdminServicesException, ApplicationSettingsException {
-        TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
-        ServerSettings.setSetting("iam.server.url", "");
-        String accessToken = "";
-        String tenantId = "";
-        String username = "";
-        boolean isUsernameAvailable = tenantManagementKeycloak.isUsernameAvailable(accessToken, tenantId, username);
-        System.out.println("Username " + username + " is " + (isUsernameAvailable ? "" : "NOT ") + "available");
-    }
 }

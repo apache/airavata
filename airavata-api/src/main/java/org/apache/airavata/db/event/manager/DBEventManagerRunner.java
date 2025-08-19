@@ -56,29 +56,6 @@ public class DBEventManagerRunner implements IServer {
         }
     }
 
-    /**
-     * The main method.
-     *
-     * @param args the arguments
-     */
-    public static void main(String[] args) {
-        try {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner();
-                }
-            };
-
-            // start the worker thread
-            log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
-        } catch (Exception ex) {
-            log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
-        }
-    }
-
     @Override
     public String getName() {
         return SERVER_NAME;

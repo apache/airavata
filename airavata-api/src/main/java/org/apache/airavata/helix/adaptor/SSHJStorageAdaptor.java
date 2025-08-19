@@ -20,9 +20,9 @@
 package org.apache.airavata.helix.adaptor;
 
 import java.util.Optional;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.datatransfer.api.AgentException;
+import org.apache.airavata.datatransfer.api.CommandOutput;
+import org.apache.airavata.datatransfer.api.StorageResourceAdaptor;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;

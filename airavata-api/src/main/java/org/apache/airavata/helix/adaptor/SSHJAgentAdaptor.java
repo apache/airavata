@@ -42,7 +42,7 @@ import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.datatransfer.api.*;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.adaptor.wrapper.SFTPClientWrapper;

@@ -55,7 +55,7 @@ public class OrchestratorClientSample {
                 sysUser = ClientSettings.getSetting(DEFAULT_USER);
                 sysUserPwd = ClientSettings.getSetting(DEFAULT_USER_PASSWORD);
                 gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-                orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
+                orchestratorClient = AiravataClientFactory.createOrchestratorClient("localhost", 8940);
                 registry = RegistryFactory.getRegistry(gateway, sysUser, sysUserPwd);
                 documentCreator = new DocumentCreator(getAiravataAPI());
                 documentCreator.createLocalHostDocs();

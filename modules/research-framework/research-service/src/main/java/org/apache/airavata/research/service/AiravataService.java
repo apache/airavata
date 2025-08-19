@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.research.service;
 
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
@@ -45,7 +45,7 @@ public class AiravataService {
     public UserProfileService.Client userProfileClient() {
         try {
             LOGGER.info("User profile client initialized");
-            return ProfileServiceClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
+            return AiravataClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
         } catch (UserProfileServiceException e) {
             LOGGER.error("Error while creating user profile client", e);
             throw new RuntimeException(e);

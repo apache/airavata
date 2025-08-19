@@ -20,7 +20,7 @@
 package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
-import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
@@ -102,8 +102,8 @@ public class ProcessDataManager extends OutputDataStagingTask {
     private static CredentialStoreService.Client getCredentialStoreClient()
             throws TTransportException, ApplicationSettingsException {
         TTransport transport = new TSocket(
-                ServerSettings.getCredentialStoreServerHost(),
-                Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+                ServerSettings.getApiServerHost(),
+                Integer.parseInt(ServerSettings.getApiServerPort()));
         transport.open();
         TProtocol protocol = new TBinaryProtocol(transport);
         protocol = new TMultiplexedProtocol(protocol, "CredentialStoreService");

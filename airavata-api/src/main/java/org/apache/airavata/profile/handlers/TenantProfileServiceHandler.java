@@ -25,7 +25,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
@@ -53,8 +53,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
-    private TenantProfileRepository tenantProfileRepository;
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
+    private final TenantProfileRepository tenantProfileRepository;
+    private final DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
 
     public TenantProfileServiceHandler() {
         logger.debug("Initializing TenantProfileServiceHandler");
@@ -242,30 +242,21 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
             throws TException, ApplicationSettingsException {
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        try {
-            String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential adminPasswordCredential =
-                    csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
-            adminPasswordCredential.setGatewayId(gateway.getGatewayId());
-            String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
-            gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-        } finally {
-            if (csClient.getInputProtocol().getTransport().isOpen()) {
-                csClient.getInputProtocol().getTransport().close();
-            }
-            if (csClient.getOutputProtocol().getTransport().isOpen()) {
-                csClient.getOutputProtocol().getTransport().close();
-            }
-        }
+        CredentialStoreService.Iface credentialStore = getCredentialStore();
+        String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        PasswordCredential adminPasswordCredential =
+                credentialStore.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
+        adminPasswordCredential.setGatewayId(gateway.getGatewayId());
+        String newAdminPasswordCredentialToken = credentialStore.addPasswordCredential(adminPasswordCredential);
+        gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+    private CredentialStoreService.Iface getCredentialStore()
+            throws TException {
+        final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
+        final String serverHost = ServerSettings.getApiServerHost();
         try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+            return AiravataClientFactory.getCredentialStore(serverHost, serverPort);
         } catch (CredentialStoreException e) {
             throw new TException("Unable to create credential store client...", e);
         }

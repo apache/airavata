@@ -100,8 +100,4 @@ public class RealtimeMonitor extends AbstractMonitor {
             logger.error("Error while running consumer", e);
         }
     }
-
-    public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().run();
-    }
 }
