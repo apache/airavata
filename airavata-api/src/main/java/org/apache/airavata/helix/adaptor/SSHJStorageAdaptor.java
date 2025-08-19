@@ -21,7 +21,6 @@ package org.apache.airavata.helix.adaptor;
 
 import java.util.Optional;
 import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -29,6 +28,7 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
 
             StorageResourceDescription storageResourceDescription =
-                    AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+                    ServiceFactory.getRegistry().getStorageResource(storageResourceId);
 
             logger.info("Fetching data movement interfaces for storage resource " + storageResourceId);
 
@@ -56,11 +56,11 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
                     new AgentException("Could not find a SCP interface for storage resource " + storageResourceId));
 
             SCPDataMovement scpDataMovement =
-                    AgentUtils.getRegistryServiceClient().getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
+                    ServiceFactory.getRegistry().getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential = ServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

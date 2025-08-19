@@ -21,8 +21,10 @@ package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentUtils;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
@@ -32,6 +34,13 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +86,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
             logger.info("Using AWS adaptor for process {}", processId);
 
             AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
-            SSHCredential sshCredential = AgentUtils.getCredentialClient()
+            SSHCredential sshCredential = ProcessDataManager.getCredentialStoreClient()
                     .getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
 
             logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);
@@ -95,6 +104,16 @@ public class ProcessDataManager extends OutputDataStagingTask {
         }
 
         return getComputeResourceAdaptor(adaptorSupport);
+    }
+    private static CredentialStoreService.Client getCredentialStoreClient()
+            throws TTransportException, ApplicationSettingsException {
+        TTransport transport = new TSocket(
+                ServerSettings.getCredentialStoreServerHost(),
+                Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+        transport.open();
+        TProtocol protocol = new TBinaryProtocol(transport);
+        protocol = new TMultiplexedProtocol(protocol, "CredentialStoreService");
+        return new CredentialStoreService.Client(protocol);
     }
 
     public String getBaseDir() throws Exception {

@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.apache.airavata.agents.api.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,11 +84,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
             ComputeResourceDescription computeResourceDescription =
-                    AgentUtils.getRegistryServiceClient().getComputeResource(computeResourceId);
+                    ServiceFactory.getRegistry().getComputeResource(computeResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential = ServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

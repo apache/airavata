@@ -30,15 +30,11 @@ services:
     extra_hosts:
       - "airavata.host:192.168.100.1"
     ports:
-      - "7878:7878"   # sharing registry service
       - "8000:8000"   # tunnel service
-      - "17000:17000" # tunnel service (ingress)
       - "8050:8050"   # file service
       - "8082:8082"   # rest proxy
       - "8930:8930"   # api service
-      - "8960:8960"   # cred store service
-      - "8962:8962"   # profile service
-      - "8970:8970"   # registry service
+      - "17000:17000" # tunnel service (ingress)
       - "18800:18800" # agent service (http)
       - "19900:19900" # agent service (gRPC)
       - "18889:18889" # research service (http)

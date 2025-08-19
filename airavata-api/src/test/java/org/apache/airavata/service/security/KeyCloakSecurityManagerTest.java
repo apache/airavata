@@ -40,6 +40,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.security.KeyCloakSecurityManager;
 import org.apache.airavata.service.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.service.security.authzcache.AuthzCacheManager;
 import org.apache.airavata.service.security.authzcache.AuthzCacheManagerFactory;

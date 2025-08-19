@@ -31,6 +31,7 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;

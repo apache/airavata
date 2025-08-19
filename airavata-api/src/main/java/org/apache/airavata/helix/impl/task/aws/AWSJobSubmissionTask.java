@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.agents.api.AgentUtils;
+
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
@@ -45,6 +45,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.service.ServiceFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
@@ -325,7 +326,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
         SSHCredential sshCredential =
-                AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
+                ServiceFactory.getCredentialStore().getSSHCredential(sshCredentialToken, getGatewayId());
         adaptor.init(
                 getTaskContext().getComputeResourceLoginUserName(),
                 publicIpAddress,

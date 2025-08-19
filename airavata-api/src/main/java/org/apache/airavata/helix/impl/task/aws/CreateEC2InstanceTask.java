@@ -21,7 +21,7 @@ package org.apache.airavata.helix.impl.task.aws;
 
 import java.security.Security;
 import java.util.UUID;
-import org.apache.airavata.agents.api.AgentUtils;
+
 import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
@@ -30,6 +30,7 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.service.ServiceFactory;
 import org.apache.helix.task.TaskResult;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -141,7 +142,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
         credential.setPublicKey(publicKey);
         credential.setUsername(getProcessModel().getUserName());
 
-        String savedToken = AgentUtils.getCredentialClient().addSSHCredential(credential);
+        String savedToken = ServiceFactory.getCredentialStore().addSSHCredential(credential);
         LOGGER.info("Successfully saved temporary SSH credential with token {}", savedToken);
 
         return savedToken;

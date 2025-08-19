@@ -19,13 +19,13 @@
 */
 package org.apache.airavata;
 
+import org.apache.airavata.api.server.ThriftAPIServer;
 import org.apache.airavata.db.event.manager.DBEventManagerRunner;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
 import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
-import org.apache.airavata.server.ThriftAPIServer;
 
 public class Main {
 
