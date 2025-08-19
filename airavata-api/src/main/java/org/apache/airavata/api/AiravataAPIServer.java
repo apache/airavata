@@ -17,14 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.api.server;
+package org.apache.airavata.api;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.handler.AiravataAPIHandler;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
@@ -63,8 +62,8 @@ import org.slf4j.LoggerFactory;
  * Airavata Thrift API Server that combines all Airavata services into a single server
  * using the orchestrator's host and port configuration.
  */
-public class ThriftAPIServer implements IServer {
-    private static final Logger logger = LoggerFactory.getLogger(ThriftAPIServer.class);
+public class AiravataAPIServer implements IServer {
+    private static final Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
     private static final String SERVER_NAME = "Airavata Thrift API";
     private static final String SERVER_VERSION = "1.0";
 
@@ -82,7 +81,7 @@ public class ThriftAPIServer implements IServer {
     public static final String IAM_ADMIN_SERVICES = "IamAdminServices";
     public static final String GROUP_MANAGER_SERVICE = "GroupManager";
 
-    public ThriftAPIServer() {
+    public AiravataAPIServer() {
         setStatus(ServerStatus.STOPPED);
     }
 
@@ -121,7 +120,7 @@ public class ThriftAPIServer implements IServer {
             final String serverHost = ServerSettings.getSetting("orchestrator.server.host", "localhost");
 
             // Create processors for each service
-            var airavataAPIProcessor = new Airavata.Processor<>(new AiravataServerHandler());
+            var airavataAPIProcessor = new Airavata.Processor<>(new AiravataAPIHandler());
             var registryProcessor = new RegistryService.Processor<>(new RegistryServerHandler());
             var credentialStoreProcessor = new CredentialStoreService.Processor<>(new CredentialStoreServerHandler());
             var sharingRegistryProcessor = new SharingRegistryService.Processor<>(new SharingRegistryServerHandler());

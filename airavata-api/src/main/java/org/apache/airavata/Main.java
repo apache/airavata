@@ -19,7 +19,7 @@
 */
 package org.apache.airavata;
 
-import org.apache.airavata.api.server.ThriftAPIServer;
+import org.apache.airavata.api.AiravataAPIServer;
 import org.apache.airavata.db.event.manager.DBEventManagerRunner;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
@@ -31,9 +31,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Starting Thrift API Server .......");
-        var thriftApiServer = new ThriftAPIServer();
-        thriftApiServer.start();
+        System.out.println("Starting Airavata API Server .......");
+        var airavataApiServer = new AiravataAPIServer();
+        airavataApiServer.start();
 
         System.out.println("Starting DB Event Manager Runner .......");
         var dbEventManagerRunner = new DBEventManagerRunner();

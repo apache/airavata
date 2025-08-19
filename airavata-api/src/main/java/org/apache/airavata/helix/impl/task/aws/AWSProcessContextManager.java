@@ -24,11 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +53,12 @@ public class AWSProcessContextManager {
 
     public AWSProcessContextManager(TaskContext taskContext) {
         try {
-            this.registry = ServiceFactory.getRegistry();
+            this.registry = AiravataServiceFactory.getRegistry();
             this.taskContext = taskContext;
             this.processId = taskContext.getProcessId();
             LOGGER.info("Initialized AWSProcessContextManager for process {}", processId);
 
-        } catch (AgentException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Failed to initialize AWSProcessContextManager", e);
             throw new RuntimeException("Failed to initialize AWSProcessContextManager", e);
         }

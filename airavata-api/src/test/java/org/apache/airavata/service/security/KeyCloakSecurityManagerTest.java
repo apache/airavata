@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.security;
+package org.apache.airavata.security;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,16 +35,16 @@ import mockit.Mocked;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.security.authzcache.AuthzCacheIndex;
+import org.apache.airavata.security.authzcache.AuthzCacheManager;
+import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
+import org.apache.airavata.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.KeyCloakSecurityManager;
-import org.apache.airavata.service.security.authzcache.AuthzCacheIndex;
-import org.apache.airavata.service.security.authzcache.AuthzCacheManager;
-import org.apache.airavata.service.security.authzcache.AuthzCacheManagerFactory;
-import org.apache.airavata.service.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;

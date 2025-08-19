@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.security.authzcache;
+package org.apache.airavata.security.authzcache;
 
 /**
  * Cache entry in the default authorization cache.

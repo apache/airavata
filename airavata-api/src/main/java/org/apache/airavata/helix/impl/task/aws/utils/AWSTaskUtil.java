@@ -21,11 +21,11 @@ package org.apache.airavata.helix.impl.task.aws.utils;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -45,7 +45,7 @@ public final class AWSTaskUtil {
 
     public static Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
         LOGGER.info("Building EC2 client for token {} and gateway id {} in region {}", token, gatewayId, region);
-        PasswordCredential pwdCred = ServiceFactory.getCredentialStore().getPasswordCredential(token, gatewayId);
+        PasswordCredential pwdCred = AiravataServiceFactory.getCredentialStore().getPasswordCredential(token, gatewayId);
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
         return Ec2Client.builder()
@@ -115,7 +115,7 @@ public final class AWSTaskUtil {
                     ec2Client.deleteKeyPair(req -> req.keyName(keyName));
                 }
                 if (sshCredentialToken != null) {
-                    ServiceFactory.getCredentialStore().deleteSSHCredential(sshCredentialToken, gatewayId);
+                    AiravataServiceFactory.getCredentialStore().deleteSSHCredential(sshCredentialToken, gatewayId);
                 }
             }
 

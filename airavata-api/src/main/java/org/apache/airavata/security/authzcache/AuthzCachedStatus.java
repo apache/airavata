@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.security.authzcache;
+package org.apache.airavata.security.authzcache;
 
 /**
  * This enum defines the status of the authorization cache returned by the authorization cache manager

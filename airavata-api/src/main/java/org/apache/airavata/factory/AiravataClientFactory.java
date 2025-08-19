@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.api.client;
+package org.apache.airavata.factory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

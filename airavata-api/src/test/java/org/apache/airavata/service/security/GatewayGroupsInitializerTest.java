@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.security;
+package org.apache.airavata.security;
 
 import static org.junit.jupiter.api.Assertions.*;
 

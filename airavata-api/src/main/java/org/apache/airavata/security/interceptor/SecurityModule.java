@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.security.interceptor;
+package org.apache.airavata.security.interceptor;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;

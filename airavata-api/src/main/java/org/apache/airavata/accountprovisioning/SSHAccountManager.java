@@ -24,11 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -38,9 +37,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +70,7 @@ public class SSHAccountManager {
     private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Iface registry = getRegistry();
+        RegistryService.Iface registry = AiravataServiceFactory.getRegistry();
         ComputeResourcePreference computeResourcePreference = null;
         try {
             computeResourcePreference =
@@ -116,7 +112,7 @@ public class SSHAccountManager {
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Iface registry = getRegistry();
+        RegistryService.Iface registry = AiravataServiceFactory.getRegistry();
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -245,7 +241,12 @@ public class SSHAccountManager {
     private static Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService.Iface credentialStore = getCredentialStore();
+        CredentialStoreService.Iface credentialStore = null;
+        try {
+          credentialStore = AiravataServiceFactory.getCredentialStore();
+        } catch (RuntimeException e) {
+            throw new InvalidSetupException("Failed to create credential store object. " + e.getMessage());
+        }
         // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
         Map<ConfigParam, String> resolvedConfig = new HashMap<>();
         for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
@@ -285,20 +286,5 @@ public class SSHAccountManager {
             }
         }
         return result;
-    }
-
-    private static RegistryService.Iface getRegistry() {
-        return new RegistryServerHandler();
-    }
-
-    private static CredentialStoreService.Iface getCredentialStore() {
-
-        try {
-            String credServerHost = ServerSettings.getCredentialStoreServerHost();
-            int credServerPort = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
-            return CredentialStoreClientFactory.createAiravataCSClient(credServerHost, credServerPort);
-        } catch (CredentialStoreException | ApplicationSettingsException e) {
-            throw new RuntimeException("Failed to create credential store service client", e);
-        }
     }
 }
