@@ -1,11 +1,9 @@
-name: Build and Push Monolithic Airavata Docker Image
+name: Build and Push Airavata Docker Image
 
 on:
   push:
     branches: [ main, master ]
     tags: [ "v*" ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 env:
