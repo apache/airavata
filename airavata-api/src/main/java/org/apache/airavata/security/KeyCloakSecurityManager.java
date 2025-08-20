@@ -28,19 +28,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.airavata.catalog.sharing.models.UserGroup;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.factory.AiravataServiceFactory;
-import org.apache.airavata.security.authzcache.*;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.catalog.sharing.models.UserGroup;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.security.authzcache.*;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -282,8 +282,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             throws Exception {
         validateToken(username, token, gatewayId);
         GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
-        List<UserGroup> userGroups =
-                sharingRegistry.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
+        List<UserGroup> userGroups = sharingRegistry.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
         List<String> userGroupIds =
                 userGroups.stream().map(UserGroup::getGroupId).toList();
         GatewayGroupMembership gatewayGroupMembership = new GatewayGroupMembership();
@@ -390,7 +389,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
         if (sharingRegistry != null) {
             if (sharingRegistry instanceof SharingRegistryService.Client) {
-            ThriftUtils.close((SharingRegistryService.Client) sharingRegistry);
+                ThriftUtils.close((SharingRegistryService.Client) sharingRegistry);
             }
         }
     }

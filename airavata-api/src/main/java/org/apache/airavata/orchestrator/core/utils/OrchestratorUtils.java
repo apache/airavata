@@ -50,7 +50,6 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,8 @@ public class OrchestratorUtils {
     public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
             throws TException {
         final RegistryService.Iface registry = getRegistry();
-        return registry.getGroupComputeResourcePreference(model.getComputeResourceId(), model.getGroupResourceProfileId());
+        return registry.getGroupComputeResourcePreference(
+                model.getComputeResourceId(), model.getGroupResourceProfileId());
     }
 
     public static String getApplicationInterfaceName(ProcessModel model) throws OrchestratorException {
@@ -121,9 +121,8 @@ public class OrchestratorUtils {
             GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
-                UserComputeResourcePreference userComputeResourcePreference =
-                        registry.getUserComputeResourcePreference(
-                                processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
+                UserComputeResourcePreference userComputeResourcePreference = registry.getUserComputeResourcePreference(
+                        processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
                 if (isValid(userComputeResourcePreference.getLoginUserName())) {
                     return userComputeResourcePreference.getLoginUserName();
                 } else if (isValid(processResourceSchedule.getOverrideLoginUserName())) {
@@ -166,16 +165,19 @@ public class OrchestratorUtils {
             String scratchLocation = computeResourcePreference.getScratchLocation();
 
             if (processModel.isUseUserCRPref()) {
-                UserComputeResourcePreference userComputeResourcePreference =
-                        registry.getUserComputeResourcePreference(
-                                processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
+                UserComputeResourcePreference userComputeResourcePreference = registry.getUserComputeResourcePreference(
+                        processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
                 if (isValid(userComputeResourcePreference.getScratchLocation())) {
                     return userComputeResourcePreference.getScratchLocation();
                 } else if (isValid(processResourceSchedule.getOverrideScratchLocation())) {
-                    logger.warn("User computer resource preference doesn't have valid scratch location, using computer resource scheduling scratch location {}", processResourceSchedule.getOverrideScratchLocation());
+                    logger.warn(
+                            "User computer resource preference doesn't have valid scratch location, using computer resource scheduling scratch location {}",
+                            processResourceSchedule.getOverrideScratchLocation());
                     return processResourceSchedule.getOverrideScratchLocation();
                 } else if (isValid(scratchLocation)) {
-                    logger.warn("Either User computer resource preference or computer resource scheduling doesn't have valid scratch location, using  gateway computer resource preference scratch location {}", scratchLocation);
+                    logger.warn(
+                            "Either User computer resource preference or computer resource scheduling doesn't have valid scratch location, using  gateway computer resource preference scratch location {}",
+                            scratchLocation);
                     return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
@@ -184,7 +186,9 @@ public class OrchestratorUtils {
                 if (isValid(processResourceSchedule.getOverrideScratchLocation())) {
                     return processResourceSchedule.getOverrideScratchLocation();
                 } else if (isValid(scratchLocation)) {
-                    logger.warn("Process compute resource scheduling doesn't have valid scratch location, using  gateway computer resource preference scratch location {}", scratchLocation);
+                    logger.warn(
+                            "Process compute resource scheduling doesn't have valid scratch location, using  gateway computer resource preference scratch location {}",
+                            scratchLocation);
                     return scratchLocation;
                 } else {
                     throw new AiravataException("Scratch location is not found");
@@ -234,8 +238,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static int getDataMovementPort(ProcessModel processModel, String gatewayId)
-            throws OrchestratorException {
+    public static int getDataMovementPort(ProcessModel processModel, String gatewayId) throws OrchestratorException {
         try {
             DataMovementProtocol protocol = getPreferredDataMovementProtocol(processModel, gatewayId);
             DataMovementInterface dataMovementInterface = getPreferredDataMovementInterface(processModel, gatewayId);

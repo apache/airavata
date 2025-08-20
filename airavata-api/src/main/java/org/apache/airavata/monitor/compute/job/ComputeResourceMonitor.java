@@ -46,7 +46,7 @@ public abstract class ComputeResourceMonitor {
     }
 
     private UserComputeResourcePreference getUserComputeResourcePreference(
-        String gatewayId, String username, String computeResourceId) throws Exception {
+            String gatewayId, String username, String computeResourceId) throws Exception {
         if (registry.isUserComputeResourcePreferenceExists(username, gatewayId, computeResourceId)) {
             return registry.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
         }

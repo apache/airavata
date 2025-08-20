@@ -25,7 +25,6 @@ import org.apache.airavata.catalog.sharing.db.entities.EntityPK;
 import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
 import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.catalog.sharing.models.*;
-import org.apache.airavata.catalog.sharing.models.*;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
 

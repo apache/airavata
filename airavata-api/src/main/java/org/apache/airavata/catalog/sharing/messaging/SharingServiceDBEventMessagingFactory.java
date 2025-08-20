@@ -20,6 +20,7 @@
 package org.apache.airavata.catalog.sharing.messaging;
 
 import java.util.List;
+import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
@@ -32,7 +33,6 @@ import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

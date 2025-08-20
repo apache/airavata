@@ -76,15 +76,15 @@ public class PreWorkflowManager extends WorkflowManager {
     }
 
     public void startServer() {
-      try {
-        super.initComponents();
-        initLaunchSubscriber();
-        Thread.currentThread().join();
-      } catch (InterruptedException ex) {
-        logger.error("PreWorkflowManager is interrupted! reason: " + ex, ex);
-      } catch (Exception e) {
-        logger.error("Error starting PreWorkflowManager", e);
-      }
+        try {
+            super.initComponents();
+            initLaunchSubscriber();
+            Thread.currentThread().join();
+        } catch (InterruptedException ex) {
+            logger.error("PreWorkflowManager is interrupted! reason: " + ex, ex);
+        } catch (Exception e) {
+            logger.error("Error starting PreWorkflowManager", e);
+        }
     }
 
     public void stopServer() {}
@@ -107,8 +107,7 @@ public class PreWorkflowManager extends WorkflowManager {
         try {
             processModel = registry.getProcess(processId);
             experimentModel = registry.getExperiment(processModel.getExperimentId());
-            ResourceType resourceType = registry
-                    .getGroupComputeResourcePreference(
+            ResourceType resourceType = registry.getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
             taskFactory = TaskFactory.getFactory(resourceType);

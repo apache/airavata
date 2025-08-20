@@ -120,7 +120,10 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                             .setParticipant(HelixParticipant.this)
                             .setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
-                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                } catch (InstantiationException
+                        | IllegalAccessException
+                        | NoSuchMethodException
+                        | InvocationTargetException e) {
                     logger.error(
                             "Failed to initialize the task: "
                                     + context.getTaskConfig().getId(),
@@ -142,7 +145,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     }
 
     private void start() {
-        ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin.Builder().setZkAddress(zkAddress).build();
+        ZKHelixAdmin zkHelixAdmin =
+                new ZKHelixAdmin.Builder().setZkAddress(zkAddress).build();
         try {
             List<String> nodesInCluster = zkHelixAdmin.getInstancesInCluster(clusterName);
 
@@ -163,15 +167,19 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                 logger.debug("Participant: " + participantName + " has been re-enabled at the cluster: " + clusterName);
             }
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.debug("Participant: " + participantName + " shutdown hook called");
-                try {
-                  zkHelixAdmin.setInstanceOperation(clusterName, participantName, InstanceOperation.DISABLE);
-                } catch (Exception e) {
-                    logger.warn("Participant: " + participantName + " was not disabled normally", e);
-                }
-                disconnect();
-            }, this.getClass().getSimpleName() + ".ShutdownHook"));
+            Runtime.getRuntime()
+                    .addShutdownHook(new Thread(
+                            () -> {
+                                logger.debug("Participant: " + participantName + " shutdown hook called");
+                                try {
+                                    zkHelixAdmin.setInstanceOperation(
+                                            clusterName, participantName, InstanceOperation.DISABLE);
+                                } catch (Exception e) {
+                                    logger.warn("Participant: " + participantName + " was not disabled normally", e);
+                                }
+                                disconnect();
+                            },
+                            this.getClass().getSimpleName() + ".ShutdownHook"));
 
             // connect the participant manager
             connect();
@@ -202,9 +210,9 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             logger.info("Participant: " + participantName + ", has connected to cluster: " + clusterName);
 
             try {
-              Thread.currentThread().join();
+                Thread.currentThread().join();
             } catch (InterruptedException ex) {
-              logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
+                logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
             }
 
         } catch (InterruptedException ex) {

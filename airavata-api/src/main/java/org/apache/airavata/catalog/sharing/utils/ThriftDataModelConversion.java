@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.catalog.sharing.utils;
 
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.catalog.sharing.models.User;
+import org.apache.airavata.model.user.UserProfile;
 
 /**
  * Created by Ajinkya on 3/29/17.

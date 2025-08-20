@@ -21,11 +21,10 @@ package org.apache.airavata.catalog.sharing;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.airavata.catalog.sharing.models.*;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
@@ -353,23 +352,18 @@ public class SharingRegistryServiceTest {
                 0, sharingRegistry.getEntity(domainId, "test-project-1").getSharedCount());
         sharingRegistry.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
 
-        sharingRegistry.shareEntityWithGroups(
-                domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
-        sharingRegistry.shareEntityWithGroups(
-                domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
+        sharingRegistry.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
+        sharingRegistry.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
 
         // true
         Assertions.assertTrue(sharingRegistry.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
         // true
-        Assertions.assertTrue(
-                sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
+        Assertions.assertTrue(sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
         // true
-        Assertions.assertTrue(
-                sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
+        Assertions.assertTrue(sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
 
         // false
-        Assertions.assertFalse(
-                sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
+        Assertions.assertFalse(sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
         // true
         Assertions.assertTrue(sharingRegistry.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
 
@@ -378,12 +372,10 @@ public class SharingRegistryServiceTest {
         // true
         Assertions.assertTrue(sharingRegistry.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
         // false
-        Assertions.assertFalse(
-                sharingRegistry.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
+        Assertions.assertFalse(sharingRegistry.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
 
         // true
-        Assertions.assertTrue(
-                (sharingRegistry.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
+        Assertions.assertTrue((sharingRegistry.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
         // false
         Assertions.assertFalse((sharingRegistry.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 

@@ -21,12 +21,10 @@ package org.apache.airavata.catalog.sharing;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.airavata.catalog.sharing.models.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TException;

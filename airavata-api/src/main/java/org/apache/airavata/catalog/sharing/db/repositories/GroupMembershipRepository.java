@@ -26,7 +26,6 @@ import org.apache.airavata.catalog.sharing.db.entities.UserEntity;
 import org.apache.airavata.catalog.sharing.db.entities.UserGroupEntity;
 import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
 import org.apache.airavata.catalog.sharing.models.*;
-import org.apache.airavata.catalog.sharing.models.*;
 
 public class GroupMembershipRepository
         extends AbstractRepository<GroupMembership, GroupMembershipEntity, GroupMembershipPK> {

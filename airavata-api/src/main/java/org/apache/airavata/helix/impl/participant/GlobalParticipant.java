@@ -56,13 +56,13 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     public static List<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
     static {
-      for (String taskClassName : TASK_CLASS_NAMES) {
-        try {
-          taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
-        } catch (ClassNotFoundException e) {
-          logger.error("Failed to load task class: " + taskClassName, e);
+        for (String taskClassName : TASK_CLASS_NAMES) {
+            try {
+                taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+            } catch (ClassNotFoundException e) {
+                logger.error("Failed to load task class: " + taskClassName, e);
+            }
         }
-      }
     }
 
     @SuppressWarnings("WeakerAccess")

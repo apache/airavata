@@ -20,13 +20,11 @@
 package org.apache.airavata.profile.handlers;
 
 import java.util.List;
-
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.factory.AiravataClientFactory;
-import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
@@ -39,6 +37,7 @@ import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.security.UserInfo;
+import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;

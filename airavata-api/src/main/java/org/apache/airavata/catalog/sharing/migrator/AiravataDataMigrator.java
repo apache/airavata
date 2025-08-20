@@ -30,12 +30,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.catalog.sharing.models.Domain;
+import org.apache.airavata.catalog.sharing.models.Entity;
+import org.apache.airavata.catalog.sharing.models.EntitySearchField;
+import org.apache.airavata.catalog.sharing.models.EntityType;
+import org.apache.airavata.catalog.sharing.models.GroupCardinality;
+import org.apache.airavata.catalog.sharing.models.GroupType;
+import org.apache.airavata.catalog.sharing.models.PermissionType;
+import org.apache.airavata.catalog.sharing.models.SearchCondition;
+import org.apache.airavata.catalog.sharing.models.SearchCriteria;
+import org.apache.airavata.catalog.sharing.models.User;
+import org.apache.airavata.catalog.sharing.models.UserGroup;
+import org.apache.airavata.catalog.sharing.utils.ThriftDataModelConversion;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -62,19 +75,6 @@ import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.catalog.sharing.models.Domain;
-import org.apache.airavata.catalog.sharing.models.Entity;
-import org.apache.airavata.catalog.sharing.models.EntitySearchField;
-import org.apache.airavata.catalog.sharing.models.EntityType;
-import org.apache.airavata.catalog.sharing.models.GroupCardinality;
-import org.apache.airavata.catalog.sharing.models.GroupType;
-import org.apache.airavata.catalog.sharing.models.PermissionType;
-import org.apache.airavata.catalog.sharing.models.SearchCondition;
-import org.apache.airavata.catalog.sharing.models.SearchCriteria;
-import org.apache.airavata.catalog.sharing.models.User;
-import org.apache.airavata.catalog.sharing.models.UserGroup;
-import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
-import org.apache.airavata.catalog.sharing.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 
 public class AiravataDataMigrator {
@@ -232,8 +232,7 @@ public class AiravataDataMigrator {
             if (gatewayId != null && !gatewayId.equals(domain.getDomainId())) {
                 continue;
             }
-            String ownerId = getAdminOwnerUser(
-                    domain, sharingRegistryServerHandler, credentialStore, registry);
+            String ownerId = getAdminOwnerUser(domain, sharingRegistryServerHandler, credentialStore, registry);
             if (ownerId != null) {
                 domainOwnerMap.put(domain.getDomainId(), ownerId);
             } else {
@@ -243,8 +242,8 @@ public class AiravataDataMigrator {
                 GatewayGroups gatewayGroups = registry.getGatewayGroups(domain.getDomainId());
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             } else {
-                GatewayGroups gatewayGroups = migrateRolesToGatewayGroups(
-                        domain, ownerId, sharingRegistryServerHandler, registry);
+                GatewayGroups gatewayGroups =
+                        migrateRolesToGatewayGroups(domain, ownerId, sharingRegistryServerHandler, registry);
                 gatewayGroupsMap.put(domain.getDomainId(), gatewayGroups);
             }
             // find all the active users in keycloak that do not exist in sharing registry service and migrate them to
@@ -423,8 +422,7 @@ public class AiravataDataMigrator {
                 }
                 String username = userId.substring(0, userId.lastIndexOf("@"));
                 List<CredentialSummary> gatewayCredentialSummaries =
-                        credentialStore.getAllCredentialSummaryForUserInGateway(
-                                SummaryType.SSH, domainID, username);
+                        credentialStore.getAllCredentialSummaryForUserInGateway(SummaryType.SSH, domainID, username);
                 for (CredentialSummary credentialSummary : gatewayCredentialSummaries) {
                     Entity entity = new Entity();
                     entity.setEntityId(credentialSummary.getToken());
@@ -442,8 +440,7 @@ public class AiravataDataMigrator {
         }
         // Creating credential store token entries (GATEWAY PWD tokens)
         for (String domainID : domainOwnerMap.keySet()) {
-            Map<String, String> gatewayPasswords =
-                    credentialStore.getAllPWDCredentialsForGateway(domainID);
+            Map<String, String> gatewayPasswords = credentialStore.getAllPWDCredentialsForGateway(domainID);
             for (Map.Entry<String, String> gatewayPasswordEntry : gatewayPasswords.entrySet()) {
                 Entity entity = new Entity();
                 entity.setEntityId(gatewayPasswordEntry.getKey());
@@ -727,8 +724,7 @@ public class AiravataDataMigrator {
         return roleMap;
     }
 
-    private static PasswordCredential getTenantAdminPasswordCredential(String tenantId)
-            throws TException {
+    private static PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException {
         GatewayResourceProfile gwrp = getRegistry().getGatewayResourceProfile(tenantId);
         CredentialStoreService.Iface credentialStore = getCredentialStore();
         return credentialStore.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
@@ -783,8 +779,7 @@ public class AiravataDataMigrator {
                         .stream()
                         .map(p -> p.getEntityId())
                         .collect(Collectors.toList());
-        List<GroupResourceProfile> groupResourceProfiles =
-                registry.getGroupResourceList(gatewayId, accessibleGRPIds);
+        List<GroupResourceProfile> groupResourceProfiles = registry.getGroupResourceList(gatewayId, accessibleGRPIds);
         return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
     }
 
@@ -872,13 +867,11 @@ public class AiravataDataMigrator {
     }
 
     private static ComputeResourcePolicy createDefaultComputeResourcePolicy(
-            String groupResourceProfileId, String computeResourceId, RegistryService.Iface registry)
-            throws TException {
+            String groupResourceProfileId, String computeResourceId, RegistryService.Iface registry) throws TException {
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(computeResourceId);
         computeResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
-        ComputeResourceDescription computeResourceDescription =
-                registry.getComputeResource(computeResourceId);
+        ComputeResourceDescription computeResourceDescription = registry.getComputeResource(computeResourceId);
         List<String> batchQueueNames = computeResourceDescription.getBatchQueues().stream()
                 .map(bq -> bq.getQueueName())
                 .collect(Collectors.toList());
@@ -899,8 +892,7 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static CredentialStoreService.Iface getCredentialStore()
-            throws TException {
+    private static CredentialStoreService.Iface getCredentialStore() throws TException {
         final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
         final String serverHost = ServerSettings.getApiServerHost();
         try {

@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.airavata.catalog.sharing.db.entities.PermissionTypeEntity;
 import org.apache.airavata.catalog.sharing.db.entities.PermissionTypePK;
 import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.catalog.sharing.models.PermissionType;
 import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
-import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

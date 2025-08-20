@@ -81,12 +81,14 @@ public class ParserWorkflowManager extends WorkflowManager {
         RegistryService.Iface registry = getRegistry();
         try {
             try {
-              ProcessModel processModel = registry.getProcess(completionMessage.getProcessId());
-              ApplicationInterfaceDescription appDescription = registry.getApplicationInterface(processModel.getApplicationInterfaceId());
-              if (appDescription == null) {
-                logger.error("Application interface not found for process id " + completionMessage.getProcessId());
-                throw new Exception("Application interface not found for process id " + completionMessage.getProcessId());
-              }
+                ProcessModel processModel = registry.getProcess(completionMessage.getProcessId());
+                ApplicationInterfaceDescription appDescription =
+                        registry.getApplicationInterface(processModel.getApplicationInterfaceId());
+                if (appDescription == null) {
+                    logger.error("Application interface not found for process id " + completionMessage.getProcessId());
+                    throw new Exception(
+                            "Application interface not found for process id " + completionMessage.getProcessId());
+                }
             } catch (Exception e) {
                 logger.error(
                         "Failed to fetch process or application description from registry associated with process id "
@@ -330,12 +332,10 @@ public class ParserWorkflowManager extends WorkflowManager {
                         case "{{gateway}}":
                             return completionMessage.getGatewayId();
                         case "{{user}}":
-                            return registry
-                                    .getProcess(completionMessage.getProcessId())
+                            return registry.getProcess(completionMessage.getProcessId())
                                     .getUserName();
                         case "{{project}}":
-                            return registry
-                                    .getExperiment(completionMessage.getExperimentId())
+                            return registry.getExperiment(completionMessage.getExperimentId())
                                     .getProjectId();
                     }
                 }
@@ -366,8 +366,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                 parsingTask.setParserId(childParserInfo.getId());
                 parsingTask.setLocalDataDir("/tmp");
                 try {
-                    parsingTask.setGroupResourceProfileId(registry
-                            .getProcess(completionMessage.getProcessId())
+                    parsingTask.setGroupResourceProfileId(registry.getProcess(completionMessage.getProcessId())
                             .getGroupResourceProfileId());
                 } catch (TException e) {
                     logger.error(

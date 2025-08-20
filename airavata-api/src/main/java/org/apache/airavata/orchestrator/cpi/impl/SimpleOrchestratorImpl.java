@@ -261,6 +261,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     "Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
         }
     }
+
     public void initialize() throws OrchestratorException {}
 
     public List<ProcessModel> createProcesses(String experimentId, String gatewayId) throws OrchestratorException {
@@ -353,10 +354,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private List<String> createAndSaveEnvSetupTask(
-            RegistryService.Iface registry,
-            String gatewayId,
-            ProcessModel processModel,
-            ResourceType resourceType)
+            RegistryService.Iface registry, String gatewayId, ProcessModel processModel, ResourceType resourceType)
             throws TException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
 
@@ -449,12 +447,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             processOutput.setValue(appName + ".stdout");
                         }
                         createOutputDataSatagingTasks(
-                                registry,
-                                processModel,
-                                gatewayId,
-                                dataStagingTaskIds,
-                                processOutput,
-                                resourceType);
+                                registry, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
                         break;
                     case STDERR:
                         if (null == processOutput.getValue()
@@ -462,22 +455,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             processOutput.setValue(appName + ".stderr");
                         }
                         createOutputDataSatagingTasks(
-                                registry,
-                                processModel,
-                                gatewayId,
-                                dataStagingTaskIds,
-                                processOutput,
-                                resourceType);
+                                registry, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
                         break;
                     case URI:
                     case URI_COLLECTION:
                         createOutputDataSatagingTasks(
-                                registry,
-                                processModel,
-                                gatewayId,
-                                dataStagingTaskIds,
-                                processOutput,
-                                resourceType);
+                                registry, processModel, gatewayId, dataStagingTaskIds, processOutput, resourceType);
                         break;
                     default:
                         // nothing to do
@@ -488,8 +471,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         try {
             if (isArchive(registry, processModel)) {
-                createArchiveDataStatgingTask(
-                        registry, processModel, gatewayId, dataStagingTaskIds, resourceType);
+                createArchiveDataStatgingTask(registry, processModel, gatewayId, dataStagingTaskIds, resourceType);
             }
         } catch (Exception e) {
             throw new AiravataException("Error! Application interface retrieval failed", e);
@@ -590,8 +572,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ResourceType resourceType)
             throws AiravataException, OrchestratorException {
         try {
-            TaskModel outputDataStagingTask = getOutputDataStagingTask(
-                    registry, processModel, processOutput, gatewayId, null, resourceType);
+            TaskModel outputDataStagingTask =
+                    getOutputDataStagingTask(registry, processModel, processOutput, gatewayId, null, resourceType);
             String taskId = registry.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
@@ -729,8 +711,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ComputeResourceDescription computeResource =
-                registry.getComputeResource(processModel.getComputeResourceId());
+        ComputeResourceDescription computeResource = registry.getComputeResource(processModel.getComputeResourceId());
 
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir =

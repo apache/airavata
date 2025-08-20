@@ -20,6 +20,7 @@
 package org.apache.airavata.factory;
 
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.ServiceName;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
@@ -41,8 +42,6 @@ import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-
-import org.apache.airavata.api.ServiceName;
 
 public class AiravataClientFactory {
 

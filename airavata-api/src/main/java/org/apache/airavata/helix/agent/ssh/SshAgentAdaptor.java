@@ -88,7 +88,8 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AiravataServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential =
+                    AiravataServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

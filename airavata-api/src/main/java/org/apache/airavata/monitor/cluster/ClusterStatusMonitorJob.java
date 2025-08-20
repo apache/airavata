@@ -26,7 +26,6 @@ import com.jcraft.jsch.Session;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.factory.AiravataServiceFactory;
@@ -55,8 +54,7 @@ public class ClusterStatusMonitorJob implements Job {
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {
-                computeResourcePreferences =
-                        registry.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
+                computeResourcePreferences = registry.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
             } catch (Exception ex) {
                 logger.warn(
                         "Could not find super tenant compute resources preferences for cluster status monitoring...");
@@ -69,8 +67,7 @@ public class ClusterStatusMonitorJob implements Job {
                         String loginUserName = p.getLoginUserName();
                         String hostName = null;
                         if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
-                            credentialStoreToken = registry
-                                    .getGatewayResourceProfile(superTenantGatewayId)
+                            credentialStoreToken = registry.getGatewayResourceProfile(superTenantGatewayId)
                                     .getCredentialStoreToken();
                         }
                         int port = -1;
@@ -92,8 +89,7 @@ public class ClusterStatusMonitorJob implements Job {
                                     .get(0)
                                     .getJobSubmissionProtocol()
                                     .equals(JobSubmissionProtocol.SSH)) {
-                                String resourceManagerType = registry
-                                        .getSSHJobSubmission(
+                                String resourceManagerType = registry.getSSHJobSubmission(
                                                 jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId())
                                         .getResourceJobManager()
                                         .getResourceJobManagerType()
@@ -175,7 +171,8 @@ public class ClusterStatusMonitorJob implements Job {
                             }
                             try {
                                 Thread.sleep(1000);
-                            } catch (Exception ignored) {}
+                            } catch (Exception ignored) {
+                            }
                         }
                         channel.disconnect();
 
@@ -227,6 +224,5 @@ public class ClusterStatusMonitorJob implements Job {
             int port,
             String credentialStoreToken,
             List<String> queueNames,
-            String resourceManagerType) {
-    }
+            String resourceManagerType) {}
 }

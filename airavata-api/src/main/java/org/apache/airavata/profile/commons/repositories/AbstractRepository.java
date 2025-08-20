@@ -24,7 +24,6 @@ import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.airavata.profile.commons.utils.JPAUtils;
 import org.apache.airavata.profile.commons.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;

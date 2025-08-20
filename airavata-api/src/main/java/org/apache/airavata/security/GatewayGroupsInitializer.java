@@ -20,17 +20,17 @@
 package org.apache.airavata.security;
 
 import org.apache.airavata.catalog.sharing.models.*;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,9 +141,7 @@ public class GatewayGroupsInitializer {
     }
 
     private String getAdminOwnerUsername(
-            RegistryService.Iface registry,
-            CredentialStoreService.Iface credentialStore,
-            String gatewayId)
+            RegistryService.Iface registry, CredentialStoreService.Iface credentialStore, String gatewayId)
             throws TException {
 
         GatewayResourceProfile gatewayResourceProfile = registry.getGatewayResourceProfile(gatewayId);

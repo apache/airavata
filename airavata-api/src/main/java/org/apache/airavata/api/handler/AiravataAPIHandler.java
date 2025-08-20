@@ -29,6 +29,7 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.catalog.sharing.models.*;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -36,7 +37,6 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.factory.AiravataServiceFactory;
-import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -96,8 +96,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
-import org.apache.airavata.catalog.sharing.models.*;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,7 +365,6 @@ public class AiravataAPIHandler implements Airavata.Iface {
             permissionType.setName("MANAGE_SHARING");
             permissionType.setDescription("Sharing permission type");
             sharingRegistry.createPermissionType(permissionType);
-
 
             logger.debug("Airavata successfully created the gateway with " + gatewayId);
 
@@ -1942,8 +1940,8 @@ public class AiravataAPIHandler implements Airavata.Iface {
         try {
 
             // Verify that user has READ access to experiment
-            final boolean hasAccess =
-                    userHasAccessInternal(sharingRegistry, authzToken, airavataExperimentId, ResourcePermissionType.READ);
+            final boolean hasAccess = userHasAccessInternal(
+                    sharingRegistry, authzToken, airavataExperimentId, ResourcePermissionType.READ);
             if (!hasAccess) {
                 throw new AuthorizationException("User does not have WRITE access to this experiment");
             }
@@ -2089,8 +2087,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
                             airavataExperimentId,
                             groupResourceProfileId);
                     experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
-                    registry.updateExperimentConfiguration(
-                            airavataExperimentId, experiment.getUserConfigurationData());
+                    registry.updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
                 } else {
                     throw new AuthorizationException("User " + username + " in gateway " + gatewayId
                             + " doesn't have access to any group resource profiles.");
@@ -2682,8 +2679,8 @@ public class AiravataAPIHandler implements Airavata.Iface {
                     TException {
         try {
             if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess =
-                        userHasAccessInternal(sharingRegistry, authzToken, appDeploymentId, ResourcePermissionType.READ);
+                final boolean hasAccess = userHasAccessInternal(
+                        sharingRegistry, authzToken, appDeploymentId, ResourcePermissionType.READ);
                 if (!hasAccess) {
                     throw new AuthorizationException(
                             "User does not have access to application deployment " + appDeploymentId);
@@ -2716,8 +2713,8 @@ public class AiravataAPIHandler implements Airavata.Iface {
                     TException {
         try {
             if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess =
-                        userHasAccessInternal(sharingRegistry, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                final boolean hasAccess = userHasAccessInternal(
+                        sharingRegistry, authzToken, appDeploymentId, ResourcePermissionType.WRITE);
                 if (!hasAccess) {
                     throw new AuthorizationException(
                             "User does not have WRITE access to application deployment " + appDeploymentId);
@@ -3554,8 +3551,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
         try {
-            String result =
-                    registry.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+            String result = registry.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
             return result;
         } catch (Exception e) {
             logger.error(
@@ -3606,8 +3602,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
         try {
-            String result =
-                    registry.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
+            String result = registry.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
             return result;
         } catch (Exception e) {
             logger.error(
@@ -3752,8 +3747,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
         try {
-            boolean result =
-                    registry.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
+            boolean result = registry.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
             return result;
         } catch (Exception e) {
             logger.error(
@@ -6267,8 +6261,7 @@ public class AiravataAPIHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
         try {
-            List<ParsingTemplate> parsingTemplates =
-                    registry.getParsingTemplatesForExperiment(experimentId, gatewayId);
+            List<ParsingTemplate> parsingTemplates = registry.getParsingTemplatesForExperiment(experimentId, gatewayId);
             return parsingTemplates;
         } catch (Exception e) {
             String msg = "Error retrieving parsing templates for experiment: " + experimentId;

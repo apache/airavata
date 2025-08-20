@@ -25,10 +25,9 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
@@ -39,6 +38,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.profile.tenant.core.repositories.TenantProfileRepository;
+import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
@@ -251,8 +251,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
     }
 
-    private CredentialStoreService.Iface getCredentialStore()
-            throws TException {
+    private CredentialStoreService.Iface getCredentialStore() throws TException {
         final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
         final String serverHost = ServerSettings.getApiServerHost();
         try {

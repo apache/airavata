@@ -81,10 +81,10 @@ public class Main {
         }
 
         try {
-          Thread.currentThread().join();
+            Thread.currentThread().join();
         } catch (InterruptedException ex) {
-          System.out.println("Main thread is interrupted! reason: " + ex);
-          ServerSettings.setStopAllThreads(true);
+            System.out.println("Main thread is interrupted! reason: " + ex);
+            ServerSettings.setStopAllThreads(true);
         }
     }
 }

@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.impl.task.aws.utils;
 
 import java.util.concurrent.TimeUnit;
-
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
@@ -45,7 +44,8 @@ public final class AWSTaskUtil {
 
     public static Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
         LOGGER.info("Building EC2 client for token {} and gateway id {} in region {}", token, gatewayId, region);
-        PasswordCredential pwdCred = AiravataServiceFactory.getCredentialStore().getPasswordCredential(token, gatewayId);
+        PasswordCredential pwdCred =
+                AiravataServiceFactory.getCredentialStore().getPasswordCredential(token, gatewayId);
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
         return Ec2Client.builder()

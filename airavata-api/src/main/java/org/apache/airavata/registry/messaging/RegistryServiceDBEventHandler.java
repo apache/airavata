@@ -192,11 +192,9 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         }
     }
 
-    private Project createDefaultProject(RegistryService.Iface registry, UserProfile userProfile)
-            throws TException {
+    private Project createDefaultProject(RegistryService.Iface registry, UserProfile userProfile) throws TException {
         // Just retrieve the first project to see if the user has any projects
-        List<Project> projects =
-                registry.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
+        List<Project> projects = registry.getUserProjects(userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
         if (projects.isEmpty()) {
             Project defaultProject = new Project();
             defaultProject.setOwner(userProfile.getUserId());

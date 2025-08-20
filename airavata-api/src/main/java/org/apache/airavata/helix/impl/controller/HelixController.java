@@ -51,12 +51,16 @@ public class HelixController implements Runnable {
     public void run() {
         try {
             var zkHelixAdmin = new ZKHelixAdmin.Builder()
-              .setZkAddress(ServerSettings.getZookeeperConnection())
-              .build();
+                    .setZkAddress(ServerSettings.getZookeeperConnection())
+                    .build();
             zkHelixAdmin.addCluster(clusterName, false);
             zkHelixAdmin.close();
 
-            logger.info("Starting helix controller '{}' for cluster '{}' at address '{}'", controllerName, clusterName, zkAddress);
+            logger.info(
+                    "Starting helix controller '{}' for cluster '{}' at address '{}'",
+                    controllerName,
+                    clusterName,
+                    zkAddress);
             zkHelixManager = HelixControllerMain.startHelixController(
                     zkAddress, clusterName, controllerName, HelixControllerMain.STANDALONE);
             logger.info("Controller '{}' started for cluster '{}'", controllerName, clusterName);
@@ -66,10 +70,10 @@ public class HelixController implements Runnable {
         } catch (Exception ex) {
             logger.error("Error in run() for controller '{}', reason: {}", controllerName, ex, ex);
         } finally {
-          if (zkHelixManager != null) {
-            logger.info("Controller '{}' has disconnected from cluster '{}'", controllerName, clusterName);
-            zkHelixManager.disconnect();
-          }
+            if (zkHelixManager != null) {
+                logger.info("Controller '{}' has disconnected from cluster '{}'", controllerName, clusterName);
+                zkHelixManager.disconnect();
+            }
         }
     }
 

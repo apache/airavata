@@ -215,10 +215,10 @@ public class EmailBasedMonitor extends AbstractMonitor {
                     emailFolder.close(false);
                 }
                 if (Thread.currentThread().isInterrupted()) {
-                  throw new InterruptedException("EmailBasedMonitor is interrupted!");
+                    throw new InterruptedException("EmailBasedMonitor is interrupted!");
                 }
             } catch (InterruptedException ex) {
-              log.error("EmailBasedMonitor is interrupted! reason: " + ex, ex);
+                log.error("EmailBasedMonitor is interrupted! reason: " + ex, ex);
             } catch (MessagingException e) {
                 log.error("Couldn't connect to the store ", e);
             } catch (Throwable e) {
@@ -235,11 +235,11 @@ public class EmailBasedMonitor extends AbstractMonitor {
                     log.error("Store close operation failed, couldn't close store", e);
                 }
                 try {
-                  Thread.sleep(ServerSettings.getEmailMonitorPeriod());
+                    Thread.sleep(ServerSettings.getEmailMonitorPeriod());
                 } catch (InterruptedException e) {
-                  log.error("interrupted while sleeping ", e);
+                    log.error("interrupted while sleeping ", e);
                 } catch (Exception e) {
-                  log.error("exception thrown when attempting to sleep ", e);
+                    log.error("exception thrown when attempting to sleep ", e);
                 }
             }
         }

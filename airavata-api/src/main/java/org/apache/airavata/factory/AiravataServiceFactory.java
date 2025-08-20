@@ -21,14 +21,13 @@ package org.apache.airavata.factory;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.handler.CredentialStoreServerHandler;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.handler.RegistryServerHandler;
-import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 
 public class AiravataServiceFactory {
 
@@ -43,7 +42,12 @@ public class AiravataServiceFactory {
     public static CredentialStoreService.Iface getCredentialStore() {
         try {
             return new CredentialStoreServerHandler();
-        } catch (ApplicationSettingsException | IllegalAccessException | ClassNotFoundException | InstantiationException | SQLException | IOException e) {
+        } catch (ApplicationSettingsException
+                | IllegalAccessException
+                | ClassNotFoundException
+                | InstantiationException
+                | SQLException
+                | IOException e) {
             throw new RuntimeException("Failed to create credential store object. " + e.getMessage());
         }
     }

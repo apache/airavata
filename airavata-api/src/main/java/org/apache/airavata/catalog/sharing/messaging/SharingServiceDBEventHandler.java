@@ -20,6 +20,8 @@
 package org.apache.airavata.catalog.sharing.messaging;
 
 import org.apache.airavata.catalog.sharing.models.*;
+import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.catalog.sharing.utils.ThriftDataModelConversion;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -33,8 +35,6 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
-import org.apache.airavata.catalog.sharing.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,8 +165,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                                 // Creating Entity Types for each domain
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":PROJECT");
-                                EntityType entityType =
-                                        new EntityType();
+                                EntityType entityType = new EntityType();
                                 entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
                                 entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("PROJECT");

@@ -179,8 +179,8 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static String getEmailBasedMonitorHost() throws ApplicationSettingsException {
-      return getSetting(EMAIL_BASED_MONITOR_HOST);
-  }
+        return getSetting(EMAIL_BASED_MONITOR_HOST);
+    }
 
     public static String getEmailBasedMonitorAddress() throws ApplicationSettingsException {
         return getSetting(EMAIL_BASED_MONITOR_ADDRESS);

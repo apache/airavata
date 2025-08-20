@@ -20,10 +20,10 @@
 package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
-import org.apache.airavata.datatransfer.api.AgentAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
@@ -52,10 +52,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
     private ProcessModel process;
     ExperimentModel experiment;
 
-    public ProcessDataManager(
-            RegistryService.Iface registry,
-            String processId,
-            AdaptorSupport adaptorSupport)
+    public ProcessDataManager(RegistryService.Iface registry, String processId, AdaptorSupport adaptorSupport)
             throws Exception {
 
         this.adaptorSupport = adaptorSupport;
@@ -99,11 +96,11 @@ public class ProcessDataManager extends OutputDataStagingTask {
 
         return getComputeResourceAdaptor(adaptorSupport);
     }
+
     private static CredentialStoreService.Client getCredentialStoreClient()
             throws TTransportException, ApplicationSettingsException {
-        TTransport transport = new TSocket(
-                ServerSettings.getApiServerHost(),
-                Integer.parseInt(ServerSettings.getApiServerPort()));
+        TTransport transport =
+                new TSocket(ServerSettings.getApiServerHost(), Integer.parseInt(ServerSettings.getApiServerPort()));
         transport.open();
         TProtocol protocol = new TBinaryProtocol(transport);
         protocol = new TMultiplexedProtocol(protocol, "CredentialStoreService");

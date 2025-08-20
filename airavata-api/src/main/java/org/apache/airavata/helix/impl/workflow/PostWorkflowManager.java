@@ -214,9 +214,8 @@ public class PostWorkflowManager extends WorkflowManager {
             var grpId = processModel.getGroupResourceProfileId();
 
             experimentModel = registry.getExperiment(experimentId);
-            ResourceType resourceType = registry
-                    .getGroupComputeResourcePreference(crId, grpId)
-                    .getResourceType();
+            ResourceType resourceType =
+                    registry.getGroupComputeResourcePreference(crId, grpId).getResourceType();
 
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
@@ -320,72 +319,73 @@ public class PostWorkflowManager extends WorkflowManager {
 
     public void startServer() {
         try {
-          init();
+            init();
         } catch (Exception e) {
-          logger.error("Error starting PostWorkflowManager", e);
+            logger.error("Error starting PostWorkflowManager", e);
         }
         final Consumer<String, JobStatusResult> consumer;
         try {
-          consumer = createConsumer();
+            consumer = createConsumer();
         } catch (ApplicationSettingsException e) {
-          logger.error("Error creating consumer", e);
-          return;
+            logger.error("Error creating consumer", e);
+            return;
         }
         try {
-          while (true) {
-              final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
-              var executorCompletionService = new ExecutorCompletionService<>(processingPool);
-              var processingFutures = new ArrayList<>();
-      
-              for (var topicPartition : consumerRecords.partitions()) {
-                  var partitionRecords = consumerRecords.records(topicPartition);
-                  logger.info("Received job records {}", partitionRecords.size());
-      
-                  for (var record : partitionRecords) {
-                      var topic = topicPartition.topic();
-                      var partition = topicPartition.partition();
-                      var key = record.key();
-                      var value = record.value();
-                      logger.info("received post on {}/{}: {}->{}", topic, partition, key, value);
-                      logger.info(
-                              "Submitting {} to process in thread pool",
-                              record.value().getJobId());
-      
-                      // This avoids kafka read thread to wait until processing is completed before committing
-                      // There is a risk of missing 20 messages in case of a restart, but this improves the
-                      // robustness of the kafka read thread by avoiding wait timeouts
-                      processingFutures.add(executorCompletionService.submit(() -> {
-                          boolean success = process(record.value());
-                          logger.info(
-                                  "Status of processing {} : {}",
-                                  record.value().getJobId(),
-                                  success);
-                          return success;
-                      }));
-      
-                      consumer.commitSync(Collections.singletonMap(
-                              topicPartition, new OffsetAndMetadata(record.offset() + 1)));
-                  }
-              }
-      
-              for (var f : processingFutures) {
-                  try {
-                      executorCompletionService.take().get();
-                  } catch (Exception e) {
-                      logger.error("Failed processing job", e);
-                  }
-              }
-              logger.info("All messages processed. Moving to next round");
-              
-              if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("PostWorkflowManager is interrupted!");
-              }
-          }
+            while (true) {
+                final ConsumerRecords<String, JobStatusResult> consumerRecords =
+                        consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+                var executorCompletionService = new ExecutorCompletionService<>(processingPool);
+                var processingFutures = new ArrayList<>();
+
+                for (var topicPartition : consumerRecords.partitions()) {
+                    var partitionRecords = consumerRecords.records(topicPartition);
+                    logger.info("Received job records {}", partitionRecords.size());
+
+                    for (var record : partitionRecords) {
+                        var topic = topicPartition.topic();
+                        var partition = topicPartition.partition();
+                        var key = record.key();
+                        var value = record.value();
+                        logger.info("received post on {}/{}: {}->{}", topic, partition, key, value);
+                        logger.info(
+                                "Submitting {} to process in thread pool",
+                                record.value().getJobId());
+
+                        // This avoids kafka read thread to wait until processing is completed before committing
+                        // There is a risk of missing 20 messages in case of a restart, but this improves the
+                        // robustness of the kafka read thread by avoiding wait timeouts
+                        processingFutures.add(executorCompletionService.submit(() -> {
+                            boolean success = process(record.value());
+                            logger.info(
+                                    "Status of processing {} : {}",
+                                    record.value().getJobId(),
+                                    success);
+                            return success;
+                        }));
+
+                        consumer.commitSync(
+                                Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                    }
+                }
+
+                for (var f : processingFutures) {
+                    try {
+                        executorCompletionService.take().get();
+                    } catch (Exception e) {
+                        logger.error("Failed processing job", e);
+                    }
+                }
+                logger.info("All messages processed. Moving to next round");
+
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("PostWorkflowManager is interrupted!");
+                }
+            }
         } catch (InterruptedException ex) {
-          logger.error("PostWorkflowManager is interrupted! reason: " + ex, ex);
+            logger.error("PostWorkflowManager is interrupted! reason: " + ex, ex);
         } finally {
-          consumer.close();
-          processingPool.shutdown();
+            consumer.close();
+            processingPool.shutdown();
         }
     }
 

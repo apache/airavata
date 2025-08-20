@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -73,8 +71,7 @@ public class SSHAccountManager {
         RegistryService.Iface registry = AiravataServiceFactory.getRegistry();
         ComputeResourcePreference computeResourcePreference = null;
         try {
-            computeResourcePreference =
-                    registry.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
+            computeResourcePreference = registry.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
         } catch (TException e) {
             throw new RuntimeException(
                     "Failed to get ComputeResourcePreference for [" + gatewayId + "] and [" + computeResourceId + "]: "
@@ -117,15 +114,14 @@ public class SSHAccountManager {
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
         try {
-            computeResourcePreference =
-                    registry.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
+            computeResourcePreference = registry.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
             computeResourceDescription = registry.getComputeResource(computeResourceId);
             // Find the SSHJobSubmission
             for (JobSubmissionInterface jobSubmissionInterface :
                     computeResourceDescription.getJobSubmissionInterfaces()) {
                 if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                    sshJobSubmission = registry.getSSHJobSubmission(
-                            jobSubmissionInterface.getJobSubmissionInterfaceId());
+                    sshJobSubmission =
+                            registry.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                     break;
                 }
             }
@@ -243,7 +239,7 @@ public class SSHAccountManager {
             throws InvalidSetupException {
         CredentialStoreService.Iface credentialStore = null;
         try {
-          credentialStore = AiravataServiceFactory.getCredentialStore();
+            credentialStore = AiravataServiceFactory.getCredentialStore();
         } catch (RuntimeException e) {
             throw new InvalidSetupException("Failed to create credential store object. " + e.getMessage());
         }

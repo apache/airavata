@@ -227,8 +227,8 @@ public class AgentManagementHandler {
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
                 new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(
-                airavata, req.getGroup(), req.getRemoteCluster());
+        GroupComputeResourcePreference groupCompResourcePref =
+                airavataService.extractGroupComputeResourcePreference(airavata, req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());

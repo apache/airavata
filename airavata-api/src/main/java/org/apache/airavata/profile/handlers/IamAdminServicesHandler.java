@@ -26,11 +26,10 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.factory.AiravataClientFactory;
 import org.apache.airavata.factory.AiravataServiceFactory;
-import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -43,6 +42,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
@@ -346,8 +346,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         return AiravataServiceFactory.getRegistry();
     }
 
-    private CredentialStoreService.Iface getCredentialStore()
-            throws TException, ApplicationSettingsException {
+    private CredentialStoreService.Iface getCredentialStore() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
         final String serverHost = ServerSettings.getApiServerHost();
         try {

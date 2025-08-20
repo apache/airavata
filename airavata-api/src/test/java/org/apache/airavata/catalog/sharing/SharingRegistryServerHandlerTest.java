@@ -22,12 +22,10 @@ package org.apache.airavata.catalog.sharing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
+import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
-import org.apache.airavata.catalog.sharing.models.*;
-import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -21,7 +21,6 @@ package org.apache.airavata.helix.impl.task.aws;
 
 import java.security.Security;
 import java.util.UUID;
-
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;

@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.apache.airavata.datatransfer.api.AgentException;
-import org.apache.airavata.datatransfer.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.datatransfer.api.AgentException;
+import org.apache.airavata.datatransfer.api.StorageResourceAdaptor;
 import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
@@ -146,8 +146,7 @@ public class DataParsingTask extends AbstractTask {
                                     true,
                                     null);
                         }
-                        DataProductModel inputDataProduct =
-                                getRegistry().getDataProduct(inputDataProductUri);
+                        DataProductModel inputDataProduct = getRegistry().getDataProduct(inputDataProductUri);
                         List<DataReplicaLocationModel> replicaLocations = inputDataProduct.getReplicaLocations();
 
                         boolean downloadPassed = false;
@@ -348,8 +347,7 @@ public class DataParsingTask extends AbstractTask {
 
         StoragePreference gatewayStoragePreference =
                 getRegistry().getGatewayStoragePreference(gatewayId, storageResourceId);
-        GatewayResourceProfile gatewayResourceProfile =
-                getRegistry().getGatewayResourceProfile(gatewayId);
+        GatewayResourceProfile gatewayResourceProfile = getRegistry().getGatewayResourceProfile(gatewayId);
 
         String token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
         if (token == null || token.isEmpty()) {
@@ -402,8 +400,8 @@ public class DataParsingTask extends AbstractTask {
         logger.info("Uploading from local path " + localFilePath + " to remote path " + remoteFilePath
                 + " of storage resource " + parsingTaskOutput.getStorageResourceId());
         try {
-            StoragePreference gatewayStoragePreference = getRegistry()
-                    .getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
+            StoragePreference gatewayStoragePreference =
+                    getRegistry().getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
             StorageResourceDescription storageResource =
                     getRegistry().getStorageResource(parsingTaskOutput.getStorageResourceId());
 

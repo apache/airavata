@@ -176,8 +176,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             if (token == null || token.isEmpty()) {
                 // try with group resource profile level token
-                GroupResourceProfile groupResourceProfile =
-                        registry.getGroupResourceProfile(groupResourceProfileId);
+                GroupResourceProfile groupResourceProfile = registry.getGroupResourceProfile(groupResourceProfileId);
                 token = groupResourceProfile.getDefaultCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
@@ -329,8 +328,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     @Override
-    public boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws TException {
+    public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws TException {
         final RegistryService.Iface registry = getRegistry();
         try {
             ExperimentModel experimentModel = registry.getExperiment(experimentId);
@@ -431,19 +429,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (groupResourceProfileId == null) {
                 throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
             }
-            GroupComputeResourcePreference groupComputeResourcePreference =
-                    registry.getGroupComputeResourcePreference(
-                            userConfigurationData
-                                    .getComputationalResourceScheduling()
-                                    .getResourceHostId(),
-                            groupResourceProfileId);
+            GroupComputeResourcePreference groupComputeResourcePreference = registry.getGroupComputeResourcePreference(
+                    userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+                    groupResourceProfileId);
             if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
                 token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
             }
             if (token == null || token.isEmpty()) {
                 // try with group resource profile level token
-                GroupResourceProfile groupResourceProfile =
-                        registry.getGroupResourceProfile(groupResourceProfileId);
+                GroupResourceProfile groupResourceProfile = registry.getGroupResourceProfile(groupResourceProfileId);
                 token = groupResourceProfile.getDefaultCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
@@ -548,8 +542,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
             if (processModel.getComputeResourceId().equals(deploymentDescription.getComputeHostId())) {
                 deploymentMap.put(
-                        registry.getComputeResource(deploymentDescription.getComputeHostId()),
-                        deploymentDescription);
+                        registry.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
             }
         }
         List<ComputeResourceDescription> computeHostList =
@@ -573,8 +566,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return selectedModuleId;
     }
 
-    private boolean validateStatesAndCancel(
-            RegistryService.Iface registry, String experimentId, String gatewayId) throws Exception {
+    private boolean validateStatesAndCancel(RegistryService.Iface registry, String experimentId, String gatewayId)
+            throws Exception {
         ExperimentStatus experimentStatus = registry.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:
@@ -811,8 +804,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             status.setReason("Job submission failed,  requeued to resubmit");
                             List<QueueStatusModel> queueStatusModels = new ArrayList<>();
                             final RegistryService.Iface registry = getRegistry();
-                            ExperimentModel experimentModel =
-                                    registry.getExperiment(processIdentity.getExperimentId());
+                            ExperimentModel experimentModel = registry.getExperiment(processIdentity.getExperimentId());
                             UserConfigurationDataModel userConfigurationDataModel =
                                     experimentModel.getUserConfigurationData();
                             if (userConfigurationDataModel != null) {
@@ -821,8 +813,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                 if (computationalResourceSchedulingModel != null) {
                                     String queueName = computationalResourceSchedulingModel.getQueueName();
                                     String resourceId = computationalResourceSchedulingModel.getResourceHostId();
-                                    ComputeResourceDescription comResourceDes =
-                                            registry.getComputeResource(resourceId);
+                                    ComputeResourceDescription comResourceDes = registry.getComputeResource(resourceId);
                                     QueueStatusModel queueStatusModel = new QueueStatusModel();
                                     queueStatusModel.setHostName(comResourceDes.getHostName());
                                     queueStatusModel.setQueueName(queueName);
@@ -1016,12 +1007,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         if (groupResourceProfileId == null) {
             throw new Exception("Experiment not configured with a Group Resource Profile: " + experimentId);
         }
-        GroupComputeResourcePreference groupComputeResourcePreference =
-                registry.getGroupComputeResourcePreference(
-                        userConfigurationData
-                                .getComputationalResourceScheduling()
-                                .getResourceHostId(),
-                        groupResourceProfileId);
+        GroupComputeResourcePreference groupComputeResourcePreference = registry.getGroupComputeResourcePreference(
+                userConfigurationData.getComputationalResourceScheduling().getResourceHostId(), groupResourceProfileId);
         if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
             token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
         }
@@ -1041,8 +1028,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private void createAndValidateTasks(
-            ExperimentModel experiment, RegistryService.Iface registry, boolean recreateTaskDag)
-            throws Exception {
+            ExperimentModel experiment, RegistryService.Iface registry, boolean recreateTaskDag) throws Exception {
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = registry.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {

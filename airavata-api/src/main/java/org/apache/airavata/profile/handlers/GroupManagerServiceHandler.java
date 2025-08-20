@@ -23,24 +23,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.factory.AiravataServiceFactory;
-import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.group.GroupModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
-import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
-import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.catalog.sharing.models.GroupCardinality;
 import org.apache.airavata.catalog.sharing.models.GroupType;
 import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
 import org.apache.airavata.catalog.sharing.models.User;
 import org.apache.airavata.catalog.sharing.models.UserGroup;
 import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.factory.AiravataServiceFactory;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.group.GroupModel;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
+import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
+import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,8 +343,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
-    private SharingRegistryService.Iface getSharingRegistry()
-            throws TException, ApplicationSettingsException {
+    private SharingRegistryService.Iface getSharingRegistry() throws TException, ApplicationSettingsException {
         return AiravataServiceFactory.getSharingRegistry();
     }
 

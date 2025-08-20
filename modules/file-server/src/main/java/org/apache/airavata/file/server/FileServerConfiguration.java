@@ -40,7 +40,7 @@ public class FileServerConfiguration {
     // api.server.host
     @Value("${api.server.host:localhost}")
     private String registryServerHost;
-    
+
     // api.server.port
     @Value("${api.server.port:8970}")
     private int registryServerPort;
