@@ -40,7 +40,7 @@ airavata:
     url: http://airavata.host:5173
     dev-url: http://airavata.host:5173
   openid:
-    url: "http://airavata.host:18080/realms/default"
+    url: "https://auth.dev.cybershuttle.org/realms/default"
   user-profile:
     server:
       url: airavata.host
@@ -92,7 +92,8 @@ springdoc:
 # Authentication Configuration
 research:
   auth:
-    jwks-uri: "https://auth.dev.cybershuttle.org/.well-known/jwks"
+    jwks-uri: "https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/certs"
+    issuer-uri: "https://auth.dev.cybershuttle.org/realms/default"
     dev-api-key: "dev-research-api-key-12345"
   cors:
     allowed-origins: "http://localhost:5173,http://localhost:3000"

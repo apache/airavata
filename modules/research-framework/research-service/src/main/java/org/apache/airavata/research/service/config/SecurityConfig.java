@@ -45,8 +45,11 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${research.auth.jwks-uri:https://auth.dev.cybershuttle.org/.well-known/jwks}")
+    @Value("${research.auth.jwks-uri:https://auth.cybershuttle.org/realms/default/protocol/openid-connect/certs}")
     private String jwksUri;
+
+    @Value("${research.auth.issuer-uri:https://auth.cybershuttle.org/realms/default}")
+    private String issuerUri;
 
     @Value("${research.auth.dev-api-key:dev-research-api-key-12345}")
     private String devApiKey;
@@ -83,7 +86,9 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(jwksUri).build();
+        return NimbusJwtDecoder.withJwkSetUri(jwksUri)
+            .jwsAlgorithm(org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256)
+            .build();
     }
 
     @Bean

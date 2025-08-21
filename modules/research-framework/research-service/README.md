@@ -357,4 +357,94 @@ When making significant changes to the Research Service:
 
 ---
 
+## 📋 UI vs Database Field Mapping
+
+### Compute Resources
+
+#### UI Fields (Frontend Forms)
+- `name` - Resource display name
+- `resourceDescription` - Resource description
+- `hostName` - Primary hostname
+- `computeType` - Type of compute resource (HPC, Cloud, etc.)
+- `cpuCores` - Number of CPU cores
+- `memoryGB` - Memory in gigabytes
+- `operatingSystem` - Operating system
+- `hostAliases` - Array of alternative hostnames
+- `ipAddresses` - Array of IP addresses
+- `sshPort` - SSH port number
+- `alternativeSSHHostName` - Alternative SSH hostname
+- `securityProtocol` - Security protocol (SSH_KEYS, etc.)
+- `resourceJobManagerType` - Job manager type (SLURM, PBS, etc.)
+- `dataMovementProtocol` - Data movement protocol (SCP, SFTP, etc.)
+- `queueSystem` - Queue system type
+- `resourceManager` - Resource manager name
+- `queues` - Array of queue configurations with maxNodes, maxProcessors, maxRunTime
+- `enabled` - Boolean status
+
+#### App Catalog Database Fields (airavata-api entities)
+- `computeResourceId` - Primary key UUID
+- `computeResourceDescription` - Resource description
+- `hostName` - Primary hostname
+- `hostAliases` - JSON array in description field
+- `ipAddresses` - JSON array in description field
+- `resourceJobManagerType` - From JobSubmissionInterface enum
+- `gatewayUsageReporting` - Boolean flag
+- `gatewayUsageModuleLoadCommand` - Command string
+- `gatewayUsageExecutable` - Executable path
+- `cpuCount` - CPU core count
+- `nodeCount` - Node count
+- `ppn` - Processes per node
+- `maxRunTime` - Maximum runtime
+- `memoryPerNode` - Memory per node
+- `loginUserName` - Login username
+- `scratchLocation` - Scratch directory
+- `allocationProjectNumber` - Project allocation number
+- `resourceSpecificCredentialStoreToken` - Credential token
+- `usageReportingGatewayId` - Gateway ID for reporting
+- `creationTime` - Timestamp
+- `updateTime` - Timestamp
+
+### Storage Resources
+
+#### UI Fields (Frontend Forms)
+- `name` - Storage resource name
+- `hostName` - Storage hostname
+- `storageResourceDescription` - Description
+- `storageType` - Type (S3, SFTP, etc.)
+- `capacityTB` - Storage capacity in TB
+- `accessProtocol` - Access protocol
+- `endpoint` - Storage endpoint URL
+- `supportsEncryption` - Encryption support boolean
+- `supportsVersioning` - Versioning support boolean
+- `bucketName` - S3 bucket name (S3 specific)
+- `accessKey` - Access key (S3 specific)
+- `secretKey` - Secret key (S3 specific)
+- `resourceManager` - Resource manager name
+- `enabled` - Boolean status
+
+#### App Catalog Database Fields (airavata-api entities)
+- `storageResourceId` - Primary key UUID
+- `hostName` - Storage hostname
+- `storageResourceDescription` - Description
+- `enabled` - Boolean status
+- `creationTime` - Timestamp
+- `updateTime` - Timestamp
+- DataMovementInterface relations for protocol-specific configurations
+- Storage-specific fields stored in related entities and JSON serialization
+
+### Field Mapping Strategy
+
+**Current Implementation (Post-August 2025):**
+- **Direct Field Mapping**: UI fields map directly to DTO fields which map to entity fields
+- **No JSON Injection**: Complex UI fields (arrays, objects) are handled through proper entity relationships
+- **Entity Relationships**: Uses airavata-api's JobSubmissionInterface, DataMovementInterface, BatchQueue entities
+- **Description Field**: Used only for actual descriptions, no JSON serialization
+
+**Previous Implementation (Pre-August 2025):**
+- **JSON-in-Description**: UI-specific fields were serialized as JSON in the description column
+- **Field Mismatch**: UI used deprecated field names that didn't match backend entities
+- **Workaround**: DTOConverter extracted/encoded JSON from description fields
+
+---
+
 **Apache Airavata Research Service** - Empowering scientific discovery through unified research resource management.
