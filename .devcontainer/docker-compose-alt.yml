@@ -87,8 +87,8 @@ services:
       - rabbitmq.status.exchange.name=status_exchange
       - rabbitmq.process.exchange.name=process_exchange
       - rabbitmq.experiment.exchange.name=experiment_exchange
-      - durable.queue=false
-      - prefetch.count=200
+      - rabbitmq.durable.queue=false
+      - rabbitmq.prefetch.count=200
       - zookeeper.server.connection=zookeeper:2181
       - security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
       - TLS.enabled=true

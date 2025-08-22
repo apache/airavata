@@ -51,8 +51,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
     public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process.exchange.name";
     public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
-    public static final String RABBITMQ_DURABLE_QUEUE = "durable.queue";
-    public static final String RABBITMQ_PREFETCH_COUNT = "prefetch.count";
+    public static final String RABBITMQ_DURABLE_QUEUE = "rabbitmq.durable.queue";
+    public static final String RABBITMQ_PREFETCH_COUNT = "rabbitmq.prefetch.count";
 
     // email-based monitoring configurations
     private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
