@@ -295,15 +295,15 @@ public class ApplicationSettings {
     }
 
     public static String getSuperTenantGatewayId() throws ApplicationSettingsException {
-        return getSetting("super.tenant.gatewayId");
+        return getSetting("default.gateway");
     }
 
     public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
-        return getSetting("cluster.monitor.repeat.time");
+        return getSetting("monitor.cluster.repeat.time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
-        return getSetting("cluster.monitor.enabled").equalsIgnoreCase("true");
+        return getSetting("monitor.cluster.enabled").equalsIgnoreCase("true");
     }
 
     public static String getIamServerUrl() throws ApplicationSettingsException {

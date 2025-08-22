@@ -60,13 +60,13 @@ sharing.enabled={{enable_sharing}}
 default.registry.user=admin
 default.registry.password=admin
 default.registry.password.hash.method=SHA
-default.registry.gateway={{ default_gateway }}
-super.tenant.gatewayId={{ default_gateway }}
+default.gateway={{ default_gateway }}
+default.gateway={{ default_gateway }}
 
 # Properties for cluster status monitoring
 # cluster status monitoring job repeat time in seconds
-cluster.monitor.enabled=false
-cluster.monitor.repeat.time=18000
+monitor.cluster.enabled=false
+monitor.cluster.repeat.time=18000
 
 ###########################################################################
 #  Server module Configuration
@@ -140,13 +140,13 @@ credential.store.keystore.password={{ cred_keystore_passwd }}
 monitors=org.apache.airavata.gfac.monitor.impl.pull.qstat.QstatMonitor,org.apache.airavata.gfac.monitor.impl.LocalJobMonitor
 
 #These properties will used to enable email base monitoring
-email.based.monitor.address={{ monitor_email_address }}
-email.based.monitor.password={{ monitor_email_password }}
-email.based.monitor.folder.name=INBOX
+monitor.email.address={{ monitor_email_address }}
+monitor.email.password={{ monitor_email_password }}
+monitor.email.folder.name=INBOX
 # either imaps or pop3
-email.based.monitor.store.protocol=imaps
+monitor.email.store.protocol=imaps
 #These property will be used to query the email server periodically. value in milliseconds(ms).
-email.based.monitoring.period=10000
+monitor.email.period.millis=10000
 
 ###########################################################################
 # AMQP Notification Configuration

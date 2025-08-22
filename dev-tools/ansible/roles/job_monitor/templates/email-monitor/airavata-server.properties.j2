@@ -17,21 +17,21 @@
 #
 
 #These properties will be used to enable email based monitoring
-email.based.monitor.address={{ monitor_email_address }}
-email.based.monitor.password={{ monitor_email_password }}
-email.based.monitor.folder.name=INBOX
+monitor.email.address={{ monitor_email_address }}
+monitor.email.password={{ monitor_email_password }}
+monitor.email.folder.name=INBOX
 # either imaps or pop3
-email.based.monitor.store.protocol=imaps
+monitor.email.store.protocol=imaps
 #These property will be used to query the email server periodically. value in milliseconds(ms).
-email.based.monitoring.period=10000
+monitor.email.period.millis=10000
 
 #These properties will be used to published parsed email messages to job monitor queue
 kafka.broker.url={{ job_monitor_broker_url }}
-job.monitor.broker.topic={{ job_monitor_broker_topic }}
-job.monitor.email.publisher.id={{ email_job_monitor_broker_publisher }}
+monitor.job.broker.topic={{ job_monitor_broker_topic }}
+monitor.email.broker.publisher.id={{ email_job_monitor_broker_publisher }}
 
 zookeeper.server.connection={{ zookeeper_connection_url }}
-email.expiration.minutes=60
+monitor.email.expiry.minutes=60
 
 ###########################################################################
 #  Registry Server Configurations

@@ -63,14 +63,13 @@ services:
       - airavata.jdbc.url.workflowcatalog=jdbc:mariadb://db:3306/workflow_catalog
       - start.derby.server.mode=false
       - sharing.enabled=true
+      - default.gateway=default
       - default.registry.user=default-admin
       - default.registry.password=123456
-      - default.registry.gateway=default
       - default.registry.oauth.client.id=pga
       - default.registry.oauth.client.secret=9790c8c4-7d9b-4ccc-a820-ca5aac38d2ad
-      - super.tenant.gatewayId=default
-      - cluster.monitor.enabled=false
-      - cluster.monitor.repeat.time=18000
+      - monitor.cluster.enabled=false
+      - monitor.cluster.repeat.time=18000
       - api.server.min.threads=50
       - job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
       - job.validators.enabled=true
@@ -117,7 +116,7 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
-      - pre.workflow.manager.loadbalance.clusters=false
+      - prewm.loadbalance.clusters=false
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-pre-wm/bin/pre-wm.sh"]
 
   participant:
@@ -134,7 +133,7 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
-      - realtime.monitor.enabled=false
+      - monitor.job.realtime.enabled=false
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--", "/opt/apache-airavata-participant/bin/participant.sh"]
 
   emailmonitor:
@@ -151,9 +150,9 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - api.server.port=8970
-      - email.based.monitor.host=CHANGEME
-      - email.based.monitor.address=CHANGEME
-      - email.based.monitor.password=CHANGEME
+      - monitor.email.host=CHANGEME
+      - monitor.email.address=CHANGEME
+      - monitor.email.password=CHANGEME
       - kafka.broker.url=kafka:9092
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
 
@@ -225,7 +224,7 @@ services:
       - zookeeper.server.connection=zookeeper:2181
       - api.server.host=apiserver
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
-      - post.workflow.manager.loadbalance.clusters=false
+      - postwm.loadbalance.clusters=false
       - kafka.broker.url=kafka:9092
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "rabbitmq:5672", "--",  "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-post-wm/bin/post-wm.sh"]
 

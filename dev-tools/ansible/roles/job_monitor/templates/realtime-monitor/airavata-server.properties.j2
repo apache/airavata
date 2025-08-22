@@ -19,11 +19,11 @@
 zookeeper.server.connection={{ zookeeper_connection_url }}
 
 kafka.broker.url={{ job_monitor_broker_url }}
-realtime.monitor.broker.consumer.group={{realtime_monitor_broker_consumer_group }}
-realtime.monitor.broker.topic={{ realtime_monitor_broker_topic }}
+monitor.job.realtime.broker.consumer.group={{realtime_monitor_broker_consumer_group }}
+monitor.job.realtime.broker.topic={{ realtime_monitor_broker_topic }}
 
-job.monitor.broker.topic={{ job_monitor_broker_topic }}
-job.monitor.realtime.publisher.id={{ realtime_monitor_broker_publisher }}
+monitor.job.broker.topic={{ job_monitor_broker_topic }}
+monitor.job.realtime.broker.publisher.id={{ realtime_monitor_broker_publisher }}
 
 ###########################################################################
 #  Registry Server Configurations

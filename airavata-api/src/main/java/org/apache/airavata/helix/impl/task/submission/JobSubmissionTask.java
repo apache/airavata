@@ -269,7 +269,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
 
-        if (Boolean.parseBoolean(ServerSettings.getSetting("realtime.monitor.enabled"))) {
+        if (Boolean.parseBoolean(ServerSettings.getSetting("monitor.job.realtime.enabled"))) {
             if (mapData.getPreJobCommands() == null) {
                 mapData.setPreJobCommands(new ArrayList<>());
             }
@@ -281,7 +281,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                                     + "--data '{\"records\":[{\"value\":{\"jobName\":\""
                                     + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\""
                                     + mapData.getTaskId() + "\"}}]}' \""
-                                    + ServerSettings.getSetting("job.status.publish.endpoint")
+                                    + ServerSettings.getSetting("job.notification.publish.endpoint")
                                     + "\" > /dev/null || true");
 
             if (mapData.getPostJobCommands() == null) {
@@ -292,7 +292,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                             + "-H \"Accept: application/vnd.kafka.v2+json\" "
                             + "--data '{\"records\":[{\"value\":{\"jobName\":\""
                             + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId()
-                            + "\"}}]}' \"" + ServerSettings.getSetting("job.status.publish.endpoint")
+                            + "\"}}]}' \"" + ServerSettings.getSetting("job.notification.publish.endpoint")
                             + "\" > /dev/null || true");
         }
     }

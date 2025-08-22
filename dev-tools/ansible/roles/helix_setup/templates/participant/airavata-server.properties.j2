@@ -34,9 +34,9 @@ security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityMana
 ###########################################################################
 # Monitoring module Configuration
 ###########################################################################
-email.based.monitor.host={{ monitor_email_host }}
-email.based.monitor.address={{ monitor_email_address }}
-email.based.monitor.password={{ monitor_email_password }}
+monitor.email.host={{ monitor_email_host }}
+monitor.email.address={{ monitor_email_address }}
+monitor.email.password={{ monitor_email_password }}
 job.notification.emailids=
 job.notification.enabled=true
 
@@ -45,7 +45,7 @@ job.notification.enabled=true
 ###########################################################################
 helix.cluster.name={{ helix_cluster_name }}
 helix.participant.name={{ helix_participant_name }}
-job.status.publish.endpoint={{ job_status_publish_endpoint }}
+job.notification.publish.endpoint={{ job_status_publish_endpoint }}
 
 ###########################################################################
 # AMQP Notification Configuration
@@ -76,7 +76,7 @@ data.parser.broker.publisher.id={{ parser_broker_publisher_id }}
 ###########################################################################
 # Job Submission Task Level Configurations
 ###########################################################################
-realtime.monitor.enabled=true
+monitor.job.realtime.enabled=true
 
 data.local.path={{ local_data_location }}
 

@@ -60,7 +60,7 @@ public class ParserWorkflowManager extends WorkflowManager {
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(
                 ServerSettings.getSetting("parser.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
+                Boolean.parseBoolean(ServerSettings.getSetting("postwm.loadbalance.clusters")));
     }
 
     @Override

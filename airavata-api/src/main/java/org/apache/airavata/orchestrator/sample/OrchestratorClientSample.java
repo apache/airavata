@@ -41,12 +41,7 @@ public class OrchestratorClientSample {
     private static OrchestratorService.Client orchestratorClient;
     //    private static Registry registry;
     private static int NUM_CONCURRENT_REQUESTS = 1;
-    private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
-    private static String sysUser;
-    private static String sysUserPwd;
-    private static String gateway;
+    private static final String DEFAULT_GATEWAY = "default.gateway";
     /*
 
         public static void main(String[] args) {

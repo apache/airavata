@@ -74,8 +74,8 @@ public class EmailBasedMonitor extends AbstractMonitor {
         password = ServerSettings.getEmailBasedMonitorPassword();
         storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
         folderName = ServerSettings.getEmailBasedMonitorFolderName();
-        emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
-        publisherId = ServerSettings.getSetting("job.monitor.email.publisher.id");
+        emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("monitor.email.expiry.minutes"));
+        publisherId = ServerSettings.getSetting("monitor.email.broker.publisher.id");
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new AiravataException(
                     "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);

@@ -26,11 +26,11 @@ api.server.port={{ registry_port }}
 # Helix workflow manager configurations
 ###########################################################################
 kafka.broker.url={{ job_monitor_broker_url }}
-job.monitor.broker.topic={{ job_monitor_broker_topic }}
-job.monitor.broker.consumer.group={{ job_monitor_broker_consumer_group }}
+monitor.job.broker.topic={{ job_monitor_broker_topic }}
+monitor.job.broker.consumer.group={{ job_monitor_broker_consumer_group }}
 helix.cluster.name={{ helix_cluster_name }}
-post.workflow.manager.name={{ helix_post_wm_name }}
-post.workflow.manager.loadbalance.clusters={{ helix_post_wm_load_balance_clusters }}
+postwm.name={{ helix_post_wm_name }}
+postwm.loadbalance.clusters={{ helix_post_wm_load_balance_clusters }}
 
 ###########################################################################
 # AMQP Notification Configuration

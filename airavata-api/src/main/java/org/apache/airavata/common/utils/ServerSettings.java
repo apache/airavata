@@ -26,7 +26,7 @@ public class ServerSettings extends ApplicationSettings {
 
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
-    private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_USER_GATEWAY = "default.gateway";
     private static final String ENABLE_SHARING = "sharing.enabled";
 
     // Zookeeper + curator constants
@@ -55,12 +55,12 @@ public class ServerSettings extends ApplicationSettings {
     public static final String RABBITMQ_PREFETCH_COUNT = "rabbitmq.prefetch.count";
 
     // email-based monitoring configurations
-    private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
-    private static final String EMAIL_BASED_MONITOR_HOST = "email.based.monitor.host";
-    private static final String EMAIL_BASED_MONITOR_ADDRESS = "email.based.monitor.address";
-    private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
-    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
-    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
+    private static final String EMAIL_BASED_MONITORING_PERIOD = "monitor.email.period.millis";
+    private static final String EMAIL_BASED_MONITOR_HOST = "monitor.email.host";
+    private static final String EMAIL_BASED_MONITOR_ADDRESS = "monitor.email.address";
+    private static final String EMAIL_BASED_MONITOR_PASSWORD = "monitor.email.password";
+    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "monitor.email.folder.name";
+    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "monitor.email.store.protocol";
 
     // Iam Server Constants
     public static final String IAM_SERVER_URL = "iam.server.url";
@@ -83,8 +83,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
     public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
     public static final String DATA_ANALYZER_ENABLED = "data.analyzer.enabled";
-    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
-    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
+    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.gateways";
+    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.period.seconds";
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
