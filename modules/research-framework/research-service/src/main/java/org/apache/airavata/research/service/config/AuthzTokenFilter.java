@@ -26,6 +26,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,8 +108,17 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
                     authzToken.setClaimsMap(claimsMap);
                     UserContext.setAuthzToken(authzToken);
 
-                    UserProfile userProfile = airavataService.getUserProfile(
-                            authzToken, getClaim(authzToken, USERNAME_CLAIM), getClaim(authzToken, GATEWAY_CLAIM));
+                    // Create UserProfile from JWT claims directly (no external UserProfileService needed)
+                    UserProfile userProfile = new UserProfile();
+                    userProfile.setUserId(getClaim(authzToken, USERNAME_CLAIM));
+                    userProfile.setGatewayId(getClaim(authzToken, GATEWAY_CLAIM));
+                    
+                    // Set email from JWT if available
+                    String email = getOptionalClaim(authzToken, "email");
+                    if (email != null) {
+                        userProfile.setEmails(Arrays.asList(email));
+                    }
+                    
                     UserContext.setUser(userProfile);
                 } catch (Exception e) {
                     LOGGER.error("Invalid authorization data", e);
@@ -184,5 +194,13 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("Missing '" + claimId + "' claim in the authentication token"));
+    }
+    
+    private static String getOptionalClaim(AuthzToken authzToken, String claimId) {
+        return authzToken.getClaimsMap().entrySet().stream()
+                .filter(entry -> entry.getKey().equalsIgnoreCase(claimId))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 }
