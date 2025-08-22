@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := start
 
 clean:
 	rm -rf distribution
@@ -9,5 +9,5 @@ build: clean
 extract: build
 	cd distribution && tar -xvf apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
 
-all: extract
+start: extract
 	cd distribution/apache-airavata-api-server-0.21-SNAPSHOT && ./bin/airavata.sh

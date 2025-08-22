@@ -55,7 +55,7 @@ public class ServerSettings extends ApplicationSettings {
     public static final String RABBITMQ_PREFETCH_COUNT = "rabbitmq.prefetch.count";
 
     // email-based monitoring configurations
-    private static final String EMAIL_BASED_MONITORING_PERIOD = "monitor.email.period.millis";
+    private static final String EMAIL_BASED_MONITORING_PERIOD = "monitor.email.interval.millis";
     private static final String EMAIL_BASED_MONITOR_HOST = "monitor.email.host";
     private static final String EMAIL_BASED_MONITOR_ADDRESS = "monitor.email.address";
     private static final String EMAIL_BASED_MONITOR_PASSWORD = "monitor.email.password";
@@ -80,11 +80,11 @@ public class ServerSettings extends ApplicationSettings {
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
             "metascheduler.maximum.rescheduler.threshold";
-    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
+    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval.millis";
     public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
     public static final String DATA_ANALYZER_ENABLED = "data.analyzer.enabled";
     public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.gateways";
-    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.period.seconds";
+    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.interval.seconds";
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);

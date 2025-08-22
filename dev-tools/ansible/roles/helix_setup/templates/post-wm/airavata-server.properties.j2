@@ -26,8 +26,8 @@ api.server.port={{ registry_port }}
 # Helix workflow manager configurations
 ###########################################################################
 kafka.broker.url={{ job_monitor_broker_url }}
-monitor.job.broker.topic={{ job_monitor_broker_topic }}
-monitor.job.broker.consumer.group={{ job_monitor_broker_consumer_group }}
+monitor.job.status.broker.topic={{ job_monitor_broker_topic }}
+monitor.job.status.broker.consumer.group={{ job_monitor_broker_consumer_group }}
 helix.cluster.name={{ helix_cluster_name }}
 postwm.name={{ helix_post_wm_name }}
 postwm.loadbalance.clusters={{ helix_post_wm_load_balance_clusters }}
@@ -60,6 +60,6 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 ###########################################################################
 # Platform Monitoring Configuration
 ###########################################################################
-monitoring.enabled={{ monitoring_enabled }}
-monitoring.host={{ monitoring_host }}
-monitoring.port={{ monitoring_port }}
+monitor.prometheus.enabled={{ monitoring_enabled }}
+monitor.prometheus.host={{ monitoring_host }}
+monitor.prometheus.port={{ monitoring_port }}

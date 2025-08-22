@@ -120,7 +120,7 @@ monitor.email.folder.name=INBOX
 # either imaps or pop3
 monitor.email.store.protocol=imaps
 #These property will be used to query the email server periodically. value in milliseconds(ms).
-monitor.email.period.millis=10000
+monitor.email.interval.millis=10000
 
 ###########################################################################
 # AMQP Notification Configuration
@@ -174,16 +174,16 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 ###########################################################################
 # Platform Monitoring Configuration
 ###########################################################################
-monitoring.enabled={{ monitoring_enabled }}
-monitoring.host={{ monitoring_host }}
-monitoring.port={{ monitoring_port }}
+monitor.prometheus.enabled={{ monitoring_enabled }}
+monitor.prometheus.host={{ monitoring_host }}
+monitor.prometheus.port={{ monitoring_port }}
 
 
 ###########################################################################
 # Metascheduler And Compute Resource Monitoring Configuration
 ###########################################################################
-monitor.cluster.enabled={{ cluster_monitoring_enabled }}
-monitor.cluster.repeat.time=18000
+monitor.job.submission.enabled={{ cluster_monitoring_enabled }}
+monitor.job.submission.interval.millis=18000
 metascheduler.cluster.scanning.interval={{ cluster_scanning_interval }}
 metascheduler.cluster.scanning.parallel.jobs={{ cluster_scanning_parallel_jobs }}
 
@@ -199,8 +199,8 @@ metascheduler.job.scanning.interval={{job_scanning_interval}}
 
 data.analyzer.enabled=false
 data.analyzer.gateways=dev-ultrascan
-data.analyzer.scanning.interval=3600
+data.analyzer.scanning.interval.millis=3600
 data.analyzer.scanning.parallel.jobs=1
-data.analyzer.period.seconds=5
+data.analyzer.interval.seconds=5
 
 

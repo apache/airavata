@@ -62,8 +62,8 @@ services:
       - default.registry.password=123456
       - default.registry.oauth.client.id=pga
       - default.registry.oauth.client.secret=9790c8c4-7d9b-4ccc-a820-ca5aac38d2ad
-      - monitor.cluster.enabled=false
-      - monitor.cluster.repeat.time=18000
+      - monitor.job.submission.enabled=false
+      - monitor.job.submission.interval.millis=18000
       - api.server.min.threads=50
       - job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
       - job.validators.enabled=true

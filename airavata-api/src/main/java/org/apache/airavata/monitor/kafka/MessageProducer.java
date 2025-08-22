@@ -37,13 +37,13 @@ public class MessageProducer {
 
     public MessageProducer() throws ApplicationSettingsException {
         producer = createProducer();
-        topic = ServerSettings.getSetting("monitor.job.broker.topic");
+        topic = ServerSettings.getSetting("monitor.job.status.broker.topic");
     }
 
     private Producer<String, JobStatusResult> createProducer() throws ApplicationSettingsException {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("monitor.job.broker.publisher.id"));
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("monitor.job.status.broker.publisher.id"));
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JobStatusResultSerializer.class.getName());
         return new KafkaProducer<>(props);

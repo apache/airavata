@@ -299,11 +299,7 @@ public class ApplicationSettings {
     }
 
     public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
-        return getSetting("monitor.cluster.repeat.time");
-    }
-
-    public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
-        return getSetting("monitor.cluster.enabled").equalsIgnoreCase("true");
+        return getSetting("monitor.job.submission.interval.millis");
     }
 
     public static String getIamServerUrl() throws ApplicationSettingsException {

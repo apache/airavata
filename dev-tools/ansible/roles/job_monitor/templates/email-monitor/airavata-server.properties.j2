@@ -23,11 +23,11 @@ monitor.email.folder.name=INBOX
 # either imaps or pop3
 monitor.email.store.protocol=imaps
 #These property will be used to query the email server periodically. value in milliseconds(ms).
-monitor.email.period.millis=10000
+monitor.email.interval.millis=10000
 
 #These properties will be used to published parsed email messages to job monitor queue
 kafka.broker.url={{ job_monitor_broker_url }}
-monitor.job.broker.topic={{ job_monitor_broker_topic }}
+monitor.job.status.broker.topic={{ job_monitor_broker_topic }}
 monitor.email.broker.publisher.id={{ email_job_monitor_broker_publisher }}
 
 zookeeper.server.connection={{ zookeeper_connection_url }}
