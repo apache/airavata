@@ -21,7 +21,6 @@ package org.apache.airavata.common.utils;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ public class JPAUtils {
     static {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        properties.put("hibernate.hbm2ddl.auto", "validate");
+        properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.format_sql", "true");
         DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;

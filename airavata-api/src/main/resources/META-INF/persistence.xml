@@ -29,7 +29,7 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.hbm2ddl.auto" value="none" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
     </properties>
@@ -99,7 +99,7 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.hbm2ddl.auto" value="none" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
     </properties>
@@ -114,7 +114,7 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.hbm2ddl.auto" value="none" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
     </properties>
@@ -143,7 +143,7 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.hbm2ddl.auto" value="none" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
     </properties>
@@ -201,7 +201,7 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.hbm2ddl.auto" value="none" />
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
     </properties>

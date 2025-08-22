@@ -54,7 +54,7 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     @Id
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
     @Id
     private String groupResourceProfileId;
 
