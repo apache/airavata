@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 public class SharingRegistryJDBCConfig implements JDBCConfig {
 
     private static final String SHARING_REG_JDBC_DRIVER = "airavata.jdbc.driver";
-    private static final String SHARING_REG_JDBC_URL = "airavata.jdbc.url.sharingcatalog";
+    private static final String SHARING_REG_JDBC_URL = "airavata.jdbc.url";
     private static final String SHARING_REG_JDBC_USER = "airavata.jdbc.user";
     private static final String SHARING_REG_JDBC_PWD = "airavata.jdbc.password";
     private static final String SHARING_REG_VALIDATION_QUERY = "airavata.jdbc.validationQuery";

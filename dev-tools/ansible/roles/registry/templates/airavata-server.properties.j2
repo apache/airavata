@@ -35,20 +35,10 @@ airavata.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 ## derby database configuration
 #airavata.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#airavata.jdbc.url.registry=jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata
-#airavata.jdbc.url.appcatalog=jdbc:derby://localhost:1527/app_catalog;create=true;user=airavata;password=airavata
-#airavata.jdbc.url.replicacatalog=jdbc:derby://localhost:1527/replica_catalog;create=true;user=airavata;password=airavata
-#airavata.jdbc.url.workflowcatalog=jdbc:derby://localhost:1527/workflow_catalog;create=true;user=airavata;password=airavata
-#airavata.jdbc.url.sharingcatalog=jdbc:derby://localhost:1527/sharing_catalog;create=true;user=airavata;password=airavata
-
+#airavata.jdbc.url=jdbc:derby://localhost:1527/airavata;create=true;user=airavata;password=airavata
 # maridb database configuration
 airavata.jdbc.driver=com.mysql.jdbc.Driver
-airavata.jdbc.url.registry=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
-airavata.jdbc.url.appcatalog=jdbc:mysql://{{ db_server }}:3306/{{ app_catalog }}
-airavata.jdbc.url.replicacatalog=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
-airavata.jdbc.url.workflowcatalog=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
-airavata.jdbc.url.sharingcatalog=jdbc:mysql://{{ db_server }}:3306/{{ sharing_catalog }}
-airavata.jdbc.url.credential.store=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
+airavata.jdbc.url=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/airavata
 
 ###########################################################################
 #  API Server Registry Configurations

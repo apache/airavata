@@ -31,7 +31,7 @@ public class ServerSettings extends ApplicationSettings {
 
     // Zookeeper + curator constants
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
-    private static final String CREDENTIAL_STORE_DB_URL = "airavata.jdbc.url.credential.store";
+    private static final String CREDENTIAL_STORE_DB_URL = "airavata.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "airavata.jdbc.user";
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "airavata.jdbc.password";
     private static final String CREDENTIAL_STORE_DB_DRIVER = "airavata.jdbc.driver";
@@ -39,7 +39,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final java.lang.String API_SERVER_HOST = "api.server.host";
     private static final java.lang.String API_SERVER_PORT = "api.server.port";
 
-    private static final String REGISTRY_DB_URL = "airavata.jdbc.url.registry";
+    private static final String REGISTRY_DB_URL = "airavata.jdbc.url";
     private static final String REGISTRY_DB_USER = "airavata.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD = "airavata.jdbc.password";
     private static final String REGISTRY_DB_DRIVER = "airavata.jdbc.driver";

@@ -33,7 +33,7 @@ public class ConnectionFactory {
     // static reference to itself
     private static ConnectionFactory instance;
 
-    private static final String REGISTRY_DB_URL = "airavata.jdbc.url.registry";
+    private static final String REGISTRY_DB_URL = "airavata.jdbc.url";
     private static final String REGISTRY_DB_USER = "airavata.jdbc.user";
     private static final String REGISTRY_DB_PASSWORD = "airavata.jdbc.password";
     private static final String REGISTRY_DB_DRIVER = "airavata.jdbc.driver";

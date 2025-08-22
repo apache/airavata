@@ -54,13 +54,7 @@ services:
       - airavata.jdbc.user=root
       - airavata.jdbc.password=123456
       - airavata.jdbc.validationQuery=SELECT 1 from CONFIGURATION
-      - airavata.jdbc.url.appcatalog=jdbc:mariadb://db:3306/app_catalog
-      - airavata.jdbc.url.credential.store=jdbc:mariadb://db:3306/credential_store
-      - airavata.jdbc.url.profile.service=jdbc:mariadb://db:3306/profile_service
-      - airavata.jdbc.url.registry=jdbc:mariadb://db:3306/experiment_catalog
-      - airavata.jdbc.url.replicacatalog=jdbc:mariadb://db:3306/replica_catalog
-      - airavata.jdbc.url.sharingcatalog=jdbc:mariadb://db:3306/sharing_catalog
-      - airavata.jdbc.url.workflowcatalog=jdbc:mariadb://db:3306/workflow_catalog
+      - airavata.jdbc.url=jdbc:mariadb://db:3306/airavata
       - start.derby.server.mode=false
       - sharing.enabled=true
       - default.gateway=default
