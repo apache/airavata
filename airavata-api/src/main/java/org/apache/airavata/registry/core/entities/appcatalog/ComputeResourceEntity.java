@@ -33,10 +33,11 @@ public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", nullable = false, length = 255)
     private String computeResourceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp creationTime;
 
     @Column(name = "ENABLED")
@@ -49,9 +50,9 @@ public class ComputeResourceEntity implements Serializable {
     private String gatewayUsageModuleLoadCommand;
 
     @Column(name = "GATEWAY_USAGE_REPORTING")
-    private boolean gatewayUsageReporting;
+    private Boolean gatewayUsageReporting;
 
-    @Column(name = "HOST_NAME")
+    @Column(name = "HOST_NAME", nullable = false, length = 255)
     private String hostName;
 
     @Column(name = "MAX_MEMORY_NODE")
@@ -60,7 +61,8 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updateTime;
 
     @Column(name = "CPUS_PER_NODE")
@@ -75,13 +77,21 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "DEFAULT_WALLTIME")
     private Integer defaultWalltime;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "HOST_ALIAS", joinColumns = @JoinColumn(name = "RESOURCE_ID"))
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+        name = "HOST_ALIAS",
+        joinColumns = @JoinColumn(name = "RESOURCE_ID"),
+        foreignKey = @ForeignKey(name = "host_alias_ibfk_1")
+    )
     @Column(name = "ALIAS")
     private List<String> hostAliases;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "HOST_IPADDRESS", joinColumns = @JoinColumn(name = "RESOURCE_ID"))
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+        name = "HOST_IPADDRESS",
+        joinColumns = @JoinColumn(name = "RESOURCE_ID"),
+        foreignKey = @ForeignKey(name = "host_ipaddress_ibfk_1")
+    )
     @Column(name = "IP_ADDRESS")
     private List<String> ipAddresses;
 
@@ -89,21 +99,21 @@ public class ComputeResourceEntity implements Serializable {
             targetEntity = BatchQueueEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private List<BatchQueueEntity> batchQueues;
 
     @OneToMany(
             targetEntity = JobSubmissionInterfaceEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
 
     @OneToMany(
             targetEntity = DataMovementInterfaceEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private List<DataMovementInterfaceEntity> dataMovementInterfaces;
 
     public ComputeResourceEntity() {}
@@ -132,11 +142,11 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageExecutable = gatewayUsageExecutable;
     }
 
-    public boolean isGatewayUsageReporting() {
+    public Boolean isGatewayUsageReporting() {
         return gatewayUsageReporting;
     }
 
-    public void setGatewayUsageReporting(boolean gatewayUsageReporting) {
+    public void setGatewayUsageReporting(Boolean gatewayUsageReporting) {
         this.gatewayUsageReporting = gatewayUsageReporting;
     }
 
