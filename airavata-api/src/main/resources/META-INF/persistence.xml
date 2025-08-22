@@ -21,20 +21,21 @@
 * -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
   <persistence-unit name="profile_service">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity</class>
     <class>org.apache.airavata.service.profile.commons.user.entities.NSFDemographicsEntity</class>
     <class>org.apache.airavata.service.profile.commons.user.entities.CustomizedDashboardEntity</class>
     <class>org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
@@ -97,13 +98,14 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.ConfigurationEntity</class>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
@@ -111,13 +113,14 @@
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="workflowcatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity</class>
     <class>
       org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity</class>
@@ -139,13 +142,14 @@
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowHandlerEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="experiment_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
@@ -177,13 +181,14 @@
     <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.catalog.sharing.db.entities.DomainEntity</class>
     <class>org.apache.airavata.catalog.sharing.db.entities.EntityEntity</class>
     <class>org.apache.airavata.catalog.sharing.db.entities.EntityTypeEntity</class>
@@ -195,9 +200,10 @@
     <class>org.apache.airavata.catalog.sharing.db.entities.UserGroupEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+      <property name="hibernate.hbm2ddl.auto" value="validate" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.format_sql" value="true" />
     </properties>
   </persistence-unit>
 </persistence>

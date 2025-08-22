@@ -22,8 +22,6 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the application_output database table.
@@ -75,7 +73,6 @@ public class ApplicationOutputEntity implements Serializable {
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
     @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private ApplicationInterfaceEntity applicationInterface;
 
     public ApplicationOutputEntity() {}

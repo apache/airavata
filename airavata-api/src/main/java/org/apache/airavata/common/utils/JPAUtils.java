@@ -37,28 +37,10 @@ public class JPAUtils {
 
     static {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
-        properties.put(
-                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "false"));
-        properties.put(
-                "openjpa.RuntimeUnenhancedClasses",
-                System.getProperty("openjpa.RuntimeUnenhancedClasses", "unsupported"));
-        properties.put("openjpa.RemoteCommitProvider", "sjvm");
-        properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-        // use the following to enable logging of all SQL statements
-        // properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO,
-        // SQL=TRACE");
-        properties.put("openjpa.jdbc.SynchronizeMappings", "validate");
-        properties.put("openjpa.jdbc.QuerySQLCache", "false");
-        properties.put("openjpa.DetachState", "all");
-        properties.put(
-                "openjpa.ConnectionFactoryProperties",
-                "PrettyPrint=true, PrettyPrintLineLength=72,"
-                        + " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
-        // MariaDB/MySQL dialect configuration to handle boolean to tinyint mapping
-        properties.put("openjpa.jdbc.DBDictionary", "mysql");
-        properties.put(
-                "openjpa.jdbc.MappingDefaults", "ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        properties.put("hibernate.hbm2ddl.auto", "validate");
+        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.format_sql", "true");
         DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;
     }
 
@@ -93,10 +75,13 @@ public class JPAUtils {
     }
 
     public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
-        String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + jdbcConfig.getURL()
-                + "?autoReconnect=true&tinyInt1isBit=false," + "Username=" + jdbcConfig.getUser() + "," + "Password="
-                + jdbcConfig.getPassword() + ",validationQuery=" + jdbcConfig.getValidationQuery();
-        logger.debug("Connection properties={}", connectionProperties);
-        return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
+        Map<String, String> properties = new HashMap<>();
+        properties.put("hibernate.connection.driver_class", jdbcConfig.getDriver());
+        properties.put("hibernate.connection.url", jdbcConfig.getURL() + "?autoReconnect=true&tinyInt1isBit=false");
+        properties.put("hibernate.connection.username", jdbcConfig.getUser());
+        properties.put("hibernate.connection.password", jdbcConfig.getPassword());
+        properties.put("hibernate.connection.validationQuery", jdbcConfig.getValidationQuery());
+        logger.debug("Connection properties={}", properties);
+        return properties;
     }
 }
