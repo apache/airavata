@@ -306,14 +306,6 @@ public class ApplicationSettings {
         return getSetting("cluster.monitor.enabled").equalsIgnoreCase("true");
     }
 
-    public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
-        return getSetting("scheduler.job.scanning.enabled").equalsIgnoreCase("true");
-    }
-
-    public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
-        return getSetting("data.interpreter.enabled").equalsIgnoreCase("true");
-    }
-
     public static String getIamServerUrl() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_URL);
     }

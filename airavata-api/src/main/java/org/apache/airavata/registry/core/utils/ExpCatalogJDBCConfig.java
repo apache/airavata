@@ -24,11 +24,11 @@ import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class ExpCatalogJDBCConfig implements JDBCConfig {
-    private static final String EXPCATALOG_JDBC_DRIVER = "registry.jdbc.driver";
-    private static final String EXPCATALOG_JDBC_URL = "registry.jdbc.url";
-    private static final String EXPCATALOG_JDBC_USER = "registry.jdbc.user";
-    private static final String EXPCATALOG_JDBC_PWD = "registry.jdbc.password";
-    private static final String EXPCATALOG_VALIDATION_QUERY = "validationQuery";
+    private static final String EXPCATALOG_JDBC_DRIVER = "airavata.jdbc.driver";
+    private static final String EXPCATALOG_JDBC_URL = "airavata.jdbc.url.registry";
+    private static final String EXPCATALOG_JDBC_USER = "airavata.jdbc.user";
+    private static final String EXPCATALOG_JDBC_PWD = "airavata.jdbc.password";
+    private static final String EXPCATALOG_VALIDATION_QUERY = "airavata.jdbc.validationQuery";
 
     @Override
     public String getURL() {

@@ -30,20 +30,19 @@ public class ServerSettings extends ApplicationSettings {
     private static final String ENABLE_SHARING = "sharing.enabled";
 
     // Zookeeper + curator constants
-    public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
-    private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
-    private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
-    private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
-    private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
+    private static final String CREDENTIAL_STORE_DB_URL = "airavata.jdbc.url.credential.store";
+    private static final String CREDENTIAL_STORE_DB_USER = "airavata.jdbc.user";
+    private static final String CREDENTIAL_STORE_DB_PASSWORD = "airavata.jdbc.password";
+    private static final String CREDENTIAL_STORE_DB_DRIVER = "airavata.jdbc.driver";
 
     private static final java.lang.String API_SERVER_HOST = "api.server.host";
     private static final java.lang.String API_SERVER_PORT = "api.server.port";
 
-    private static final String REGISTRY_DB_URL = "registry.jdbc.url";
-    private static final String REGISTRY_DB_USER = "registry.jdbc.user";
-    private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
-    private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
+    private static final String REGISTRY_DB_URL = "airavata.jdbc.url.registry";
+    private static final String REGISTRY_DB_USER = "airavata.jdbc.user";
+    private static final String REGISTRY_DB_PASSWORD = "airavata.jdbc.password";
+    private static final String REGISTRY_DB_DRIVER = "airavata.jdbc.driver";
     private static final String HOST_SCHEDULER = "host.scheduler";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enabled";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
@@ -75,14 +74,15 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
     public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
     public static final String METASCHEDULER_USERNAME = "metascheduler.username";
-    public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "cluster.scanning.interval";
-    public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "job.scanning.interval";
-    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
+    public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "metascheduler.job.scanning.interval";
+    public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "metascheduler.cluster.scanning.interval";
+    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "metascheduler.cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
             "metascheduler.maximum.rescheduler.threshold";
     public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
     public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
+    public static final String DATA_ANALYZER_ENABLED = "data.analyzer.enabled";
     public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
     public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
 
@@ -170,10 +170,6 @@ public class ServerSettings extends ApplicationSettings {
         ServerSettings.stopAllThreads = stopAllThreads;
     }
 
-    public static boolean isEmbeddedZK() {
-        return Boolean.parseBoolean(getSetting(EMBEDDED_ZK, "true"));
-    }
-
     public static int getEmailMonitorPeriod() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(EMAIL_BASED_MONITORING_PERIOD, "100000"));
     }
@@ -245,7 +241,7 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static int getCacheSize() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
+        return Integer.parseInt(getSetting(Constants.AUTHZ_CACHE_SIZE));
     }
 
     public static String getLocalDataLocation() {
@@ -290,6 +286,10 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getMetaschedulerUsername() throws ApplicationSettingsException {
         return getSetting(METASCHEDULER_USERNAME, "");
+    }
+
+    public static Boolean getDataAnalyzerEnabled() throws ApplicationSettingsException {
+        return getSetting(DATA_ANALYZER_ENABLED).equalsIgnoreCase("true");
     }
 
     public static String getDataAnalyzingEnabledGateways() throws ApplicationSettingsException {

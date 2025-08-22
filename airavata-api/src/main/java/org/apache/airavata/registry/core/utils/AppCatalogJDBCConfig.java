@@ -24,11 +24,11 @@ import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class AppCatalogJDBCConfig implements JDBCConfig {
-    private static final String APPCATALOG_JDBC_DRIVER = "appcatalog.jdbc.driver";
-    private static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
-    private static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
-    private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
-    private static final String APPCATALOG_JDBC_VALIDATION_QUERY = "appcatalog.validationQuery";
+    private static final String APPCATALOG_JDBC_DRIVER = "airavata.jdbc.driver";
+    private static final String APPCATALOG_JDBC_URL = "airavata.jdbc.url.appcatalog";
+    private static final String APPCATALOG_JDBC_USER = "airavata.jdbc.user";
+    private static final String APPCATALOG_JDBC_PWD = "airavata.jdbc.password";
+    private static final String APPCATALOG_JDBC_VALIDATION_QUERY = "airavata.jdbc.validationQuery";
 
     @Override
     public String getURL() {

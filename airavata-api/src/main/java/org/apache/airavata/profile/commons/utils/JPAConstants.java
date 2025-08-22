@@ -20,9 +20,9 @@
 package org.apache.airavata.profile.commons.utils;
 
 public class JPAConstants {
-    public static final String KEY_JDBC_URL = "profile.service.jdbc.url";
-    public static final String KEY_JDBC_USER = "profile.service.jdbc.user";
-    public static final String KEY_JDBC_PASSWORD = "profile.service.jdbc.password";
-    public static final String KEY_JDBC_DRIVER = "profile.service.jdbc.driver";
-    public static final String VALIDATION_QUERY = "profile.service.validationQuery";
+    public static final String KEY_JDBC_URL = "airavata.jdbc.url.profile.service";
+    public static final String KEY_JDBC_USER = "airavata.jdbc.user";
+    public static final String KEY_JDBC_PASSWORD = "airavata.jdbc.password";
+    public static final String KEY_JDBC_DRIVER = "airavata.jdbc.driver";
+    public static final String VALIDATION_QUERY = "airavata.jdbc.validationQuery";
 }

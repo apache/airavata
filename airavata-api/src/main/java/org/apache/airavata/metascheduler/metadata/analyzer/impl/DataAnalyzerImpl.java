@@ -40,6 +40,10 @@ public class DataAnalyzerImpl implements DataAnalyzer {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            if (!ServerSettings.getDataAnalyzerEnabled()) {
+                LOGGER.debug("Data Analyzer is not enabled");
+                return;
+            }
             LOGGER.debug("Executing Data Analyzer ....... ");
             String gateway = ServerSettings.getDataAnalyzingEnabledGateways();
 

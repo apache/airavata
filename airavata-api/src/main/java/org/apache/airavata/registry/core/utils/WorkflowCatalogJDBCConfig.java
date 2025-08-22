@@ -24,11 +24,11 @@ import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class WorkflowCatalogJDBCConfig implements JDBCConfig {
-    private static final String WORKFLOW_CATALOG_JDBC_DRIVER = "workflowcatalog.jdbc.driver";
-    private static final String WORKFLOW_CATALOG_JDBC_URL = "workflowcatalog.jdbc.url";
-    private static final String WORKFLOW_CATALOG_JDBC_USER = "workflowcatalog.jdbc.user";
-    private static final String WORKFLOW_CATALOG_JDBC_PASSWORD = "workflowcatalog.jdbc.password";
-    private static final String WORKFLOW_CATALOG_VALIDATION_QUERY = "workflowcatalog.validationQuery";
+    private static final String WORKFLOW_CATALOG_JDBC_DRIVER = "airavata.jdbc.driver";
+    private static final String WORKFLOW_CATALOG_JDBC_URL = "airavata.jdbc.url.workflowcatalog";
+    private static final String WORKFLOW_CATALOG_JDBC_USER = "airavata.jdbc.user";
+    private static final String WORKFLOW_CATALOG_JDBC_PASSWORD = "airavata.jdbc.password";
+    private static final String WORKFLOW_CATALOG_VALIDATION_QUERY = "airavata.jdbc.validationQuery";
 
     @Override
     public String getURL() {
