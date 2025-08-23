@@ -40,7 +40,7 @@ public class EntityTypePK implements Serializable {
         this.entityTypeId = entityTypeId;
     }
 
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     @Id
     public String getDomainId() {
         return domainId;

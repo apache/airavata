@@ -40,7 +40,7 @@ public class UserGroupPK implements Serializable {
         this.groupId = groupId;
     }
 
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     @Id
     public String getDomainId() {
         return domainId;

@@ -20,14 +20,11 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "SHARING", schema = "")
+@Table(name = "SHARING", options = "DEFAULT CHARSET=latin1 COLLATE=latin1_bin")
 @IdClass(SharingPK.class)
 public class SharingEntity {
-    private static final Logger logger = LoggerFactory.getLogger(SharingEntity.class);
     private String permissionTypeId;
     private String entityId;
     private String groupId;
@@ -38,7 +35,7 @@ public class SharingEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "PERMISSION_TYPE_ID")
+    @Column(name = "PERMISSION_TYPE_ID", length = 50)
     public String getPermissionTypeId() {
         return permissionTypeId;
     }
@@ -78,7 +75,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }

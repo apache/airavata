@@ -41,7 +41,7 @@ public class TaskEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private TaskTypes taskType;
 
-    @Column(name = "PARENT_PROCESS_ID", insertable = false, updatable = false)
+    @Column(name = "PARENT_PROCESS_ID")
     private String parentProcessId;
 
     @Column(name = "CREATION_TIME")
@@ -50,12 +50,10 @@ public class TaskEntity implements Serializable {
     @Column(name = "LAST_UPDATE_TIME")
     private Timestamp lastUpdateTime;
 
-    @Lob
-    @Column(name = "TASK_DETAIL")
+    @Column(name = "TASK_DETAIL", columnDefinition = "TEXT")
     private String taskDetail;
 
-    @Lob
-    @Column(name = "SUB_TASK_MODEL")
+    @Column(name = "SUB_TASK_MODEL", columnDefinition = "LONGBLOB")
     private byte[] subTaskModel;
 
     @OneToMany(
@@ -77,7 +75,7 @@ public class TaskEntity implements Serializable {
     private List<JobEntity> jobs;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false, insertable = false)
     private ProcessEntity process;
 
     public TaskEntity() {}

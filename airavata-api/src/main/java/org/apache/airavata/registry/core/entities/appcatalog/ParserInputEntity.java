@@ -37,11 +37,11 @@ public class ParserInputEntity implements Serializable {
     @Column(name = "PARSER_INPUT_REQUIRED")
     private boolean requiredInput;
 
-    @Column(name = "PARSER_ID", insertable = false, updatable = false)
+    @Column(name = "PARSER_ID")
     private String parserId;
 
     @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_ID")
+    @JoinColumn(name = "PARSER_ID", insertable = false, updatable = false)
     private ParserEntity parser;
 
     @Column(name = "INPUT_TYPE")

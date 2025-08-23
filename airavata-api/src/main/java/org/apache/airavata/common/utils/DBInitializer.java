@@ -20,44 +20,38 @@
 package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DBInitializer {
     private static final Logger logger = LoggerFactory.getLogger(DBInitializer.class);
 
-    private JDBCConfig jdbcConfig;
-    private String initScriptPrefix;
-    private String checkTableName;
-
-    public DBInitializer(JDBCConfig jdbcConfig, String initScriptPrefix, String checkTableName) {
-        this.jdbcConfig = jdbcConfig;
-        this.initScriptPrefix = initScriptPrefix;
-        this.checkTableName = checkTableName;
+    public static void initializeDB(List<DBInitConfig> dbInitConfigs) {
+        for (var dbInitConfig : dbInitConfigs) {
+            initializeDB(dbInitConfig);
+        }
     }
 
     public static void initializeDB(DBInitConfig dbInitConfig) {
+        var jdbcConfig = dbInitConfig.getJDBCConfig();
+        var initScriptPrefix = dbInitConfig.getDBInitScriptPrefix();
+        var checkTableName = dbInitConfig.getCheckTableName();
 
-        JDBCConfig jdbcConfig = dbInitConfig.getJDBCConfig();
-        DBInitializer dbInitializer =
-                new DBInitializer(jdbcConfig, dbInitConfig.getDBInitScriptPrefix(), dbInitConfig.getCheckTableName());
-        dbInitializer.initializeDB();
-        dbInitConfig.postInit();
-    }
-
-    public void initializeDB() {
         // Create connection
         Connection conn = null;
         try {
-            DBUtil dbUtil = new DBUtil(jdbcConfig);
+            var dbUtil = new DBUtil(jdbcConfig);
             conn = dbUtil.getConnection();
-            if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
-                DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
-                logger.info("New Database created from " + initScriptPrefix + " !!!");
+            if (!DatabaseCreator.doesTableExist(checkTableName, conn)) {
+              logger.info("Check failed, table: " + checkTableName + " not exists. Executing init script: " + initScriptPrefix);
+              DatabaseCreator.initializeTables(initScriptPrefix, conn);
+              logger.info("Executed init script: " + initScriptPrefix);
             } else {
-                logger.info("Table " + checkTableName + " already exists. Skipping database init script "
-                        + initScriptPrefix);
+              logger.info("Check passed, table: " + checkTableName + " exists. Skipping init script: " + initScriptPrefix);
             }
+            conn.commit();
 
         } catch (Exception e) {
             String message = "Failed to initialize database for " + initScriptPrefix;

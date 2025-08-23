@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PermissionTypeRepository
-        extends AbstractRepository<PermissionType, PermissionTypeEntity, PermissionTypePK> {
+        extends AbstractSharingRepository<PermissionType, PermissionTypeEntity, PermissionTypePK> {
     private static final Logger logger = LoggerFactory.getLogger(PermissionTypeRepository.class);
 
     public PermissionTypeRepository() {

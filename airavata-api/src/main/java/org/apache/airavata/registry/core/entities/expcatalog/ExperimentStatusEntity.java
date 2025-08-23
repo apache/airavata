@@ -48,12 +48,11 @@ public class ExperimentStatusEntity implements Serializable {
     @Column(name = "TIME_OF_STATE_CHANGE")
     private Timestamp timeOfStateChange;
 
-    @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "TEXT")
     private String reason;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false, insertable = false)
     private ExperimentEntity experiment;
 
     public ExperimentStatusEntity() {}

@@ -40,7 +40,7 @@ public class UserPK implements Serializable {
         this.userId = userId;
     }
 
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     @Id
     public String getDomainId() {
         return domainId;

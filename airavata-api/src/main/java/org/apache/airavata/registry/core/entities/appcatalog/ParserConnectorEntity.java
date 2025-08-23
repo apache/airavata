@@ -32,13 +32,13 @@ public class ParserConnectorEntity implements Serializable {
     @Column(name = "PARSER_CONNECTOR_ID")
     private String id;
 
-    @Column(name = "PARENT_PARSER_ID", insertable = false, updatable = false)
+    @Column(name = "PARENT_PARSER_ID")
     private String parentParserId;
 
-    @Column(name = "CHILD_PARSER_ID", insertable = false, updatable = false)
+    @Column(name = "CHILD_PARSER_ID")
     private String childParserId;
 
-    @Column(name = "PARSING_TEMPLATE_ID", insertable = false, updatable = false)
+    @Column(name = "PARSING_TEMPLATE_ID")
     private String parsingTemplateId;
 
     @OneToMany(
@@ -50,15 +50,15 @@ public class ParserConnectorEntity implements Serializable {
     private List<ParserConnectorInputEntity> connectorInputs;
 
     @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARENT_PARSER_ID")
+    @JoinColumn(name = "PARENT_PARSER_ID", insertable = false, updatable = false)
     private ParserEntity parentParser;
 
     @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "CHILD_PARSER_ID")
+    @JoinColumn(name = "CHILD_PARSER_ID", insertable = false, updatable = false)
     private ParserEntity childParser;
 
     @ManyToOne(targetEntity = ParsingTemplateEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSING_TEMPLATE_ID")
+    @JoinColumn(name = "PARSING_TEMPLATE_ID", insertable = false, updatable = false)
     private ParsingTemplateEntity parsingTemplate;
 
     public String getId() {

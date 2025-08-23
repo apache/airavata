@@ -33,7 +33,7 @@ public class ParallelismCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false)
+    @Column(name = "RESOURCE_JOB_MANAGER_ID")
     private String resourceJobManagerId;
 
     @Id
@@ -45,7 +45,7 @@ public class ParallelismCommandEntity implements Serializable {
     private String command;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false)
     private ResourceJobManagerEntity resourceJobManager;
 
     public ParallelismCommandEntity() {}

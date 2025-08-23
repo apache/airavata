@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.profile.commons.user.entities.UserProfileEntity;
-import org.apache.airavata.profile.commons.utils.JPAUtils;
+import org.apache.airavata.profile.commons.utils.ProfileSvcJPAUtils;
 import org.apache.airavata.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.profile.commons.utils.QueryConstants;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
         Mapper mapper = ObjectMapperSingleton.getInstance();
         UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
-        UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
+        UserProfileEntity persistedCopy = ProfileSvcJPAUtils.execute(entityManager -> {
             UserProfileEntity result = entityManager.merge(entity);
             if (postUpdateAction != null) {
                 postUpdateAction.run();

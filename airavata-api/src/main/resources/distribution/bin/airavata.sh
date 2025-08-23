@@ -21,5 +21,5 @@
 
 SERVICE_NAME="airavata-api"
 MAIN_CLASS="org.apache.airavata.Main"
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dlog4j2.messageFactory=org.apache.logging.log4j.message.ParameterizedMessageFactory"
 run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

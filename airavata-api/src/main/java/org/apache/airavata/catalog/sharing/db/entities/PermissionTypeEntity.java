@@ -20,14 +20,11 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "PERMISSION_TYPE", schema = "")
+@Table(name = "PERMISSION_TYPE")
 @IdClass(PermissionTypePK.class)
 public class PermissionTypeEntity {
-    private static final Logger logger = LoggerFactory.getLogger(PermissionTypeEntity.class);
     private String permissionTypeId;
     private String domainId;
     private String name;
@@ -36,7 +33,7 @@ public class PermissionTypeEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "PERMISSION_TYPE_ID")
+    @Column(name = "PERMISSION_TYPE_ID", length = 50)
     public String getPermissionTypeId() {
         return permissionTypeId;
     }
@@ -46,7 +43,7 @@ public class PermissionTypeEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }

@@ -27,9 +27,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
@@ -39,7 +36,6 @@ import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
 import org.apache.airavata.model.credential.store.*;
@@ -47,11 +43,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import sun.security.provider.X509Factory;
 
 public class CredentialStoreServerHandler implements CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
-    private DBUtil dbUtil;
     private SSHCredentialWriter sshCredentialWriter;
     private CertificateCredentialWriter certificateCredentialWriter;
     private CredentialReaderImpl credentialReader;
@@ -59,19 +53,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     public CredentialStoreServerHandler()
             throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
                     SQLException, IOException {
-        String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-        String userName = ServerSettings.getCredentialStoreDBUser();
-        String password = ServerSettings.getCredentialStoreDBPassword();
-        String driverName = ServerSettings.getCredentialStoreDBDriver();
-
-        log.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName
-                + " driver name - " + driverName);
-        DBInitializer.initializeDB(new CredentialStoreDBInitConfig());
-
-        dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
-        sshCredentialWriter = new SSHCredentialWriter(dbUtil);
-        certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
-        credentialReader = new CredentialReaderImpl(dbUtil);
+        sshCredentialWriter = new SSHCredentialWriter();
+        certificateCredentialWriter = new CertificateCredentialWriter();
+        credentialReader = new CredentialReaderImpl();
     }
 
     @Override

@@ -30,10 +30,9 @@ import java.sql.Connection;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.repository.CredentialsRepository;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class SSHSummaryTest extends DatabaseTestCases {
     private static final Logger logger = LoggerFactory.getLogger(SSHSummaryTest.class);
 
-    private CredentialsDAO credentialsDAO;
+    private CredentialsRepository credentialsRepository;
 
     private X509Certificate[] x509Certificates;
     private PrivateKey privateKey;
@@ -96,7 +95,7 @@ public class SSHSummaryTest extends DatabaseTestCases {
     @BeforeEach
     public void setUp() throws Exception {
 
-        credentialsDAO = new CredentialsDAO();
+        credentialsRepository = new CredentialsRepository();
 
         x509Certificates = new X509Certificate[1];
 
@@ -152,15 +151,10 @@ public class SSHSummaryTest extends DatabaseTestCases {
     //    @Test Change the properties in ServerProperties file and give the correct path to run the test
     public void testSSHSummary() throws Exception {
         try {
-            String jdbcURL = ServerSettings.getCredentialStoreDBURL();
-            String jdbcDriver = ServerSettings.getCredentialStoreDBDriver();
-            String userName = ServerSettings.getCredentialStoreDBUser();
-            String password = ServerSettings.getCredentialStoreDBPassword();
             String gatewayId = "phasta";
             String privateKeyPath = "/home/abhandar/Documents/Airavata/keys/id_rsa_airavata";
             String pubKeyPath = "/home/abhandar/Documents/Airavata/keys/id_rsa_airavata.pub";
-            DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
-            SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
+            SSHCredentialWriter writer = new SSHCredentialWriter();
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);

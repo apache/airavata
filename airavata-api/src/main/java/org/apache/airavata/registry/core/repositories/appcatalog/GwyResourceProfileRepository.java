@@ -34,14 +34,10 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.GwyResourceProfile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GwyResourceProfileRepository
         extends AppCatAbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>
         implements GwyResourceProfile {
-
-    private static final Logger logger = LoggerFactory.getLogger(GwyResourceProfileRepository.class);
 
     public GwyResourceProfileRepository() {
         super(GatewayResourceProfile.class, GatewayProfileEntity.class);

@@ -32,6 +32,7 @@
     <logger name="org.apache.zookeeper" level="ERROR" />
     <logger name="org.apache.airavata" level="INFO" />
     <logger name="org.hibernate" level="ERROR" />
+    <logger name="org.apache.commons.beanutils.converters" level="ERROR" />
     <Root level="INFO">
       <AppenderRef ref="Console" />
     </Root>

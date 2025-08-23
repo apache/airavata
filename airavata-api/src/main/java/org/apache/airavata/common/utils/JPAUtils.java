@@ -32,16 +32,6 @@ import org.slf4j.LoggerFactory;
 public class JPAUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JPAUtils.class);
-    private static final Map<String, String> DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES;
-
-    static {
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        properties.put("hibernate.hbm2ddl.auto", "none");
-        properties.put("hibernate.show_sql", "false");
-        properties.put("hibernate.format_sql", "true");
-        DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;
-    }
 
     /**
      * Create an {@link EntityManagerFactory} with the default settings.
@@ -51,32 +41,14 @@ public class JPAUtils {
      * @return {@link EntityManagerFactory}
      */
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, JDBCConfig jdbcConfig) {
-
-        return getEntityManagerFactory(persistenceUnitName, jdbcConfig, DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
-    }
-
-    /**
-     * Create an {@link EntityManagerFactory}. The given properties will override
-     * the default properties.
-     *
-     * @param persistenceUnitName
-     * @param jdbcConfig
-     * @param properties
-     * @return {@link EntityManagerFactory}
-     */
-    public static EntityManagerFactory getEntityManagerFactory(
-            String persistenceUnitName, JDBCConfig jdbcConfig, Map<String, String> properties) {
-
-        Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
-        finalProperties.putAll(createConnectionProperties(jdbcConfig));
-        finalProperties.putAll(properties);
-        return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
+        var properties = createConnectionProperties(jdbcConfig);
+        return Persistence.createEntityManagerFactory(persistenceUnitName, properties);
     }
 
     public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
-        Map<String, String> properties = new HashMap<>();
+        var properties = new HashMap<String, String>();
         properties.put("hibernate.connection.driver_class", jdbcConfig.getDriver());
-        properties.put("hibernate.connection.url", jdbcConfig.getURL() + "?autoReconnect=true&tinyInt1isBit=false");
+        properties.put("hibernate.connection.url", jdbcConfig.getURL());
         properties.put("hibernate.connection.username", jdbcConfig.getUser());
         properties.put("hibernate.connection.password", jdbcConfig.getPassword());
         properties.put("hibernate.connection.validationQuery", jdbcConfig.getValidationQuery());

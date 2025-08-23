@@ -22,19 +22,23 @@ package org.apache.airavata.profile.commons.utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.JPAUtils;
 
-public class JPAUtils {
+public class ProfileSvcJPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "profile_service";
     private static final JDBCConfig JDBC_CONFIG = new ProfileServiceJDBCConfig();
-    private static final EntityManagerFactory factory =
-            org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static EntityManager entityManagerInstance = null;
 
-    public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+    public static synchronized EntityManager getEntityManager() {
+        if (entityManagerInstance == null || !entityManagerInstance.isOpen()) {
+            entityManagerInstance = factory.createEntityManager();
+        }
+        return entityManagerInstance;
     }
 
     public static <R> R execute(Committer<EntityManager, R> committer) {
-        EntityManager entityManager = JPAUtils.getEntityManager();
+        EntityManager entityManager = getEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
@@ -45,7 +49,6 @@ public class JPAUtils {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
             }
         }
     }

@@ -21,6 +21,6 @@
 
 SERVICE_NAME="rest-proxy"
 MAIN_CLASS="org.apache.airavata.restproxy.RestProxyApplication"
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dspring.config.location=${AIRAVATA_HOME}/conf/"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml -Dlog4j2.messageFactory=org.apache.logging.log4j.message.ParameterizedMessageFactory -Dspring.config.location=${AIRAVATA_HOME}/conf/"
 
 run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

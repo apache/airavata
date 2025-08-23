@@ -20,14 +20,12 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "ENTITY", schema = "")
+@Table(name = "ENTITY")
 @IdClass(EntityPK.class)
 public class EntityEntity {
-    private static final Logger logger = LoggerFactory.getLogger(EntityEntity.class);
+
     private String entityId;
     private String domainId;
     private String entityTypeId;
@@ -53,7 +51,7 @@ public class EntityEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }
@@ -112,8 +110,7 @@ public class EntityEntity {
         this.description = description;
     }
 
-    @Lob
-    @Column(name = "BINARY_DATA")
+    @Column(name = "BINARY_DATA", columnDefinition = "LONGBLOB")
     public byte[] getBinaryData() {
         return binaryData;
     }

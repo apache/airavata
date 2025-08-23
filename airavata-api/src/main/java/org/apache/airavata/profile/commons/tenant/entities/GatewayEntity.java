@@ -21,13 +21,11 @@ package org.apache.airavata.profile.commons.tenant.entities;
 
 import jakarta.persistence.*;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "GATEWAY")
+@Table(name = "GATEWAY_ENTITY")
 public class GatewayEntity {
-    private static final Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
+
     private String airavataInternalGatewayId;
     private String gatewayId;
     private String gatewayName;

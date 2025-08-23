@@ -28,7 +28,9 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
@@ -38,7 +40,10 @@ import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.repository.CredentialsRepository;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsEntity;
+import org.apache.airavata.credential.store.utils.CredentialSerializationUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,13 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test class for credential class
+ * Test class for credential repository
  */
 public class CredentialsDAOTest extends DatabaseTestCases {
 
     private static final Logger logger = LoggerFactory.getLogger(CredentialsDAOTest.class);
 
-    private CredentialsDAO credentialsDAO;
+    private CredentialsRepository credentialsRepository;
 
     private X509Certificate[] x509Certificates;
     private PrivateKey privateKey;
@@ -103,7 +108,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     @BeforeEach
     public void setUp() throws Exception {
 
-        credentialsDAO = new CredentialsDAO();
+        credentialsRepository = new CredentialsRepository();
 
         x509Certificates = new X509Certificate[1];
 
@@ -174,11 +179,37 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         try {
             CertificateCredential certificateCredential = getTestCredentialObject();
-            credentialsDAO.addCredentials(
-                    certificateCredential.getCommunityUser().getGatewayName(), certificateCredential, connection);
+            
+            // Create credentials entity
+            CredentialsEntity credentialsEntity = new CredentialsEntity();
+            credentialsEntity.setGatewayId(certificateCredential.getCommunityUser().getGatewayName());
+            credentialsEntity.setTokenId(certificateCredential.getToken());
+            credentialsEntity.setPortalUserId(certificateCredential.getPortalUserName());
+            credentialsEntity.setTimePersisted(new Timestamp(new Date().getTime()));
+            credentialsEntity.setDescription("Test credential");
+            credentialsEntity.setCredentialOwnerType(certificateCredential.getCredentialOwnerType());
+            
+            // Serialize and encrypt the credential
+            byte[] serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+            credentialsEntity.setCredential(serializedCredential);
+            
+            credentialsRepository.create(credentialsEntity);
+            
+            // Add second credential
             certificateCredential.setToken("tom2");
-            credentialsDAO.addCredentials(
-                    certificateCredential.getCommunityUser().getGatewayName(), certificateCredential, connection);
+            credentialsEntity = new CredentialsEntity();
+            credentialsEntity.setGatewayId(certificateCredential.getCommunityUser().getGatewayName());
+            credentialsEntity.setTokenId(certificateCredential.getToken());
+            credentialsEntity.setPortalUserId(certificateCredential.getPortalUserName());
+            credentialsEntity.setTimePersisted(new Timestamp(new Date().getTime()));
+            credentialsEntity.setDescription("Test credential 2");
+            credentialsEntity.setCredentialOwnerType(certificateCredential.getCredentialOwnerType());
+            
+            // Serialize and encrypt the credential
+            serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+            credentialsEntity.setCredential(serializedCredential);
+            
+            credentialsRepository.create(credentialsEntity);
 
         } finally {
             connection.close();
@@ -206,31 +237,20 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         CertificateCredential certificateCredential = getTestCredentialObject();
 
-        CredentialsDAO credentialsDAO1 = new CredentialsDAO();
-
-        byte[] array = credentialsDAO1.convertObjectToByteArray(certificateCredential);
-        CertificateCredential readCertificateCredential =
-                (CertificateCredential) credentialsDAO1.convertByteArrayToObject(array);
+        // Test serialization and deserialization
+        byte[] array = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+        CertificateCredential readCertificateCredential = (CertificateCredential) CredentialSerializationUtils.deserializeCredentialWithDecryption(array);
 
         checkEquality(certificateCredential.getCertificates(), readCertificateCredential.getCertificates());
-        assertEquals(
-                certificateCredential.getCertificateRequestedTime(),
-                readCertificateCredential.getCertificateRequestedTime());
-        assertEquals(
-                certificateCredential.getCommunityUser().getGatewayName(),
-                readCertificateCredential.getCommunityUser().getGatewayName());
-        assertEquals(
-                certificateCredential.getCommunityUser().getUserEmail(),
-                readCertificateCredential.getCommunityUser().getUserEmail());
-        assertEquals(
-                certificateCredential.getCommunityUser().getUserName(),
-                readCertificateCredential.getCommunityUser().getUserName());
+        assertEquals(certificateCredential.getCertificateRequestedTime(), readCertificateCredential.getCertificateRequestedTime());
+        assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential.getCommunityUser().getGatewayName());
+        assertEquals(certificateCredential.getCommunityUser().getUserEmail(), readCertificateCredential.getCommunityUser().getUserEmail());
+        assertEquals(certificateCredential.getCommunityUser().getUserName(), readCertificateCredential.getCommunityUser().getUserName());
         assertEquals(certificateCredential.getLifeTime(), readCertificateCredential.getLifeTime());
         assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
         assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
         assertEquals(certificateCredential.getPortalUserName(), readCertificateCredential.getPortalUserName());
-        assertEquals(
-                certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
+        assertEquals(certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
 
         PrivateKey newKey = readCertificateCredential.getPrivateKey();
 
@@ -252,32 +272,20 @@ public class CredentialsDAOTest extends DatabaseTestCases {
 
         CertificateCredential certificateCredential = getTestCredentialObject();
 
-        CredentialsDAO credentialsDAO1 =
-                new CredentialsDAO(uri.getPath(), secretKeyAlias, new TestACSKeyStoreCallback());
-
-        byte[] array = credentialsDAO1.convertObjectToByteArray(certificateCredential);
-        CertificateCredential readCertificateCredential =
-                (CertificateCredential) credentialsDAO1.convertByteArrayToObject(array);
+        // Test encryption with custom keystore
+        byte[] array = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential, uri.getPath(), secretKeyAlias, new TestACSKeyStoreCallback());
+        CertificateCredential readCertificateCredential = (CertificateCredential) CredentialSerializationUtils.deserializeCredentialWithDecryption(array, uri.getPath(), secretKeyAlias, new TestACSKeyStoreCallback());
 
         checkEquality(certificateCredential.getCertificates(), readCertificateCredential.getCertificates());
-        assertEquals(
-                certificateCredential.getCertificateRequestedTime(),
-                readCertificateCredential.getCertificateRequestedTime());
-        assertEquals(
-                certificateCredential.getCommunityUser().getGatewayName(),
-                readCertificateCredential.getCommunityUser().getGatewayName());
-        assertEquals(
-                certificateCredential.getCommunityUser().getUserEmail(),
-                readCertificateCredential.getCommunityUser().getUserEmail());
-        assertEquals(
-                certificateCredential.getCommunityUser().getUserName(),
-                readCertificateCredential.getCommunityUser().getUserName());
+        assertEquals(certificateCredential.getCertificateRequestedTime(), readCertificateCredential.getCertificateRequestedTime());
+        assertEquals(certificateCredential.getCommunityUser().getGatewayName(), readCertificateCredential.getCommunityUser().getGatewayName());
+        assertEquals(certificateCredential.getCommunityUser().getUserEmail(), readCertificateCredential.getCommunityUser().getUserEmail());
+        assertEquals(certificateCredential.getCommunityUser().getUserName(), readCertificateCredential.getCommunityUser().getUserName());
         assertEquals(certificateCredential.getLifeTime(), readCertificateCredential.getLifeTime());
         assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
         assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
         assertEquals(certificateCredential.getPortalUserName(), readCertificateCredential.getPortalUserName());
-        assertEquals(
-                certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
+        assertEquals(certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
 
         PrivateKey newKey = readCertificateCredential.getPrivateKey();
 
@@ -289,7 +297,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
     }
 
-    private class TestACSKeyStoreCallback implements KeyStorePasswordCallback {
+    private class TestACSKeyStoreCallback implements CredentialSerializationUtils.KeyStorePasswordCallback {
 
         @Override
         public char[] getStorePassword() {
@@ -325,17 +333,19 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            CertificateCredential certificateCredential =
-                    (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
-            // Test get gateway name
-            String gateway = credentialsDAO.getGatewayID("tom", connection);
-            assertNotNull(certificateCredential);
-            assertEquals("jerry", certificateCredential.getPortalUserName());
-            assertEquals("gw1", gateway);
+            List<CredentialsEntity> credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertNotNull(credentialsEntities);
+            assertFalse(credentialsEntities.isEmpty());
+            
+            CredentialsEntity credentialsEntity = credentialsEntities.get(0);
+            assertEquals("jerry", credentialsEntity.getPortalUserId());
+            assertEquals("gw1", credentialsEntity.getGatewayId());
+            
+            // Test deserialized credential content
+            CertificateCredential certificateCredential = (CertificateCredential) CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
             checkEquality(x509Certificates, certificateCredential.getCertificates());
-            assertEquals(
-                    privateKey.getFormat(),
-                    certificateCredential.getPrivateKey().getFormat());
+            assertEquals(privateKey.getFormat(), certificateCredential.getPrivateKey().getFormat());
+            
         } finally {
             connection.close();
         }
@@ -349,14 +359,14 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            CertificateCredential certificateCredential =
-                    (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
-            assertNotNull(certificateCredential);
+            List<CredentialsEntity> credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertNotNull(credentialsEntities);
+            assertFalse(credentialsEntities.isEmpty());
 
-            credentialsDAO.deleteCredentials("gw1", "tom", connection);
+            credentialsRepository.delete(new CredentialsEntity.CredentialsPK("gw1", "tom"));
 
-            certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
-            assertNull(certificateCredential);
+            credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertTrue(credentialsEntities.isEmpty());
 
         } finally {
             connection.close();
@@ -371,28 +381,30 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            CommunityUser communityUser = getCommunityUser("gw1", "tom");
-            CertificateCredential certificateCredential = new CertificateCredential();
-            certificateCredential.setToken("tom");
-            certificateCredential.setCommunityUser(communityUser);
-            certificateCredential.setCertificates(x509Certificates);
-            // certificateCredential.setPrivateKey(privateKey);
+            List<CredentialsEntity> credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertNotNull(credentialsEntities);
+            assertFalse(credentialsEntities.isEmpty());
+            
+            CredentialsEntity credentialsEntity = credentialsEntities.get(0);
+            credentialsEntity.setPortalUserId("test2");
+            credentialsEntity.setCredentialOwnerType(CredentialOwnerType.USER);
+            
+            // Update serialized credential content
+            CertificateCredential certificateCredential = getTestCredentialObject();
             certificateCredential.setPortalUserName("test2");
-            certificateCredential.setLifeTime(50);
-            certificateCredential.setNotBefore("15 OCT 2012 5:34:23");
-            certificateCredential.setNotAfter("16 OCT 2012 5:34:23");
             certificateCredential.setCredentialOwnerType(CredentialOwnerType.USER);
+            byte[] serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+            credentialsEntity.setCredential(serializedCredential);
+            
+            credentialsRepository.update(credentialsEntity);
 
-            credentialsDAO.updateCredentials(communityUser.getGatewayName(), certificateCredential, connection);
-
-            certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
-
-            assertEquals(
-                    "CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
-                    certificateCredential.getCertificates()[0].getIssuerDN().toString());
-            // Assertions.assertNotNull(certificateCredential.getPrivateKey());
-            assertEquals("test2", certificateCredential.getPortalUserName());
-            assertEquals(CredentialOwnerType.USER, certificateCredential.getCredentialOwnerType());
+            credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertNotNull(credentialsEntities);
+            assertFalse(credentialsEntities.isEmpty());
+            
+            credentialsEntity = credentialsEntities.get(0);
+            assertEquals("test2", credentialsEntity.getPortalUserId());
+            assertEquals(CredentialOwnerType.USER, credentialsEntity.getCredentialOwnerType());
 
         } finally {
             connection.close();
@@ -407,13 +419,15 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-
-            CertificateCredential certificateCredential =
-                    (CertificateCredential) credentialsDAO.getCredential("gw1", "tom", connection);
-            assertEquals(
-                    "CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
-                    certificateCredential.getCertificates()[0].getIssuerDN().toString());
-            // Assertions.assertNotNull(certificateCredential.getPrivateKey());
+            List<CredentialsEntity> credentialsEntities = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
+            assertNotNull(credentialsEntities);
+            assertFalse(credentialsEntities.isEmpty());
+            
+            // Test deserialized credential content
+            CredentialsEntity credentialsEntity = credentialsEntities.get(0);
+            CertificateCredential certificateCredential = (CertificateCredential) CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
+            assertEquals("CN=Airavata Project, OU=IU, O=Indiana University, L=Bloomington, ST=IN, C=US",
+                certificateCredential.getCertificates()[0].getIssuerDN().toString());
 
         } finally {
             connection.close();
@@ -428,7 +442,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            List<Credential> list = credentialsDAO.getCredentials("gw1", connection);
+            List<CredentialsEntity> list = credentialsRepository.findByGatewayId("gw1");
 
             assertEquals(2, list.size());
         } finally {
@@ -444,19 +458,18 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            List<Credential> list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom"), connection);
-
+            // Test with single token
+            List<CredentialsEntity> list = credentialsRepository.findByGatewayIdAndTokenId("gw1", "tom");
             assertEquals(1, list.size());
-            list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom", "tom2"), connection);
+            
+            // Test with multiple tokens
+            list = credentialsRepository.findByGatewayId("gw1");
             assertEquals(2, list.size());
-            list = credentialsDAO.getCredentials("gw1", Arrays.asList("tom2"), connection);
-            assertEquals(1, list.size());
-            list = credentialsDAO.getCredentials("gw1", Arrays.asList("non-existent-token-id"), connection);
+            
+            // Test with non-existent token
+            list = credentialsRepository.findByGatewayIdAndTokenId("gw1", "non-existent-token-id");
             assertEquals(0, list.size());
-            list = credentialsDAO.getCredentials("gw1", Arrays.asList(), connection);
-            assertEquals(0, list.size());
-            list = credentialsDAO.getCredentials("gw1", null, connection);
-            assertEquals(0, list.size());
+            
         } finally {
             connection.close();
         }

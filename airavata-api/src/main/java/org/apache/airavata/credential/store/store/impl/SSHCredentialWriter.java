@@ -19,65 +19,58 @@
 */
 package org.apache.airavata.credential.store.store.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.repository.CredentialsRepository;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.CredentialWriter;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsEntity;
+import org.apache.airavata.credential.store.utils.CredentialSerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Writes SSH credentials to database.
+ * Writes SSH credentials to database using JPA repositories.
  */
 public class SSHCredentialWriter implements CredentialWriter {
 
-    private CredentialsDAO credentialsDAO;
-    private DBUtil dbUtil;
+    private CredentialsRepository credentialsRepository;
+    private static Logger logger = LoggerFactory.getLogger(SSHCredentialWriter.class);
 
-    protected static Logger logger = LoggerFactory.getLogger(SSHCredentialWriter.class);
-
-    public SSHCredentialWriter(DBUtil dbUtil) throws ApplicationSettingsException {
-        this.dbUtil = dbUtil;
-        this.credentialsDAO = new CredentialsDAO(
-                ApplicationSettings.getCredentialStoreKeyStorePath(),
-                ApplicationSettings.getCredentialStoreKeyAlias(),
-                new DefaultKeyStorePasswordCallback());
+    public SSHCredentialWriter() throws ApplicationSettingsException {
+        this.credentialsRepository = new CredentialsRepository();
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
-
-        SSHCredential sshCredential = (SSHCredential) credential;
-        Connection connection = null;
-
         try {
-            connection = dbUtil.getConnection();
+            SSHCredential sshCredential = (SSHCredential) credential;
+            
             // First delete existing credentials
-            credentialsDAO.deleteCredentials(sshCredential.getGateway(), sshCredential.getToken(), connection);
-            // Add the new certificate
-            credentialsDAO.addCredentials(sshCredential.getGateway(), credential, connection);
-
-            if (!connection.getAutoCommit()) {
-                connection.commit();
-            }
-
-        } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e1) {
-                    logger.error("Unable to rollback transaction", e1);
-                }
-            }
-            throw new CredentialStoreException("Unable to retrieve database connection.", e);
-        } finally {
-            DBUtil.cleanup(connection);
+            credentialsRepository.delete(new CredentialsEntity.CredentialsPK(sshCredential.getGateway(), sshCredential.getToken()));
+            
+            // Create new credentials entity
+            CredentialsEntity credentialsEntity = new CredentialsEntity();
+            credentialsEntity.setGatewayId(sshCredential.getGateway());
+            credentialsEntity.setTokenId(sshCredential.getToken());
+            credentialsEntity.setPortalUserId(sshCredential.getPortalUserName());
+            credentialsEntity.setTimePersisted(new Timestamp(new Date().getTime()));
+            credentialsEntity.setDescription(sshCredential.getDescription());
+            credentialsEntity.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
+            
+            // Serialize and encrypt the credential
+            byte[] serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(sshCredential);
+            credentialsEntity.setCredential(serializedCredential);
+            
+            // Save the entity
+            credentialsRepository.create(credentialsEntity);
+            
+        } catch (Exception e) {
+            logger.error("Error writing SSH credentials", e);
+            throw new CredentialStoreException("Error writing SSH credentials", e);
         }
     }
 }

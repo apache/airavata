@@ -25,7 +25,7 @@ import org.apache.airavata.catalog.sharing.models.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntityTypeRepository extends AbstractRepository<EntityType, EntityTypeEntity, EntityTypePK> {
+public class EntityTypeRepository extends AbstractSharingRepository<EntityType, EntityTypeEntity, EntityTypePK> {
     private static final Logger logger = LoggerFactory.getLogger(EntityTypeRepository.class);
 
     public EntityTypeRepository() {

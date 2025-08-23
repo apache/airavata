@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.core.repositories.common;
 
+import java.util.Arrays;
+
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DerbyUtil;
@@ -60,7 +62,7 @@ public class TestBase {
             for (Database database : databases) {
                 logger.info("Creating database " + database.name());
                 DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
-                DBInitializer.initializeDB(getDBInitConfig(database));
+                DBInitializer.initializeDB(Arrays.asList(getDBInitConfig(database)));
             }
         } catch (Exception e) {
             logger.error("Failed to create the databases", e);
@@ -84,13 +86,13 @@ public class TestBase {
     private DBInitConfig getDBInitConfig(Database database) {
         switch (database) {
             case APP_CATALOG:
-                return new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog");
+                return new AppCatalogDBInitConfig().setDbInitScriptPrefix("app-catalog");
             case EXP_CATALOG:
-                return new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
+                return new ExpCatalogDBInitConfig().setDbInitScriptPrefix("exp-catalog");
             case REPLICA_CATALOG:
-                return new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replicacatalog");
+                return new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replica-catalog");
             case WORKFLOW_CATALOG:
-                return new WorkflowCatalogDBInitConfig().setDbInitScriptPrefix("airavataworkflowcatalog");
+                return new WorkflowCatalogDBInitConfig().setDbInitScriptPrefix("workflow-catalog");
             default:
                 return null;
         }

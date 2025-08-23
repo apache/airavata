@@ -20,14 +20,11 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "SHARING_USER", schema = "") // USER is a reserved term in derby
+@Table(name = "SHARING_USER") // USER is a reserved term in derby
 @IdClass(UserPK.class)
 public class UserEntity {
-    private static final Logger logger = LoggerFactory.getLogger(UserEntity.class);
     private String userId;
     private String domainId;
     private String userName;
@@ -49,7 +46,7 @@ public class UserEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }
@@ -98,8 +95,7 @@ public class UserEntity {
         this.email = email;
     }
 
-    @Lob
-    @Column(name = "ICON")
+    @Column(name = "ICON", columnDefinition = "LONGBLOB")
     public byte[] getIcon() {
         return icon;
     }

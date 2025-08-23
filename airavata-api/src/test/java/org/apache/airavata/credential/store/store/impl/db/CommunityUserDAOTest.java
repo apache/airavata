@@ -27,14 +27,15 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
+import org.apache.airavata.credential.store.repository.CommunityUserRepository;
 import org.junit.jupiter.api.*;
 
 /**
- * Test for community user DAO.
+ * Test for community user repository.
  */
 public class CommunityUserDAOTest extends DatabaseTestCases {
 
-    private CommunityUserDAO communityUserDAO;
+    private CommunityUserRepository communityUserRepository;
 
     @BeforeAll
     public static void setUpDatabase() throws Exception {
@@ -62,7 +63,7 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
 
     @BeforeEach
     public void setUp() throws Exception {
-        communityUserDAO = new CommunityUserDAO();
+        communityUserRepository = new CommunityUserRepository();
         Connection connection = getDbUtil().getConnection();
         try {
             DBUtil.truncate("community_user", connection);
@@ -79,28 +80,34 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
         try {
 
             CommunityUser communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
+            CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
+            communityUserRepository.create(entity);
 
             communityUser = new CommunityUser("gw1", "ogce2", "ogce@sciencegateway.org");
-            communityUserDAO.addCommunityUser(communityUser, "Token2", connection);
+            entity = new CommunityUserEntity("gw1", "ogce2", "Token2", "ogce@sciencegateway.org");
+            communityUserRepository.create(entity);
 
-            CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNotNull(user);
-            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
 
-            user = communityUserDAO.getCommunityUser("gw1", "ogce2", connection);
-            assertNotNull(user);
-            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce2");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
 
-            user = communityUserDAO.getCommunityUserByToken("gw1", "Token1", connection);
-            assertNotNull(user);
-            assertEquals("ogce", user.getUserName());
-            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            users = communityUserRepository.findByTokenId("Token1");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("ogce", users.get(0).getCommunityUserName());
+            assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
 
-            user = communityUserDAO.getCommunityUserByToken("gw1", "Token2", connection);
-            assertNotNull(user);
-            assertEquals("ogce2", user.getUserName());
-            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            users = communityUserRepository.findByTokenId("Token2");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("ogce2", users.get(0).getCommunityUserName());
+            assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
 
         } finally {
             connection.close();
@@ -114,16 +121,17 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
 
         try {
             CommunityUser communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
+            CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
+            communityUserRepository.create(entity);
 
-            CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNotNull(user);
+            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
 
-            communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.deleteCommunityUser(communityUser, connection);
+            communityUserRepository.deleteByGatewayIdAndCommunityUserName("gw1", "ogce");
 
-            user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNull(user);
+            users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertTrue(users.isEmpty());
 
         } finally {
             connection.close();
@@ -137,16 +145,17 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
 
         try {
             CommunityUser communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
+            CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
+            communityUserRepository.create(entity);
 
-            CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNotNull(user);
+            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
 
-            communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.deleteCommunityUserByToken(communityUser, "Token1", connection);
+            communityUserRepository.deleteByTokenId("Token1");
 
-            user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNull(user);
+            users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertTrue(users.isEmpty());
 
         } finally {
             connection.close();
@@ -160,11 +169,13 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
 
         try {
             CommunityUser communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-            communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
+            CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
+            communityUserRepository.create(entity);
 
-            CommunityUser user = communityUserDAO.getCommunityUser("gw1", "ogce", connection);
-            assertNotNull(user);
-            assertEquals("ogce@sciencegateway.org", user.getUserEmail());
+            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
 
         } finally {
             connection.close();
@@ -177,16 +188,18 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         CommunityUser communityUser = new CommunityUser("gw1", "ogce", "ogce@sciencegateway.org");
-        communityUserDAO.addCommunityUser(communityUser, "Token1", connection);
+        CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
+        communityUserRepository.create(entity);
 
         communityUser = new CommunityUser("gw1", "ogce2", "ogce@sciencegateway.org");
-        communityUserDAO.addCommunityUser(communityUser, "Token2", connection);
+        entity = new CommunityUserEntity("gw1", "ogce2", "Token2", "ogce@sciencegateway.org");
+        communityUserRepository.create(entity);
 
-        List<CommunityUser> users = communityUserDAO.getCommunityUsers("gw1", connection);
+        List<CommunityUserEntity> users = communityUserRepository.findByGatewayId("gw1");
         assertNotNull(users);
         assertEquals(2, users.size());
 
-        assertEquals(users.get(0).getUserName(), "ogce");
-        assertEquals(users.get(1).getUserName(), "ogce2");
+        assertEquals(users.get(0).getCommunityUserName(), "ogce");
+        assertEquals(users.get(1).getCommunityUserName(), "ogce2");
     }
 }

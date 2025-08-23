@@ -54,7 +54,7 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     @Id
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     @Id
     private String groupResourceProfileId;
 
@@ -79,7 +79,7 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     private String resourceSpecificCredentialStoreToken;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false, insertable = false)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {}

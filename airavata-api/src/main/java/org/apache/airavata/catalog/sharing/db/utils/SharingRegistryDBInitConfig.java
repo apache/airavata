@@ -23,6 +23,7 @@ import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.JDBCConfig;
 
 public class SharingRegistryDBInitConfig implements DBInitConfig {
+
     private String dbInitScriptPrefix = "database_scripts/sharing-registry";
 
     @Override
@@ -37,7 +38,7 @@ public class SharingRegistryDBInitConfig implements DBInitConfig {
 
     @Override
     public String getCheckTableName() {
-        return "CONFIGURATION";
+        return "SHARING";
     }
 
     public void setDBInitScriptPrefix(String dbInitScriptPrefix) {

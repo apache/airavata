@@ -31,7 +31,7 @@ public class CredentialStoreDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDBInitScriptPrefix() {
-        return "database_scripts/credstore";
+        return "database_scripts/cred-store";
     }
 
     @Override

@@ -27,19 +27,16 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.catalog.sharing.db.utils.Committer;
 import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
-import org.apache.airavata.catalog.sharing.db.utils.JPAUtils;
 import org.apache.airavata.catalog.sharing.db.utils.ObjectMapperSingleton;
+import org.apache.airavata.catalog.sharing.db.utils.SharingRegJPAUtils;
 import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class AbstractRepository<T, E, Id> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
+public abstract class AbstractSharingRepository<T, E, Id> {
 
     private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
-    public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
+    public AbstractSharingRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
@@ -98,6 +95,7 @@ public abstract class AbstractRepository<T, E, Id> {
         return returnList;
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
         String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
         ArrayList<String> parameters = new ArrayList<>();
@@ -115,37 +113,38 @@ public abstract class AbstractRepository<T, E, Id> {
         query += " ORDER BY p.createdTime DESC";
         String queryString = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
-        List resultSet = execute(entityManager -> {
-            jakarta.persistence.Query q = entityManager.createQuery(queryString);
+        List<E> resultSet = execute(entityManager -> {
+            Query q = entityManager.createQuery(queryString);
             for (int i = 0; i < parameters.size(); i++) {
                 q.setParameter(i + 1, parameters.get(i));
             }
-            return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            return (List<E>) q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> select(String queryString, Map<String, Object> queryParameters, int offset, int limit)
             throws SharingRegistryException {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
-        List resultSet = execute(entityManager -> {
+        List<E> resultSet = execute(entityManager -> {
             Query q = entityManager.createQuery(queryString);
             for (Map.Entry<String, Object> queryParam : queryParameters.entrySet()) {
                 q.setParameter(queryParam.getKey(), queryParam.getValue());
             }
-            return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            return (List<E>) q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = JPAUtils.getEntityManager();
+        var entityManager = SharingRegJPAUtils.getEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
@@ -156,7 +155,6 @@ public abstract class AbstractRepository<T, E, Id> {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
             }
         }
     }

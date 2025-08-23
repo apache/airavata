@@ -22,14 +22,18 @@ package org.apache.airavata.catalog.sharing.db.utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.JPAUtils;
 
-public class JPAUtils {
-    public static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
+public class SharingRegJPAUtils {
+    private static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
     private static final JDBCConfig JDBC_CONFIG = new SharingRegistryJDBCConfig();
-    private static final EntityManagerFactory factory =
-            org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static EntityManager entityManagerInstance = null;
 
-    public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+    public static synchronized EntityManager getEntityManager() {
+        if (entityManagerInstance == null || !entityManagerInstance.isOpen()) {
+            entityManagerInstance = factory.createEntityManager();
+        }
+        return entityManagerInstance;
     }
 }

@@ -35,7 +35,7 @@ import org.apache.airavata.catalog.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, UserGroupPK> {
+public class UserGroupRepository extends AbstractSharingRepository<UserGroup, UserGroupEntity, UserGroupPK> {
     private static final Logger logger = LoggerFactory.getLogger(UserGroupRepository.class);
 
     public UserGroupRepository() {

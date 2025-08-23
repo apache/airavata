@@ -20,14 +20,11 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "ENTITY_TYPE", schema = "")
+@Table(name = "ENTITY_TYPE")
 @IdClass(EntityTypePK.class)
 public class EntityTypeEntity {
-    private static final Logger logger = LoggerFactory.getLogger(EntityTypeEntity.class);
     private String entityTypeId;
     private String domainId;
     private String name;
@@ -46,7 +43,7 @@ public class EntityTypeEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }

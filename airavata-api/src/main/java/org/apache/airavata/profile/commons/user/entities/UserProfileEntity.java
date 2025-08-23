@@ -241,8 +241,7 @@ public class UserProfileEntity {
         this.state = state;
     }
 
-    @Lob
-    @Column(name = "COMMENTS")
+    @Column(name = "COMMENTS", columnDefinition = "TEXT")
     public String getComments() {
         return comments;
     }
@@ -262,8 +261,7 @@ public class UserProfileEntity {
         this.labeledURI = labeledURI;
     }
 
-    @Lob
-    @Column(name = "GPG_KEY")
+    @Column(name = "GPG_KEY", columnDefinition = "TEXT")
     public String getGpgKey() {
         return gpgKey;
     }

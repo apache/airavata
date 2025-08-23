@@ -20,7 +20,7 @@
 package org.apache.airavata.credential.store.credential.impl.certificate;
 
 import java.util.Date;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.airavata.credential.store.credential.AuditInfo;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 

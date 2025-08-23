@@ -165,7 +165,7 @@ services:
       - "18080:18080"
 
   db:
-    image: mariadb:10.4.13
+    image: mariadb:10
     container_name: db
     restart: always
     environment:

@@ -42,7 +42,7 @@ public class ProcessWorkflowEntity {
     private String type;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false, insertable = false)
     private ProcessEntity process;
 
     public String getProcessId() {

@@ -25,7 +25,7 @@ import org.apache.airavata.catalog.sharing.models.GroupAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GroupAdminRepository extends AbstractRepository<GroupAdmin, GroupAdminEntity, GroupAdminPK> {
+public class GroupAdminRepository extends AbstractSharingRepository<GroupAdmin, GroupAdminEntity, GroupAdminPK> {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupAdminRepository.class);
 

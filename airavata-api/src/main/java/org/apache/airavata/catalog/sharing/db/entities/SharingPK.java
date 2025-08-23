@@ -33,7 +33,7 @@ public class SharingPK implements Serializable {
     private String inheritedParentId;
     private String domainId;
 
-    @Column(name = "PERMISSION_TYPE_ID")
+    @Column(name = "PERMISSION_TYPE_ID", length = 50)
     @Id
     public String getPermissionTypeId() {
         return permissionTypeId;
@@ -73,7 +73,7 @@ public class SharingPK implements Serializable {
         this.inheritedParentId = inheritedParentId;
     }
 
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     @Id
     public String getDomainId() {
         return domainId;

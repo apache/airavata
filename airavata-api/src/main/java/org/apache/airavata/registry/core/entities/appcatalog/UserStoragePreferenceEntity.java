@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import java.io.Serializable;
+
 import jakarta.persistence.*;
 
 /**
@@ -27,7 +29,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "USER_STORAGE_PREFERENCE")
 @IdClass(UserStoragePreferencePK.class)
-public class UserStoragePreferenceEntity {
+public class UserStoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -52,7 +54,10 @@ public class UserStoragePreferenceEntity {
     private String loginUserName;
 
     @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumns({@JoinColumn(name = "USER_ID"), @JoinColumn(name = "GATEWAY_ID")})
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false), 
+        @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserStoragePreferenceEntity() {}

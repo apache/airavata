@@ -31,11 +31,8 @@ import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
 import org.apache.airavata.catalog.sharing.models.SharingRegistryException;
 import org.apache.airavata.catalog.sharing.models.SharingType;
 import org.apache.airavata.catalog.sharing.models.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class UserRepository extends AbstractRepository<User, UserEntity, UserPK> {
-    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
+public class UserRepository extends AbstractSharingRepository<User, UserEntity, UserPK> {
 
     public UserRepository() {
         super(User.class, UserEntity.class);

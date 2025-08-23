@@ -48,7 +48,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
     // TODO: Store COMPUTE_RESOURCE_ID and QUEUE_NAME in table so it can FK to BATCH_QUEUE
@@ -60,7 +60,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     private List<String> allowedBatchQueues;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false, insertable = false)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public ComputeResourcePolicyEntity() {}

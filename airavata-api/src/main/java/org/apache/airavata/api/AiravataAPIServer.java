@@ -21,17 +21,16 @@ package org.apache.airavata.api;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.List;
 import org.apache.airavata.api.handler.AiravataAPIHandler;
 import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
-import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.handler.CredentialStoreServerHandler;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.handler.OrchestratorServerHandler;
 import org.apache.airavata.profile.handlers.GroupManagerServiceHandler;
@@ -43,6 +42,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.WorkflowCatalogDBInitConfig;
 import org.apache.airavata.registry.handler.RegistryServerHandler;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
@@ -96,21 +96,20 @@ public class AiravataAPIServer implements IServer {
         try {
             setStatus(ServerStatus.STARTING);
 
-            // Initialize databases
-            logger.info("Initializing databases...");
-            List<DBInitConfig> dbInitConfigs = Arrays.asList(
-                    new ExpCatalogDBInitConfig(),
-                    new AppCatalogDBInitConfig(),
-                    new ReplicaCatalogDBInitConfig(),
-                    new UserProfileCatalogDBInitConfig(),
-                    new SharingRegistryDBInitConfig()
-                    // new WorkflowCatalogDBInitConfig()
-                    );
+            // // Initialize databases
+            // logger.info("Initializing databases...");
+            // var dbInitConfigs = Arrays.asList(
+            //         new ExpCatalogDBInitConfig(),
+            //         new AppCatalogDBInitConfig(),
+            //         new CredentialStoreDBInitConfig(),
+            //         new ReplicaCatalogDBInitConfig(),
+            //         new SharingRegistryDBInitConfig(),
+            //         new UserProfileCatalogDBInitConfig(),
+            //         new WorkflowCatalogDBInitConfig()
+            //         );
 
-            for (DBInitConfig dbInitConfig : dbInitConfigs) {
-                DBInitializer.initializeDB(dbInitConfig);
-            }
-            logger.info("Databases initialized successfully");
+            // DBInitializer.initializeDB(dbInitConfigs);
+            // logger.info("Databases initialized successfully");
 
             // Use orchestrator's host and port configuration
             final int serverPort = Integer.parseInt(ServerSettings.getSetting("api.server.port", "8930"));

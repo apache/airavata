@@ -44,7 +44,7 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
     private String resourceId;
 
     @Id
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
     @Id
@@ -56,11 +56,11 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
 
     @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
     @JoinColumns({
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
+        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false, insertable = false, updatable = false),
         @JoinColumn(
                 name = "GROUP_RESOURCE_PROFILE_ID",
                 referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
-                nullable = false)
+                nullable = false, insertable = false, updatable = false)
     })
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 

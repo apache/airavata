@@ -20,14 +20,11 @@
 package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "GROUP_ADMIN", schema = "")
+@Table(name = "GROUP_ADMIN")
 @IdClass(GroupAdminPK.class)
 public class GroupAdminEntity {
-    private static final Logger logger = LoggerFactory.getLogger(GroupAdminEntity.class);
     private String groupId;
     private String domainId;
     private String adminId;
@@ -44,7 +41,7 @@ public class GroupAdminEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }
@@ -65,8 +62,8 @@ public class GroupAdminEntity {
 
     @ManyToOne(targetEntity = UserGroupEntity.class, cascade = CascadeType.MERGE)
     @JoinColumns({
-        @JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID"),
-        @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "DOMAIN_ID")
+        @JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "DOMAIN_ID", insertable = false, updatable = false)
     })
     public UserGroupEntity getUserGroup() {
         return userGroup;

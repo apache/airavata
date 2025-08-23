@@ -69,8 +69,7 @@ public class ApplicationInputEntity implements Serializable {
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
 
-    @Lob
-    @Column(name = "USER_FRIENDLY_DESC")
+    @Column(name = "USER_FRIENDLY_DESC", columnDefinition = "TEXT")
     private String userFriendlyDescription;
 
     @Column(name = "IS_READ_ONLY")

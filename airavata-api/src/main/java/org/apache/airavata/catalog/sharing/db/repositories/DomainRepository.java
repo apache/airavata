@@ -21,11 +21,8 @@ package org.apache.airavata.catalog.sharing.db.repositories;
 
 import org.apache.airavata.catalog.sharing.db.entities.DomainEntity;
 import org.apache.airavata.catalog.sharing.models.Domain;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class DomainRepository extends AbstractRepository<Domain, DomainEntity, String> {
-    private static final Logger logger = LoggerFactory.getLogger(DomainRepository.class);
+public class DomainRepository extends AbstractSharingRepository<Domain, DomainEntity, String> {
 
     public DomainRepository() {
         super(Domain.class, DomainEntity.class);

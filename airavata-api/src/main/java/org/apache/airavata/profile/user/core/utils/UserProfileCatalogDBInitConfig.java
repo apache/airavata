@@ -36,6 +36,6 @@ public class UserProfileCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getCheckTableName() {
-        return "CONFIGURATION";
+        return "USER_PROFILE";
     }
 }

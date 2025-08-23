@@ -53,7 +53,7 @@ services:
       - airavata.jdbc.driver=org.mariadb.jdbc.Driver
       - airavata.jdbc.user=root
       - airavata.jdbc.password=123456
-      - airavata.jdbc.validationQuery=SELECT 1 from CONFIGURATION
+      - airavata.jdbc.validationQuery=SELECT 1
       - airavata.jdbc.url=jdbc:mariadb://db:3306/airavata
       - start.derby.server.mode=false
       - sharing.enabled=true
@@ -151,7 +151,7 @@ services:
     command: ["/tmp/wait-for-it.sh", "zookeeper:2181", "--", "/tmp/wait-for-it.sh", "apiserver:8970", "--" , "/tmp/wait-for-it.sh", "kafka:9092", "--", "/opt/apache-airavata-email-monitor/bin/email-monitor.sh"]
 
   db:
-    image: mariadb:10.4.13
+    image: mariadb:10
     environment:
       MYSQL_ROOT_PASSWORD: 123456
     ports:

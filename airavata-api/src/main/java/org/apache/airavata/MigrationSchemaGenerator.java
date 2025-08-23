@@ -22,6 +22,8 @@ package org.apache.airavata;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
+
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.JDBCConfig;
@@ -68,7 +70,7 @@ public class MigrationSchemaGenerator {
                 waitForDatabaseServer(database.dbInitConfig.getJDBCConfig(), 60);
                 try {
                     logger.info("initializing database " + database.name());
-                    DBInitializer.initializeDB(database.dbInitConfig);
+                    DBInitializer.initializeDB(Arrays.asList(database.dbInitConfig));
                 } catch (Exception e) {
 
                     logger.error("Failed to initialize database " + database.name(), e);

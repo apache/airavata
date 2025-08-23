@@ -28,7 +28,7 @@ import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
 import org.apache.airavata.catalog.sharing.models.*;
 
 public class GroupMembershipRepository
-        extends AbstractRepository<GroupMembership, GroupMembershipEntity, GroupMembershipPK> {
+        extends AbstractSharingRepository<GroupMembership, GroupMembershipEntity, GroupMembershipPK> {
 
     public GroupMembershipRepository() {
         super(GroupMembership.class, GroupMembershipEntity.class);

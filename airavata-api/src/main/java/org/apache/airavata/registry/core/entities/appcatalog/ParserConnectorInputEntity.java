@@ -31,28 +31,28 @@ public class ParserConnectorInputEntity implements Serializable {
     @Column(name = "PARSER_CONNECTOR_INPUT_ID")
     private String id;
 
-    @Column(name = "PARSER_INPUT_ID", insertable = false, updatable = false)
+    @Column(name = "PARSER_INPUT_ID")
     private String inputId;
 
-    @Column(name = "PARSER_OUTPUT_ID", insertable = false, updatable = false)
+    @Column(name = "PARSER_OUTPUT_ID")
     private String parentOutputId;
 
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "PARSER_CONNECTOR_ID", insertable = false, updatable = false)
+    @Column(name = "PARSER_CONNECTOR_ID")
     private String parserConnectorId;
 
     @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_INPUT_ID")
+    @JoinColumn(name = "PARSER_INPUT_ID", insertable = false, updatable = false)
     private ParserInputEntity input;
 
     @ManyToOne(targetEntity = ParserOutputEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_OUTPUT_ID")
+    @JoinColumn(name = "PARSER_OUTPUT_ID", insertable = false, updatable = false)
     private ParserOutputEntity output;
 
     @ManyToOne(targetEntity = ParserConnectorEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_CONNECTOR_ID")
+    @JoinColumn(name = "PARSER_CONNECTOR_ID", insertable = false, updatable = false)
     private ParserConnectorEntity parserConnector;
 
     public String getId() {

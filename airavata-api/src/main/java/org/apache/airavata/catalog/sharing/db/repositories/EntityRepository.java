@@ -26,7 +26,7 @@ import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
 import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.catalog.sharing.models.*;
 
-public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
+public class EntityRepository extends AbstractSharingRepository<Entity, EntityEntity, EntityPK> {
 
     public EntityRepository() {
         super(Entity.class, EntityEntity.class);

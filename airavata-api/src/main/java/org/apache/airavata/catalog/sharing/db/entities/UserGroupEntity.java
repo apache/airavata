@@ -21,14 +21,11 @@ package org.apache.airavata.catalog.sharing.db.entities;
 
 import jakarta.persistence.*;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "USER_GROUP", schema = "")
+@Table(name = "USER_GROUP")
 @IdClass(UserGroupPK.class)
 public class UserGroupEntity {
-    private static final Logger logger = LoggerFactory.getLogger(UserGroupEntity.class);
     private String groupId;
     private String domainId;
     private String name;
@@ -51,7 +48,7 @@ public class UserGroupEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 100)
     public String getDomainId() {
         return domainId;
     }

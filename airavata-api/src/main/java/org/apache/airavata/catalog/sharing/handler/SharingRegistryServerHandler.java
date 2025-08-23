@@ -25,12 +25,9 @@ import java.util.*;
 import org.apache.airavata.catalog.sharing.db.entities.*;
 import org.apache.airavata.catalog.sharing.db.repositories.*;
 import org.apache.airavata.catalog.sharing.db.utils.DBConstants;
-import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.catalog.sharing.service.cpi.sharing_cpiConstants;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -40,14 +37,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandler.class);
 
     public static String OWNER_PERMISSION_NAME = "OWNER";
-
-    public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
-        this(new SharingRegistryDBInitConfig());
-    }
-
-    public SharingRegistryServerHandler(SharingRegistryDBInitConfig sharingRegistryDBInitConfig) {
-        DBInitializer.initializeDB(sharingRegistryDBInitConfig);
-    }
 
     @Override
     public String getAPIVersion() throws TException {

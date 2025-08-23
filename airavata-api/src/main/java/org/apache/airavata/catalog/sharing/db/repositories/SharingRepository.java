@@ -32,7 +32,7 @@ import org.apache.airavata.catalog.sharing.models.SharingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
+public class SharingRepository extends AbstractSharingRepository<Sharing, SharingEntity, SharingPK> {
     private static final Logger logger = LoggerFactory.getLogger(SharingRepository.class);
 
     public SharingRepository() {
