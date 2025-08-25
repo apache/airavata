@@ -22,7 +22,6 @@ package org.apache.airavata.catalog.sharing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.catalog.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.catalog.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -37,10 +36,7 @@ public class SharingRegistryServerHandlerTest {
 
     @Test
     public void test() throws TException, ApplicationSettingsException {
-        SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
-        sharingRegistryDBInitConfig.setDBInitScriptPrefix("sharing-registry");
-        SharingRegistryServerHandler sharingRegistryServerHandler =
-                new SharingRegistryServerHandler(sharingRegistryDBInitConfig);
+        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
         // Creating domain
         Domain domain = new Domain();
