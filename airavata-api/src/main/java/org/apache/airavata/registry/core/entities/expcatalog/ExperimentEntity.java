@@ -71,8 +71,7 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean enableEmailNotification;
 
-    @Lob
-    @Column(name = "EMAIL_ADDRESSES")
+    @Column(name = "EMAIL_ADDRESSES", columnDefinition = "TEXT")
     public String emailAddresses;
 
     @OneToOne(

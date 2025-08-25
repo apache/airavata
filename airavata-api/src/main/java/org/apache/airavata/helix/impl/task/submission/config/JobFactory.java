@@ -45,26 +45,26 @@ public class JobFactory {
     }
 
     public static ResourceJobManager getResourceJobManager(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registry,
             JobSubmissionProtocol submissionProtocol,
             JobSubmissionInterface jobSubmissionInterface)
             throws Exception {
         try {
             if (submissionProtocol == JobSubmissionProtocol.SSH) {
                 SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getSSHJobSubmission(registry, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
                 LOCALSubmission localJobSubmission =
-                        getLocalJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getLocalJobSubmission(registry, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK) {
                 SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getSSHJobSubmission(registry, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
@@ -85,20 +85,20 @@ public class JobFactory {
                 + jobSubmissionInterface.getJobSubmissionInterfaceId());
     }
 
-    public static LOCALSubmission getLocalJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static LOCALSubmission getLocalJobSubmission(RegistryService.Iface registry, String submissionId)
             throws AppCatalogException {
         try {
-            return registryClient.getLocalJobSubmission(submissionId);
+            return registry.getLocalJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
             throw new AppCatalogException(errorMsg, e);
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Iface registry, String submissionId)
             throws AppCatalogException {
         try {
-            return registryClient.getSSHJobSubmission(submissionId);
+            return registry.getSSHJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             throw new AppCatalogException(errorMsg, e);

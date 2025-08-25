@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.common.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.Properties;
 import javax.sql.DataSource;
@@ -187,7 +188,13 @@ public class DBUtil {
     }
 
     private void loadDriver() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Class.forName(driverName).newInstance();
+        try {
+            Class.forName(driverName).getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("No constructor found for driver " + driverName, e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Error instantiating driver " + driverName, e);
+        }
     }
 
     /**

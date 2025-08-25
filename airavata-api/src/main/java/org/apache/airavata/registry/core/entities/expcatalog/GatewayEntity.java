@@ -30,6 +30,7 @@ import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 @Entity
 @Table(name = "GATEWAY")
 public class GatewayEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id

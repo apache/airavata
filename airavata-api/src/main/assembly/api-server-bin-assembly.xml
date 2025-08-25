@@ -62,6 +62,7 @@
         <include>templates/*.template</include>
         <include>*.properties</include>
         <include>*.xml</include>
+        <include>*.yml</include>
       </includes>
     </fileSet>
 

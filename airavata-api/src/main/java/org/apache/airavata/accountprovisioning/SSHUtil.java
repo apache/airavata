@@ -23,9 +23,6 @@ import com.jcraft.jsch.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
@@ -134,29 +131,5 @@ public class SSHUtil {
                 session.disconnect();
             }
         }
-    }
-
-    public static void main(String[] args) throws JSchException {
-
-        // Test the validate method
-        String username = System.getProperty("user.name");
-        String privateKeyFilepath = System.getProperty("user.home") + "/.ssh/id_rsa";
-        String publicKeyFilepath = privateKeyFilepath + ".pub";
-        String passphrase = "changeme";
-        String hostname = "changeme";
-
-        Path privateKeyPath = Paths.get(privateKeyFilepath);
-        Path publicKeyPath = Paths.get(publicKeyFilepath);
-
-        SSHCredential sshCredential = new SSHCredential();
-        sshCredential.setPassphrase(passphrase);
-        try {
-            sshCredential.setPublicKey(new String(Files.readAllBytes(publicKeyPath), "UTF-8"));
-            sshCredential.setPrivateKey(new String(Files.readAllBytes(privateKeyPath), "UTF-8"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        boolean result = validate(hostname, 22, username, sshCredential);
-        System.out.println(result);
     }
 }

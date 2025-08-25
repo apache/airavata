@@ -41,7 +41,7 @@ public class AiravataCustomMailParser implements EmailParser {
     private static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService.Iface registry)
             throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         parseSubject(message.getSubject(), jobStatusResult);

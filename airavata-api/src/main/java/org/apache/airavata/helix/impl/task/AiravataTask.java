@@ -27,9 +27,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.factory.AiravataClientFactory;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -48,9 +49,6 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.commons.io.FileUtils;
@@ -240,7 +238,7 @@ public abstract class AiravataTask extends AbstractTask {
                 } else {
                     status.setTimeOfStateChange(status.getTimeOfStateChange());
                 }
-                getRegistryServiceClient().addProcessStatus(status, getProcessId());
+                getRegistry().addProcessStatus(status, getProcessId());
                 ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
                 ProcessStatusChangeEvent processStatusChangeEvent =
                         new ProcessStatusChangeEvent(status.getState(), identifier);
@@ -274,7 +272,7 @@ public abstract class AiravataTask extends AbstractTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            getRegistryServiceClient().addJobStatus(jobStatus, taskId, jobId);
+            getRegistry().addJobStatus(jobStatus, taskId, jobId);
 
             JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
 
@@ -291,7 +289,7 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
         try {
-            ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
+            ExperimentModel experiment = getRegistry().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
@@ -300,13 +298,13 @@ public abstract class AiravataTask extends AbstractTask {
                         expOutput.setValue(productUri);
 
                         if (!skipExperimentStatusPublish) {
-                            getRegistryServiceClient()
+                            getRegistry()
                                     .addExperimentProcessOutputs(
                                             "EXPERIMENT_OUTPUT", Collections.singletonList(expOutput), experimentId);
                         }
 
                         if (!skipProcessStatusPublish) {
-                            getRegistryServiceClient()
+                            getRegistry()
                                     .addExperimentProcessOutputs(
                                             "PROCESS_OUTPUT", Collections.singletonList(expOutput), processId);
                         }
@@ -323,7 +321,7 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void saveExperimentOutputCollection(String outputName, List<String> outputVals) throws TaskOnFailException {
         try {
-            ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
+            ExperimentModel experiment = getRegistry().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
@@ -335,13 +333,13 @@ public abstract class AiravataTask extends AbstractTask {
                         }
                         expOutput.setValue(String.join(",", productUris));
                         if (!skipExperimentStatusPublish) {
-                            getRegistryServiceClient()
+                            getRegistry()
                                     .addExperimentProcessOutputs(
                                             "EXPERIMENT_OUTPUT", Collections.singletonList(expOutput), experimentId);
                         }
 
                         if (!skipProcessStatusPublish) {
-                            getRegistryServiceClient()
+                            getRegistry()
                                     .addExperimentProcessOutputs(
                                             "PROCESS_OUTPUT", Collections.singletonList(expOutput), processId);
                         }
@@ -388,14 +386,14 @@ public abstract class AiravataTask extends AbstractTask {
         replicaLocationModel.setFilePath(outputVal);
         dataProductModel.addToReplicaLocations(replicaLocationModel);
 
-        return getRegistryServiceClient().registerDataProduct(dataProductModel);
+        return getRegistry().registerDataProduct(dataProductModel);
     }
 
     @SuppressWarnings("WeakerAccess")
     private void saveExperimentError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-            getRegistryServiceClient().addErrors("EXPERIMENT_ERROR", errorModel, experimentId);
+            getRegistry().addErrors("EXPERIMENT_ERROR", errorModel, experimentId);
         } catch (Exception e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId()
                     + " : - Error while updating experiment errors";
@@ -407,7 +405,7 @@ public abstract class AiravataTask extends AbstractTask {
     private void saveProcessError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-            getRegistryServiceClient().addErrors("PROCESS_ERROR", errorModel, getProcessId());
+            getRegistry().addErrors("PROCESS_ERROR", errorModel, getProcessId());
         } catch (Exception e) {
             logger.error(
                     "expId: " + getExperimentId() + " processId: " + getProcessId()
@@ -420,7 +418,7 @@ public abstract class AiravataTask extends AbstractTask {
     private void saveTaskError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
-            getRegistryServiceClient().addErrors("TASK_ERROR", errorModel, getTaskId());
+            getRegistry().addErrors("TASK_ERROR", errorModel, getTaskId());
         } catch (Exception e) {
             logger.error(
                     "expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
@@ -518,15 +516,15 @@ public abstract class AiravataTask extends AbstractTask {
     protected void loadContext() throws TaskOnFailException {
         try {
             logger.info("Loading context for task " + getTaskId());
-            processModel = getRegistryServiceClient().getProcess(processId);
+            processModel = getRegistry().getProcess(processId);
 
             this.computeResourceDescription =
-                    getRegistryServiceClient().getComputeResource(this.processModel.getComputeResourceId());
+                    getRegistry().getComputeResource(this.processModel.getComputeResourceId());
 
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(
                             getProcessId(), getGatewayId(), getTaskId())
-                    .setRegistryClient(getRegistryServiceClient())
-                    .setProfileClient(getUserProfileClient())
+                    .setRegistry(getRegistry())
+                    .setProfile(getUserProfileClient())
                     .setProcessModel(getProcessModel());
 
             this.taskContext = taskContextBuilder.build();
@@ -550,7 +548,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskStatus taskStatus = new TaskStatus();
             taskStatus.setState(ts);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            getRegistryServiceClient().addTaskStatus(taskStatus, getTaskId());
+            getRegistry().addTaskStatus(taskStatus, getTaskId());
             TaskIdentifier identifier =
                     new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts, identifier);
@@ -644,29 +642,16 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     // TODO this is inefficient. Try to use a connection pool
-    public static RegistryService.Client getRegistryServiceClient() {
-        final String serverHost;
-        final int serverPort;
-        try {
-            serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            serverHost = ServerSettings.getRegistryServerHost();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to get registry server host or port...", e);
-        }
-        try {
-            logger.info("Connecting to registry server on {}:{}", serverHost, serverPort);
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    public static RegistryService.Iface getRegistry() {
+        return AiravataServiceFactory.getRegistry();
     }
 
-    public static UserProfileService.Client getUserProfileClient() {
+    public static UserProfileService.Iface getUserProfileClient() {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
-        } catch (UserProfileServiceException | ApplicationSettingsException e) {
+            final int serverPort = Integer.parseInt(ServerSettings.getApiServerPort());
+            final String serverHost = ServerSettings.getApiServerHost();
+            return AiravataClientFactory.createUserProfileServiceClient(serverHost, serverPort);
+        } catch (UserProfileServiceException e) {
             throw new RuntimeException("Unable to create profile service client...", e);
         }
     }

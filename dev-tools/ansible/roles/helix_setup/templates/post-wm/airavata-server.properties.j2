@@ -19,18 +19,18 @@
 ###########################################################################
 #  Registry Server Configurations
 ###########################################################################
-regserver.server.host={{ registry_host }}
-regserver.server.port={{ registry_port }}
+api.server.host={{ registry_host }}
+api.server.port={{ registry_port }}
 
 ###########################################################################
 # Helix workflow manager configurations
 ###########################################################################
 kafka.broker.url={{ job_monitor_broker_url }}
-job.monitor.broker.topic={{ job_monitor_broker_topic }}
-job.monitor.broker.consumer.group={{ job_monitor_broker_consumer_group }}
+monitor.job.status.broker.topic={{ job_monitor_broker_topic }}
+monitor.job.status.broker.consumer.group={{ job_monitor_broker_consumer_group }}
 helix.cluster.name={{ helix_cluster_name }}
-post.workflow.manager.name={{ helix_post_wm_name }}
-post.workflow.manager.loadbalance.clusters={{ helix_post_wm_load_balance_clusters }}
+postwm.name={{ helix_post_wm_name }}
+postwm.loadbalance.clusters={{ helix_post_wm_load_balance_clusters }}
 
 ###########################################################################
 # AMQP Notification Configuration
@@ -43,8 +43,8 @@ rabbitmq.broker.url={{ rabbitmq_broker_url }}
 rabbitmq.status.exchange.name=status_exchange
 rabbitmq.process.exchange.name=process_exchange
 rabbitmq.experiment.exchange.name=experiment_exchange
-durable.queue=false
-prefetch.count=200
+rabbitmq.durable.queue=false
+rabbitmq.prefetch.count=200
 
 ###########################################################################
 # Zookeeper Server Configuration
@@ -60,6 +60,6 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 ###########################################################################
 # Platform Monitoring Configuration
 ###########################################################################
-post.workflow.manager.monitoring.enabled={{ post_workflow_manager_monitoring_enabled }}
-post.workflow.manager.monitoring.host={{ post_workflow_manager_monitoring_host }}
-post.workflow.manager.monitoring.port={{ post_workflow_manager_monitoring_port }}
+monitor.prometheus.enabled={{ monitoring_enabled }}
+monitor.prometheus.host={{ monitoring_host }}
+monitor.prometheus.port={{ monitoring_port }}

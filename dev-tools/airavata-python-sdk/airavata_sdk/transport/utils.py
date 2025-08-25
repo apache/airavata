@@ -131,52 +131,52 @@ def initialize_api_client_pool(
     port=settings.API_SERVER_PORT,
     secure=settings.API_SERVER_SECURE,
 ) -> Airavata.Client:
-  return ThriftClient(Airavata.Client, host, port, secure).client
+  return ThriftClient(Airavata.Client, host, port, secure, "AiravataAPI").client
 
 
 def initialize_group_manager_client(
-    host=settings.PROFILE_SERVICE_HOST,
-    port=settings.PROFILE_SERVICE_PORT,
-    secure=settings.PROFILE_SERVICE_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> GroupManagerService.Client:
   return ThriftClient(GroupManagerService.Client, host, port, secure, GROUP_MANAGER_CPI_NAME).client
 
 
 def initialize_iam_admin_client(
-    host=settings.PROFILE_SERVICE_HOST,
-    port=settings.PROFILE_SERVICE_PORT,
-    secure=settings.PROFILE_SERVICE_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> IamAdminServices.Client:
   return ThriftClient(IamAdminServices.Client, host, port, secure, IAM_ADMIN_SERVICES_CPI_NAME).client
 
 
 def initialize_tenant_profile_client(
-    host=settings.PROFILE_SERVICE_HOST,
-    port=settings.PROFILE_SERVICE_PORT,
-    secure=settings.PROFILE_SERVICE_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> TenantProfileService.Client:
   return ThriftClient(TenantProfileService.Client, host, port, secure, TENANT_PROFILE_CPI_NAME).client
 
 
 def initialize_user_profile_client(
-    host=settings.PROFILE_SERVICE_HOST,
-    port=settings.PROFILE_SERVICE_PORT,
-    secure=settings.PROFILE_SERVICE_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> UserProfileService.Client:
   return ThriftClient(UserProfileService.Client, host, port, secure, USER_PROFILE_CPI_NAME).client
 
 
 def initialize_sharing_registry_client(
-    host=settings.SHARING_API_HOST,
-    port=settings.SHARING_API_PORT,
-    secure=settings.SHARING_API_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> SharingRegistryService.Client:
-  return ThriftClient(SharingRegistryService.Client, host, port, secure).client
+  return ThriftClient(SharingRegistryService.Client, host, port, secure, "SharingRegistry").client
 
 
 def initialize_credential_store_client(
-    host=settings.CREDENTIAL_STORE_API_HOST,
-    port=settings.CREDENTIAL_STORE_API_PORT,
-    secure=settings.CREDENTIAL_STORE_API_SECURE,
+    host=settings.API_SERVER_HOSTNAME,
+    port=settings.API_SERVER_PORT,
+    secure=settings.API_SERVER_SECURE,
 ) -> CredentialStoreService.Client:
-  return ThriftClient(CredentialStoreService.Client, host, port, secure).client
+  return ThriftClient(CredentialStoreService.Client, host, port, secure, "CredentialStore").client

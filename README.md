@@ -62,11 +62,11 @@ Airavata is composed as 4 top-level services that work together to facilitate th
 ### 1. Airavata API Server `(apache-airavata-api-server)`
 
 The Airavata API Server bootstraps the services needed to run/monitor computational jobs, access/share results of computational runs, and manage fine-grained access to computational resources.
+> Class Name: `org.apache.airavata.Main`
+> Command: `bin/airavata.sh`
 
 
 #### Orchestrator
-> Class Name: `org.apache.airavata.server.ServerMain`
-> Command: `bin/orchestrator.sh`
 
 The Orchestrator spins up 7 servers (of type `org.apache.airavata.common.utils.IServer`) for external clients to run computational jobs from.
 
@@ -75,11 +75,9 @@ The Orchestrator spins up 7 servers (of type `org.apache.airavata.common.utils.I
 - **DB Event Manager** - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
   (`org.apache.airavata.db.event.manager.DBEventManagerRunner`)
 - **Registry** - Manages metadata and definitions for executable tasks and applications.
-  (`org.apache.airavata.registry.api.service.RegistryAPIServer`)
 - **Credential Store** - Manages secure storage and retrieval of credentials for accessing registered compute resources.
-  (`org.apache.airavata.credential.store.server.CredentialStoreServer`)
 - **Sharing Registry** - Handles sharing and permissioning of Airavata resources between users and groups.
-  (`org.apache.airavata.sharing.registry.server.SharingRegistryServer`)
+  (`org.apache.airavata.catalog.sharing.handler.SharingRegistryServer`)
 - **Orchestrator** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
   (`org.apache.airavata.orchestrator.server.OrchestratorServer`)
 - **Profile** - Manages users, tenants, compute resources, and group profiles.
@@ -87,7 +85,6 @@ The Orchestrator spins up 7 servers (of type `org.apache.airavata.common.utils.I
 
 #### Controller
 > Class Name: `org.apache.airavata.helix.impl.controller.HelixController`
-> Command: `bin/controller.sh`
 
 The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure.
 
@@ -95,31 +92,26 @@ The Controller manages the step-by-step transition of task state on *helix-side*
 
 #### Participant
 > Class Name: `org.apache.airavata.helix.impl.participant.GlobalParticipant`
-> Command: `bin/participant.sh`
 
 The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`.
 
 #### Email Monitor
 > Class Name: `org.apache.airavata.monitor.email.EmailBasedMonitor`
-> Command: `bin/email-monitor.sh`
 
 The email monitor periodically checks an email inbox for job status updates sent via email. If it reads a new email with a job status update, it relays that state-change to the internal MQ (KafkaProducer).
 
 #### Realtime Monitor
 > Class Name: `org.apache.airavata.monitor.realtime.RealtimeMonitor`
-> Command: `bin/realtime-monitor.sh`
 
 The realtime monitor listens to incoming state-change messages on the internal MQ (KafkaConsumer), and relays that state-change to the internal MQ (KafkaProducer). When a task is completed at the compute resource, the realtime monitor is notified of this.
 
 #### Pre Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
-> Command: `bin/pre-wm.sh`
 
 The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant.
 
 #### Post Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
-> Command: `bin/post-wm.sh`
 
 The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller.
 
@@ -128,7 +120,6 @@ The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at
 
 ### 2. Airavata File Server `(apache-airavata-file-server)`
 > Class Name: `org.apache.airavata.file.server.FileServerApplication`
-> Command: `bin/
 
 The Airavata File Server is a lightweight SFTP wrapper running on storage nodes integrated with Airavata. It lets users securely access storage via SFTP, using Airavata authentication tokens as ephemeral passwords.
 
@@ -322,7 +313,7 @@ The easiest way to setup a development environment is to follow the instructions
 
 ### Additional Tools
 
-* `org.apache.airavata.sharing.registry.migrator.airavata.AiravataDataMigrator`
+* `org.apache.airavata.catalog.sharing.migrator.AiravataDataMigrator`
 * `modules/deployment-scripts`
 * `modules/load-client`
 

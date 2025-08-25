@@ -22,7 +22,7 @@ package org.apache.airavata.orchestrator.core.validator.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.ValidationResults;
@@ -32,8 +32,6 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +39,10 @@ import org.slf4j.LoggerFactory;
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    private RegistryService.Client registryClient;
+    private RegistryService.Iface registryClient;
 
     public BatchQueueValidator() throws TException, ApplicationSettingsException {
-        this.registryClient = getRegistryServiceClient();
+        this.registryClient = getRegistry();
     }
 
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
@@ -226,13 +224,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         return validatorResultList;
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistry() {
+        return AiravataServiceFactory.getRegistry();
     }
 }

@@ -21,16 +21,10 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
-import org.apache.airavata.registry.core.repositories.expcatalog.UserRepository;
 
 public class ExpCatalogDBInitConfig implements DBInitConfig {
 
-    private String dbInitScriptPrefix = "database_scripts/expcatalog";
+    private String dbInitScriptPrefix = "database_scripts/exp-catalog";
 
     @Override
     public JDBCConfig getJDBCConfig() {
@@ -49,36 +43,6 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getCheckTableName() {
-        return "CONFIGURATION";
-    }
-
-    @Override
-    public void postInit() {
-
-        try {
-            // Create default gateway and default user if not already created
-            GatewayRepository gatewayRepository = new GatewayRepository();
-            String defaultGatewayId = ServerSettings.getDefaultUserGateway();
-            if (!gatewayRepository.isGatewayExist(defaultGatewayId)) {
-                Gateway gateway = new Gateway();
-                gateway.setGatewayId(defaultGatewayId);
-                gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
-                gateway.setOauthClientId(ServerSettings.getSetting("default.registry.oauth.client.id"));
-                gateway.setOauthClientSecret(ServerSettings.getSetting("default.registry.oauth.client.secret"));
-                gatewayRepository.addGateway(gateway);
-            }
-
-            UserRepository userRepository = new UserRepository();
-            String defaultUsername = ServerSettings.getDefaultUser();
-            if (!userRepository.isUserExists(defaultGatewayId, defaultUsername)) {
-                UserProfile defaultUser = new UserProfile();
-                defaultUser.setUserId(defaultUsername);
-                defaultUser.setGatewayId(defaultGatewayId);
-                userRepository.addUser(defaultUser);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to post-initialize the expcatalog database", e);
-        }
+        return "EXPERIMENT";
     }
 }

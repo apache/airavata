@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.datatransfer.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;

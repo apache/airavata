@@ -48,7 +48,7 @@ public class CreateLaunchExperimentUS3 {
     public static final int THRIFT_SERVER_PORT = 8930;
     private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY = "default.gateway";
 
     public static void main(String[] args) {
         try {

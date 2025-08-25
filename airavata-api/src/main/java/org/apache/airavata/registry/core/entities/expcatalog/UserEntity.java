@@ -25,6 +25,7 @@ import jakarta.persistence.*;
 @Table(name = "USERS")
 @IdClass(UserPK.class)
 public class UserEntity {
+
     private String airavataInternalUserId;
     private String userId;
     private String password;
@@ -69,13 +70,16 @@ public class UserEntity {
         this.password = password;
     }
 
-    @ManyToOne(targetEntity = GatewayEntity.class)
-    @JoinColumn(name = "GATEWAY_ID")
+    @ManyToOne(targetEntity = GatewayEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
     public GatewayEntity getGateway() {
         return gateway;
     }
 
     public void setGateway(GatewayEntity gateway) {
         this.gateway = gateway;
+        if (gateway != null) {
+            this.gatewayId = gateway.getGatewayId();
+        }
     }
 }

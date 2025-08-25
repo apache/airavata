@@ -47,14 +47,16 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     public RealtimeMonitor() throws ApplicationSettingsException {
         parser = new RealtimeJobStatusParser();
-        publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
-        brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
+        publisherId = ServerSettings.getSetting("monitor.job.realtime.broker.publisher.id");
+        brokerTopic = ServerSettings.getSetting("monitor.job.realtime.broker.topic");
     }
 
     private Consumer<String, String> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("realtime.monitor.broker.consumer.group"));
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                ServerSettings.getSetting("monitor.job.realtime.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.
@@ -64,27 +66,41 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
-        final Consumer<String, String> consumer = createConsumer();
+    private void runConsumer() {
+        final Consumer<String, String> consumer;
+        try {
+            consumer = createConsumer();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error while creating consumer", e);
+            return;
+        }
 
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
-            consumerRecords.forEach(record -> {
-                try {
-                    process(record.key(), record.value(), registryClient);
-                } catch (Exception e) {
-                    logger.error("Error while processing message {}", record.value(), e);
+        try {
+            while (true) {
+                final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
+                RegistryService.Iface registry = getRegistry();
+                consumerRecords.forEach(record -> {
+                    try {
+                        process(record.key(), record.value(), registry);
+                    } catch (Exception e) {
+                        logger.error("Error while processing message {}", record.value(), e);
+                    }
+                });
+                consumer.commitAsync();
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("RealtimeMonitor is interrupted!");
                 }
-            });
-            getRegistryClientPool().returnResource(registryClient);
-            consumer.commitAsync();
+            }
+        } catch (InterruptedException ex) {
+            logger.error("RealtimeMonitor is interrupted! reason: " + ex, ex);
+        } finally {
+            consumer.close();
         }
     }
 
-    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+    private void process(String key, String value, RegistryService.Iface registry) throws MonitoringException {
         logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
-        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
+        JobStatusResult statusResult = parser.parse(value, publisherId, registry);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);
@@ -93,7 +109,10 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
-    public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+    @Override
+    public void run() {
+        var thread = new Thread(this::runConsumer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 }

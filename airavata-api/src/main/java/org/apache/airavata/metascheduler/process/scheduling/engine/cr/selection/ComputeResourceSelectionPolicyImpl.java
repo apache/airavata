@@ -19,30 +19,24 @@
 */
 package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection;
 
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
-import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.registry.api.RegistryService;
 
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
 
-    protected ThriftClientPool<RegistryService.Client> registryClientPool;
+    protected RegistryService.Iface registry;
 
     public ComputeResourceSelectionPolicyImpl() {
-        this.registryClientPool = Utils.getRegistryServiceClientPool();
+        this.registry = AiravataServiceFactory.getRegistry();
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourcId, String groupResourceProfileId) throws Exception {
-        RegistryService.Client client = this.registryClientPool.getResource();
-        try {
-            if (client.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
-                return client.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
-            }
-            return null;
-        } finally {
-            this.registryClientPool.returnResource(client);
+        if (registry.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
+            return registry.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
         }
+        return null;
     }
 }

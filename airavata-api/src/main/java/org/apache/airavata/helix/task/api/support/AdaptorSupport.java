@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.task.api.support;
 
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.datatransfer.api.*;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 

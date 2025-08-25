@@ -44,8 +44,7 @@ public class JobEntity implements Serializable {
     @Column(name = "PROCESS_ID")
     private String processId;
 
-    @Lob
-    @Column(name = "JOB_DESCRIPTION")
+    @Column(name = "JOB_DESCRIPTION", columnDefinition = "TEXT")
     private String jobDescription;
 
     @Column(name = "CREATION_TIME")
@@ -60,12 +59,10 @@ public class JobEntity implements Serializable {
     @Column(name = "WORKING_DIR")
     private String workingDir;
 
-    @Lob
-    @Column(name = "STD_OUT")
+    @Column(name = "STD_OUT", columnDefinition = "TEXT")
     private String stdOut;
 
-    @Lob
-    @Column(name = "STD_ERR")
+    @Column(name = "STD_ERR", columnDefinition = "TEXT")
     private String stdErr;
 
     @Column(name = "EXIT_CODE")
@@ -80,7 +77,12 @@ public class JobEntity implements Serializable {
     private List<JobStatusEntity> jobStatuses;
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", nullable = false, updatable = false)
+    @JoinColumn(
+            name = "TASK_ID",
+            referencedColumnName = "TASK_ID",
+            nullable = false,
+            updatable = false,
+            insertable = false)
     private TaskEntity task;
 
     public JobEntity() {}

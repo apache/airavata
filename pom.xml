@@ -75,7 +75,6 @@ under the License.
         <module>modules/restproxy</module>
         <module>modules/registry-db-migrator</module>
         <module>modules/registry-jpa-generator</module>
-        <module>modules/ide-integration</module>
     </modules>
 
     <properties>
@@ -162,11 +161,6 @@ under the License.
             <!-- Apache Commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>2.12.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.18.0</version>
             </dependency>
@@ -248,9 +242,9 @@ under the License.
                 <version>1.4.3</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa</artifactId>
-                <version>4.1.1</version>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>7.1.0.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -321,21 +315,16 @@ under the License.
 
             <!-- Database -->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-j</artifactId>
-                <version>9.3.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.5</version>
             </dependency>
 
             <!-- Jakarta -->
             <dependency>
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
-                <version>5.0.0</version>
+                <version>6.1.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.jms</groupId>
@@ -358,21 +347,30 @@ under the License.
               <version>2.0.1</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.4.0-b180830.0359</version>
+              <groupId>jakarta.persistence</groupId>
+              <artifactId>jakarta.persistence-api</artifactId>
+              <version>3.2.0</version>
             </dependency>
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>2.0.1.Final</version>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>9.0.1.Final</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.glassfish.expressly</groupId>
+                <artifactId>expressly</artifactId>
+                <version>6.0.0</version>
+            </dependency>
             <!-- Other Libraries -->
             <dependency>
                 <groupId>com.github.dozermapper</groupId>
@@ -724,11 +722,6 @@ under the License.
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
                     <artifactId>replacer</artifactId>
                     <version>1.5.3</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.openjpa</groupId>
-                    <artifactId>openjpa-maven-plugin</artifactId>
-                    <version>4.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

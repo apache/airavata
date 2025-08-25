@@ -32,8 +32,6 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the COMPUTE_RESOURCE_RESERVATION database table.
@@ -66,14 +64,19 @@ public class ComputeResourceReservationEntity implements Serializable {
 
     @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
     @JoinColumns({
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false, updatable = false),
+        @JoinColumn(
+                name = "RESOURCE_ID",
+                referencedColumnName = "RESOURCE_ID",
+                nullable = false,
+                updatable = false,
+                insertable = false),
         @JoinColumn(
                 name = "GROUP_RESOURCE_PROFILE_ID",
                 referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
                 nullable = false,
-                updatable = false)
+                updatable = false,
+                insertable = false)
     })
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public ComputeResourceReservationEntity() {}

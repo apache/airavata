@@ -43,7 +43,7 @@ public class PBSEmailParser implements EmailParser {
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
 
     @Override
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService.Iface registry)
             throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         //        log.info("Parsing -> " + message.getSubject());

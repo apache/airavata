@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.agent.ssh;
 
 import java.io.*;
-import org.apache.airavata.agents.api.AdaptorParams;
+import org.apache.airavata.datatransfer.api.AdaptorParams;
 
 /**
  * TODO: Class level comments please
@@ -122,13 +122,5 @@ public class SshAdaptorParams extends AdaptorParams implements Serializable {
     public SshAdaptorParams setStrictHostKeyChecking(boolean strictHostKeyChecking) {
         this.strictHostKeyChecking = strictHostKeyChecking;
         return this;
-    }
-
-    public static void main(String args[]) throws IOException {
-        SshAdaptorParams params = new SshAdaptorParams();
-        params.setUserName("dimuthu");
-        params.setPassword("upe");
-        params.setHostName("localhost");
-        params.writeToFile(new File("/tmp/ssh-param.json"));
     }
 }

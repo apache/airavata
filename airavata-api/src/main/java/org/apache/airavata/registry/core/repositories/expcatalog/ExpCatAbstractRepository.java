@@ -30,7 +30,7 @@ public class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
     }
 
     @Override
-    protected EntityManager getEntityManager() {
+    protected synchronized EntityManager getEntityManager() {
         return ExpCatalogJPAUtils.getEntityManager();
     }
 }
