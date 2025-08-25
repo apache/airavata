@@ -35,6 +35,7 @@ import java.util.List;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
+import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
@@ -320,7 +321,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         assertTrue(Arrays.equals(privateKey.getEncoded(), newKey.getEncoded()));
     }
 
-    private class TestACSKeyStoreCallback implements CredentialSerializationUtils.KeyStorePasswordCallback {
+    private class TestACSKeyStoreCallback implements KeyStorePasswordCallback {
 
         @Override
         public char[] getStorePassword() {

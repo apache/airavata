@@ -20,16 +20,16 @@
 package org.apache.airavata.credential.store.utils;
 
 import java.io.*;
-import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Base64;
-import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
+import org.apache.airavata.common.utils.KeyStorePasswordCallback;
+import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.slf4j.Logger;
@@ -102,30 +102,9 @@ public class CredentialSerializationUtils {
      */
     public static byte[] serializeCredentialWithEncryption(Credential credential) throws CredentialStoreException {
         try {
-            // First serialize the credential
             byte[] serializedCredential = serializeCredential(credential);
-
-            // Get the secret key from keystore
             SecretKey secretKey = getSecretKeyFromKeyStore();
-
-            // Use AES/CBC/PKCS5Padding to ensure IV is used and generated
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            byte[] encryptedData = cipher.doFinal(serializedCredential);
-
-            // Get the IV (should not be null)
-            byte[] iv = cipher.getIV();
-            if (iv == null) {
-                throw new CredentialStoreException("IV is null after cipher initialization");
-            }
-
-            // Combine IV and encrypted data
-            byte[] combined = new byte[iv.length + encryptedData.length];
-            System.arraycopy(iv, 0, combined, 0, iv.length);
-            System.arraycopy(encryptedData, 0, combined, iv.length, encryptedData.length);
-
-            return combined;
-
+            return SecurityUtil.encrypt(serializedCredential, secretKey);
         } catch (Exception e) {
             logger.error("Error encrypting credential", e);
             throw new CredentialStoreException("Error encrypting credential", e);
@@ -141,21 +120,8 @@ public class CredentialSerializationUtils {
     public static Credential deserializeCredentialWithDecryption(byte[] encryptedCredential)
             throws CredentialStoreException {
         try {
-            // Get the secret key from keystore
             SecretKey secretKey = getSecretKeyFromKeyStore();
-
-            // Extract IV and encrypted data
-            byte[] iv = new byte[16]; // AES IV size
-            byte[] encryptedData = new byte[encryptedCredential.length - 16];
-            System.arraycopy(encryptedCredential, 0, iv, 0, 16);
-            System.arraycopy(encryptedCredential, 16, encryptedData, 0, encryptedData.length);
-
-            // Decrypt the data
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new javax.crypto.spec.IvParameterSpec(iv));
-            byte[] decryptedData = cipher.doFinal(encryptedData);
-
-            // Deserialize the decrypted data
+            byte[] decryptedData = SecurityUtil.decrypt(encryptedCredential, secretKey);
             return deserializeCredential(decryptedData);
 
         } catch (Exception e) {
@@ -177,25 +143,9 @@ public class CredentialSerializationUtils {
             Credential credential, String keystorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CredentialStoreException {
         try {
-            // First serialize the credential
             byte[] serializedCredential = serializeCredential(credential);
-
-            // Get the secret key from custom keystore
             SecretKey secretKey = getSecretKeyFromCustomKeyStore(keystorePath, keyAlias, passwordCallback);
-
-            // Encrypt the serialized data
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            byte[] encryptedData = cipher.doFinal(serializedCredential);
-
-            // Combine IV and encrypted data
-            byte[] iv = cipher.getIV();
-            byte[] combined = new byte[iv.length + encryptedData.length];
-            System.arraycopy(iv, 0, combined, 0, iv.length);
-            System.arraycopy(encryptedData, 0, combined, iv.length, encryptedData.length);
-
-            return combined;
-
+            return SecurityUtil.encrypt(serializedCredential, secretKey);
         } catch (Exception e) {
             logger.error("Error encrypting credential with custom keystore", e);
             throw new CredentialStoreException("Error encrypting credential with custom keystore", e);
@@ -215,23 +165,9 @@ public class CredentialSerializationUtils {
             byte[] encryptedCredential, String keystorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CredentialStoreException {
         try {
-            // Get the secret key from custom keystore
             SecretKey secretKey = getSecretKeyFromCustomKeyStore(keystorePath, keyAlias, passwordCallback);
-
-            // Extract IV and encrypted data
-            byte[] iv = new byte[16]; // AES IV size
-            byte[] encryptedData = new byte[encryptedCredential.length - 16];
-            System.arraycopy(encryptedCredential, 0, iv, 0, 16);
-            System.arraycopy(encryptedCredential, 16, encryptedData, 0, encryptedData.length);
-
-            // Decrypt the data
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new javax.crypto.spec.IvParameterSpec(iv));
-            byte[] decryptedData = cipher.doFinal(encryptedData);
-
-            // Deserialize the decrypted data
+            byte[] decryptedData = SecurityUtil.decrypt(encryptedCredential, secretKey);
             return deserializeCredential(decryptedData);
-
         } catch (Exception e) {
             logger.error("Error decrypting credential with custom keystore", e);
             throw new CredentialStoreException("Error decrypting credential with custom keystore", e);
@@ -244,12 +180,7 @@ public class CredentialSerializationUtils {
      * @throws Exception if key retrieval fails
      */
     private static SecretKey getSecretKeyFromKeyStore() throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        try (FileInputStream fis = new FileInputStream(KEYSTORE_PATH)) {
-            keyStore.load(fis, KEYSTORE_PASSWORD_CALLBACK.getStorePassword());
-        }
-
-        return (SecretKey) keyStore.getKey(KEY_ALIAS, KEYSTORE_PASSWORD_CALLBACK.getSecretKeyPassPhrase(KEY_ALIAS));
+        return (SecretKey) SecurityUtil.getSymmetricKey(KEYSTORE_PATH, KEY_ALIAS, KEYSTORE_PASSWORD_CALLBACK);
     }
 
     /**
@@ -262,12 +193,7 @@ public class CredentialSerializationUtils {
      */
     private static SecretKey getSecretKeyFromCustomKeyStore(
             String keystorePath, String keyAlias, KeyStorePasswordCallback passwordCallback) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        try (FileInputStream fis = new FileInputStream(keystorePath)) {
-            keyStore.load(fis, passwordCallback.getStorePassword());
-        }
-
-        return (SecretKey) keyStore.getKey(keyAlias, passwordCallback.getSecretKeyPassPhrase(keyAlias));
+        return (SecretKey) SecurityUtil.getSymmetricKey(keystorePath, keyAlias, passwordCallback);
     }
 
     /**
@@ -298,14 +224,5 @@ public class CredentialSerializationUtils {
     public static SecretKey stringToSecretKey(String keyString) {
         byte[] keyBytes = Base64.getDecoder().decode(keyString);
         return new SecretKeySpec(keyBytes, "AES");
-    }
-
-    /**
-     * Interface for keystore password callbacks.
-     */
-    public interface KeyStorePasswordCallback {
-        char[] getStorePassword();
-
-        char[] getSecretKeyPassPhrase(String keyAlias);
     }
 }

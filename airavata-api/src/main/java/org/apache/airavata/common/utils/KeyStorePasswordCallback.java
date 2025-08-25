@@ -55,7 +55,7 @@ public interface KeyStorePasswordCallback {
      * Instead of the actual file.
      * @return The password to open the keystore.
      */
-    char[] getStorePassword() throws RuntimeException;
+    char[] getStorePassword();
 
     /**
      * Caller should implement the interface. Should return the pass phrase for
