@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := start
+.DEFAULT_GOAL := serve-dev
 
 clean:
 	rm -rf distribution
@@ -9,5 +9,11 @@ build: clean
 extract: build
 	cd distribution && tar -xvf apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
 
-start: extract
+serve: extract
 	cd distribution/apache-airavata-api-server-0.21-SNAPSHOT && ./bin/airavata.sh
+
+compile-dev:
+	mvn clean compile -DskipTests -pl airavata-api
+
+serve-dev: compile-dev
+	mvn exec:java -pl airavata-api

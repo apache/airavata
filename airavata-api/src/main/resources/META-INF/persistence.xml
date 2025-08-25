@@ -28,9 +28,15 @@
     <class>org.apache.airavata.profile.commons.tenant.entities.GatewayEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
@@ -97,9 +103,15 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
@@ -111,9 +123,15 @@
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="workflowcatalog_data_new">
@@ -133,9 +151,15 @@
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowHandlerEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="experiment_data_new">
@@ -170,9 +194,15 @@
     <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
@@ -188,9 +218,15 @@
     <class>org.apache.airavata.catalog.sharing.db.entities.UserGroupEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="credential_store_data">
@@ -199,9 +235,15 @@
     <class>org.apache.airavata.credential.store.store.impl.db.CredentialsEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
 </persistence>

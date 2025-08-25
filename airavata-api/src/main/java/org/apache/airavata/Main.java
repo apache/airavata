@@ -45,72 +45,95 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
 
+    static {
+        Thread.currentThread().setName("Main");
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    private static String getLogo() {
+        String logo = "";
+        try (java.io.InputStream is = Main.class.getClassLoader().getResourceAsStream("logo.txt")) {
+            if (is != null) {
+                java.util.Scanner scanner = new java.util.Scanner(is, java.nio.charset.StandardCharsets.UTF_8.name());
+                scanner.useDelimiter("\\A");
+                logo = scanner.hasNext() ? scanner.next() : "";
+                scanner.close();
+            }
+        } catch (Exception e) {
+            logger.warn("Could not load logo.txt", e);
+        }
+        return logo;
+    }
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Starting Airavata API Server .......");
+        String logo = getLogo();
+        System.out.println(logo);
+        Thread.sleep(1000);
+
+        logger.info("Starting Airavata API Server .......");
         var airavataApiServer = new AiravataAPIServer();
         airavataApiServer.start();
 
-        System.out.println("Starting DB Event Manager Runner .......");
+        logger.info("Starting DB Event Manager Runner .......");
         var dbEventManagerRunner = new DBEventManagerRunner();
         dbEventManagerRunner.start();
 
-        System.out.println("Starting Helix Controller .......");
+        logger.info("Starting Helix Controller .......");
         var helixController = new HelixController();
         helixController.start();
 
-        System.out.println("Starting Helix Participant .......");
+        logger.info("Starting Helix Participant .......");
         var participant = new GlobalParticipant();
         participant.run();
 
-        System.out.println("Starting Pre Workflow Manager .......");
+        logger.info("Starting Pre Workflow Manager .......");
         var preWorkflowManager = new PreWorkflowManager();
         preWorkflowManager.run();
 
-        System.out.println("Starting Post Workflow Manager .......");
+        logger.info("Starting Post Workflow Manager .......");
         var postWorkflowManager = new PostWorkflowManager();
         postWorkflowManager.run();
 
         if (ServerSettings.getBooleanSetting("data.interpreter.enabled")) {
-            System.out.println("Starting Data Interpreter .......");
+            logger.info("Starting Data Interpreter .......");
             var dataInterpreter = new DataInterpreterService();
             dataInterpreter.start();
         }
 
         if (ServerSettings.getBooleanSetting("process.rescheduler.enabled")) {
-            System.out.println("Starting Process Rescheduler .......");
+            logger.info("Starting Process Rescheduler .......");
             var processRescheduler = new ProcessReschedulingService();
             processRescheduler.start();
         }
 
         if (ServerSettings.getBooleanSetting("monitor.email.enabled")) {
-            System.out.println("Starting Email Monitor .......");
+            logger.info("Starting Email Monitor .......");
             var emailMonitor = new EmailBasedMonitor();
             emailMonitor.run();
         }
 
         if (ServerSettings.getBooleanSetting("monitor.job.realtime.enabled")) {
-            System.out.println("Starting Realtime Monitor .......");
+            logger.info("Starting Realtime Monitor .......");
             var realTimeMonitor = new RealtimeMonitor();
             realTimeMonitor.run();
         }
 
         if (ServerSettings.getBooleanSetting("monitor.job.submission.enabled")) {
-            System.out.println("Starting Job Submission Monitor .......");
+            logger.info("Starting Job Submission Monitor .......");
             var clusterMonitor = new ClusterStatusMonitorJobScheduler();
             clusterMonitor.scheduleClusterStatusMonitoring();
         }
 
         if (ServerSettings.getBooleanSetting("monitor.compute.resource.enabled")) {
-            System.out.println("Starting Cluster Resource Monitor .......");
+            logger.info("Starting Cluster Resource Monitor .......");
             var resourceMonitor = new ComputationalResourceMonitoringService();
             resourceMonitor.start();
         }
 
         if (ServerSettings.getBooleanSetting("monitor.prometheus.enabled")) {
-            System.out.println("Starting Prometheus Monitor .......");
+            logger.info("Starting Prometheus Monitor .......");
             var monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("monitor.prometheus.host"),
                     ServerSettings.getIntSetting("monitor.prometheus.port"));
@@ -123,7 +146,7 @@ public class Main {
         try {
             Thread.currentThread().join();
         } catch (InterruptedException ex) {
-            System.out.println("Main thread is interrupted! reason: " + ex);
+            logger.info("Main thread is interrupted! reason: " + ex);
             ServerSettings.setStopAllThreads(true);
         }
     }
@@ -248,7 +271,7 @@ public class Main {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to add the password credentials for the default gateway", e);
+            logger.error("Failed to initialize DB entries", e);
         }
     }
 }

@@ -25,8 +25,6 @@ import org.apache.airavata.catalog.sharing.models.*;
 import org.apache.airavata.catalog.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -34,9 +32,11 @@ import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CipresTest {
-    private static final Logger log = LogManager.getLogger(CipresTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CipresTest.class);
 
     public static void main(String[] args) throws InterruptedException, TException, ApplicationSettingsException {
         System.out.println("Hello World!");

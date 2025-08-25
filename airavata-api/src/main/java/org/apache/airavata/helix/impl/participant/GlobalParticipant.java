@@ -67,6 +67,6 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     @SuppressWarnings("WeakerAccess")
     public GlobalParticipant() throws ApplicationSettingsException {
-        super(GlobalParticipant.taskClasses, null);
+        super(GlobalParticipant.taskClasses, "Orchestrator");
     }
 }

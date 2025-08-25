@@ -241,7 +241,6 @@ under the License.
         <configuration>
           <systemPropertyVariables>
             <log4j2.configurationFile>src/main/resources/log4j2.xml</log4j2.configurationFile>
-            <log4j2.messageFactory>org.apache.logging.log4j.message.ParameterizedMessageFactory</log4j2.messageFactory>
           </systemPropertyVariables>
         </configuration>
       </plugin>

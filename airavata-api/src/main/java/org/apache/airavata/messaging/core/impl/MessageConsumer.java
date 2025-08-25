@@ -26,14 +26,14 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.messaging.event.Message;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageConsumer extends DefaultConsumer {
 
-    private static final Logger logger = LogManager.getLogger(MessageConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
 
     private MessageHandler handler;
     private Channel channel;

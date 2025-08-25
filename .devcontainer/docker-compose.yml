@@ -209,6 +209,13 @@ services:
     image: zookeeper:latest
     container_name: zookeeper
     restart: always
+    environment:
+      ZOO_TICK_TIME: 3000
+      ZOO_INIT_LIMIT: 10
+      ZOO_SYNC_LIMIT: 5
+      ZOO_MAX_CLIENT_CNXNS: 0
+      ZOO_AUTOPURGE_SNAPRETAINCOUNT: 3
+      ZOO_AUTOPURGE_PURGEINTERVAL: 24
     networks:
       airavata-network:
         ipv4_address: 192.168.100.17
