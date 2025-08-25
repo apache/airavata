@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.core.repositories.common;
 
 import java.util.Arrays;
-
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DerbyUtil;

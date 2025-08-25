@@ -21,7 +21,6 @@ package org.apache.airavata.credential.store.store.impl;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
@@ -52,18 +51,19 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
     public Credential getCredential(String gatewayId, String tokenId) throws CredentialStoreException {
         try {
             // Get from JPA repository
-            CredentialsEntity credentialsEntity = credentialsRepository.get(
-                new CredentialsEntity.CredentialsPK(gatewayId, tokenId));
-            
+            CredentialsEntity credentialsEntity =
+                    credentialsRepository.get(new CredentialsEntity.CredentialsPK(gatewayId, tokenId));
+
             if (credentialsEntity != null) {
                 // Deserialize the credential from byte array
-                return CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
+                return CredentialSerializationUtils.deserializeCredentialWithDecryption(
+                        credentialsEntity.getCredential());
             }
-            
+
             return null;
         } catch (Exception e) {
-            throw new CredentialStoreException("Error retrieving credential for gateway: " + gatewayId + 
-                ", token: " + tokenId, e);
+            throw new CredentialStoreException(
+                    "Error retrieving credential for gateway: " + gatewayId + ", token: " + tokenId, e);
         }
     }
 
@@ -71,12 +71,13 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         try {
             List<CredentialsEntity> credentialsEntities = credentialsRepository.getAll();
             List<Credential> credentials = new java.util.ArrayList<>();
-            
+
             for (CredentialsEntity entity : credentialsEntities) {
-                Credential credential = CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
+                Credential credential =
+                        CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
                 credentials.add(credential);
             }
-            
+
             return credentials;
         } catch (Exception e) {
             throw new CredentialStoreException("Error retrieving all credentials", e);
@@ -88,12 +89,13 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         try {
             List<CredentialsEntity> credentialsEntities = credentialsRepository.findByGatewayId(gatewayId);
             List<Credential> credentials = new java.util.ArrayList<>();
-            
+
             for (CredentialsEntity entity : credentialsEntities) {
-                Credential credential = CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
+                Credential credential =
+                        CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
                 credentials.add(credential);
             }
-            
+
             return credentials;
         } catch (Exception e) {
             throw new CredentialStoreException("Error retrieving credentials for gateway: " + gatewayId, e);
@@ -105,17 +107,18 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
             throws CredentialStoreException {
         try {
             List<Credential> credentials = new java.util.ArrayList<>();
-            
+
             for (String tokenId : accessibleTokenIds) {
-                CredentialsEntity credentialsEntity = credentialsRepository.get(
-                    new CredentialsEntity.CredentialsPK(gatewayId, tokenId));
-                
+                CredentialsEntity credentialsEntity =
+                        credentialsRepository.get(new CredentialsEntity.CredentialsPK(gatewayId, tokenId));
+
                 if (credentialsEntity != null) {
-                    Credential credential = CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
+                    Credential credential = CredentialSerializationUtils.deserializeCredentialWithDecryption(
+                            credentialsEntity.getCredential());
                     credentials.add(credential);
                 }
             }
-            
+
             return credentials;
         } catch (Exception e) {
             throw new CredentialStoreException("Error retrieving accessible credentials for gateway: " + gatewayId, e);
@@ -127,12 +130,13 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         try {
             List<CredentialsEntity> credentialsEntities = credentialsRepository.findByPortalUserId(userName);
             List<Credential> credentials = new java.util.ArrayList<>();
-            
+
             for (CredentialsEntity entity : credentialsEntities) {
-                Credential credential = CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
+                Credential credential =
+                        CredentialSerializationUtils.deserializeCredentialWithDecryption(entity.getCredential());
                 credentials.add(credential);
             }
-            
+
             return credentials;
         } catch (Exception e) {
             throw new CredentialStoreException("Error retrieving credentials for user: " + userName, e);
@@ -141,31 +145,31 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     public String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException {
         try {
-            CredentialsEntity credentialsEntity = credentialsRepository.get(
-                new CredentialsEntity.CredentialsPK(gatewayName, tokenId));
-            
+            CredentialsEntity credentialsEntity =
+                    credentialsRepository.get(new CredentialsEntity.CredentialsPK(gatewayName, tokenId));
+
             if (credentialsEntity != null) {
                 return credentialsEntity.getPortalUserId();
             }
-            
+
             return null;
         } catch (Exception e) {
-            throw new CredentialStoreException("Error retrieving portal user for gateway: " + gatewayName + 
-                ", token: " + tokenId, e);
+            throw new CredentialStoreException(
+                    "Error retrieving portal user for gateway: " + gatewayName + ", token: " + tokenId, e);
         }
     }
 
     public CertificateAuditInfo getAuditInfo(String gatewayName, String tokenId) throws CredentialStoreException {
         try {
-            CredentialsEntity credentialsEntity = credentialsRepository.get(
-                new CredentialsEntity.CredentialsPK(gatewayName, tokenId));
-            
+            CredentialsEntity credentialsEntity =
+                    credentialsRepository.get(new CredentialsEntity.CredentialsPK(gatewayName, tokenId));
+
             if (credentialsEntity == null) {
                 return null;
             }
 
-            CertificateCredential certificateCredential = 
-                (CertificateCredential) CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
+            CertificateCredential certificateCredential = (CertificateCredential)
+                    CredentialSerializationUtils.deserializeCredentialWithDecryption(credentialsEntity.getCredential());
 
             CertificateAuditInfo certificateAuditInfo = new CertificateAuditInfo();
             CommunityUser retrievedUser = certificateCredential.getCommunityUser();
@@ -179,8 +183,8 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
             return certificateAuditInfo;
         } catch (Exception e) {
-            throw new CredentialStoreException("Error retrieving audit info for gateway: " + gatewayName + 
-                ", token: " + tokenId, e);
+            throw new CredentialStoreException(
+                    "Error retrieving audit info for gateway: " + gatewayName + ", token: " + tokenId, e);
         }
     }
 
@@ -188,16 +192,16 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
             throws CredentialStoreException {
         try {
             // Find community user entities by gateway and community user name
-            List<CommunityUserEntity> communityUserEntities = 
-                communityUserRepository.findByGatewayIdAndCommunityUserName(gatewayName, communityUser);
-            
+            List<CommunityUserEntity> communityUserEntities =
+                    communityUserRepository.findByGatewayIdAndCommunityUserName(gatewayName, communityUser);
+
             for (CommunityUserEntity entity : communityUserEntities) {
                 entity.setCommunityUserEmail(email);
                 communityUserRepository.update(entity);
             }
         } catch (Exception e) {
-            throw new CredentialStoreException("Error updating community user email for gateway: " + gatewayName + 
-                ", user: " + communityUser, e);
+            throw new CredentialStoreException(
+                    "Error updating community user email for gateway: " + gatewayName + ", user: " + communityUser, e);
         }
     }
 
@@ -205,8 +209,8 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         try {
             credentialsRepository.delete(new CredentialsEntity.CredentialsPK(gatewayName, tokenId));
         } catch (Exception e) {
-            throw new CredentialStoreException("Error removing credentials for gateway: " + gatewayName + 
-                ", token: " + tokenId, e);
+            throw new CredentialStoreException(
+                    "Error removing credentials for gateway: " + gatewayName + ", token: " + tokenId, e);
         }
     }
 
@@ -214,11 +218,11 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
     public String getGatewayID(String tokenId) throws CredentialStoreException {
         try {
             List<CredentialsEntity> credentialsEntities = credentialsRepository.findByTokenId(tokenId);
-            
+
             if (!credentialsEntities.isEmpty()) {
                 return credentialsEntities.get(0).getGatewayId();
             }
-            
+
             return null;
         } catch (Exception e) {
             throw new CredentialStoreException("Error retrieving gateway ID for token: " + tokenId, e);

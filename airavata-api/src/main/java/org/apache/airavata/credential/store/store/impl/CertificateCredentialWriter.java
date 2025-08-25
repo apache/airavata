@@ -54,24 +54,24 @@ public class CertificateCredentialWriter implements CredentialWriter {
         try {
             // Write community user
             writeCommunityUser(certificateCredential.getCommunityUser(), credential.getToken());
-            
+
             // First delete existing credentials
-            credentialsRepository.delete(
-                new CredentialsEntity.CredentialsPK(
-                    certificateCredential.getCommunityUser().getGatewayName(),
-                    certificateCredential.getToken()));
-            
+            credentialsRepository.delete(new CredentialsEntity.CredentialsPK(
+                    certificateCredential.getCommunityUser().getGatewayName(), certificateCredential.getToken()));
+
             // Create new credentials entity
             CredentialsEntity credentialsEntity = new CredentialsEntity();
-            credentialsEntity.setGatewayId(certificateCredential.getCommunityUser().getGatewayName());
+            credentialsEntity.setGatewayId(
+                    certificateCredential.getCommunityUser().getGatewayName());
             credentialsEntity.setTokenId(certificateCredential.getToken());
             credentialsEntity.setPortalUserId(certificateCredential.getPortalUserName());
             credentialsEntity.setCredentialOwnerType(certificateCredential.getCredentialOwnerType());
-            
+
             // Serialize and encrypt the credential
-            byte[] serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+            byte[] serializedCredential =
+                    CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
             credentialsEntity.setCredential(serializedCredential);
-            
+
             // Save the entity
             credentialsRepository.create(credentialsEntity);
 
@@ -80,8 +80,7 @@ public class CertificateCredentialWriter implements CredentialWriter {
         }
     }
 
-    public void writeCommunityUser(CommunityUser communityUser, String token)
-            throws CredentialStoreException {
+    public void writeCommunityUser(CommunityUser communityUser, String token) throws CredentialStoreException {
 
         // First delete existing community user
         communityUserRepository.deleteByTokenId(token);
@@ -96,6 +95,4 @@ public class CertificateCredentialWriter implements CredentialWriter {
         // Persist new community user
         communityUserRepository.create(communityUserEntity);
     }
-
-
 }

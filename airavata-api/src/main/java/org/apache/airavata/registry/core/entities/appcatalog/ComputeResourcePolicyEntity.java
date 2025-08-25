@@ -31,7 +31,6 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
  * The persistent class for the compute_resource_policy database table.
  */

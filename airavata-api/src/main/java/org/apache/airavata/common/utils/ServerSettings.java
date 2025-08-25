@@ -76,7 +76,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_USERNAME = "metascheduler.username";
     public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "metascheduler.job.scanning.interval";
     public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "metascheduler.cluster.scanning.interval";
-    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "metascheduler.cluster.scanning.parallel.jobs";
+    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS =
+            "metascheduler.cluster.scanning.parallel.jobs";
     public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
             "metascheduler.maximum.rescheduler.threshold";

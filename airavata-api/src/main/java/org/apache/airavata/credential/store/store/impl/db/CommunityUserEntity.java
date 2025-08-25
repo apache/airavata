@@ -89,9 +89,9 @@ public class CommunityUserEntity implements Serializable {
         if (this == o) return true;
         if (!(o instanceof CommunityUserEntity)) return false;
         CommunityUserEntity that = (CommunityUserEntity) o;
-        return Objects.equals(gatewayId, that.gatewayId) &&
-               Objects.equals(communityUserName, that.communityUserName) &&
-               Objects.equals(tokenId, that.tokenId);
+        return Objects.equals(gatewayId, that.gatewayId)
+                && Objects.equals(communityUserName, that.communityUserName)
+                && Objects.equals(tokenId, that.tokenId);
     }
 
     @Override
@@ -141,9 +141,9 @@ public class CommunityUserEntity implements Serializable {
             if (this == o) return true;
             if (!(o instanceof CommunityUserPK)) return false;
             CommunityUserPK that = (CommunityUserPK) o;
-            return Objects.equals(gatewayId, that.gatewayId) &&
-                   Objects.equals(communityUserName, that.communityUserName) &&
-                   Objects.equals(tokenId, that.tokenId);
+            return Objects.equals(gatewayId, that.gatewayId)
+                    && Objects.equals(communityUserName, that.communityUserName)
+                    && Objects.equals(tokenId, that.tokenId);
         }
 
         @Override

@@ -54,7 +54,9 @@ public class RealtimeMonitor extends AbstractMonitor {
     private Consumer<String, String> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("monitor.job.realtime.broker.consumer.group"));
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                ServerSettings.getSetting("monitor.job.realtime.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.

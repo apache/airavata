@@ -48,10 +48,11 @@ public class SSHCredentialWriter implements CredentialWriter {
     public void writeCredentials(Credential credential) throws CredentialStoreException {
         try {
             SSHCredential sshCredential = (SSHCredential) credential;
-            
+
             // First delete existing credentials
-            credentialsRepository.delete(new CredentialsEntity.CredentialsPK(sshCredential.getGateway(), sshCredential.getToken()));
-            
+            credentialsRepository.delete(
+                    new CredentialsEntity.CredentialsPK(sshCredential.getGateway(), sshCredential.getToken()));
+
             // Create new credentials entity
             CredentialsEntity credentialsEntity = new CredentialsEntity();
             credentialsEntity.setGatewayId(sshCredential.getGateway());
@@ -60,14 +61,14 @@ public class SSHCredentialWriter implements CredentialWriter {
             credentialsEntity.setTimePersisted(new Timestamp(new Date().getTime()));
             credentialsEntity.setDescription(sshCredential.getDescription());
             credentialsEntity.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
-            
+
             // Serialize and encrypt the credential
             byte[] serializedCredential = CredentialSerializationUtils.serializeCredentialWithEncryption(sshCredential);
             credentialsEntity.setCredential(serializedCredential);
-            
+
             // Save the entity
             credentialsRepository.create(credentialsEntity);
-            
+
         } catch (Exception e) {
             logger.error("Error writing SSH credentials", e);
             throw new CredentialStoreException("Error writing SSH credentials", e);

@@ -37,7 +37,6 @@ import java.io.Serializable;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
-
 /**
  * The persistent class for the group_compute_resource_preference database table.
  */

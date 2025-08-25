@@ -46,8 +46,18 @@ public class SSHAccountProvisionerConfiguration {
 
     @ManyToOne(targetEntity = ComputeResourcePreferenceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumns({
-        @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false, insertable = false, updatable = false),
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false, insertable = false, updatable = false)
+        @JoinColumn(
+                name = "GATEWAY_ID",
+                referencedColumnName = "GATEWAY_ID",
+                nullable = false,
+                insertable = false,
+                updatable = false),
+        @JoinColumn(
+                name = "RESOURCE_ID",
+                referencedColumnName = "RESOURCE_ID",
+                nullable = false,
+                insertable = false,
+                updatable = false)
     })
     private ComputeResourcePreferenceEntity computeResourcePreference;
 

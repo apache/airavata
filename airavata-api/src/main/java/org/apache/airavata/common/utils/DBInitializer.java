@@ -21,7 +21,6 @@ package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +44,13 @@ public class DBInitializer {
             var dbUtil = new DBUtil(jdbcConfig);
             conn = dbUtil.getConnection();
             if (!DatabaseCreator.doesTableExist(checkTableName, conn)) {
-              logger.info("Check failed, table: " + checkTableName + " not exists. Executing init script: " + initScriptPrefix);
-              DatabaseCreator.initializeTables(initScriptPrefix, conn);
-              logger.info("Executed init script: " + initScriptPrefix);
+                logger.info("Check failed, table: " + checkTableName + " not exists. Executing init script: "
+                        + initScriptPrefix);
+                DatabaseCreator.initializeTables(initScriptPrefix, conn);
+                logger.info("Executed init script: " + initScriptPrefix);
             } else {
-              logger.info("Check passed, table: " + checkTableName + " exists. Skipping init script: " + initScriptPrefix);
+                logger.info("Check passed, table: " + checkTableName + " exists. Skipping init script: "
+                        + initScriptPrefix);
             }
             conn.commit();
 

@@ -19,9 +19,8 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import java.io.Serializable;
-
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 /**
  * The persistent class for the user_storage_preference database table.
@@ -55,7 +54,7 @@ public class UserStoragePreferenceEntity implements Serializable {
 
     @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
     @JoinColumns({
-        @JoinColumn(name = "USER_ID", insertable = false, updatable = false), 
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false),
         @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
     })
     private UserResourceProfileEntity userResourceProfile;

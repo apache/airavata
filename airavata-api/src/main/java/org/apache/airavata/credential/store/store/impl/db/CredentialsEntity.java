@@ -55,8 +55,14 @@ public class CredentialsEntity implements Serializable {
 
     public CredentialsEntity() {}
 
-    public CredentialsEntity(String gatewayId, String tokenId, byte[] credential, String portalUserId,
-                            Timestamp timePersisted, String description, CredentialOwnerType credentialOwnerType) {
+    public CredentialsEntity(
+            String gatewayId,
+            String tokenId,
+            byte[] credential,
+            String portalUserId,
+            Timestamp timePersisted,
+            String description,
+            CredentialOwnerType credentialOwnerType) {
         this.gatewayId = gatewayId;
         this.tokenId = tokenId;
         this.credential = credential;

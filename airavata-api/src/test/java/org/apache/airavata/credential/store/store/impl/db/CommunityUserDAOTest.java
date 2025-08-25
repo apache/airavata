@@ -87,7 +87,8 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             entity = new CommunityUserEntity("gw1", "ogce2", "Token2", "ogce@sciencegateway.org");
             communityUserRepository.create(entity);
 
-            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            List<CommunityUserEntity> users =
+                    communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
             assertNotNull(users);
             assertFalse(users.isEmpty());
             assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());
@@ -124,7 +125,8 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
             communityUserRepository.create(entity);
 
-            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            List<CommunityUserEntity> users =
+                    communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
             assertNotNull(users);
             assertFalse(users.isEmpty());
 
@@ -148,7 +150,8 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
             communityUserRepository.create(entity);
 
-            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            List<CommunityUserEntity> users =
+                    communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
             assertNotNull(users);
             assertFalse(users.isEmpty());
 
@@ -172,7 +175,8 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
             CommunityUserEntity entity = new CommunityUserEntity("gw1", "ogce", "Token1", "ogce@sciencegateway.org");
             communityUserRepository.create(entity);
 
-            List<CommunityUserEntity> users = communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
+            List<CommunityUserEntity> users =
+                    communityUserRepository.findByGatewayIdAndCommunityUserName("gw1", "ogce");
             assertNotNull(users);
             assertFalse(users.isEmpty());
             assertEquals("ogce@sciencegateway.org", users.get(0).getCommunityUserEmail());

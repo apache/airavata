@@ -64,12 +64,18 @@ public class ComputeResourceReservationEntity implements Serializable {
 
     @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
     @JoinColumns({
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false, updatable = false, insertable = false),
+        @JoinColumn(
+                name = "RESOURCE_ID",
+                referencedColumnName = "RESOURCE_ID",
+                nullable = false,
+                updatable = false,
+                insertable = false),
         @JoinColumn(
                 name = "GROUP_RESOURCE_PROFILE_ID",
                 referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
                 nullable = false,
-                updatable = false, insertable = false)
+                updatable = false,
+                insertable = false)
     })
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 

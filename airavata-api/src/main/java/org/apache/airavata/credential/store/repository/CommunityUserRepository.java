@@ -19,16 +19,18 @@
 */
 package org.apache.airavata.credential.store.repository;
 
-import org.apache.airavata.credential.store.store.impl.db.CommunityUserEntity;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import org.apache.airavata.credential.store.store.impl.db.CommunityUserEntity;
 
 /**
  * Repository for CommunityUserEntity providing CRUD operations
  * and custom query methods for community user management.
  */
-public class CommunityUserRepository extends AbstractCredentialStoreRepository<CommunityUserEntity, CommunityUserEntity, CommunityUserEntity.CommunityUserPK> {
+public class CommunityUserRepository
+        extends AbstractCredentialStoreRepository<
+                CommunityUserEntity, CommunityUserEntity, CommunityUserEntity.CommunityUserPK> {
 
     public CommunityUserRepository() {
         super(CommunityUserEntity.class, CommunityUserEntity.class);
@@ -87,7 +89,8 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @return list of community users matching the criteria
      */
     public List<CommunityUserEntity> findByGatewayIdAndCommunityUserName(String gatewayId, String communityUserName) {
-        String queryString = "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.communityUserName = :communityUserName";
+        String queryString =
+                "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.communityUserName = :communityUserName";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("communityUserName", communityUserName);
@@ -101,7 +104,8 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @return list of community users matching the criteria
      */
     public List<CommunityUserEntity> findByGatewayIdAndTokenId(String gatewayId, String tokenId) {
-        String queryString = "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.tokenId = :tokenId";
+        String queryString =
+                "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.tokenId = :tokenId";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("tokenId", tokenId);
@@ -115,7 +119,8 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @return list of community users matching the criteria
      */
     public List<CommunityUserEntity> findByCommunityUserNameAndTokenId(String communityUserName, String tokenId) {
-        String queryString = "SELECT c FROM CommunityUserEntity c WHERE c.communityUserName = :communityUserName AND c.tokenId = :tokenId";
+        String queryString =
+                "SELECT c FROM CommunityUserEntity c WHERE c.communityUserName = :communityUserName AND c.tokenId = :tokenId";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("communityUserName", communityUserName);
         parameters.put("tokenId", tokenId);
@@ -141,7 +146,8 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @return list of community users matching the criteria
      */
     public List<CommunityUserEntity> findByGatewayIdAndCommunityUserEmail(String gatewayId, String communityUserEmail) {
-        String queryString = "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.communityUserEmail = :communityUserEmail";
+        String queryString =
+                "SELECT c FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId AND c.communityUserEmail = :communityUserEmail";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("communityUserEmail", communityUserEmail);
@@ -155,8 +161,10 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @param tokenId the token ID
      * @return true if the community user exists, false otherwise
      */
-    public boolean existsByGatewayIdAndCommunityUserNameAndTokenId(String gatewayId, String communityUserName, String tokenId) {
-        CommunityUserEntity.CommunityUserPK pk = new CommunityUserEntity.CommunityUserPK(gatewayId, communityUserName, tokenId);
+    public boolean existsByGatewayIdAndCommunityUserNameAndTokenId(
+            String gatewayId, String communityUserName, String tokenId) {
+        CommunityUserEntity.CommunityUserPK pk =
+                new CommunityUserEntity.CommunityUserPK(gatewayId, communityUserName, tokenId);
         return exists(pk);
     }
 
@@ -168,7 +176,7 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
         List<CommunityUserEntity> users = findByGatewayId(gatewayId);
         for (CommunityUserEntity user : users) {
             CommunityUserEntity.CommunityUserPK pk = new CommunityUserEntity.CommunityUserPK(
-                user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
+                    user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
             delete(pk);
         }
     }
@@ -181,7 +189,7 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
         List<CommunityUserEntity> users = findByTokenId(tokenId);
         for (CommunityUserEntity user : users) {
             CommunityUserEntity.CommunityUserPK pk = new CommunityUserEntity.CommunityUserPK(
-                user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
+                    user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
             delete(pk);
         }
     }
@@ -195,7 +203,7 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
         List<CommunityUserEntity> users = findByGatewayIdAndCommunityUserName(gatewayId, communityUserName);
         for (CommunityUserEntity user : users) {
             CommunityUserEntity.CommunityUserPK pk = new CommunityUserEntity.CommunityUserPK(
-                user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
+                    user.getGatewayId(), user.getCommunityUserName(), user.getTokenId());
             delete(pk);
         }
     }
@@ -247,7 +255,8 @@ public class CommunityUserRepository extends AbstractCredentialStoreRepository<C
      * @return list of distinct community user names for the gateway
      */
     public List<String> findDistinctCommunityUserNamesByGatewayId(String gatewayId) {
-        String queryString = "SELECT DISTINCT c.communityUserName FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId";
+        String queryString =
+                "SELECT DISTINCT c.communityUserName FROM CommunityUserEntity c WHERE c.gatewayId = :gatewayId";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         return execute(entityManager -> {

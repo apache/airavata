@@ -19,18 +19,20 @@
 */
 package org.apache.airavata.credential.store.repository;
 
-import org.apache.airavata.credential.store.store.impl.db.CredentialsEntity;
-import org.apache.airavata.credential.store.credential.CredentialOwnerType;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.sql.Timestamp;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsEntity;
 
 /**
  * Repository for CredentialsEntity providing CRUD operations
  * and custom query methods for credential management.
  */
-public class CredentialsRepository extends AbstractCredentialStoreRepository<CredentialsEntity, CredentialsEntity, CredentialsEntity.CredentialsPK> {
+public class CredentialsRepository
+        extends AbstractCredentialStoreRepository<
+                CredentialsEntity, CredentialsEntity, CredentialsEntity.CredentialsPK> {
 
     public CredentialsRepository() {
         super(CredentialsEntity.class, CredentialsEntity.class);
@@ -77,7 +79,8 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
      * @return list of credentials matching the criteria
      */
     public List<CredentialsEntity> findByGatewayIdAndTokenId(String gatewayId, String tokenId) {
-        String queryString = "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.tokenId = :tokenId";
+        String queryString =
+                "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.tokenId = :tokenId";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("tokenId", tokenId);
@@ -103,7 +106,8 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
      * @return list of credentials matching the criteria
      */
     public List<CredentialsEntity> findByGatewayIdAndPortalUserId(String gatewayId, String portalUserId) {
-        String queryString = "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.portalUserId = :portalUserId";
+        String queryString =
+                "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.portalUserId = :portalUserId";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("portalUserId", portalUserId);
@@ -128,8 +132,10 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
      * @param credentialOwnerType the credential owner type
      * @return list of credentials matching the criteria
      */
-    public List<CredentialsEntity> findByGatewayIdAndCredentialOwnerType(String gatewayId, CredentialOwnerType credentialOwnerType) {
-        String queryString = "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.credentialOwnerType = :credentialOwnerType";
+    public List<CredentialsEntity> findByGatewayIdAndCredentialOwnerType(
+            String gatewayId, CredentialOwnerType credentialOwnerType) {
+        String queryString =
+                "SELECT c FROM CredentialsEntity c WHERE c.gatewayId = :gatewayId AND c.credentialOwnerType = :credentialOwnerType";
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("gatewayId", gatewayId);
         parameters.put("credentialOwnerType", credentialOwnerType);
@@ -216,8 +222,8 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
     public void deleteByGatewayId(String gatewayId) {
         List<CredentialsEntity> credentials = findByGatewayId(gatewayId);
         for (CredentialsEntity credential : credentials) {
-            CredentialsEntity.CredentialsPK pk = new CredentialsEntity.CredentialsPK(
-                credential.getGatewayId(), credential.getTokenId());
+            CredentialsEntity.CredentialsPK pk =
+                    new CredentialsEntity.CredentialsPK(credential.getGatewayId(), credential.getTokenId());
             delete(pk);
         }
     }
@@ -229,8 +235,8 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
     public void deleteByTokenId(String tokenId) {
         List<CredentialsEntity> credentials = findByTokenId(tokenId);
         for (CredentialsEntity credential : credentials) {
-            CredentialsEntity.CredentialsPK pk = new CredentialsEntity.CredentialsPK(
-                credential.getGatewayId(), credential.getTokenId());
+            CredentialsEntity.CredentialsPK pk =
+                    new CredentialsEntity.CredentialsPK(credential.getGatewayId(), credential.getTokenId());
             delete(pk);
         }
     }
@@ -242,8 +248,8 @@ public class CredentialsRepository extends AbstractCredentialStoreRepository<Cre
     public void deleteByPortalUserId(String portalUserId) {
         List<CredentialsEntity> credentials = findByPortalUserId(portalUserId);
         for (CredentialsEntity credential : credentials) {
-            CredentialsEntity.CredentialsPK pk = new CredentialsEntity.CredentialsPK(
-                credential.getGatewayId(), credential.getTokenId());
+            CredentialsEntity.CredentialsPK pk =
+                    new CredentialsEntity.CredentialsPK(credential.getGatewayId(), credential.getTokenId());
             delete(pk);
         }
     }

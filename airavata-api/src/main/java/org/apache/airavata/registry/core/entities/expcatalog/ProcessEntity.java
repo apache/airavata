@@ -135,7 +135,12 @@ public class ProcessEntity implements Serializable {
     private List<TaskEntity> tasks;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false, insertable = false)
+    @JoinColumn(
+            name = "EXPERIMENT_ID",
+            referencedColumnName = "EXPERIMENT_ID",
+            nullable = false,
+            updatable = false,
+            insertable = false)
     private ExperimentEntity experiment;
 
     @OneToMany(

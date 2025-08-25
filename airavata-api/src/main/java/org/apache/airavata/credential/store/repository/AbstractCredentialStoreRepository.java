@@ -21,23 +21,22 @@ package org.apache.airavata.credential.store.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.credential.store.utils.CredentialStoreJPAUtils;
 import org.apache.airavata.credential.store.utils.CredentialStoreJPAUtils.Committer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Abstract repository class for credential store entities.
  * Provides common CRUD operations and query methods.
  */
 public abstract class AbstractCredentialStoreRepository<T, E, Id> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractCredentialStoreRepository.class);
-    
+
     private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 

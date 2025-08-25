@@ -31,7 +31,8 @@ public class AppCatalogJPAUtils {
     // the other appcatalog_data persistence context in airavata-registry-core
     public static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
     private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
-    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory =
+            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
     private static EntityManager entityManagerInstance = null;
 
     public static synchronized EntityManager getEntityManager() {

@@ -21,20 +21,21 @@ package org.apache.airavata.credential.store.utils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 /**
  * JPA utility class for credential store operations.
  * Provides EntityManager management and transaction handling.
  */
 public class CredentialStoreJPAUtils {
-    
+
     private static final String PERSISTENCE_UNIT_NAME = "credential_store_data";
     private static final JDBCConfig JDBC_CONFIG = new CredentialStoreJDBCConfig();
-    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory =
+            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
     private static EntityManager entityManagerInstance = null;
 
     public static synchronized EntityManager getEntityManager() {
@@ -64,7 +65,7 @@ public class CredentialStoreJPAUtils {
      * JDBC configuration for credential store database.
      */
     private static class CredentialStoreJDBCConfig implements JDBCConfig {
-        
+
         @Override
         public String getDriver() {
             try {

@@ -27,7 +27,8 @@ import org.apache.airavata.common.utils.JPAUtils;
 public class SharingRegJPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
     private static final JDBCConfig JDBC_CONFIG = new SharingRegistryJDBCConfig();
-    private static final EntityManagerFactory factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static final EntityManagerFactory factory =
+            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
     private static EntityManager entityManagerInstance = null;
 
     public static synchronized EntityManager getEntityManager() {
