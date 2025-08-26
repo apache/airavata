@@ -212,11 +212,10 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             try {
                 Thread.currentThread().join();
             } catch (InterruptedException ex) {
-                logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
+                logger.info("Participant: " + participantName + ", is interrupted. Shutting down.");
             }
-
         } catch (InterruptedException ex) {
-            logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
+            logger.info("Participant: " + participantName + ", is interrupted. Shutting down.");
         } catch (Exception ex) {
             logger.error("Error in connect() for Participant: " + participantName + ", reason: " + ex, ex);
         } finally {

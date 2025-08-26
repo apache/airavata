@@ -197,6 +197,7 @@ public class AiravataAPIServer implements IServer {
         if (server != null && server.isServing()) {
             setStatus(ServerStatus.STOPING);
             server.stop();
+            logger.info("Airavata Thrift API Stopped.");
         }
     }
 

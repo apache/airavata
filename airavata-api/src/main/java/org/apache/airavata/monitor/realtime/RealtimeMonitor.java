@@ -31,7 +31,6 @@ import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -66,36 +65,53 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
+    private void closeConsumer(Consumer<String, String> consumer) {
+        if (consumer != null) {
+            try {
+                consumer.unsubscribe();
+                consumer.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     private void runConsumer() {
-        final Consumer<String, String> consumer;
+        logger.info("RealtimeMonitor started.");
+        Consumer<String, String> consumer;
         try {
             consumer = createConsumer();
         } catch (ApplicationSettingsException e) {
             logger.error("Error while creating consumer", e);
             return;
         }
-
         try {
-            while (true) {
-                final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-                RegistryService.Iface registry = getRegistry();
-                consumerRecords.forEach(record -> {
-                    try {
-                        process(record.key(), record.value(), registry);
-                    } catch (Exception e) {
-                        logger.error("Error while processing message {}", record.value(), e);
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    var consumerRecords = consumer.poll(Duration.ofSeconds(1));
+                    var registry = getRegistry();
+                    consumerRecords.forEach(record -> {
+                        try {
+                            process(record.key(), record.value(), registry);
+                        } catch (Exception e) {
+                            logger.error("Error while processing message {}", record.value(), e);
+                        }
+                    });
+                    consumer.commitAsync();
+                } catch (Exception e) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException("RealtimeMonitor is interrupted.");
                     }
-                });
-                consumer.commitAsync();
-                if (Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedException("RealtimeMonitor is interrupted!");
+                    logger.error("Error while polling consumer", e);
                 }
             }
-        } catch (InterruptedException ex) {
-            logger.error("RealtimeMonitor is interrupted! reason: " + ex, ex);
+        } catch (InterruptedException e) {
+            logger.info("RealtimeMonitor is interrupted. Shutting down.");
+            closeConsumer(consumer);
+            consumer = null;
         } finally {
-            consumer.close();
+            closeConsumer(consumer);
         }
+        logger.info("RealtimeMonitor stopped.");
     }
 
     private void process(String key, String value, RegistryService.Iface registry) throws MonitoringException {

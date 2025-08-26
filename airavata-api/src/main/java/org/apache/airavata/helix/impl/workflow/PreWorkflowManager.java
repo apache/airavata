@@ -76,15 +76,17 @@ public class PreWorkflowManager extends WorkflowManager {
     }
 
     public void startServer() {
+        logger.info("PreWorkflowManager started.");
         try {
             super.initComponents();
             initLaunchSubscriber();
             Thread.currentThread().join();
         } catch (InterruptedException ex) {
-            logger.error("PreWorkflowManager is interrupted! reason: " + ex, ex);
+            logger.info("PreWorkflowManager is interrupted. Shutting down.");
         } catch (Exception e) {
-            logger.error("Error starting PreWorkflowManager", e);
+            logger.error("Error running PreWorkflowManager", e);
         }
+        logger.info("PreWorkflowManager stopped.");
     }
 
     public void stopServer() {}

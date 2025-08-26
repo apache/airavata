@@ -71,6 +71,7 @@ public class Main {
         String logo = getLogo();
         System.out.println(logo);
         Thread.sleep(1000);
+        logger.info("Starting Airavata Services...");
 
         logger.info("Starting Airavata API Server .......");
         var airavataApiServer = new AiravataAPIServer();
@@ -137,8 +138,10 @@ public class Main {
             var monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("monitor.prometheus.host"),
                     ServerSettings.getIntSetting("monitor.prometheus.port"));
-            monitoringServer.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
+            var thread = new Thread(monitoringServer::start, "MonitoringServer");
+            thread.setDaemon(true);
+            thread.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop, "MonitoringServer.ShutdownHook"));
         }
 
         postInit();
@@ -146,9 +149,10 @@ public class Main {
         try {
             Thread.currentThread().join();
         } catch (InterruptedException ex) {
-            logger.info("Main thread is interrupted! reason: " + ex);
+            logger.info("Main thread is interrupted. Shutting down Airavata Services.");
             ServerSettings.setStopAllThreads(true);
         }
+        logger.info("Airavata Services stopped.");
     }
 
     public static void postInit() {

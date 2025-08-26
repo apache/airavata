@@ -173,7 +173,13 @@ public class EmailBasedMonitor extends AbstractMonitor {
     private void runEmailMonitor() {
         Session session = null;
         SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-        while (!ServerSettings.isStopAllThreads()) {
+        long sleepTime = Duration.ofMinutes(1).toMillis();
+        try {
+            sleepTime = ServerSettings.getEmailMonitorPeriod();
+        } catch (Exception e) {
+            log.warn("Email monitor period was not found. Using default (1 minute)", e);
+        }
+        while (!ServerSettings.isStopAllThreads() && !Thread.currentThread().isInterrupted()) {
             try {
                 if (session == null) {
                     session = Session.getDefaultInstance(properties);
@@ -214,11 +220,6 @@ public class EmailBasedMonitor extends AbstractMonitor {
                     }
                     emailFolder.close(false);
                 }
-                if (Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedException("EmailBasedMonitor is interrupted!");
-                }
-            } catch (InterruptedException ex) {
-                log.error("EmailBasedMonitor is interrupted! reason: " + ex, ex);
             } catch (MessagingException e) {
                 log.error("Couldn't connect to the store ", e);
             } catch (Throwable e) {
@@ -234,16 +235,14 @@ public class EmailBasedMonitor extends AbstractMonitor {
                 } catch (MessagingException e) {
                     log.error("Store close operation failed, couldn't close store", e);
                 }
-                try {
-                    Thread.sleep(ServerSettings.getEmailMonitorPeriod());
-                } catch (InterruptedException e) {
-                    log.error("interrupted while sleeping ", e);
-                } catch (Exception e) {
-                    log.error("exception thrown when attempting to sleep ", e);
-                }
+            }
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                log.info("interrupt received. shutting down email monitor.");
             }
         }
-        log.info("Email monitoring daemon stopped");
+        log.info("Email monitor stopped");
     }
 
     @Override

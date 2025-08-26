@@ -319,6 +319,7 @@ public class PostWorkflowManager extends WorkflowManager {
     }
 
     public void startServer() {
+        logger.info("PostWorkflowManager started.");
         try {
             init();
         } catch (Exception e) {
@@ -332,9 +333,16 @@ public class PostWorkflowManager extends WorkflowManager {
             return;
         }
         try {
-            while (true) {
-                final ConsumerRecords<String, JobStatusResult> consumerRecords =
-                        consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+            while (!Thread.currentThread().isInterrupted()) {
+                final ConsumerRecords<String, JobStatusResult> consumerRecords;
+                try {
+                    consumerRecords = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+                } catch (Exception e) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException("PostWorkflowManager is interrupted. Shutting down.");
+                    }
+                    throw e;
+                }
                 var executorCompletionService = new ExecutorCompletionService<>(processingPool);
                 var processingFutures = new ArrayList<>();
 
@@ -379,15 +387,26 @@ public class PostWorkflowManager extends WorkflowManager {
                 logger.info("All messages processed. Moving to next round");
 
                 if (Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedException("PostWorkflowManager is interrupted!");
+                    throw new InterruptedException("PostWorkflowManager is interrupted. Shutting down.");
                 }
             }
         } catch (InterruptedException ex) {
-            logger.error("PostWorkflowManager is interrupted! reason: " + ex, ex);
+            logger.info("PostWorkflowManager is interrupted. Shutting down.");
         } finally {
-            consumer.close();
-            processingPool.shutdown();
+            try {
+                consumer.unsubscribe();
+            } catch (Exception ignored) {
+            }
+            try {
+                consumer.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                processingPool.shutdown();
+            } catch (Exception ignored) {
+            }
         }
+        logger.info("PostWorkflowManager stopped.");
     }
 
     private void saveAndPublishJobStatus(

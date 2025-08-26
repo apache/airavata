@@ -40,6 +40,7 @@ public class MonitoringServer {
         try {
             logger.info("Starting the monitoring server");
             httpServer = new HTTPServer(host, port, true);
+            logger.info("Monitoring server started on host {} and port {}", host, port);
         } catch (Exception e) {
             logger.error("Failed to start the monitoring server on host {} na port {}", host, port, e);
         }
