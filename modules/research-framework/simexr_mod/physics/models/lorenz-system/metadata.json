@@ -1,0 +1,16 @@
+{
+  "model_name": "Lorenz System",
+  "equations": "\\[dx/dt = sigma * (y - x), \\quad dy/dt = x * (rho - z) - y, \\quad dz/dt = x * y - beta * z\\]",
+  "initial_conditions": {
+    "'x(0)'": "1.0",
+    "'y(0)'": "1.0",
+    "'z(0)'": "1.0"
+  },
+  "parameters": {
+    "'sigma'": "10",
+    "'rho'": "28",
+    "'beta'": "\\frac{8}{3}"
+  },
+  "vary_variable": "(t,)",
+  "objective": "Analyze how the trajectory of the system evolves over time in 3D state space (x, y, z), focusing on chaotic regime characteristics and sensitivity to initial conditions."
+}

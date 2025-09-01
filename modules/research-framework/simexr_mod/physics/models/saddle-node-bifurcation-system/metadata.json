@@ -1,0 +1,12 @@
+{
+  "model_name": "Saddle-Node Bifurcation System",
+  "equations": "- dtheta/dt = omega + theta**2 * p*",
+  "initial_conditions": [
+    "0.1"
+  ],
+  "parameters": {
+    "r": "*range(-2, 2, 0.2)"
+  },
+  "vary_variable": "r",
+  "objective": "Identify fixed point values and their stability for varying r"
+}

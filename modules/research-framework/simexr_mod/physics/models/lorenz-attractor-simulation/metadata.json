@@ -1,0 +1,16 @@
+{
+  "model_name": "Lorenz Attractor Simulation",
+  "equations": "-dx/dt = sigma * (y - x); dy/dt = x * (rho - z) - y; dz/dt = x * y - beta * z",
+  "initial_conditions": {
+    "'x(0)'": "1.0"
+  },
+  "parameters": {
+    "'sigma'": "10.0",
+    "'rho'": "28.0",
+    "'beta'": "8/3.0"
+  },
+  "vary_variable": {
+    "'t'": "(0,50)"
+  },
+  "objective": "Analyze the evolution of trajectory in state space (x,y,z) for chaotic regime entry and sensitivity to initial conditions."
+}

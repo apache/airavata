@@ -1,0 +1,12 @@
+{
+  "model_name": "1D Saddle-Node Bifurcation",
+  "equations": "dx/dt = r + x**2",
+  "initial_conditions": [
+    "x(0) = 0.1"
+  ],
+  "parameters": {
+    "r": "-2.0 to 2.0, step 0.2"
+  },
+  "vary_variable": "r",
+  "objective": "Explore bifurcation behavior and identify fixed points"
+}

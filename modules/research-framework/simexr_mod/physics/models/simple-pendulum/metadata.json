@@ -1,0 +1,21 @@
+{
+  "model_name": "Simple Pendulum",
+  "equations": "theta''(t) + (g / L) * sin(theta(t)) = 0",
+  "initial_conditions": [
+    "theta(0)=pi/6",
+    "theta'(0)=0"
+  ],
+  "parameters": {
+    "g": "9.81",
+    "L": ""
+  },
+  "vary_variable": {
+    "L": [
+      "0.5",
+      "1.0",
+      "1.5",
+      "2.0"
+    ]
+  },
+  "objective": "simulate motion"
+}

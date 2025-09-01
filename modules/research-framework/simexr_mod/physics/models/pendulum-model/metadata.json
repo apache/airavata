@@ -1,0 +1,14 @@
+{
+  "model_name": "Pendulum Model",
+  "equations": "theta''(t) + (g / L) * sin(theta(t)) = 0",
+  "initial_conditions": [
+    "pi/6",
+    "0"
+  ],
+  "parameters": {
+    "g": "9.81 m/s\u00b2",
+    "L": "m"
+  },
+  "vary_variable": "L",
+  "objective": "simulate motion"
+}

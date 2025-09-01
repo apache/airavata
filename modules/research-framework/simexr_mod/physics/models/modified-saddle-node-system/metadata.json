@@ -1,0 +1,15 @@
+{
+  "model_name": "Modified Saddle-Node System",
+  "equations": "- 'd x/dt = r - x^2 + a * x^3' ",
+  "initial_conditions": [
+    "x(0)=0.0"
+  ],
+  "parameters": {
+    "r": "varies from -1 to 1.5",
+    "a": "'0.2'"
+  },
+  "vary_variable": {
+    "t": "[0,30]"
+  },
+  "objective": "Analyze how asymmetry affects the position and number of fixed points."
+}

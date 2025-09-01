@@ -1,0 +1,26 @@
+{
+  "model_name": "Saddle-Node Bifurcation",
+  "equations": "- 'dx/dt = r + x^2' - endline dashes to denote continuation of the equation as needed.",
+  "initial_conditions": [
+    "x(0)=0.1"
+  ],
+  "parameters": {
+    "r": "[-2, 2]"
+  },
+  "vary_variable": {
+    "r": [
+      [
+        "-2",
+        "+2",
+        "0.2"
+      ]
+    ],
+    "t": [
+      [
+        0,
+        20
+      ]
+    ]
+  },
+  "objective": "To observe and identify values of r where fixed points appear or disappear, distinguishing between stable and unstable branches."
+}
