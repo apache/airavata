@@ -1,0 +1,3 @@
+[submodule "modules/research-framework/simexr_mod"]
+	path = modules/research-framework/simexr_mod
+	url = https://github.com/vash02/simexr.git
