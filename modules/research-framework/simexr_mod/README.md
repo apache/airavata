@@ -75,7 +75,7 @@ pip install -r requirements.txt
 
 ### 2. Configuration
 
-Create `utils/config.yaml` with your OpenAI API key:
+Create `config.yaml` with your OpenAI API key:
 
 ```yaml
 openai:
