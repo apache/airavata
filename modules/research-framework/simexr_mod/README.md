@@ -102,7 +102,6 @@ This will automatically:
 - Launch the Streamlit web interface
 - Open your browser to http://localhost:8501
 
-![Screenshot 2025-09-12 at 11.39.31 AM.png](../../../../../../var/folders/q3/mq53py8958ndz_blwtj161xm0000gn/T/TemporaryItems/NSIRD_screencaptureui_CT243C/Screenshot%202025-09-12%20at%2011.39.31%E2%80%AFAM.png)
 ### Option 2: API Only
 
 Start just the API server for programmatic access:
@@ -125,6 +124,11 @@ Once the Streamlit app is running, you can:
 3. **View Results**: Use the "View Results" page to explore simulation data
 4. **AI Analysis**: Use the "AI Analysis" page to ask questions about your results
 5. **Search Models**: Use the "Model Search" page to find existing models
+
+## End-to-End Flow
+
+**Complete workflow**: Import GitHub scripts → Transform with AI → Run simulations → Analyze results → Get AI insights. The system automatically handles script transformation, parameter extraction, and result storage, enabling researchers to go from raw code to AI-powered insights in minutes.
+
 
 ### 3. Using the API Directly
 
