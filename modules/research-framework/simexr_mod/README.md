@@ -102,6 +102,7 @@ This will automatically:
 - Launch the Streamlit web interface
 - Open your browser to http://localhost:8501
 
+![Screenshot 2025-09-12 at 11.39.31 AM.png](../../../../../../var/folders/q3/mq53py8958ndz_blwtj161xm0000gn/T/TemporaryItems/NSIRD_screencaptureui_CT243C/Screenshot%202025-09-12%20at%2011.39.31%E2%80%AFAM.png)
 ### Option 2: API Only
 
 Start just the API server for programmatic access:
@@ -119,11 +120,11 @@ The server will be available at:
 
 Once the Streamlit app is running, you can:
 
-1. **📥 Import Models**: Use the "Import Models" page to import scripts from GitHub
-2. **⚙️ Run Simulations**: Use the "Run Simulations" page to execute simulations
-3. **📊 View Results**: Use the "View Results" page to explore simulation data
-4. **🤖 AI Analysis**: Use the "AI Analysis" page to ask questions about your results
-5. **🔍 Search Models**: Use the "Model Search" page to find existing models
+1. **Import Models**: Use the "Import Models" page to import scripts from GitHub
+2. **️Run Simulations**: Use the "Run Simulations" page to execute simulations
+3. **View Results**: Use the "View Results" page to explore simulation data
+4. **AI Analysis**: Use the "AI Analysis" page to ask questions about your results
+5. **Search Models**: Use the "Model Search" page to find existing models
 
 ### 3. Using the API Directly
 
@@ -211,7 +212,7 @@ The SimExR framework includes a modern, user-friendly web interface built with S
 - `GET /database/results` - Get simulation results
 - `GET /database/models` - Get database models
 
-## 🧪 Testing Results
+## Testing Results
 
 ### Complete Workflow Test
 
