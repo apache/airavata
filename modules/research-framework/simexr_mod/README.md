@@ -125,6 +125,8 @@ Once the Streamlit app is running, you can:
 3. **📊 View Results**: Use the "View Results" page to explore simulation data
 4. **🤖 AI Analysis**: Use the "AI Analysis" page to ask questions about your results
 5. **🔍 Search Models**: Use the "Model Search" page to find existing models
+<img width="1497" height="743" alt="Screenshot 2025-09-12 at 3 23 13 PM" src="https://github.com/user-attachments/assets/5ff387ad-33b2-4554-8a29-6be7e58b32d3" />
+
 
 ## 🔄 End-to-End Flow
 
