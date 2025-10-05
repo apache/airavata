@@ -39,6 +39,8 @@ public class AgentLaunchRequest {
     private int nodeCount = 1;
     private int memory = 2048;
 
+    private JobBatchSpec jobBatchSpec;
+
     public String getExperimentName() {
         return experimentName;
     }
@@ -137,5 +139,13 @@ public class AgentLaunchRequest {
 
     public void setMounts(List<String> mounts) {
         this.mounts = mounts;
+    }
+
+    public JobBatchSpec getJobBatchSpec() {
+        return jobBatchSpec;
+    }
+
+    public void setJobBatchSpec(JobBatchSpec jobBatchSpec) {
+        this.jobBatchSpec = jobBatchSpec;
     }
 }
