@@ -172,7 +172,7 @@ public class AgentManagementHandler {
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
 
             // Handle job workload
-            String batchId = jobBatchHandler.handleJobWorkload(experimentId, req.getJobBatchSpec());
+            String batchId = jobBatchHandler.handleJobWorkload(experimentId, agentId, req.getJobBatchSpec());
 
             airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName, batchId);

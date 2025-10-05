@@ -19,7 +19,9 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.airavata.agent.connection.service.db.entity.AgentBatchAssignmentEntity;
 import org.apache.airavata.agent.connection.service.db.entity.JobBatchEntity;
+import org.apache.airavata.agent.connection.service.db.repo.AgentBatchAssignmentRepo;
 import org.apache.airavata.agent.connection.service.db.repo.JobBatchRepo;
 import org.apache.airavata.agent.connection.service.models.JobBatchSpec;
 import org.slf4j.Logger;
@@ -35,15 +37,17 @@ public class JobBatchHandler {
 
     private final JobBatchWorker jobBatchWorker;
     private final JobBatchRepo jobBatchRepo;
+    private final AgentBatchAssignmentRepo agentJobAssignmentRepo;
     private final ObjectMapper objectMapper;
 
-    public JobBatchHandler(JobBatchWorker jobBatchWorker, JobBatchRepo jobBatchRepo, ObjectMapper objectMapper) {
+    public JobBatchHandler(JobBatchWorker jobBatchWorker, JobBatchRepo jobBatchRepo, AgentBatchAssignmentRepo agentJobAssignmentRepo, ObjectMapper objectMapper) {
         this.jobBatchWorker = jobBatchWorker;
         this.jobBatchRepo = jobBatchRepo;
+        this.agentJobAssignmentRepo = agentJobAssignmentRepo;
         this.objectMapper = objectMapper;
     }
 
-    public String handleJobWorkload(String experimentId, JobBatchSpec spec) {
+    public String handleJobWorkload(String experimentId, String agentId, JobBatchSpec spec) {
 
         String batchId = null;
         if (spec != null) {
@@ -64,6 +68,12 @@ public class JobBatchHandler {
             batch.setCommandTemplate(spec.getApplicationCommand());
             batch.setPayloadJson(objectMapper.valueToTree(spec));
             jobBatchRepo.save(batch);
+
+            AgentBatchAssignmentEntity assign = new AgentBatchAssignmentEntity();
+            assign.setAgentId(agentId);
+            assign.setExperimentId(experimentId);
+            assign.setBatchId(batchId);
+            agentJobAssignmentRepo.save(assign);
 
             jobBatchWorker.expandAndPersistUnitsAsync(experimentId, batchId, spec.getApplicationCommand(), spec.getParameterGrid());
         }
