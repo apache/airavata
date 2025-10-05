@@ -158,7 +158,7 @@ public class AgentManagementHandler {
 
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
         try {
-            String agentId = "agent_" + UUID.randomUUID().toString();
+            String agentId = "agent_" + UUID.randomUUID();
             String envName = generateEnvName(req.getLibraries(), req.getPip());
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
