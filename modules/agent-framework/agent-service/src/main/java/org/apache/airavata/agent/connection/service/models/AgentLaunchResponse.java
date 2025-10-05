@@ -24,11 +24,13 @@ public class AgentLaunchResponse {
     private String experimentId;
     private String envName;
     private String processId;
+    private String batchId;
 
-    public AgentLaunchResponse(String agentId, String experimentId, String envName) {
+    public AgentLaunchResponse(String agentId, String experimentId, String envName, String batchId) {
         this.agentId = agentId;
         this.experimentId = experimentId;
         this.envName = envName;
+        this.batchId = batchId;
     }
 
     public String getAgentId() {
@@ -61,5 +63,13 @@ public class AgentLaunchResponse {
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+
+    public String getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
     }
 }

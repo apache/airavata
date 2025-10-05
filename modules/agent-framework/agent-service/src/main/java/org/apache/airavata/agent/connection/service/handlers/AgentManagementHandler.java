@@ -54,6 +54,7 @@ public class AgentManagementHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
+    private final JobBatchHandler jobBatchHandler;
 
     @Value("${airavata.storageResourceId}")
     private String storageResourceId;
@@ -64,9 +65,11 @@ public class AgentManagementHandler {
     @Value("${grpc.server.host}")
     private String grpcHost;
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
+    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig,
+                                  JobBatchHandler jobBatchHandler) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
+        this.jobBatchHandler = jobBatchHandler;
     }
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
@@ -167,10 +170,12 @@ public class AgentManagementHandler {
                     .airavata()
                     .createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
-            airavataService
-                    .airavata()
-                    .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
-            return new AgentLaunchResponse(agentId, experimentId, envName);
+
+            // Handle job workload
+            String batchId = jobBatchHandler.handleJobWorkload(experimentId, req.getJobBatchSpec());
+
+            airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
+            return new AgentLaunchResponse(agentId, experimentId, envName, batchId);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException(
