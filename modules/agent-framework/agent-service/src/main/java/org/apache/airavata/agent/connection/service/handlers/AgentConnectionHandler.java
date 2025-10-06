@@ -57,6 +57,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, TunnelCreationResponse> TUNNEL_CREATION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
+    private final AgentWorkService agentWorkService;
+
     @Value("${airavata.tunnel.serverHost}")
     private String tunnelServerHost;
 
@@ -68,6 +70,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
     @Value("${airavata.tunnel.serverToken}")
     private String tunnelServerToken;
+
+    public AgentConnectionHandler(AgentWorkService agentWorkService) {
+        this.agentWorkService = agentWorkService;
+    }
 
     // response handling
     public AgentInfoResponse isAgentUp(String agentId) {
@@ -602,6 +608,33 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
         PYTHON_EXECUTION_RESPONSE_CACHE.put(executionResponse.getExecutionId(), executionResponse);
     }
 
+    private void handleNextJobUnitRequest(String agentId, StreamObserver<ServerMessage> responseObserver) {
+        logger.info("Received next job unit request for agent id {}", agentId);
+        AssignResult assignResult = agentWorkService.assignNextForAgent(agentId);
+
+        try {
+            if (assignResult instanceof AssignResult.Assigned assigned) {
+                responseObserver.onNext(ServerMessage.newBuilder().setAssignJobUnit(AssignJobUnit.newBuilder()
+                        .setJobUnitId(assigned.jobUnitId())
+                        .setResolvedCommand(assigned.resolvedCommand())
+                        .build()).build());
+                logger.info("Assigned job unit id {} to agent id {}", assigned.jobUnitId(), agentId);
+
+            } else if (assignResult instanceof AssignResult.NoWork noWork) {
+                responseObserver.onNext(ServerMessage.newBuilder().setNoJobUnitAvailable(NoJobUnitAvailable.newBuilder()
+                        .setReason(noWork.reason())
+                        .build()).build());
+                logger.info("No job unit available for agent id {}, reason: {}", agentId, noWork.reason());
+            }
+        } catch (Exception e) {
+            logger.error("Failed to send reply to agent {}", agentId, e);
+        }
+    }
+
+    private void handleJobUnitCompletion(String jobUnitId) {
+        agentWorkService.markCompleted(jobUnitId);
+    }
+
     // routing
     private Optional<StreamObserver<ServerMessage>> getAgentStreamObserver(String agentId) {
         if (AGENT_STREAM_MAPPING.containsKey(agentId)
@@ -658,6 +691,14 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
                     case ASYNCCOMMANDTERMINATERESPONSE -> {
                         handleAsyncCommandTerminateResponse(request.getAsyncCommandTerminateResponse());
+                    }
+
+                    case REQUESTNEXTJOBUNIT -> {
+                        handleNextJobUnitRequest(request.getRequestNextJobUnit().getAgentId(), responseObserver);
+                    }
+
+                    case JOBUNITCOMPLETED -> {
+                        handleJobUnitCompletion(request.getJobUnitCompleted().getJobUnitId());
                     }
                 }
             }
