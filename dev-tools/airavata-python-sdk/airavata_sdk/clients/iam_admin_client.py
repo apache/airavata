@@ -38,9 +38,9 @@ class IAMAdminClient(object):
     def __init__(self):
         self.settings = Settings()
         self.client = utils.initialize_iam_admin_client(
-            self.settings.PROFILE_SERVICE_HOST,
-            self.settings.PROFILE_SERVICE_PORT,
-            self.settings.PROFILE_SERVICE_SECURE,
+            self.settings.API_SERVER_HOSTNAME,
+            self.settings.API_SERVER_PORT,
+            self.settings.API_SERVER_SECURE,
         )
         # expose the needed functions
         self.set_up_gateway = self.client.setUpGateway

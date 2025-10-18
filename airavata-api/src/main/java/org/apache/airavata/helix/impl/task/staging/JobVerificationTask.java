@@ -20,8 +20,8 @@
 package org.apache.airavata.helix.impl.task.staging;
 
 import java.util.List;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.CommandOutput;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -45,7 +45,7 @@ public class JobVerificationTask extends AiravataTask {
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
-            List<JobModel> jobs = getRegistryServiceClient().getJobs("processId", getProcessId());
+            List<JobModel> jobs = getRegistry().getJobs("processId", getProcessId());
 
             logger.info("Fetching jobs for process " + getProcessId() + " to verify to saturation");
 
@@ -59,7 +59,7 @@ public class JobVerificationTask extends AiravataTask {
 
             JobManagerConfiguration jobManagerConfiguration =
                     JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                            getRegistryServiceClient(),
+                            getRegistry(),
                             getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getPreferredJobSubmissionInterface()));
 

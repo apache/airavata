@@ -21,8 +21,6 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the postjob_command database table.
@@ -46,7 +44,6 @@ public class PostjobCommandEntity implements Serializable {
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "APPDEPLOYMENT_ID")
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public PostjobCommandEntity() {}

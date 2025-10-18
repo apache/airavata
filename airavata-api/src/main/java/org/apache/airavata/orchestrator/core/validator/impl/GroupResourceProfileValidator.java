@@ -22,7 +22,7 @@ package org.apache.airavata.orchestrator.core.validator.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.error.ValidationResults;
@@ -33,8 +33,6 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +41,10 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileValidator.class);
 
-    private RegistryService.Client registryClient;
+    private RegistryService.Iface registry;
 
     public GroupResourceProfileValidator() throws TException, ApplicationSettingsException {
-        this.registryClient = getRegistryServiceClient();
+        this.registry = getRegistry();
     }
 
     @Override
@@ -84,9 +82,9 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         }
 
         List<BatchQueueResourcePolicy> batchQueueResourcePolicies =
-                registryClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+                registry.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
         List<ComputeResourcePolicy> computeResourcePolicies =
-                registryClient.getGroupComputeResourcePolicyList(groupResourceProfileId);
+                registry.getGroupComputeResourcePolicyList(groupResourceProfileId);
         ComputeResourcePolicy groupComputeResourcePolicy = computeResourcePolicies.stream()
                 .filter(computeResourcePolicy -> computeResourceId.equals(computeResourcePolicy.getComputeResourceId()))
                 .findFirst()
@@ -205,13 +203,7 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         return batchQueuevalidatorResultList;
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistry() {
+        return AiravataServiceFactory.getRegistry();
     }
 }

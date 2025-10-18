@@ -30,7 +30,7 @@ public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<
     }
 
     @Override
-    protected EntityManager getEntityManager() {
+    protected synchronized EntityManager getEntityManager() {
         return WorkflowCatalogJPAUtils.getEntityManager();
     }
 }

@@ -21,8 +21,6 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the library_apend_path database table.
@@ -47,7 +45,6 @@ public class LibraryPrependPathEntity implements Serializable {
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "DEPLOYMENT_ID")
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public LibraryPrependPathEntity() {}

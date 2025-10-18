@@ -20,10 +20,12 @@
 package org.apache.airavata.common.utils;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,52 +36,17 @@ public class SecurityUtil {
 
     public static final String PASSWORD_HASH_METHOD_PLAINTEXT = "PLAINTEXT";
     public static final String CHARSET_ENCODING = "UTF-8";
-    public static final String PADDING_MECHANISM = "AES/CBC/PKCS5Padding";
+    public static final String CIPHER_NAME = "AES/GCM/NoPadding";
+    public static final int GCM_IV_BYTES = 12; // 96 bits
+    public static final int GCM_TAG_BITS = 128;
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
 
-    public static byte[] encryptString(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, String value)
-            throws GeneralSecurityException, IOException {
-        return encrypt(keyStorePath, keyAlias, passwordCallback, value.getBytes(CHARSET_ENCODING));
-    }
-
-    public static byte[] encrypt(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] value)
-            throws GeneralSecurityException, IOException {
-
-        Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
-
-        Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
-        return cipher.doFinal(value);
-    }
-
-    private static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
+    public static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException,
                     UnrecoverableKeyException {
         KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, passwordCallback);
         return ks.getKey(keyAlias, passwordCallback.getSecretKeyPassPhrase(keyAlias));
-    }
-
-    public static byte[] decrypt(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
-            throws GeneralSecurityException, IOException {
-
-        Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
-
-        Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
-
-        return cipher.doFinal(encrypted);
-    }
-
-    public static String decryptString(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
-            throws GeneralSecurityException, IOException {
-
-        byte[] decrypted = decrypt(keyStorePath, keyAlias, passwordCallback, encrypted);
-        return new String(decrypted, CHARSET_ENCODING);
     }
 
     public static KeyStore loadKeyStore(String keyStoreFilePath, KeyStorePasswordCallback passwordCallback)
@@ -92,5 +59,33 @@ public class SecurityUtil {
             throw new FileNotFoundException("Keystore file not found: " + keyStoreFilePath);
         }
         return KeyStore.getInstance(keystoreFile, passwordCallback.getStorePassword());
+    }
+
+    public static byte[] encrypt(byte[] data, Key key) throws GeneralSecurityException {
+        // Initialize the cipher
+        var cipher = Cipher.getInstance(SecurityUtil.CIPHER_NAME);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        var iv = cipher.getIV();
+        // Encrypt the data
+        var encryptedData = cipher.doFinal(data);
+        // Construct tag [iv,encryptedData]
+        var tag = ByteBuffer.allocate(iv.length + encryptedData.length)
+                .put(iv)
+                .put(encryptedData)
+                .array();
+        return tag;
+    }
+
+    public static byte[] decrypt(byte[] tag, Key key) throws GeneralSecurityException {
+        // Deconstruct tag [iv,encryptedData]
+        var iv = Arrays.copyOfRange(tag, 0, GCM_IV_BYTES);
+        var encryptedData = Arrays.copyOfRange(tag, GCM_IV_BYTES, tag.length);
+        // Initialize the cipher
+        var cipher = Cipher.getInstance(SecurityUtil.CIPHER_NAME);
+        var spec = new GCMParameterSpec(GCM_TAG_BITS, iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        // Decrypt the data
+        var data = cipher.doFinal(encryptedData);
+        return data;
     }
 }

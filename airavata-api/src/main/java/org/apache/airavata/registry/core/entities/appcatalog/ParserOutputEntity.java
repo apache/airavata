@@ -41,7 +41,7 @@ public class ParserOutputEntity implements Serializable {
     private String parserId;
 
     @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PARSER_ID")
+    @JoinColumn(name = "PARSER_ID", insertable = false, updatable = false)
     private ParserEntity parser;
 
     @Column(name = "OUTPUT_TYPE")

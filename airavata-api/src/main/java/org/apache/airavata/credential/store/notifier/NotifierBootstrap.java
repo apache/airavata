@@ -52,8 +52,6 @@ public class NotifierBootstrap extends TimerTask {
     private static String MESSAGE = "Credentials for community user {0} expires at {1}";
     private static String SUBJECT = "Expiring credentials for user {0}";
 
-    private DBUtil dbUtil;
-
     private long period;
 
     protected static Logger log = LoggerFactory.getLogger(NotifierBootstrap.class);
@@ -68,8 +66,6 @@ public class NotifierBootstrap extends TimerTask {
             Timer timer = new Timer();
             timer.scheduleAtFixedRate(this, 0, period);
         }
-
-        this.dbUtil = db;
 
         this.credentialStoreNotifier = new EmailNotifier(configuration);
     }
@@ -97,7 +93,7 @@ public class NotifierBootstrap extends TimerTask {
 
         // retrieve OA4MP credentials
         try {
-            CredentialReader credentialReader = new CredentialReaderImpl(this.dbUtil);
+            CredentialReader credentialReader = new CredentialReaderImpl();
             List<Credential> credentials = credentialReader.getAllCredentials();
 
             for (Credential credential : credentials) {

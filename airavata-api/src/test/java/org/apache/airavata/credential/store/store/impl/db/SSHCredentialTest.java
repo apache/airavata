@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
@@ -33,17 +32,12 @@ import org.apache.airavata.credential.store.util.TokenGenerator;
 public class SSHCredentialTest {
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_gw119";
-        String jdbcDriver = "com.mysql.jdbc.Driver";
-        String userName = "gtaDevUser";
-        String password = "gtaDevPWD";
         String gatewayId = "phasta";
         String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa";
         String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
 
         try {
-            DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
-            SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
+            SSHCredentialWriter writer = new SSHCredentialWriter();
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);
@@ -65,12 +59,6 @@ public class SSHCredentialTest {
             sshCredential.setPassphrase("ultrascan");
             writer.writeCredentials(sshCredential);
             System.out.println(token);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();
         } catch (CredentialStoreException e) {

@@ -30,8 +30,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the compute_resource_policy database table.
@@ -61,8 +59,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     private List<String> allowedBatchQueues;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false, insertable = false)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public ComputeResourcePolicyEntity() {}

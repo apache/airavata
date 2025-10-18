@@ -21,7 +21,7 @@ package org.apache.airavata.helix.impl.task.aws;
 
 import java.security.Security;
 import java.util.UUID;
-import org.apache.airavata.agents.api.AgentUtils;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
@@ -141,7 +141,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
         credential.setPublicKey(publicKey);
         credential.setUsername(getProcessModel().getUserName());
 
-        String savedToken = AgentUtils.getCredentialClient().addSSHCredential(credential);
+        String savedToken = AiravataServiceFactory.getCredentialStore().addSSHCredential(credential);
         LOGGER.info("Successfully saved temporary SSH credential with token {}", savedToken);
 
         return savedToken;

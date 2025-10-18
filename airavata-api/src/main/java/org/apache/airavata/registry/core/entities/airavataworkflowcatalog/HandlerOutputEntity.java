@@ -37,8 +37,7 @@ public class HandlerOutputEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @Lob
-    @Column(name = "VALUE")
+    @Column(name = "VALUE", columnDefinition = "TEXT")
     private String value;
 
     @Column(name = "TYPE")

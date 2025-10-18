@@ -68,9 +68,9 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.security.AiravataSecurityManager;
+import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.service.security.AiravataSecurityManager;
-import org.apache.airavata.service.security.SecurityManagerFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,8 +84,8 @@ public class TaskContext {
     private static final Logger logger = LoggerFactory.getLogger(TaskContext.class);
 
     private Publisher statusPublisher;
-    private RegistryService.Client registryClient;
-    private UserProfileService.Client profileClient;
+    private RegistryService.Iface registry;
+    private UserProfileService.Iface profile;
 
     private String processId;
     private String gatewayId;
@@ -217,7 +217,7 @@ public class TaskContext {
     public GatewayResourceProfile getGatewayResourceProfile() throws Exception {
         if (this.groupResourceProfile == null) {
             try {
-                gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
+                gatewayResourceProfile = registry.getGatewayResourceProfile(gatewayId);
             } catch (TException e) {
                 logger.error("Failed to fetch gateway resource profile for gateway {}", gatewayId);
                 throw e;
@@ -233,7 +233,7 @@ public class TaskContext {
     public GroupResourceProfile getGroupResourceProfile() throws Exception {
         if (groupResourceProfile == null) {
             try {
-                groupResourceProfile = registryClient.getGroupResourceProfile(processModel.getGroupResourceProfileId());
+                groupResourceProfile = registry.getGroupResourceProfile(processModel.getGroupResourceProfileId());
             } catch (TException e) {
                 logger.error(
                         "Failed to find a group resource proifle with id {}", processModel.getGroupResourceProfileId());
@@ -251,7 +251,7 @@ public class TaskContext {
 
         if (groupComputeResourcePreference == null) {
             try {
-                groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+                groupComputeResourcePreference = registry.getGroupComputeResourcePreference(
                         processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
             } catch (TException e) {
                 logger.error(
@@ -280,7 +280,7 @@ public class TaskContext {
 
         if (userResourceProfile == null && processModel.isUseUserCRPref()) {
             try {
-                this.userResourceProfile = registryClient.getUserResourceProfile(processModel.getUserName(), gatewayId);
+                this.userResourceProfile = registry.getUserResourceProfile(processModel.getUserName(), gatewayId);
             } catch (TException e) {
                 logger.error(
                         "Failed to fetch user resource profile for user {} in gateway {}",
@@ -300,7 +300,7 @@ public class TaskContext {
     private UserComputeResourcePreference getUserComputeResourcePreference() throws Exception {
         if (this.userComputeResourcePreference == null && processModel.isUseUserCRPref()) {
             try {
-                this.userComputeResourcePreference = registryClient.getUserComputeResourcePreference(
+                this.userComputeResourcePreference = registry.getUserComputeResourcePreference(
                         processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
             } catch (TException e) {
                 logger.error(
@@ -331,7 +331,7 @@ public class TaskContext {
         if (this.gatewayStorageResourcePreference == null) {
             try {
                 this.gatewayStorageResourcePreference =
-                        registryClient.getGatewayStoragePreference(gatewayId, processModel.getStorageResourceId());
+                        registry.getGatewayStoragePreference(gatewayId, processModel.getStorageResourceId());
             } catch (TException e) {
                 logger.error(
                         "Failed to fetch gateway storage preference for gateway {} and storage {}",
@@ -350,7 +350,7 @@ public class TaskContext {
 
     public ComputeResourceDescription getComputeResourceDescription() throws Exception {
         if (this.computeResourceDescription == null) {
-            this.computeResourceDescription = registryClient.getComputeResource(getComputeResourceId());
+            this.computeResourceDescription = registry.getComputeResource(getComputeResourceId());
         }
         return computeResourceDescription;
     }
@@ -363,7 +363,7 @@ public class TaskContext {
         if (this.applicationDeploymentDescription == null) {
             try {
                 this.applicationDeploymentDescription =
-                        registryClient.getApplicationDeployment(processModel.getApplicationDeploymentId());
+                        registry.getApplicationDeployment(processModel.getApplicationDeploymentId());
             } catch (TException e) {
                 logger.error(
                         "Failed to fetch application deployment with id {}",
@@ -383,7 +383,7 @@ public class TaskContext {
         if (this.applicationInterfaceDescription == null) {
             try {
                 this.applicationInterfaceDescription =
-                        registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
+                        registry.getApplicationInterface(processModel.getApplicationInterfaceId());
             } catch (TException e) {
                 logger.error(
                         "Failed to fetch application interface with id {}",
@@ -659,22 +659,22 @@ public class TaskContext {
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
                 SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                        getRegistry().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
                 LOCALSubmission localSubmission =
-                        getRegistryClient().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                        getRegistry().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = localSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
                 SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                        getRegistry().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
                 SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
+                        getRegistry().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
 
             } else {
@@ -695,7 +695,7 @@ public class TaskContext {
 
     public StorageResourceDescription getStorageResourceDescription() throws Exception {
         if (this.storageResourceDescription == null) {
-            this.storageResourceDescription = registryClient.getStorageResource(getStorageResourceId());
+            this.storageResourceDescription = registry.getStorageResource(getStorageResourceId());
         }
         return this.storageResourceDescription;
     }
@@ -747,20 +747,20 @@ public class TaskContext {
         }
     }
 
-    public void setRegistryClient(RegistryService.Client registryClient) {
-        this.registryClient = registryClient;
+    public void setRegistry(RegistryService.Iface registry) {
+        this.registry = registry;
     }
 
-    public RegistryService.Client getRegistryClient() {
-        return registryClient;
+    public RegistryService.Iface getRegistry() {
+        return registry;
     }
 
-    public UserProfileService.Client getProfileClient() {
-        return profileClient;
+    public UserProfileService.Iface getProfile() {
+        return profile;
     }
 
-    public void setProfileClient(UserProfileService.Client profileClient) {
-        this.profileClient = profileClient;
+    public void setProfile(UserProfileService.Iface profile) {
+        this.profile = profile;
     }
 
     public UserProfile getUserProfile() throws TaskOnFailException {
@@ -769,7 +769,7 @@ public class TaskContext {
             try {
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(getGatewayId());
-                this.userProfile = getProfileClient()
+                this.userProfile = getProfile()
                         .getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
             } catch (Exception e) {
                 logger.error("Failed to fetch the user profile for user id {}", processModel.getUserName(), e);
@@ -923,8 +923,8 @@ public class TaskContext {
         private final String processId;
         private final String gatewayId;
         private final String taskId;
-        private RegistryService.Client registryClient;
-        private UserProfileService.Client profileClient;
+        private RegistryService.Iface registry;
+        private UserProfileService.Iface profile;
         private ProcessModel processModel;
 
         @SuppressWarnings("WeakerAccess")
@@ -942,13 +942,13 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setRegistryClient(RegistryService.Client registryClient) {
-            this.registryClient = registryClient;
+        public TaskContextBuilder setRegistry(RegistryService.Iface registry) {
+            this.registry = registry;
             return this;
         }
 
-        public TaskContextBuilder setProfileClient(UserProfileService.Client profileClient) {
-            this.profileClient = profileClient;
+        public TaskContextBuilder setProfile(UserProfileService.Iface profile) {
+            this.profile = profile;
             return this;
         }
 
@@ -957,14 +957,14 @@ public class TaskContext {
             if (notValid(processModel)) {
                 throwError("Invalid Process Model");
             }
-            if (notValid(registryClient)) {
+            if (notValid(registry)) {
                 throwError("Invalid Registry Client");
             }
 
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
-            ctx.setRegistryClient(registryClient);
+            ctx.setRegistry(registry);
             ctx.setProcessModel(processModel);
-            ctx.setProfileClient(profileClient);
+            ctx.setProfile(profile);
             return ctx;
         }
 

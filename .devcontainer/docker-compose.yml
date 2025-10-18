@@ -30,15 +30,11 @@ services:
     extra_hosts:
       - "airavata.host:192.168.100.1"
     ports:
-      - "7878:7878"   # sharing registry service
       - "8000:8000"   # tunnel service
-      - "17000:17000" # tunnel service (ingress)
       - "8050:8050"   # file service
       - "8082:8082"   # rest proxy
       - "8930:8930"   # api service
-      - "8960:8960"   # cred store service
-      - "8962:8962"   # profile service
-      - "8970:8970"   # registry service
+      - "17000:17000" # tunnel service (ingress)
       - "18800:18800" # agent service (http)
       - "19900:19900" # agent service (gRPC)
       - "18889:18889" # research service (http)
@@ -61,14 +57,11 @@ services:
     extra_hosts:
       - "airavata.host:192.168.100.1"
     ports:
-      - "7878:7878"   # sharing registry service
       - "8000:8000"   # tunnel service
-      - "17000:17000" # tunnel service (ingress)
       - "8050:8050"   # file service
+      - "8082:8082"   # rest proxy
       - "8930:8930"   # api service
-      - "8960:8960"   # cred store service
-      - "8962:8962"   # profile service
-      - "8970:8970"   # registry service
+      - "17000:17000" # tunnel service (ingress)
       - "18800:18800" # agent service (http)
       - "19900:19900" # agent service (gRPC)
       - "18889:18889" # research service (http)
@@ -123,6 +116,11 @@ services:
       - "airavata.host:192.168.100.1"
 
   proxy:
+    profiles:
+      - development
+    build:
+      context: proxy
+      dockerfile: Dockerfile
     image: nginx:stable
     container_name: proxy
     restart: always
@@ -144,6 +142,8 @@ services:
       - "8443:8443" # tls + keycloak
       - "9930:9930" # tls + api
       - "20000:20000" # tls + jupyterhub
+    depends_on:
+      - devcontainer
 
   keycloak:
     image: keycloak/keycloak:25.0
@@ -165,7 +165,7 @@ services:
       - "18080:18080"
 
   db:
-    image: mariadb:10.4.13
+    image: mariadb:10
     container_name: db
     restart: always
     environment:
@@ -209,6 +209,13 @@ services:
     image: zookeeper:latest
     container_name: zookeeper
     restart: always
+    environment:
+      ZOO_TICK_TIME: 3000
+      ZOO_INIT_LIMIT: 10
+      ZOO_SYNC_LIMIT: 5
+      ZOO_MAX_CLIENT_CNXNS: 0
+      ZOO_AUTOPURGE_SNAPRETAINCOUNT: 3
+      ZOO_AUTOPURGE_PURGEINTERVAL: 24
     networks:
       airavata-network:
         ipv4_address: 192.168.100.17

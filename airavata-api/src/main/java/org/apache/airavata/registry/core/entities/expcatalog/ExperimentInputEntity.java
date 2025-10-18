@@ -40,8 +40,7 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "INPUT_NAME")
     private String name;
 
-    @Lob
-    @Column(name = "INPUT_VALUE")
+    @Column(name = "INPUT_VALUE", columnDefinition = "TEXT")
     private String value;
 
     @Column(name = "DATA_TYPE")
@@ -54,8 +53,7 @@ public class ExperimentInputEntity implements Serializable {
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
 
-    @Lob
-    @Column(name = "USER_FRIENDLY_DESCRIPTION")
+    @Column(name = "USER_FRIENDLY_DESCRIPTION", columnDefinition = "TEXT")
     private String userFriendlyDescription;
 
     @Column(name = "METADATA", length = 4096)

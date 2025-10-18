@@ -19,19 +19,16 @@
 */
 package org.apache.airavata.credential.store.store.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.repository.CommunityUserRepository;
+import org.apache.airavata.credential.store.repository.CredentialsRepository;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.CredentialWriter;
-import org.apache.airavata.credential.store.store.impl.db.CommunityUserDAO;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
+import org.apache.airavata.credential.store.store.impl.db.CommunityUserEntity;
+import org.apache.airavata.credential.store.store.impl.db.CredentialsEntity;
+import org.apache.airavata.credential.store.utils.CredentialSerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,81 +37,62 @@ import org.slf4j.LoggerFactory;
  */
 public class CertificateCredentialWriter implements CredentialWriter {
 
-    private CredentialsDAO credentialsDAO;
-    private CommunityUserDAO communityUserDAO;
+    private final CredentialsRepository credentialsRepository;
+    private final CommunityUserRepository communityUserRepository;
 
     protected static Logger log = LoggerFactory.getLogger(CertificateCredentialWriter.class);
 
-    private DBUtil dbUtil;
-
-    public CertificateCredentialWriter(DBUtil dbUtil) throws ApplicationSettingsException {
-
-        this.dbUtil = dbUtil;
-
-        this.credentialsDAO = new CredentialsDAO(
-                ApplicationSettings.getCredentialStoreKeyStorePath(),
-                ApplicationSettings.getCredentialStoreKeyAlias(),
-                new DefaultKeyStorePasswordCallback());
-
-        communityUserDAO = new CommunityUserDAO();
+    public CertificateCredentialWriter() {
+        this.credentialsRepository = new CredentialsRepository();
+        this.communityUserRepository = new CommunityUserRepository();
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
 
         CertificateCredential certificateCredential = (CertificateCredential) credential;
 
-        Connection connection = null;
-
         try {
-
-            connection = dbUtil.getConnection();
             // Write community user
-            writeCommunityUser(certificateCredential.getCommunityUser(), credential.getToken(), connection);
+            writeCommunityUser(certificateCredential.getCommunityUser(), credential.getToken());
+
             // First delete existing credentials
-            credentialsDAO.deleteCredentials(
-                    certificateCredential.getCommunityUser().getGatewayName(),
-                    certificateCredential.getToken(),
-                    connection);
-            // Add the new certificate
-            credentialsDAO.addCredentials(
-                    certificateCredential.getCommunityUser().getGatewayName(), credential, connection);
+            credentialsRepository.delete(new CredentialsEntity.CredentialsPK(
+                    certificateCredential.getCommunityUser().getGatewayName(), certificateCredential.getToken()));
 
-            if (!connection.getAutoCommit()) {
-                connection.commit();
-            }
+            // Create new credentials entity
+            CredentialsEntity credentialsEntity = new CredentialsEntity();
+            credentialsEntity.setGatewayId(
+                    certificateCredential.getCommunityUser().getGatewayName());
+            credentialsEntity.setTokenId(certificateCredential.getToken());
+            credentialsEntity.setPortalUserId(certificateCredential.getPortalUserName());
+            credentialsEntity.setCredentialOwnerType(certificateCredential.getCredentialOwnerType());
 
-        } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e1) {
-                    log.error("Unable to rollback transaction", e1);
-                }
-            }
-            throw new CredentialStoreException("Unable to retrieve database connection.", e);
-        } finally {
-            DBUtil.cleanup(connection);
+            // Serialize and encrypt the credential
+            byte[] serializedCredential =
+                    CredentialSerializationUtils.serializeCredentialWithEncryption(certificateCredential);
+            credentialsEntity.setCredential(serializedCredential);
+
+            // Save the entity
+            credentialsRepository.create(credentialsEntity);
+
+        } catch (Exception e) {
+            throw new CredentialStoreException("Error writing certificate credentials", e);
         }
     }
 
-    public void writeCommunityUser(CommunityUser communityUser, String token, Connection connection)
-            throws CredentialStoreException {
+    public void writeCommunityUser(CommunityUser communityUser, String token) throws CredentialStoreException {
 
         // First delete existing community user
-        communityUserDAO.deleteCommunityUserByToken(communityUser, token, connection);
+        communityUserRepository.deleteByTokenId(token);
+
+        // Create new community user entity
+        CommunityUserEntity communityUserEntity = new CommunityUserEntity();
+        communityUserEntity.setGatewayId(communityUser.getGatewayName());
+        communityUserEntity.setCommunityUserName(communityUser.getUserName());
+        communityUserEntity.setCommunityUserEmail(communityUser.getUserEmail());
+        communityUserEntity.setTokenId(token);
 
         // Persist new community user
-        communityUserDAO.addCommunityUser(communityUser, token, connection);
+        communityUserRepository.create(communityUserEntity);
     }
-
-    /*
-     * TODO Remove later - If we dont need to expose this in the interface public void writeCommunityUser(CommunityUser
-     * communityUser, String token) throws CredentialStoreException {
-     *
-     * Connection connection = null; try { connection = dbUtil.getConnection(); writeCommunityUser(communityUser, token,
-     * connection);
-     *
-     * } catch (SQLException e) { throw new CredentialStoreException("Unable to retrieve database connection.", e); }
-     * finally { DBUtil.cleanup(connection); } }
-     */
 }

@@ -46,8 +46,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "LAST_UPDATE_TIME")
     private Timestamp lastUpdateTime;
 
-    @Lob
-    @Column(name = "PROCESS_DETAIL")
+    @Column(name = "PROCESS_DETAIL", columnDefinition = "TEXT")
     private String processDetail;
 
     @Column(name = "APPLICATION_INTERFACE_ID")
@@ -59,8 +58,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Lob
-    @Column(name = "TASK_DAG")
+    @Column(name = "TASK_DAG", columnDefinition = "TEXT")
     private String taskDag;
 
     @Column(name = "GATEWAY_EXECUTION_ID")
@@ -69,8 +67,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     private boolean enableEmailNotification;
 
-    @Lob
-    @Column(name = "EMAIL_ADDRESSES")
+    @Column(name = "EMAIL_ADDRESSES", columnDefinition = "TEXT")
     private String emailAddresses;
 
     @Column(name = "STORAGE_RESOURCE_ID")
@@ -138,7 +135,12 @@ public class ProcessEntity implements Serializable {
     private List<TaskEntity> tasks;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(
+            name = "EXPERIMENT_ID",
+            referencedColumnName = "EXPERIMENT_ID",
+            nullable = false,
+            updatable = false,
+            insertable = false)
     private ExperimentEntity experiment;
 
     @OneToMany(

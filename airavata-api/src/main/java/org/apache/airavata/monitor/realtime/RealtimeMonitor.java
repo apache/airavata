@@ -31,7 +31,6 @@ import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -47,14 +46,16 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     public RealtimeMonitor() throws ApplicationSettingsException {
         parser = new RealtimeJobStatusParser();
-        publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
-        brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
+        publisherId = ServerSettings.getSetting("monitor.job.realtime.broker.publisher.id");
+        brokerTopic = ServerSettings.getSetting("monitor.job.realtime.broker.topic");
     }
 
     private Consumer<String, String> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("realtime.monitor.broker.consumer.group"));
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                ServerSettings.getSetting("monitor.job.realtime.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.
@@ -64,27 +65,58 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
-        final Consumer<String, String> consumer = createConsumer();
-
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
-            consumerRecords.forEach(record -> {
-                try {
-                    process(record.key(), record.value(), registryClient);
-                } catch (Exception e) {
-                    logger.error("Error while processing message {}", record.value(), e);
-                }
-            });
-            getRegistryClientPool().returnResource(registryClient);
-            consumer.commitAsync();
+    private void closeConsumer(Consumer<String, String> consumer) {
+        if (consumer != null) {
+            try {
+                consumer.unsubscribe();
+                consumer.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+    private void runConsumer() {
+        logger.info("RealtimeMonitor started.");
+        Consumer<String, String> consumer;
+        try {
+            consumer = createConsumer();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error while creating consumer", e);
+            return;
+        }
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    var consumerRecords = consumer.poll(Duration.ofSeconds(1));
+                    var registry = getRegistry();
+                    consumerRecords.forEach(record -> {
+                        try {
+                            process(record.key(), record.value(), registry);
+                        } catch (Exception e) {
+                            logger.error("Error while processing message {}", record.value(), e);
+                        }
+                    });
+                    consumer.commitAsync();
+                } catch (Exception e) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException("RealtimeMonitor is interrupted.");
+                    }
+                    logger.error("Error while polling consumer", e);
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.info("RealtimeMonitor is interrupted. Shutting down.");
+            closeConsumer(consumer);
+            consumer = null;
+        } finally {
+            closeConsumer(consumer);
+        }
+        logger.info("RealtimeMonitor stopped.");
+    }
+
+    private void process(String key, String value, RegistryService.Iface registry) throws MonitoringException {
         logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
-        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
+        JobStatusResult statusResult = parser.parse(value, publisherId, registry);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);
@@ -93,7 +125,10 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
-    public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+    @Override
+    public void run() {
+        var thread = new Thread(this::runConsumer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 }

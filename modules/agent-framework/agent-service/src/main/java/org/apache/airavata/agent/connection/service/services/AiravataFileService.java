@@ -63,7 +63,7 @@ public class AiravataFileService {
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {
-        Airavata.Client airavataClient = airavataService.airavata();
+        Airavata.Iface airavataClient = airavataService.getAiravata();
         String fusePath = request.getName();
 
         ReadDirRes.Builder readDirResBuilder = ReadDirRes.newBuilder();

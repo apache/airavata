@@ -21,7 +21,7 @@ package org.apache.airavata.file.server.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.datatransfer.api.FileMetadata;
 
 public class AiravataDirectory {
     private String directoryName;

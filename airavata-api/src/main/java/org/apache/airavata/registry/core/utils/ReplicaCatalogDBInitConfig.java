@@ -24,8 +24,8 @@ import org.apache.airavata.common.utils.JDBCConfig;
 
 public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
-    public static final String CHECK_TABLE = "CONFIGURATION";
-    private String dbInitScriptPrefix = "database_scripts/replicacatalog";
+    public static final String CHECK_TABLE = "DATA_PRODUCT";
+    private String dbInitScriptPrefix = "database_scripts/replica-catalog";
 
     @Override
     public JDBCConfig getJDBCConfig() {

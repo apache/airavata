@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -47,8 +48,7 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -64,23 +64,15 @@ public class PostWorkflowManager extends WorkflowManager {
 
     public PostWorkflowManager() throws ApplicationSettingsException {
         super(
-                ServerSettings.getSetting("post.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
+                ServerSettings.getSetting("postwm.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("postwm.loadbalance.clusters")));
     }
 
-    public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
-        PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.startServer();
+    @Override
+    public void run() {
+        var thread = new Thread(this::startServer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 
     private void init() throws Exception {
@@ -90,7 +82,8 @@ public class PostWorkflowManager extends WorkflowManager {
     private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.consumer.group"));
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("monitor.job.status.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -98,7 +91,7 @@ public class PostWorkflowManager extends WorkflowManager {
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("job.monitor.broker.topic")));
+        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("monitor.job.status.broker.topic")));
         return consumer;
     }
 
@@ -109,7 +102,7 @@ public class PostWorkflowManager extends WorkflowManager {
             return false;
         }
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         var jobId = jobStatusResult.getJobId();
         var jobName = jobStatusResult.getJobName();
@@ -118,7 +111,7 @@ public class PostWorkflowManager extends WorkflowManager {
         logger.info("processing JobStatusUpdate<{}> from {}: {}", jobId, publisherId, jobStatusResult);
 
         try {
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobId);
+            List<JobModel> jobs = registry.getJobs("jobId", jobId);
             logger.info("Found {} jobs in registry with id={}", jobs.size(), jobId);
             if (!jobs.isEmpty()) {
                 jobs = jobs.stream()
@@ -128,16 +121,14 @@ public class PostWorkflowManager extends WorkflowManager {
             }
             if (jobs.size() != 1) {
                 logger.error("Found {} job(s) in registry with id={} and name={}", jobs.size(), jobId, jobName);
-                getRegistryClientPool().returnResource(registryClient);
                 return false;
             }
             JobModel jobModel = jobs.get(0);
-            ProcessModel processModel = registryClient.getProcess(jobModel.getProcessId());
-            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+            ProcessModel processModel = registry.getProcess(jobModel.getProcessId());
+            ExperimentModel experimentModel = registry.getExperiment(processModel.getExperimentId());
+            ProcessStatus processStatus = registry.getProcessStatus(processModel.getProcessId());
 
             var processState = processStatus.getState();
-            getRegistryClientPool().returnResource(registryClient);
 
             if (experimentModel != null) {
                 jobModel.getJobStatuses()
@@ -205,7 +196,6 @@ public class PostWorkflowManager extends WorkflowManager {
                     jobStatusResult.getJobId(),
                     jobStatusResult.getState().name(),
                     e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -213,21 +203,20 @@ public class PostWorkflowManager extends WorkflowManager {
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         postwfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
+            processModel = registry.getProcess(processId);
             var experimentId = processModel.getExperimentId();
             var crId = processModel.getComputeResourceId();
             var grpId = processModel.getGroupResourceProfileId();
 
-            experimentModel = registryClient.getExperiment(experimentId);
-            ResourceType resourceType = registryClient
-                    .getGroupComputeResourcePreference(crId, grpId)
-                    .getResourceType();
+            experimentModel = registry.getExperiment(experimentId);
+            ResourceType resourceType =
+                    registry.getGroupComputeResourcePreference(crId, grpId).getResourceType();
 
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
@@ -236,7 +225,6 @@ public class PostWorkflowManager extends WorkflowManager {
             logger.error("Failed to fetch experiment/process from registry for pid={}", processId, e);
             throw new Exception("Failed to fetch experiment/process from registry for pid=" + processId, e);
         } finally {
-            getRegistryClientPool().returnResource(registryClient);
         }
 
         String taskDag = processModel.getTaskDag();
@@ -330,58 +318,95 @@ public class PostWorkflowManager extends WorkflowManager {
         registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
-    public void startServer() throws Exception {
-
-        init();
-        final Consumer<String, JobStatusResult> consumer = createConsumer();
-        new Thread(() -> {
-                    while (true) {
-                        final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
-                        var executorCompletionService = new ExecutorCompletionService<>(processingPool);
-                        var processingFutures = new ArrayList<>();
-
-                        for (var topicPartition : consumerRecords.partitions()) {
-                            var partitionRecords = consumerRecords.records(topicPartition);
-                            logger.info("Received job records {}", partitionRecords.size());
-
-                            for (var record : partitionRecords) {
-                                var topic = topicPartition.topic();
-                                var partition = topicPartition.partition();
-                                var key = record.key();
-                                var value = record.value();
-                                logger.info("received post on {}/{}: {}->{}", topic, partition, key, value);
-                                logger.info(
-                                        "Submitting {} to process in thread pool",
-                                        record.value().getJobId());
-
-                                // This avoids kafka read thread to wait until processing is completed before committing
-                                // There is a risk of missing 20 messages in case of a restart, but this improves the
-                                // robustness of the kafka read thread by avoiding wait timeouts
-                                processingFutures.add(executorCompletionService.submit(() -> {
-                                    boolean success = process(record.value());
-                                    logger.info(
-                                            "Status of processing {} : {}",
-                                            record.value().getJobId(),
-                                            success);
-                                    return success;
-                                }));
-
-                                consumer.commitSync(Collections.singletonMap(
-                                        topicPartition, new OffsetAndMetadata(record.offset() + 1)));
-                            }
-                        }
-
-                        for (var f : processingFutures) {
-                            try {
-                                executorCompletionService.take().get();
-                            } catch (Exception e) {
-                                logger.error("Failed processing job", e);
-                            }
-                        }
-                        logger.info("All messages processed. Moving to next round");
+    public void startServer() {
+        logger.info("PostWorkflowManager started.");
+        try {
+            init();
+        } catch (Exception e) {
+            logger.error("Error starting PostWorkflowManager", e);
+        }
+        final Consumer<String, JobStatusResult> consumer;
+        try {
+            consumer = createConsumer();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error creating consumer", e);
+            return;
+        }
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                final ConsumerRecords<String, JobStatusResult> consumerRecords;
+                try {
+                    consumerRecords = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+                } catch (Exception e) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException("PostWorkflowManager is interrupted. Shutting down.");
                     }
-                })
-                .start();
+                    throw e;
+                }
+                var executorCompletionService = new ExecutorCompletionService<>(processingPool);
+                var processingFutures = new ArrayList<>();
+
+                for (var topicPartition : consumerRecords.partitions()) {
+                    var partitionRecords = consumerRecords.records(topicPartition);
+                    logger.info("Received job records {}", partitionRecords.size());
+
+                    for (var record : partitionRecords) {
+                        var topic = topicPartition.topic();
+                        var partition = topicPartition.partition();
+                        var key = record.key();
+                        var value = record.value();
+                        logger.info("received post on {}/{}: {}->{}", topic, partition, key, value);
+                        logger.info(
+                                "Submitting {} to process in thread pool",
+                                record.value().getJobId());
+
+                        // This avoids kafka read thread to wait until processing is completed before committing
+                        // There is a risk of missing 20 messages in case of a restart, but this improves the
+                        // robustness of the kafka read thread by avoiding wait timeouts
+                        processingFutures.add(executorCompletionService.submit(() -> {
+                            boolean success = process(record.value());
+                            logger.info(
+                                    "Status of processing {} : {}",
+                                    record.value().getJobId(),
+                                    success);
+                            return success;
+                        }));
+
+                        consumer.commitSync(
+                                Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                    }
+                }
+
+                for (var f : processingFutures) {
+                    try {
+                        executorCompletionService.take().get();
+                    } catch (Exception e) {
+                        logger.error("Failed processing job", e);
+                    }
+                }
+                logger.info("All messages processed. Moving to next round");
+
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("PostWorkflowManager is interrupted. Shutting down.");
+                }
+            }
+        } catch (InterruptedException ex) {
+            logger.info("PostWorkflowManager is interrupted. Shutting down.");
+        } finally {
+            try {
+                consumer.unsubscribe();
+            } catch (Exception ignored) {
+            }
+            try {
+                consumer.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                processingPool.shutdown();
+            } catch (Exception ignored) {
+            }
+        }
+        logger.info("PostWorkflowManager stopped.");
     }
 
     private void saveAndPublishJobStatus(
@@ -401,15 +426,13 @@ public class PostWorkflowManager extends WorkflowManager {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+            RegistryService.Iface registry = getRegistry();
 
             try {
-                registryClient.addJobStatus(jobStatus, taskId, jobId);
-                getRegistryClientPool().returnResource(registryClient);
+                registry.addJobStatus(jobStatus, taskId, jobId);
 
             } catch (Exception e) {
                 logger.error("Failed to add job status " + jobId, e);
-                getRegistryClientPool().returnBrokenResource(registryClient);
             }
 
             JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);

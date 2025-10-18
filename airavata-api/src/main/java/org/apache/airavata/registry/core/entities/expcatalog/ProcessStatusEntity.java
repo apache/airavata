@@ -48,12 +48,16 @@ public class ProcessStatusEntity implements Serializable {
     @Column(name = "TIME_OF_STATE_CHANGE")
     private Timestamp timeOfStateChange;
 
-    @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "TEXT")
     private String reason;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(
+            name = "PROCESS_ID",
+            referencedColumnName = "PROCESS_ID",
+            nullable = false,
+            updatable = false,
+            insertable = false)
     private ProcessEntity process;
 
     public ProcessStatusEntity() {}

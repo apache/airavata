@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
+    protected static EntityManager entityManagerInstance = null;
 
     private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
@@ -145,7 +146,6 @@ public abstract class AbstractRepository<T, E, Id> {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
             }
         }
     }
@@ -174,7 +174,6 @@ public abstract class AbstractRepository<T, E, Id> {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
             }
         }
     }
@@ -201,7 +200,6 @@ public abstract class AbstractRepository<T, E, Id> {
                 if (entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
             }
         }
     }

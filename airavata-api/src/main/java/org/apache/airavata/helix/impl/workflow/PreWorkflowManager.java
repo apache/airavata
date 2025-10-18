@@ -55,8 +55,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -72,13 +71,22 @@ public class PreWorkflowManager extends WorkflowManager {
 
     public PreWorkflowManager() throws ApplicationSettingsException {
         super(
-                ServerSettings.getSetting("pre.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
+                ServerSettings.getSetting("prewm.name"),
+                Boolean.parseBoolean(ServerSettings.getSetting("prewm.loadbalance.clusters")));
     }
 
-    public void startServer() throws Exception {
-        super.initComponents();
-        initLaunchSubscriber();
+    public void startServer() {
+        logger.info("PreWorkflowManager started.");
+        try {
+            super.initComponents();
+            initLaunchSubscriber();
+            Thread.currentThread().join();
+        } catch (InterruptedException ex) {
+            logger.info("PreWorkflowManager is interrupted. Shutting down.");
+        } catch (Exception e) {
+            logger.error("Error running PreWorkflowManager", e);
+        }
+        logger.info("PreWorkflowManager stopped.");
     }
 
     public void stopServer() {}
@@ -93,17 +101,15 @@ public class PreWorkflowManager extends WorkflowManager {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
-            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            getRegistryClientPool().returnResource(registryClient);
-            ResourceType resourceType = registryClient
-                    .getGroupComputeResourcePreference(
+            processModel = registry.getProcess(processId);
+            experimentModel = registry.getExperiment(processModel.getExperimentId());
+            ResourceType resourceType = registry.getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
             taskFactory = TaskFactory.getFactory(resourceType);
@@ -112,7 +118,6 @@ public class PreWorkflowManager extends WorkflowManager {
         } catch (Exception e) {
             logger.error(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
         }
@@ -205,20 +210,18 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Iface registry = getRegistry();
 
         ProcessModel processModel;
         GroupComputeResourcePreference gcrPref;
 
         try {
-            processModel = registryClient.getProcess(processId);
-            getRegistryClientPool().returnResource(registryClient);
-            gcrPref = registryClient.getGroupComputeResourcePreference(
+            processModel = registry.getProcess(processId);
+            gcrPref = registry.getGroupComputeResourcePreference(
                     processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
         } catch (Exception e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to fetch process from registry associated with process id " + processId, e);
         }
 
@@ -287,19 +290,11 @@ public class PreWorkflowManager extends WorkflowManager {
         return workflow;
     }
 
-    public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
-        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
+    @Override
+    public void run() {
+        var thread = new Thread(this::startServer, this.getClass().getSimpleName());
+        thread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(thread::interrupt));
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

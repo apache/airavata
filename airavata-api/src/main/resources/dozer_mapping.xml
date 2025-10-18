@@ -65,4 +65,12 @@
             <b>emailAddresses</b>
         </field>
     </mapping>
+    <mapping>
+        <class-a>org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile</class-a>
+        <class-b>org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity</class-b>
+        <field>
+            <a>gatewayID</a>
+            <b>gatewayId</b>
+        </field>
+    </mapping>
 </mappings>

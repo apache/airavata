@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.core.support.adaptor;
 
 import java.util.Optional;
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.datatransfer.api.*;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;

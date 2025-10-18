@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.helix.impl.task.env;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -41,11 +41,10 @@ public class DataProductEntity implements Serializable {
     @Column(name = "GATEWAY_ID")
     private String gatewayId;
 
-    @Lob
-    @Column(name = "PRODUCT_NAME")
+    @Column(name = "PRODUCT_NAME", columnDefinition = "TEXT")
     private String productName;
 
-    @Column(name = "PRODUCT_DESCRIPTION")
+    @Column(name = "PRODUCT_DESCRIPTION", columnDefinition = "TEXT")
     private String productDescription;
 
     @Column(name = "OWNER_NAME")

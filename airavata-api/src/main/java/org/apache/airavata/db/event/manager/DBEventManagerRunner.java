@@ -22,15 +22,15 @@ package org.apache.airavata.db.event.manager;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Ajinkya on 3/29/17.
  */
 public class DBEventManagerRunner implements IServer {
 
-    private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
+    private static final Logger log = LoggerFactory.getLogger(DBEventManagerRunner.class);
 
     private static final String SERVER_NAME = "DB Event Manager";
     private static final String SERVER_VERSION = "1.0";
@@ -53,29 +53,6 @@ public class DBEventManagerRunner implements IServer {
             log.debug("DB Event manager subscriber is listening");
         } catch (AiravataException e) {
             log.error("Error starting DB Event Manager.", e);
-        }
-    }
-
-    /**
-     * The main method.
-     *
-     * @param args the arguments
-     */
-    public static void main(String[] args) {
-        try {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner();
-                }
-            };
-
-            // start the worker thread
-            log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
-        } catch (Exception ex) {
-            log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
         }
     }
 
@@ -103,7 +80,7 @@ public class DBEventManagerRunner implements IServer {
 
             // start the worker thread
             log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
+            new Thread(runner, this.getClass().getSimpleName()).start();
             setStatus(ServerStatus.STARTED);
         } catch (Exception ex) {
             log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);

@@ -52,14 +52,13 @@ public class JobStatusEntity implements Serializable {
     @Column(name = "TIME_OF_STATE_CHANGE")
     private Timestamp timeOfStateChange;
 
-    @Lob
-    @Column(name = "REASON")
+    @Column(name = "REASON", columnDefinition = "TEXT")
     private String reason;
 
     @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID"),
-        @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+        @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     })
     private JobEntity job;
 

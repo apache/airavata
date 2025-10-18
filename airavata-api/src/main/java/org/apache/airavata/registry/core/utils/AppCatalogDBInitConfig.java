@@ -21,13 +21,10 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
-    private String dbInitScriptPrefix = "database_scripts/appcatalog";
+    private String dbInitScriptPrefix = "database_scripts/app-catalog";
 
     @Override
     public JDBCConfig getJDBCConfig() {
@@ -46,21 +43,6 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getCheckTableName() {
-        return "GATEWAY_PROFILE";
-    }
-
-    @Override
-    public void postInit() {
-
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        try {
-            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayID(ServerSettings.getDefaultUserGateway());
-            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
-                gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create default gateway for app catalog", e);
-        }
+        return "APPLICATION_INTERFACE";
     }
 }
