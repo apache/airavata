@@ -30,11 +30,11 @@ import jakarta.persistence.*;
 @IdClass(SSHAccountProvisionerConfigurationPK.class)
 public class SSHAccountProvisionerConfiguration {
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", insertable = false, updatable = false)
     private String gatewayId;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
     private String resourceId;
 
     @Id

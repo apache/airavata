@@ -33,7 +33,7 @@ public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", insertable = false, updatable = false)
     private String dataMovementInterfaceId;
 
     @Id
