@@ -20,12 +20,14 @@ package main
 import (
 	protos "airavata-agent/protos"
 	"context"
+	"errors"
 	"flag"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"airavata-agent/pkg"
 
@@ -36,6 +38,11 @@ import (
 type Stream = grpc.BidiStreamingClient[protos.AgentMessage, protos.ServerMessage]
 
 var defaultLibs = []string{"python<3.12", "pip", "ipykernel", "git", "flask", "jupyter_client", "ttyd"}
+
+const (
+	noWorkBackoff   = 3 * time.Second // sleep between polls when no work
+	maxEmptyReplies = 3               // exit after 3 consecutive empty replies
+)
 
 func main() {
 
@@ -144,9 +151,11 @@ func main() {
 	}
 	log.Printf("[agent.go] main() Connected to the server.\n")
 
+	requestNextJobUnit(stream, *agentId)
+
 	// start interceptor
 	ch := make(chan struct{})
-	go startInterceptor(stream, ch)
+	go startInterceptor(stream, ch, *agentId, *environ)
 
 	<-ch
 
@@ -156,7 +165,9 @@ func main() {
 
 }
 
-func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
+func startInterceptor(stream Stream, grpcStreamChannel chan struct{}, agentId string, envName string) {
+	consecutiveEmpty := 0
+	pollingJobEnabled := true
 
 	for {
 		in, err := stream.Recv()
@@ -173,34 +184,34 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 		case *protos.ServerMessage_EnvSetupRequest:
 			log.Printf("[agent.go] Recived a env setup request\n")
 			executionId := x.EnvSetupRequest.ExecutionId
-			envName := x.EnvSetupRequest.EnvName
+			envNameReq := x.EnvSetupRequest.EnvName
 			envLibs := x.EnvSetupRequest.Libraries
 			envPip := x.EnvSetupRequest.Pip
-			go pkg.CreateEnv(stream, executionId, envName, append(envLibs, defaultLibs...), envPip)
+			go pkg.CreateEnv(stream, executionId, envNameReq, append(envLibs, defaultLibs...), envPip)
 
 		case *protos.ServerMessage_PythonExecutionRequest:
 			log.Printf("[agent.go] Recived a python execution request\n")
 			executionId := x.PythonExecutionRequest.ExecutionId
-			envName := x.PythonExecutionRequest.EnvName
+			envNameReq := x.PythonExecutionRequest.EnvName
 			workingDir := x.PythonExecutionRequest.WorkingDir
 			code := x.PythonExecutionRequest.Code
-			go pkg.ExecutePython(stream, executionId, envName, workingDir, code)
+			go pkg.ExecutePython(stream, executionId, envNameReq, workingDir, code)
 
 		case *protos.ServerMessage_CommandExecutionRequest:
 			log.Printf("[agent.go] Recived a shell execution request\n")
 			executionId := x.CommandExecutionRequest.ExecutionId
-			envName := x.CommandExecutionRequest.EnvName
+			envNameReq := x.CommandExecutionRequest.EnvName
 			workingDir := x.CommandExecutionRequest.WorkingDir
 			execArgs := x.CommandExecutionRequest.Arguments
-			go pkg.ExecuteShell(stream, executionId, envName, workingDir, execArgs)
+			go pkg.ExecuteShell(stream, executionId, envNameReq, workingDir, execArgs)
 
 		case *protos.ServerMessage_AsyncCommandExecutionRequest:
 			log.Printf("[agent.go] Recived a async shell execution request\n")
 			executionId := x.AsyncCommandExecutionRequest.ExecutionId
-			envName := x.AsyncCommandExecutionRequest.EnvName
+			envNameReq := x.AsyncCommandExecutionRequest.EnvName
 			workingDir := x.AsyncCommandExecutionRequest.WorkingDir
 			execArgs := x.AsyncCommandExecutionRequest.Arguments
-			go pkg.ExecuteShellAsync(stream, executionId, envName, workingDir, execArgs)
+			go pkg.ExecuteShellAsync(stream, executionId, envNameReq, workingDir, execArgs)
 
 		case *protos.ServerMessage_AsyncCommandListRequest:
 			log.Printf("[agent.go] Recived async shell list request\n")
@@ -216,15 +227,15 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 		case *protos.ServerMessage_JupyterExecutionRequest:
 			log.Printf("[agent.go] Recived a jupyter execution request\n")
 			executionId := x.JupyterExecutionRequest.ExecutionId
-			envName := x.JupyterExecutionRequest.EnvName
+			envNameReq := x.JupyterExecutionRequest.EnvName
 			code := x.JupyterExecutionRequest.Code
-			go pkg.ExecuteJupyter(stream, executionId, envName, code)
+			go pkg.ExecuteJupyter(stream, executionId, envNameReq, code)
 
 		case *protos.ServerMessage_KernelRestartRequest:
 			log.Printf("[agent.go] Recived a kernel restart request\n")
 			executionId := x.KernelRestartRequest.ExecutionId
-			envName := x.KernelRestartRequest.EnvName
-			go pkg.RestartKernel(stream, executionId, envName)
+			envNameReq := x.KernelRestartRequest.EnvName
+			go pkg.RestartKernel(stream, executionId, envNameReq)
 
 		case *protos.ServerMessage_TunnelCreationRequest:
 			log.Printf("[agent.go] Received a tunnel creation request\n")
@@ -248,7 +259,93 @@ func startInterceptor(stream Stream, grpcStreamChannel chan struct{}) {
 			} else {
 				log.Printf("[agent.go] Closed tunnel: %s\n", tunnelId)
 			}
+
+		case *protos.ServerMessage_AssignJobUnit:
+			if !pollingJobEnabled {
+				// Shouldn't happen, but ignore if an agent is in interactive mode
+				break
+			}
+
+			consecutiveEmpty = 0 // reset on actual work
+			ju := x.AssignJobUnit
+			log.Printf("[agent.go] Assigned job unit: %s\n", ju.JobUnitId)
+
+			exitCode := runResolvedCommand(envName, ju.ResolvedCommand)
+
+			_ = stream.Send(&protos.AgentMessage{
+				Message: &protos.AgentMessage_JobUnitCompleted{
+					JobUnitCompleted: &protos.JobUnitCompleted{
+						JobUnitId: ju.JobUnitId,
+						ExitCode:  int32(exitCode),
+					},
+				},
+			})
+			requestNextJobUnit(stream, agentId)
+
+		case *protos.ServerMessage_NoJobUnitAvailable:
+			reason := x.NoJobUnitAvailable.Reason
+
+			// If the server says no batch jobs have assigned for the agent
+			if reason == "NO_ASSIGNMENT" {
+				if pollingJobEnabled {
+					log.Printf("[agent.go] No batch assignment for this agent; stopping job unit polling and staying in interactive mode.\n")
+				}
+				pollingJobEnabled = false
+				break
+			}
+
+			// If polling is disabled, ignore no work messages
+			if !pollingJobEnabled {
+				break
+			}
+
+			switch reason {
+			case "EMPTY", "EMPTY_ALL_DONE":
+				consecutiveEmpty++
+				log.Printf("[agent.go] No job unit available (%d/%d): %s\n", consecutiveEmpty, maxEmptyReplies, reason)
+
+				if consecutiveEmpty >= maxEmptyReplies {
+					log.Printf("[agent.go] No work after %d polls — shutting down agent (sweep complete).\n", maxEmptyReplies)
+					close(grpcStreamChannel)
+					return
+				}
+
+				time.Sleep(noWorkBackoff)
+				requestNextJobUnit(stream, agentId)
+
+			default:
+				// Unknown condition, retry without counting
+				time.Sleep(noWorkBackoff)
+				requestNextJobUnit(stream, agentId)
+			}
 		}
 
 	}
+}
+
+func requestNextJobUnit(stream Stream, agentId string) {
+	_ = stream.Send(&protos.AgentMessage{
+		Message: &protos.AgentMessage_RequestNextJobUnit{
+			RequestNextJobUnit: &protos.RequestNextJobUnit{
+				AgentId: agentId,
+			},
+		},
+	})
+}
+
+func runResolvedCommand(envName string, resolved string) int {
+	log.Printf("[agent.go] Running job unit command: %s\n", resolved)
+	cmd := exec.Command("micromamba", "run", "-n", envName, "bash", "-lc", resolved)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		var ee *exec.ExitError
+		if errors.As(err, &ee) {
+			log.Printf("[agent.go] Command exited with code %d\n", ee.ExitCode())
+			return ee.ExitCode()
+		}
+		log.Printf("[agent.go] Command failed to start/run: %v\n", err)
+		return 1
+	}
+	return 0
 }
