@@ -291,6 +291,7 @@ def find_runtimes(
     node_count: int | None = None,
     cpu_count: int | None = None,
     group: str | None = None,
+    queue_name: str | None = None,
 ) -> list[Runtime]:
   from .airavata import AiravataOperator
   av = AiravataOperator(AuthContext.get_access_token())
@@ -314,6 +315,8 @@ def find_runtimes(
       if (cluster or r.args["cluster"]) != r.args["cluster"]:
         continue
       if (category or r.args["category"]) != r.args["category"]:
+        continue
+      if (queue_name or r.args["queue_name"]) != r.args["queue_name"]:
         continue
       matched_runtimes.append(r)
     runtimes.extend(matched_runtimes)
