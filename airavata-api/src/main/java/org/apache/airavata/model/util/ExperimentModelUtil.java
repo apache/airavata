@@ -93,6 +93,7 @@ public class ExperimentModelUtil {
         UserConfigurationDataModel configData = experiment.getUserConfigurationData();
         if (configData != null) {
             processModel.setStorageResourceId(configData.getStorageId());
+            processModel.setOutputStorageResourceId(configData.getOutputStorageResourceId());
             processModel.setExperimentDataDir(configData.getExperimentDataDir());
             processModel.setGenerateCert(configData.isGenerateCert());
             processModel.setUserDn(configData.getUserDN());

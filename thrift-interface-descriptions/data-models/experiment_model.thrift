@@ -70,6 +70,7 @@ struct UserConfigurationDataModel {
     10: optional bool useUserCRPref;
     11: optional string groupResourceProfileId
     12: optional list<scheduling_model.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList,
+    13: optional string outputStorageResourceId;
 }
 
 /**
