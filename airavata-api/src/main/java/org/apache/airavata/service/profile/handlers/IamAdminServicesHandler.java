@@ -26,9 +26,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -38,9 +36,7 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
@@ -57,6 +53,20 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
+    // Direct handler dependencies (for unified service)
+    private RegistryServerHandler registryHandler;
+    private CredentialStoreServerHandler credentialStoreHandler;
+
+    // Constructor for unified service with direct handler dependencies
+    public IamAdminServicesHandler(
+            RegistryServerHandler registryHandler, CredentialStoreServerHandler credentialStoreHandler) {
+        this.registryHandler = registryHandler;
+        this.credentialStoreHandler = credentialStoreHandler;
+    }
+
+    // Legacy constructor for backward compatibility
+    public IamAdminServicesHandler() {}
+
     @Override
     public String getAPIVersion() throws TException {
         return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
@@ -72,9 +82,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
             // Load the tenant admin password stored in gateway request
-            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
             // Admin password token should already be stored under requested gateway's gatewayId
-            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(
+            PasswordCredential tenantAdminPasswordCredential = credentialStoreHandler.getPasswordCredential(
                     gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
             if (!keycloakclient.createTenantAdminAccount(
@@ -83,7 +92,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (TException | ApplicationSettingsException ex) {
+        } catch (TException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
             throw iamAdminServicesException;
@@ -339,30 +348,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
             throws TException, ApplicationSettingsException {
 
-        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
+        GatewayResourceProfile gwrp = registryHandler.getGatewayResourceProfile(tenantId);
 
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+        return credentialStoreHandler.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
-        }
-    }
+    // Client factory methods removed - use direct handler calls
 }

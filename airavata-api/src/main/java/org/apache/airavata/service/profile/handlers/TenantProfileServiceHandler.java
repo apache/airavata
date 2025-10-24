@@ -24,10 +24,7 @@ import java.util.UUID;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
@@ -56,6 +53,15 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     private TenantProfileRepository tenantProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
 
+    // Direct handler dependency (for unified service)
+    private CredentialStoreServerHandler credentialStoreHandler;
+
+    // Constructor for unified service with direct handler dependencies
+    public TenantProfileServiceHandler(CredentialStoreServerHandler credentialStoreHandler) {
+        this.credentialStoreHandler = credentialStoreHandler;
+    }
+
+    // Legacy constructor for backward compatibility
     public TenantProfileServiceHandler() {
         logger.debug("Initializing TenantProfileServiceHandler");
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
@@ -242,32 +248,13 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
             throws TException, ApplicationSettingsException {
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        try {
-            String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential adminPasswordCredential =
-                    csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
-            adminPasswordCredential.setGatewayId(gateway.getGatewayId());
-            String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
-            gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-        } finally {
-            if (csClient.getInputProtocol().getTransport().isOpen()) {
-                csClient.getInputProtocol().getTransport().close();
-            }
-            if (csClient.getOutputProtocol().getTransport().isOpen()) {
-                csClient.getOutputProtocol().getTransport().close();
-            }
-        }
+        String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        PasswordCredential adminPasswordCredential = credentialStoreHandler.getPasswordCredential(
+                gateway.getIdentityServerPasswordToken(), requestGatewayId);
+        adminPasswordCredential.setGatewayId(gateway.getGatewayId());
+        String newAdminPasswordCredentialToken = credentialStoreHandler.addPasswordCredential(adminPasswordCredential);
+        gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
-        }
-    }
+    // Client factory method removed - use direct handler calls
 }
