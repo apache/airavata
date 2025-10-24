@@ -71,7 +71,7 @@ public class AgentManagementHandler {
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Iface airavata = airavataService.getAiravata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
             airavata.terminateExperiment(
                     UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
@@ -84,7 +84,7 @@ public class AgentManagementHandler {
 
     public ExperimentModel getExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Iface airavata = airavataService.getAiravata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
             GroupResourceProfile groupResourceProfile = airavata.getGroupResourceProfile(
                     UserContext.authzToken(),
@@ -124,7 +124,7 @@ public class AgentManagementHandler {
         for (AgentLaunchRequest req : launchRequests) {
             String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
             ExperimentStatistics experimentStatistics = airavataService
-                    .airavata()
+                    .getAiravata()
                     .getExperimentStatistics(
                             UserContext.authzToken(),
                             UserContext.gatewayId(),
@@ -164,11 +164,11 @@ public class AgentManagementHandler {
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
 
             String experimentId = airavataService
-                    .airavata()
+                    .getAiravata()
                     .createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService
-                    .airavata()
+                    .getAiravata()
                     .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (TException e) {
@@ -181,7 +181,7 @@ public class AgentManagementHandler {
     public void terminateApplication(String gatewayId, String experimentId) {
         try {
             LOGGER.info("Terminating the application with experiment Id: {}", experimentId);
-            airavataService.airavata().terminateExperiment(UserContext.authzToken(), experimentId, gatewayId);
+            airavataService.getAiravata().terminateExperiment(UserContext.authzToken(), experimentId, gatewayId);
         } catch (Exception e) {
             LOGGER.error("Error while terminating the application with the experiment Id: {}", experimentId);
             throw new RuntimeException(
@@ -193,7 +193,7 @@ public class AgentManagementHandler {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);
             ExperimentModel expModel =
-                    airavataService.airavata().getDetailedExperimentTree(UserContext.authzToken(), expId);
+                    airavataService.getAiravata().getDetailedExperimentTree(UserContext.authzToken(), expId);
             if (expModel.getProcesses() != null && !expModel.getProcesses().isEmpty()) {
                 return expModel.getProcesses().get(0);
             } else {
@@ -208,12 +208,12 @@ public class AgentManagementHandler {
 
     private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
             throws TException {
-        Airavata.Client airavataClient = airavataService.airavata();
+        Airavata.Iface airavata = airavataService.getAiravata();
 
         String experimentName = req.getExperimentName();
         String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
         String projectDir = projectName.replace(" ", "_");
-        String projectId = airavataService.getProjectId(airavataClient, projectName);
+        String projectId = airavataService.getProjectId(airavata, projectName);
         AuthzToken authzToken = UserContext.authzToken();
         String userName = UserContext.username();
         String gatewayId = UserContext.gatewayId();
@@ -227,8 +227,8 @@ public class AgentManagementHandler {
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
                 new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(
-                airavataClient, req.getGroup(), req.getRemoteCluster());
+        GroupComputeResourcePreference groupCompResourcePref =
+                airavataService.extractGroupComputeResourcePreference(airavata, req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
@@ -253,7 +253,7 @@ public class AgentManagementHandler {
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(authzToken, appInterfaceId);
+        List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(authzToken, appInterfaceId);
         List<InputDataObjectType> experimentInputs = applicationInputs.stream()
                 .peek(input -> {
                     if (input != null && input.getName() != null) {
@@ -273,7 +273,7 @@ public class AgentManagementHandler {
                 .collect(Collectors.toList());
 
         experimentModel.setExperimentInputs(experimentInputs);
-        experimentModel.setExperimentOutputs(airavataClient.getApplicationOutputs(authzToken, appInterfaceId));
+        experimentModel.setExperimentOutputs(airavata.getApplicationOutputs(authzToken, appInterfaceId));
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
 

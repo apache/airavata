@@ -24,8 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
@@ -48,18 +47,18 @@ public class AWSProcessContextManager {
     private static final String AWS_PUBLIC_IP = "AWS_PUBLIC_IP";
     private static final String AWS_JOB_ID = "AWS_JOB_ID";
 
-    private final RegistryService.Client registryClient;
+    private final RegistryService.Iface registry;
     private final TaskContext taskContext;
     private final String processId;
 
     public AWSProcessContextManager(TaskContext taskContext) {
         try {
-            this.registryClient = AgentUtils.getRegistryServiceClient();
+            this.registry = AiravataServiceFactory.getRegistry();
             this.taskContext = taskContext;
             this.processId = taskContext.getProcessId();
             LOGGER.info("Initialized AWSProcessContextManager for process {}", processId);
 
-        } catch (AgentException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("Failed to initialize AWSProcessContextManager", e);
             throw new RuntimeException("Failed to initialize AWSProcessContextManager", e);
         }
@@ -132,7 +131,7 @@ public class AWSProcessContextManager {
         contextMap.put(key, value);
         ProcessModel processModel = taskContext.getProcessModel();
         processModel.setProcessDetail(MAPPER.writeValueAsString(contextMap));
-        registryClient.updateProcess(processModel, processId);
+        registry.updateProcess(processModel, processId);
         LOGGER.info("Updated process detail for process {} with key '{}'", processId, key);
     }
 }

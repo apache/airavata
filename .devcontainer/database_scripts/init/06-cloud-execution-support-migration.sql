@@ -1,4 +1,4 @@
-USE app_catalog;
+USE airavata;
 
 -- Add RESOURCE_TYPE column to base table
 ALTER TABLE `GROUP_COMPUTE_RESOURCE_PREFERENCE`

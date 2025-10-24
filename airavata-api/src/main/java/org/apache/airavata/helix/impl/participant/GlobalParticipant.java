@@ -22,10 +22,8 @@ package org.apache.airavata.helix.impl.participant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,44 +53,20 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         "org.apache.airavata.helix.impl.task.aws.AWSCompletingTask",
     };
 
-    @SuppressWarnings("WeakerAccess")
-    public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName)
-            throws ApplicationSettingsException {
-        super(taskClasses, taskTypeName);
-    }
+    public static List<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
-    public void startServer() {
-        Thread t = new Thread(this);
-        t.start();
-    }
-
-    public void stopServer() {}
-
-    public static void main(String args[]) {
-        logger.info("Starting global participant");
-
-        try {
-            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
-
-            for (String taskClassName : TASK_CLASS_NAMES) {
-                logger.debug("Adding task class: " + taskClassName + " to the global participant");
+    static {
+        for (String taskClassName : TASK_CLASS_NAMES) {
+            try {
                 taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+            } catch (ClassNotFoundException e) {
+                logger.error("Failed to load task class: " + taskClassName, e);
             }
-
-            if (ServerSettings.getBooleanSetting("participant.monitoring.enabled")) {
-                MonitoringServer monitoringServer = new MonitoringServer(
-                        ServerSettings.getSetting("participant.monitoring.host"),
-                        ServerSettings.getIntSetting("participant.monitoring.port"));
-                monitoringServer.start();
-
-                Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-            }
-
-            GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
-            participant.startServer();
-
-        } catch (Exception e) {
-            logger.error("Failed to start global participant", e);
         }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public GlobalParticipant() throws ApplicationSettingsException {
+        super(GlobalParticipant.taskClasses, "Orchestrator");
     }
 }

@@ -25,6 +25,4 @@ public interface DBInitConfig {
     String getDBInitScriptPrefix();
 
     String getCheckTableName();
-
-    default void postInit() {}
 }

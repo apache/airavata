@@ -24,7 +24,7 @@ import org.apache.airavata.common.utils.JDBCConfig;
 
 public class WorkflowCatalogDBInitConfig implements DBInitConfig {
 
-    private String dbInitScriptPrefix = "database_scripts/airavataworkflowcatalog";
+    private String dbInitScriptPrefix = "database_scripts/workflow-catalog";
 
     @Override
     public JDBCConfig getJDBCConfig() {
@@ -43,6 +43,6 @@ public class WorkflowCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getCheckTableName() {
-        return "CONFIGURATION";
+        return "AIRAVATA_WORKFLOW";
     }
 }

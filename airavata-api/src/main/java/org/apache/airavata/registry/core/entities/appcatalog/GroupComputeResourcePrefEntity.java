@@ -36,8 +36,6 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 
 /**
  * The persistent class for the group_compute_resource_preference database table.
@@ -80,8 +78,7 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     private String resourceSpecificCredentialStoreToken;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false, insertable = false)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {}

@@ -20,19 +20,11 @@
 package org.apache.airavata.messaging.client;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -55,24 +47,6 @@ public class RabbitMQListener {
     private static String experimentId = "*";
     private static String jobId = "*";
     private static LEVEL level = LEVEL.ALL;
-
-    public static void main(String[] args) {
-        File file = new File("/tmp/latency_client");
-        parseArguments(args);
-        try {
-            FileOutputStream fos = new FileOutputStream(file, false);
-            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-            String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            System.out.println("broker url " + brokerUrl);
-            final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            List<String> routingKeys = getRoutingKeys(level);
-            Subscriber subscriber = MessagingFactory.getSubscriber(message -> {}, routingKeys, Type.STATUS);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error reading airavata server properties", e);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
 
     private static MessageHandler getMessageHandler(final BufferedWriter bw) {
         return message -> {

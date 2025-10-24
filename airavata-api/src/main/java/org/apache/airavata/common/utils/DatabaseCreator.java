@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -69,7 +68,7 @@ public class DatabaseCreator {
      *
      * @throws Exception
      */
-    public static void createRegistryDatabase(String prefix, Connection conn) throws Exception {
+    public static void initializeTables(String prefix, Connection conn) throws Exception {
         createDatabase(prefix, conn);
     }
 
@@ -80,33 +79,14 @@ public class DatabaseCreator {
      *            Table which should be existed
      * @return <code>true</core> if checkSQL is success, else <code>false</code> .
      */
-    public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
-        try {
-
-            log.debug("Running a query to test the database tables existence.");
-
-            // check whether the tables are already created with a query
-            Statement statement = null;
-            try {
-                statement = conn.createStatement();
-                ResultSet rs = statement.executeQuery("select * from " + tableName);
-                if (rs != null) {
-                    rs.close();
-                }
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    return false;
-                }
-            }
+    public static boolean doesTableExist(String tableName, Connection conn) {
+        log.debug("Running a query to test the database tables existence.");
+        try (Statement statement = conn.createStatement()) {
+            statement.executeQuery("select * from " + tableName);
+            return true;
         } catch (SQLException e) {
             return false;
         }
-
-        return true;
     }
 
     /**
@@ -152,9 +132,11 @@ public class DatabaseCreator {
             conn.clearWarnings();
         } catch (SQLException e) {
             if (e.getSQLState().equals("X0Y32")) {
-                // eliminating the table already exception for the derby
-                // database
-                log.info("Table Already Exists", e);
+                // eliminating the table already exists exception for Derby
+                log.info("Table Already Exists");
+            } else if (e.getErrorCode() == 1050) {
+                // eliminating the table already exists exception for MySQL/MariaDB
+                log.info("Table Already Exists (MySQL/MariaDB)");
             } else {
                 throw new Exception("Error occurred while executing : " + sql, e);
             }

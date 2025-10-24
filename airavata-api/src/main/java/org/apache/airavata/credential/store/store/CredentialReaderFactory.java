@@ -34,7 +34,7 @@ public class CredentialReaderFactory {
      * @return CredentialReader object.
      */
     public static CredentialReader createCredentialStoreReader(DBUtil dbUti) throws ApplicationSettingsException {
-        return new CredentialReaderImpl(dbUti);
+        return new CredentialReaderImpl();
     }
 
     /**
@@ -48,6 +48,6 @@ public class CredentialReaderFactory {
     public static CredentialReader createCredentialStoreReader()
             throws ClassNotFoundException, ApplicationSettingsException, InstantiationException,
                     IllegalAccessException {
-        return new CredentialReaderImpl(DBUtil.getCredentialStoreDBUtil());
+        return new CredentialReaderImpl();
     }
 }

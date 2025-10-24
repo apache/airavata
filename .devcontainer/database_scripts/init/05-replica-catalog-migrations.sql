@@ -1,4 +1,4 @@
-USE replica_catalog;
+USE airavata;
 
 -- AIRAVATA-3697: Support file names that have UTF8 characters and that are long
 ALTER TABLE

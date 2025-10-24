@@ -28,6 +28,6 @@ public abstract class MessagingConstants {
     public static final String RABBIT_ROUTING_KEY = "routingKey";
     public static final String RABBIT_QUEUE = "queue";
     public static final String RABBIT_CONSUMER_TAG = "consumerTag";
-    public static final String DURABLE_QUEUE = "durable.queue";
-    public static final String PREFETCH_COUNT = "prefetch.count";
+    public static final String DURABLE_QUEUE = "rabbitmq.durable.queue";
+    public static final String PREFETCH_COUNT = "rabbitmq.prefetch.count";
 }

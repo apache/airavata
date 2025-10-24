@@ -95,54 +95,6 @@ class Settings:
         return str(os.getenv("FILE_SVC_URL", f"http://{self.API_SERVER_HOSTNAME}:8050"))
 
     # ------------------------------------------------------------
-    # Profile Service Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def PROFILE_SERVICE_HOST(self):
-        return str(os.getenv("PROFILE_SERVICE_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def PROFILE_SERVICE_PORT(self):
-        return int(os.getenv("PROFILE_SERVICE_PORT", 8962))
-
-    @property
-    def PROFILE_SERVICE_SECURE(self):
-        return bool(os.getenv("PROFILE_SERVICE_SECURE", False))
-
-    # ------------------------------------------------------------
-    # Sharing Service Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def SHARING_API_HOST(self):
-        return str(os.getenv("SHARING_API_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def SHARING_API_PORT(self):
-        return int(os.getenv("SHARING_API_PORT", 7878))
-
-    @property
-    def SHARING_API_SECURE(self):
-        return bool(os.getenv("SHARING_API_SECURE", False))
-
-    # ------------------------------------------------------------
-    # Credential Store Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def CREDENTIAL_STORE_API_HOST(self):
-        return str(os.getenv("CREDENTIAL_STORE_API_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def CREDENTIAL_STORE_API_PORT(self):
-        return int(os.getenv("CREDENTIAL_STORE_API_PORT", 8960))
-
-    @property
-    def CREDENTIAL_STORE_API_SECURE(self):
-        return bool(os.getenv("CREDENTIAL_STORE_API_SECURE", False))
-
-    # ------------------------------------------------------------
     # Gateway Settings
     # ------------------------------------------------------------
 

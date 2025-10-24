@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.helix.agent.storage;
 
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.datatransfer.api.AgentException;
+import org.apache.airavata.datatransfer.api.CommandOutput;
+import org.apache.airavata.datatransfer.api.StorageResourceAdaptor;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.agent.ssh.SshAdaptorParams;
 import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -41,11 +41,12 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
             logger.info("Initializing Storage Resource Adaptor for storage resource : " + storageResourceId
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
             StorageResourceDescription storageResource =
-                    AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+                    AiravataServiceFactory.getRegistry().getStorageResource(storageResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential =
+                    AiravataServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

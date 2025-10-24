@@ -42,7 +42,8 @@ import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.datatransfer.api.*;
+import org.apache.airavata.factory.AiravataServiceFactory;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.adaptor.wrapper.SFTPClientWrapper;
 import org.apache.airavata.helix.adaptor.wrapper.SessionWrapper;
@@ -137,7 +138,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                     + ", gateway : " + gatewayId + ", user " + userId + ", token : " + token);
 
             ComputeResourceDescription computeResourceDescription =
-                    AgentUtils.getRegistryServiceClient().getComputeResource(computeResource);
+                    AiravataServiceFactory.getRegistry().getComputeResource(computeResource);
 
             logger.info("Fetching job submission interfaces for compute resource " + computeResource);
 
@@ -149,12 +150,13 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp.orElseThrow(
                     () -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
 
-            SSHJobSubmission sshJobSubmission = AgentUtils.getRegistryServiceClient()
+            SSHJobSubmission sshJobSubmission = AiravataServiceFactory.getRegistry()
                     .getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential =
+                    AiravataServiceFactory.getCredentialStore().getSSHCredential(token, gatewayId);
 
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);

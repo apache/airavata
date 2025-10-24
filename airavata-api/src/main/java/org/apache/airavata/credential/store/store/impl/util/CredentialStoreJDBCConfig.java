@@ -64,7 +64,7 @@ public class CredentialStoreJDBCConfig implements JDBCConfig {
     @Override
     public String getValidationQuery() {
         try {
-            return ServerSettings.getSetting("credential.store.jdbc.validationQuery");
+            return ServerSettings.getSetting("airavata.jdbc.validationQuery");
         } catch (ApplicationSettingsException e) {
             throw new RuntimeException(e);
         }

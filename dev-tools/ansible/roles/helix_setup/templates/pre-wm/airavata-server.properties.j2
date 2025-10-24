@@ -19,15 +19,15 @@
 ###########################################################################
 #  Registry Server Configurations
 ###########################################################################
-regserver.server.host={{ registry_host }}
-regserver.server.port={{ registry_port }}
+api.server.host={{ registry_host }}
+api.server.port={{ registry_port }}
 
 ###########################################################################
 # Helix workflow manager configurations
 ###########################################################################
 helix.cluster.name={{ helix_cluster_name }}
-pre.workflow.manager.name={{ helix_pre_wm_name }}
-pre.workflow.manager.loadbalance.clusters={{ helix_pre_wm_load_balance_clusters }}
+prewm.name={{ helix_pre_wm_name }}
+prewm.loadbalance.clusters={{ helix_pre_wm_load_balance_clusters }}
 
 ###########################################################################
 # AMQP Notification Configuration
@@ -40,8 +40,8 @@ rabbitmq.broker.url={{ rabbitmq_broker_url }}
 rabbitmq.status.exchange.name=status_exchange
 rabbitmq.process.exchange.name=process_exchange
 rabbitmq.experiment.exchange.name=experiment_exchange
-durable.queue=false
-prefetch.count=200
+rabbitmq.durable.queue=false
+rabbitmq.prefetch.count=200
 
 ###########################################################################
 # Zookeeper Server Configuration
@@ -57,6 +57,6 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 ###########################################################################
 # Platform Monitoring Configuration
 ###########################################################################
-pre.workflow.manager.monitoring.enabled={{ pre_workflow_manager_monitoring_enabled }}
-pre.workflow.manager.monitoring.host={{ pre_workflow_manager_monitoring_host }}
-pre.workflow.manager.monitoring.port={{ pre_workflow_manager_monitoring_port }}
+monitor.prometheus.enabled={{ monitoring_enabled }}
+monitor.prometheus.host={{ monitoring_host }}
+monitor.prometheus.port={{ monitoring_port }}

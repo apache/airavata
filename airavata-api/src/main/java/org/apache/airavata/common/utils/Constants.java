@@ -39,13 +39,13 @@ public final class Constants {
     public static final String AUTHZ_CACHE_MANAGER_CLASS = "authz.cache.manager.class";
     public static final String AUTHZ_CACHE_ENABLED = "authz.cache.enabled";
 
-    public static final String IN_MEMORY_CACHE_SIZE = "in.memory.cache.size";
-    public static final String LOCAL_DATA_LOCATION = "local.data.location";
+    public static final String AUTHZ_CACHE_SIZE = "authz.cache.size";
+    public static final String LOCAL_DATA_LOCATION = "data.local.path";
 
     // Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
     public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
 
-    public static final String ENABLE_STREAMING_TRANSFER = "enable.streaming.transfer";
+    public static final String ENABLE_STREAMING_TRANSFER = "data.streaming.enabled";
 }

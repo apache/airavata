@@ -21,20 +21,26 @@
 * -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
   <persistence-unit name="profile_service">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-    <class>org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity</class>
-    <class>org.apache.airavata.service.profile.commons.user.entities.NSFDemographicsEntity</class>
-    <class>org.apache.airavata.service.profile.commons.user.entities.CustomizedDashboardEntity</class>
-    <class>org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity</class>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>org.apache.airavata.profile.commons.user.entities.UserProfileEntity</class>
+    <class>org.apache.airavata.profile.commons.user.entities.NSFDemographicsEntity</class>
+    <class>org.apache.airavata.profile.commons.user.entities.CustomizedDashboardEntity</class>
+    <class>org.apache.airavata.profile.commons.tenant.entities.GatewayEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
@@ -97,13 +103,19 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.ConfigurationEntity</class>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
@@ -111,41 +123,48 @@
     <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="workflowcatalog_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.ApplicationErrorEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.ApplicationStatusEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.ApplicationStatusEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerErrorEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerInputEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerOutputEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.HandlerStatusEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowApplicationEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowConnectionEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowDataBlockEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowApplicationEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowConnectionEntity</class>
+    <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowDataBlockEntity</class>
     <class>org.apache.airavata.registry.core.entities.airavataworkflowcatalog.WorkflowHandlerEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="experiment_data_new">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
@@ -172,32 +191,59 @@
     <class>org.apache.airavata.registry.core.entities.expcatalog.TaskErrorEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.TaskStatusEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class>
-    <class>
-      org.apache.airavata.registry.core.entities.expcatalog.ComputationalResourceSchedulingEntity</class>
     <class>org.apache.airavata.registry.core.entities.expcatalog.UserEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
-    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-    <class>org.apache.airavata.sharing.registry.db.entities.DomainEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.EntityEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.EntityTypeEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.GroupMembershipEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.PermissionTypeEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.SharingEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.GroupAdminEntity</class>
-    <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>org.apache.airavata.catalog.sharing.db.entities.DomainEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.EntityEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.EntityTypeEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.GroupAdminEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.GroupMembershipEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.PermissionTypeEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.SharingEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.UserEntity</class>
+    <class>org.apache.airavata.catalog.sharing.db.entities.UserGroupEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="openjpa.jdbc.MappingDefaults"
-        value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
-      <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="credential_store_data">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>org.apache.airavata.credential.store.store.impl.db.CommunityUserEntity</class>
+    <class>org.apache.airavata.credential.store.store.impl.db.CredentialsEntity</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+      <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+      <property name="hibernate.hikari.connectionTimeout" value="30000" />
+      <property name="hibernate.hikari.idleTimeout" value="600000" />
+      <property name="hibernate.hikari.maxLifetime" value="1800000" />
+      <property name="hibernate.hikari.maximumPoolSize" value="10" />
+      <property name="hibernate.hikari.minimumIdle" value="5" />
+      <property name="hibernate.hikari.leakDetectionThreshold" value="60000" />
     </properties>
   </persistence-unit>
 </persistence>

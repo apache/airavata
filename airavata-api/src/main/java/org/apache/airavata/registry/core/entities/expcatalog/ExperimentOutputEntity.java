@@ -40,8 +40,7 @@ public class ExperimentOutputEntity implements Serializable {
     @Column(name = "OUTPUT_NAME")
     private String name;
 
-    @Lob
-    @Column(name = "OUTPUT_VALUE")
+    @Column(name = "OUTPUT_VALUE", columnDefinition = "TEXT")
     private String value;
 
     @Column(name = "DATA_TYPE")

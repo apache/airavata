@@ -41,11 +41,10 @@ public class DataReplicaLocationEntity implements Serializable {
     @Column(name = "PRODUCT_URI")
     private String productUri;
 
-    @Lob
-    @Column(name = "REPLICA_NAME")
+    @Column(name = "REPLICA_NAME", columnDefinition = "TEXT")
     private String replicaName;
 
-    @Column(name = "REPLICA_DESCRIPTION")
+    @Column(name = "REPLICA_DESCRIPTION", columnDefinition = "TEXT")
     private String replicaDescription;
 
     @Column(name = "STORAGE_RESOURCE_ID")

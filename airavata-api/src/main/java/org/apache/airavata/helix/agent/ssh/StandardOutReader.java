@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.agent.ssh;
 
 import java.io.*;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.datatransfer.api.CommandOutput;
 import org.apache.commons.io.IOUtils;
 
 /**

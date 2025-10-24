@@ -18,7 +18,7 @@
  *
  */
 
- namespace java org.apache.airavata.sharing.registry.models
+ namespace java org.apache.airavata.catalog.sharing.models
  namespace php Airavata.Model.Sharing
  namespace py airavata.model.sharing
 

@@ -27,9 +27,9 @@ class CredentialStoreClient(object):
     def __init__(self):
         self.settings = Settings()
         self.client = utils.initialize_credential_store_client(
-            self.settings.CREDENTIAL_STORE_API_HOST,
-            self.settings.CREDENTIAL_STORE_API_PORT,
-            self.settings.CREDENTIAL_STORE_API_SECURE,
+            self.settings.API_SERVER_HOSTNAME,
+            self.settings.API_SERVER_PORT,
+            self.settings.API_SERVER_SECURE,
         )
         # expose the needed functions
         self.get_SSH_credential = self.client.getSSHCredential

@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -28,7 +29,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "USER_COMPUTE_RESOURCE_PREFERENCE")
 @IdClass(UserComputeResourcePreferencePK.class)
-public class UserComputeResourcePreferenceEntity {
+public class UserComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -74,7 +75,10 @@ public class UserComputeResourcePreferenceEntity {
     private boolean validated;
 
     @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumns({@JoinColumn(name = "USER_ID"), @JoinColumn(name = "GATEWAY_ID")})
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserComputeResourcePreferenceEntity() {}

@@ -24,9 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.FileMetadata;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.datatransfer.api.AgentAdaptor;
+import org.apache.airavata.datatransfer.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
@@ -46,7 +45,7 @@ public class AirvataFileService {
     private AdaptorSupport adaptorSupport;
 
     @Autowired
-    ThriftClientPool<RegistryService.Client> registryClientPool;
+    RegistryService.Iface registry;
 
     private AgentAdaptor getAgentAdaptor(ProcessDataManager dataManager, String processId) throws Exception {
         AgentAdaptor agentAdaptor;
@@ -60,7 +59,7 @@ public class AirvataFileService {
     }
 
     public FileMetadata getInfo(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(registry, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
@@ -69,7 +68,7 @@ public class AirvataFileService {
     }
 
     public AiravataDirectory listDir(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(registry, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
@@ -96,7 +95,7 @@ public class AirvataFileService {
     }
 
     public AiravataFile listFile(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(registry, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
@@ -113,7 +112,7 @@ public class AirvataFileService {
         metadata.setSize(file.getSize());
         Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(registry, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
@@ -133,7 +132,7 @@ public class AirvataFileService {
 
     public Path downloadFile(String processId, String subPath) throws Exception {
 
-        ProcessDataManager dataManager = new ProcessDataManager(registryClientPool, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(registry, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
