@@ -34,7 +34,7 @@ public class ModuleLoadCmdEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "APP_DEPLOYMENT_ID")
+    @Column(name = "APP_DEPLOYMENT_ID", insertable = false, updatable = false)
     private String appdeploymentId;
 
     @Id

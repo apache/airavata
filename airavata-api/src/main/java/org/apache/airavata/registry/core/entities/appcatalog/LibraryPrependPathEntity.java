@@ -35,7 +35,7 @@ public class LibraryPrependPathEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DEPLOYMENT_ID")
+    @Column(name = "DEPLOYMENT_ID", insertable = false, updatable = false)
     private String deploymentId;
 
     @Column(name = "VALUE")
