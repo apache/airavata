@@ -19,10 +19,9 @@
 */
 package org.apache.airavata.research.service.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -35,6 +34,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.HashSet;
@@ -69,10 +69,9 @@ public abstract class Resource {
     @Column(nullable = false)
     private String headerImage;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "resource_authors", joinColumns = @JoinColumn(name = "resource_id"))
-    @Column(name = "author_id")
-    private Set<String> authors = new HashSet<>();
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<ResourceAuthor> authors = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
@@ -135,11 +134,12 @@ public abstract class Resource {
         this.description = description;
     }
 
-    public Set<String> getAuthors() {
+    public Set<ResourceAuthor> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<String> authors) {
+    public void setAuthors(Set<ResourceAuthor> authors) {
+        authors.forEach(author -> author.setResource(this));
         this.authors = authors;
     }
 
