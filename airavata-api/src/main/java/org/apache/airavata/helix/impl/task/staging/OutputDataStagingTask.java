@@ -32,6 +32,7 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -74,8 +75,8 @@ public class OutputDataStagingTask extends DataStagingTask {
                 throw new TaskOnFailException(message, true, null);
             }
 
-            // Fetch and validate storage resource
-            StorageResourceDescription storageResource = getStorageResource();
+            // Use output storage resource if specified, otherwise fall back to default
+            StorageResourceDescription storageResource = getTaskContext().getOutputStorageResourceDescription();
 
             // Fetch and validate source and destination URLS
             URI sourceURI;
@@ -90,13 +91,13 @@ public class OutputDataStagingTask extends DataStagingTask {
                                 sourceURI.getPath().length());
 
                 if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
-
-                    String inputPath = getTaskContext().getStorageFileSystemRootLocation();
+                    StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
+                    String inputPath = outputStoragePref.getFileSystemRootLocation();
                     String destFilePath = buildDestinationFilePath(inputPath, sourceFileName);
 
                     destinationURI = new URI(
                             "file",
-                            getTaskContext().getStorageResourceLoginUserName(),
+                            outputStoragePref.getLoginUserName(),
                             storageResource.getHostName(),
                             22,
                             destFilePath,
@@ -117,7 +118,7 @@ public class OutputDataStagingTask extends DataStagingTask {
             }
 
             // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
+            StorageResourceAdaptor storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
 
             // Fetch and validate compute resource adaptor
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());

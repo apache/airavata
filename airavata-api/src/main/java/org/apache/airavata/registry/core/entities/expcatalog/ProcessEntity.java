@@ -94,6 +94,9 @@ public class ProcessEntity implements Serializable {
     @Column(name = "USE_USER_CR_PREF")
     private boolean useUserCRPref;
 
+    @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
+    private String outputStorageResourceId;
+
     @OneToMany(
             targetEntity = ProcessStatusEntity.class,
             cascade = CascadeType.ALL,
@@ -364,5 +367,13 @@ public class ProcessEntity implements Serializable {
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
+    }
+
+    public String getOutputStorageResourceId() {
+        return outputStorageResourceId;
+    }
+
+    public void setOutputStorageResourceId(String outputStorageResourceId) {
+        this.outputStorageResourceId = outputStorageResourceId;
     }
 }
