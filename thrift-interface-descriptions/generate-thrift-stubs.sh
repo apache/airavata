@@ -76,6 +76,7 @@ setup() {
     REGISTRY_THRIFT_FILE="${THRIFTDIR}/service-cpis/registry-api.thrift"
     SHARING_API_THRIFT_FILE="${THRIFTDIR}/service-cpis/sharing_cpi.thrift"
     PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service-cpi.thrift"
+    AIRAVATA_SERVICE_THRIFT_FILE="${THRIFTDIR}/airavata-service/airavata_service.thrift"
 
     PHP_THRIFT_FILE="${THRIFTDIR}/stubs_php.thrift"
     JAVA_THRIFT_FILE="${THRIFTDIR}/stubs_java.thrift"
@@ -196,6 +197,7 @@ generate_java_stubs() {
     generate_component_java_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
     generate_component_java_stubs ${SHARING_API_THRIFT_FILE} ${SHARING_REGISTRY_SRC_DIR}
     generate_component_java_stubs ${PROFILE_SERVICE_THRIFT_FILE} ${PROFILE_SERVICE_SRC_DIR}
+    generate_component_java_stubs ${AIRAVATA_SERVICE_THRIFT_FILE} ${JAVA_SRC_DIR}
     echo "Successfully generated all Java stubs (API, CPI, and service)"
 }
 

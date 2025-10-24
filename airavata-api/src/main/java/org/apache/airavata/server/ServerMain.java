@@ -53,6 +53,7 @@ public class ServerMain {
     private static final String API_ORCH = "api-orch";
     private static final String EXECUTION = "execution";
     // server names
+    private static final String ALL_IN_ONE_CLASS = "airavata_service.class";
     private static final String API_SERVER = "apiserver.class";
     private static final String CREDENTIAL_STORE = "credential.store.class";
     private static final String REGISTRY_SERVER = "regserver";
@@ -109,13 +110,7 @@ public class ServerMain {
         if (serverList.indexOf(ALL_IN_ONE) > -1) {
             serverList.clear();
             serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
-            serverList.add(REGISTRY_SERVER); // registry server should start before everything else
-            serverList.add(CREDENTIAL_STORE); // credential store should start before api server
-            serverList.add(SHARING_SERVER);
-            serverList.add(API_SERVER);
-            serverList.add(ORCHESTRATOR);
-            serverList.add(GFAC_SERVER);
-            serverList.add(PROFILE_SERVICE);
+            serverList.add(ALL_IN_ONE_CLASS);
         } else if (serverList.indexOf(API_ORCH) > -1) {
             serverList.clear();
             serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
