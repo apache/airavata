@@ -73,4 +73,5 @@ struct ProcessModel {
     24: optional bool useUserCRPref,
     25: optional string groupResourceProfileId;
     26: optional list<ProcessWorkflow> processWorkflows;
+    27: optional string outputStorageResourceId;
 }

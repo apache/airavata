@@ -30,6 +30,7 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.agents.streaming.TransferResult;
 import org.apache.airavata.agents.streaming.VirtualStreamProducer;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -99,6 +100,42 @@ public abstract class DataStagingTask extends AiravataTask {
         } catch (Exception e) {
             throw new TaskOnFailException(
                     "Failed to obtain adaptor for storage resource " + storageId + " in task " + getTaskId(), false, e);
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected StorageResourceAdaptor getOutputStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        String storageId = null;
+        try {
+            storageId = getTaskContext().getOutputStorageResourceId();
+            
+            if (getTaskContext().getProcessModel().getOutputStorageResourceId() != null
+                    && !getTaskContext().getProcessModel().getOutputStorageResourceId().trim().isEmpty()) {
+
+                StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
+
+                StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
+                        getGatewayId(),
+                        storageId,
+                        getTaskContext().getDataMovementProtocol(),
+                        outputStoragePref.getResourceSpecificCredentialStoreToken() != null 
+                            ? outputStoragePref.getResourceSpecificCredentialStoreToken()
+                            : getTaskContext().getGatewayResourceProfile().getCredentialStoreToken(),
+                        outputStoragePref.getLoginUserName());
+
+                if (storageResourceAdaptor == null) {
+                    throw new TaskOnFailException(
+                            "Output storage resource adaptor for " + storageId + " can not be null",
+                            true, null);
+                }
+                return storageResourceAdaptor;
+            } else {
+                // Fall back to default storage resource configured
+                return getStorageAdaptor(adaptorSupport);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to obtain adaptor for output storage resource " + storageId + " in task " + getTaskId(), e);
+            throw new TaskOnFailException( "Failed to obtain adaptor for output storage resource " + storageId + " in task " + getTaskId(), false, e);
         }
     }
 

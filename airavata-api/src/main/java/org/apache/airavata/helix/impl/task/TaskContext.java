@@ -739,6 +739,27 @@ public class TaskContext {
         return getGatewayStorageResourcePreference().getStorageResourceId();
     }
 
+    public String getOutputStorageResourceId() throws Exception {
+         if (processModel.getOutputStorageResourceId() != null && !processModel.getOutputStorageResourceId().trim().isEmpty()) {
+             return processModel.getOutputStorageResourceId();
+         }
+        return getStorageResourceId();
+    }
+
+    public StoragePreference getOutputGatewayStorageResourcePreference() throws Exception {
+        String outputStorageId = getOutputStorageResourceId();
+        try {
+            return registryClient.getGatewayStoragePreference(gatewayId, outputStorageId);
+        } catch (TException e) {
+            logger.error("Failed to fetch gateway storage preference for output storage {} in gateway {}", outputStorageId, gatewayId, e);
+            throw e;
+        }
+    }
+
+    public StorageResourceDescription getOutputStorageResourceDescription() throws Exception {
+        return registryClient.getStorageResource(getOutputStorageResourceId());
+    }
+
     private ComputationalResourceSchedulingModel getProcessCRSchedule() {
         if (getProcessModel() != null) {
             return getProcessModel().getProcessResourceSchedule();
