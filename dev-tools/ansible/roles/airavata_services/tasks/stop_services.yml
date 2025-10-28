@@ -1,0 +1,138 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Check if API Server binary exists
+  stat:
+    path: "{{ api_server_dir }}/bin/orchestrator.sh"
+  register: api_server_exists
+  tags:
+    - stop
+
+- name: Stop API Server orchestrator if exists
+  shell: "{{ api_server_dir }}/bin/orchestrator.sh -d stop api-orch"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server controller if exists
+  shell: "{{ api_server_dir }}/bin/controller.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server participant if exists
+  shell: "{{ api_server_dir }}/bin/participant.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server pre-wm if exists
+  shell: "{{ api_server_dir }}/bin/pre-wm.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server post-wm if exists
+  shell: "{{ api_server_dir }}/bin/post-wm.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server email-monitor if exists
+  shell: "{{ api_server_dir }}/bin/email-monitor.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server realtime-monitor if exists
+  shell: "{{ api_server_dir }}/bin/realtime-monitor.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if Agent Service binary exists
+  stat:
+    path: "{{ agent_service_dir }}/bin/agent-service.sh"
+  register: agent_service_exists
+  tags:
+    - stop
+
+- name: Stop Agent Service if exists
+  shell: "{{ agent_service_dir }}/bin/agent-service.sh -d stop"
+  when: agent_service_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if Research Service binary exists
+  stat:
+    path: "{{ research_service_dir }}/bin/research-service.sh"
+  register: research_service_exists
+  tags:
+    - stop
+
+- name: Stop Research Service if exists
+  shell: "{{ research_service_dir }}/bin/research-service.sh -d stop"
+  when: research_service_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if File Server binary exists
+  stat:
+    path: "{{ file_server_dir }}/bin/file-service.sh"
+  register: file_server_exists
+  tags:
+    - stop
+
+- name: Stop File Server if exists
+  shell: "{{ file_server_dir }}/bin/file-service.sh -d stop"
+  when: file_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if REST Proxy binary exists
+  stat:
+    path: "{{ restproxy_dir }}/bin/restproxy.sh"
+  register: restproxy_exists
+  tags:
+    - stop
+
+- name: Stop REST Proxy if exists
+  shell: "{{ restproxy_dir }}/bin/restproxy.sh -d stop"
+  when: restproxy_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Wait for services to fully stop
+  wait_for:
+    timeout: 30
+  tags:
+    - stop

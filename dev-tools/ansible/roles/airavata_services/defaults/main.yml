@@ -1,0 +1,214 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Airavata Services Role Default Variables
+
+# Service distribution names
+airavata_version: "0.21-SNAPSHOT"
+api_server_dist_name: "apache-airavata-api-server-{{ airavata_version }}"
+agent_service_dist_name: "apache-airavata-agent-service-{{ airavata_version }}"
+research_service_dist_name: "apache-airavata-research-service-{{ airavata_version }}"
+file_server_dist_name: "apache-airavata-file-server-{{ airavata_version }}"
+restproxy_dist_name: "apache-airavata-restproxy-{{ airavata_version }}"
+
+# Service directories
+api_server_dir: "{{ deployment_dir }}/{{ api_server_dist_name }}"
+agent_service_dir: "{{ deployment_dir }}/{{ agent_service_dist_name }}"
+research_service_dir: "{{ deployment_dir }}/{{ research_service_dist_name }}"
+file_server_dir: "{{ deployment_dir }}/{{ file_server_dist_name }}"
+restproxy_dir: "{{ deployment_dir }}/{{ restproxy_dist_name }}"
+
+# Service ports
+api_server_port: 8930
+profile_service_port: 8962
+registry_port: 8970
+registry_server_port: 8970
+sharing_registry_port: 7878
+cred_store_port: 8960
+agent_service_port: 18880
+research_service_port: 18899
+file_server_port: 8050
+restproxy_port: 8082
+
+# Service hosts
+api_server_host: "0.0.0.0"
+profile_service_host: "0.0.0.0"
+agent_service_server_address: "0.0.0.0"
+research_service_server_address: "0.0.0.0"
+
+# Monitoring ports
+api_server_monitoring_port: 9097
+participant_monitoring_port: 9096
+pre_wm_monitoring_port: 9093
+post_wm_monitoring_port: 9094
+
+# Monitoring hosts
+api_server_monitoring_host: "localhost"
+participant_monitoring_host: "localhost"
+pre_workflow_manager_monitoring_host: "localhost"
+post_workflow_manager_monitoring_host: "localhost"
+
+# Server hosts
+orchestrator_server_host: "localhost"
+regserver_server_host: "localhost"
+sharing_registry_server_host: "localhost"
+cred_store_server_host: "localhost"
+
+# Orchestrator configuration
+orchestrator_class: "org.apache.airavata.orchestrator.server.OrchestratorServer"
+orchestrator_server_port: 8940
+orchestrator_server_min_threads: 50
+job_validators: "org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator"
+enable_validation: true
+host_scheduler: "org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler"
+
+# Registry server configuration
+regserver_class: "org.apache.airavata.registry.api.service.RegistryAPIServer"
+
+# Sharing registry configuration
+sharing_server_class: "org.apache.airavata.sharing.registry.server.SharingRegistryServer"
+enable_sharing: true
+
+# Default registry user
+default_registry_user: "default-admin"
+default_registry_gateway: "default"
+default_registry_oauth_client_id: "pga"
+super_tenant_gatewayId: "default"
+
+# JDBC driver
+registry_jdbc_driver: "org.mariadb.jdbc.Driver"
+appcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+replicacatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+workflowcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+sharingcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+profile_service_jdbc_driver: "org.mariadb.jdbc.Driver"
+credential_store_jdbc_driver: "org.mariadb.jdbc.Driver"
+
+# Security configuration
+security_manager_class: "org.apache.airavata.service.security.KeyCloakSecurityManager"
+TLS_enabled: false
+TLS_client_timeout: 10000
+keystore_path: "keystores/airavata.p12"
+authz_cache_enabled: true
+authz_cache_manager_class: "org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager"
+in_memory_cache_size: 1000
+
+# Keystore configuration
+credential_store_keystore_url: "keystores/airavata.sym.p12"
+credential_store_keystore_alias: "airavata"
+
+# Job notification configuration
+job_notification_enable: true
+job_notification_emailids: ""
+prefetch_count: 200
+durable_queue: false
+
+# RabbitMQ configuration
+rabbitmq_status_exchange_name: "status_exchange"
+rabbitmq_process_exchange_name: "process_exchange"
+rabbitmq_experiment_exchange_name: "experiment_exchange"
+experiment_launch_queue: "experiment_launch"
+
+# Zookeeper configuration
+embedded_zk: false
+
+# Helix configuration
+helix_cluster_name: "AiravataCluster"
+helix_controller_name: "AiravataController"
+helix_participant_name: "AiravataParticipant"
+participant_monitoring_enabled: true
+
+# Job monitor configuration
+enable_realtime_monitor: true
+realtime_monitor_broker_consumer_group: "monitor"
+realtime_monitor_broker_topic: "helix-airavata-mq"
+job_monitor_broker_consumer_group: "MonitoringConsumer"
+job_monitor_broker_topic: "monitoring-data"
+job_monitor_broker_publisher_id: "AiravataMonitorPublisher"
+job_monitor_email_publisher_id: "EmailBasedProducer"
+job_monitor_realtime_publisher_id: "RealtimeProducer"
+
+# Email monitor configuration
+email_based_monitor_host: "imap.gmail.com"
+email_based_monitor_store_protocol: "imaps"
+email_based_monitor_folder_name: "INBOX"
+email_expiration_minutes: 60
+email_based_monitoring_period: 10000
+
+# Pre-workflow manager configuration
+pre_workflow_manager_loadbalance_clusters: false
+pre_workflow_manager_monitoring_enabled: true
+pre_workflow_manager_name: "AiravataPreWM"
+
+# Post-workflow manager configuration
+post_workflow_manager_loadbalance_clusters: false
+post_workflow_manager_monitoring_enabled: true
+post_workflow_manager_name: "AiravataPostWM"
+
+# Parser-workflow configuration
+data_parser_delete_container: true
+data_parser_broker_consumer_group: "CHANGE_ME"
+data_parser_topic: "CHANGE_ME"
+data_parser_storage_resource_id: "CHANGE_ME"
+
+# Monitoring and scanning configuration
+cluster_status_monitoring_enable: false
+metaschedluer_job_scanning_enable: false
+data_analyzer_job_scanning_enable: false
+
+# Data staging configuration
+enable_streaming_transfer: false
+
+# Thrift client pool configuration
+thrift_client_pool_abandoned_removal_enabled: true
+thrift_client_pool_abandoned_removal_logged: false
+
+# DB Event Manager
+db_event_manager_class: "org.apache.airavata.db.event.manager.DBEventManagerRunner"
+
+# Agent service configuration
+agent_service_grpc_host: "api.dev.cybershuttle.org"
+agent_service_grpc_port: 19900
+agent_service_grpc_max_inbound_message_size: 10485760
+agent_service_max_file_size: "200MB"
+agent_service_max_request_size: "200MB"
+agent_service_pool_name: "AppCatalogPool"
+agent_service_leak_detection_threshold: 20000
+agent_service_ddl_auto: "create"
+
+# Research service configuration
+research_service_grpc_port: 19908
+research_service_max_file_size: "200MB"
+research_service_max_request_size: "200MB"
+research_service_pool_name: "ResearchCatalogPool"
+research_service_leak_detection_threshold: 20000
+research_service_ddl_auto: "validate"
+
+# File server configuration
+file_server_max_file_size: "12GB"
+file_server_max_request_size: "12GB"
+file_server_file_size_threshold: "2MB"
+
+# Storage configuration
+local_data_location: "/home/{{ deploy_user }}/temp-storage"
+agent_service_storage_resource_id: "default_9c15d8af-3d36-4c3c-a07a-0f3b4bb5b903"
+agent_service_storage_path: "/var/www/portals/gateway-user-data"
+agent_service_application_interface_id: "AiravataAgent_3eeb580b-b0c6-4f7e-8e3d-22c4f84ec3f1"
