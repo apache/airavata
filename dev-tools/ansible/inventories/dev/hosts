@@ -1,0 +1,12 @@
+[airavata_servers]
+dev-server
+
+[zookeeper]
+dev-server
+
+[rabbitmq]
+dev-server
+
+[database]
+dev-server
+

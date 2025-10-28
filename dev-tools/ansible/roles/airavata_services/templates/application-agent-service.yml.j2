@@ -1,0 +1,63 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+grpc:
+  server:
+    host: {{ agent_service_grpc_host }}
+    port: {{ agent_service_grpc_port }}
+    max-inbound-message-size: {{ agent_service_grpc_max_inbound_message_size }}
+
+server:
+  port: {{ agent_service_server_port }}
+  address: {{ agent_service_server_address }}
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: {{ agent_service_max_file_size }}
+      max-request-size: {{ agent_service_max_request_size }}
+  datasource:
+    url: "{{ agent_service_datasource_url }}"
+    username: "{{ agent_service_datasource_username }}"
+    password: "{{ agent_service_datasource_password }}"
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: {{ agent_service_pool_name }}
+      leak-detection-threshold: {{ agent_service_leak_detection_threshold }}
+    jpa:
+     hibernate:
+      ddl-auto: {{ agent_service_ddl_auto }}
+     open-in-view: false
+
+airavata:
+  server:
+    url: {{ agent_service_airavata_url }}
+    port: {{ agent_service_airavata_port }}
+    secure: {{ agent_service_airavata_secure }}
+  storageResourceId: {{ agent_service_storage_resource_id }}
+  storagePath: {{ agent_service_storage_path }}
+  cluster:
+    applicationInterfaceId: {{ agent_service_application_interface_id }}
+  tunnel:
+    serverHost: {{ tunnel_server_host }}
+    serverPort: {{ tunnel_server_port }}
+    serverToken: {{ tunnel_server_token }}
+    serverApiUrl: {{ tunnel_server_api_url }}
+

@@ -1,0 +1,19 @@
+---
+# Server-specific sensitive variables (will be encrypted)
+# Copy this file to vault.yml, fill in values, then encrypt:
+# ansible-vault encrypt vault.yml
+
+# SSH connection details
+ansible_host: "CHANGEME_SERVER_IP"
+ansible_user: "CHANGEME_SSH_USER"
+ansible_ssh_private_key_file: "CHANGEME_PATH_TO_SSH_KEY"
+
+# Optional: If using password-based SSH
+# ansible_password: "CHANGEME_SSH_PASSWORD"
+
+# Optional: If SSH runs on non-standard port
+# ansible_port: 22
+
+# Optional: SSH connection timeout
+# ansible_ssh_timeout: 30
+

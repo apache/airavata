@@ -1,0 +1,25 @@
+---
+# Non-sensitive configuration variables
+# Copy this file to vars.yml and update values as needed
+
+# Airavata version and build settings
+airavata_version: "0.21-SNAPSHOT"
+git_branch: "master"
+airavata_git_repo: "https://github.com/apache/airavata.git"
+airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
+deployment_dir: "/home/{{ deploy_user }}/airavata"
+
+# Non-sensitive service settings
+deploy_user: "CHANGEME_DEPLOY_USER"
+api_server_port: 8930
+profile_service_port: 8962
+registry_port: 8970
+
+# Database info
+registry_jdbc_driver: "org.mariadb.jdbc.Driver"
+registry_jdbc_user: "root"
+appcatalog_jdbc_user: "root"
+
+# Paths
+local_data_location: "/home/{{ deploy_user }}/temp-storage"
+
