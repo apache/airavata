@@ -76,7 +76,8 @@ class DataModelCreationUtil(object):
             experiment_model: ExperimentModel,
             computation_resource_name: str,
             group_resource_profile_name: str,
-            storageId: str,
+            inputStorageId: str,
+            outputStorageId: str,
             node_count: int,
             total_cpu_count: int,
             queue_name: str,
@@ -97,7 +98,8 @@ class DataModelCreationUtil(object):
         userConfigData.computationalResourceScheduling = computRes
 
         userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.storageId = storageId
+        userConfigData.storageId = inputStorageId
+        userConfigData.outputStorageResourceId = outputStorageId
 
         userConfigData.experimentDataDir = experiment_dir_path
         userConfigData.airavataAutoSchedule = auto_schedule
