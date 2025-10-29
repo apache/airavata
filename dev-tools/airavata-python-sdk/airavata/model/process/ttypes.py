@@ -158,12 +158,13 @@ class ProcessModel(object):
      - useUserCRPref
      - groupResourceProfileId
      - processWorkflows
+     - outputStorageResourceId
 
     """
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, processId: str = "DO_NOT_SET_AT_CLIENTS", experimentId: str = None, creationTime: typing.Optional[int] = None, lastUpdateTime: typing.Optional[int] = None, processStatuses: typing.Optional[list[airavata.model.status.ttypes.ProcessStatus]] = None, processDetail: typing.Optional[str] = None, applicationInterfaceId: typing.Optional[str] = None, applicationDeploymentId: typing.Optional[str] = None, computeResourceId: typing.Optional[str] = None, processInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, processOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, processResourceSchedule: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, tasks: typing.Optional[list[airavata.model.task.ttypes.TaskModel]] = None, taskDag: typing.Optional[str] = None, processErrors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, gatewayExecutionId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, storageResourceId: typing.Optional[str] = None, userDn: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, experimentDataDir: typing.Optional[str] = None, userName: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, processWorkflows: typing.Optional[list[ProcessWorkflow]] = None,):
+    def __init__(self, processId: str = "DO_NOT_SET_AT_CLIENTS", experimentId: str = None, creationTime: typing.Optional[int] = None, lastUpdateTime: typing.Optional[int] = None, processStatuses: typing.Optional[list[airavata.model.status.ttypes.ProcessStatus]] = None, processDetail: typing.Optional[str] = None, applicationInterfaceId: typing.Optional[str] = None, applicationDeploymentId: typing.Optional[str] = None, computeResourceId: typing.Optional[str] = None, processInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, processOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, processResourceSchedule: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, tasks: typing.Optional[list[airavata.model.task.ttypes.TaskModel]] = None, taskDag: typing.Optional[str] = None, processErrors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, gatewayExecutionId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, storageResourceId: typing.Optional[str] = None, userDn: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, experimentDataDir: typing.Optional[str] = None, userName: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, processWorkflows: typing.Optional[list[ProcessWorkflow]] = None, outputStorageResourceId: typing.Optional[str] = None,):
         self.processId: str = processId
         self.experimentId: str = experimentId
         self.creationTime: typing.Optional[int] = creationTime
@@ -190,6 +191,7 @@ class ProcessModel(object):
         self.useUserCRPref: typing.Optional[bool] = useUserCRPref
         self.groupResourceProfileId: typing.Optional[str] = groupResourceProfileId
         self.processWorkflows: typing.Optional[list[ProcessWorkflow]] = processWorkflows
+        self.outputStorageResourceId: typing.Optional[str] = outputStorageResourceId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -372,6 +374,11 @@ class ProcessModel(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 27:
+                if ftype == TType.STRING:
+                    self.outputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -508,6 +515,10 @@ class ProcessModel(object):
                 iter48.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
+        if self.outputStorageResourceId is not None:
+            oprot.writeFieldBegin('outputStorageResourceId', TType.STRING, 27)
+            oprot.writeString(self.outputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.outputStorageResourceId)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -565,6 +576,7 @@ ProcessModel.thrift_spec = (
     (24, TType.BOOL, 'useUserCRPref', None, None, ),  # 24
     (25, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 25
     (26, TType.LIST, 'processWorkflows', (TType.STRUCT, [ProcessWorkflow, None], False), None, ),  # 26
+    (27, TType.STRING, 'outputStorageResourceId', 'UTF8', None, ),  # 27
 )
 fix_spec(all_structs)
 del all_structs
