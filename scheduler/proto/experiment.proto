@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.experiment;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+// Experiment status enumeration
+enum ExperimentStatus {
+  EXPERIMENT_STATUS_CREATED = 0;
+  EXPERIMENT_STATUS_SUBMITTED = 1;
+  EXPERIMENT_STATUS_RUNNING = 2;
+  EXPERIMENT_STATUS_COMPLETED = 3;
+  EXPERIMENT_STATUS_FAILED = 4;
+  EXPERIMENT_STATUS_CANCELLED = 5;
+}
+
+// Task status enumeration
+enum TaskStatus {
+  TASK_STATUS_CREATED = 0;
+  TASK_STATUS_QUEUED = 1;
+  TASK_STATUS_DATA_STAGING = 2;
+  TASK_STATUS_ENV_SETUP = 3;
+  TASK_STATUS_RUNNING = 4;
+  TASK_STATUS_OUTPUT_STAGING = 5;
+  TASK_STATUS_COMPLETED = 6;
+  TASK_STATUS_FAILED = 7;
+  TASK_STATUS_CANCELLED = 8;
+}
+
+// Parameter set for experiment
+message ParameterSet {
+  string id = 1;
+  map<string, string> values = 2;
+  map<string, string> metadata = 3;
+}
+
+// Experiment specification
+message ExperimentSpec {
+  string id = 1;
+  string name = 2;
+  string command_template = 3;
+  string output_pattern = 4;
+  repeated ParameterSet parameters = 5;
+  map<string, string> metadata = 6;
+}
+
+// Task representation
+message Task {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string experiment_id = 4;
+  string command = 5;
+  string output_path = 6;
+  TaskStatus status = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  string worker_id = 10;
+  string compute_resource_id = 11;
+  google.protobuf.Timestamp started_at = 12;
+  google.protobuf.Timestamp completed_at = 13;
+  string error = 14;
+  repeated apache.airavata.scheduler.common.FileMetadata input_files = 15;
+  repeated apache.airavata.scheduler.common.FileMetadata output_files = 16;
+  map<string, string> metadata = 17;
+  int32 retry_count = 18;
+  int32 max_retries = 19;
+}
+
+// Complete experiment
+message Experiment {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string project_id = 4;
+  string owner = 5;
+  ExperimentStatus status = 6;
+  string command_template = 7;
+  string output_pattern = 8;
+  repeated ParameterSet parameters = 9;
+  repeated Task tasks = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  map<string, string> metadata = 13;
+  repeated apache.airavata.scheduler.common.Error errors = 14;
+}
+
+// Create experiment request
+message CreateExperimentRequest {
+  string name = 1;
+  string description = 2;
+  string project_id = 3;
+  string owner = 4;
+  string command_template = 5;
+  string output_pattern = 6;
+  repeated ParameterSet parameters = 7;
+  map<string, string> metadata = 8;
+}
+
+// Create experiment response
+message CreateExperimentResponse {
+  Experiment experiment = 1;
+  apache.airavata.scheduler.common.ValidationResult validation = 2;
+}
+
+// Get experiment request
+message GetExperimentRequest {
+  string experiment_id = 1;
+  bool include_tasks = 2;
+  bool include_metadata = 3;
+}
+
+// Get experiment response
+message GetExperimentResponse {
+  Experiment experiment = 1;
+  bool found = 2;
+}
+
+// List experiments request
+message ListExperimentsRequest {
+  string project_id = 1;
+  string owner = 2;
+  ExperimentStatus status = 3;
+  apache.airavata.scheduler.common.PaginationRequest pagination = 4;
+}
+
+// List experiments response
+message ListExperimentsResponse {
+  repeated Experiment experiments = 1;
+  apache.airavata.scheduler.common.PaginationResponse pagination = 2;
+}
+
+// Update experiment request
+message UpdateExperimentRequest {
+  string experiment_id = 1;
+  string name = 2;
+  string description = 3;
+  ExperimentStatus status = 4;
+  map<string, string> metadata = 5;
+}
+
+// Update experiment response
+message UpdateExperimentResponse {
+  Experiment experiment = 1;
+  apache.airavata.scheduler.common.ValidationResult validation = 2;
+}
+
+// Delete experiment request
+message DeleteExperimentRequest {
+  string experiment_id = 1;
+  bool force = 2;
+}
+
+// Delete experiment response
+message DeleteExperimentResponse {
+  bool deleted = 1;
+  string message = 2;
+}
+
+// Submit experiment request
+message SubmitExperimentRequest {
+  string experiment_id = 1;
+  string compute_resource_id = 2;
+  map<string, string> options = 3;
+}
+
+// Submit experiment response
+message SubmitExperimentResponse {
+  string submission_id = 1;
+  ExperimentStatus status = 2;
+  apache.airavata.scheduler.common.ValidationResult validation = 3;
+}
