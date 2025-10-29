@@ -154,6 +154,59 @@ class AlphaFold2(ExperimentApp):
     obj.tasks = []
     return obj
 
+class VizFold_MSA(ExperimentApp):
+  """
+  VizFold lets you compute the 3D structure of a protein (using OpenFold),
+  and visualize its residue-to-residue attention scores using arc diagrams.
+  """
+
+  def __init__(
+      self,
+  ) -> None:
+    super().__init__(app_id="VizFold-MSA")
+
+  @classmethod
+  def initialize(
+      cls,
+      name: str,
+      protein: str,
+  ) -> Experiment[ExperimentApp]:
+    app = cls()
+    obj = Experiment[ExperimentApp](name, app).with_inputs(
+        protein=protein,
+    )
+    obj.input_mapping = {
+        "Protein": ("protein", "str"),
+    }
+    obj.tasks = []
+    return obj
+
+class VizFold_Fold(ExperimentApp):
+  """
+  VizFold lets you compute the 3D structure of a protein (using OpenFold),
+  and visualize its residue-to-residue attention scores using arc diagrams.
+  """
+
+  def __init__(
+      self,
+  ) -> None:
+    super().__init__(app_id="VizFold-Fold")
+
+  @classmethod
+  def initialize(
+      cls,
+      name: str,
+      protein: str,
+  ) -> Experiment[ExperimentApp]:
+    app = cls()
+    obj = Experiment[ExperimentApp](name, app).with_inputs(
+        protein=protein,
+    )
+    obj.input_mapping = {
+        "Protein": ("protein", "str"),
+    }
+    obj.tasks = []
+    return obj
 
 class AMBER(ExperimentApp):
   """

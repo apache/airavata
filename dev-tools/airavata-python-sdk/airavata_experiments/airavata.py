@@ -112,7 +112,8 @@ class AiravataOperator:
       experiment_model: ExperimentModel,
       computation_resource_name: str,
       group: str,
-      storageId: str,
+      inputStorageId: str,
+      outputStorageId: str,
       node_count: int,
       total_cpu_count: int,
       queue_name: str,
@@ -133,7 +134,8 @@ class AiravataOperator:
         userConfigData.computationalResourceScheduling = computRes
 
         userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.storageId = storageId
+        userConfigData.storageId = inputStorageId
+        userConfigData.outputStorageResourceId = outputStorageId
 
         userConfigData.experimentDataDir = experiment_dir_path
         userConfigData.airavataAutoSchedule = auto_schedule
@@ -535,7 +537,8 @@ class AiravataOperator:
       group: str = "Default",
       *,
       gateway_id: str | None = None,
-      sr_host: str | None = None,
+      input_sr_host: str | None = None,
+      output_sr_host: str | None = None,
       auto_schedule: bool = False,
   ) -> LaunchState:
     """
@@ -545,7 +548,8 @@ class AiravataOperator:
     # preprocess args (str)
     print("[AV] Preprocessing args...")
     gateway_id = str(gateway_id or self.default_gateway_id())
-    sr_host = str(sr_host or self.default_sr_hostname())
+    input_sr_host = str(input_sr_host or self.default_sr_hostname())
+    output_sr_host = str(output_sr_host or input_sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     server_url = urlparse(self.connection_svc_url()).netloc
 
@@ -558,7 +562,8 @@ class AiravataOperator:
     assert len(gateway_id) > 0, f"Invalid gateway_id: {gateway_id}"
     assert len(queue_name) > 0, f"Invalid queue_name: {queue_name}"
     assert len(group) > 0, f"Invalid group name: {group}"
-    assert len(sr_host) > 0, f"Invalid sr_host: {sr_host}"
+    assert len(input_sr_host) > 0, f"Invalid input_sr_host: {input_sr_host}"
+    assert len(output_sr_host) > 0, f"Invalid output_sr_host: {output_sr_host}"
     assert len(project) > 0, f"Invalid project_name: {project}"
     assert len(mount_point.as_posix()) > 0, f"Invalid mount_point: {mount_point}"
 
@@ -585,10 +590,14 @@ class AiravataOperator:
     data_inputs.update({"agent_id": data_inputs.get("agent_id", str(uuid.uuid4()))})
     data_inputs.update({"server_url": server_url})
 
-    # setup runtime params
-    print("[AV] Setting up runtime params...")
-    storage = self.get_storage(sr_host)
-    sr_id = storage.storageResourceId
+    # setup storage
+    print("[AV] Setting up storage...")
+    input_storage = self.get_storage(input_sr_host)
+    output_storage = self.get_storage(output_sr_host)
+    assert input_storage is not None, f"Invalid input_storage: {input_storage}"
+    assert output_storage is not None, f"Invalid output_storage: {output_storage}"
+    input_sr_id = input_storage.storageResourceId
+    output_sr_id = output_storage.storageResourceId
 
     # setup application interface
     print("[AV] Setting up application interface...")
@@ -607,7 +616,7 @@ class AiravataOperator:
     # setup experiment directory
     print("[AV] Setting up experiment directory...")
     exp_dir = self.make_experiment_dir(
-        sr_host=storage.hostName,
+        sr_host=input_storage.hostName,
         project_name=project,
         experiment_name=experiment_name,
     )
@@ -620,7 +629,8 @@ class AiravataOperator:
         experiment_model=experiment,
         computation_resource_name=computation_resource_name,
         group=group,
-        storageId=sr_id,
+        inputStorageId=input_sr_id,
+        outputStorageId=output_sr_id,
         node_count=node_count,
         total_cpu_count=cpu_count,
         wall_time_limit=walltime,
@@ -630,7 +640,7 @@ class AiravataOperator:
     )
 
     def register_input_file(file: Path) -> str:
-      return str(self.register_input_file(file.name, sr_host, sr_id, gateway_id, file.name, abs_path))
+      return str(self.register_input_file(file.name, input_sr_host, input_sr_id, gateway_id, file.name, abs_path))
     
     # set up experiment inputs
     print("[AV] Setting up experiment inputs...")

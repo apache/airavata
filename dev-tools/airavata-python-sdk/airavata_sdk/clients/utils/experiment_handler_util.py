@@ -83,6 +83,7 @@ class ExperimentHandlerUtil(object):
         group_name: str = "Default",
         application_name: str = "Default Application",
         project_name: str = "Default Project",
+        output_storage_host: str | None = None,
     ):
         execution_id = self.airavata_util.get_execution_id(application_name)
         assert execution_id is not None
@@ -91,14 +92,20 @@ class ExperimentHandlerUtil(object):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         group_resource_profile_id = self.airavata_util.get_group_resource_profile_id(group_name)
 
-        storage_host = self.settings.STORAGE_RESOURCE_HOST
-        assert storage_host is not None
+        input_storage_host = self.settings.STORAGE_RESOURCE_HOST
+        assert input_storage_host is not None
 
         sftp_port = self.settings.SFTP_PORT
         assert sftp_port is not None
 
-        storage_id = self.airavata_util.get_storage_resource_id(storage_host)
-        assert storage_id is not None
+        input_storage_id = self.airavata_util.get_storage_resource_id(input_storage_host)
+        assert input_storage_id is not None
+
+        if output_storage_host is not None:
+            output_storage_id = self.airavata_util.get_storage_resource_id(output_storage_host)
+        else:
+            output_storage_id = input_storage_id
+        assert output_storage_id is not None
 
         assert project_name is not None
         assert application_name is not None
@@ -112,8 +119,8 @@ class ExperimentHandlerUtil(object):
             description=description,
         )
 
-        logger.info("connnecting to file upload endpoint %s : %s", storage_host, sftp_port)
-        sftp_connector = SFTPConnector(host=storage_host,
+        logger.info("connnecting to file upload endpoint %s : %s", input_storage_host, sftp_port)
+        sftp_connector = SFTPConnector(host=input_storage_host,
                                        port=sftp_port,
                                        username=self.user_id,
                                        password=self.access_token)
@@ -136,7 +143,8 @@ class ExperimentHandlerUtil(object):
         experiment = self.data_model_client.configure_computation_resource_scheduling(experiment_model=experiment,
                                                                                       computation_resource_name=computation_resource_name,
                                                                                       group_resource_profile_name=group_name,
-                                                                                      storageId=storage_id,
+                                                                                      inputStorageId=input_storage_id,
+                                                                                      outputStorageId=output_storage_id,
                                                                                       node_count=int(node_count),
                                                                                       total_cpu_count=int(cpu_count),
                                                                                       wall_time_limit=int(walltime),
@@ -151,8 +159,8 @@ class ExperimentHandlerUtil(object):
                     data_uris = []
                     for x in input_file_mapping[key]:
                         data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                              storage_name=storage_host,
-                                                                              storageId=storage_id,
+                                                                              storage_name=input_storage_host,
+                                                                              storageId=input_storage_id,
                                                                               input_file_name=x,
                                                                               uploaded_storage_path=path)
                         data_uris.append(data_uri)
@@ -160,8 +168,8 @@ class ExperimentHandlerUtil(object):
                 else:
                     x = input_file_mapping[key]
                     data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                          storage_name=storage_host,
-                                                                          storageId=storage_id,
+                                                                          storage_name=input_storage_host,
+                                                                          storageId=input_storage_id,
                                                                           input_file_name=x,
                                                                           uploaded_storage_path=path)
                     new_file_mapping[key] = data_uri
@@ -177,8 +185,8 @@ class ExperimentHandlerUtil(object):
                 data_uris = []
                 for x in input_files:
                     data_uri = self.data_model_client.register_input_file(file_identifier=x,
-                                                                          storage_name=storage_host,
-                                                                          storageId=storage_id,
+                                                                          storage_name=input_storage_host,
+                                                                          storageId=input_storage_id,
                                                                           input_file_name=x,
                                                                           uploaded_storage_path=path)
                     data_uris.append(data_uri)
