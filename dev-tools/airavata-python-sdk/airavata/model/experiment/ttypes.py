@@ -70,12 +70,13 @@ class UserConfigurationDataModel(object):
      - useUserCRPref
      - groupResourceProfileId
      - autoScheduledCompResourceSchedulingList
+     - outputStorageResourceId
 
     """
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, airavataAutoSchedule: bool = False, overrideManualScheduledParams: bool = False, shareExperimentPublicly: typing.Optional[bool] = False, computationalResourceScheduling: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, throttleResources: typing.Optional[bool] = False, userDN: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, storageId: typing.Optional[str] = None, experimentDataDir: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = None,):
+    def __init__(self, airavataAutoSchedule: bool = False, overrideManualScheduledParams: bool = False, shareExperimentPublicly: typing.Optional[bool] = False, computationalResourceScheduling: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, throttleResources: typing.Optional[bool] = False, userDN: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, storageId: typing.Optional[str] = None, experimentDataDir: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = None, outputStorageResourceId: typing.Optional[str] = None,):
         self.airavataAutoSchedule: bool = airavataAutoSchedule
         self.overrideManualScheduledParams: bool = overrideManualScheduledParams
         self.shareExperimentPublicly: typing.Optional[bool] = shareExperimentPublicly
@@ -88,6 +89,7 @@ class UserConfigurationDataModel(object):
         self.useUserCRPref: typing.Optional[bool] = useUserCRPref
         self.groupResourceProfileId: typing.Optional[str] = groupResourceProfileId
         self.autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = autoScheduledCompResourceSchedulingList
+        self.outputStorageResourceId: typing.Optional[str] = outputStorageResourceId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -165,6 +167,11 @@ class UserConfigurationDataModel(object):
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
+            elif fid == 13:
+                if ftype == TType.STRING:
+                    self.outputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -226,6 +233,10 @@ class UserConfigurationDataModel(object):
             for iter6 in self.autoScheduledCompResourceSchedulingList:
                 iter6.write(oprot)
             oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        if self.outputStorageResourceId is not None:
+            oprot.writeFieldBegin('outputStorageResourceId', TType.STRING, 13)
+            oprot.writeString(self.outputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.outputStorageResourceId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1044,6 +1055,7 @@ UserConfigurationDataModel.thrift_spec = (
     (10, TType.BOOL, 'useUserCRPref', None, None, ),  # 10
     (11, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 11
     (12, TType.LIST, 'autoScheduledCompResourceSchedulingList', (TType.STRUCT, [airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel, None], False), None, ),  # 12
+    (13, TType.STRING, 'outputStorageResourceId', 'UTF8', None, ),  # 13
 )
 all_structs.append(ExperimentModel)
 ExperimentModel.thrift_spec = (
