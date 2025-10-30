@@ -614,16 +614,20 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
         try {
             if (assignResult instanceof AssignResult.Assigned assigned) {
-                responseObserver.onNext(ServerMessage.newBuilder().setAssignJobUnit(AssignJobUnit.newBuilder()
-                        .setJobUnitId(assigned.jobUnitId())
-                        .setResolvedCommand(assigned.resolvedCommand())
-                        .build()).build());
+                responseObserver.onNext(ServerMessage.newBuilder()
+                        .setAssignJobUnit(AssignJobUnit.newBuilder()
+                                .setJobUnitId(assigned.jobUnitId())
+                                .setResolvedCommand(assigned.resolvedCommand())
+                                .build())
+                        .build());
                 logger.info("Assigned job unit id {} to agent id {}", assigned.jobUnitId(), agentId);
 
             } else if (assignResult instanceof AssignResult.NoWork noWork) {
-                responseObserver.onNext(ServerMessage.newBuilder().setNoJobUnitAvailable(NoJobUnitAvailable.newBuilder()
-                        .setReason(noWork.reason())
-                        .build()).build());
+                responseObserver.onNext(ServerMessage.newBuilder()
+                        .setNoJobUnitAvailable(NoJobUnitAvailable.newBuilder()
+                                .setReason(noWork.reason())
+                                .build())
+                        .build());
                 logger.info("No job unit available for agent id {}, reason: {}", agentId, noWork.reason());
             }
         } catch (Exception e) {

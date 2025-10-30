@@ -330,7 +330,7 @@ public class TaskContext {
     /**
      * Returns the default storage preference for the gateway.
      * Prefers gateway-specific storage (ID starting with gatewayId), otherwise uses the first available preference.
-     * 
+     *
      * @deprecated Use {@link #getInputGatewayStorageResourcePreference()} for input staging operations
      *             or {@link #getOutputGatewayStorageResourcePreference()} for output staging operations.
      */
@@ -340,7 +340,7 @@ public class TaskContext {
             try {
                 GatewayResourceProfile gatewayProfile = getGatewayResourceProfile();
                 List<StoragePreference> storagePreferences = gatewayProfile.getStoragePreferences();
-                
+
                 if (storagePreferences == null || storagePreferences.isEmpty()) {
                     throw new Exception("No storage preferences found for gateway " + gatewayId);
                 }
@@ -353,12 +353,16 @@ public class TaskContext {
                         })
                         .findFirst()
                         .orElseGet(() -> {
-                            logger.debug("No gateway-specific storage found, using first available: {}", storagePreferences.get(0).getStorageResourceId());
+                            logger.debug(
+                                    "No gateway-specific storage found, using first available: {}",
+                                    storagePreferences.get(0).getStorageResourceId());
                             return storagePreferences.get(0);
                         });
 
                 if (this.gatewayStorageResourcePreference.getStorageResourceId().startsWith(gatewayPrefix)) {
-                    logger.debug("Using gateway-specific storage preference: {}", this.gatewayStorageResourcePreference.getStorageResourceId());
+                    logger.debug(
+                            "Using gateway-specific storage preference: {}",
+                            this.gatewayStorageResourcePreference.getStorageResourceId());
                 }
             } catch (TException e) {
                 logger.error("Failed to fetch gateway storage preference for gateway {}", gatewayId, e);
@@ -764,7 +768,8 @@ public class TaskContext {
     }
 
     public String getInputStorageResourceId() throws Exception {
-        if (processModel.getInputStorageResourceId() != null && !processModel.getInputStorageResourceId().trim().isEmpty()) {
+        if (processModel.getInputStorageResourceId() != null
+                && !processModel.getInputStorageResourceId().trim().isEmpty()) {
             return processModel.getInputStorageResourceId();
         }
         return getStorageResourceId();
@@ -775,15 +780,20 @@ public class TaskContext {
         try {
             return registryClient.getGatewayStoragePreference(gatewayId, inputStorageId);
         } catch (TException e) {
-            logger.error("Failed to fetch gateway storage preference for input storage {} in gateway {}", inputStorageId, gatewayId, e);
+            logger.error(
+                    "Failed to fetch gateway storage preference for input storage {} in gateway {}",
+                    inputStorageId,
+                    gatewayId,
+                    e);
             throw e;
         }
     }
 
     public String getOutputStorageResourceId() throws Exception {
-         if (processModel.getOutputStorageResourceId() != null && !processModel.getOutputStorageResourceId().trim().isEmpty()) {
-             return processModel.getOutputStorageResourceId();
-         }
+        if (processModel.getOutputStorageResourceId() != null
+                && !processModel.getOutputStorageResourceId().trim().isEmpty()) {
+            return processModel.getOutputStorageResourceId();
+        }
         return getStorageResourceId();
     }
 
@@ -792,7 +802,11 @@ public class TaskContext {
         try {
             return registryClient.getGatewayStoragePreference(gatewayId, outputStorageId);
         } catch (TException e) {
-            logger.error("Failed to fetch gateway storage preference for output storage {} in gateway {}", outputStorageId, gatewayId, e);
+            logger.error(
+                    "Failed to fetch gateway storage preference for output storage {} in gateway {}",
+                    outputStorageId,
+                    gatewayId,
+                    e);
             throw e;
         }
     }
