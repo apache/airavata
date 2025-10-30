@@ -86,8 +86,11 @@ public class UserConfigurationDataEntity implements Serializable {
     @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     private String overrideAllocationProjectNumber;
 
-    @Column(name = "STORAGE_RESOURCE_ID")
-    private String storageId;
+    @Column(name = "INPUT_STORAGE_RESOURCE_ID")
+    private String inputStorageResourceId;
+
+    @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
+    private String outputStorageResourceId;
 
     @Column(name = "EXPERIMENT_DATA_DIR", length = 512)
     private String experimentDataDir;
@@ -97,9 +100,6 @@ public class UserConfigurationDataEntity implements Serializable {
 
     @Column(name = "IS_USE_USER_CR_PREF")
     private boolean useUserCRPref;
-
-    @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
-    private String outputStorageResourceId;
 
     @OneToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
@@ -258,12 +258,20 @@ public class UserConfigurationDataEntity implements Serializable {
         this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
     }
 
-    public String getStorageId() {
-        return storageId;
+    public String getInputStorageResourceId() {
+        return inputStorageResourceId;
     }
 
-    public void setStorageId(String storageId) {
-        this.storageId = storageId;
+    public void setInputStorageResourceId(String inputStorageResourceId) {
+        this.inputStorageResourceId = inputStorageResourceId;
+    }
+
+    public String getOutputStorageResourceId() {
+        return outputStorageResourceId;
+    }
+
+    public void setOutputStorageResourceId(String outputStorageResourceId) {
+        this.outputStorageResourceId = outputStorageResourceId;
     }
 
     public String getExperimentDataDir() {
@@ -305,13 +313,5 @@ public class UserConfigurationDataEntity implements Serializable {
     public void setAutoScheduledCompResourceSchedulingList(
             List<ComputationalResourceSchedulingEntity> autoScheduledCompResourceSchedulingList) {
         this.autoScheduledCompResourceSchedulingList = autoScheduledCompResourceSchedulingList;
-    }
-
-    public String getOutputStorageResourceId() {
-        return outputStorageResourceId;
-    }
-
-    public void setOutputStorageResourceId(String outputStorageResourceId) {
-        this.outputStorageResourceId = outputStorageResourceId;
     }
 }
