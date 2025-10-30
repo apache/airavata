@@ -68,7 +68,7 @@ public class ArchiveTask extends DataStagingTask {
                     tarDirPath = sourceURI.getPath();
                 }
 
-                String inputPath = getTaskContext().getStorageFileSystemRootLocation();
+                String inputPath = getTaskContext().getOutputGatewayStorageResourcePreference().getFileSystemRootLocation();
                 destFilePath = buildDestinationFilePath(inputPath, archiveFileName);
 
                 tarCreationAbsPath = tarDirPath + File.separator + archiveFileName;
@@ -77,8 +77,8 @@ public class ArchiveTask extends DataStagingTask {
                         "Failed to obtain source URI for archival staging task " + getTaskId(), true, e);
             }
 
-            // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
+            // Fetch and validate storage adaptor (uses output storage if configured, otherwise default)
+            StorageResourceAdaptor storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
             // Fetch and validate compute resource adaptor
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 

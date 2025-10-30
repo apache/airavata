@@ -82,8 +82,8 @@ public class InputDataStagingTask extends DataStagingTask {
                     sourceUrls = new String[] {dataStagingTaskModel.getSource()};
                 }
 
-                // Fetch and validate storage adaptor
-                StorageResourceAdaptor storageResourceAdaptor = getStorageAdaptor(taskHelper.getAdaptorSupport());
+                // Fetch and validate storage adaptor (uses input storage if configured, otherwise default)
+                StorageResourceAdaptor storageResourceAdaptor = getInputStorageAdaptor(taskHelper.getAdaptorSupport());
                 // Fetch and validate compute resource adaptor
                 AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
