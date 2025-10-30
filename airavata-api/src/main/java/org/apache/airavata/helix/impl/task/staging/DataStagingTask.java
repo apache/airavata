@@ -30,13 +30,13 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.agents.streaming.TransferResult;
 import org.apache.airavata.agents.streaming.VirtualStreamProducer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.patform.monitoring.CountMonitor;
@@ -90,8 +90,12 @@ public abstract class DataStagingTask extends AiravataTask {
             return createStorageAdaptorFromPreference(adaptorSupport, storageId, gatewayStoragePref, "Default");
 
         } catch (Exception e) {
-            logger.error("Failed to obtain adaptor for default storage resource {} in task {}", storageId, getTaskId(), e);
-            throw new TaskOnFailException("Failed to obtain adaptor for default storage resource " + storageId + " in task " + getTaskId(), false, e);
+            logger.error(
+                    "Failed to obtain adaptor for default storage resource {} in task {}", storageId, getTaskId(), e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for default storage resource " + storageId + " in task " + getTaskId(),
+                    false,
+                    e);
         }
     }
 
@@ -105,7 +109,11 @@ public abstract class DataStagingTask extends AiravataTask {
             storageId = getTaskContext().getInputStorageResourceId();
 
             if (getTaskContext().getProcessModel().getInputStorageResourceId() != null
-                    && !getTaskContext().getProcessModel().getInputStorageResourceId().trim().isEmpty()) {
+                    && !getTaskContext()
+                            .getProcessModel()
+                            .getInputStorageResourceId()
+                            .trim()
+                            .isEmpty()) {
 
                 StoragePreference inputStoragePref = getTaskContext().getInputGatewayStorageResourcePreference();
                 return createStorageAdaptorFromPreference(adaptorSupport, storageId, inputStoragePref, "Input");
@@ -114,8 +122,12 @@ public abstract class DataStagingTask extends AiravataTask {
                 return getStorageAdaptor(adaptorSupport);
             }
         } catch (Exception e) {
-            logger.error("Failed to obtain adaptor for input storage resource {} in task {}", storageId, getTaskId(), e);
-            throw new TaskOnFailException("Failed to obtain adaptor for input storage resource " + storageId + " in task " + getTaskId(), false, e);
+            logger.error(
+                    "Failed to obtain adaptor for input storage resource {} in task {}", storageId, getTaskId(), e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for input storage resource " + storageId + " in task " + getTaskId(),
+                    false,
+                    e);
         }
     }
 
@@ -129,7 +141,11 @@ public abstract class DataStagingTask extends AiravataTask {
             storageId = getTaskContext().getOutputStorageResourceId();
 
             if (getTaskContext().getProcessModel().getOutputStorageResourceId() != null
-                    && !getTaskContext().getProcessModel().getOutputStorageResourceId().trim().isEmpty()) {
+                    && !getTaskContext()
+                            .getProcessModel()
+                            .getOutputStorageResourceId()
+                            .trim()
+                            .isEmpty()) {
 
                 StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
                 return createStorageAdaptorFromPreference(adaptorSupport, storageId, outputStoragePref, "Output");
@@ -138,8 +154,12 @@ public abstract class DataStagingTask extends AiravataTask {
                 return getStorageAdaptor(adaptorSupport);
             }
         } catch (Exception e) {
-            logger.error("Failed to obtain adaptor for output storage resource {} in task {}", storageId, getTaskId(), e);
-            throw new TaskOnFailException("Failed to obtain adaptor for output storage resource " + storageId + " in task " + getTaskId(), false, e);
+            logger.error(
+                    "Failed to obtain adaptor for output storage resource {} in task {}", storageId, getTaskId(), e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for output storage resource " + storageId + " in task " + getTaskId(),
+                    false,
+                    e);
         }
     }
 
@@ -459,8 +479,9 @@ public abstract class DataStagingTask extends AiravataTask {
     /**
      * Common method to create StorageResourceAdaptor from a StoragePreference.
      */
-    private StorageResourceAdaptor createStorageAdaptorFromPreference(AdaptorSupport adaptorSupport, String storageId,
-                                                                      StoragePreference storagePreference, String adaptorType) throws TaskOnFailException {
+    private StorageResourceAdaptor createStorageAdaptorFromPreference(
+            AdaptorSupport adaptorSupport, String storageId, StoragePreference storagePreference, String adaptorType)
+            throws TaskOnFailException {
         try {
             String credentialToken = storagePreference.getResourceSpecificCredentialStoreToken() != null
                     ? storagePreference.getResourceSpecificCredentialStoreToken()
@@ -474,13 +495,17 @@ public abstract class DataStagingTask extends AiravataTask {
                     storagePreference.getLoginUserName());
 
             if (storageResourceAdaptor == null) {
-                throw new TaskOnFailException(adaptorType + " storage resource adaptor for " + storageId + " can not be null", true, null);
+                throw new TaskOnFailException(
+                        adaptorType + " storage resource adaptor for " + storageId + " can not be null", true, null);
             }
             return storageResourceAdaptor;
 
         } catch (Exception e) {
-            throw new TaskOnFailException("Failed to obtain adaptor for " + adaptorType.toLowerCase() + " storage resource " +
-                    storageId + " in task " + getTaskId(), false, e);
+            throw new TaskOnFailException(
+                    "Failed to obtain adaptor for " + adaptorType.toLowerCase() + " storage resource " + storageId
+                            + " in task " + getTaskId(),
+                    false,
+                    e);
         }
     }
 }
