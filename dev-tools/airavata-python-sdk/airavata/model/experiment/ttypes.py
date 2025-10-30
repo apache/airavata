@@ -65,18 +65,18 @@ class UserConfigurationDataModel(object):
      - throttleResources
      - userDN
      - generateCert
-     - storageId
+     - inputStorageResourceId
+     - outputStorageResourceId
      - experimentDataDir
      - useUserCRPref
      - groupResourceProfileId
      - autoScheduledCompResourceSchedulingList
-     - outputStorageResourceId
 
     """
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, airavataAutoSchedule: bool = False, overrideManualScheduledParams: bool = False, shareExperimentPublicly: typing.Optional[bool] = False, computationalResourceScheduling: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, throttleResources: typing.Optional[bool] = False, userDN: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, storageId: typing.Optional[str] = None, experimentDataDir: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = None, outputStorageResourceId: typing.Optional[str] = None,):
+    def __init__(self, airavataAutoSchedule: bool = False, overrideManualScheduledParams: bool = False, shareExperimentPublicly: typing.Optional[bool] = False, computationalResourceScheduling: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, throttleResources: typing.Optional[bool] = False, userDN: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, inputStorageResourceId: typing.Optional[str] = None, outputStorageResourceId: typing.Optional[str] = None, experimentDataDir: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = None,):
         self.airavataAutoSchedule: bool = airavataAutoSchedule
         self.overrideManualScheduledParams: bool = overrideManualScheduledParams
         self.shareExperimentPublicly: typing.Optional[bool] = shareExperimentPublicly
@@ -84,12 +84,12 @@ class UserConfigurationDataModel(object):
         self.throttleResources: typing.Optional[bool] = throttleResources
         self.userDN: typing.Optional[str] = userDN
         self.generateCert: typing.Optional[bool] = generateCert
-        self.storageId: typing.Optional[str] = storageId
+        self.inputStorageResourceId: typing.Optional[str] = inputStorageResourceId
+        self.outputStorageResourceId: typing.Optional[str] = outputStorageResourceId
         self.experimentDataDir: typing.Optional[str] = experimentDataDir
         self.useUserCRPref: typing.Optional[bool] = useUserCRPref
         self.groupResourceProfileId: typing.Optional[str] = groupResourceProfileId
         self.autoScheduledCompResourceSchedulingList: typing.Optional[list[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel]] = autoScheduledCompResourceSchedulingList
-        self.outputStorageResourceId: typing.Optional[str] = outputStorageResourceId
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -138,25 +138,30 @@ class UserConfigurationDataModel(object):
                     iprot.skip(ftype)
             elif fid == 8:
                 if ftype == TType.STRING:
-                    self.storageId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.inputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 9:
                 if ftype == TType.STRING:
-                    self.experimentDataDir = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.outputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 10:
+                if ftype == TType.STRING:
+                    self.experimentDataDir = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 11:
                 if ftype == TType.BOOL:
                     self.useUserCRPref = iprot.readBool()
                 else:
                     iprot.skip(ftype)
-            elif fid == 11:
+            elif fid == 12:
                 if ftype == TType.STRING:
                     self.groupResourceProfileId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 12:
+            elif fid == 13:
                 if ftype == TType.LIST:
                     self.autoScheduledCompResourceSchedulingList = []
                     (_etype3, _size0) = iprot.readListBegin()
@@ -165,11 +170,6 @@ class UserConfigurationDataModel(object):
                         _elem5.read(iprot)
                         self.autoScheduledCompResourceSchedulingList.append(_elem5)
                     iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 13:
-                if ftype == TType.STRING:
-                    self.outputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -211,32 +211,32 @@ class UserConfigurationDataModel(object):
             oprot.writeFieldBegin('generateCert', TType.BOOL, 7)
             oprot.writeBool(self.generateCert)
             oprot.writeFieldEnd()
-        if self.storageId is not None:
-            oprot.writeFieldBegin('storageId', TType.STRING, 8)
-            oprot.writeString(self.storageId.encode('utf-8') if sys.version_info[0] == 2 else self.storageId)
+        if self.inputStorageResourceId is not None:
+            oprot.writeFieldBegin('inputStorageResourceId', TType.STRING, 8)
+            oprot.writeString(self.inputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.inputStorageResourceId)
+            oprot.writeFieldEnd()
+        if self.outputStorageResourceId is not None:
+            oprot.writeFieldBegin('outputStorageResourceId', TType.STRING, 9)
+            oprot.writeString(self.outputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.outputStorageResourceId)
             oprot.writeFieldEnd()
         if self.experimentDataDir is not None:
-            oprot.writeFieldBegin('experimentDataDir', TType.STRING, 9)
+            oprot.writeFieldBegin('experimentDataDir', TType.STRING, 10)
             oprot.writeString(self.experimentDataDir.encode('utf-8') if sys.version_info[0] == 2 else self.experimentDataDir)
             oprot.writeFieldEnd()
         if self.useUserCRPref is not None:
-            oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 10)
+            oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 11)
             oprot.writeBool(self.useUserCRPref)
             oprot.writeFieldEnd()
         if self.groupResourceProfileId is not None:
-            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 11)
+            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 12)
             oprot.writeString(self.groupResourceProfileId.encode('utf-8') if sys.version_info[0] == 2 else self.groupResourceProfileId)
             oprot.writeFieldEnd()
         if self.autoScheduledCompResourceSchedulingList is not None:
-            oprot.writeFieldBegin('autoScheduledCompResourceSchedulingList', TType.LIST, 12)
+            oprot.writeFieldBegin('autoScheduledCompResourceSchedulingList', TType.LIST, 13)
             oprot.writeListBegin(TType.STRUCT, len(self.autoScheduledCompResourceSchedulingList))
             for iter6 in self.autoScheduledCompResourceSchedulingList:
                 iter6.write(oprot)
             oprot.writeListEnd()
-            oprot.writeFieldEnd()
-        if self.outputStorageResourceId is not None:
-            oprot.writeFieldBegin('outputStorageResourceId', TType.STRING, 13)
-            oprot.writeString(self.outputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.outputStorageResourceId)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1050,12 +1050,12 @@ UserConfigurationDataModel.thrift_spec = (
     (5, TType.BOOL, 'throttleResources', None, False, ),  # 5
     (6, TType.STRING, 'userDN', 'UTF8', None, ),  # 6
     (7, TType.BOOL, 'generateCert', None, False, ),  # 7
-    (8, TType.STRING, 'storageId', 'UTF8', None, ),  # 8
-    (9, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 9
-    (10, TType.BOOL, 'useUserCRPref', None, None, ),  # 10
-    (11, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 11
-    (12, TType.LIST, 'autoScheduledCompResourceSchedulingList', (TType.STRUCT, [airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel, None], False), None, ),  # 12
-    (13, TType.STRING, 'outputStorageResourceId', 'UTF8', None, ),  # 13
+    (8, TType.STRING, 'inputStorageResourceId', 'UTF8', None, ),  # 8
+    (9, TType.STRING, 'outputStorageResourceId', 'UTF8', None, ),  # 9
+    (10, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 10
+    (11, TType.BOOL, 'useUserCRPref', None, None, ),  # 11
+    (12, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 12
+    (13, TType.LIST, 'autoScheduledCompResourceSchedulingList', (TType.STRUCT, [airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel, None], False), None, ),  # 13
 )
 all_structs.append(ExperimentModel)
 ExperimentModel.thrift_spec = (
