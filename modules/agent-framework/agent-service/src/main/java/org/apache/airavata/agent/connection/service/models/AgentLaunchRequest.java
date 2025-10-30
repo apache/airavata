@@ -39,6 +39,9 @@ public class AgentLaunchRequest {
     private int nodeCount = 1;
     private int memory = 2048;
 
+    private String inputStorageId;
+    private String outputStorageId;
+
     private JobBatchSpec jobBatchSpec;
 
     public String getExperimentName() {
@@ -139,6 +142,22 @@ public class AgentLaunchRequest {
 
     public void setMounts(List<String> mounts) {
         this.mounts = mounts;
+    }
+
+    public String getInputStorageId() {
+        return inputStorageId;
+    }
+
+    public void setInputStorageId(String inputStorageId) {
+        this.inputStorageId = inputStorageId;
+    }
+
+    public String getOutputStorageId() {
+        return outputStorageId;
+    }
+
+    public void setOutputStorageId(String outputStorageId) {
+        this.outputStorageId = outputStorageId;
     }
 
     public JobBatchSpec getJobBatchSpec() {

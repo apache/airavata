@@ -73,8 +73,11 @@ public class ProcessEntity implements Serializable {
     @Column(name = "EMAIL_ADDRESSES")
     private String emailAddresses;
 
-    @Column(name = "STORAGE_RESOURCE_ID")
-    private String storageResourceId;
+    @Column(name = "INPUT_STORAGE_RESOURCE_ID")
+    private String inputStorageResourceId;
+
+    @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
+    private String outputStorageResourceId;
 
     @Column(name = "USER_DN")
     private String userDn;
@@ -93,9 +96,6 @@ public class ProcessEntity implements Serializable {
 
     @Column(name = "USE_USER_CR_PREF")
     private boolean useUserCRPref;
-
-    @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
-    private String outputStorageResourceId;
 
     @OneToMany(
             targetEntity = ProcessStatusEntity.class,
@@ -249,12 +249,20 @@ public class ProcessEntity implements Serializable {
         this.emailAddresses = emailAddresses;
     }
 
-    public String getStorageResourceId() {
-        return storageResourceId;
+    public String getInputStorageResourceId() {
+        return inputStorageResourceId;
     }
 
-    public void setStorageResourceId(String storageResourceId) {
-        this.storageResourceId = storageResourceId;
+    public void setInputStorageResourceId(String inputStorageResourceId) {
+        this.inputStorageResourceId = inputStorageResourceId;
+    }
+
+    public String getOutputStorageResourceId() {
+        return outputStorageResourceId;
+    }
+
+    public void setOutputStorageResourceId(String outputStorageResourceId) {
+        this.outputStorageResourceId = outputStorageResourceId;
     }
 
     public String getUserDn() {
@@ -367,13 +375,5 @@ public class ProcessEntity implements Serializable {
 
     public void setExperiment(ExperimentEntity experiment) {
         this.experiment = experiment;
-    }
-
-    public String getOutputStorageResourceId() {
-        return outputStorageResourceId;
-    }
-
-    public void setOutputStorageResourceId(String outputStorageResourceId) {
-        this.outputStorageResourceId = outputStorageResourceId;
     }
 }

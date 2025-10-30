@@ -42,6 +42,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +251,8 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
-        userConfigurationDataModel.setStorageId(storageResourceId);
+        userConfigurationDataModel.setInputStorageResourceId(StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : storageResourceId);
+        userConfigurationDataModel.setOutputStorageResourceId(StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : storageResourceId);
         String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
