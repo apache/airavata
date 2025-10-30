@@ -98,7 +98,7 @@ class DataModelCreationUtil(object):
         userConfigData.computationalResourceScheduling = computRes
 
         userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.storageId = inputStorageId
+        userConfigData.inputStorageResourceId = inputStorageId
         userConfigData.outputStorageResourceId = outputStorageId
 
         userConfigData.experimentDataDir = experiment_dir_path

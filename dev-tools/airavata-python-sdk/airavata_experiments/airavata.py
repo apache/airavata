@@ -134,7 +134,7 @@ class AiravataOperator:
         userConfigData.computationalResourceScheduling = computRes
 
         userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.storageId = inputStorageId
+        userConfigData.inputStorageResourceId = inputStorageId
         userConfigData.outputStorageResourceId = outputStorageId
 
         userConfigData.experimentDataDir = experiment_dir_path
@@ -681,7 +681,7 @@ class AiravataOperator:
 
     # upload file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
+    self.upload_files(None, None, input_storage.hostName, files_to_upload, exp_dir)
 
     # create experiment
     print(f"[AV] Creating experiment...")
@@ -731,7 +731,7 @@ class AiravataOperator:
       process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
-      sr_host=storage.hostName,
+      sr_host=input_storage.hostName,
     )
 
   def get_experiment_status(self, experiment_id: str) -> ExperimentState:
