@@ -112,7 +112,8 @@ class AiravataOperator:
       experiment_model: ExperimentModel,
       computation_resource_name: str,
       group: str,
-      storageId: str,
+      inputStorageId: str,
+      outputStorageId: str,
       node_count: int,
       total_cpu_count: int,
       queue_name: str,
@@ -133,7 +134,8 @@ class AiravataOperator:
         userConfigData.computationalResourceScheduling = computRes
 
         userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.storageId = storageId
+        userConfigData.inputStorageResourceId = inputStorageId
+        userConfigData.outputStorageResourceId = outputStorageId
 
         userConfigData.experimentDataDir = experiment_dir_path
         userConfigData.airavataAutoSchedule = auto_schedule
@@ -535,7 +537,8 @@ class AiravataOperator:
       group: str = "Default",
       *,
       gateway_id: str | None = None,
-      sr_host: str | None = None,
+      input_sr_host: str | None = None,
+      output_sr_host: str | None = None,
       auto_schedule: bool = False,
   ) -> LaunchState:
     """
@@ -545,7 +548,8 @@ class AiravataOperator:
     # preprocess args (str)
     print("[AV] Preprocessing args...")
     gateway_id = str(gateway_id or self.default_gateway_id())
-    sr_host = str(sr_host or self.default_sr_hostname())
+    input_sr_host = str(input_sr_host or self.default_sr_hostname())
+    output_sr_host = str(output_sr_host or input_sr_host or self.default_sr_hostname())
     mount_point = Path(self.default_gateway_data_store_dir()) / self.user_id
     server_url = urlparse(self.connection_svc_url()).netloc
 
@@ -558,7 +562,8 @@ class AiravataOperator:
     assert len(gateway_id) > 0, f"Invalid gateway_id: {gateway_id}"
     assert len(queue_name) > 0, f"Invalid queue_name: {queue_name}"
     assert len(group) > 0, f"Invalid group name: {group}"
-    assert len(sr_host) > 0, f"Invalid sr_host: {sr_host}"
+    assert len(input_sr_host) > 0, f"Invalid input_sr_host: {input_sr_host}"
+    assert len(output_sr_host) > 0, f"Invalid output_sr_host: {output_sr_host}"
     assert len(project) > 0, f"Invalid project_name: {project}"
     assert len(mount_point.as_posix()) > 0, f"Invalid mount_point: {mount_point}"
 
@@ -585,10 +590,14 @@ class AiravataOperator:
     data_inputs.update({"agent_id": data_inputs.get("agent_id", str(uuid.uuid4()))})
     data_inputs.update({"server_url": server_url})
 
-    # setup runtime params
-    print("[AV] Setting up runtime params...")
-    storage = self.get_storage(sr_host)
-    sr_id = storage.storageResourceId
+    # setup storage
+    print("[AV] Setting up storage...")
+    input_storage = self.get_storage(input_sr_host)
+    output_storage = self.get_storage(output_sr_host)
+    assert input_storage is not None, f"Invalid input_storage: {input_storage}"
+    assert output_storage is not None, f"Invalid output_storage: {output_storage}"
+    input_sr_id = input_storage.storageResourceId
+    output_sr_id = output_storage.storageResourceId
 
     # setup application interface
     print("[AV] Setting up application interface...")
@@ -607,7 +616,7 @@ class AiravataOperator:
     # setup experiment directory
     print("[AV] Setting up experiment directory...")
     exp_dir = self.make_experiment_dir(
-        sr_host=storage.hostName,
+        sr_host=input_storage.hostName,
         project_name=project,
         experiment_name=experiment_name,
     )
@@ -620,7 +629,8 @@ class AiravataOperator:
         experiment_model=experiment,
         computation_resource_name=computation_resource_name,
         group=group,
-        storageId=sr_id,
+        inputStorageId=input_sr_id,
+        outputStorageId=output_sr_id,
         node_count=node_count,
         total_cpu_count=cpu_count,
         wall_time_limit=walltime,
@@ -630,7 +640,7 @@ class AiravataOperator:
     )
 
     def register_input_file(file: Path) -> str:
-      return str(self.register_input_file(file.name, sr_host, sr_id, gateway_id, file.name, abs_path))
+      return str(self.register_input_file(file.name, input_sr_host, input_sr_id, gateway_id, file.name, abs_path))
     
     # set up experiment inputs
     print("[AV] Setting up experiment inputs...")
@@ -671,7 +681,7 @@ class AiravataOperator:
 
     # upload file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(None, None, storage.hostName, files_to_upload, exp_dir)
+    self.upload_files(None, None, input_storage.hostName, files_to_upload, exp_dir)
 
     # create experiment
     print(f"[AV] Creating experiment...")
@@ -693,25 +703,61 @@ class AiravataOperator:
     # wait until experiment begins, then get process id
     print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
     process_id = None
-    while process_id is None:
+    max_wait_process = 300  # 10 minutes max wait for process
+    wait_count_process = 0
+    while process_id is None and wait_count_process < max_wait_process:
+      # Check experiment status - if failed, raise error
+      try:
+        status = self.get_experiment_status(ex_id)
+        if status == ExperimentState.FAILED:
+          raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for process to begin")
+        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for process")
+      except Exception as status_err:
+        if "FAILED" in str(status_err) or "terminal state" in str(status_err):
+          raise status_err
+      
       try:
         process_id = self.get_process_id(ex_id)
       except:
+        pass
+      
+      if process_id is None:
         time.sleep(2)
-      else:
-        time.sleep(2)
+        wait_count_process += 1
+    
+    if process_id is None:
+      raise Exception(f"[AV] Experiment {experiment_name} timeout waiting for process to begin")
     print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
 
     # wait until task begins, then get job id
     print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
     job_id = job_state = None
-    while job_id in [None, "N/A"]:
+    max_wait_task = 300  # 10 minutes max wait for task
+    wait_count_task = 0
+    while job_id in [None, "N/A"] and wait_count_task < max_wait_task:
+      # Check experiment status - if failed, raise error
+      try:
+        status = self.get_experiment_status(ex_id)
+        if status == ExperimentState.FAILED:
+          raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for task to begin")
+        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for task")
+      except Exception as status_err:
+        if "FAILED" in str(status_err) or "terminal state" in str(status_err):
+          raise status_err
+      
       try:
         job_id, job_state = self.get_task_status(ex_id)
       except:
+        pass
+      
+      if job_id in [None, "N/A"]:
         time.sleep(2)
-      else:
-        time.sleep(2)
+        wait_count_task += 1
+    
+    if job_id in [None, "N/A"]:
+      raise Exception(f"[AV] Experiment {experiment_name} timeout waiting for task to begin")
     assert job_state is not None, f"Job state is None for job id: {job_id}"
     print(f"[AV] Experiment {experiment_name} - Task {job_state.name} with id: {job_id}")
 
@@ -721,7 +767,7 @@ class AiravataOperator:
       process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
-      sr_host=storage.hostName,
+      sr_host=input_storage.hostName,
     )
 
   def get_experiment_status(self, experiment_id: str) -> ExperimentState:

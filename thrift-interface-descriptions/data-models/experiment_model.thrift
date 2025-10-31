@@ -65,11 +65,12 @@ struct UserConfigurationDataModel {
     5: optional bool throttleResources = 0,
     6: optional string userDN,
     7: optional bool generateCert = 0,
-    8: optional string storageId;
-    9: optional string experimentDataDir;
-    10: optional bool useUserCRPref;
-    11: optional string groupResourceProfileId
-    12: optional list<scheduling_model.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList,
+    8: optional string inputStorageResourceId;
+    9: optional string outputStorageResourceId;
+    10: optional string experimentDataDir;
+    11: optional bool useUserCRPref;
+    12: optional string groupResourceProfileId
+    13: optional list<scheduling_model.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList,
 }
 
 /**

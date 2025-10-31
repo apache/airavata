@@ -129,12 +129,14 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals(
                 experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
-        userConfigurationDataModel.setStorageId("storage2");
+        userConfigurationDataModel.setInputStorageResourceId("storage2");
+        userConfigurationDataModel.setOutputStorageResourceId("storage2");
         experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
         final UserConfigurationDataModel retrievedUserConfigurationDataModel =
                 experimentRepository.getUserConfigurationData(experimentId);
-        assertEquals("storage2", retrievedUserConfigurationDataModel.getStorageId());
+        assertEquals("storage2", retrievedUserConfigurationDataModel.getInputStorageResourceId());
+        assertEquals("storage2", retrievedUserConfigurationDataModel.getOutputStorageResourceId());
         final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling =
                 retrievedUserConfigurationDataModel.getComputationalResourceScheduling();
         assertNotNull(retrievedComputationalResourceScheduling);

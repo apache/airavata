@@ -189,6 +189,28 @@ message TunnelTerminationResponse {
   string status = 2;
 }
 
+// Agent requesting the next job unit from the Job Workload
+message RequestNextJobUnit {
+  string agent_id = 1;
+}
+
+// Agent letting know the job unit is completed
+message JobUnitCompleted {
+  string job_unit_id = 1;
+  int32  exit_code   = 2;
+}
+
+// Server assigning the job unit with the resolved command
+message AssignJobUnit {
+  string job_unit_id      = 1;
+  string resolved_command = 2;
+}
+
+// Server indicating the agent that there are no job units to be consumed
+message NoJobUnitAvailable {
+  string reason = 1; // EMPTY, EMPTY_ALL_DONE, NO_ASSIGNMENT
+}
+
 message AgentMessage {
   oneof message {
     AgentPing agentPing = 1;
@@ -204,6 +226,9 @@ message AgentMessage {
     AsyncCommandExecutionResponse asyncCommandExecutionResponse = 11;
     AsyncCommandListResponse asyncCommandListResponse = 12;
     AsyncCommandTerminateResponse asyncCommandTerminateResponse = 13;
+
+    RequestNextJobUnit requestNextJobUnit = 20;
+    JobUnitCompleted   jobUnitCompleted   = 21;
   }
 }
 
@@ -222,5 +247,8 @@ message ServerMessage {
     AsyncCommandExecutionRequest asyncCommandExecutionRequest = 11;
     AsyncCommandListRequest asyncCommandListRequest = 12;
     AsyncCommandTerminateRequest asyncCommandTerminateRequest = 13;
+
+    AssignJobUnit       assignJobUnit       = 20;
+    NoJobUnitAvailable  noJobUnitAvailable  = 21;
   }
 }
