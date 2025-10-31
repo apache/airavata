@@ -165,18 +165,18 @@ def main():
     
     EXPERIMENT_NAME = "Test"
     PROJECT_NAME = "Default Project"
-    APPLICATION_NAME = "NAMD"
+    APPLICATION_NAME = "NAMD-test"
     GATEWAY_ID = None
     
-    COMPUTATION_RESOURCE_NAME = "js2.gpu.airavata.org"
-    QUEUE_NAME = "batch"
+    COMPUTATION_RESOURCE_NAME = "NeuroData25VC2"
+    QUEUE_NAME = "cloud"
     NODE_COUNT = 1
-    CPU_COUNT = 4
-    WALLTIME = 30
+    CPU_COUNT = 1
+    WALLTIME = 5
     GROUP_NAME = "Default"
     
-    INPUT_STORAGE_HOST = "vizfold_9c15d8af-3d36-4c3c-a07a-0f3b4bb5b904"
-    OUTPUT_STORAGE_HOST = None
+    INPUT_STORAGE_HOST = "gateway.dev.cybershuttle.org"
+    OUTPUT_STORAGE_HOST = "149.165.169.12"
     
     INPUT_FILES = {}
     DATA_INPUTS = {}
