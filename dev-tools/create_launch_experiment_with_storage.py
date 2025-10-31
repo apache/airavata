@@ -141,20 +141,62 @@ def create_and_launch_experiment(
     return result
 
 
+def get_experiment_state_value(status) -> tuple[int, str, ExperimentState]:
+    """Extract state value, name, and enum from status. Returns (value, name, enum)."""
+    if isinstance(status, ExperimentState):
+        return status.value, status.name, status
+    
+    # Handle ExperimentStatus object
+    if hasattr(status, 'state'):
+        state = status.state
+        if isinstance(state, ExperimentState):
+            return state.value, state.name, state
+        elif hasattr(state, 'value'):
+            return state.value, state.name if hasattr(state, 'name') else str(state), state
+    
+    # Handle direct value/name access
+    status_value = status.value if hasattr(status, 'value') else (status if isinstance(status, int) else None)
+    status_name = status.name if hasattr(status, 'name') else str(status)
+    
+    # Convert to ExperimentState enum
+    if status_value is not None:
+        try:
+            enum_state = ExperimentState(status_value)
+            return status_value, status_name, enum_state
+        except (ValueError, TypeError):
+            pass
+    
+    # Fallback
+    return None, status_name, ExperimentState.FAILED
+
+
 def monitor_experiment(operator: AiravataOperator, experiment_id: str, check_interval: int = 30):
     logger.info(f"Monitoring experiment {experiment_id}...")
     
     while True:
-        status = operator.get_experiment_status(experiment_id)
-        logger.info(f"Experiment status: {status.name}")
-        
-        if status in [
-            ExperimentState.COMPLETED,
-            ExperimentState.CANCELED,
-            ExperimentState.FAILED,
-        ]:
-            logger.info(f"Experiment finished with state: {status.name}")
-            break
+        try:
+            status = operator.get_experiment_status(experiment_id)
+            status_value, status_name, status_enum = get_experiment_state_value(status)
+            logger.info(f"Experiment status: {status_name} (value: {status_value})")
+            
+            # Check terminal states: COMPLETED (7), CANCELED (6), FAILED (8)
+            if status_value is not None:
+                is_terminal = status_value in [
+                    ExperimentState.COMPLETED.value,  # 7
+                    ExperimentState.CANCELED.value,   # 6
+                    ExperimentState.FAILED.value      # 8
+                ]
+            else:
+                is_terminal = status_name in ['COMPLETED', 'CANCELED', 'FAILED']
+            
+            if is_terminal:
+                logger.info(f"Experiment finished with state: {status_name}")
+                break
+        except Exception as e:
+            logger.error(f"Error checking experiment {experiment_id} status: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            # Continue monitoring despite errors
         
         time.sleep(check_interval)
 

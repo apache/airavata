@@ -703,25 +703,61 @@ class AiravataOperator:
     # wait until experiment begins, then get process id
     print(f"[AV] Experiment {experiment_name} WAITING until experiment begins...")
     process_id = None
-    while process_id is None:
+    max_wait_process = 300  # 10 minutes max wait for process
+    wait_count_process = 0
+    while process_id is None and wait_count_process < max_wait_process:
+      # Check experiment status - if failed, raise error
+      try:
+        status = self.get_experiment_status(ex_id)
+        if status == ExperimentState.FAILED:
+          raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for process to begin")
+        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for process")
+      except Exception as status_err:
+        if "FAILED" in str(status_err) or "terminal state" in str(status_err):
+          raise status_err
+      
       try:
         process_id = self.get_process_id(ex_id)
       except:
+        pass
+      
+      if process_id is None:
         time.sleep(2)
-      else:
-        time.sleep(2)
+        wait_count_process += 1
+    
+    if process_id is None:
+      raise Exception(f"[AV] Experiment {experiment_name} timeout waiting for process to begin")
     print(f"[AV] Experiment {experiment_name} EXECUTING with pid: {process_id}")
 
     # wait until task begins, then get job id
     print(f"[AV] Experiment {experiment_name} WAITING until task begins...")
     job_id = job_state = None
-    while job_id in [None, "N/A"]:
+    max_wait_task = 300  # 10 minutes max wait for task
+    wait_count_task = 0
+    while job_id in [None, "N/A"] and wait_count_task < max_wait_task:
+      # Check experiment status - if failed, raise error
+      try:
+        status = self.get_experiment_status(ex_id)
+        if status == ExperimentState.FAILED:
+          raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for task to begin")
+        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for task")
+      except Exception as status_err:
+        if "FAILED" in str(status_err) or "terminal state" in str(status_err):
+          raise status_err
+      
       try:
         job_id, job_state = self.get_task_status(ex_id)
       except:
+        pass
+      
+      if job_id in [None, "N/A"]:
         time.sleep(2)
-      else:
-        time.sleep(2)
+        wait_count_task += 1
+    
+    if job_id in [None, "N/A"]:
+      raise Exception(f"[AV] Experiment {experiment_name} timeout waiting for task to begin")
     assert job_state is not None, f"Job state is None for job id: {job_id}"
     print(f"[AV] Experiment {experiment_name} - Task {job_state.name} with id: {job_id}")
 
