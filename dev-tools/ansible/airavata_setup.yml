@@ -89,6 +89,25 @@
         - ssl
         - letsencrypt
     
+    # Keycloak IAM installation and configuration
+    - role: keycloak
+      tags:
+        - keycloak
+        - iam
+    
+    # Reverse proxy (Apache2)
+    - role: reverse_proxy
+      tags:
+        - reverse_proxy
+        - apache
+    
+    # HAProxy for API server reverse proxy (SSL termination)
+    - role: api-orch
+      tags:
+        - haproxy
+        - api_proxy
+      when: api_server_public_hostname is defined
+    
     # Build and deploy Airavata services
     - role: airavata_services
       become: yes

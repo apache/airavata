@@ -9,6 +9,9 @@ airavata_git_repo: "https://github.com/apache/airavata.git"
 airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
 deployment_dir: "/home/{{ deploy_user }}/airavata"
 
+# Maven version
+apache_maven_version: "apache-maven-3.9.11"
+
 # Non-sensitive service settings
 deploy_user: "CHANGEME_DEPLOY_USER"
 api_server_port: 8930

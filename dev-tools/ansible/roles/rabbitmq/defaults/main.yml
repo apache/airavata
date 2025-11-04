@@ -19,15 +19,5 @@
 #
 
 ---
-
-# Gracefully reload httpd (RedHat)
-- name: restart httpd
-  service: name=httpd state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-# Gracefully reload apache2 (Ubuntu/Debian)
-- name: restart apache2
-  service: name=apache2 state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "Debian"
+# RabbitMQ Erlang version (compatible with latest RabbitMQ 3.x)
+rabbitmq_erlang_version: "26.3.2.3"

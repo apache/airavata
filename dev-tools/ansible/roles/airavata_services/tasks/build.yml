@@ -34,11 +34,14 @@
     msg: "Git pull completed. Changed: {{ git_pull_result.changed }}"
 
 - name: Build Airavata with Maven
-  command: mvn clean install -DskipTests
+  shell: |
+    source /etc/profile.d/maven.sh 2>/dev/null || true
+    /opt/{{ apache_maven_version }}/bin/mvn clean install -DskipTests
   args:
     chdir: "{{ airavata_source_dir }}"
   environment:
     MAVEN_OPTS: "-Xmx2048m"
+    PATH: "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/{{ apache_maven_version }}/bin:{{ ansible_env.PATH }}"
   register: maven_build_result
   tags:
     - build

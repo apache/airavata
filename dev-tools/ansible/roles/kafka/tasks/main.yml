@@ -35,18 +35,47 @@
   become: yes
 
 # Download Kafka
-- name: Download and unarchive Kafka from {{ kafka_tgz_url }}
-  unarchive: src="{{ kafka_tgz_url }}"
-      dest="{{ deployment_dir }}"
-      copy=no
-      owner="{{ user }}"
-      group="{{ group }}"
+- name: Check if Kafka archive already exists
+  stat:
+    path: "/tmp/{{ kafka_package_name }}.zip"
+  register: kafka_archive
+  become: yes
+
+- name: Download Kafka archive
+  shell: |
+    cd /tmp && \
+    (wget -q --no-check-certificate "{{ kafka_tgz_url }}" -O "{{ kafka_package_name }}.zip" || \
+     curl -k -L "{{ kafka_tgz_url }}" -o "{{ kafka_package_name }}.zip")
+  args:
+    creates: "/tmp/{{ kafka_package_name }}.zip"
+  become: yes
+  become_user: root
+  when: not kafka_package.stat.exists and not kafka_archive.stat.exists
+
+- name: Unarchive Kafka
+  unarchive:
+    src: "/tmp/{{ kafka_package_name }}.zip"
+    dest: "{{ deployment_dir }}"
+    remote_src: yes
+    owner: "{{ user }}"
+    group: "{{ group }}"
   when: not kafka_package.stat.exists
   become: yes
 
-# Create kafka logs directory
-- name: Create kafka logs directory
-  file: path="{{ kafka_dir }}/logs" state=directory owner={{ user }} group={{ group }}
+# Create symlink confluent -> confluent-<version>
+- name: Create Kafka symlink
+  file:
+    src: "{{ kafka_package_name }}"
+    dest: "{{ deployment_dir }}/{{ kafka_symlink_name }}"
+    state: link
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  become: yes
+  when: kafka_symlink_name is defined
+
+# Create kafka-logs directory (matching dev server structure)
+- name: Create kafka-logs directory
+  file: path="{{ deployment_dir }}/{{ kafka_symlink_name }}/kafka-logs" state=directory owner={{ user }} group={{ group }}
   become: yes
 
 # Config kafka server and start

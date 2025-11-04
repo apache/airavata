@@ -19,15 +19,19 @@
 #
 
 ---
+# Reverse proxy configuration defaults
+reverse_proxy_service_name:
+  CentOS_7: httpd
+  Rocky_8: httpd
+  Ubuntu_22: apache2
+  Ubuntu_24: apache2
 
-# Gracefully reload httpd (RedHat)
-- name: restart httpd
-  service: name=httpd state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
+reverse_proxy_config_dir:
+  CentOS_7: /etc/httpd
+  Rocky_8: /etc/httpd
+  Ubuntu_22: /etc/apache2
+  Ubuntu_24: /etc/apache2
 
-# Gracefully reload apache2 (Ubuntu/Debian)
-- name: restart apache2
-  service: name=apache2 state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "Debian"
+reverse_proxy_ssl_dir: "/etc/apache2/ssl-available"
+reverse_proxy_vhost_dir: "/etc/apache2/sites-available"
+

@@ -43,9 +43,20 @@
   become_user: root
   when: ansible_distribution == "Rocky"
 
-- name: install pexpect
-  pip: name=pexpect
+- name: install pexpect (Ubuntu/Debian)
+  apt:
+    name: python3-pexpect
+    state: present
+    update_cache: yes
   become_user: root
+  when: ansible_os_family == "Debian"
+
+- name: install pexpect (CentOS/Rocky)
+  pip:
+    name: pexpect
+    extra_args: "--break-system-packages"
+  become_user: root
+  when: ansible_os_family == "RedHat"
 
 # - name: Adds Python MySQL support on Debian/Ubuntu
 #   apt: pkg="python-mysqldb" state=present
@@ -60,6 +71,14 @@
   dnf: name=python3-mysql state=present
   become_user: root
   when: ansible_distribution == 'Rocky'
+
+- name: Adds Python MySQL support on Ubuntu/Debian
+  apt:
+    pkg: python3-pymysql
+    state: present
+    update_cache: yes
+  become_user: root
+  when: ansible_os_family == 'Debian'
 
 - name: Add MariaDB yum repository on CentOS {{ ansible_distribution }}
   copy: src="MariaDB_yum_CentOS_{{ ansible_distribution_major_version }}.repo"
@@ -79,6 +98,33 @@
   become_user: root
   when: ansible_distribution == 'Rocky'
 
+- name: Set MariaDB root password via debconf (Ubuntu/Debian)
+  debconf:
+    name: mariadb-server
+    question: "mysql-server/root_password"
+    value: "{{ mysql_root_password }}"
+    vtype: password
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
+- name: Confirm MariaDB root password via debconf (Ubuntu/Debian)
+  debconf:
+    name: mariadb-server
+    question: "mysql-server/root_password_again"
+    value: "{{ mysql_root_password }}"
+    vtype: password
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
+- name: install mariadb (Ubuntu/Debian)
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ mysql_packages }}"
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
 - name: check if mysql has been updated
   stat: path=/usr/share/mysql/SELinux/mariadb.pp
   register: mysql_selinux_update
@@ -88,25 +134,25 @@
 
 - name: double check policycoreutils installed (Centos)
   yum: name=policycoreutils-python state=installed
-  when: mysql_selinux_update.stat.exists == False and (ansible_distribution == 'CentOS')
+  when: mysql_selinux_update.stat.exists == False and (ansible_distribution == 'CentOS') and ansible_os_family == "RedHat"
   become_user: root
 
 - name: double check policycoreutils installed (Rocky)
   dnf: name=policycoreutils-python-utils state=installed
-  when: mysql_selinux_update.stat.exists == False and ansible_distribution == 'Rocky'
+  when: mysql_selinux_update.stat.exists == False and ansible_distribution == 'Rocky' and ansible_os_family == "RedHat"
   become_user: root
 
 - name: Copy SELinux type enforcement file
   copy: src=mysql-tmp.te dest=/tmp/
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
 
 - name: Compile SELinux module file
   command: checkmodule -M -m -o /tmp/mysql-tmp.mod /tmp/mysql-tmp.te
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
 
 - name: Build SELinux policy package
   command: semodule_package -o /tmp/mysql-tmp.pp -m /tmp/mysql-tmp.mod
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
 
 #- name: check if mysql has been updated
 #  stat: path=/tmp/mysql-tmp.pp
@@ -117,18 +163,18 @@
 
 - name: unLoad SELinux policy package
   command: semodule -r mysql-tmp
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
   become_user: root
   ignore_errors: True
 
 - name: Load SELinux policy package
   command: semodule -i /tmp/mysql-tmp.pp
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
   become_user: root
 
 - name: Remove temporary files
   file: path=/tmp/mysql-tmp.* state=absent
-  when: mysql_selinux_update.stat.exists == False
+  when: mysql_selinux_update.stat.exists == False and ansible_os_family == "RedHat"
 
 # TODO: SELinux issue for 10.0.29 MariaDB, need to allow setgid/setuid.
 ## See https://www.rootusers.com/how-to-fix-mariadb-10-0-29-selinux-update-failure/
@@ -144,34 +190,143 @@
   become_user: root
   when: ansible_distribution == 'Rocky'
 
+- name: start mariadb (Ubuntu/Debian)
+  service: name=mariadb state=started enabled=yes
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
+- name: Wait for MariaDB to be ready
+  wait_for:
+    port: 3306
+    host: localhost
+    delay: 5
+    timeout: 60
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
+- name: Wait for MariaDB socket to be ready (Ubuntu/Debian)
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    state: present
+    timeout: 60
+  become_user: root
+  when: ansible_os_family == 'Debian'
+
 - include: secure_install.yml
 
 - name: create databases
-  mysql_db: name="{{ item }}" state=present encoding=utf8
+  mysql_db:
+    name: "{{ item }}"
+    state: present
+    encoding: utf8
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
   with_items:
     - "{{ mysql_databases }}"
+  when: ansible_os_family == 'Debian'
+
+- name: create databases (CentOS/Rocky)
+  mysql_db:
+    name: "{{ item }}"
+    state: present
+    encoding: utf8
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  with_items:
+    - "{{ mysql_databases }}"
+  when: ansible_os_family == 'RedHat'
 
 - name: give access to {{ db_user }} from remote
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
   with_items:
     - "{{ groups['api-orch'] }}"
+  when: ansible_os_family == 'Debian' and 'api-orch' in groups
+
+- name: give access to {{ db_user }} from remote (CentOS/Rocky)
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  with_items:
+    - "{{ groups['api-orch'] }}"
+  when: ansible_os_family == 'RedHat' and 'api-orch' in groups
 
 - name: give access to {{ db_user }} from localhost
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="localhost"
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
+  when: ansible_os_family == 'Debian'
+
+- name: give access to {{ db_user }} from localhost (CentOS/Rocky)
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  when: ansible_os_family == 'RedHat'
 
 # TODO: database access from GFac is no longer needed (GFac deprecated and only using Registry API)
 - name: give access to {{ db_user }} from remote
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
   with_items:
     - "{{ groups['gfac'] }}"
-  when: "'gfac' in groups"
+  when: ansible_os_family == 'Debian' and 'gfac' in groups
+
+- name: give access to {{ db_user }} from remote (CentOS/Rocky)
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  with_items:
+    - "{{ groups['gfac'] }}"
+  when: ansible_os_family == 'RedHat' and 'gfac' in groups
 
 - name: create new user {{ db_user }} with all privilege
-  mysql_user: name="{{ db_user }}"
-              password="{{ db_password }}"
-              append_privs=yes
-              host_all=yes
-              priv=*.*:ALL,GRANT state=present
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    append_privs: yes
+    host_all: yes
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
+  when: ansible_os_family == 'Debian'
+
+- name: create new user {{ db_user }} with all privilege (CentOS/Rocky)
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    append_privs: yes
+    host_all: yes
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  when: ansible_os_family == 'RedHat'
 
 - include: keycloak.yml
   when: "'keycloak' in groups"
@@ -182,7 +337,7 @@
     permanent: yes
     state: enabled
     immediate: yes
-    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ db_server_port }}" protocol=tcp accept
-  with_items:
-    - "{{ db_subnets }}"
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ db_server_port | default(3306) }}" protocol=tcp accept
+  with_items: "{{ db_subnets | default([]) }}"
   become_user: root
+  when: db_subnets is defined and db_subnets | length > 0

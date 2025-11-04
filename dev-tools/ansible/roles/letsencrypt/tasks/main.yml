@@ -23,25 +23,61 @@
 - include_tasks: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
   when: ansible_os_family == "RedHat"
 
-- name: add Certbot PPA repository
-  apt_repository:
-    repo: "ppa:certbot/certbot"
+# Note: Certbot PPA is deprecated for Ubuntu 24.04+. Install from Ubuntu repositories or snap instead.
+# For Ubuntu 22.04 and earlier, we can still use the PPA.
+# For Ubuntu 24.04+, certbot is available in the universe repository.
+- name: Install software-properties-common for add-apt-repository (Ubuntu < 24.04)
+  apt:
+    name: software-properties-common
+    state: present
+    update_cache: yes
   become: yes
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int < 24)
+
+- name: add Certbot PPA repository (Ubuntu < 24.04)
+  shell: |
+    add-apt-repository -y ppa:certbot/certbot
+    apt-get update
+  args:
+    creates: /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.list
+  become: yes
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int < 24)
+
+- name: Find and remove deprecated certbot PPA files (Ubuntu 24.04+)
+  shell: |
+    rm -f /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.list /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.list.save /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.sources 2>/dev/null || true
+  become: yes
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int >= 24)
+  ignore_errors: yes
+
+- name: Enable universe repository for certbot (Ubuntu 24.04+)
+  shell: |
+    add-apt-repository -y universe || true
+    apt-get update -o APT::Get::AllowUnauthenticated=true || apt-get update --allow-insecure-repositories || true
+  become: yes
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int >= 24)
+  ignore_errors: yes
+
+- name: Install Certbot and dependencies (Ubuntu 24.04+)
+  shell: |
+    apt-get install -y certbot python3-certbot-apache || apt-get install -y certbot python3-certbot-apache --allow-unauthenticated
+  become: yes
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int >= 24)
 
 
 
-- name: Install Certbot and dependencies (Debian)
+- name: Install Certbot and dependencies (Ubuntu < 24.04)
   apt: name={{ item }} state=latest update_cache=yes
   with_items:
     - certbot
     - python-certbot-apache
   become: yes
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and (ansible_distribution_major_version | int < 24)
 
 
-# Note: on Ubuntu crontab is automatically created to run cert renewal. Only
-# CentOS requires enabling the certbot-renew timer.
+# Note: Ubuntu automatically sets up certificate renewal via systemd timer.
+# The timer is created when certbot is installed via apt.
+# CentOS/Rocky require manual enabling of the certbot-renew timer.
 
 - name: enable certbot (letsencrypt) renewal
   systemd:

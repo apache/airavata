@@ -24,9 +24,18 @@
 Description=Keycloak
 
 [Service]
-ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0
+Environment="JAVA_HOME={{ keycloak_java_home }}"
+{% if keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24 %}
+# Keycloak 24.0.0+ uses environment variables for admin user creation
+Environment="KEYCLOAK_ADMIN={{ keycloak_master_account_username }}"
+Environment="KEYCLOAK_ADMIN_PASSWORD={{ keycloak_master_account_password }}"
+{% endif %}
+ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh start --optimized --hostname={{ keycloak_vhost_servername }} --hostname-strict=false --proxy=edge --http-enabled=false --https-certificate-file={{ keycloak_ssl_certificate_file }} --https-certificate-key-file={{ keycloak_ssl_certificate_key_file }} --https-port=8443
+WorkingDirectory={{ user_home }}/{{ keycloak_install_dir }}
 User={{user}}
 Group={{group}}
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target

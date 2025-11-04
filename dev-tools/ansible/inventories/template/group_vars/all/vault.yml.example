@@ -31,6 +31,9 @@ default_registry_password: "CHANGEME_REGISTRY_PASSWORD"
 default_registry_oauth_client_secret: "CHANGEME_OAUTH_SECRET"
 
 # RabbitMQ
+rabbitmq_user: "guest"
+rabbitmq_password: "guest"
+rabbitmq_vhost: "CHANGEME_VHOST"
 rabbitmq_broker_url: "amqp://guest:guest@localhost:5672/CHANGEME_VHOST"
 
 # Zookeeper

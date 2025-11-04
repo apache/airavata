@@ -44,7 +44,9 @@ registry_server_port: 8970
 sharing_registry_port: 7878
 cred_store_port: 8960
 agent_service_port: 18880
+agent_service_server_port: 18880
 research_service_port: 18899
+research_service_server_port: 18899
 file_server_port: 8050
 restproxy_port: 8082
 
@@ -122,6 +124,7 @@ prefetch_count: 200
 durable_queue: false
 
 # RabbitMQ configuration
+rabbitmq_server: "localhost"
 rabbitmq_status_exchange_name: "status_exchange"
 rabbitmq_process_exchange_name: "process_exchange"
 rabbitmq_experiment_exchange_name: "experiment_exchange"

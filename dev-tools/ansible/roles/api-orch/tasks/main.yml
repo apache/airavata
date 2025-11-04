@@ -23,7 +23,6 @@
 # api-orch deployment
 - name: Create api-orchestrator deployment directory
   file: path="{{ api_orch_dir }}" state=directory owner="{{ user }}" group="{{ group }}"
-  when: build is success
 
 - name: Check previous deployments
   stat: path="{{ api_orch_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
@@ -39,48 +38,6 @@
   when: systemd_unit_file.stat.exists
   become: yes
   become_user: root
-
-- name: Delete previous deployments
-  file: path="{{ api_orch_dir }}/{{ airavata_dist }}" state=absent
-
-
-- name: Copy distribution to api-orcheatrator deployment directory
-  unarchive: src="{{ airavata_source_dir }}/modules/distribution/target/{{ airavata_dist_name }}"
-             dest="{{ api_orch_dir }}/"
-             copy=no
-
-- name: set api-orch private ip
-  set_fact:
-    api_server_host: "{{ api_server_bind_host }}"
-    orchestrator_host: "{{ orchestrator_bind_host }}"
-    cred_store_server_host: "{{ cred_store_server_bind_host }}"
-    registry_host: "{{ registry_bind_host }}"
-    sharing_registry_host: "{{ sharing_registry_bind_host }}"
-    profile_service_host: "{{ profile_service_bind_host }}"
-
-
-- name: Copy Airavata server properties file
-  template: src=airavata-server.properties.j2
-            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server.properties"
-            owner={{ user }}
-            group={{ group }}
-            mode="u=rw,g=r,o=r"
-
-- name: Copy logback configuration file
-  template: src=log4j2.xml.j2
-            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/log4j2.xml"
-            owner={{ user }}
-            group={{ group }}
-            mode="u=rw,g=r,o=r"
-
-- name: create logs directory
-  file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
-
-- name: Copy MariaDB connector jar to lib
-  get_url: url="{{ mariadb_connector_jar_url }}"
-          dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/"
-          owner={{ user }}
-          group={{ group }}
 
 # Create a SSL certificate for the api server
 
@@ -107,12 +64,12 @@
   become_user: root
 
 - name: generate certificate if it doesn't exist
-  command: certbot --standalone --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
+  command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
   become_user: root
   when: not stat_api_server_ssl_cert_result.stat.exists
 
 - name: set certificate renewal post-hook
-  command: certbot renew --force-renewal --installer null --standalone --post-hook "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version]}}.service" --quiet
+  command: certbot renew --force-renewal --installer null --webroot --post-hook "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version]}}.service" --quiet
   become_user: root
   # Renewal might fail due to rate limiting, which is fine since we only need to set the post-hook
   ignore_errors: true
@@ -128,6 +85,16 @@
 
 - name: Install HAProxy
   include_tasks: haproxy/install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Install HAProxy (Ubuntu)
+  apt:
+    name: haproxy
+    state: present
+    update_cache: yes
+  become: true
+  become_user: root
+  when: ansible_os_family == "Debian"
 
 - name: Copy HAProxy config file
   template: src=haproxy.cfg.j2
@@ -149,8 +116,7 @@
     state: enabled
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ sharing_registry_port }}" protocol=tcp accept
-  with_items:
-    - "{{ sharing_subnets }}"
+  with_items: "{{ sharing_subnets | default(['0.0.0.0/0']) }}"
   become_user: root
 
 - name: allow only selected networks to access Airavata Registry
@@ -160,8 +126,7 @@
     state: enabled
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ registry_port }}" protocol=tcp accept
-  with_items:
-    - "{{ registry_subnets }}"
+  with_items: "{{ registry_subnets | default(['0.0.0.0/0']) }}"
   become_user: root
 
 - name: allow only selected networks to access Airavata Credential Store
@@ -171,8 +136,7 @@
     state: enabled
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ cred_store_port }}" protocol=tcp accept
-  with_items:
-    - "{{ credential_store_subnets }}"
+  with_items: "{{ credential_store_subnets | default(['0.0.0.0/0']) }}"
   become_user: root
 
 - name: allow all networks to access Airavata API Server over TLS
@@ -200,34 +164,7 @@
     state: enabled
     immediate: yes
     rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ api_server_monitoring_port }}" protocol=tcp accept
-  with_items:
-    - "{{ monitoring_subnets }}"
+  with_items: "{{ monitoring_subnets | default(['0.0.0.0/0']) }}"
   become_user: root
 
-- name: Install api-orch systemd script
-  template: src=apiorch.service.j2
-            dest="{{ api_orch_systemd_unit_file }}"
-  become: yes
-  become_user: root
-
-
-- name: Allow  to modify files
-  sefcontext:
-    target: "{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh"
-    setype: initrc_exec_t
-    state: present
-  become: yes
-  become_user: root
-  when: ansible_distribution == "Rocky"
-
-- name: Apply new SELinux file context to filesystem
-  command: restorecon -v "{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server-start.sh"
-  become: yes
-  become_user: root
-  when: ansible_distribution == "Rocky"
-
-- name: start api-orch
-  service: name=apiorch state=started enabled=yes daemon_reload=yes
-  become: yes
-  become_user: root
 ...

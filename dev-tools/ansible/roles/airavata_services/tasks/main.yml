@@ -34,3 +34,9 @@
 - name: Include REST proxy deployment tasks
   include_tasks: deploy_restproxy.yml
 
+- name: Start all Airavata services
+  include_tasks: start_services.yml
+  tags:
+    - start
+    - deploy
+

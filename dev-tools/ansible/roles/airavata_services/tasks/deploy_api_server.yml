@@ -89,7 +89,16 @@
     - deploy
     - api-server
 
-- name: Copy keystore file
+# If keystore already exists in inventory files, copy it otherwise generate it
+- name: Check if keystore exists in inventory files
+  stat:
+    path: "{{ inventory_dir }}/files/{{ vault_keystore_file }}"
+  register: keystore_file_exists
+  tags:
+    - deploy
+    - api-server
+
+- name: Copy keystore file from inventory (if provided)
   copy:
     src: "{{ inventory_dir }}/files/{{ vault_keystore_file }}"
     dest: "{{ api_server_dir }}/conf/keystores/{{ vault_keystore_file | basename }}"
@@ -97,7 +106,14 @@
     group: "{{ deploy_user }}"
     mode: "0600"
     decrypt: yes
-  when: vault_keystore_file is defined
+  when: vault_keystore_file is defined and keystore_file_exists.stat.exists
+  tags:
+    - deploy
+    - api-server
+
+- name: Generate keystore from Let's Encrypt certificates
+  include_tasks: generate_keystore.yml
+  when: vault_keystore_file is defined and not keystore_file_exists.stat.exists
   tags:
     - deploy
     - api-server

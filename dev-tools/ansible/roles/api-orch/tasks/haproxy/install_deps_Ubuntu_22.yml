@@ -20,14 +20,11 @@
 
 ---
 
-# Gracefully reload httpd (RedHat)
-- name: restart httpd
-  service: name=httpd state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "RedHat"
+- name: apt install haproxy (Ubuntu)
+  apt:
+    name: haproxy
+    state: present
+    update_cache: yes
+  become: true
+  become_user: root
 
-# Gracefully reload apache2 (Ubuntu/Debian)
-- name: restart apache2
-  service: name=apache2 state=reloaded enabled=yes
-  become: yes
-  when: ansible_os_family == "Debian"

@@ -8,6 +8,9 @@ airavata_git_repo: "https://github.com/apache/airavata.git"
 airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
 deployment_dir: "/home/{{ deploy_user }}/airavata"
 
+# Maven version (should match common role's apache_maven_version)
+apache_maven_version: "apache-maven-3.9.11"
+
 # Deployment user
 deploy_user: "exouser"
 
@@ -22,6 +25,15 @@ agent_service_port: 18880
 research_service_port: 18899
 file_server_port: 8050
 restproxy_port: 8082
+
+# Database names
+app_catalog: "app_catalog"
+exp_catalog: "experiment_catalog"
+replica_catalog: "replica_catalog"
+workflow_catalog: "workflow_catalog"
+sharing_catalog: "sharing_catalog"
+credential_store: "credential_store"
+profile_service: "profile_service"
 
 # Database drivers
 registry_jdbc_driver: "org.mariadb.jdbc.Driver"
