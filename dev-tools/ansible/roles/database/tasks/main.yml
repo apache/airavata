@@ -102,19 +102,19 @@
   debconf:
     name: mariadb-server
     question: "mysql-server/root_password"
-    value: "{{ mysql_root_password }}"
+    value: "{{ mysql_root_password | default('') }}"
     vtype: password
   become_user: root
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and mysql_root_password is defined and mysql_root_password | length > 0
 
 - name: Confirm MariaDB root password via debconf (Ubuntu/Debian)
   debconf:
     name: mariadb-server
     question: "mysql-server/root_password_again"
-    value: "{{ mysql_root_password }}"
+    value: "{{ mysql_root_password | default('') }}"
     vtype: password
   become_user: root
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and mysql_root_password is defined and mysql_root_password | length > 0
 
 - name: install mariadb (Ubuntu/Debian)
   apt:

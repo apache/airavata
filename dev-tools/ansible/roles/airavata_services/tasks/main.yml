@@ -19,6 +19,13 @@
 #
 
 ---
+- name: Stop all Airavata services before deployment
+  include_tasks: stop_services.yml
+  when: not skip_stop_services | default(false)
+  tags:
+    - deploy
+    - stop
+
 - name: Include service deployment tasks
   include_tasks: deploy_api_server.yml
 

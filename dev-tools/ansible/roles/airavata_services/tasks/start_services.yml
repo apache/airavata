@@ -18,59 +18,68 @@
 # under the License.
 #
 
----
 - name: Start API Server orchestrator
-  shell: "{{ api_server_dir }}/bin/orchestrator.sh -d start api-orch"
+  shell: '{{ api_server_dir }}/bin/orchestrator.sh -d start api-orch'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Wait for API Server orchestrator to be ready
+  wait_for:
+    port: '{{ orchestrator_server_port }}'
+    host: localhost
+    delay: 5
+    timeout: 60
   tags:
     - start
     - api-server
 
 - name: Start API Server controller
-  shell: "{{ api_server_dir }}/bin/controller.sh -d start"
+  shell: '{{ api_server_dir }}/bin/controller.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
 - name: Start API Server participant
-  shell: "{{ api_server_dir }}/bin/participant.sh -d start"
+  shell: '{{ api_server_dir }}/bin/participant.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
 - name: Start API Server email-monitor
-  shell: "{{ api_server_dir }}/bin/email-monitor.sh -d start"
+  shell: '{{ api_server_dir }}/bin/email-monitor.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
 - name: Start API Server realtime-monitor
-  shell: "{{ api_server_dir }}/bin/realtime-monitor.sh -d start"
+  shell: '{{ api_server_dir }}/bin/realtime-monitor.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
 - name: Start API Server pre-wm
-  shell: "{{ api_server_dir }}/bin/pre-wm.sh -d start"
+  shell: '{{ api_server_dir }}/bin/pre-wm.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
 - name: Start API Server post-wm
-  shell: "{{ api_server_dir }}/bin/post-wm.sh -d start"
+  shell: '{{ api_server_dir }}/bin/post-wm.sh -d start'
   args:
-    chdir: "{{ api_server_dir }}"
+    chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
@@ -83,9 +92,9 @@
     - api-server
 
 - name: Start Agent Service
-  shell: "{{ agent_service_dir }}/bin/agent-service.sh -d start"
+  shell: '{{ agent_service_dir }}/bin/agent-service.sh -d start'
   args:
-    chdir: "{{ agent_service_dir }}"
+    chdir: '{{ agent_service_dir }}'
   tags:
     - start
     - agent-service
@@ -98,9 +107,9 @@
     - agent-service
 
 - name: Start Research Service
-  shell: "{{ research_service_dir }}/bin/research-service.sh -d start"
+  shell: '{{ research_service_dir }}/bin/research-service.sh -d start'
   args:
-    chdir: "{{ research_service_dir }}"
+    chdir: '{{ research_service_dir }}'
   tags:
     - start
     - research-service
@@ -113,9 +122,9 @@
     - research-service
 
 - name: Start File Server
-  shell: "{{ file_server_dir }}/bin/file-service.sh -d start"
+  shell: '{{ file_server_dir }}/bin/file-service.sh -d start'
   args:
-    chdir: "{{ file_server_dir }}"
+    chdir: '{{ file_server_dir }}'
   tags:
     - start
     - file-server
@@ -128,9 +137,9 @@
     - file-server
 
 - name: Start REST Proxy
-  shell: "{{ restproxy_dir }}/bin/restproxy.sh -d start"
+  shell: '{{ restproxy_dir }}/bin/restproxy.sh -d start'
   args:
-    chdir: "{{ restproxy_dir }}"
+    chdir: '{{ restproxy_dir }}'
   tags:
     - start
     - restproxy

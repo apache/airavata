@@ -42,20 +42,22 @@
       debug:
         msg: "Updating Airavata services on {{ inventory_hostname }}"
 
-    - name: Pull and build Airavata
-      include_role:
-        name: airavata_services
-        tasks_from: build
-
     - name: Stop all services
       include_role:
         name: airavata_services
         tasks_from: stop_services
 
+    - name: Pull and build Airavata
+      include_role:
+        name: airavata_services
+        tasks_from: build
+
     - name: Deploy all services
       include_role:
         name: airavata_services
         tasks_from: main
+      vars:
+        skip_stop_services: true
 
     - name: Start all services
       include_role:

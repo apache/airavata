@@ -25,12 +25,14 @@ reverse_proxy_service_name:
   Rocky_8: httpd
   Ubuntu_22: apache2
   Ubuntu_24: apache2
+  default: apache2
 
 reverse_proxy_config_dir:
   CentOS_7: /etc/httpd
   Rocky_8: /etc/httpd
   Ubuntu_22: /etc/apache2
   Ubuntu_24: /etc/apache2
+  default: /etc/apache2
 
 reverse_proxy_ssl_dir: "/etc/apache2/ssl-available"
 reverse_proxy_vhost_dir: "/etc/apache2/sites-available"

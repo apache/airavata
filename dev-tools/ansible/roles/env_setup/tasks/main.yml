@@ -49,16 +49,23 @@
 #     - iptables
 #     - ip6tables
 
-- name: Check if firewalld service file exists
+- name: Check if firewalld service file exists (systemd custom location)
   stat:
     path: /etc/systemd/system/firewalld.service
-  register: firewalld_service_file
+  register: firewalld_service_file_systemd
   become: yes
+
+- name: Check if firewalld service file exists (Debian/Ubuntu standard location)
+  stat:
+    path: /lib/systemd/system/firewalld.service
+  register: firewalld_service_file_lib
+  become: yes
+  when: ansible_os_family == "Debian"
 
 - name: Start firewalld service
   service: name=firewalld state=started enabled=yes
   become: yes
-  when: firewalld_service_file.stat.exists or ansible_os_family == "RedHat"
+  when: (firewalld_service_file_systemd.stat.exists | default(false)) or (firewalld_service_file_lib.stat.exists | default(false)) or ansible_os_family == "RedHat"
 
 - name: open firewall port 22 for SSH connections (Redhat or Rocky)
   firewalld: port="22/tcp"

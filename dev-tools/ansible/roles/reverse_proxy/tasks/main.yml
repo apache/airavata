@@ -61,7 +61,7 @@
 # Start and enable service
 - name: Start and enable Apache2/httpd
   service:
-    name: "{{ reverse_proxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version] }}"
+    name: "{{ reverse_proxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version] | default(reverse_proxy_service_name[ansible_distribution] | default(reverse_proxy_service_name['default'])) }}"
     state: started
     enabled: yes
   become: yes

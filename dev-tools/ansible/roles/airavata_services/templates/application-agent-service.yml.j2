@@ -35,8 +35,8 @@ spring:
       max-request-size: {{ agent_service_max_request_size }}
   datasource:
     url: "{{ agent_service_datasource_url }}"
-    username: "{{ agent_service_datasource_username }}"
-    password: "{{ agent_service_datasource_password }}"
+    username: "{{ agent_service_datasource_username | default(db_user | default('airavata')) }}"
+    password: "{{ agent_service_datasource_password | default(db_password | default('')) }}"
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       pool-name: {{ agent_service_pool_name }}

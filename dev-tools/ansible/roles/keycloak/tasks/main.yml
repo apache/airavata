@@ -143,12 +143,23 @@
   when: ansible_os_family == "Debian"
 
 # Download keycloak distribution
-- name: Check if Keycloak is already installed
+- name: Check if Keycloak is already installed (Keycloak 24+ uses Quarkus)
   stat:
-    path: "{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
-  register: keycloak_installed
+    path: "{{user_home}}/{{ keycloak_install_dir }}/bin/kc.sh"
+  register: keycloak_installed_quarkus
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+  tags:
+    - always
+
+- name: Check if Keycloak is already installed (Legacy WildFly versions)
+  stat:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+  register: keycloak_installed_wildfly
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
     - always
 
@@ -161,14 +172,32 @@
     chown -R {{ user }}:{{ group }} "{{ user_home }}/{{ keycloak_install_dir }}" && \
     rm -f "/tmp/{{ keycloak_install_dir }}.tar.gz"
   args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/bin/kc.sh"
+  become: true
+  become_user: root
+  when: (keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24) and not (keycloak_installed_quarkus.stat.exists | default(false))
+  tags:
+    - always
+
+- name: Download Keycloak distribution (Legacy WildFly versions)
+  shell: |
+    cd /tmp && \
+    (wget -q --no-check-certificate "{{ keycloak_downlaod_url }}" -O "{{ keycloak_install_dir }}.tar.gz" || \
+     curl -k -L "{{ keycloak_downlaod_url }}" -o "{{ keycloak_install_dir }}.tar.gz") && \
+    tar -xzf "{{ keycloak_install_dir }}.tar.gz" -C "{{ user_home }}" && \
+    chown -R {{ user }}:{{ group }} "{{ user_home }}/{{ keycloak_install_dir }}" && \
+    rm -f "/tmp/{{ keycloak_install_dir }}.tar.gz"
+  args:
     creates: "{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
   become: true
   become_user: root
-  when: not keycloak_installed.stat.exists
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24 and not (keycloak_installed_wildfly.stat.exists | default(false))
   tags:
     - always
 
 # <---------------------------- Setup Mysql database for keycloak ------------------->
+# Note: Keycloak 24+ (Quarkus) uses environment variables
+# Legacy versions (< 24) use WildFly modules for JDBC driver
 
 # create folder structure
 - file:
@@ -177,6 +206,7 @@
     mode: 0755
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
 
@@ -186,6 +216,7 @@
   register: mysql_connector_jar
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
     - always
 
@@ -201,7 +232,7 @@
     creates: "{{user_home}}/{{ mysql_connector_dir_name }}/{{ keycloak_db_connector_name }}"
   become: true
   become_user: root
-  when: not mysql_connector_jar.stat.exists
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24 and not (mysql_connector_jar.stat.exists | default(false))
   tags:
     - always
 
@@ -209,6 +240,7 @@
   command: mv {{user_home}}/{{ mysql_connector_dir_name }}/{{ keycloak_db_connector_name }} {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
 
@@ -221,6 +253,7 @@
     mode="u=rw,g=r,o=r"
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
 
