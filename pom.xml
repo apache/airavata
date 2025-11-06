@@ -76,6 +76,7 @@ under the License.
         <module>modules/registry-db-migrator</module>
         <module>modules/registry-jpa-generator</module>
         <module>modules/ide-integration</module>
+        <module>modules/airavata-rest-api</module>
     </modules>
 
     <properties>
