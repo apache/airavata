@@ -62,3 +62,4 @@ logs/
 /vault*
 /dev-tools/ansible/inventories/test
 /dev-tools/ansible/RUN_TEST_ENV.md
+.github/workflows/ansible-check.yml
