@@ -54,6 +54,7 @@ public class AgentManagementHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
+    private final JobBatchHandler jobBatchHandler;
 
     @Value("${airavata.storageResourceId}")
     private String storageResourceId;
@@ -64,9 +65,13 @@ public class AgentManagementHandler {
     @Value("${grpc.server.host}")
     private String grpcHost;
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
+    public AgentManagementHandler(
+            AiravataService airavataService,
+            ClusterApplicationConfig clusterApplicationConfig,
+            JobBatchHandler jobBatchHandler) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
+        this.jobBatchHandler = jobBatchHandler;
     }
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
@@ -158,7 +163,7 @@ public class AgentManagementHandler {
 
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
         try {
-            String agentId = "agent_" + UUID.randomUUID().toString();
+            String agentId = "agent_" + UUID.randomUUID();
             String envName = generateEnvName(req.getLibraries(), req.getPip());
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
@@ -167,10 +172,14 @@ public class AgentManagementHandler {
                     .airavata()
                     .createExperiment(UserContext.authzToken(), experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
+
+            // Handle job workload
+            String batchId = jobBatchHandler.handleJobWorkload(experimentId, agentId, req.getJobBatchSpec());
+
             airavataService
                     .airavata()
                     .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
-            return new AgentLaunchResponse(agentId, experimentId, envName);
+            return new AgentLaunchResponse(agentId, experimentId, envName, batchId);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException(

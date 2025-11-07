@@ -17,21 +17,30 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.agent.connection.service.models;
+package org.apache.airavata.agent.connection.service.db.entity;
 
-public class AgentLaunchResponse {
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.Instant;
+
+@Entity
+@Table(name = "AGENT_BATCH_ASSIGNMENT")
+public class AgentBatchAssignmentEntity {
+
+    @Id
+    @Column(name = "AGENT_ID", nullable = false)
     private String agentId;
+
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
-    private String envName;
-    private String processId;
+
+    @Column(name = "BATCH_ID", nullable = false)
     private String batchId;
 
-    public AgentLaunchResponse(String agentId, String experimentId, String envName, String batchId) {
-        this.agentId = agentId;
-        this.experimentId = experimentId;
-        this.envName = envName;
-        this.batchId = batchId;
-    }
+    @Column(name = "CREATED_AT", insertable = false, updatable = false)
+    private Instant createdAt;
 
     public String getAgentId() {
         return agentId;
@@ -49,27 +58,19 @@ public class AgentLaunchResponse {
         this.experimentId = experimentId;
     }
 
-    public String getEnvName() {
-        return envName;
-    }
-
-    public void setEnvName(String envName) {
-        this.envName = envName;
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
-    }
-
     public String getBatchId() {
         return batchId;
     }
 
     public void setBatchId(String batchId) {
         this.batchId = batchId;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }
