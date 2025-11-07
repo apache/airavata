@@ -246,8 +246,10 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
-        userConfigurationDataModel.setInputStorageResourceId(StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : storageResourceId);
-        userConfigurationDataModel.setOutputStorageResourceId(StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : storageResourceId);
+        userConfigurationDataModel.setInputStorageResourceId(
+                StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : storageResourceId);
+        userConfigurationDataModel.setOutputStorageResourceId(
+                StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : storageResourceId);
         String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
