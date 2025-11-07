@@ -19,40 +19,112 @@
 #
 
 ---
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ampgateway"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/csbglsu"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ddstudio"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/distantreader"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/epwgateway"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/gatech"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/georgiastate"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/hubzero"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/interactwel"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugateway"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugeosurvey"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/kentucky"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/lsu"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/mines"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nanoconfinement"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nanoshape"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/NCSAIndustry"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/newmexicostate"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nexttdb"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oscer"
-# - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/pfec-hydro"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/phasta"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/r-hpc"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/rutgersgemr"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/saverx"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scigap"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/sdstate"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/seagrid"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/searchingSRA"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/simvascular"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/southdakota"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/southernillinois"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/testdrive"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/uab"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/ultrascan"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/wvsu"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/ampgateway"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/csbglsu"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/ddstudio"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/distantreader"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/epwgateway"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/gatech"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/georgiastate"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/hubzero"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/interactwel"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/iugateway"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/iugeosurvey"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/kentucky"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/lsu"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/mines"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/nanoconfinement"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/nanoshape"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/NCSAIndustry"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/newmexicostate"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/nexttdb"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/oscer"
+# - import_playbook: pga-single-vhost.yml
+#   vars:
+#     vars_dir: "{{ inventory_dir }}/pga_config/pfec-hydro"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/phasta"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/r-hpc"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/rutgersgemr"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/saverx"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/scigap"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/sdstate"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/seagrid"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/searchingSRA"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/simvascular"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/southdakota"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/southernillinois"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/testdrive"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/uab"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/ultrascan"
+- import_playbook: pga-single-vhost.yml
+  vars:
+    vars_dir: "{{ inventory_dir }}/pga_config/wvsu"
 ...

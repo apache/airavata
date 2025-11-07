@@ -47,9 +47,9 @@
   args:
     creates: /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg
 
-- name: Map Ubuntu release to RabbitMQ repository codename (use jammy for noble)
+- name: Map Ubuntu release to RabbitMQ repository codename (use jammy for noble/questing)
   set_fact:
-    rabbitmq_ubuntu_codename: "{{ 'jammy' if ansible_distribution_release == 'noble' else ansible_distribution_release }}"
+    rabbitmq_ubuntu_codename: "{{ 'jammy' if (ansible_distribution_release == 'noble' or ansible_distribution_release == 'questing' or (ansible_distribution_major_version | int >= 24)) else ansible_distribution_release }}"
   when: ansible_os_family == "Debian"
 
 - name: Add RabbitMQ Erlang repository (Ubuntu)

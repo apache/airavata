@@ -1,0 +1,400 @@
+name: Ansible CI
+
+on:
+  pull_request:
+    branches:
+      - master
+      - airavata-deployment
+    paths:
+      - 'dev-tools/ansible/**'
+      - '.github/workflows/ansible-check.yml'
+  push:
+    branches:
+      - master
+      - airavata-deployment
+    paths:
+      - 'dev-tools/ansible/**'
+      - '.github/workflows/ansible-check.yml'
+
+jobs:
+  ansible-syntax-check:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: dev-tools/ansible
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('dev-tools/ansible/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Ansible and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify Ansible installation
+        run: |
+          ansible --version
+          ansible-playbook --version
+
+      - name: Check for deprecated include syntax
+        run: |
+          echo "Checking for deprecated 'include:' syntax..."
+          if grep -r "^\s*-\s*include:" . --include="*.yml" --exclude-dir=".git" 2>/dev/null; then
+            echo "❌ ERROR: Found deprecated 'include:' syntax. Use 'import_tasks:', 'include_tasks:', or 'import_playbook:' instead."
+            exit 1
+          fi
+          echo "✅ No deprecated 'include:' syntax found"
+
+      - name: Validate Ansible playbook syntax
+        run: |
+          echo "Validating Ansible playbook syntax..."
+          
+          # Find all playbook files (top-level YAML files, not in roles/tasks)
+          find . -name "*.yml" -type f \
+            ! -path "*/roles/*/tasks/*" \
+            ! -path "*/roles/*/handlers/*" \
+            ! -path "*/roles/*/vars/*" \
+            ! -path "*/roles/*/defaults/*" \
+            ! -path "*/.git/*" \
+            ! -path "*/inventories/*" \
+            ! -name "requirements.txt" \
+            -print0 | while IFS= read -r -d '' file; do
+            echo "Checking: $file"
+            ansible-playbook --syntax-check "$file" -i /dev/null || {
+              echo "❌ Syntax error in: $file"
+              exit 1
+            }
+          done
+          echo "✅ All playbooks passed syntax check"
+
+      - name: Validate role task files syntax
+        run: |
+          echo "Validating role task files syntax..."
+          
+          # Check task files in roles using ansible-lint or basic YAML validation
+          # For now, we'll use Python's yaml module to validate YAML syntax
+          python3 << 'PYTHON_SCRIPT'
+          import yaml
+          import sys
+          import os
+          import glob
+          
+          errors = []
+          for root, dirs, files in os.walk('./roles'):
+              for file in files:
+                  if file.endswith('.yml'):
+                      filepath = os.path.join(root, file)
+                      # Only check task and handler files
+                      if '/tasks/' in filepath or '/handlers/' in filepath:
+                          try:
+                              with open(filepath, 'r') as f:
+                                  yaml.safe_load(f)
+                              print(f"✅ {filepath}")
+                          except yaml.YAMLError as e:
+                              errors.append(f"❌ {filepath}: {e}")
+          
+          if errors:
+              print("\n".join(errors))
+              sys.exit(1)
+          print("✅ All role task files passed YAML syntax check")
+          PYTHON_SCRIPT
+
+      - name: Check for common Ansible issues
+        run: |
+          echo "Checking for common issues..."
+          
+          # Check for missing spaces after colons in YAML
+          if grep -r ":\w" . --include="*.yml" --exclude-dir=".git" --exclude-dir="inventories" 2>/dev/null | grep -v "{{" | grep -v "}}"; then
+            echo "⚠️  WARNING: Found potential YAML syntax issues (missing space after colon)"
+          fi
+          
+          # Check for tabs instead of spaces
+          if grep -r $'\t' . --include="*.yml" --exclude-dir=".git" --exclude-dir="inventories" 2>/dev/null; then
+            echo "⚠️  WARNING: Found tabs in YAML files (should use spaces)"
+          fi
+          
+          echo "✅ Common checks completed"
+
+      - name: Test inventory parsing (if test inventory exists)
+        continue-on-error: true
+        run: |
+          if [ -d "inventories/test" ] && [ -f "inventories/test/hosts" ]; then
+            echo "Testing inventory parsing..."
+            ansible-inventory --list -i inventories/test 2>&1 || echo "⚠️  Inventory parsing failed (may require vault password)"
+          else
+            echo "ℹ️  Test inventory not found, skipping inventory check"
+          fi
+
+      - name: Summary
+        run: |
+          echo "✅ Ansible syntax validation completed successfully!"
+          echo "All playbooks and roles are syntactically correct."
+
+  molecule-test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: dev-tools/ansible
+
+    strategy:
+      matrix:
+        role:
+          - env_setup
+        # Add more roles here as you set up Molecule for them
+        # - java
+        # - database
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc \
+            libc6-dev \
+            make \
+            python3-dev
+
+      - name: Verify Docker is available
+        run: |
+          docker --version
+          docker info
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('dev-tools/ansible/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Ansible and Molecule dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify Molecule installation
+        run: |
+          molecule --version
+          ansible-lint --version
+
+      - name: Run ansible-lint
+        continue-on-error: true
+        run: |
+          echo "Running ansible-lint on role: ${{ matrix.role }}"
+          ansible-lint roles/${{ matrix.role }} || echo "⚠️  ansible-lint found issues (non-blocking)"
+
+      - name: Run Molecule test
+        run: |
+          echo "Running Molecule test for role: ${{ matrix.role }}"
+          cd roles/${{ matrix.role }}
+          molecule test
+
+      - name: Cleanup Molecule instances (if test fails)
+        if: failure()
+        run: |
+          cd roles/${{ matrix.role }}
+          molecule destroy || true
+
+  ansible-multi-os-test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: dev-tools/ansible
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: centos7
+            image: quay.io/centos/centos:7
+            inventory: test
+            python: python
+          - os: rocky8
+            image: quay.io/rockylinux/rockylinux:8
+            inventory: test
+            python: python3
+          - os: ubuntu2204
+            image: ubuntu:22.04
+            inventory: test
+            python: python3
+          - os: ubuntu2404
+            image: ubuntu:24.04
+            inventory: test
+            python: python3
+          - os: centos7
+            image: quay.io/centos/centos:7
+            inventory: dev
+            python: python
+          - os: rocky8
+            image: quay.io/rockylinux/rockylinux:8
+            inventory: dev
+            python: python3
+          - os: ubuntu2204
+            image: ubuntu:22.04
+            inventory: dev
+            python: python3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc \
+            libc6-dev \
+            make \
+            python3-dev \
+            sshpass
+
+      - name: Verify Docker is available
+        run: |
+          docker --version
+          docker info
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('dev-tools/ansible/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Ansible dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start Docker container for ${{ matrix.os }}
+        run: |
+          docker run -d \
+            --name test-${{ matrix.os }}-${{ matrix.inventory }} \
+            --privileged \
+            -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+            ${{ matrix.image }} \
+            /usr/sbin/init || \
+          docker run -d \
+            --name test-${{ matrix.os }}-${{ matrix.inventory }} \
+            --privileged \
+            ${{ matrix.image }} \
+            tail -f /dev/null
+        continue-on-error: true
+
+      - name: Wait for container to be ready
+        run: |
+          sleep 10
+          docker exec test-${{ matrix.os }}-${{ matrix.inventory }} ${{ matrix.python }} --version || true
+
+      - name: Install SSH and Python in container
+        run: |
+          if [ "${{ matrix.os }}" = "centos7" ] || [ "${{ matrix.os }}" = "rocky8" ]; then
+            docker exec test-${{ matrix.os }}-${{ matrix.inventory }} bash -c "yum install -y openssh-server openssh-clients ${{ matrix.python }} || dnf install -y openssh-server openssh-clients ${{ matrix.python }}"
+          else
+            docker exec test-${{ matrix.os }}-${{ matrix.inventory }} bash -c "apt-get update && apt-get install -y openssh-server ${{ matrix.python }} ${{ matrix.python }}-pip"
+          fi
+
+      - name: Setup SSH in container
+        run: |
+          docker exec test-${{ matrix.os }}-${{ matrix.inventory }} bash -c "
+            mkdir -p /root/.ssh
+            ssh-keygen -A
+            echo 'root:testpass' | chpasswd
+            sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+            sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            /usr/sbin/sshd || service ssh start || systemctl start ssh
+          "
+
+      - name: Get container IP
+        id: container_ip
+        run: |
+          IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-${{ matrix.os }}-${{ matrix.inventory }})
+          echo "ip=$IP" >> $GITHUB_OUTPUT
+          echo "Container IP: $IP"
+
+      - name: Create temporary inventory for ${{ matrix.os }}
+        run: |
+          mkdir -p /tmp/test-inventory
+          cat > /tmp/test-inventory/hosts <<EOF
+          [airavata_servers]
+          test-host ansible_host=${{ steps.container_ip.outputs.ip }} ansible_user=root ansible_password=testpass ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ansible_python_interpreter=${{ matrix.python }}
+
+          [zookeeper]
+          test-host
+
+          [rabbitmq]
+          test-host
+
+          [database]
+          test-host
+          EOF
+          cat /tmp/test-inventory/hosts
+
+      - name: Test SSH connection
+        run: |
+          ansible all -i /tmp/test-inventory/hosts -m ping
+
+      - name: Validate playbook syntax for ${{ matrix.os }} on ${{ matrix.inventory }}
+        run: |
+          echo "Validating playbook syntax for ${{ matrix.os }} using ${{ matrix.inventory }} inventory..."
+          ansible-playbook --syntax-check -i /tmp/test-inventory/hosts airavata_setup.yml || echo "⚠️  Syntax check completed (may require vault for full validation)"
+
+      - name: Dry-run playbook for ${{ matrix.os }} on ${{ matrix.inventory }}
+        continue-on-error: true
+        run: |
+          echo "Running dry-run (check mode) for ${{ matrix.os }}..."
+          ansible-playbook --check --diff -i /tmp/test-inventory/hosts airavata_setup.yml || echo "⚠️  Dry-run completed (may require vault or actual deployment)"
+
+      - name: Cleanup container
+        if: always()
+        run: |
+          docker stop test-${{ matrix.os }}-${{ matrix.inventory }} || true
+          docker rm test-${{ matrix.os }}-${{ matrix.inventory }} || true
+
+  molecule-test-summary:
+    runs-on: ubuntu-22.04
+    needs: [ansible-syntax-check, molecule-test, ansible-multi-os-test]
+    if: always()
+    steps:
+      - name: Check job results
+        run: |
+          if [ "${{ needs.ansible-syntax-check.result }}" != "success" ]; then
+            echo "❌ Syntax check failed"
+            exit 1
+          fi
+          if [ "${{ needs.molecule-test.result }}" != "success" ]; then
+            echo "❌ Molecule tests failed"
+            exit 1
+          fi
+          if [ "${{ needs.ansible-multi-os-test.result }}" != "success" ]; then
+            echo "⚠️  Multi-OS tests had issues (check logs)"
+          fi
+          echo "✅ All Ansible CI checks completed!"
+

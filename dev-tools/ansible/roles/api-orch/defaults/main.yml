@@ -62,8 +62,12 @@ haproxy_service_name:
  Rocky_8: haproxy
  Ubuntu_22: haproxy
  Ubuntu_24: haproxy
+ Ubuntu_25: haproxy
+ default: haproxy
 haproxy_config_dir:
  CentOS_7: /etc/haproxy18/
  Rocky_8: /etc/haproxy/
  Ubuntu_22: /etc/haproxy/
  Ubuntu_24: /etc/haproxy/
+ Ubuntu_25: /etc/haproxy/
+ default: /etc/haproxy/

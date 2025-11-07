@@ -23,6 +23,7 @@
   yum: name={{ item }} state=latest update_cache=yes
   with_items:
     - git
+    - unzip
   become_user: root
   when: ansible_distribution == "CentOS"
 
@@ -30,6 +31,7 @@
   dnf: name={{ item }}
   with_items:
     - git
+    - unzip
   become_user: root
   when: ansible_distribution == "Rocky"
 
@@ -49,6 +51,7 @@
     - libssl-dev
     - libtool
     - pkg-config
+    - unzip
   become_user: root
   when: ansible_os_family == "Debian"
 

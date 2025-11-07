@@ -60,3 +60,5 @@ logs/
 **/generated-sources/
 /distribution
 /vault*
+/dev-tools/ansible/inventories/test
+/dev-tools/ansible/RUN_TEST_ENV.md
