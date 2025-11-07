@@ -20,8 +20,8 @@
 
 ---
 #Master playbook
-- include: database.yml
-- include: airavata.yml
-- include: keycloak.yml
-- include: pga.yml
+- import_playbook: database.yml
+- import_playbook: airavata.yml
+- import_playbook: keycloak.yml
+- import_playbook: pga.yml
 ...

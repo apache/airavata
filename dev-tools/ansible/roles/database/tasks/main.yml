@@ -43,9 +43,11 @@
   become_user: root
   when: ansible_distribution == "Rocky"
 
-- name: install pexpect (Ubuntu/Debian)
+- name: install pexpect and debconf-utils (Ubuntu/Debian)
   apt:
-    name: python3-pexpect
+    name:
+      - python3-pexpect
+      - debconf-utils
     state: present
     update_cache: yes
   become_user: root
@@ -212,7 +214,7 @@
   become_user: root
   when: ansible_os_family == 'Debian'
 
-- include: secure_install.yml
+- import_tasks: secure_install.yml
 
 - name: create databases
   mysql_db:
@@ -328,7 +330,7 @@
     login_password: "{{ mysql_root_password }}"
   when: ansible_os_family == 'RedHat'
 
-- include: keycloak.yml
+- import_tasks: keycloak.yml
   when: "'keycloak' in groups"
 
 - name: allow only selected networks to access DB
