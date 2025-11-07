@@ -65,8 +65,10 @@ public class AgentManagementHandler {
     @Value("${grpc.server.host}")
     private String grpcHost;
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig,
-                                  JobBatchHandler jobBatchHandler) {
+    public AgentManagementHandler(
+            AiravataService airavataService,
+            ClusterApplicationConfig clusterApplicationConfig,
+            JobBatchHandler jobBatchHandler) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
         this.jobBatchHandler = jobBatchHandler;
@@ -174,7 +176,9 @@ public class AgentManagementHandler {
             // Handle job workload
             String batchId = jobBatchHandler.handleJobWorkload(experimentId, agentId, req.getJobBatchSpec());
 
-            airavataService.airavata().launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
+            airavataService
+                    .airavata()
+                    .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName, batchId);
         } catch (TException e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
