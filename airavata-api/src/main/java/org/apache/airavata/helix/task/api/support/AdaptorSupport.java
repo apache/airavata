@@ -19,7 +19,9 @@
 */
 package org.apache.airavata.helix.task.api.support;
 
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
@@ -30,13 +32,17 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
  * @since 1.0.0-SNAPSHOT
  */
 public interface AdaptorSupport {
-    public void initializeAdaptor();
+    void initializeAdaptor();
 
-    public AgentAdaptor fetchAdaptor(
+    AgentAdaptor fetchAdaptor(
             String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId)
             throws Exception;
 
-    public StorageResourceAdaptor fetchStorageAdaptor(
+    StorageResourceAdaptor fetchStorageAdaptor(
             String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId)
             throws AgentException;
+
+    AgentAdaptor fetchComputeSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException;
+
+    StorageResourceAdaptor fetchStorageSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException;
 }

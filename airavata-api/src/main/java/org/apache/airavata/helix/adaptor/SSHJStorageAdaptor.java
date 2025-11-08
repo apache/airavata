@@ -108,4 +108,9 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         return super.executeCommand(command, workingDirectory);
     }
+
+    @Override
+    public org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo getStorageVolumeInfo(String location) throws AgentException {
+        return super.getStorageVolumeInfo(location);
+    }
 }

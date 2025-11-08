@@ -3610,7 +3610,24 @@ service Airavata extends base_api.BaseAPI {
                                                                                           2: airavata_errors.AiravataClientException ace,
                                                                                           3: airavata_errors.AiravataSystemException ase,
                                                                                           4: airavata_errors.AuthorizationException ae);
- //
- //End of API
- }
+
+ /**
+  * Get storage volume information for a compute or storage resource.
+  *
+  * @param authzToken
+  * @param resourceId Can be either a compute resource ID or storage resource ID
+  * @param location Optional path/mount point. If null/empty, defaults to user's home directory ($HOME)
+  * @return StorageVolumeInfo containing disk usage information
+  */
+ storage_resource_model.StorageVolumeInfo getResourceStorageInfo(1: required security_model.AuthzToken authzToken,
+                                                                 2: required string resourceId,
+                                                                 3: optional string location)
+                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                         4: airavata_errors.AuthorizationException ae)
+
+//
+//End of API
+}
 
