@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.core.support.adaptor;
 
+import java.util.Optional;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
@@ -29,8 +30,6 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 /**
  * TODO: Class level comments please
@@ -136,14 +135,26 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     }
 
     @Override
-    public AgentAdaptor fetchComputeSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException {
+    public AgentAdaptor fetchComputeSSHAdaptor(
+            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+            throws AgentException {
         String cacheKey = "compute-" + resourceId;
 
-        logger.debug("Fetching SSH adaptor for compute resource {} with token {} for gateway user {} with login username {}", resourceId, authToken, gatewayUserId, loginUserName);
+        logger.debug(
+                "Fetching SSH adaptor for compute resource {} with token {} for gateway user {} with login username {}",
+                resourceId,
+                authToken,
+                gatewayUserId,
+                loginUserName);
 
         Optional<AgentAdaptor> adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
         if (adaptorOp.isPresent()) {
-            logger.debug("Reusing SSH adaptor for gateway {}, compute resource {}, gateway user {}, login username {}", gatewayId, resourceId, gatewayUserId, loginUserName);
+            logger.debug(
+                    "Reusing SSH adaptor for gateway {}, compute resource {}, gateway user {}, login username {}",
+                    gatewayId,
+                    resourceId,
+                    gatewayUserId,
+                    loginUserName);
             return adaptorOp.get();
 
         } else {
@@ -153,7 +164,12 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                     return adaptorOp.get();
 
                 } else {
-                    logger.debug("Could not find SSH adaptor for gateway {}, compute resource {}, gateway user {}, login username {}. Creating new one", gatewayId, resourceId, gatewayUserId, loginUserName);
+                    logger.debug(
+                            "Could not find SSH adaptor for gateway {}, compute resource {}, gateway user {}, login username {}. Creating new one",
+                            gatewayId,
+                            resourceId,
+                            gatewayUserId,
+                            loginUserName);
 
                     SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor();
                     agentAdaptor.init(resourceId, gatewayId, loginUserName, authToken);
@@ -166,14 +182,26 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     }
 
     @Override
-    public StorageResourceAdaptor fetchStorageSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException {
+    public StorageResourceAdaptor fetchStorageSSHAdaptor(
+            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+            throws AgentException {
         String cacheKey = "storage-" + resourceId;
 
-        logger.debug("Fetching SSH adaptor for storage resource {} with token {} for gateway user {} with login username {}", resourceId, authToken, gatewayUserId, loginUserName);
+        logger.debug(
+                "Fetching SSH adaptor for storage resource {} with token {} for gateway user {} with login username {}",
+                resourceId,
+                authToken,
+                gatewayUserId,
+                loginUserName);
 
         Optional<AgentAdaptor> adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
         if (adaptorOp.isPresent()) {
-            logger.debug("Reusing SSH adaptor for gateway {}, storage resource {}, gateway user {}, login username {}", gatewayId, resourceId, gatewayUserId, loginUserName);
+            logger.debug(
+                    "Reusing SSH adaptor for gateway {}, storage resource {}, gateway user {}, login username {}",
+                    gatewayId,
+                    resourceId,
+                    gatewayUserId,
+                    loginUserName);
             return (StorageResourceAdaptor) adaptorOp.get();
 
         } else {
@@ -182,7 +210,12 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                 if (adaptorOp.isPresent()) {
                     return (StorageResourceAdaptor) adaptorOp.get();
                 } else {
-                    logger.debug("Could not find SSH adaptor for gateway {}, storage resource {}, gateway user {}, login username {}. Creating new one", gatewayId, resourceId, gatewayUserId, loginUserName);
+                    logger.debug(
+                            "Could not find SSH adaptor for gateway {}, storage resource {}, gateway user {}, login username {}. Creating new one",
+                            gatewayId,
+                            resourceId,
+                            gatewayUserId,
+                            loginUserName);
 
                     SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor();
                     storageAdaptor.init(resourceId, gatewayId, loginUserName, authToken);

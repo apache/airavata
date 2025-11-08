@@ -602,7 +602,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             if (targetLocation == null || targetLocation.trim().isEmpty()) {
                 CommandOutput homeOutput = executeCommand("echo $HOME", null);
 
-                if (homeOutput.getExitCode() != 0 || homeOutput.getStdOut() == null || homeOutput.getStdOut().trim().isEmpty()) {
+                if (homeOutput.getExitCode() != 0
+                        || homeOutput.getStdOut() == null
+                        || homeOutput.getStdOut().trim().isEmpty()) {
                     logger.error("Failed to determine user's home directory: {}", homeOutput.getStdError());
                     throw new AgentException("Failed to determine user's home directory: " + homeOutput.getStdError());
                 }
@@ -618,13 +620,21 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             CommandOutput dfBytesOutput = executeCommand(dfBytesCommand, null);
 
             if (dfHumanOutput.getExitCode() != 0) {
-                logger.error("Failed to execute df command for location {}: {}", targetLocation, dfHumanOutput.getStdError());
-                throw new AgentException("Failed to execute df command for location " + targetLocation + ": " + dfHumanOutput.getStdError());
+                logger.error(
+                        "Failed to execute df command for location {}: {}",
+                        targetLocation,
+                        dfHumanOutput.getStdError());
+                throw new AgentException("Failed to execute df command for location " + targetLocation + ": "
+                        + dfHumanOutput.getStdError());
             }
 
             if (dfBytesOutput.getExitCode() != 0) {
-                logger.error("Failed to execute df command for location {}: {}", targetLocation, dfBytesOutput.getStdError());
-                throw new AgentException("Failed to execute df command for location " + targetLocation + ": " + dfBytesOutput.getStdError());
+                logger.error(
+                        "Failed to execute df command for location {}: {}",
+                        targetLocation,
+                        dfBytesOutput.getStdError());
+                throw new AgentException("Failed to execute df command for location " + targetLocation + ": "
+                        + dfBytesOutput.getStdError());
             }
 
             return parseDfOutput(dfHumanOutput.getStdOut(), dfBytesOutput.getStdOut(), targetLocation);
@@ -635,15 +645,19 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         }
     }
 
-    private StorageVolumeInfo parseDfOutput(String dfHumanOutput, String dfBytesOutput, String targetLocation) throws AgentException {
+    private StorageVolumeInfo parseDfOutput(String dfHumanOutput, String dfBytesOutput, String targetLocation)
+            throws AgentException {
         try {
             // Parse df -P -T -h output (POSIX format with filesystem type)
             String[] humanLines = dfHumanOutput.split("\n");
             String[] bytesLines = dfBytesOutput.split("\n");
 
             if (humanLines.length < 2 || bytesLines.length < 2) {
-                logger.error("Unexpected df output format while parsing storage volume info for location {}", targetLocation);
-                throw new AgentException("Unexpected df output format while parsing storage volume info for location " + targetLocation);
+                logger.error(
+                        "Unexpected df output format while parsing storage volume info for location {}",
+                        targetLocation);
+                throw new AgentException(
+                        "Unexpected df output format while parsing storage volume info for location " + targetLocation);
             }
 
             // Skip the header line and get the data line
@@ -655,8 +669,12 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             String[] bytesFields = bytesDataLine.split("\\s+");
 
             if (humanFields.length < 7 || bytesFields.length < 7) {
-                logger.error("Unexpected df output format - insufficient fields while parsing storage volume info for location {}", targetLocation);
-                throw new AgentException("Unexpected df output format - insufficient fields while parsing storage volume info for location " + targetLocation);
+                logger.error(
+                        "Unexpected df output format - insufficient fields while parsing storage volume info for location {}",
+                        targetLocation);
+                throw new AgentException(
+                        "Unexpected df output format - insufficient fields while parsing storage volume info for location "
+                                + targetLocation);
             }
 
             String filesystemType = humanFields[1]; // ext4, xfs, etc.
@@ -702,7 +720,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         } catch (Exception e) {
             logger.error("Error parsing df output: {} for location {}", e.getMessage(), targetLocation, e);
-            throw new AgentException("Error parsing df output: " + e.getMessage() + " for location " + targetLocation, e);
+            throw new AgentException(
+                    "Error parsing df output: " + e.getMessage() + " for location " + targetLocation, e);
         }
     }
 }

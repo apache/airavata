@@ -543,7 +543,8 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     @Override
     public StorageVolumeInfo getStorageVolumeInfo(String location) {
-        throw new UnsupportedOperationException("Operation not supported by SshAgentAdaptor. Use SSHJAgentAdaptor instead.");
+        throw new UnsupportedOperationException(
+                "Operation not supported by SshAgentAdaptor. Use SSHJAgentAdaptor instead.");
     }
 
     private static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {

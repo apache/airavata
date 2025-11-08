@@ -42,7 +42,11 @@ public interface AdaptorSupport {
             String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId)
             throws AgentException;
 
-    AgentAdaptor fetchComputeSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException;
+    AgentAdaptor fetchComputeSSHAdaptor(
+            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+            throws AgentException;
 
-    StorageResourceAdaptor fetchStorageSSHAdaptor(String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName) throws AgentException;
+    StorageResourceAdaptor fetchStorageSSHAdaptor(
+            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+            throws AgentException;
 }

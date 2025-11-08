@@ -19,11 +19,10 @@
 */
 package org.apache.airavata.agents.api;
 
-import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 
 /**
  * TODO: Class level comments please

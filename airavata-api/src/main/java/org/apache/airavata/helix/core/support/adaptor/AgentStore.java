@@ -114,7 +114,8 @@ public class AgentStore {
         userToAdaptorMap.put(userId, storageResourceAdaptor);
     }
 
-    public Optional<AgentAdaptor> getSSHAdaptor(String resourceId, String authToken, String gatewayUserId, String loginUserName) {
+    public Optional<AgentAdaptor> getSSHAdaptor(
+            String resourceId, String authToken, String gatewayUserId, String loginUserName) {
         Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap = sshAdaptorCache.get(resourceId);
 
         if (tokenToGatewayUserMap != null) {
@@ -136,11 +137,15 @@ public class AgentStore {
         }
     }
 
-    public void putSSHAdaptor(String resourceId, String authToken, String gatewayUserId, String loginUserName, AgentAdaptor adaptor) {
+    public void putSSHAdaptor(
+            String resourceId, String authToken, String gatewayUserId, String loginUserName, AgentAdaptor adaptor) {
 
-        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap = sshAdaptorCache.computeIfAbsent(resourceId, k -> new HashMap<>());
-        Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap = tokenToGatewayUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
-        Map<String, AgentAdaptor> loginUserToAdaptorMap = gatewayUserToLoginUserMap.computeIfAbsent(gatewayUserId, k -> new HashMap<>());
+        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap =
+                sshAdaptorCache.computeIfAbsent(resourceId, k -> new HashMap<>());
+        Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap =
+                tokenToGatewayUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
+        Map<String, AgentAdaptor> loginUserToAdaptorMap =
+                gatewayUserToLoginUserMap.computeIfAbsent(gatewayUserId, k -> new HashMap<>());
 
         loginUserToAdaptorMap.put(loginUserName, adaptor);
     }
