@@ -408,6 +408,16 @@ public class ComputeResourceRepository
         return unicoreJobSubmission.getJobSubmissionInterfaceId();
     }
 
+    public void updateUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        UnicoreSubmissionEntity unicoreSubmissionEntity =
+                mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
+        if (unicoreJobSubmission.getSecurityProtocol() != null) {
+            unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
+        }
+        execute(entityManager -> entityManager.merge(unicoreSubmissionEntity));
+    }
+
     @Override
     public String addLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
         localDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"));
