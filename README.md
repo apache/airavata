@@ -237,9 +237,16 @@ multitail apache-airavata-*/logs/*.log
 
 ```
 
-### 🐳 Option 2 - Run with Docker (Experimental)
+### 🐳 Option 2 - Run with Docker
 
-> ⚠️ **Note:** Docker deployment is experimental and not recommended for production use.
+> ⚠️ **SECURITY WARNING:** The default Docker configuration uses hardcoded passwords for development only.  
+> **For production deployments:**
+> 1. Copy `env.example` to `.env` and update all passwords
+> 2. Use environment variables for all sensitive credentials
+> 3. Implement proper secrets management (HashiCorp Vault, AWS Secrets Manager, etc.)
+> 4. Never commit `.env` file to version control
+> 
+> See `env.example` for configuration template.
 
 Before setting up Apache Airavata, ensure that you have:
 

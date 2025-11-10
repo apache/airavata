@@ -3,10 +3,10 @@ services:
     image: mariadb:10.11
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
       MYSQL_DATABASE: experiment_catalog
       MYSQL_USER: airavata
-      MYSQL_PASSWORD: 123456
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-123456}
     ports:
       - "3306:3306"
     volumes:
@@ -14,13 +14,21 @@ services:
       - ./.devcontainer/database_scripts/init:/docker-entrypoint-initdb.d:ro
     networks:
       - airavata-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: airavata-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: airavata
-      RABBITMQ_DEFAULT_PASS: airavata
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-airavata}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-airavata}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -28,6 +36,14 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - airavata-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
@@ -40,6 +56,14 @@ services:
       - zookeeper-logs:/var/lib/zookeeper/log
     networks:
       - airavata-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -62,6 +86,14 @@ services:
       airavata-network:
         aliases:
           - airavata.host
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   airavata-monolithic:
     build:
@@ -87,6 +119,10 @@ services:
       - airavata-logs:/opt/airavata/logs
     environment:
       - JAVA_OPTS=-Xmx2g -Xms1g -Dthrift.server.max.message.size=1048576000 -Dthrift.server.max.frame.size=1048576000 -Dthrift.server.transport.max.message.size=1048576000 -Dthrift.maxMessageSize=1048576000 -Dthrift.maxFrameSize=1048576000
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
     logging:
       driver: "json-file"
       options:
@@ -99,6 +135,14 @@ services:
       - kafka
     networks:
       - airavata-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
 
 volumes:
   mysql-data:
