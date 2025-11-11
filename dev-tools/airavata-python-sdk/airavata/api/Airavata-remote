@@ -217,6 +217,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  string saveParsingTemplate(AuthzToken authzToken, ParsingTemplate parsingTemplate)')
     print('  bool removeParsingTemplate(AuthzToken authzToken, string templateId, string gatewayId)')
     print('   listAllParsingTemplates(AuthzToken authzToken, string gatewayId)')
+    print('  StorageVolumeInfo getResourceStorageInfo(AuthzToken authzToken, string resourceId, string location)')
     print('  string getAPIVersion()')
     print('')
     sys.exit(0)
@@ -1454,6 +1455,12 @@ elif cmd == 'listAllParsingTemplates':
         print('listAllParsingTemplates requires 2 args')
         sys.exit(1)
     pp.pprint(client.listAllParsingTemplates(eval(args[0]), args[1],))
+
+elif cmd == 'getResourceStorageInfo':
+    if len(args) != 3:
+        print('getResourceStorageInfo requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getResourceStorageInfo(eval(args[0]), args[1], args[2],))
 
 elif cmd == 'getAPIVersion':
     if len(args) != 0:
