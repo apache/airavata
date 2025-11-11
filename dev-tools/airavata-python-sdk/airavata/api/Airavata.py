@@ -3842,6 +3842,23 @@ class Iface(airavata.base.api.BaseAPI.Iface):
         """
         pass
 
+    def getResourceStorageInfo(self, authzToken: airavata.model.security.ttypes.AuthzToken, resourceId: str, location: str) -> airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo:
+        """
+        Get storage volume information for a compute or storage resource.
+
+        @param authzToken
+        @param resourceId Can be either a compute resource ID or storage resource ID
+        @param location Optional path/mount point. If null/empty, defaults to user's home directory ($HOME)
+        @return StorageVolumeInfo containing disk usage information
+
+        Parameters:
+         - authzToken
+         - resourceId
+         - location
+
+        """
+        pass
+
 
 class Client(airavata.base.api.BaseAPI.Client, Iface):
     def __init__(self, iprot, oprot=None):
@@ -14188,6 +14205,57 @@ class Client(airavata.base.api.BaseAPI.Client, Iface):
             raise result.ae
         raise TApplicationException(TApplicationException.MISSING_RESULT, "listAllParsingTemplates failed: unknown result")
 
+    def getResourceStorageInfo(self, authzToken: airavata.model.security.ttypes.AuthzToken, resourceId: str, location: str) -> airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo:
+        """
+        Get storage volume information for a compute or storage resource.
+
+        @param authzToken
+        @param resourceId Can be either a compute resource ID or storage resource ID
+        @param location Optional path/mount point. If null/empty, defaults to user's home directory ($HOME)
+        @return StorageVolumeInfo containing disk usage information
+
+        Parameters:
+         - authzToken
+         - resourceId
+         - location
+
+        """
+        self.send_getResourceStorageInfo(authzToken, resourceId, location)
+        return self.recv_getResourceStorageInfo()
+
+    def send_getResourceStorageInfo(self, authzToken: airavata.model.security.ttypes.AuthzToken, resourceId: str, location: str):
+        self._oprot.writeMessageBegin('getResourceStorageInfo', TMessageType.CALL, self._seqid)
+        args = getResourceStorageInfo_args()
+        args.authzToken = authzToken
+        args.resourceId = resourceId
+        args.location = location
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_getResourceStorageInfo(self) -> airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo:
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = getResourceStorageInfo_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        if result.ire is not None:
+            raise result.ire
+        if result.ace is not None:
+            raise result.ace
+        if result.ase is not None:
+            raise result.ase
+        if result.ae is not None:
+            raise result.ae
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getResourceStorageInfo failed: unknown result")
+
 
 class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
     def __init__(self, handler):
@@ -14385,6 +14453,7 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
         self._processMap["saveParsingTemplate"] = Processor.process_saveParsingTemplate
         self._processMap["removeParsingTemplate"] = Processor.process_removeParsingTemplate
         self._processMap["listAllParsingTemplates"] = Processor.process_listAllParsingTemplates
+        self._processMap["getResourceStorageInfo"] = Processor.process_getResourceStorageInfo
         self._on_message_begin = None
 
     def on_message_begin(self, func):
@@ -21197,6 +21266,41 @@ class Processor(airavata.base.api.BaseAPI.Processor, Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("listAllParsingTemplates", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_getResourceStorageInfo(self, seqid, iprot, oprot):
+        args = getResourceStorageInfo_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = getResourceStorageInfo_result()
+        try:
+            result.success = self._handler.getResourceStorageInfo(args.authzToken, args.resourceId, args.location)
+            msg_type = TMessageType.REPLY
+        except TTransport.TTransportException:
+            raise
+        except airavata.api.error.ttypes.InvalidRequestException as ire:
+            msg_type = TMessageType.REPLY
+            result.ire = ire
+        except airavata.api.error.ttypes.AiravataClientException as ace:
+            msg_type = TMessageType.REPLY
+            result.ace = ace
+        except airavata.api.error.ttypes.AiravataSystemException as ase:
+            msg_type = TMessageType.REPLY
+            result.ase = ase
+        except airavata.api.error.ttypes.AuthorizationException as ae:
+            msg_type = TMessageType.REPLY
+            result.ae = ae
+        except TApplicationException as ex:
+            logging.exception('TApplication exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = ex
+        except Exception:
+            logging.exception('Unexpected exception in handler')
+            msg_type = TMessageType.EXCEPTION
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("getResourceStorageInfo", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -60994,6 +61098,211 @@ class listAllParsingTemplates_result(object):
 all_structs.append(listAllParsingTemplates_result)
 listAllParsingTemplates_result.thrift_spec = (
     (0, TType.LIST, 'success', (TType.STRUCT, [airavata.model.appcatalog.parser.ttypes.ParsingTemplate, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'ire', [airavata.api.error.ttypes.InvalidRequestException, None], None, ),  # 1
+    (2, TType.STRUCT, 'ace', [airavata.api.error.ttypes.AiravataClientException, None], None, ),  # 2
+    (3, TType.STRUCT, 'ase', [airavata.api.error.ttypes.AiravataSystemException, None], None, ),  # 3
+    (4, TType.STRUCT, 'ae', [airavata.api.error.ttypes.AuthorizationException, None], None, ),  # 4
+)
+
+
+class getResourceStorageInfo_args(object):
+    """
+    Attributes:
+     - authzToken
+     - resourceId
+     - location
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, authzToken: airavata.model.security.ttypes.AuthzToken = None, resourceId: str = None, location: typing.Optional[str] = None,):
+        self.authzToken: airavata.model.security.ttypes.AuthzToken = authzToken
+        self.resourceId: str = resourceId
+        self.location: typing.Optional[str] = location
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRUCT:
+                    self.authzToken = airavata.model.security.ttypes.AuthzToken()
+                    self.authzToken.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.resourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.location = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getResourceStorageInfo_args')
+        if self.authzToken is not None:
+            oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+            self.authzToken.write(oprot)
+            oprot.writeFieldEnd()
+        if self.resourceId is not None:
+            oprot.writeFieldBegin('resourceId', TType.STRING, 2)
+            oprot.writeString(self.resourceId.encode('utf-8') if sys.version_info[0] == 2 else self.resourceId)
+            oprot.writeFieldEnd()
+        if self.location is not None:
+            oprot.writeFieldBegin('location', TType.STRING, 3)
+            oprot.writeString(self.location.encode('utf-8') if sys.version_info[0] == 2 else self.location)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.authzToken is None:
+            raise TProtocolException(message='Required field authzToken is unset!')
+        if self.resourceId is None:
+            raise TProtocolException(message='Required field resourceId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getResourceStorageInfo_args)
+getResourceStorageInfo_args.thrift_spec = (
+    None,  # 0
+    (1, TType.STRUCT, 'authzToken', [airavata.model.security.ttypes.AuthzToken, None], None, ),  # 1
+    (2, TType.STRING, 'resourceId', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'location', 'UTF8', None, ),  # 3
+)
+
+
+class getResourceStorageInfo_result(object):
+    """
+    Attributes:
+     - success
+     - ire
+     - ace
+     - ase
+     - ae
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, success: typing.Optional[airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo] = None, ire: typing.Optional[airavata.api.error.ttypes.InvalidRequestException] = None, ace: typing.Optional[airavata.api.error.ttypes.AiravataClientException] = None, ase: typing.Optional[airavata.api.error.ttypes.AiravataSystemException] = None, ae: typing.Optional[airavata.api.error.ttypes.AuthorizationException] = None,):
+        self.success: typing.Optional[airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo] = success
+        self.ire: typing.Optional[airavata.api.error.ttypes.InvalidRequestException] = ire
+        self.ace: typing.Optional[airavata.api.error.ttypes.AiravataClientException] = ace
+        self.ase: typing.Optional[airavata.api.error.ttypes.AiravataSystemException] = ase
+        self.ae: typing.Optional[airavata.api.error.ttypes.AuthorizationException] = ae
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.STRUCT:
+                    self.success = airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo()
+                    self.success.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 1:
+                if ftype == TType.STRUCT:
+                    self.ire = airavata.api.error.ttypes.InvalidRequestException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.ace = airavata.api.error.ttypes.AiravataClientException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRUCT:
+                    self.ase = airavata.api.error.ttypes.AiravataSystemException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRUCT:
+                    self.ae = airavata.api.error.ttypes.AuthorizationException.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('getResourceStorageInfo_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.STRUCT, 0)
+            self.success.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ire is not None:
+            oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+            self.ire.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ace is not None:
+            oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+            self.ace.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ase is not None:
+            oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+            self.ase.write(oprot)
+            oprot.writeFieldEnd()
+        if self.ae is not None:
+            oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+            self.ae.write(oprot)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+all_structs.append(getResourceStorageInfo_result)
+getResourceStorageInfo_result.thrift_spec = (
+    (0, TType.STRUCT, 'success', [airavata.model.appcatalog.storageresource.ttypes.StorageVolumeInfo, None], None, ),  # 0
     (1, TType.STRUCT, 'ire', [airavata.api.error.ttypes.InvalidRequestException, None], None, ),  # 1
     (2, TType.STRUCT, 'ace', [airavata.api.error.ttypes.AiravataClientException, None], None, ),  # 2
     (3, TType.STRUCT, 'ase', [airavata.api.error.ttypes.AiravataSystemException, None], None, ),  # 3

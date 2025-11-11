@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.agents.api.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -538,6 +539,12 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public FileMetadata getFileMetadata(String remoteFile) throws AgentException {
         throw new AgentException("Operation not implemented");
+    }
+
+    @Override
+    public StorageVolumeInfo getStorageVolumeInfo(String location) {
+        throw new UnsupportedOperationException(
+                "Operation not supported by SshAgentAdaptor. Use SSHJAgentAdaptor instead.");
     }
 
     private static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {

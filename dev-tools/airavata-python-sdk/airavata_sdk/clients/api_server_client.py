@@ -113,6 +113,7 @@ class APIServerClient:
         self.get_all_storage_resource_names = self.client.getAllStorageResourceNames
         self.update_storage_resource = self.client.updateStorageResource
         self.delete_storage_resource = self.client.deleteStorageResource
+        self.get_resource_storage_info = self.client.getResourceStorageInfo
         self.add_local_submission_details = self.client.addLocalSubmissionDetails
         self.update_local_submission_details = self.client.updateLocalSubmissionDetails
         self.get_local_job_submission = self.client.getLocalJobSubmission

@@ -52,3 +52,30 @@ struct StorageResourceDescription {
     6: optional i64 creationTime,
     7: optional i64 updateTime,
 }
+
+/**
+ * Storage Volume Information
+ *
+ * Contains disk usage information for a filesystem/mount point.
+ *
+ * totalSize: Total size in human-readable format (e.g., "100G", "500M")
+ * usedSize: Used size in human-readable format
+ * availableSize: Available size in human-readable format
+ * totalSizeBytes: Total size in bytes
+ * usedSizeBytes: Used size in bytes
+ * availableSizeBytes: Available size in bytes
+ * percentageUsed: Percentage used
+ * mountPoint: Mount point/filesystem path
+ * filesystemType: Filesystem type if available
+ */
+struct StorageVolumeInfo {
+    1: required string totalSize,
+    2: required string usedSize,
+    3: required string availableSize,
+    4: required i64 totalSizeBytes,
+    5: required i64 usedSizeBytes,
+    6: required i64 availableSizeBytes,
+    7: required double percentageUsed,
+    8: required string mountPoint,
+    9: optional string filesystemType,
+}

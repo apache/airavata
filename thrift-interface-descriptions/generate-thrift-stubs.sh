@@ -46,7 +46,7 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.21.0'
+REQUIRED_THRIFT_VERSION='0.22.0'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 AIRAVATA_DIR=`dirname "$SCRIPT_DIR"`
 
@@ -76,6 +76,7 @@ setup() {
     REGISTRY_THRIFT_FILE="${THRIFTDIR}/service-cpis/registry-api.thrift"
     SHARING_API_THRIFT_FILE="${THRIFTDIR}/service-cpis/sharing_cpi.thrift"
     PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service-cpi.thrift"
+    AIRAVATA_API_THRIFT_FILE="${THRIFTDIR}/airavata-apis/airavata_api.thrift"
 
     PHP_THRIFT_FILE="${THRIFTDIR}/stubs_php.thrift"
     JAVA_THRIFT_FILE="${THRIFTDIR}/stubs_java.thrift"

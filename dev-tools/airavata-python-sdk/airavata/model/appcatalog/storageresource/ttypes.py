@@ -174,6 +174,183 @@ class StorageResourceDescription(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+
+class StorageVolumeInfo(object):
+    """
+    Storage Volume Information
+
+    Contains disk usage information for a filesystem/mount point.
+
+    totalSize: Total size in human-readable format (e.g., "100G", "500M")
+    usedSize: Used size in human-readable format
+    availableSize: Available size in human-readable format
+    totalSizeBytes: Total size in bytes
+    usedSizeBytes: Used size in bytes
+    availableSizeBytes: Available size in bytes
+    percentageUsed: Percentage used
+    mountPoint: Mount point/filesystem path
+    filesystemType: Filesystem type if available
+
+    Attributes:
+     - totalSize
+     - usedSize
+     - availableSize
+     - totalSizeBytes
+     - usedSizeBytes
+     - availableSizeBytes
+     - percentageUsed
+     - mountPoint
+     - filesystemType
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, totalSize: str = None, usedSize: str = None, availableSize: str = None, totalSizeBytes: int = None, usedSizeBytes: int = None, availableSizeBytes: int = None, percentageUsed: float = None, mountPoint: str = None, filesystemType: typing.Optional[str] = None,):
+        self.totalSize: str = totalSize
+        self.usedSize: str = usedSize
+        self.availableSize: str = availableSize
+        self.totalSizeBytes: int = totalSizeBytes
+        self.usedSizeBytes: int = usedSizeBytes
+        self.availableSizeBytes: int = availableSizeBytes
+        self.percentageUsed: float = percentageUsed
+        self.mountPoint: str = mountPoint
+        self.filesystemType: typing.Optional[str] = filesystemType
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.totalSize = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.usedSize = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.availableSize = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.I64:
+                    self.totalSizeBytes = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I64:
+                    self.usedSizeBytes = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I64:
+                    self.availableSizeBytes = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.DOUBLE:
+                    self.percentageUsed = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.mountPoint = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.STRING:
+                    self.filesystemType = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('StorageVolumeInfo')
+        if self.totalSize is not None:
+            oprot.writeFieldBegin('totalSize', TType.STRING, 1)
+            oprot.writeString(self.totalSize.encode('utf-8') if sys.version_info[0] == 2 else self.totalSize)
+            oprot.writeFieldEnd()
+        if self.usedSize is not None:
+            oprot.writeFieldBegin('usedSize', TType.STRING, 2)
+            oprot.writeString(self.usedSize.encode('utf-8') if sys.version_info[0] == 2 else self.usedSize)
+            oprot.writeFieldEnd()
+        if self.availableSize is not None:
+            oprot.writeFieldBegin('availableSize', TType.STRING, 3)
+            oprot.writeString(self.availableSize.encode('utf-8') if sys.version_info[0] == 2 else self.availableSize)
+            oprot.writeFieldEnd()
+        if self.totalSizeBytes is not None:
+            oprot.writeFieldBegin('totalSizeBytes', TType.I64, 4)
+            oprot.writeI64(self.totalSizeBytes)
+            oprot.writeFieldEnd()
+        if self.usedSizeBytes is not None:
+            oprot.writeFieldBegin('usedSizeBytes', TType.I64, 5)
+            oprot.writeI64(self.usedSizeBytes)
+            oprot.writeFieldEnd()
+        if self.availableSizeBytes is not None:
+            oprot.writeFieldBegin('availableSizeBytes', TType.I64, 6)
+            oprot.writeI64(self.availableSizeBytes)
+            oprot.writeFieldEnd()
+        if self.percentageUsed is not None:
+            oprot.writeFieldBegin('percentageUsed', TType.DOUBLE, 7)
+            oprot.writeDouble(self.percentageUsed)
+            oprot.writeFieldEnd()
+        if self.mountPoint is not None:
+            oprot.writeFieldBegin('mountPoint', TType.STRING, 8)
+            oprot.writeString(self.mountPoint.encode('utf-8') if sys.version_info[0] == 2 else self.mountPoint)
+            oprot.writeFieldEnd()
+        if self.filesystemType is not None:
+            oprot.writeFieldBegin('filesystemType', TType.STRING, 9)
+            oprot.writeString(self.filesystemType.encode('utf-8') if sys.version_info[0] == 2 else self.filesystemType)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.totalSize is None:
+            raise TProtocolException(message='Required field totalSize is unset!')
+        if self.usedSize is None:
+            raise TProtocolException(message='Required field usedSize is unset!')
+        if self.availableSize is None:
+            raise TProtocolException(message='Required field availableSize is unset!')
+        if self.totalSizeBytes is None:
+            raise TProtocolException(message='Required field totalSizeBytes is unset!')
+        if self.usedSizeBytes is None:
+            raise TProtocolException(message='Required field usedSizeBytes is unset!')
+        if self.availableSizeBytes is None:
+            raise TProtocolException(message='Required field availableSizeBytes is unset!')
+        if self.percentageUsed is None:
+            raise TProtocolException(message='Required field percentageUsed is unset!')
+        if self.mountPoint is None:
+            raise TProtocolException(message='Required field mountPoint is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
 all_structs.append(StorageResourceDescription)
 StorageResourceDescription.thrift_spec = (
     None,  # 0
@@ -184,6 +361,19 @@ StorageResourceDescription.thrift_spec = (
     (5, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT, [airavata.model.data.movement.ttypes.DataMovementInterface, None], False), None, ),  # 5
     (6, TType.I64, 'creationTime', None, None, ),  # 6
     (7, TType.I64, 'updateTime', None, None, ),  # 7
+)
+all_structs.append(StorageVolumeInfo)
+StorageVolumeInfo.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'totalSize', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'usedSize', 'UTF8', None, ),  # 2
+    (3, TType.STRING, 'availableSize', 'UTF8', None, ),  # 3
+    (4, TType.I64, 'totalSizeBytes', None, None, ),  # 4
+    (5, TType.I64, 'usedSizeBytes', None, None, ),  # 5
+    (6, TType.I64, 'availableSizeBytes', None, None, ),  # 6
+    (7, TType.DOUBLE, 'percentageUsed', None, None, ),  # 7
+    (8, TType.STRING, 'mountPoint', 'UTF8', None, ),  # 8
+    (9, TType.STRING, 'filesystemType', 'UTF8', None, ),  # 9
 )
 fix_spec(all_structs)
 del all_structs

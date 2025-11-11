@@ -40,6 +40,8 @@ public class AgentStore {
             new HashMap<>();
     private final Map<String, Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>>>
             storageAdaptorCache = new HashMap<>();
+    // SSH adaptor cache: resourceId (with compute/storage prefix): auth token: gatewayUserId: loginUserName: adaptor
+    private final Map<String, Map<String, Map<String, Map<String, AgentAdaptor>>>> sshAdaptorCache = new HashMap<>();
 
     public Optional<AgentAdaptor> getAgentAdaptor(
             String computeResource, JobSubmissionProtocol submissionProtocol, String authToken, String userId) {
@@ -110,5 +112,41 @@ public class AgentStore {
         Map<String, StorageResourceAdaptor> userToAdaptorMap =
                 tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
         userToAdaptorMap.put(userId, storageResourceAdaptor);
+    }
+
+    public Optional<AgentAdaptor> getSSHAdaptor(
+            String resourceId, String authToken, String gatewayUserId, String loginUserName) {
+        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap = sshAdaptorCache.get(resourceId);
+
+        if (tokenToGatewayUserMap != null) {
+            Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap = tokenToGatewayUserMap.get(authToken);
+
+            if (gatewayUserToLoginUserMap != null) {
+                Map<String, AgentAdaptor> loginUserToAdaptorMap = gatewayUserToLoginUserMap.get(gatewayUserId);
+
+                if (loginUserToAdaptorMap != null) {
+                    return Optional.ofNullable(loginUserToAdaptorMap.get(loginUserName));
+                } else {
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public void putSSHAdaptor(
+            String resourceId, String authToken, String gatewayUserId, String loginUserName, AgentAdaptor adaptor) {
+
+        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap =
+                sshAdaptorCache.computeIfAbsent(resourceId, k -> new HashMap<>());
+        Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap =
+                tokenToGatewayUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
+        Map<String, AgentAdaptor> loginUserToAdaptorMap =
+                gatewayUserToLoginUserMap.computeIfAbsent(gatewayUserId, k -> new HashMap<>());
+
+        loginUserToAdaptorMap.put(loginUserName, adaptor);
     }
 }
