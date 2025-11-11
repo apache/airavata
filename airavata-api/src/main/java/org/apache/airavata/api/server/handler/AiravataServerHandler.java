@@ -102,6 +102,7 @@ import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.apache.thrift.TApplicationException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -3853,12 +3854,31 @@ public class AiravataServerHandler implements Airavata.Iface {
         StorageInfoContext context;
 
         try {
-            Optional<ComputeResourceDescription> computeResourceOp =
-                    Optional.ofNullable(regClient.getComputeResource(resourceId));
-            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
+            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
+            try {
+                ComputeResourceDescription computeResource = regClient.getComputeResource(resourceId);
+                if (computeResource != null) {
+                    computeResourceOp = Optional.of(computeResource);
+                }
+            } catch (TApplicationException e) {
+                // TApplicationException with "unknown result" means resource not found (null return for non-nullable
+                // type)
+                logger.debug("Compute resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+            }
 
+            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
             if (computeResourceOp.isEmpty()) {
-                storageResourceOp = Optional.ofNullable(regClient.getStorageResource(resourceId));
+                try {
+                    StorageResourceDescription storageResource = regClient.getStorageResource(resourceId);
+                    if (storageResource != null) {
+                        storageResourceOp = Optional.of(storageResource);
+                    }
+                } catch (TApplicationException e) {
+                    // TApplicationException with "unknown result" means resource not found (null return for
+                    // non-nullable type)
+                    logger.debug(
+                            "Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+                }
             }
 
             if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
@@ -7298,6 +7318,28 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     private record StorageInfoContext(String loginUserName, String credentialToken, AgentAdaptor adaptor) {}
 
+    /**
+     * Check if a gateway resource profile exists
+     */
+    private boolean isGatewayResourceProfileExists(String gatewayId) throws TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            try {
+                GatewayResourceProfile profile = regClient.getGatewayResourceProfile(gatewayId);
+                registryClientPool.returnResource(regClient);
+                return profile != null;
+            } catch (org.apache.thrift.TApplicationException e) {
+                logger.error("Gateway resource profile does not exist for gateway: {}", gatewayId, e);
+                registryClientPool.returnResource(regClient);
+                return false;
+            }
+        } catch (Exception e) {
+            registryClientPool.returnBrokenResource(regClient);
+            logger.error("Error while checking if gateway resource profile exists", e);
+            throw e;
+        }
+    }
+
     private AiravataClientException clientException(AiravataErrorType errorType, String parameter) {
         AiravataClientException exception = new AiravataClientException();
         exception.setAiravataErrorType(errorType);
@@ -7317,8 +7359,15 @@ public class AiravataServerHandler implements Airavata.Iface {
         GroupComputeResourcePreference groupComputePref = null;
         GroupResourceProfile groupResourceProfile = null;
 
-        UserComputeResourcePreference userComputePref =
-                getUserComputeResourcePreference(authzToken, userId, gatewayId, resourceId);
+        UserComputeResourcePreference userComputePref = null;
+        if (isUserResourceProfileExists(authzToken, userId, gatewayId)) {
+            userComputePref = getUserComputeResourcePreference(authzToken, userId, gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "User resource profile does not exist for user {} in gateway {}, will try group preferences",
+                    userId,
+                    gatewayId);
+        }
 
         if (userComputePref != null
                 && userComputePref.getLoginUserName() != null
@@ -7428,8 +7477,24 @@ public class AiravataServerHandler implements Airavata.Iface {
     private StorageInfoContext resolveStorageStorageInfoContext(
             AuthzToken authzToken, String gatewayId, String userId, String resourceId)
             throws AgentException, TException {
-        UserStoragePreference userStoragePref = getUserStoragePreference(authzToken, userId, gatewayId, resourceId);
-        StoragePreference storagePref = getGatewayStoragePreference(authzToken, gatewayId, resourceId);
+        UserStoragePreference userStoragePref = null;
+        if (isUserResourceProfileExists(authzToken, userId, gatewayId)) {
+            userStoragePref = getUserStoragePreference(authzToken, userId, gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "User resource profile does not exist for user {} in gateway {}, will try gateway preferences",
+                    userId,
+                    gatewayId);
+        }
+
+        StoragePreference storagePref = null;
+        if (isGatewayResourceProfileExists(gatewayId)) {
+            storagePref = getGatewayStoragePreference(authzToken, gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "Gateway resource profile does not exist for gateway {}, will check if user preference exists",
+                    gatewayId);
+        }
 
         String loginUserName;
         boolean loginFromUserPref;
