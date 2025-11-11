@@ -202,6 +202,7 @@ public abstract class DataStagingTask extends AiravataTask {
         inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
         String experimentDataDir = getProcessModel().getExperimentDataDir();
         String filePath;
+        // TODO : This logic is extremely dangerous. This was implemented expecting the input and output storage are same.
         if (experimentDataDir != null && !experimentDataDir.isEmpty()) {
             if (!experimentDataDir.endsWith(File.separator)) {
                 experimentDataDir += File.separator;
