@@ -351,6 +351,85 @@ class StorageVolumeInfo(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+
+class StorageDirectoryInfo(object):
+    """
+    Provides Directory Size Information of a given storage
+
+    totalSize: Total size in human-readable format (e.g., "100G", "500M")
+    totalSizeBytes: Total size in bytes
+
+    Attributes:
+     - totalSize
+     - totalSizeBytes
+
+    """
+    thrift_spec: typing.Any = None
+
+
+    def __init__(self, totalSize: str = None, totalSizeBytes: int = None,):
+        self.totalSize: str = totalSize
+        self.totalSizeBytes: int = totalSizeBytes
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.totalSize = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.I64:
+                    self.totalSizeBytes = iprot.readI64()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        self.validate()
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('StorageDirectoryInfo')
+        if self.totalSize is not None:
+            oprot.writeFieldBegin('totalSize', TType.STRING, 1)
+            oprot.writeString(self.totalSize.encode('utf-8') if sys.version_info[0] == 2 else self.totalSize)
+            oprot.writeFieldEnd()
+        if self.totalSizeBytes is not None:
+            oprot.writeFieldBegin('totalSizeBytes', TType.I64, 2)
+            oprot.writeI64(self.totalSizeBytes)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.totalSize is None:
+            raise TProtocolException(message='Required field totalSize is unset!')
+        if self.totalSizeBytes is None:
+            raise TProtocolException(message='Required field totalSizeBytes is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
 all_structs.append(StorageResourceDescription)
 StorageResourceDescription.thrift_spec = (
     None,  # 0
@@ -374,6 +453,12 @@ StorageVolumeInfo.thrift_spec = (
     (7, TType.DOUBLE, 'percentageUsed', None, None, ),  # 7
     (8, TType.STRING, 'mountPoint', 'UTF8', None, ),  # 8
     (9, TType.STRING, 'filesystemType', 'UTF8', None, ),  # 9
+)
+all_structs.append(StorageDirectoryInfo)
+StorageDirectoryInfo.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'totalSize', 'UTF8', None, ),  # 1
+    (2, TType.I64, 'totalSizeBytes', None, None, ),  # 2
 )
 fix_spec(all_structs)
 del all_structs
