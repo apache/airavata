@@ -107,6 +107,7 @@ public abstract class DataStagingTask extends AiravataTask {
         String storageId = null;
         try {
             storageId = getTaskContext().getInputStorageResourceId();
+            logger.info("Fetching input storage adaptor for input storage resource {}", storageId);
 
             if (getTaskContext().getProcessModel().getInputStorageResourceId() != null
                     && !getTaskContext()
@@ -139,6 +140,7 @@ public abstract class DataStagingTask extends AiravataTask {
         String storageId = null;
         try {
             storageId = getTaskContext().getOutputStorageResourceId();
+            logger.info("Fetching output storage adaptor for input storage resource {}", storageId);
 
             if (getTaskContext().getProcessModel().getOutputStorageResourceId() != null
                     && !getTaskContext()
