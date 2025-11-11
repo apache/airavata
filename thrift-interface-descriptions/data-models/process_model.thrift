@@ -65,12 +65,13 @@ struct ProcessModel {
     16: optional string gatewayExecutionId,
     17: optional bool enableEmailNotification,
     18: optional list<string> emailAddresses,
-    19: optional string storageResourceId,
-    20: optional string userDn,
-    21: optional bool generateCert = 0,
-    22: optional string experimentDataDir,
-    23: optional string userName,
-    24: optional bool useUserCRPref,
-    25: optional string groupResourceProfileId;
-    26: optional list<ProcessWorkflow> processWorkflows;
+    19: optional string inputStorageResourceId,
+    20: optional string outputStorageResourceId,
+    21: optional string userDn,
+    22: optional bool generateCert = 0,
+    23: optional string experimentDataDir,
+    24: optional string userName,
+    25: optional bool useUserCRPref,
+    26: optional string groupResourceProfileId;
+    27: optional list<ProcessWorkflow> processWorkflows;
 }

@@ -150,7 +150,8 @@ class ProcessModel(object):
      - gatewayExecutionId
      - enableEmailNotification
      - emailAddresses
-     - storageResourceId
+     - inputStorageResourceId
+     - outputStorageResourceId
      - userDn
      - generateCert
      - experimentDataDir
@@ -163,7 +164,7 @@ class ProcessModel(object):
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, processId: str = "DO_NOT_SET_AT_CLIENTS", experimentId: str = None, creationTime: typing.Optional[int] = None, lastUpdateTime: typing.Optional[int] = None, processStatuses: typing.Optional[list[airavata.model.status.ttypes.ProcessStatus]] = None, processDetail: typing.Optional[str] = None, applicationInterfaceId: typing.Optional[str] = None, applicationDeploymentId: typing.Optional[str] = None, computeResourceId: typing.Optional[str] = None, processInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, processOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, processResourceSchedule: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, tasks: typing.Optional[list[airavata.model.task.ttypes.TaskModel]] = None, taskDag: typing.Optional[str] = None, processErrors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, gatewayExecutionId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, storageResourceId: typing.Optional[str] = None, userDn: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, experimentDataDir: typing.Optional[str] = None, userName: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, processWorkflows: typing.Optional[list[ProcessWorkflow]] = None,):
+    def __init__(self, processId: str = "DO_NOT_SET_AT_CLIENTS", experimentId: str = None, creationTime: typing.Optional[int] = None, lastUpdateTime: typing.Optional[int] = None, processStatuses: typing.Optional[list[airavata.model.status.ttypes.ProcessStatus]] = None, processDetail: typing.Optional[str] = None, applicationInterfaceId: typing.Optional[str] = None, applicationDeploymentId: typing.Optional[str] = None, computeResourceId: typing.Optional[str] = None, processInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, processOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, processResourceSchedule: typing.Optional[airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel] = None, tasks: typing.Optional[list[airavata.model.task.ttypes.TaskModel]] = None, taskDag: typing.Optional[str] = None, processErrors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, gatewayExecutionId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, inputStorageResourceId: typing.Optional[str] = None, outputStorageResourceId: typing.Optional[str] = None, userDn: typing.Optional[str] = None, generateCert: typing.Optional[bool] = False, experimentDataDir: typing.Optional[str] = None, userName: typing.Optional[str] = None, useUserCRPref: typing.Optional[bool] = None, groupResourceProfileId: typing.Optional[str] = None, processWorkflows: typing.Optional[list[ProcessWorkflow]] = None,):
         self.processId: str = processId
         self.experimentId: str = experimentId
         self.creationTime: typing.Optional[int] = creationTime
@@ -182,7 +183,8 @@ class ProcessModel(object):
         self.gatewayExecutionId: typing.Optional[str] = gatewayExecutionId
         self.enableEmailNotification: typing.Optional[bool] = enableEmailNotification
         self.emailAddresses: typing.Optional[list[str]] = emailAddresses
-        self.storageResourceId: typing.Optional[str] = storageResourceId
+        self.inputStorageResourceId: typing.Optional[str] = inputStorageResourceId
+        self.outputStorageResourceId: typing.Optional[str] = outputStorageResourceId
         self.userDn: typing.Optional[str] = userDn
         self.generateCert: typing.Optional[bool] = generateCert
         self.experimentDataDir: typing.Optional[str] = experimentDataDir
@@ -328,40 +330,45 @@ class ProcessModel(object):
                     iprot.skip(ftype)
             elif fid == 19:
                 if ftype == TType.STRING:
-                    self.storageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.inputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 20:
                 if ftype == TType.STRING:
-                    self.userDn = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.outputStorageResourceId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 21:
+                if ftype == TType.STRING:
+                    self.userDn = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 22:
                 if ftype == TType.BOOL:
                     self.generateCert = iprot.readBool()
                 else:
                     iprot.skip(ftype)
-            elif fid == 22:
+            elif fid == 23:
                 if ftype == TType.STRING:
                     self.experimentDataDir = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 23:
+            elif fid == 24:
                 if ftype == TType.STRING:
                     self.userName = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 24:
+            elif fid == 25:
                 if ftype == TType.BOOL:
                     self.useUserCRPref = iprot.readBool()
                 else:
                     iprot.skip(ftype)
-            elif fid == 25:
+            elif fid == 26:
                 if ftype == TType.STRING:
                     self.groupResourceProfileId = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 26:
+            elif fid == 27:
                 if ftype == TType.LIST:
                     self.processWorkflows = []
                     (_etype39, _size36) = iprot.readListBegin()
@@ -473,36 +480,40 @@ class ProcessModel(object):
                 oprot.writeString(iter47.encode('utf-8') if sys.version_info[0] == 2 else iter47)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
-        if self.storageResourceId is not None:
-            oprot.writeFieldBegin('storageResourceId', TType.STRING, 19)
-            oprot.writeString(self.storageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.storageResourceId)
+        if self.inputStorageResourceId is not None:
+            oprot.writeFieldBegin('inputStorageResourceId', TType.STRING, 19)
+            oprot.writeString(self.inputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.inputStorageResourceId)
+            oprot.writeFieldEnd()
+        if self.outputStorageResourceId is not None:
+            oprot.writeFieldBegin('outputStorageResourceId', TType.STRING, 20)
+            oprot.writeString(self.outputStorageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.outputStorageResourceId)
             oprot.writeFieldEnd()
         if self.userDn is not None:
-            oprot.writeFieldBegin('userDn', TType.STRING, 20)
+            oprot.writeFieldBegin('userDn', TType.STRING, 21)
             oprot.writeString(self.userDn.encode('utf-8') if sys.version_info[0] == 2 else self.userDn)
             oprot.writeFieldEnd()
         if self.generateCert is not None:
-            oprot.writeFieldBegin('generateCert', TType.BOOL, 21)
+            oprot.writeFieldBegin('generateCert', TType.BOOL, 22)
             oprot.writeBool(self.generateCert)
             oprot.writeFieldEnd()
         if self.experimentDataDir is not None:
-            oprot.writeFieldBegin('experimentDataDir', TType.STRING, 22)
+            oprot.writeFieldBegin('experimentDataDir', TType.STRING, 23)
             oprot.writeString(self.experimentDataDir.encode('utf-8') if sys.version_info[0] == 2 else self.experimentDataDir)
             oprot.writeFieldEnd()
         if self.userName is not None:
-            oprot.writeFieldBegin('userName', TType.STRING, 23)
+            oprot.writeFieldBegin('userName', TType.STRING, 24)
             oprot.writeString(self.userName.encode('utf-8') if sys.version_info[0] == 2 else self.userName)
             oprot.writeFieldEnd()
         if self.useUserCRPref is not None:
-            oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 24)
+            oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 25)
             oprot.writeBool(self.useUserCRPref)
             oprot.writeFieldEnd()
         if self.groupResourceProfileId is not None:
-            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 25)
+            oprot.writeFieldBegin('groupResourceProfileId', TType.STRING, 26)
             oprot.writeString(self.groupResourceProfileId.encode('utf-8') if sys.version_info[0] == 2 else self.groupResourceProfileId)
             oprot.writeFieldEnd()
         if self.processWorkflows is not None:
-            oprot.writeFieldBegin('processWorkflows', TType.LIST, 26)
+            oprot.writeFieldBegin('processWorkflows', TType.LIST, 27)
             oprot.writeListBegin(TType.STRUCT, len(self.processWorkflows))
             for iter48 in self.processWorkflows:
                 iter48.write(oprot)
@@ -557,14 +568,15 @@ ProcessModel.thrift_spec = (
     (16, TType.STRING, 'gatewayExecutionId', 'UTF8', None, ),  # 16
     (17, TType.BOOL, 'enableEmailNotification', None, None, ),  # 17
     (18, TType.LIST, 'emailAddresses', (TType.STRING, 'UTF8', False), None, ),  # 18
-    (19, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 19
-    (20, TType.STRING, 'userDn', 'UTF8', None, ),  # 20
-    (21, TType.BOOL, 'generateCert', None, False, ),  # 21
-    (22, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 22
-    (23, TType.STRING, 'userName', 'UTF8', None, ),  # 23
-    (24, TType.BOOL, 'useUserCRPref', None, None, ),  # 24
-    (25, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 25
-    (26, TType.LIST, 'processWorkflows', (TType.STRUCT, [ProcessWorkflow, None], False), None, ),  # 26
+    (19, TType.STRING, 'inputStorageResourceId', 'UTF8', None, ),  # 19
+    (20, TType.STRING, 'outputStorageResourceId', 'UTF8', None, ),  # 20
+    (21, TType.STRING, 'userDn', 'UTF8', None, ),  # 21
+    (22, TType.BOOL, 'generateCert', None, False, ),  # 22
+    (23, TType.STRING, 'experimentDataDir', 'UTF8', None, ),  # 23
+    (24, TType.STRING, 'userName', 'UTF8', None, ),  # 24
+    (25, TType.BOOL, 'useUserCRPref', None, None, ),  # 25
+    (26, TType.STRING, 'groupResourceProfileId', 'UTF8', None, ),  # 26
+    (27, TType.LIST, 'processWorkflows', (TType.STRUCT, [ProcessWorkflow, None], False), None, ),  # 27
 )
 fix_spec(all_structs)
 del all_structs
