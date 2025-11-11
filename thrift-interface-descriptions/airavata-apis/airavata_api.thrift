@@ -20,7 +20,7 @@
 
 /**
  * Application Programming Interface definition for Apache Airavata Services.
- *   this parent thrift file is contains all service interfaces. The data models are 
+ *   this parent thrift file is contains all service interfaces. The data models are
  *   described in respective thrift files.
 */
 
@@ -102,7 +102,7 @@ service Airavata extends base_api.BaseAPI {
    *
    * @param gateway
    *    The gateway data model.
-   * 
+   *
    * @return gatewayId
    *   Th unique identifier of the  newly registered gateway.
    *
@@ -673,13 +673,13 @@ service Airavata extends base_api.BaseAPI {
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
-   * 
+   *
    * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
+   *
    * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
+   *
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
@@ -811,13 +811,13 @@ service Airavata extends base_api.BaseAPI {
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
-   * 
+   *
    * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
+   *
    * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
+   *
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
@@ -888,13 +888,13 @@ service Airavata extends base_api.BaseAPI {
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
-   * 
+   *
    * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
+   *
    * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
+   *
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
@@ -1076,7 +1076,7 @@ service Airavata extends base_api.BaseAPI {
    *
    * Clone an Existing Experiment
    * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
-   *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
+   *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
    *
    * @param newExperimentName
    *    experiment name that should be used in the cloned experiment
@@ -1094,13 +1094,13 @@ service Airavata extends base_api.BaseAPI {
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
-   * 
+   *
    * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
+   *
    * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
+   *
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
@@ -1196,13 +1196,13 @@ service Airavata extends base_api.BaseAPI {
    *
    * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
-   * 
+   *
    * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-   * 
+   *
    * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
+   *
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
    *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
    *         gateway registration steps and retry this request.
@@ -3620,6 +3620,22 @@ service Airavata extends base_api.BaseAPI {
   * @return StorageVolumeInfo containing disk usage information
   */
  storage_resource_model.StorageVolumeInfo getResourceStorageInfo(1: required security_model.AuthzToken authzToken,
+                                                                 2: required string resourceId,
+                                                                 3: optional string location)
+                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                         4: airavata_errors.AuthorizationException ae)
+
+/**
+  * Get storage directory information for a compute or storage resource.
+  *
+  * @param authzToken
+  * @param resourceId Can be either a compute resource ID or storage resource ID
+  * @param location Optional path/mount point. If null/empty, defaults to user's home directory ($HOME)
+  * @return StorageDirectoryInfo containing directory size information
+  */
+ storage_resource_model.StorageDirectoryInfo getStorageDirectoryInfo(1: required security_model.AuthzToken authzToken,
                                                                  2: required string resourceId,
                                                                  3: optional string location)
                                                                  throws (1: airavata_errors.InvalidRequestException ire,

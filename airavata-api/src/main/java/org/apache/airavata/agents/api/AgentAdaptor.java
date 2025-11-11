@@ -22,6 +22,7 @@ package org.apache.airavata.agents.api;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 
 /**
@@ -59,4 +60,6 @@ public interface AgentAdaptor {
     FileMetadata getFileMetadata(String remoteFile) throws AgentException;
 
     StorageVolumeInfo getStorageVolumeInfo(String location) throws AgentException;
+
+    StorageDirectoryInfo getStorageDirectoryInfo(String location) throws AgentException;
 }

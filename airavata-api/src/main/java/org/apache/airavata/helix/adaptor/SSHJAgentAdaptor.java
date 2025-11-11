@@ -51,6 +51,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
@@ -642,6 +643,54 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         } catch (Exception e) {
             logger.error("Error while retrieving storage volume info for location " + location, e);
             throw new AgentException("Error while retrieving storage volume info for location " + location, e);
+        }
+    }
+
+    @Override
+    public StorageDirectoryInfo getStorageDirectoryInfo(String location) throws AgentException {
+        try {
+            String targetLocation = location;
+            if (targetLocation == null || targetLocation.trim().isEmpty()) {
+                CommandOutput homeOutput = executeCommand("echo $HOME", null);
+
+                if (homeOutput.getExitCode() != 0
+                        || homeOutput.getStdOut() == null
+                        || homeOutput.getStdOut().trim().isEmpty()) {
+                    logger.error("Failed to determine user's home directory: {}", homeOutput.getStdError());
+                    throw new AgentException("Failed to determine user's home directory: " + homeOutput.getStdError());
+                }
+                targetLocation = homeOutput.getStdOut().trim();
+            }
+
+            // Escape location to prevent command injection and handle spaces
+            String escapedLocation = targetLocation.replace("'", "'\"'\"'");
+            String duKBytesCommand = "du -sk '" + escapedLocation + "'";
+
+            CommandOutput duKBytesOutput = executeCommand(duKBytesCommand, null);
+
+            if (duKBytesOutput.getExitCode() != 0) {
+                logger.error(
+                        "Failed to execute du -sk command for location {}: {}",
+                        targetLocation,
+                        duKBytesOutput.getStdError());
+                throw new AgentException("Failed to execute du -sk command for location " + targetLocation + ": "
+                        + duKBytesOutput.getStdError());
+            }
+
+            String outputKbStr = duKBytesOutput.getStdOut().trim();
+            logger.info("OutputKbStr: for du -ku {} is {}", location, outputKbStr);
+            String numberOfKBytesStr = outputKbStr.split(" ")[0];
+
+            long numberOfKBytes = Long.parseLong(numberOfKBytesStr);
+
+            StorageDirectoryInfo storageDirectoryInfo = new StorageDirectoryInfo();
+            storageDirectoryInfo.setTotalSizeBytes(numberOfKBytes * 1024);
+            storageDirectoryInfo.setTotalSize(numberOfKBytes + "kb");
+            return storageDirectoryInfo;
+
+        } catch (Exception e) {
+            logger.error("Error while retrieving storage directory info for location " + location, e);
+            throw new AgentException("Error while retrieving storage directory info for location " + location, e);
         }
     }
 
