@@ -106,8 +106,10 @@ public class OutputDataStagingTask extends DataStagingTask {
 
                 } else {
                     destinationURI = new URI(dataStagingTaskModel.getDestination());
-                    logger.info("Output data staging destination for task id {} is {}", getTaskId(), destinationURI.getPath());
-
+                    logger.info(
+                            "Output data staging destination for task id {} is {}",
+                            getTaskId(),
+                            destinationURI.getPath());
                 }
 
                 if (logger.isDebugEnabled()) {
