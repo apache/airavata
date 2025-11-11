@@ -59,6 +59,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
+import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
@@ -3900,6 +3901,81 @@ public class AiravataServerHandler implements Airavata.Iface {
             regClient = null;
 
             return context.adaptor.getStorageVolumeInfo(location);
+
+        } catch (InvalidRequestException | AiravataClientException e) {
+            if (regClient != null) {
+                registryClientPool.returnResource(regClient);
+            }
+            logger.error("Error while retrieving storage resource.", e);
+            throw e;
+
+        } catch (Exception e) {
+            logger.error("Error while retrieving storage volume info for resource {}", resourceId, e);
+            registryClientPool.returnBrokenResource(regClient);
+
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving storage volume info. More info: " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public StorageDirectoryInfo getStorageDirectoryInfo(AuthzToken authzToken, String resourceId, String location)
+            throws TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        RegistryService.Client regClient = registryClientPool.getResource();
+        StorageInfoContext context;
+
+        try {
+            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
+            try {
+                ComputeResourceDescription computeResource = regClient.getComputeResource(resourceId);
+                if (computeResource != null) {
+                    computeResourceOp = Optional.of(computeResource);
+                }
+            } catch (TApplicationException e) {
+                // TApplicationException with "unknown result" means resource not found (null return for non-nullable
+                // type)
+                logger.debug("Compute resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+            }
+
+            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
+            if (computeResourceOp.isEmpty()) {
+                try {
+                    StorageResourceDescription storageResource = regClient.getStorageResource(resourceId);
+                    if (storageResource != null) {
+                        storageResourceOp = Optional.of(storageResource);
+                    }
+                } catch (TApplicationException e) {
+                    // TApplicationException with "unknown result" means resource not found (null return for
+                    // non-nullable type)
+                    logger.debug(
+                            "Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+                }
+            }
+
+            if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
+                logger.error(
+                        "Resource with ID {} not found as either compute resource or storage resource", resourceId);
+                throw new InvalidRequestException("Resource with ID '" + resourceId
+                        + "' not found as either compute resource or storage resource");
+            }
+
+            if (computeResourceOp.isPresent()) {
+                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveComputeStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            } else {
+                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveStorageStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            }
+
+            registryClientPool.returnResource(regClient);
+            regClient = null;
+
+            return context.adaptor.getStorageDirectoryInfo(location);
 
         } catch (InvalidRequestException | AiravataClientException e) {
             if (regClient != null) {

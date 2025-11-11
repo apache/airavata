@@ -79,3 +79,14 @@ struct StorageVolumeInfo {
     8: required string mountPoint,
     9: optional string filesystemType,
 }
+
+/**
+ * Provides Directory Size Information of a given storage
+ *
+ * totalSize: Total size in human-readable format (e.g., "100G", "500M")
+ * totalSizeBytes: Total size in bytes
+ */
+struct StorageDirectoryInfo {
+    1: required string totalSize,
+    2: required i64 totalSizeBytes,
+}
