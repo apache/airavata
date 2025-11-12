@@ -3093,7 +3093,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting storage resource. More info : " + e.getMessage());
-            registryClientPool.returnBrokenResource(regClient);
             throw exception;
         }
     }
@@ -6687,45 +6686,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private void submitExperiment(String gatewayId, String experimentId) throws AiravataException {
-        ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
-        MessageContext messageContext = new MessageContext(
-                event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
-    }
-
-    private void submitCancelExperiment(String gatewayId, String experimentId) throws AiravataException {
-        ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
-        MessageContext messageContext = new MessageContext(
-                event,
-                MessageType.EXPERIMENT_CANCEL,
-                "CANCEL.EXP-" + UUID.randomUUID().toString(),
-                gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
-    }
-
-    private void submitExperimentIntermediateOutputsEvent(
-            String gatewayId, String experimentId, List<String> outputNames) throws AiravataException {
-
-        ExperimentIntermediateOutputsEvent event =
-                new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
-        MessageContext messageContext = new MessageContext(
-                event,
-                MessageType.INTERMEDIATE_OUTPUTS,
-                "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(),
-                gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
-    }
-
     private void shareEntityWithAdminGatewayGroups(
             RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity)
             throws TException {
         final String domainId = entity.getDomainId();
-        GatewayGroups gatewayGroups = retrieveGatewayGroups(regClient, domainId);
-        createManageSharingPermissionTypeIfMissing(sharingClient, domainId);
+        GatewayGroups gatewayGroups = airavataService.retrieveGatewayGroups(domainId);
+        airavataService.createManageSharingPermissionTypeIfMissing(sharingClient, domainId);
         sharingClient.shareEntityWithGroups(
                 domainId,
                 entity.getEntityId(),
@@ -6787,30 +6753,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
         }
         throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
-    }
-
-    private void createManageSharingPermissionTypeIfMissing(
-            SharingRegistryService.Client sharingClient, String domainId) throws TException {
-        // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING permission, so add it if missing
-        String permissionTypeId = domainId + ":MANAGE_SHARING";
-        if (!sharingClient.isPermissionExists(domainId, permissionTypeId)) {
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(permissionTypeId);
-            permissionType.setDomainId(domainId);
-            permissionType.setName("MANAGE_SHARING");
-            permissionType.setDescription("Manage sharing permission type");
-            sharingClient.createPermissionType(permissionType);
-            logger.info("Created MANAGE_SHARING permission type for domain " + domainId);
-        }
-    }
-
-    private GatewayGroups retrieveGatewayGroups(RegistryService.Client regClient, String gatewayId) throws TException {
-
-        if (regClient.isGatewayGroupsExists(gatewayId)) {
-            return regClient.getGatewayGroups(gatewayId);
-        } else {
-            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
-        }
     }
 
     /**
