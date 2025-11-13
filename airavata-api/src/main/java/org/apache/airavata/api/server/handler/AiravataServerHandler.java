@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.api.server.handler;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.ConfigParam;
@@ -37,7 +38,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
-import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
@@ -147,9 +147,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
         // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRunsMillis(5L * 60L * 1000L);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWaitMillis(3000);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
         return poolConfig;
     }
 
@@ -6684,75 +6684,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage(msg + " More info : " + e.getMessage());
             throw exception;
         }
-    }
-
-    private void shareEntityWithAdminGatewayGroups(
-            RegistryService.Client regClient, SharingRegistryService.Client sharingClient, Entity entity)
-            throws TException {
-        final String domainId = entity.getDomainId();
-        GatewayGroups gatewayGroups = airavataService.retrieveGatewayGroups(domainId);
-        airavataService.createManageSharingPermissionTypeIfMissing(sharingClient, domainId);
-        sharingClient.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                domainId + ":MANAGE_SHARING",
-                true);
-        sharingClient.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                domainId + ":WRITE",
-                true);
-        sharingClient.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
-                domainId + ":READ",
-                true);
-    }
-
-    private boolean userHasAccessInternal(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String entityId,
-            ResourcePermissionType permissionType) {
-        final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
-        try {
-            final boolean hasOwnerAccess = sharingClient.userHasAccess(
-                    domainId, userId, entityId, domainId + ":" + ResourcePermissionType.OWNER);
-            boolean hasAccess = false;
-            if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
-            } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
-            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
-                hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.MANAGE_SHARING);
-            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                hasAccess = hasOwnerAccess;
-            }
-            return hasAccess;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to check if user has access", e);
-        }
-    }
-
-    private ResourceType getResourceType(SharingRegistryService.Client sharingClient, String domainId, String entityId)
-            throws TException {
-        Entity entity = sharingClient.getEntity(domainId, entityId);
-        for (ResourceType resourceType : ResourceType.values()) {
-            if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
-                return resourceType;
-            }
-        }
-        throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
     }
 
     /**
