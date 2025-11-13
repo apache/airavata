@@ -21,9 +21,9 @@
 ---
 #Variables associated with this role
 
-java_home: "/usr/lib/jvm/java-11"
-java_home_keycloak: "/usr/lib/jvm/java-8"
-openjdk_version: "java-11-openjdk-devel-11.0.11.0.9"
-openjdk_version_rocky: "java-11-openjdk-devel"
-openjdk_version_rocky_keycloak: "java-1.8.0-openjdk-devel"
+# Default Java home (used for CentOS/Rocky)
+java_home: "/usr/lib/jvm/java-17"
+java_home_ubuntu: "/usr/lib/jvm/java-17-openjdk-amd64"
+openjdk_version: "java-17-openjdk-devel"
+openjdk_version_rocky: "java-17-openjdk-devel"
 ...

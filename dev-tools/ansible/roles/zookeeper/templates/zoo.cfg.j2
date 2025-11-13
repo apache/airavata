@@ -12,6 +12,8 @@ syncLimit={{sync_limit}}
 dataDir={{zookeeper_data_dir}}
 # the port at which the clients will connect
 clientPort={{ client_port }}
+# AdminServer port (default is 8080, changed to avoid conflicts with Keycloak)
+admin.serverPort={{ zookeeper_admin_server_port }}
 # the maximum number of client connections.
 # increase this if you need to handle more clients
 #maxClientCnxns=60

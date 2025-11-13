@@ -18,6 +18,9 @@
 # under the License.
 #
 
+api_orch_dir: "{{ deployment_dir | default(user_home + '/airavata') }}"
+airavata_dist: "apache-airavata-{{ airavata_version | default('0.21-SNAPSHOT') }}"
+airavata_dist_name: "{{ airavata_dist }}.tar.gz"
 api_orch_server_names: "api-orch"
 api_orch_log_dir: "{{ api_orch_dir }}/{{ airavata_dist }}/logs"
 api_orch_log_max_history: 30
@@ -49,11 +52,18 @@ thrift_client_pool_abandoned_removal_enabled: false
 thrift_client_pool_abandoned_removal_logged: false
 
 api_server_public_hostname: "localhost"
+api_server_port: 8930
+api_server_tls_port: 443
+api_server_host: "localhost"
 haproxy_api_server_ssl_cert: "/etc/ssl/{{ api_server_public_hostname }}/{{ api_server_public_hostname }}.pem"
 api_server_letsencrypt_ssl_cert: "/etc/letsencrypt/live/{{ api_server_public_hostname }}/cert.pem"
 haproxy_service_name:
  CentOS_7: haproxy18
  Rocky_8: haproxy
+ Ubuntu_22: haproxy
+ Ubuntu_24: haproxy
 haproxy_config_dir:
  CentOS_7: /etc/haproxy18/
  Rocky_8: /etc/haproxy/
+ Ubuntu_22: /etc/haproxy/
+ Ubuntu_24: /etc/haproxy/

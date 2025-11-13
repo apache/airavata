@@ -63,6 +63,8 @@ public class GwyResourceProfileRepository
         String gatewayId = gatewayResourceProfile.getGatewayID();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
+        // Explicitly set gatewayId since Dozer mapping does not handle gatewayID -> gatewayId conversion
+        gatewayProfileEntity.setGatewayId(gatewayId);
         if (get(gatewayId) != null) {
             gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         } else {

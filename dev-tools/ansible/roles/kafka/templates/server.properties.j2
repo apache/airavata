@@ -22,13 +22,13 @@ broker.id={{ broker_id }}
 
 ############################# Socket Server Settings #############################
 
-# The address the socket server listens on. It will get the value returned from
-# java.net.InetAddress.getCanonicalHostName() if not configured.
+# The address the socket server listens on. If not configured, the host name will be equal to the value of
+# java.net.InetAddress.getCanonicalHostName(), with PLAINTEXT listener name, and port 9092.
 #   FORMAT:
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ kafka_listener_port }}
+#listeners=PLAINTEXT://:9092
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
@@ -57,7 +57,7 @@ socket.request.max.bytes={{ socket_request_max_bytes }}
 ############################# Log Basics #############################
 
 # A comma separated list of directories under which to store log files
-log.dirs={{ kafka_dir }}/logs
+log.dirs={{ deployment_dir }}/{{ kafka_symlink_name }}/kafka-logs
 
 # The default number of log partitions per topic. More partitions allow greater
 # parallelism for consumption, but this will also result in more files across
@@ -123,7 +123,7 @@ log.retention.check.interval.ms={{ log_retention_check_interval }}
 zookeeper.connect={{ zookeeper_connection_url }}
 
 # Timeout in ms for connecting to zookeeper
-zookeeper.connection.timeout.ms=6000
+zookeeper.connection.timeout.ms=18000
 
 ##################### Confluent Metrics Reporter #######################
 # Confluent Control Center and Confluent Auto Data Balancer integration
@@ -189,7 +189,21 @@ confluent.license.topic.replication.factor=1
 # Replication factor for the metadata topic used for authorization. Default is 3.
 confluent.metadata.topic.replication.factor=1
 
+# Replication factor for the topic used for audit logs. Default is 3.
+confluent.security.event.logger.exporter.kafka.topic.replicas=1
+
 # Listeners for metadata server
 #confluent.metadata.server.listeners=http://0.0.0.0:8090
 # Advertised listeners for metadata server
 #confluent.metadata.server.advertised.listeners=http://127.0.0.1:8090
+
+############################# Confluent Data Balancer Settings  #############################
+
+# The Confluent Data Balancer is used to measure the load across the Kafka cluster and move data
+# around as necessary. Comment out this line to disable the Data Balancer.
+confluent.balancer.enable=true
+
+# The replication factor for the topics the Data Balancer uses to store internal state.
+# For anything other than development testing, a value greater than 1 is recommended to ensure availability.
+# The default value is 3.
+confluent.balancer.topic.replication.factor=1
