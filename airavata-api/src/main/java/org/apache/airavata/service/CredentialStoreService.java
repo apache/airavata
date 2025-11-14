@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
-    
+
     private DBUtil dbUtil;
     private SSHCredentialWriter sshCredentialWriter;
     private CertificateCredentialWriter certificateCredentialWriter;
@@ -105,7 +105,8 @@ public class CredentialStoreService {
         }
     }
 
-    public String addCertificateCredential(CertificateCredential certificateCredential) throws CredentialStoreException {
+    public String addCertificateCredential(CertificateCredential certificateCredential)
+            throws CredentialStoreException {
         try {
             org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential =
                     new org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential();
@@ -191,9 +192,8 @@ public class CredentialStoreService {
                     "Error occurred while retrieving SSH credentialfor token - " + tokenId + " and gateway id - "
                             + gatewayId,
                     e);
-            throw new CredentialStoreException(
-                    "Error occurred while retrieving SSH credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId);
+            throw new CredentialStoreException("Error occurred while retrieving SSH credential for token - " + tokenId
+                    + " and gateway id - " + gatewayId);
         }
     }
 
@@ -211,8 +211,7 @@ public class CredentialStoreService {
                 return convertToCredentialSummary(
                         (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential);
             }
-            throw new CredentialStoreException(
-                    "Unrecognized type of credential for token: " + tokenId);
+            throw new CredentialStoreException("Unrecognized type of credential for token: " + tokenId);
         } catch (CredentialStoreException e) {
             final String msg = "Error occurred while retrieving credential summary for token - " + tokenId
                     + " and gateway id - " + gatewayId;
@@ -311,7 +310,8 @@ public class CredentialStoreService {
         return credentialSummary;
     }
 
-    public CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws CredentialStoreException {
+    public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
+            throws CredentialStoreException {
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
             if (credential
@@ -348,9 +348,8 @@ public class CredentialStoreService {
                     "Error occurred while retrieving Certificate credential for token - " + tokenId
                             + " and gateway id - " + gatewayId,
                     e);
-            throw new CredentialStoreException(
-                    "Error occurred while retrieving Certificate credential for token - " + tokenId
-                            + " and gateway id - " + gatewayId);
+            throw new CredentialStoreException("Error occurred while retrieving Certificate credential for token - "
+                    + tokenId + " and gateway id - " + gatewayId);
         }
     }
 
@@ -381,14 +380,14 @@ public class CredentialStoreService {
                     "Error occurred while retrieving PWD credentialfor token - " + tokenId + " and gateway id - "
                             + gatewayId,
                     e);
-            throw new CredentialStoreException(
-                    "Error occurred while retrieving PWD credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId);
+            throw new CredentialStoreException("Error occurred while retrieving PWD credential for token - " + tokenId
+                    + " and gateway id - " + gatewayId);
         }
     }
 
     @Deprecated
-    public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId) throws CredentialStoreException {
+    public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
+            throws CredentialStoreException {
         if (type.equals(SummaryType.SSH)) {
             Map<String, String> sshKeyMap = new HashMap<>();
             List<CredentialSummary> summaryList = new ArrayList<>();
@@ -514,9 +513,8 @@ public class CredentialStoreService {
                     "Error occurred while deleting SSH credential for token - " + tokenId + " and gateway id - "
                             + gatewayId,
                     e);
-            throw new CredentialStoreException(
-                    "Error occurred while deleting SSH credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId);
+            throw new CredentialStoreException("Error occurred while deleting SSH credential for token - " + tokenId
+                    + " and gateway id - " + gatewayId);
         }
     }
 
@@ -529,10 +527,8 @@ public class CredentialStoreService {
                     "Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - "
                             + gatewayId,
                     e);
-            throw new CredentialStoreException(
-                    "Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId);
+            throw new CredentialStoreException("Error occurred while deleting PWD credential for token - " + tokenId
+                    + " and gateway id - " + gatewayId);
         }
     }
 }
-
