@@ -197,26 +197,40 @@ public abstract class DataStagingTask extends AiravataTask {
         return localDataPath;
     }
 
-    protected String buildDestinationFilePath(String inputPath, String fileName) {
-
-        inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-        String experimentDataDir = getProcessModel().getExperimentDataDir();
-        String filePath;
-        // TODO : This logic is extremely dangerous. This was implemented expecting the input and output storage are
-        // same.
-        if (experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if (!experimentDataDir.endsWith(File.separator)) {
-                experimentDataDir += File.separator;
-            }
-            if (experimentDataDir.startsWith(File.separator)) {
-                filePath = experimentDataDir + fileName;
-            } else {
-                filePath = inputPath + experimentDataDir + fileName;
-            }
-        } else {
-            filePath = inputPath + getProcessId() + File.separator + fileName;
+    /**
+     * Builds the destination file path for data staging tasks.
+     * The method constructs the path as: targetStorageRoot + experimentDataDir + fileName
+     * If experimentDataDir is given as an absolute path (starts with '/'), the leading
+     * separator is stripped to make it relative to targetStorageRoot.
+     * If experimentDataDir is null or empty falls back to processId-based path.
+     *
+     * @param targetStorageRoot The file system root location of the target storage resource
+     * @param fileName          The name of the file to be staged
+     * @return The complete destination file path
+     */
+    protected String buildDestinationFilePath(String targetStorageRoot, String fileName) {
+        String targetRoot = targetStorageRoot.trim();
+        if (!targetRoot.endsWith(File.separator)) {
+            targetRoot += File.separator;
         }
-        return filePath;
+
+        String experimentDataDir = getProcessModel().getExperimentDataDir();
+
+        if (experimentDataDir == null || experimentDataDir.trim().isEmpty()) {
+            return targetRoot + getProcessId() + File.separator + fileName;
+        }
+
+        String normalizedDir = experimentDataDir.trim();
+        if (normalizedDir.startsWith(File.separator)) {
+            normalizedDir = normalizedDir.substring(1);
+            logger.debug("Stripped the leading separator from experimentDataDir to make it relative: {}", normalizedDir);
+        }
+
+        if (!normalizedDir.endsWith(File.separator)) {
+            normalizedDir += File.separator;
+        }
+
+        return targetRoot + normalizedDir + fileName;
     }
 
     protected String escapeSpecialCharacters(String inputString) {
