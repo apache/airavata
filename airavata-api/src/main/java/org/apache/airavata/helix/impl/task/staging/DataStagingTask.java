@@ -223,7 +223,8 @@ public abstract class DataStagingTask extends AiravataTask {
         String normalizedDir = experimentDataDir.trim();
         if (normalizedDir.startsWith(File.separator)) {
             normalizedDir = normalizedDir.substring(1);
-            logger.debug("Stripped the leading separator from experimentDataDir to make it relative: {}", normalizedDir);
+            logger.debug(
+                    "Stripped the leading separator from experimentDataDir to make it relative: {}", normalizedDir);
         }
 
         if (!normalizedDir.endsWith(File.separator)) {
