@@ -40,8 +40,9 @@ import org.slf4j.LoggerFactory;
 
 public class OrchestratorRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorRegistryService.class);
-    
-    private org.apache.airavata.service.RegistryService registryService = new org.apache.airavata.service.RegistryService();
+
+    private org.apache.airavata.service.RegistryService registryService =
+            new org.apache.airavata.service.RegistryService();
 
     public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
         return registryService.getExperiment(airavataExperimentId);
@@ -104,7 +105,8 @@ public class OrchestratorRegistryService {
         return registryService.getApplicationInterface(appInterfaceId);
     }
 
-    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
+            throws AppCatalogException {
         return registryService.getApplicationDeployments(appModuleId);
     }
 
@@ -120,4 +122,3 @@ public class OrchestratorRegistryService {
         registryService.registerQueueStatuses(queueStatuses);
     }
 }
-

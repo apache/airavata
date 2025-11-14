@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
@@ -33,7 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 // import sun.security.provider.X509Factory;
 
-public class CredentialStoreServerHandler implements org.apache.airavata.credential.store.cpi.CredentialStoreService.Iface {
+public class CredentialStoreServerHandler
+        implements org.apache.airavata.credential.store.cpi.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
     private org.apache.airavata.service.CredentialStoreService credentialStoreService;
 
@@ -138,7 +138,6 @@ public class CredentialStoreServerHandler implements org.apache.airavata.credent
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(msg);
         }
     }
-
 
     @Override
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)

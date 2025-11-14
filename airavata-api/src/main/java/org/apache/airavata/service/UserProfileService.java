@@ -117,7 +117,8 @@ public class UserProfileService {
         }
     }
 
-    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
+    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
+            throws UserProfileServiceException {
         try {
             // After updating the user profile in the database but before committing the transaction, the
             // following will update the user profile in the IAM service also. If the update in the IAM service
@@ -233,4 +234,3 @@ public class UserProfileService {
         }
     }
 }
-

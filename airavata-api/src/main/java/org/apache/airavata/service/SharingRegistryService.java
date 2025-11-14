@@ -113,9 +113,7 @@ public class SharingRegistryService {
         Domain domain = new DomainRepository().get(user.getDomainId());
         if (domain.getInitialUserGroupId() != null) {
             addUsersToGroup(
-                    user.getDomainId(),
-                    Collections.singletonList(user.getUserId()),
-                    domain.getInitialUserGroupId());
+                    user.getDomainId(), Collections.singletonList(user.getUserId()), domain.getInitialUserGroupId());
         }
 
         return user.getUserId();
@@ -356,8 +354,7 @@ public class SharingRegistryService {
         return true;
     }
 
-    public boolean hasAdminAccess(String domainId, String groupId, String adminId)
-            throws SharingRegistryException {
+    public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException {
         GroupAdminPK groupAdminPK = new GroupAdminPK();
         groupAdminPK.setGroupId(groupId);
         groupAdminPK.setAdminId(adminId);
@@ -367,8 +364,7 @@ public class SharingRegistryService {
         return false;
     }
 
-    public boolean hasOwnerAccess(String domainId, String groupId, String ownerId)
-            throws SharingRegistryException {
+    public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException {
         UserGroupPK userGroupPK = new UserGroupPK();
         userGroupPK.setGroupId(groupId);
         userGroupPK.setDomainId(domainId);
@@ -418,8 +414,7 @@ public class SharingRegistryService {
         return true;
     }
 
-    public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId)
-            throws SharingRegistryException {
+    public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
         GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
         return groupMembershipRepository.getAllMemberGroupsForUser(domainId, userId);
     }
@@ -428,8 +423,7 @@ public class SharingRegistryService {
      * * EntityType Operations
      * *
      */
-    public String createEntityType(EntityType entityType)
-            throws SharingRegistryException, DuplicateEntryException {
+    public String createEntityType(EntityType entityType) throws SharingRegistryException, DuplicateEntryException {
         EntityTypePK entityTypePK = new EntityTypePK();
         entityTypePK.setDomainId(entityType.getDomainId());
         entityTypePK.setEntityTypeId(entityType.getEntityTypeId());
@@ -454,8 +448,7 @@ public class SharingRegistryService {
         return true;
     }
 
-    public boolean isEntityTypeExists(String domainId, String entityTypeId)
-            throws SharingRegistryException {
+    public boolean isEntityTypeExists(String domainId, String entityTypeId) throws SharingRegistryException {
         EntityTypePK entityTypePK = new EntityTypePK();
         entityTypePK.setDomainId(domainId);
         entityTypePK.setEntityTypeId(entityTypeId);
@@ -511,16 +504,14 @@ public class SharingRegistryService {
         return true;
     }
 
-    public boolean isPermissionExists(String domainId, String permissionId)
-            throws SharingRegistryException {
+    public boolean isPermissionExists(String domainId, String permissionId) throws SharingRegistryException {
         PermissionTypePK permissionTypePK = new PermissionTypePK();
         permissionTypePK.setDomainId(domainId);
         permissionTypePK.setPermissionTypeId(permissionId);
         return (new PermissionTypeRepository()).isExists(permissionTypePK);
     }
 
-    public boolean deletePermissionType(String domainId, String permissionTypeId)
-            throws SharingRegistryException {
+    public boolean deletePermissionType(String domainId, String permissionTypeId) throws SharingRegistryException {
         PermissionTypePK permissionTypePK = new PermissionTypePK();
         permissionTypePK.setDomainId(domainId);
         permissionTypePK.setPermissionTypeId(permissionTypeId);
@@ -528,8 +519,7 @@ public class SharingRegistryService {
         return true;
     }
 
-    public PermissionType getPermissionType(String domainId, String permissionTypeId)
-            throws SharingRegistryException {
+    public PermissionType getPermissionType(String domainId, String permissionTypeId) throws SharingRegistryException {
         PermissionTypePK permissionTypePK = new PermissionTypePK();
         permissionTypePK.setDomainId(domainId);
         permissionTypePK.setPermissionTypeId(permissionTypeId);
@@ -772,8 +762,7 @@ public class SharingRegistryService {
                     sharing.setUpdatedTime(System.currentTimeMillis());
                     sharings.add(sharing);
                     (new EntityRepository())
-                            .getChildEntities(domainId, childEntityId).stream()
-                                    .forEach(e -> temp.addLast(e));
+                            .getChildEntities(domainId, childEntityId).stream().forEach(e -> temp.addLast(e));
                 }
             }
         }
@@ -915,4 +904,3 @@ public class SharingRegistryService {
         return hashtable;
     }
 }
-
