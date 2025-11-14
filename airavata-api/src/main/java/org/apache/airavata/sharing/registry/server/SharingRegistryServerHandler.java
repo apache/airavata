@@ -34,8 +34,9 @@ import org.slf4j.LoggerFactory;
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandler.class);
     private org.apache.airavata.service.SharingRegistryService sharingRegistryService;
-    
-    public static String OWNER_PERMISSION_NAME = org.apache.airavata.service.SharingRegistryService.OWNER_PERMISSION_NAME;
+
+    public static String OWNER_PERMISSION_NAME =
+            org.apache.airavata.service.SharingRegistryService.OWNER_PERMISSION_NAME;
 
     public SharingRegistryServerHandler() throws ApplicationSettingsException, TException {
         this(new SharingRegistryDBInitConfig());
@@ -780,7 +781,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission)
             throws SharingRegistryException, TException {
         try {
-            return sharingRegistryService.shareEntityWithUsers(domainId, entityId, userList, permissionTypeId, cascadePermission);
+            return sharingRegistryService.shareEntityWithUsers(
+                    domainId, entityId, userList, permissionTypeId, cascadePermission);
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
@@ -798,7 +800,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             boolean cascadePermission)
             throws SharingRegistryException, TException {
         try {
-            return sharingRegistryService.shareEntityWithGroups(domainId, entityId, groupList, permissionTypeId, cascadePermission);
+            return sharingRegistryService.shareEntityWithGroups(
+                    domainId, entityId, groupList, permissionTypeId, cascadePermission);
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
@@ -826,7 +829,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             String domainId, String entityId, List<String> groupList, String permissionTypeId)
             throws SharingRegistryException, TException {
         try {
-            return sharingRegistryService.revokeEntitySharingFromGroups(domainId, entityId, groupList, permissionTypeId);
+            return sharingRegistryService.revokeEntitySharingFromGroups(
+                    domainId, entityId, groupList, permissionTypeId);
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {

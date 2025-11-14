@@ -19,36 +19,61 @@
 */
 package org.apache.airavata.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.credential.store.CredentialSummary;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -56,81 +81,58 @@ import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.credential.store.SummaryType;
-import org.apache.airavata.model.group.ResourcePermissionType;
-import org.apache.airavata.model.group.ResourceType;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.EntityType;
 import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.registry.models.SearchCriteria;
-import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
-import java.util.UUID;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
-    
-    private org.apache.airavata.service.RegistryService registryService = new org.apache.airavata.service.RegistryService();
+
+    private org.apache.airavata.service.RegistryService registryService =
+            new org.apache.airavata.service.RegistryService();
 
     public List<String> getAllUsersInGateway(String gatewayId) throws RegistryException {
         return registryService.getAllUsersInGateway(gatewayId);
     }
 
-    public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryException, AppCatalogException {
+    public boolean updateGateway(String gatewayId, Gateway updatedGateway)
+            throws RegistryException, AppCatalogException {
         return registryService.updateGateway(gatewayId, updatedGateway);
     }
 
@@ -210,20 +212,48 @@ public class AiravataService {
         return registryService.deleteProject(projectId);
     }
 
-    public List<Project> searchProjects(String gatewayId, String userName, List<String> accessibleProjectIds, Map<ProjectSearchFields, String> filters, int limit, int offset) throws RegistryException {
+    public List<Project> searchProjects(
+            String gatewayId,
+            String userName,
+            List<String> accessibleProjectIds,
+            Map<ProjectSearchFields, String> filters,
+            int limit,
+            int offset)
+            throws RegistryException {
         return registryService.searchProjects(gatewayId, userName, accessibleProjectIds, filters, limit, offset);
     }
 
-    public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset) throws RegistryException {
+    public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
+            throws RegistryException {
         return registryService.getUserExperiments(gatewayId, userName, limit, offset);
     }
 
-    public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset) throws RegistryException {
+    public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
+            throws RegistryException {
         return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
     }
 
-    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime, String userName, String applicationName, String resourceHostName, List<String> accessibleExpIds, int limit, int offset) throws RegistryException {
-        return registryService.getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, accessibleExpIds, limit, offset);
+    public ExperimentStatistics getExperimentStatistics(
+            String gatewayId,
+            long fromTime,
+            long toTime,
+            String userName,
+            String applicationName,
+            String resourceHostName,
+            List<String> accessibleExpIds,
+            int limit,
+            int offset)
+            throws RegistryException {
+        return registryService.getExperimentStatistics(
+                gatewayId,
+                fromTime,
+                toTime,
+                userName,
+                applicationName,
+                resourceHostName,
+                accessibleExpIds,
+                limit,
+                offset);
     }
 
     public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
@@ -242,7 +272,14 @@ public class AiravataService {
         return registryService.deleteExperiment(experimentId);
     }
 
-    public List<ExperimentSummaryModel> searchExperiments(String gatewayId, String userName, List<String> accessibleExpIds, Map<ExperimentSearchFields, String> filters, int limit, int offset) throws RegistryException {
+    public List<ExperimentSummaryModel> searchExperiments(
+            String gatewayId,
+            String userName,
+            List<String> accessibleExpIds,
+            Map<ExperimentSearchFields, String> filters,
+            int limit,
+            int offset)
+            throws RegistryException {
         return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
     }
 
@@ -256,7 +293,8 @@ public class AiravataService {
             String userName,
             Map<ExperimentSearchFields, String> filters,
             int limit,
-            int offset) throws Exception {
+            int offset)
+            throws Exception {
         List<String> accessibleExpIds = new ArrayList<>();
         Map<ExperimentSearchFields, String> filtersCopy = new HashMap<>(filters);
         List<SearchCriteria> sharingFilters = new ArrayList<>();
@@ -361,11 +399,14 @@ public class AiravataService {
         return registryService.getComputeResource(computeResourceId);
     }
 
-    public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws AppCatalogException {
+    public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
+            throws AppCatalogException {
         return registryService.registerComputeResource(computeResourceDescription);
     }
 
-    public boolean updateComputeResource(String computeResourceId, ComputeResourceDescription computeResourceDescription) throws AppCatalogException {
+    public boolean updateComputeResource(
+            String computeResourceId, ComputeResourceDescription computeResourceDescription)
+            throws AppCatalogException {
         return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
     }
 
@@ -377,7 +418,8 @@ public class AiravataService {
         return registryService.getAllComputeResourceNames();
     }
 
-    public String registerStorageResource(StorageResourceDescription storageResourceDescription) throws AppCatalogException {
+    public String registerStorageResource(StorageResourceDescription storageResourceDescription)
+            throws AppCatalogException {
         return registryService.registerStorageResource(storageResourceDescription);
     }
 
@@ -385,7 +427,9 @@ public class AiravataService {
         return registryService.getStorageResource(storageResourceId);
     }
 
-    public boolean updateStorageResource(String storageResourceId, StorageResourceDescription storageResourceDescription) throws AppCatalogException {
+    public boolean updateStorageResource(
+            String storageResourceId, StorageResourceDescription storageResourceDescription)
+            throws AppCatalogException {
         return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
     }
 
@@ -397,7 +441,8 @@ public class AiravataService {
         return registryService.getAllStorageResourceNames();
     }
 
-    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws AppCatalogException {
+    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
+            throws AppCatalogException {
         return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
     }
 
@@ -405,7 +450,8 @@ public class AiravataService {
         return registryService.getGatewayResourceProfile(gatewayID);
     }
 
-    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws AppCatalogException {
+    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
+            throws AppCatalogException {
         return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
     }
 
@@ -417,7 +463,8 @@ public class AiravataService {
         return registryService.getUserResourceProfile(userId, gatewayId);
     }
 
-    public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile) throws AppCatalogException {
+    public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
+            throws AppCatalogException {
         return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
     }
 
@@ -433,7 +480,8 @@ public class AiravataService {
         registryService.updateGroupResourceProfile(groupResourceProfile);
     }
 
-    public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds) throws AppCatalogException {
+    public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
+            throws AppCatalogException {
         return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
     }
 
@@ -445,23 +493,29 @@ public class AiravataService {
         return registryService.isGatewayGroupsExists(gatewayId);
     }
 
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws RegistryException {
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
+            throws RegistryException {
         registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
     }
 
-    public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) throws RegistryException {
+    public void updateResourceScheduleing(
+            String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
+            throws RegistryException {
         registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
     }
 
-    public String registerApplicationDeployment(String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
+    public String registerApplicationDeployment(
+            String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
         return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
     }
 
-    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws AppCatalogException {
+    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
+            throws AppCatalogException {
         return registryService.getApplicationDeployment(appDeploymentId);
     }
 
-    public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
+    public boolean updateApplicationDeployment(
+            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
         return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
     }
 
@@ -473,15 +527,18 @@ public class AiravataService {
         return registryService.getApplicationInterface(appInterfaceId);
     }
 
-    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
+            throws AppCatalogException {
         return registryService.getApplicationDeployments(appModuleId);
     }
 
-    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) throws AppCatalogException {
+    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
+            throws AppCatalogException {
         return registryService.registerApplicationInterface(gatewayId, applicationInterface);
     }
 
-    public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws AppCatalogException {
+    public boolean updateApplicationInterface(
+            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws AppCatalogException {
         return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
     }
 
@@ -493,7 +550,8 @@ public class AiravataService {
         return registryService.getAllApplicationInterfaceNames(gatewayId);
     }
 
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws AppCatalogException {
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
+            throws AppCatalogException {
         return registryService.getAllApplicationInterfaces(gatewayId);
     }
 
@@ -501,7 +559,8 @@ public class AiravataService {
         return registryService.getApplicationInputs(appInterfaceId);
     }
 
-    public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule) throws AppCatalogException {
+    public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
+            throws AppCatalogException {
         return registryService.registerApplicationModule(gatewayId, applicationModule);
     }
 
@@ -509,7 +568,8 @@ public class AiravataService {
         return registryService.getApplicationModule(appModuleId);
     }
 
-    public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws AppCatalogException {
+    public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
+            throws AppCatalogException {
         return registryService.updateApplicationModule(appModuleId, applicationModule);
     }
 
@@ -521,7 +581,9 @@ public class AiravataService {
         return registryService.deleteApplicationModule(appModuleId);
     }
 
-    public List<ApplicationModule> getAccessibleAppModules(String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
+    public List<ApplicationModule> getAccessibleAppModules(
+            String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds)
+            throws AppCatalogException {
         return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
     }
 
@@ -529,9 +591,7 @@ public class AiravataService {
      * Get accessible app modules with sharing registry integration
      */
     public List<ApplicationModule> getAccessibleAppModulesWithSharing(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String gatewayId) throws Exception {
+            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String gatewayId) throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         List<String> accessibleAppDeploymentIds = new ArrayList<>();
         if (ServerSettings.isEnableSharing()) {
@@ -556,13 +616,12 @@ public class AiravataService {
                     .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
         }
         List<String> accessibleComputeResourceIds = new ArrayList<>();
-        List<GroupResourceProfile> groupResourceProfileList = getGroupResourceListWithSharing(
-                sharingClient, authzToken, gatewayId);
+        List<GroupResourceProfile> groupResourceProfileList =
+                getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
         for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
             List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                     groupResourceProfile.getComputePreferences();
-            for (GroupComputeResourcePreference groupComputeResourcePreference :
-                    groupComputeResourcePreferenceList) {
+            for (GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
                 accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
             }
         }
@@ -577,27 +636,35 @@ public class AiravataService {
         return registryService.getJobDetails(airavataExperimentId);
     }
 
-    public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws AppCatalogException {
+    public String addLocalSubmissionDetails(
+            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws AppCatalogException {
         return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
     }
 
-    public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addSSHJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
-    public String addSSHForkJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addSSHForkJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
-    public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
+    public String addCloudJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission)
+            throws AppCatalogException {
         return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
     }
 
-    public String addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
+    public String addUNICOREJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
+            throws AppCatalogException {
         return registryService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
     }
 
-    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws AppCatalogException {
+    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
+            throws AppCatalogException {
         return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
     }
 
@@ -617,19 +684,23 @@ public class AiravataService {
         return registryService.getUnicoreJobSubmission(jobSubmissionId);
     }
 
-    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
+    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
+            throws AppCatalogException {
         return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
     }
 
-    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
+    public boolean updateCloudJobSubmissionDetails(
+            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission);
     }
 
-    public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
+    public boolean updateUnicoreJobSubmissionDetails(
+            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
         return registryService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
     }
 
-    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException {
+    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
+            throws AppCatalogException {
         return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
     }
 
@@ -637,7 +708,8 @@ public class AiravataService {
         return registryService.registerResourceJobManager(resourceJobManager);
     }
 
-    public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
+    public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
+            throws AppCatalogException {
         return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
     }
 
@@ -649,31 +721,41 @@ public class AiravataService {
         return registryService.deleteResourceJobManager(resourceJobManagerId);
     }
 
-    public String addPasswordCredential(CredentialStoreService.Client csClient, PasswordCredential passwordCredential) throws CredentialStoreException, TException {
+    public String addPasswordCredential(CredentialStoreService.Client csClient, PasswordCredential passwordCredential)
+            throws CredentialStoreException, TException {
         return csClient.addPasswordCredential(passwordCredential);
     }
 
-    public void deletePWDCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId) throws CredentialStoreException, TException {
+    public void deletePWDCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+            throws CredentialStoreException, TException {
         csClient.deletePWDCredential(tokenId, gatewayId);
     }
 
-    public boolean deleteSSHCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId) throws CredentialStoreException, TException {
+    public boolean deleteSSHCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+            throws CredentialStoreException, TException {
         return csClient.deleteSSHCredential(tokenId, gatewayId);
     }
 
-    public CredentialSummary getCredentialSummary(CredentialStoreService.Client csClient, String tokenId, String gatewayId) throws CredentialStoreException, TException {
+    public CredentialSummary getCredentialSummary(
+            CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+            throws CredentialStoreException, TException {
         return csClient.getCredentialSummary(tokenId, gatewayId);
     }
 
-    public List<CredentialSummary> getAllCredentialSummaries(CredentialStoreService.Client csClient, SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException, TException {
+    public List<CredentialSummary> getAllCredentialSummaries(
+            CredentialStoreService.Client csClient, SummaryType type, List<String> accessibleTokenIds, String gatewayId)
+            throws CredentialStoreException, TException {
         return csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
     }
 
-    public String addLocalDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, LOCALDataMovement localDataMovement) throws AppCatalogException {
+    public String addLocalDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, LOCALDataMovement localDataMovement)
+            throws AppCatalogException {
         return registryService.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement);
     }
 
-    public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement) throws AppCatalogException {
+    public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
+            throws AppCatalogException {
         return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
     }
 
@@ -681,15 +763,19 @@ public class AiravataService {
         return registryService.getLocalDataMovement(dataMovementId);
     }
 
-    public String addSCPDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement) throws AppCatalogException {
+    public String addSCPDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
+            throws AppCatalogException {
         return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
     }
 
-    public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement) throws AppCatalogException {
+    public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
+            throws AppCatalogException {
         return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
     }
 
-    public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset) throws RegistryException {
+    public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
+            throws RegistryException {
         return registryService.getUserProjects(gatewayId, userName, limit, offset);
     }
 
@@ -702,7 +788,8 @@ public class AiravataService {
             String gatewayId,
             String userName,
             int limit,
-            int offset) throws Exception {
+            int offset)
+            throws Exception {
         if (ServerSettings.isEnableSharing()) {
             // user projects + user accessible projects
             List<String> accessibleProjectIds = new ArrayList<>();
@@ -725,8 +812,7 @@ public class AiravataService {
             if (accessibleProjectIds.isEmpty()) {
                 result = Collections.emptyList();
             } else {
-                result = searchProjects(
-                        gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+                result = searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
             }
             return result;
         } else {
@@ -734,8 +820,11 @@ public class AiravataService {
         }
     }
 
-    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
-        return registryService.getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
+            String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
+            throws AppCatalogException {
+        return registryService.getAccessibleApplicationDeployments(
+                gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
     /**
@@ -745,7 +834,8 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String gatewayId,
-            ResourcePermissionType permissionType) throws Exception {
+            ResourcePermissionType permissionType)
+            throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         List<String> accessibleAppDeploymentIds = new ArrayList<>();
         if (ServerSettings.isEnableSharing()) {
@@ -770,13 +860,12 @@ public class AiravataService {
                     .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
         }
         List<String> accessibleComputeResourceIds = new ArrayList<>();
-        List<GroupResourceProfile> groupResourceProfileList = getGroupResourceListWithSharing(
-                sharingClient, authzToken, gatewayId);
+        List<GroupResourceProfile> groupResourceProfileList =
+                getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
         for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
             List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                     groupResourceProfile.getComputePreferences();
-            for (GroupComputeResourcePreference groupComputeResourcePreference :
-                    groupComputeResourcePreferenceList) {
+            for (GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
                 accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
             }
         }
@@ -787,11 +876,18 @@ public class AiravataService {
         return registryService.getAppModuleDeployedResources(appModuleId);
     }
 
-    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(String appModuleId, String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds) throws AppCatalogException {
-        return registryService.getAccessibleApplicationDeploymentsForAppModule(gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
+            String appModuleId,
+            String gatewayId,
+            List<String> accessibleAppDeploymentIds,
+            List<String> accessibleComputeResourceIds)
+            throws AppCatalogException {
+        return registryService.getAccessibleApplicationDeploymentsForAppModule(
+                gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws AppCatalogException {
+    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
+            throws AppCatalogException {
         return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
     }
 
@@ -799,11 +895,14 @@ public class AiravataService {
         return registryService.getSCPDataMovement(dataMovementId);
     }
 
-    public String addUnicoreDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
+    public String addUnicoreDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
+            throws AppCatalogException {
         return registryService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement);
     }
 
-    public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
+    public boolean updateUnicoreDataMovementDetails(
+            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
         return registryService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
     }
 
@@ -811,11 +910,14 @@ public class AiravataService {
         return registryService.getUnicoreDataMovement(dataMovementId);
     }
 
-    public String addGridFTPDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
+    public String addGridFTPDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
+            throws AppCatalogException {
         return registryService.addGridFTPDataMovementDetails(resourceId, dmType, priorityOrder, gridFTPDataMovement);
     }
 
-    public boolean updateGridFTPDataMovementDetails(String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
+    public boolean updateGridFTPDataMovementDetails(
+            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         return registryService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
     }
 
@@ -823,7 +925,8 @@ public class AiravataService {
         return registryService.getGridFTPDataMovement(dataMovementId);
     }
 
-    public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType) throws AppCatalogException {
+    public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
+            throws AppCatalogException {
         return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
     }
 
@@ -831,23 +934,31 @@ public class AiravataService {
         return registryService.deleteBatchQueue(computeResourceId, queueName);
     }
 
-    public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws AppCatalogException {
-        return registryService.addGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+    public boolean addGatewayComputeResourcePreference(
+            String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
+            throws AppCatalogException {
+        return registryService.addGatewayComputeResourcePreference(
+                gatewayID, computeResourceId, computeResourcePreference);
     }
 
-    public boolean addGatewayStoragePreference(String gatewayID, String storageResourceId, StoragePreference dataStoragePreference) throws AppCatalogException {
+    public boolean addGatewayStoragePreference(
+            String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
+            throws AppCatalogException {
         return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
     }
 
-    public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws AppCatalogException {
+    public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
+            throws AppCatalogException {
         return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
-    public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId) throws AppCatalogException {
+    public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId)
+            throws AppCatalogException {
         return registryService.getGatewayStoragePreference(gatewayID, storageId);
     }
 
-    public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws AppCatalogException {
+    public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID)
+            throws AppCatalogException {
         return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
     }
 
@@ -859,15 +970,20 @@ public class AiravataService {
         return registryService.getAllGatewayResourceProfiles();
     }
 
-    public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws AppCatalogException {
-        return registryService.updateGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+    public boolean updateGatewayComputeResourcePreference(
+            String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
+            throws AppCatalogException {
+        return registryService.updateGatewayComputeResourcePreference(
+                gatewayID, computeResourceId, computeResourcePreference);
     }
 
-    public boolean updateGatewayStoragePreference(String gatewayID, String storageId, StoragePreference dataStoragePreference) throws AppCatalogException {
+    public boolean updateGatewayStoragePreference(
+            String gatewayID, String storageId, StoragePreference dataStoragePreference) throws AppCatalogException {
         return registryService.updateGatewayStoragePreference(gatewayID, storageId, dataStoragePreference);
     }
 
-    public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws AppCatalogException {
+    public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
+            throws AppCatalogException {
         return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
@@ -883,27 +999,40 @@ public class AiravataService {
         return registryService.isUserResourceProfileExists(userId, gatewayId);
     }
 
-    public boolean addUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws AppCatalogException {
-        return registryService.addUserComputeResourcePreference(userId, gatewayID, computeResourceId, userComputeResourcePreference);
+    public boolean addUserComputeResourcePreference(
+            String userId,
+            String gatewayID,
+            String computeResourceId,
+            UserComputeResourcePreference userComputeResourcePreference)
+            throws AppCatalogException {
+        return registryService.addUserComputeResourcePreference(
+                userId, gatewayID, computeResourceId, userComputeResourcePreference);
     }
 
-    public boolean addUserStoragePreference(String userId, String gatewayID, String userStorageResourceId, UserStoragePreference dataStoragePreference) throws AppCatalogException {
-        return registryService.addUserStoragePreference(userId, gatewayID, userStorageResourceId, dataStoragePreference);
+    public boolean addUserStoragePreference(
+            String userId, String gatewayID, String userStorageResourceId, UserStoragePreference dataStoragePreference)
+            throws AppCatalogException {
+        return registryService.addUserStoragePreference(
+                userId, gatewayID, userStorageResourceId, dataStoragePreference);
     }
 
-    public UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId) throws AppCatalogException {
+    public UserComputeResourcePreference getUserComputeResourcePreference(
+            String userId, String gatewayID, String userComputeResourceId) throws AppCatalogException {
         return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
     }
 
-    public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String userStorageId) throws AppCatalogException {
+    public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String userStorageId)
+            throws AppCatalogException {
         return registryService.getUserStoragePreference(userId, gatewayID, userStorageId);
     }
 
-    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID) throws AppCatalogException {
+    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
+            throws AppCatalogException {
         return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
     }
 
-    public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID) throws AppCatalogException {
+    public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
+            throws AppCatalogException {
         return registryService.getAllUserStoragePreferences(userId, gatewayID);
     }
 
@@ -911,19 +1040,29 @@ public class AiravataService {
         return registryService.getAllUserResourceProfiles();
     }
 
-    public boolean updateUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws AppCatalogException {
-        return registryService.updateUserComputeResourcePreference(userId, gatewayID, computeResourceId, userComputeResourcePreference);
+    public boolean updateUserComputeResourcePreference(
+            String userId,
+            String gatewayID,
+            String computeResourceId,
+            UserComputeResourcePreference userComputeResourcePreference)
+            throws AppCatalogException {
+        return registryService.updateUserComputeResourcePreference(
+                userId, gatewayID, computeResourceId, userComputeResourcePreference);
     }
 
-    public boolean updateUserStoragePreference(String userId, String gatewayID, String userStorageId, UserStoragePreference userStoragePreference) throws AppCatalogException {
+    public boolean updateUserStoragePreference(
+            String userId, String gatewayID, String userStorageId, UserStoragePreference userStoragePreference)
+            throws AppCatalogException {
         return registryService.updateUserStoragePreference(userId, gatewayID, userStorageId, userStoragePreference);
     }
 
-    public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId) throws AppCatalogException {
+    public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId)
+            throws AppCatalogException {
         return registryService.deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
     }
 
-    public boolean deleteUserStoragePreference(String userId, String gatewayID, String userStorageId) throws AppCatalogException {
+    public boolean deleteUserStoragePreference(String userId, String gatewayID, String userStorageId)
+            throws AppCatalogException {
         return registryService.deleteUserStoragePreference(userId, gatewayID, userStorageId);
     }
 
@@ -939,11 +1078,13 @@ public class AiravataService {
         return registryService.removeGroupResourceProfile(groupResourceProfileId);
     }
 
-    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId) throws AppCatalogException {
+    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
+            throws AppCatalogException {
         return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
     }
 
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) throws AppCatalogException {
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(
+            String computeResourceId, String groupResourceProfileId) throws AppCatalogException {
         return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
     }
 
@@ -963,15 +1104,18 @@ public class AiravataService {
         return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
     }
 
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId) throws AppCatalogException {
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
+            throws AppCatalogException {
         return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
     }
 
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId) throws AppCatalogException {
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
+            throws AppCatalogException {
         return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
     }
 
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId) throws AppCatalogException {
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
+            throws AppCatalogException {
         return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
     }
 
@@ -995,7 +1139,8 @@ public class AiravataService {
         return registryService.getParsingTemplate(templateId, gatewayId);
     }
 
-    public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId) throws RegistryException {
+    public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId)
+            throws RegistryException {
         return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
     }
 
@@ -1024,8 +1169,8 @@ public class AiravataService {
         }
     }
 
-    public void createManageSharingPermissionTypeIfMissing(
-            SharingRegistryService.Client sharingClient, String domainId) throws TException {
+    public void createManageSharingPermissionTypeIfMissing(SharingRegistryService.Client sharingClient, String domainId)
+            throws TException {
         // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING permission, so add it if missing
         String permissionTypeId = domainId + ":MANAGE_SHARING";
         try {
@@ -1045,8 +1190,7 @@ public class AiravataService {
         }
     }
 
-    public void shareEntityWithAdminGatewayGroups(
-            SharingRegistryService.Client sharingClient, Entity entity)
+    public void shareEntityWithAdminGatewayGroups(SharingRegistryService.Client sharingClient, Entity entity)
             throws TException {
         final String domainId = entity.getDomainId();
         GatewayGroups gatewayGroups = retrieveGatewayGroups(domainId);
@@ -1109,7 +1253,8 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             String gatewayId,
             String userName,
-            String description) throws Exception {
+            String description)
+            throws Exception {
         SSHCredential sshCredential = new SSHCredential();
         sshCredential.setUsername(userName);
         sshCredential.setGatewayId(gatewayId);
@@ -1126,8 +1271,8 @@ public class AiravataService {
             sharingClient.createEntity(entity);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
-            logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description
-                    + "]");
+            logger.error(
+                    "Rolling back ssh key creation for user " + userName + " and description [" + description + "]");
             csClient.deleteSSHCredential(key, gatewayId);
             throw new Exception("Failed to create sharing registry record", ex);
         }
@@ -1142,7 +1287,8 @@ public class AiravataService {
             String userName,
             String loginUserName,
             String password,
-            String description) throws Exception {
+            String description)
+            throws Exception {
         PasswordCredential pwdCredential = new PasswordCredential();
         pwdCredential.setPortalUserName(userName);
         pwdCredential.setLoginUserName(loginUserName);
@@ -1161,8 +1307,8 @@ public class AiravataService {
             sharingClient.createEntity(entity);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
-            logger.error("Rolling back password registration for user " + userName + " and description ["
-                    + description + "]");
+            logger.error("Rolling back password registration for user " + userName + " and description [" + description
+                    + "]");
             try {
                 deletePWDCredential(csClient, key, gatewayId);
             } catch (Exception rollbackEx) {
@@ -1170,8 +1316,8 @@ public class AiravataService {
             }
             throw new Exception("Failed to create sharing registry record", ex);
         }
-        logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : "
-                + loginUserName);
+        logger.debug(
+                "Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + loginUserName);
         return key;
     }
 
@@ -1180,7 +1326,8 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String tokenId,
-            String gatewayId) throws Exception {
+            String gatewayId)
+            throws Exception {
         if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
             throw new Exception("User does not have permission to access this resource");
         }
@@ -1195,7 +1342,8 @@ public class AiravataService {
             AuthzToken authzToken,
             SummaryType type,
             String gatewayId,
-            String userName) throws Exception {
+            String userName)
+            throws Exception {
         List<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -1218,9 +1366,9 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String airavataCredStoreToken,
-            String gatewayId) throws Exception {
-        if (!userHasAccessInternal(
-                sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            String gatewayId)
+            throws Exception {
+        if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
             throw new Exception("User does not have permission to delete this resource.");
         }
         logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
@@ -1233,9 +1381,9 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String airavataCredStoreToken,
-            String gatewayId) throws Exception {
-        if (!userHasAccessInternal(
-                sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            String gatewayId)
+            throws Exception {
+        if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
             throw new Exception("User does not have permission to delete this resource.");
         }
         logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
@@ -1246,9 +1394,7 @@ public class AiravataService {
 
     // Project management methods with sharing registry integration
     public String createProjectWithSharing(
-            SharingRegistryService.Client sharingClient,
-            String gatewayId,
-            Project project) throws Exception {
+            SharingRegistryService.Client sharingClient, String gatewayId, Project project) throws Exception {
         String projectId = createProject(gatewayId, project);
         if (ServerSettings.isEnableSharing()) {
             try {
@@ -1280,21 +1426,15 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String projectId,
-            Project updatedProject) throws Exception {
+            Project updatedProject)
+            throws Exception {
         Project existingProject = getProject(projectId);
         if (ServerSettings.isEnableSharing()
-                        && !authzToken
-                                .getClaimsMap()
-                                .get(Constants.USER_NAME)
-                                .equals(existingProject.getOwner())
-                || !authzToken
-                        .getClaimsMap()
-                        .get(Constants.GATEWAY_ID)
-                        .equals(existingProject.getGatewayId())) {
+                        && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingProject.getOwner())
+                || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingProject.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(
-                    gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
                 throw new Exception("User does not have permission to access this resource");
             }
         }
@@ -1309,23 +1449,14 @@ public class AiravataService {
     }
 
     public boolean deleteProjectWithAuth(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String projectId) throws Exception {
+            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String projectId) throws Exception {
         Project existingProject = getProject(projectId);
         if (ServerSettings.isEnableSharing()
-                        && !authzToken
-                                .getClaimsMap()
-                                .get(Constants.USER_NAME)
-                                .equals(existingProject.getOwner())
-                || !authzToken
-                        .getClaimsMap()
-                        .get(Constants.GATEWAY_ID)
-                        .equals(existingProject.getGatewayId())) {
+                        && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingProject.getOwner())
+                || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingProject.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(
-                    gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
                 throw new Exception("User does not have permission to access this resource");
             }
         }
@@ -1335,24 +1466,15 @@ public class AiravataService {
     }
 
     public Project getProjectWithAuth(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String projectId) throws Exception {
+            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String projectId) throws Exception {
         Project project = getProject(projectId);
-        if (authzToken
-                        .getClaimsMap()
-                        .get(Constants.USER_NAME)
-                        .equals(project.getOwner())
-                && authzToken
-                        .getClaimsMap()
-                        .get(Constants.GATEWAY_ID)
-                        .equals(project.getGatewayId())) {
+        if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(project.getOwner())
+                && authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(project.getGatewayId())) {
             return project;
         } else if (ServerSettings.isEnableSharing()) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(
-                    gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
                 throw new Exception("User does not have permission to access this resource");
             }
             return project;
@@ -1363,9 +1485,8 @@ public class AiravataService {
 
     // Experiment management methods with sharing registry integration
     public String createExperimentWithSharing(
-            SharingRegistryService.Client sharingClient,
-            String gatewayId,
-            ExperimentModel experiment) throws Exception {
+            SharingRegistryService.Client sharingClient, String gatewayId, ExperimentModel experiment)
+            throws Exception {
         String experimentId = createExperiment(gatewayId, experiment);
 
         if (ServerSettings.isEnableSharing()) {
@@ -1402,9 +1523,10 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             Publisher statusPublisher,
             String gatewayId,
-            ExperimentModel experiment) throws Exception {
+            ExperimentModel experiment)
+            throws Exception {
         String experimentId = createExperimentWithSharing(sharingClient, gatewayId, experiment);
-        
+
         if (statusPublisher != null) {
             ExperimentStatusChangeEvent event =
                     new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
@@ -1413,7 +1535,7 @@ public class AiravataService {
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             statusPublisher.publish(messageContext);
         }
-        
+
         return experimentId;
     }
 
@@ -1421,7 +1543,8 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String gatewayId,
-            ExperimentModel experiment) throws Exception {
+            ExperimentModel experiment)
+            throws Exception {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
         // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
@@ -1443,8 +1566,7 @@ public class AiravataService {
 
         // Verify user has READ access to Application Deployment
         final String appInterfaceId = experiment.getExecutionId();
-        ApplicationInterfaceDescription applicationInterfaceDescription =
-                getApplicationInterface(appInterfaceId);
+        ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(appInterfaceId);
 
         List<String> appModuleIds = applicationInterfaceDescription.getApplicationModules();
         // Assume that there is only one app module for this interface
@@ -1471,8 +1593,8 @@ public class AiravataService {
                             + " doesn't have access to app deployment " + appDeploymentId);
                 }
             } else {
-                throw new Exception("Application deployment doesn't exist for application interface "
-                        + appInterfaceId + " and host " + resourceHostId + " in gateway " + gatewayId);
+                throw new Exception("Application deployment doesn't exist for application interface " + appInterfaceId
+                        + " and host " + resourceHostId + " in gateway " + gatewayId);
             }
         } else if (experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null
                 && !experiment
@@ -1500,29 +1622,21 @@ public class AiravataService {
     }
 
     public boolean deleteExperimentWithAuth(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String experimentId) throws Exception {
+            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String experimentId) throws Exception {
         ExperimentModel experimentModel = getExperiment(experimentId);
 
         if (ServerSettings.isEnableSharing()
-                        && !authzToken
-                                .getClaimsMap()
-                                .get(Constants.USER_NAME)
-                                .equals(experimentModel.getUserName())
-                || !authzToken
-                        .getClaimsMap()
-                        .get(Constants.GATEWAY_ID)
-                        .equals(experimentModel.getGatewayId())) {
+                        && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(experimentModel.getUserName())
+                || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(
-                    gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
                 throw new Exception("User does not have permission to access this resource");
             }
         }
 
-        if (!(experimentModel.getExperimentStatus().get(0).getState() == org.apache.airavata.model.status.ExperimentState.CREATED)) {
+        if (!(experimentModel.getExperimentStatus().get(0).getState()
+                == org.apache.airavata.model.status.ExperimentState.CREATED)) {
             throw new Exception("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
         }
         return deleteExperiment(experimentId);
@@ -1541,9 +1655,8 @@ public class AiravataService {
 
     // Gateway management methods with sharing registry integration
     public String addGatewayWithSharing(
-            RegistryService.Client registryClient,
-            SharingRegistryService.Client sharingClient,
-            Gateway gateway) throws Exception {
+            RegistryService.Client registryClient, SharingRegistryService.Client sharingClient, Gateway gateway)
+            throws Exception {
         String gatewayId = registryClient.addGateway(gateway);
         Domain domain = new Domain();
         domain.setDomainId(gateway.getGatewayId());
@@ -1614,7 +1727,8 @@ public class AiravataService {
     }
 
     // Event publishing methods
-    public void publishExperimentSubmitEvent(Publisher experimentPublisher, String gatewayId, String experimentId) throws Exception {
+    public void publishExperimentSubmitEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
+            throws Exception {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(
                 event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
@@ -1622,7 +1736,8 @@ public class AiravataService {
         experimentPublisher.publish(messageContext);
     }
 
-    public void publishExperimentCancelEvent(Publisher experimentPublisher, String gatewayId, String experimentId) throws Exception {
+    public void publishExperimentCancelEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
+            throws Exception {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(
                 event,
@@ -1634,7 +1749,8 @@ public class AiravataService {
     }
 
     public void publishExperimentIntermediateOutputsEvent(
-            Publisher experimentPublisher, String gatewayId, String experimentId, List<String> outputNames) throws Exception {
+            Publisher experimentPublisher, String gatewayId, String experimentId, List<String> outputNames)
+            throws Exception {
         ExperimentIntermediateOutputsEvent event =
                 new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
         MessageContext messageContext = new MessageContext(
@@ -1654,10 +1770,11 @@ public class AiravataService {
             AuthzToken authzToken,
             String airavataExperimentId,
             List<String> outputNames,
-            Publisher experimentPublisher) throws Exception {
+            Publisher experimentPublisher)
+            throws Exception {
         // Verify that user has WRITE access to experiment
-        final boolean hasAccess = userHasAccessInternal(
-                sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+        final boolean hasAccess =
+                userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
         if (!hasAccess) {
             throw new Exception("User does not have WRITE access to this experiment");
         }
@@ -1708,10 +1825,11 @@ public class AiravataService {
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String airavataExperimentId,
-            List<String> outputNames) throws Exception {
+            List<String> outputNames)
+            throws Exception {
         // Verify that user has READ access to experiment
-        final boolean hasAccess = userHasAccessInternal(
-                sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.READ);
+        final boolean hasAccess =
+                userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.READ);
         if (!hasAccess) {
             throw new Exception("User does not have READ access to this experiment");
         }
@@ -1724,13 +1842,11 @@ public class AiravataService {
         Optional<ProcessModel> mostRecentOutputFetchProcess = existingExperiment.getProcesses().stream()
                 .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
                 .filter(p -> {
-                    List<String> names = p.getProcessOutputs().stream()
-                            .map(o -> o.getName())
-                            .collect(Collectors.toList());
+                    List<String> names =
+                            p.getProcessOutputs().stream().map(o -> o.getName()).collect(Collectors.toList());
                     return new HashSet<>(names).equals(new HashSet<>(outputNames));
                 })
-                .sorted(Comparator.comparing(ProcessModel::getLastUpdateTime)
-                        .reversed())
+                .sorted(Comparator.comparing(ProcessModel::getLastUpdateTime).reversed())
                 .findFirst();
 
         if (!mostRecentOutputFetchProcess.isPresent()) {
@@ -1756,7 +1872,8 @@ public class AiravataService {
             String gatewayId,
             String resourceId,
             ResourcePermissionType permissionType,
-            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction) throws Exception {
+            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction)
+            throws Exception {
         HashSet<String> accessibleUsers = new HashSet<>();
         if (permissionType.equals(ResourcePermissionType.WRITE)) {
             userListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream()
@@ -1785,7 +1902,8 @@ public class AiravataService {
             String gatewayId,
             String resourceId,
             ResourcePermissionType permissionType,
-            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction) throws Exception {
+            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction)
+            throws Exception {
         HashSet<String> accessibleGroups = new HashSet<>();
         if (permissionType.equals(ResourcePermissionType.WRITE)) {
             groupListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream()
@@ -1808,7 +1926,8 @@ public class AiravataService {
             AuthzToken authzToken,
             String resourceId,
             ResourcePermissionType permissionType,
-            boolean directlySharedOnly) throws Exception {
+            boolean directlySharedOnly)
+            throws Exception {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction;
         if (directlySharedOnly) {
@@ -1839,7 +1958,8 @@ public class AiravataService {
             AuthzToken authzToken,
             String resourceId,
             ResourcePermissionType permissionType,
-            boolean directlySharedOnly) throws Exception {
+            boolean directlySharedOnly)
+            throws Exception {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction;
         if (directlySharedOnly) {
@@ -1866,7 +1986,8 @@ public class AiravataService {
     public String createGroupResourceProfileWithSharing(
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
-            GroupResourceProfile groupResourceProfile) throws Exception {
+            GroupResourceProfile groupResourceProfile)
+            throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         validateGroupResourceProfile(sharingClient, authzToken, groupResourceProfile);
         String groupResourceProfileId = createGroupResourceProfile(groupResourceProfile);
@@ -1899,7 +2020,8 @@ public class AiravataService {
     public void validateGroupResourceProfile(
             SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
-            GroupResourceProfile groupResourceProfile) throws Exception {
+            GroupResourceProfile groupResourceProfile)
+            throws Exception {
         Set<String> tokenIds = new HashSet<>();
         if (groupResourceProfile.getComputePreferences() != null) {
             for (GroupComputeResourcePreference groupComputeResourcePreference :
@@ -1925,7 +2047,8 @@ public class AiravataService {
             AuthzToken authzToken,
             String gatewayId,
             String airavataExperimentId,
-            Publisher experimentPublisher) throws Exception {
+            Publisher experimentPublisher)
+            throws Exception {
         ExperimentModel experiment = getExperiment(airavataExperimentId);
 
         if (experiment == null) {
@@ -1935,8 +2058,8 @@ public class AiravataService {
 
         // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
         if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
-            List<GroupResourceProfile> groupResourceProfiles = getGroupResourceListWithSharing(
-                    sharingClient, authzToken, gatewayId);
+            List<GroupResourceProfile> groupResourceProfiles =
+                    getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
             if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
                 // Just pick the first one
                 final String groupResourceProfileId =
@@ -1962,9 +2085,7 @@ public class AiravataService {
      * Get group resource list with sharing registry integration
      */
     public List<GroupResourceProfile> getGroupResourceListWithSharing(
-            SharingRegistryService.Client sharingClient,
-            AuthzToken authzToken,
-            String gatewayId) throws Exception {
+            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String gatewayId) throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         List<String> accessibleGroupResProfileIds = new ArrayList<>();
         if (ServerSettings.isEnableSharing()) {
@@ -1987,4 +2108,3 @@ public class AiravataService {
         return getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
     }
 }
-

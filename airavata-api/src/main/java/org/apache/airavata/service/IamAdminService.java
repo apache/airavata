@@ -254,8 +254,7 @@ public class IamAdminService {
         }
     }
 
-    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
-            throws IamAdminServicesException {
+    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -309,4 +308,3 @@ public class IamAdminService {
         }
     }
 }
-

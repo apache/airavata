@@ -105,7 +105,8 @@ public class GroupManagerService {
         }
     }
 
-    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException {
+    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId)
+            throws GroupManagerServiceException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
@@ -394,4 +395,3 @@ public class GroupManagerService {
         return sharingClient.addUsersToGroup(domainId, userIds, groupId);
     }
 }
-

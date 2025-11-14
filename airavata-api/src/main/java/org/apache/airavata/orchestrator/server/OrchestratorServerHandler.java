@@ -19,50 +19,24 @@
 */
 package org.apache.airavata.orchestrator.server;
 
-import java.text.MessageFormat;
 import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
-import org.apache.airavata.common.logging.MDCUtil;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.messaging.core.*;
-import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
-import org.apache.airavata.metascheduler.process.scheduling.api.ProcessSchedulerImpl;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
-import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.service.OrchestratorRegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -70,7 +44,6 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -110,7 +83,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             statusSubscribe = getStatusSubscriber();
             experimentSubscriber = getExperimentSubscriber();
             startCurator();
-            orchestratorService = new org.apache.airavata.service.OrchestratorService(orchestratorRegistryService, orchestrator, curatorClient, publisher);
+            orchestratorService = new org.apache.airavata.service.OrchestratorService(
+                    orchestratorRegistryService, orchestrator, curatorClient, publisher);
         } catch (OrchestratorException | AiravataException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -223,7 +197,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-
     private String getAiravataUserName() {
         return airavataUserName;
     }
@@ -253,8 +226,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-
-
     private class ProcessStatusHandler implements MessageHandler {
         /**
          * This method only handle MessageType.PROCESS type messages.
@@ -281,8 +252,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             + "Error" + " while prcessing process status change event");
                     throw new RuntimeException("Error while updating experiment status", e);
                 } catch (Exception e) {
-                    log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType()
-                            + "Error" + " while prcessing process status change event", e);
+                    log.error(
+                            "Message Id : " + message.getMessageId() + ", Message type : " + message.getType() + "Error"
+                                    + " while prcessing process status change event",
+                            e);
                     throw new RuntimeException("Error while updating experiment status", e);
                 }
             } else {
@@ -374,7 +347,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-
     private void startCurator() throws ApplicationSettingsException {
         String connectionSting = ServerSettings.getZookeeperConnection();
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
@@ -385,5 +357,4 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     public String getExperimentNodePath(String experimentId) {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
     }
-
 }
