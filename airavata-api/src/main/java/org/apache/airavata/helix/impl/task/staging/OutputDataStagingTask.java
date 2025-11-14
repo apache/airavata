@@ -92,9 +92,9 @@ public class OutputDataStagingTask extends DataStagingTask {
 
                 if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
                     StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
-                    String inputPath = outputStoragePref.getFileSystemRootLocation();
-                    String destFilePath = buildDestinationFilePath(inputPath, sourceFileName);
-                    logger.info("Output storage path for task id " + getTaskId() + " is " + destFilePath);
+                    String outputStorageRoot = outputStoragePref.getFileSystemRootLocation();
+                    String destFilePath = buildDestinationFilePath(outputStorageRoot, sourceFileName);
+                    logger.info("Output storage path for task id {} is {}", getTaskId(), destFilePath);
                     destinationURI = new URI(
                             "file",
                             outputStoragePref.getLoginUserName(),

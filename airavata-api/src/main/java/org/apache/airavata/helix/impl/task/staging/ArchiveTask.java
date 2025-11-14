@@ -68,10 +68,10 @@ public class ArchiveTask extends DataStagingTask {
                     tarDirPath = sourceURI.getPath();
                 }
 
-                String inputPath = getTaskContext()
+                String outputStorageRoot = getTaskContext()
                         .getOutputGatewayStorageResourcePreference()
                         .getFileSystemRootLocation();
-                destFilePath = buildDestinationFilePath(inputPath, archiveFileName);
+                destFilePath = buildDestinationFilePath(outputStorageRoot, archiveFileName);
 
                 tarCreationAbsPath = tarDirPath + File.separator + archiveFileName;
             } catch (URISyntaxException e) {
