@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
@@ -33,6 +34,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourcePr
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.registry.core.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceReservationEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefPK;
@@ -115,6 +117,7 @@ public class GroupResourceProfileRepository
         updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
         updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
         GroupResourceProfileEntity groupResourceProfileEntity = mapToEntity(updatedGroupResourceProfile);
+        patchComputePrefEntities(groupResourceProfileEntity, updatedGroupResourceProfile);
         updateChildrenEntities(groupResourceProfileEntity);
         GroupResourceProfile groupResourceProfile = mergeEntity(groupResourceProfileEntity);
         return groupResourceProfile.getGroupResourceProfileId();
@@ -133,6 +136,43 @@ public class GroupResourceProfileRepository
                             r.setGroupComputeResourcePref(slurm);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private void patchComputePrefEntities(GroupResourceProfileEntity destEntity, GroupResourceProfile sourceModel) {
+        if (destEntity.getComputePreferences() == null || sourceModel.getComputePreferences() == null) {
+            return;
+        }
+        Map<String, GroupComputeResourcePreference> sourcePrefs = new HashMap<>();
+        for (GroupComputeResourcePreference pref : sourceModel.getComputePreferences()) {
+            sourcePrefs.put(pref.getComputeResourceId(), pref);
+        }
+
+        for (GroupComputeResourcePrefEntity prefEntity : destEntity.getComputePreferences()) {
+            GroupComputeResourcePreference sourcePref = sourcePrefs.get(prefEntity.getComputeResourceId());
+            if (sourcePref == null || !sourcePref.isSetSpecificPreferences()) {
+                continue;
+            }
+            if (prefEntity instanceof SlurmGroupComputeResourcePrefEntity slurmEntity) {
+                if (sourcePref.getSpecificPreferences().isSetSlurm()) {
+                    SlurmComputeResourcePreference slurm =
+                            sourcePref.getSpecificPreferences().getSlurm();
+                    slurmEntity.setAllocationProjectNumber(slurm.getAllocationProjectNumber());
+                    slurmEntity.setPreferredBatchQueue(slurm.getPreferredBatchQueue());
+                    slurmEntity.setQualityOfService(slurm.getQualityOfService());
+                    slurmEntity.setUsageReportingGatewayId(slurm.getUsageReportingGatewayId());
+                    slurmEntity.setSshAccountProvisioner(slurm.getSshAccountProvisioner());
+                    slurmEntity.setSshAccountProvisionerAdditionalInfo(slurm.getSshAccountProvisionerAdditionalInfo());
+                }
+            } else if (prefEntity instanceof AWSGroupComputeResourcePrefEntity awsEntity) {
+                if (sourcePref.getSpecificPreferences().isSetAws()) {
+                    AwsComputeResourcePreference aws =
+                            sourcePref.getSpecificPreferences().getAws();
+                    awsEntity.setRegion(aws.getRegion());
+                    awsEntity.setPreferredAmiId(aws.getPreferredAmiId());
+                    awsEntity.setPreferredInstanceType(aws.getPreferredInstanceType());
                 }
             }
         }
