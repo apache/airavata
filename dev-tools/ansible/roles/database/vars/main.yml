@@ -30,6 +30,7 @@ mysql_databases:
     - "{{ credential_store }}"
     - "{{ sharing_catalog }}"
     - "{{ profile_service }}"
+    - "{{ research_catalog }}"
 
 mysql_privs:
     - "{{ app_catalog }}.*:ALL"
@@ -39,5 +40,6 @@ mysql_privs:
     - "{{ credential_store }}.*:ALL"
     - "{{ sharing_catalog }}.*:ALL"
     - "{{ profile_service }}.*:ALL"
+    - "{{ research_catalog }}.*:ALL"
 
 ...

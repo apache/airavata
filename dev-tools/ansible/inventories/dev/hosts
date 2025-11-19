@@ -1,6 +1,9 @@
 [airavata_servers]
 dev-server
 
+[keycloak]
+dev-server
+
 [zookeeper]
 dev-server
 
@@ -9,4 +12,3 @@ dev-server
 
 [database]
 dev-server
-
