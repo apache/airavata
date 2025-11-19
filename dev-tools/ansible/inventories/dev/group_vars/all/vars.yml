@@ -3,16 +3,21 @@
 
 # Airavata version and build settings
 airavata_version: "0.21-SNAPSHOT"
-git_branch: "master"
+git_branch: "airavata-deployment"
 airavata_git_repo: "https://github.com/apache/airavata.git"
 airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
-deployment_dir: "/home/{{ deploy_user }}/airavata"
+deployment_dir: "/home/{{ deploy_user }}/airavata-deployment"
 
 # Maven version (should match common role's apache_maven_version)
 apache_maven_version: "apache-maven-3.9.11"
 
 # Deployment user
-deploy_user: "exouser"
+deploy_user: "airavata"
+
+# System user/group (used by env_setup and other roles)
+user: "airavata"
+group: "airavata"
+user_home: "/home/{{ user }}"
 
 # Service ports
 api_server_port: 8930
@@ -71,18 +76,43 @@ email_based_monitoring_period: 10000
 # Kafka and RabbitMQ
 kafka_broker_url: "localhost:9092"
 restproxy_broker_url: "localhost:9092"
+rabbitmq_port: 5672
 rabbitmq_status_exchange_name: "status_exchange"
 rabbitmq_process_exchange_name: "process_exchange"
 rabbitmq_experiment_exchange_name: "experiment_exchange"
 experiment_launch_queue: "experiment_launch"
 
 # Zookeeper connection
-zookeeper_connection: "localhost:2181"
+zookeeper_client_port: 2181
+zookeeper_connection: "localhost:{{ zookeeper_client_port }}"
 embedded_zk: false
+# Zookeeper AdminServer port (default is 8081 to avoid conflict with Keycloak on 8080)
+# Can be overridden here if needed
+# zookeeper_admin_server_port: 8081
+
+# API Server public hostname (for HAProxy SSL termination)
+api_server_public_hostname: "api2.dev.cybershuttle.org"
+
+# Let's Encrypt email for certificate notifications
+letsencrypt_email: "admin@cybershuttle.org"
+
+# Keycloak virtual host hostname (for Let's Encrypt certificate)
+keycloak_vhost_servername: "auth2.dev.cybershuttle.org"
+
+# Firewall subnets (for allowing access to services)
+# These can be restricted to specific IP ranges for security
+# For test environment, using 0.0.0.0/0 to allow all (adjust for production)
+zk_subnets:
+  - "0.0.0.0/0"
+kafka_subnets:
+  - "0.0.0.0/0"
+rabbitmq_subnets:
+  - "0.0.0.0/0"
+db_subnets:
+  - "0.0.0.0/0"
 
 # Other non-sensitive configuration
 enable_sharing: true
 enable_validation: true
 enable_realtime_monitor: true
 job_notification_enable: true
-

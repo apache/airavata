@@ -22,50 +22,13 @@
 ################################################################################
 # Setup and run rabbitmq
 
-# Ubuntu: Add RabbitMQ APT repository
-- name: Install prerequisites for RabbitMQ (Ubuntu)
+# Ubuntu/Debian – install RabbitMQ and Erlang from distro repositories
+- name: Install RabbitMQ prerequisites (Ubuntu/Debian)
   apt:
     name:
-      - curl
-      - gnupg2
+      - erlang
+      - rabbitmq-server
     state: present
-    update_cache: yes
-  become: yes
-  when: ansible_os_family == "Debian"
-
-- name: Add RabbitMQ Erlang signing key (Ubuntu)
-  shell: curl -fsSL https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key | gpg --dearmor -o /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg
-  become: yes
-  when: ansible_os_family == "Debian"
-  args:
-    creates: /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg
-
-- name: Add RabbitMQ server signing key (Ubuntu)
-  shell: curl -fsSL https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key | gpg --dearmor -o /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg
-  become: yes
-  when: ansible_os_family == "Debian"
-  args:
-    creates: /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg
-
-- name: Map Ubuntu release to RabbitMQ repository codename (use jammy for noble)
-  set_fact:
-    rabbitmq_ubuntu_codename: "{{ 'jammy' if ansible_distribution_release == 'noble' else ansible_distribution_release }}"
-  when: ansible_os_family == "Debian"
-
-- name: Add RabbitMQ Erlang repository (Ubuntu)
-  apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg arch=amd64] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ rabbitmq_ubuntu_codename | default('jammy') }} main"
-    state: present
-    filename: rabbitmq-erlang
-    update_cache: yes
-  become: yes
-  when: ansible_os_family == "Debian"
-
-- name: Add RabbitMQ server repository (Ubuntu)
-  apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg arch=amd64] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu {{ rabbitmq_ubuntu_codename | default('jammy') }} main"
-    state: present
-    filename: rabbitmq-server
     update_cache: yes
   become: yes
   when: ansible_os_family == "Debian"
