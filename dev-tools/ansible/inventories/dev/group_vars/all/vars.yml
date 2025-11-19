@@ -15,8 +15,8 @@ apache_maven_version: "apache-maven-3.9.11"
 deploy_user: "airavata"
 
 # System user/group (used by env_setup and other roles)
-user: "airavata"
-group: "airavata"
+user: "{{ deploy_user }}"
+group: "{{ deploy_user }}"
 user_home: "/home/{{ user }}"
 
 # Service ports
@@ -39,6 +39,7 @@ workflow_catalog: "workflow_catalog"
 sharing_catalog: "sharing_catalog"
 credential_store: "credential_store"
 profile_service: "profile_service"
+research_catalog: "research_catalog"
 
 # Database drivers
 registry_jdbc_driver: "org.mariadb.jdbc.Driver"
@@ -50,13 +51,13 @@ profile_service_jdbc_driver: "org.mariadb.jdbc.Driver"
 credential_store_jdbc_driver: "org.mariadb.jdbc.Driver"
 
 # Database users
-registry_jdbc_user: "root"
-appcatalog_jdbc_user: "root"
-replicacatalog_jdbc_user: "root"
-workflowcatalog_jdbc_user: "root"
-sharingcatalog_jdbc_user: "root"
-profile_service_jdbc_user: "root"
-credential_store_jdbc_user: "root"
+registry_jdbc_user: "{{ db_user | default('airavata') }}"
+appcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+replicacatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+workflowcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+sharingcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+profile_service_jdbc_user: "{{ db_user | default('airavata') }}"
+credential_store_jdbc_user: "{{ db_user | default('airavata') }}"
 
 # Paths
 local_data_location: "/home/{{ deploy_user }}/temp-storage"

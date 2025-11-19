@@ -254,3 +254,34 @@
   changed_when: false
   tags:
     - stop
+
+- name: Define Airavata service log directories
+  set_fact:
+    airavata_log_dirs:
+      - { service: "API Server", path: "{{ api_server_dir }}/logs" }
+      - { service: "Agent Service", path: "{{ agent_service_dir }}/logs" }
+      - { service: "Research Service", path: "{{ research_service_dir }}/logs" }
+      - { service: "File Server", path: "{{ file_server_dir }}/logs" }
+      - { service: "REST Proxy", path: "{{ restproxy_dir }}/logs" }
+  when: archive_logs_on_stop | bool
+
+- name: Check log directories
+  stat:
+    path: "{{ item.path }}"
+  register: airavata_log_dir_stats
+  loop: "{{ airavata_log_dirs }}"
+  when: archive_logs_on_stop | bool
+
+- name: Archive Airavata service logs
+  shell: |
+    ts=$(date +%Y%m%d%H%M%S)
+    dest_dir="{{ item.item.path }}/archive/${ts}"
+    mkdir -p "${dest_dir}"
+    find "{{ item.item.path }}" -maxdepth 1 -type f -name "*.log*" -print -exec mv {} "${dest_dir}/" \;
+  args:
+    executable: /bin/bash
+  loop: "{{ airavata_log_dir_stats.results }}"
+  when: archive_logs_on_stop | bool and item.stat.exists
+  changed_when: true
+  tags:
+    - stop

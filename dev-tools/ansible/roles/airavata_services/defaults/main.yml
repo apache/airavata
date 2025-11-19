@@ -156,6 +156,9 @@ email_based_monitor_folder_name: "INBOX"
 email_expiration_minutes: 60
 email_based_monitoring_period: 10000
 
+# Log management
+archive_logs_on_stop: true
+
 # Pre-workflow manager configuration
 pre_workflow_manager_loadbalance_clusters: false
 pre_workflow_manager_monitoring_enabled: true
