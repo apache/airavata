@@ -26,7 +26,11 @@
   become: yes
 
 - name: Create a new user "{{ user }}"
-  user: name={{ user }} group={{ group }}
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    shell: /bin/bash
+    create_home: yes
   become: yes
 
 - name: Install Firewalld (RedHat)
