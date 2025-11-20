@@ -32,14 +32,22 @@
     ServerName {{ keycloak_vhost_servername }}
 
     RequestHeader set X-Forwarded-Proto "https"
-    ProxyPass / "http://localhost:8080/"
-    ProxyPassReverse / "http://localhost:8080/"
+    RequestHeader set X-Forwarded-Port "443"
+    ProxyPass / "https://localhost:8443/"
+    ProxyPassReverse / "https://localhost:8443/"
     ProxyPreserveHost On
+    SSLProxyEngine On
+    SSLProxyVerify none
     # See https://issues.redhat.com/browse/KEYCLOAK-3067 for more info
     LimitRequestFieldSize 65536
 
+{% if ansible_os_family == "Debian" %}
+    ErrorLog /var/log/apache2/keycloak.error.log
+    CustomLog /var/log/apache2/keycloak.requests.log combined
+{% else %}
     ErrorLog /var/log/httpd/keycloak.error.log
     CustomLog /var/log/httpd/keycloak.requests.log combined
+{% endif %}
 
     SSLEngine on
     # Disable SSLv3 which is vulnerable to the POODLE attack

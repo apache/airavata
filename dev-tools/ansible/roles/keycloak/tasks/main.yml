@@ -29,26 +29,31 @@
   become: yes
   when: ansible_distribution == "Rocky"
 
-- name: Install java
-  yum: name="java-1.8.0-openjdk-devel" state=present update_cache=yes
+- name: Install Apache2 (Ubuntu/Debian)
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Enable Apache2 required modules (Ubuntu/Debian)
+  shell: |
+    a2enmod proxy
+    a2enmod proxy_http
+    a2enmod ssl
+    a2enmod rewrite
+    a2enmod headers
+  become: yes
+  when: ansible_os_family == "Debian"
+  ignore_errors: yes
+
+- name: Install java (Keycloak uses system Java, already installed by java role)
+  debug:
+    msg: "Java is already installed by the java role. Keycloak will use {{ keycloak_java_home | default(java_home) }}"
   become: yes
   tags:
     - always
-
-# NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
-- name: set {{ keycloak_java_home }} as default
-  alternatives:
-    name="{{ item.exe }}"
-    link="/usr/bin/{{ item.exe }}"
-    path="{{ item.path }}/{{ item.exe }}"
-  with_items:
-    - { path: "{{ keycloak_java_home }}/bin", exe: 'java' }
-    - { path: "{{ keycloak_java_home }}/bin", exe: 'keytool' }
-    - { path: "{{ keycloak_java_home }}/bin", exe: 'javac' }
-    - { path: "{{ keycloak_java_home }}/bin", exe: 'javadoc' }
-  become: yes
-  tags:
-       - always
 
 - name: set selinux to permissive
   selinux: state=permissive policy=targeted
@@ -61,6 +66,7 @@
     state: yes
     persistent: yes
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Enable http/s service on public zone (for certbot verification)
   firewalld: service={{ item }} permanent=true state=enabled zone=public immediate=True
@@ -70,13 +76,33 @@
   become: yes
 
 # TODO: it seems like a virtual host config of some type is needed for the following to work
-- name: copy basic virtual host file so certbot can verify domain
+- name: copy basic virtual host file so certbot can verify domain (RedHat)
   template: src="basic-vhost.conf.j2" dest=/etc/httpd/conf.d/basic-vhost.conf backup=yes
   become: yes
+  when: ansible_os_family == "RedHat"
 
-- name: start httpd
+- name: copy basic virtual host file so certbot can verify domain (Ubuntu/Debian)
+  template: src="basic-vhost.conf.j2" dest=/etc/apache2/sites-available/basic-vhost.conf backup=yes
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Enable basic virtual host (Ubuntu/Debian)
+  file:
+    src: /etc/apache2/sites-available/basic-vhost.conf
+    dest: /etc/apache2/sites-enabled/basic-vhost.conf
+    state: link
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: start httpd (RedHat)
   service: name=httpd state=started enabled=yes
   become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: start apache2 (Ubuntu/Debian)
+  service: name=apache2 state=started enabled=yes
+  become: yes
+  when: ansible_os_family == "Debian"
 
 - name: check if SSL certificate exists
   stat:
@@ -89,26 +115,89 @@
   become: yes
   when: not stat_ssl_cert_result.stat.exists
 
-- name: Add keycloak virtual host config that proxies to the keycloak server
+- name: Add keycloak virtual host config that proxies to the keycloak server (RedHat)
   template: src="vhost.conf.j2" dest=/etc/httpd/conf.d/keycloak.conf backup=yes
   become: yes
+  when: ansible_os_family == "RedHat"
   notify:
     - restart httpd
 
+- name: Add keycloak virtual host config that proxies to the keycloak server (Ubuntu/Debian)
+  template: src="vhost.conf.j2" dest=/etc/apache2/sites-available/keycloak.conf backup=yes
+  become: yes
+  when: ansible_os_family == "Debian"
+  notify:
+    - restart apache2
+
+- name: Enable keycloak virtual host (Ubuntu/Debian)
+  file:
+    src: /etc/apache2/sites-available/keycloak.conf
+    dest: /etc/apache2/sites-enabled/keycloak.conf
+    state: link
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Restart Apache2 to apply Keycloak virtual host (Ubuntu/Debian)
+  service: name=apache2 state=reloaded enabled=yes
+  become: yes
+  when: ansible_os_family == "Debian"
+
 # Download keycloak distribution
-- name: Download and unarchive keycloak
-  unarchive:  src="{{ keycloak_downlaod_url }}"
-              dest="{{ user_home }}"
-              copy=no
-              owner="{{ user }}"
-              group="{{ group }}"
-              creates="{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+- name: Check if Keycloak is already installed (Keycloak 24+ uses Quarkus)
+  stat:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/bin/kc.sh"
+  register: keycloak_installed_quarkus
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
   tags:
-       - always
+    - always
+
+- name: Check if Keycloak is already installed (Legacy WildFly versions)
+  stat:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+  register: keycloak_installed_wildfly
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
+  tags:
+    - always
+
+- name: Download Keycloak distribution
+  shell: |
+    cd /tmp && \
+    (wget -q --no-check-certificate "{{ keycloak_downlaod_url }}" -O "{{ keycloak_install_dir }}.tar.gz" || \
+     curl -k -L "{{ keycloak_downlaod_url }}" -o "{{ keycloak_install_dir }}.tar.gz") && \
+    tar -xzf "{{ keycloak_install_dir }}.tar.gz" -C "{{ user_home }}" && \
+    chown -R {{ user }}:{{ group }} "{{ user_home }}/{{ keycloak_install_dir }}" && \
+    rm -f "/tmp/{{ keycloak_install_dir }}.tar.gz"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/bin/kc.sh"
+  become: true
+  become_user: root
+  when: (keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24) and not (keycloak_installed_quarkus.stat.exists | default(false))
+  tags:
+    - always
+
+- name: Download Keycloak distribution (Legacy WildFly versions)
+  shell: |
+    cd /tmp && \
+    (wget -q --no-check-certificate "{{ keycloak_downlaod_url }}" -O "{{ keycloak_install_dir }}.tar.gz" || \
+     curl -k -L "{{ keycloak_downlaod_url }}" -o "{{ keycloak_install_dir }}.tar.gz") && \
+    tar -xzf "{{ keycloak_install_dir }}.tar.gz" -C "{{ user_home }}" && \
+    chown -R {{ user }}:{{ group }} "{{ user_home }}/{{ keycloak_install_dir }}" && \
+    rm -f "/tmp/{{ keycloak_install_dir }}.tar.gz"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+  become: true
+  become_user: root
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24 and not (keycloak_installed_wildfly.stat.exists | default(false))
+  tags:
+    - always
 
 # <---------------------------- Setup Mysql database for keycloak ------------------->
+# Note: Keycloak 24+ (Quarkus) uses environment variables
+# Legacy versions (< 24) use WildFly modules for JDBC driver
 
 # create folder structure
 - file:
@@ -117,26 +206,41 @@
     mode: 0755
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
+
+- name: Check if MySQL connector JAR already exists
+  stat:
+    path: "{{user_home}}/{{ mysql_connector_dir_name }}/{{ keycloak_db_connector_name }}"
+  register: mysql_connector_jar
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
+  tags:
+    - always
 
 - name: Download and unarchive mysql jdbc driver
-  unarchive: src="{{ mysql_db_connector_download_url }}"
-      dest="{{ user_home }}"
-      copy=no
-      owner="{{ user }}"
-      group="{{ group }}"
-      creates="{{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar"
-      validate_certs=False
+  shell: |
+    cd /tmp && \
+    (wget -q --no-check-certificate "{{ mysql_db_connector_download_url }}" -O "{{ mysql_connector_archive_name }}" || \
+     curl -k -L "{{ mysql_db_connector_download_url }}" -o "{{ mysql_connector_archive_name }}") && \
+    tar -xzf "{{ mysql_connector_archive_name }}" -C "{{ user_home }}" && \
+    chown -R {{ user }}:{{ group }} "{{ user_home }}/{{ mysql_connector_dir_name }}" && \
+    rm -f "/tmp/{{ mysql_connector_archive_name }}"
+  args:
+    creates: "{{user_home}}/{{ mysql_connector_dir_name }}/{{ keycloak_db_connector_name }}"
   become: true
-  become_user: "{{ user }}"
+  become_user: root
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24 and not (mysql_connector_jar.stat.exists | default(false))
   tags:
-       - always
+    - always
 
 - name: move jdbc connector to keycloak module
-  command: mv {{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
+  command: mv {{user_home}}/{{ mysql_connector_dir_name }}/{{ keycloak_db_connector_name }} {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
 
@@ -149,15 +253,57 @@
     mode="u=rw,g=r,o=r"
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is defined and keycloak_version.split('.')[0] | int < 24
   tags:
        - always
+
+# Keycloak 24+ uses Quarkus and requires database drivers in the providers directory
+- name: Create providers directory for Keycloak 24+ (Quarkus)
+  file:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/providers"
+    state: directory
+    mode: 0755
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+  tags:
+    - always
+
+- name: Check if MariaDB connector JAR already exists in providers (Keycloak 24+)
+  stat:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  register: mariadb_connector_providers
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+  tags:
+    - always
+
+- name: Download MariaDB Java Client for Keycloak 24+ (Quarkus)
+  shell: |
+    curl -fsSL --max-time 300 --retry 3 --retry-delay 5 \
+      "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/3.3.3/mariadb-java-client-3.3.3.jar" \
+      -o "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar" && \
+    chmod 644 "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar" && \
+    chown {{ user }}:{{ group }} "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  become: true
+  when: >
+    (keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24) and
+    not (mariadb_connector_providers.stat.exists | default(false))
+  tags:
+    - always
 
 # </---------------------------- Setup Mysql database for keycloak - END ------------------->
 
 # <---------------------------- Server Configuration -------------------------------->
 
 # Only Executed for standalone mode (SSL Configuration & MySql)
-- name: copy keycloak configuration file (Standalone)
+# Note: Keycloak 24.0.0+ uses Quarkus and doesn't use standalone.xml anymore
+# Configuration is done via environment variables and command-line arguments
+# This task is skipped for Keycloak 24.0.0+
+- name: copy keycloak configuration file (Standalone) - Legacy versions only
   template: >
     src=standalone.xml.j2
     dest="{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/standalone.xml"
@@ -166,12 +312,59 @@
     mode="u=rw,g=r,o=r"
   become: true
   become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int < 24
   tags:
        - standalone
 
 # </------------------------------ Server Configuration ends ---------------------------->
 
 # <---------- setup init script for keycloak, starts the server after reboot ----------->
+
+- name: Detect Java home if not already set (Ubuntu/Debian)
+  shell: find /usr/lib/jvm -name java -type f -path "*/bin/java" 2>/dev/null | head -1 | xargs dirname | xargs dirname
+  register: detected_java_home
+  changed_when: false
+  when: ansible_os_family == "Debian"
+
+- name: Verify detected Java path exists
+  stat:
+    path: "{{ detected_java_home.stdout }}/bin/java"
+  register: detected_java_path_check
+  changed_when: false
+  when: ansible_os_family == "Debian" and detected_java_home.stdout != ""
+
+- name: Set detected Java home for Keycloak (Ubuntu/Debian)
+  set_fact:
+    keycloak_java_home: "{{ detected_java_home.stdout }}"
+  when: ansible_os_family == "Debian" and detected_java_home.stdout != "" and (detected_java_path_check.stat.exists | default(false))
+
+- name: Ensure Keycloak user can read Let's Encrypt certificates
+  shell: |
+    setfacl -m u:{{ user }}:r /etc/letsencrypt/live/{{ keycloak_vhost_servername }}/cert.pem
+    setfacl -m u:{{ user }}:r /etc/letsencrypt/live/{{ keycloak_vhost_servername }}/privkey.pem
+    setfacl -m u:{{ user }}:r /etc/letsencrypt/live/{{ keycloak_vhost_servername }}/fullchain.pem
+  become: yes
+  become_user: root
+  when: ansible_os_family == "Debian"
+  ignore_errors: yes
+
+- name: Copy Keycloak certificates to user-accessible location (alternative if ACL fails)
+  shell: |
+    mkdir -p {{ user_home }}/keycloak-certs
+    cp /etc/letsencrypt/live/{{ keycloak_vhost_servername }}/cert.pem {{ user_home }}/keycloak-certs/
+    cp /etc/letsencrypt/live/{{ keycloak_vhost_servername }}/privkey.pem {{ user_home }}/keycloak-certs/
+    chown -R {{ user }}:{{ group }} {{ user_home }}/keycloak-certs
+    chmod 600 {{ user_home }}/keycloak-certs/*
+  become: yes
+  become_user: root
+  when: ansible_os_family == "Debian"
+  register: cert_copy_result
+
+- name: Update Keycloak certificate paths to use user-accessible location
+  set_fact:
+    keycloak_ssl_certificate_file: "{{ user_home }}/keycloak-certs/cert.pem"
+    keycloak_ssl_certificate_key_file: "{{ user_home }}/keycloak-certs/privkey.pem"
+  when: ansible_os_family == "Debian" and cert_copy_result is succeeded
 
 - name: copy keycloak.service systemd unit file
   template:
@@ -181,20 +374,77 @@
   become: yes
   tags:
        - always
+  notify:
+    - reload systemd daemon
+
+- name: ensure Keycloak realm import directory exists
+  file:
+    path: "{{ keycloak_realm_import_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+  become: yes
+  when: keycloak_realm_import_enabled | bool
+
+- name: render Keycloak realm definition for import
+  template:
+    src: "{{ keycloak_realm_import_src }}"
+    dest: "{{ keycloak_realm_import_path }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0644"
+  become: yes
+  when: keycloak_realm_import_enabled | bool
+
+- name: import Keycloak realm definition
+  shell: >
+    {{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh import
+    --file {{ keycloak_realm_import_path }}
+    --override=true
+    && touch {{ keycloak_realm_import_marker }}
+  args:
+    executable: /bin/bash
+    chdir: "{{ user_home }}/{{ keycloak_install_dir }}"
+    creates: "{{ keycloak_realm_import_marker }}"
+  become: yes
+  become_user: "{{ user }}"
+  environment:
+    KC_DB: "{{ keycloak_db_vendor }}"
+    KC_DB_URL: "{{ keycloak_quarkus_db_url }}"
+    KC_DB_URL_HOST: "{{ keycloak_db_host }}"
+    KC_DB_URL_PORT: "{{ keycloak_db_port }}"
+    KC_DB_URL_DATABASE: "{{ keycloak_db_schema_name }}"
+    KC_DB_USERNAME: "{{ keycloak_db_username }}"
+    KC_DB_PASSWORD: "{{ keycloak_db_password }}"
+  when:
+    - keycloak_realm_import_enabled | bool
+    - keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
 
 
 # </---------- setup init script for keycloak, starts the server after reboot ----------->
 
 # <-------------------------Initialize a new admin for keycloak-------------------------->
+# Note: Keycloak 24.0.0+ uses kc.sh and environment variables for admin setup
+# The admin user is created on first start using KEYCLOAK_ADMIN and KEYCLOAK_ADMIN_PASSWORD
+# For legacy versions (< 24.0.0), use add-user-keycloak.sh
 
-- name: Add master realm admin account
+- name: Add master realm admin account (Legacy versions)
   command: "{{user_home}}/{{ keycloak_install_dir }}/bin/add-user-keycloak.sh -r master -u {{ keycloak_master_account_username }} -p {{ keycloak_master_account_password }}"
   args:
     creates: "{{user_home}}/{{ keycloak_install_dir }}/standalone/configuration/keycloak-add-user.json"
   become: yes
   become_user: root
+  when: keycloak_version is not defined or (keycloak_version | default('0.0.0')).split('.')[0] | int < 24
   tags:
-       - always
+    - always
+
+- name: Note admin user creation for Keycloak 24
+  debug:
+    msg: "For Keycloak 24.0.0 and above, admin user will be created on first start via environment variables in systemd service"
+  when: keycloak_version is defined and (keycloak_version.split('.')[0] | int >= 24)
+  tags:
+    - always
 
 
 # <--------------------------start keycloak Identity server------------------------------>
