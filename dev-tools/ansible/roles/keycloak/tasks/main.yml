@@ -377,6 +377,50 @@
   notify:
     - reload systemd daemon
 
+- name: ensure Keycloak realm import directory exists
+  file:
+    path: "{{ keycloak_realm_import_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+  become: yes
+  when: keycloak_realm_import_enabled | bool
+
+- name: render Keycloak realm definition for import
+  template:
+    src: "{{ keycloak_realm_import_src }}"
+    dest: "{{ keycloak_realm_import_path }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0644"
+  become: yes
+  when: keycloak_realm_import_enabled | bool
+
+- name: import Keycloak realm definition
+  shell: >
+    {{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh import
+    --file {{ keycloak_realm_import_path }}
+    --override=true
+    && touch {{ keycloak_realm_import_marker }}
+  args:
+    executable: /bin/bash
+    chdir: "{{ user_home }}/{{ keycloak_install_dir }}"
+    creates: "{{ keycloak_realm_import_marker }}"
+  become: yes
+  become_user: "{{ user }}"
+  environment:
+    KC_DB: "{{ keycloak_db_vendor }}"
+    KC_DB_URL: "{{ keycloak_quarkus_db_url }}"
+    KC_DB_URL_HOST: "{{ keycloak_db_host }}"
+    KC_DB_URL_PORT: "{{ keycloak_db_port }}"
+    KC_DB_URL_DATABASE: "{{ keycloak_db_schema_name }}"
+    KC_DB_USERNAME: "{{ keycloak_db_username }}"
+    KC_DB_PASSWORD: "{{ keycloak_db_password }}"
+  when:
+    - keycloak_realm_import_enabled | bool
+    - keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+
 
 # </---------- setup init script for keycloak, starts the server after reboot ----------->
 

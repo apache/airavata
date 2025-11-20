@@ -50,6 +50,15 @@ keycloak_db_username: "CHANGEME"
 keycloak_db_password: "CHANGEME"
 keycloak_db_pool_size: "20"
 
+keycloak_realm_import_enabled: true
+keycloak_realm_name: "default"
+keycloak_realm_import_src: "realm-default.json.j2"
+keycloak_realm_import_dir: "{{ user_home }}/keycloak-realms"
+keycloak_realm_import_filename: "realm-default.json"
+keycloak_realm_import_path: "{{ keycloak_realm_import_dir }}/{{ keycloak_realm_import_filename }}"
+keycloak_realm_import_marker: "{{ keycloak_realm_import_dir }}/.imported-{{ keycloak_realm_name }}"
+keycloak_logout_url: "https://{{ keycloak_vhost_servername }}/"
+
 keycloak_vhost_servername: "changeme.org"
 keycloak_ssl_certificate_file: "/etc/letsencrypt/live/{{ keycloak_vhost_servername }}/cert.pem"
 keycloak_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ keycloak_vhost_servername }}/fullchain.pem"
