@@ -21,10 +21,37 @@ sharingcatalog_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/sharing_catalog"
 profile_service_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/profile_service"
 credential_store_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/credential_store"
 
-# IAM credentials
+# IAM/Keycloak credentials
 iam_server_url: "https://CHANGEME_IAM_SERVER"
 iam_admin_username: "admin"
 iam_admin_password: "CHANGEME_IAM_PASSWORD"
+
+# Keycloak admin account (for Keycloak 24+)
+keycloak_master_account_username: "admin"
+keycloak_master_account_password: "CHANGEME_KEYCLOAK_ADMIN_PASSWORD"
+
+# Keycloak database credentials
+keycloak_db_username: "keycloak"
+keycloak_db_password: "CHANGEME_KEYCLOAK_DB_PASSWORD"
+
+# Keycloak realm client configuration
+# PGA client (for Airavata Gateway)
+keycloak_pga_client_secret: "CHANGEME_PGA_CLIENT_SECRET"
+keycloak_pga_redirect_uris:
+  - "https://CHANGEME_GATEWAY_HOST/callback-url"
+  - "https://CHANGEME_GATEWAY_HOST/"
+  - "https://CHANGEME_GATEWAY_HOST/auth/callback*"
+keycloak_pga_web_origins:
+  - "https://CHANGEME_GATEWAY_HOST"
+
+# CS-JupyterLab client
+keycloak_jupyterlab_client_secret: "CHANGEME_JUPYTERLAB_CLIENT_SECRET"
+keycloak_jupyterlab_redirect_uris:
+  - "https://CHANGEME_JUPYTERLAB_HOST/hub/oauth_callback"
+
+# CILogon identity provider
+keycloak_cilogon_client_id: "CHANGEME_CILOGON_CLIENT_ID"
+keycloak_cilogon_client_secret: "CHANGEME_CILOGON_CLIENT_SECRET"
 
 # OAuth secrets
 default_registry_password: "CHANGEME_REGISTRY_PASSWORD"
