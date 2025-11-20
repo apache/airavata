@@ -855,12 +855,8 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1",
-      "redirectUris": [
-        "",
-        "/*",
-        "http://airavata.host:20000/hub/oauth_callback"
-      ],
+      "secret": "{{ keycloak_jupyterlab_client_secret }}",
+      "redirectUris": {{ keycloak_jupyterlab_redirect_uris | to_json }},
       "webOrigins": [
         "/*"
       ],
@@ -1039,14 +1035,9 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "m36BXQIxX3j3VILadeHMK5IvbOeRlCCc",
-      "redirectUris": [
-        "http://airavata.host:8008/callback*",
-        "https://airavata.host:8009/auth/callback*"
-      ],
-      "webOrigins": [
-        "*"
-      ],
+      "secret": "{{ keycloak_pga_client_secret }}",
+      "redirectUris": {{ keycloak_pga_redirect_uris | to_json }},
+      "webOrigins": {{ keycloak_pga_web_origins | to_json }},
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -1968,14 +1959,14 @@
         "loginHint": "false",
         "clientAuthMethod": "client_secret_post",
         "syncMode": "IMPORT",
-        "clientSecret": "xNgIF3suP5NFRiBnyDdBnJRP5XG3D5fgCfg5jxdkMlBUOe735UDXayX3OpOh2ra-zXY1VZKV4uou2qYw4WvAOg",
+        "clientSecret": "{{ keycloak_cilogon_client_secret }}",
         "allowedClockSkew": "0",
         "defaultScope": "openid profile email org.cilogon.userinfo",
         "guiOrder": "1",
         "hideOnLoginPage": "false",
         "userInfoUrl": "https://cilogon.org/oauth2/userinfo",
         "validateSignature": "false",
-        "clientId": "cilogon:/client_id/392446d1fe4981d3eab8adb6da2a1952",
+        "clientId": "{{ keycloak_cilogon_client_id }}",
         "uiLocales": "false",
         "disableNonce": "false",
         "sendClientIdOnLogout": "false",

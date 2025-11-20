@@ -59,6 +59,26 @@ keycloak_realm_import_path: "{{ keycloak_realm_import_dir }}/{{ keycloak_realm_i
 keycloak_realm_import_marker: "{{ keycloak_realm_import_dir }}/.imported-{{ keycloak_realm_name }}"
 keycloak_logout_url: "https://{{ keycloak_vhost_servername }}/"
 
+# Realm client configuration - Override in inventories/<env>/group_vars/all/vault.yml
+# PGA client configuration
+keycloak_pga_client_secret: "CHANGEME_PGA_CLIENT_SECRET"
+keycloak_pga_redirect_uris:
+  - "http://airavata.host:8008/callback*"
+  - "https://airavata.host:8009/auth/callback*"
+keycloak_pga_web_origins:
+  - "*"
+
+# CS-JupyterLab client configuration
+keycloak_jupyterlab_client_secret: "CHANGEME_JUPYTERLAB_CLIENT_SECRET"
+keycloak_jupyterlab_redirect_uris:
+  - ""
+  - "/*"
+  - "http://airavata.host:20000/hub/oauth_callback"
+
+# CILogon identity provider configuration
+keycloak_cilogon_client_id: "CHANGEME_CILOGON_CLIENT_ID"
+keycloak_cilogon_client_secret: "CHANGEME_CILOGON_CLIENT_SECRET"
+
 keycloak_vhost_servername: "changeme.org"
 keycloak_ssl_certificate_file: "/etc/letsencrypt/live/{{ keycloak_vhost_servername }}/cert.pem"
 keycloak_ssl_certificate_chain_file: "/etc/letsencrypt/live/{{ keycloak_vhost_servername }}/fullchain.pem"
