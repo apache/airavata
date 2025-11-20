@@ -257,6 +257,44 @@
   tags:
        - always
 
+# Keycloak 24+ uses Quarkus and requires database drivers in the providers directory
+- name: Create providers directory for Keycloak 24+ (Quarkus)
+  file:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/providers"
+    state: directory
+    mode: 0755
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+  tags:
+    - always
+
+- name: Check if MariaDB connector JAR already exists in providers (Keycloak 24+)
+  stat:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  register: mariadb_connector_providers
+  become: true
+  become_user: "{{ user }}"
+  when: keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24
+  tags:
+    - always
+
+- name: Download MariaDB Java Client for Keycloak 24+ (Quarkus)
+  shell: |
+    curl -fsSL --max-time 300 --retry 3 --retry-delay 5 \
+      "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/3.3.3/mariadb-java-client-3.3.3.jar" \
+      -o "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar" && \
+    chmod 644 "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar" && \
+    chown {{ user }}:{{ group }} "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/providers/mariadb-java-client.jar"
+  become: true
+  when: >
+    (keycloak_version is not defined or keycloak_version.split('.')[0] | int >= 24) and
+    not (mariadb_connector_providers.stat.exists | default(false))
+  tags:
+    - always
+
 # </---------------------------- Setup Mysql database for keycloak - END ------------------->
 
 # <---------------------------- Server Configuration -------------------------------->
@@ -336,6 +374,8 @@
   become: yes
   tags:
        - always
+  notify:
+    - reload systemd daemon
 
 
 # </---------- setup init script for keycloak, starts the server after reboot ----------->

@@ -31,3 +31,7 @@
   service: name=apache2 state=reloaded enabled=yes
   become: yes
   when: ansible_os_family == "Debian"
+
+- name: reload systemd daemon
+  command: systemctl daemon-reload
+  become: yes

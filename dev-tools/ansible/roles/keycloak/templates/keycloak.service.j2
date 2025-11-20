@@ -30,8 +30,8 @@ Environment="JAVA_HOME={{ keycloak_java_home }}"
 Environment="KEYCLOAK_ADMIN={{ keycloak_master_account_username }}"
 Environment="KEYCLOAK_ADMIN_PASSWORD={{ keycloak_master_account_password }}"
 # Database configuration for Keycloak 24+ (Quarkus)
-Environment="KC_DB=mariadb"
-Environment="KC_DB_URL=jdbc:mariadb://{{ keycloak_db_host }}:{{ keycloak_db_port }}/{{ keycloak_db_schema_name }}"
+Environment="KC_DB={{ keycloak_db_vendor }}"
+Environment="KC_DB_URL={{ keycloak_quarkus_db_url }}"
 Environment="KC_DB_URL_HOST={{ keycloak_db_host }}"
 Environment="KC_DB_URL_PORT={{ keycloak_db_port }}"
 Environment="KC_DB_URL_DATABASE={{ keycloak_db_schema_name }}"
@@ -41,7 +41,7 @@ Environment="KC_DB_POOL_INITIAL_SIZE={{ keycloak_db_pool_size | default('20') }}
 Environment="KC_DB_POOL_MIN_SIZE={{ keycloak_db_pool_size | default('20') }}"
 Environment="KC_DB_POOL_MAX_SIZE={{ keycloak_db_pool_size | default('20') }}"
 {% endif %}
-ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh start --optimized --hostname={{ keycloak_vhost_servername }} --hostname-strict=false --proxy=edge --http-enabled=false --https-certificate-file={{ keycloak_ssl_certificate_file }} --https-certificate-key-file={{ keycloak_ssl_certificate_key_file }} --https-port=8443
+ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh start --hostname={{ keycloak_vhost_servername }} --hostname-strict=false --proxy=edge --http-enabled=false --https-certificate-file={{ keycloak_ssl_certificate_file }} --https-certificate-key-file={{ keycloak_ssl_certificate_key_file }} --https-port=8443
 WorkingDirectory={{ user_home }}/{{ keycloak_install_dir }}
 User={{user}}
 Group={{group}}

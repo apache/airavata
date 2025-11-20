@@ -45,6 +45,15 @@
   with_items:
     - "{{ groups['keycloak'] }}"
 
+- name: give access to {{ keycloak_db_username }} from localhost
+  mysql_user:
+    name: "{{ keycloak_db_username }}"
+    password: "{{ keycloak_db_password }}"
+    host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else omit }}"
+
 - name: create new user {{ keycloak_db_username }} with all privilege
   mysql_user:
     name: "{{ keycloak_db_username }}"
