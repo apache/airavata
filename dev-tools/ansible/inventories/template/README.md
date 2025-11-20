@@ -24,10 +24,10 @@ mv host_vars/airavata-server/vault.yml.example host_vars/airavata-server/vault.y
 
 Edit all files and replace `CHANGEME` values with your actual values:
 
-**hosts** - Replace `airavata-server` with your host alias if needed
-**group_vars/all/vars.yml** - Set non-sensitive configuration values
-**group_vars/all/vault.yml** - Set sensitive values (passwords, URLs, etc.)
-**host_vars/airavata-server/vault.yml** - Set server IP addresses and SSH credentials
+- **hosts** - Replace `airavata-server` with your host alias if needed
+- **group_vars/all/vars.yml** - Set non-sensitive configuration values
+- **group_vars/all/vault.yml** - Set sensitive values (passwords, URLs, etc.)
+- **host_vars/airavata-server/vault.yml** - Set server IP addresses and SSH credentials
 
 ### 4. Encrypt sensitive files
 
@@ -55,23 +55,13 @@ ansible-playbook -i inventories/my-env --list-hosts -m ping --ask-vault-pass
 
 **For initial setup (full environment from scratch):**
 ```bash
-./deploy_setup.sh my-env
-```
-
-or
-
-```bash
+cd ../..
 ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
 ```
 
 **For service updates (infrastructure already exists):**
 ```bash
-./deploy_update.sh my-env
-```
-
-or
-
-```bash
+cd ../..
 ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
 ```
 

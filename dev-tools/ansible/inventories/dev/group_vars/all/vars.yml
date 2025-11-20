@@ -92,13 +92,13 @@ embedded_zk: false
 # zookeeper_admin_server_port: 8081
 
 # API Server public hostname (for HAProxy SSL termination)
-api_server_public_hostname: "api2.dev.cybershuttle.org"
+api_server_public_hostname: "api.dev.cybershuttle.org"
 
 # Let's Encrypt email for certificate notifications
 letsencrypt_email: "admin@cybershuttle.org"
 
 # Keycloak virtual host hostname (for Let's Encrypt certificate)
-keycloak_vhost_servername: "auth2.dev.cybershuttle.org"
+keycloak_vhost_servername: "auth.dev.cybershuttle.org"
 
 # Firewall subnets (for allowing access to services)
 # These can be restricted to specific IP ranges for security
