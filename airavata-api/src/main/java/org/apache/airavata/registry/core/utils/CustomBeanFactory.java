@@ -26,6 +26,11 @@ import com.github.dozermapper.core.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.registry.core.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TFieldIdEnum;
 import org.apache.thrift.meta_data.FieldMetaData;
@@ -40,8 +45,17 @@ public class CustomBeanFactory implements BeanFactory {
     public Object createBean(Object source, Class<?> sourceClass, String targetBeanId, BeanContainer beanContainer) {
         Object result;
         Class<?> destClass = MappingUtils.loadClass(targetBeanId, beanContainer);
+        if (GroupComputeResourcePrefEntity.class.equals(destClass)
+                && source instanceof GroupComputeResourcePreference pref) {
+            ResourceType resourceType = pref.isSetResourceType() ? pref.getResourceType() : null;
+            if (resourceType == ResourceType.AWS) {
+                destClass = AWSGroupComputeResourcePrefEntity.class;
+            } else {
+                destClass = SlurmGroupComputeResourcePrefEntity.class;
+            }
+        }
         if (logger.isDebugEnabled()) {
-            logger.debug("Creating bean of type " + destClass.getSimpleName());
+            logger.debug("Creating bean of type {}", destClass.getSimpleName());
         }
         result = ReflectionUtils.newInstance(destClass);
         if (result instanceof TBase) {
@@ -79,13 +93,15 @@ public class CustomBeanFactory implements BeanFactory {
             Map<F, FieldMetaData> metaDataMap = (Map<F, FieldMetaData>) metaDataMapField.get(null);
             for (Entry<F, FieldMetaData> metaDataEntry : metaDataMap.entrySet()) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("processing field " + metaDataEntry.getValue().fieldName);
+                    logger.debug("processing field {}", metaDataEntry.getValue().fieldName);
                 }
                 Object fieldValue = instance.getFieldValue(metaDataEntry.getKey());
                 if (fieldValue != null) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("field " + metaDataEntry.getValue().fieldName + " has a default value ["
-                                + fieldValue + "], calling setter to force the field to be set");
+                        logger.debug(
+                                "field {} has a default value [{}], calling setter to force the field to be set",
+                                metaDataEntry.getValue().fieldName,
+                                fieldValue);
                     }
                     instance.setFieldValue(metaDataEntry.getKey(), fieldValue);
                 }
