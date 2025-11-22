@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airavata Scheduler Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .experiment-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .experiment-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .experiment-item {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .experiment-item h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .experiment-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-created { background-color: #e9ecef; color: #495057; }
+        .status-submitted { background-color: #fff3cd; color: #856404; }
+        .status-running { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .status-failed { background-color: #f8d7da; color: #721c24; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+
+        .experiment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .real-time-updates {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .update-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .update-item:last-child {
+            border-bottom: none;
+        }
+
+        .update-timestamp {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Airavata Scheduler Dashboard</h1>
+            <p>Real-time experiment monitoring and management</p>
+            <span id="connectionStatus" class="connection-status disconnected">Disconnected</span>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalExperiments">0</div>
+                <div class="stat-label">Total Experiments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="runningExperiments">0</div>
+                <div class="stat-label">Running</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedExperiments">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="failedExperiments">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="card">
+            <h2>Search Experiments</h2>
+            <div class="search-filters">
+                <div class="form-group">
+                    <label for="searchProject">Project ID</label>
+                    <input type="text" id="searchProject" placeholder="Filter by project">
+                </div>
+                <div class="form-group">
+                    <label for="searchStatus">Status</label>
+                    <select id="searchStatus">
+                        <option value="">All Statuses</option>
+                        <option value="CREATED">Created</option>
+                        <option value="SUBMITTED">Submitted</option>
+                        <option value="RUNNING">Running</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="FAILED">Failed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="searchSort">Sort By</label>
+                    <select id="searchSort">
+                        <option value="created_at">Created Date</option>
+                        <option value="updated_at">Updated Date</option>
+                        <option value="name">Name</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="searchOrder">Order</label>
+                    <select id="searchOrder">
+                        <option value="desc">Descending</option>
+                        <option value="asc">Ascending</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <button class="btn btn-primary" onclick="searchExperiments()">Search</button>
+                    <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Create Experiment Form -->
+            <div class="card">
+                <h2>Create New Experiment</h2>
+                <form id="experimentForm" class="experiment-form">
+                    <div class="form-group">
+                        <label for="experimentName">Experiment Name</label>
+                        <input type="text" id="experimentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="experimentDescription">Description</label>
+                        <textarea id="experimentDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectId">Project ID</label>
+                        <input type="text" id="projectId" value="default-project" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="commandTemplate">Command Template</label>
+                        <textarea id="commandTemplate" placeholder="echo 'Hello {{.param1}} {{.param2}}'" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="outputPattern">Output Pattern</label>
+                        <input type="text" id="outputPattern" placeholder="output_{{.param1}}_{{.param2}}.txt">
+                    </div>
+                    <div class="form-group">
+                        <label for="parameters">Parameters (JSON)</label>
+                        <textarea id="parameters" placeholder='[{"id": "param1", "values": {"param1": "value1", "param2": "value1"}}, {"id": "param2", "values": {"param1": "value1", "param2": "value2"}}]'></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Experiment</button>
+                </form>
+            </div>
+
+            <!-- Experiment List -->
+            <div class="card">
+                <h2>Experiments</h2>
+                <div id="experimentList" class="experiment-list">
+                    <p>Loading experiments...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Updates -->
+        <div class="real-time-updates">
+            <h2>Real-time Updates</h2>
+            <div id="updatesList">
+                <p>Waiting for updates...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:8080/api/v2';
+        const WS_BASE_URL = 'ws://localhost:8080/ws';
+        
+        // Global state
+        let wsConnection = null;
+        let currentUser = 'demo-user';
+        let experiments = [];
+        let updateCount = 0;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWebSocket();
+            loadExperiments();
+            setupEventListeners();
+        });
+
+        // WebSocket connection management
+        function initializeWebSocket() {
+            const wsUrl = `${WS_BASE_URL}/user`;
+            wsConnection = new WebSocket(wsUrl);
+
+            wsConnection.onopen = function() {
+                updateConnectionStatus(true);
+                addUpdate('WebSocket connected', 'success');
+                
+                // Subscribe to user updates
+                sendWebSocketMessage({
+                    type: 'subscribe',
+                    data: {
+                        resource_type: 'user',
+                        user_id: currentUser
+                    }
+                });
+            };
+
+            wsConnection.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                handleWebSocketMessage(message);
+            };
+
+            wsConnection.onclose = function() {
+                updateConnectionStatus(false);
+                addUpdate('WebSocket disconnected', 'error');
+                
+                // Attempt to reconnect after 5 seconds
+                setTimeout(initializeWebSocket, 5000);
+            };
+
+            wsConnection.onerror = function(error) {
+                addUpdate('WebSocket error: ' + error, 'error');
+            };
+        }
+
+        function sendWebSocketMessage(message) {
+            if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+                wsConnection.send(JSON.stringify(message));
+            }
+        }
+
+        function handleWebSocketMessage(message) {
+            switch (message.type) {
+                case 'experiment_update':
+                    handleExperimentUpdate(message.data);
+                    break;
+                case 'task_update':
+                    handleTaskUpdate(message.data);
+                    break;
+                case 'system_update':
+                    handleSystemUpdate(message.data);
+                    break;
+                default:
+                    addUpdate(`Received: ${message.type}`, 'info');
+            }
+        }
+
+        function handleExperimentUpdate(data) {
+            addUpdate(`Experiment ${data.experiment_id}: ${data.status}`, 'info');
+            
+            // Update experiment in list
+            const experimentIndex = experiments.findIndex(exp => exp.id === data.experiment_id);
+            if (experimentIndex !== -1) {
+                experiments[experimentIndex] = { ...experiments[experimentIndex], ...data };
+                renderExperimentList();
+                updateStatistics();
+            }
+        }
+
+        function handleTaskUpdate(data) {
+            addUpdate(`Task ${data.task_id}: ${data.status}`, 'info');
+        }
+
+        function handleSystemUpdate(data) {
+            addUpdate(`System: ${data.message}`, 'info');
+        }
+
+        // API functions
+        async function loadExperiments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experiments?limit=50`, {
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                experiments = data.experiments || [];
+                renderExperimentList();
+                updateStatistics();
+            } catch (error) {
+                addUpdate(`Failed to load experiments: ${error.message}`, 'error');
+            }
+        }
+
+        async function searchExperiments() {
+            const projectId = document.getElementById('searchProject').value;
+            const status = document.getElementById('searchStatus').value;
+            const sortBy = document.getElementById('searchSort').value;
+            const order = document.getElementById('searchOrder').value;
+
+            let url = `${API_BASE_URL}/experiments/search?limit=50`;
+            if (projectId) url += `&project_id=${encodeURIComponent(projectId)}`;
+            if (status) url += `&status=${encodeURIComponent(status)}`;
+            if (sortBy) url += `&sort_by=${encodeURIComponent(sortBy)}`;
+            if (order) url += `&order=${encodeURIComponent(order)}`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                experiments = data.experiments || [];
+                renderExperimentList();
+                addUpdate(`Found ${experiments.length} experiments`, 'success');
+            } catch (error) {
+                addUpdate(`Search failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function createExperiment(experimentData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experiments`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(experimentData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const experiment = await response.json();
+                experiments.unshift(experiment);
+                renderExperimentList();
+                updateStatistics();
+                addUpdate(`Created experiment: ${experiment.name}`, 'success');
+                
+                return experiment;
+            } catch (error) {
+                addUpdate(`Failed to create experiment: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function submitExperiment(experimentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experiments/${experimentId}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const experiment = await response.json();
+                const index = experiments.findIndex(exp => exp.id === experimentId);
+                if (index !== -1) {
+                    experiments[index] = experiment;
+                    renderExperimentList();
+                }
+                addUpdate(`Submitted experiment: ${experiment.name}`, 'success');
+            } catch (error) {
+                addUpdate(`Failed to submit experiment: ${error.message}`, 'error');
+            }
+        }
+
+        async function cancelExperiment(experimentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experiments/${experimentId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const experiment = await response.json();
+                const index = experiments.findIndex(exp => exp.id === experimentId);
+                if (index !== -1) {
+                    experiments[index] = experiment;
+                    renderExperimentList();
+                }
+                addUpdate(`Cancelled experiment: ${experiment.name}`, 'success');
+            } catch (error) {
+                addUpdate(`Failed to cancel experiment: ${error.message}`, 'error');
+            }
+        }
+
+        async function getExperimentSummary(experimentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experiments/${experimentId}/summary`, {
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const summary = await response.json();
+                showExperimentSummary(summary);
+            } catch (error) {
+                addUpdate(`Failed to get experiment summary: ${error.message}`, 'error');
+            }
+        }
+
+        async function createDerivativeExperiment(sourceExperimentId) {
+            const newName = prompt('Enter name for derivative experiment:');
+            if (!newName) return;
+
+            try {
+                const derivativeData = {
+                    new_experiment_name: newName,
+                    task_filter: 'only_successful',
+                    parameter_modifications: {
+                        param1: 'modified_value'
+                    }
+                };
+
+                const response = await fetch(`${API_BASE_URL}/experiments/${sourceExperimentId}/derive`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-ID': currentUser,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(derivativeData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                addUpdate(`Created derivative experiment: ${result.new_experiment_id}`, 'success');
+                
+                // Reload experiments to show the new one
+                loadExperiments();
+            } catch (error) {
+                addUpdate(`Failed to create derivative experiment: ${error.message}`, 'error');
+            }
+        }
+
+        // UI rendering functions
+        function renderExperimentList() {
+            const container = document.getElementById('experimentList');
+            
+            if (experiments.length === 0) {
+                container.innerHTML = '<p>No experiments found.</p>';
+                return;
+            }
+
+            container.innerHTML = experiments.map(experiment => `
+                <div class="experiment-item">
+                    <h3>${experiment.name}</h3>
+                    <div class="experiment-meta">
+                        <div><strong>ID:</strong> ${experiment.id}</div>
+                        <div><strong>Project:</strong> ${experiment.project_id}</div>
+                        <div><strong>Owner:</strong> ${experiment.owner_id}</div>
+                        <div><strong>Created:</strong> ${new Date(experiment.created_at).toLocaleString()}</div>
+                    </div>
+                    <div>
+                        <span class="status-badge status-${experiment.status.toLowerCase()}">${experiment.status}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${getProgressPercentage(experiment)}%"></div>
+                    </div>
+                    <div class="experiment-actions">
+                        ${getExperimentActions(experiment)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getProgressPercentage(experiment) {
+            // This would typically come from the experiment summary
+            // For demo purposes, return a mock percentage based on status
+            switch (experiment.status) {
+                case 'CREATED': return 0;
+                case 'SUBMITTED': return 10;
+                case 'RUNNING': return 50;
+                case 'COMPLETED': return 100;
+                case 'FAILED': return 0;
+                case 'CANCELLED': return 0;
+                default: return 0;
+            }
+        }
+
+        function getExperimentActions(experiment) {
+            const actions = [];
+            
+            if (experiment.status === 'CREATED') {
+                actions.push(`<button class="btn btn-primary btn-small" onclick="submitExperiment('${experiment.id}')">Submit</button>`);
+            }
+            
+            if (experiment.status === 'RUNNING') {
+                actions.push(`<button class="btn btn-secondary btn-small" onclick="cancelExperiment('${experiment.id}')">Cancel</button>`);
+            }
+            
+            actions.push(`<button class="btn btn-secondary btn-small" onclick="getExperimentSummary('${experiment.id}')">Summary</button>`);
+            
+            if (experiment.status === 'COMPLETED') {
+                actions.push(`<button class="btn btn-primary btn-small" onclick="createDerivativeExperiment('${experiment.id}')">Derive</button>`);
+            }
+            
+            return actions.join('');
+        }
+
+        function updateStatistics() {
+            const total = experiments.length;
+            const running = experiments.filter(exp => exp.status === 'RUNNING').length;
+            const completed = experiments.filter(exp => exp.status === 'COMPLETED').length;
+            const failed = experiments.filter(exp => exp.status === 'FAILED').length;
+
+            document.getElementById('totalExperiments').textContent = total;
+            document.getElementById('runningExperiments').textContent = running;
+            document.getElementById('completedExperiments').textContent = completed;
+            document.getElementById('failedExperiments').textContent = failed;
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.textContent = 'Connected';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.textContent = 'Disconnected';
+                statusElement.className = 'connection-status disconnected';
+            }
+        }
+
+        function addUpdate(message, type = 'info') {
+            const updatesList = document.getElementById('updatesList');
+            const updateElement = document.createElement('div');
+            updateElement.className = 'update-item';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            updateElement.innerHTML = `
+                <div>${message}</div>
+                <div class="update-timestamp">${timestamp}</div>
+            `;
+            
+            updatesList.insertBefore(updateElement, updatesList.firstChild);
+            
+            // Keep only the last 50 updates
+            while (updatesList.children.length > 50) {
+                updatesList.removeChild(updatesList.lastChild);
+            }
+            
+            updateCount++;
+        }
+
+        function showExperimentSummary(summary) {
+            const message = `
+                Experiment Summary:
+                - Total Tasks: ${summary.total_tasks}
+                - Completed: ${summary.completed_tasks}
+                - Failed: ${summary.failed_tasks}
+                - Success Rate: ${(summary.success_rate * 100).toFixed(1)}%
+                - Average Duration: ${summary.avg_duration_sec ? summary.avg_duration_sec.toFixed(1) : 'N/A'}s
+            `;
+            alert(message);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchProject').value = '';
+            document.getElementById('searchStatus').value = '';
+            document.getElementById('searchSort').value = 'created_at';
+            document.getElementById('searchOrder').value = 'desc';
+            loadExperiments();
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            document.getElementById('experimentForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('experimentName').value,
+                    description: document.getElementById('experimentDescription').value,
+                    project_id: document.getElementById('projectId').value,
+                    command_template: document.getElementById('commandTemplate').value,
+                    output_pattern: document.getElementById('outputPattern').value,
+                    parameters: []
+                };
+
+                // Parse parameters JSON
+                const parametersText = document.getElementById('parameters').value;
+                if (parametersText.trim()) {
+                    try {
+                        formData.parameters = JSON.parse(parametersText);
+                    } catch (error) {
+                        addUpdate('Invalid parameters JSON format', 'error');
+                        return;
+                    }
+                }
+
+                try {
+                    await createExperiment(formData);
+                    document.getElementById('experimentForm').reset();
+                    document.getElementById('projectId').value = 'default-project';
+                } catch (error) {
+                    // Error already handled in createExperiment
+                }
+            });
+        }
+
+        // Heartbeat to keep connection alive
+        setInterval(() => {
+            if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+                sendWebSocketMessage({ type: 'ping' });
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
