@@ -143,14 +143,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<Gateway> getAllGateways() throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllGateways();
-        } catch (Throwable e) {
-            logger.error("Error while getting all the gateways", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.getAllGateways();
     }
 
     /**
@@ -162,52 +155,24 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isGatewayExist(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.isGatewayExist(gatewayId);
-        } catch (Throwable e) {
-            logger.error("Error while getting gateway", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.isGatewayExist(gatewayId);
     }
 
     @Override
     public boolean deleteNotification(String gatewayId, String notificationId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteNotification(gatewayId, notificationId);
-        } catch (Throwable e) {
-            logger.error("Error while deleting notification", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.deleteNotification(gatewayId, notificationId);
     }
 
     @Override
     public Notification getNotification(String gatewayId, String notificationId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getNotification(gatewayId, notificationId);
-        } catch (Throwable e) {
-            logger.error("Error while retrieving notification", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while retreiving notification. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.getNotification(gatewayId, notificationId);
     }
 
     @Override
     public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllNotifications(gatewayId);
-        } catch (Throwable e) {
-            logger.error("Error while getting all notifications", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.getAllNotifications(gatewayId);
     }
 
     /**
@@ -220,11 +185,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Project getProject(String projectId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProject(projectId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the project");
-        }
+        return registryService.getProject(projectId);
     }
 
     /**
@@ -239,11 +200,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteProject(String projectId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteProject(projectId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing the project");
-        }
+        return registryService.deleteProject(projectId);
     }
 
     /**
@@ -258,11 +215,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserProjects(gatewayId, userName, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving projects");
-        }
+        return registryService.getUserProjects(gatewayId, userName, limit, offset);
     }
 
     /**
@@ -285,20 +238,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
             int limit,
             int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getExperimentStatistics(
-                    gatewayId,
-                    fromTime,
-                    toTime,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExpIds,
-                    limit,
-                    offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving experiments");
-        }
+        return registryService.getExperimentStatistics(
+                gatewayId,
+                fromTime,
+                toTime,
+                userName,
+                applicationName,
+                resourceHostName,
+                accessibleExpIds,
+                limit,
+                offset);
     }
 
     /**
@@ -313,11 +262,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the experiments");
-        }
+        return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
     }
 
     /**
@@ -332,11 +277,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserExperiments(gatewayId, userName, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the experiments");
-        }
+        return registryService.getUserExperiments(gatewayId, userName, limit, offset);
     }
 
     /**
@@ -348,11 +289,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteExperiment(experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting the experiment");
-        }
+        return registryService.deleteExperiment(experimentId);
     }
 
     /**
@@ -427,11 +364,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ExperimentModel getDetailedExperimentTree(String airavataExperimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getDetailedExperimentTree(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the experiment");
-        }
+        return registryService.getDetailedExperimentTree(airavataExperimentId);
     }
 
     /**
@@ -446,11 +379,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ExperimentStatus getExperimentStatus(String airavataExperimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getExperimentStatus(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving experiment status");
-        }
+        return registryService.getExperimentStatus(airavataExperimentId);
     }
 
     /**
@@ -464,11 +393,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getExperimentOutputs(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the experiment outputs");
-        }
+        return registryService.getExperimentOutputs(airavataExperimentId);
     }
 
     /**
@@ -482,11 +407,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getIntermediateOutputs(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving intermediate outputs");
-        }
+        return registryService.getIntermediateOutputs(airavataExperimentId);
     }
 
     /**
@@ -499,192 +420,111 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getJobStatuses(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the job statuses");
-        }
+        return registryService.getJobStatuses(airavataExperimentId);
     }
 
     @Override
     public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id)
             throws RegistryServiceException, TException {
-        try {
-            registryService.addExperimentProcessOutputs(outputType, outputs, id);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding outputs");
-        }
+        registryService.addExperimentProcessOutputs(outputType, outputs, id);
     }
 
     @Override
     public void addErrors(String errorType, ErrorModel errorModel, String id)
             throws RegistryServiceException, TException {
-        try {
-            registryService.addErrors(errorType, errorModel, id);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding errors");
-        }
+        registryService.addErrors(errorType, errorModel, id);
     }
 
     @Override
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
-        try {
-            registryService.addTaskStatus(taskStatus, taskId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding task status");
-        }
+        registryService.addTaskStatus(taskStatus, taskId);
     }
 
     @Override
     public void addProcessStatus(ProcessStatus processStatus, String processId)
             throws RegistryServiceException, TException {
-        try {
-            registryService.addProcessStatus(processStatus, processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding process status");
-        }
+        registryService.addProcessStatus(processStatus, processId);
     }
 
     @Override
     public void updateProcessStatus(ProcessStatus processStatus, String processId)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateProcessStatus(processStatus, processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating process status");
-        }
+        registryService.updateProcessStatus(processStatus, processId);
     }
 
     @Override
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateExperimentStatus(experimentStatus, experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating experiment status");
-        }
+        registryService.updateExperimentStatus(experimentStatus, experimentId);
     }
 
     @Override
     public void addJobStatus(JobStatus jobStatus, String taskId, String jobId)
             throws RegistryServiceException, TException {
-        try {
-            registryService.addJobStatus(jobStatus, taskId, jobId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding job status");
-        }
+        registryService.addJobStatus(jobStatus, taskId, jobId);
     }
 
     @Override
     public void addJob(JobModel jobModel, String processId) throws RegistryServiceException, TException {
-        try {
-            registryService.addJob(jobModel, processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding job");
-        }
+        registryService.addJob(jobModel, processId);
     }
 
     @Override
     public void deleteJobs(String processId) throws RegistryServiceException, TException {
-        try {
-            registryService.deleteJobs(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting job");
-        }
+        registryService.deleteJobs(processId);
     }
 
     @Override
     public String addProcess(ProcessModel processModel, String experimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addProcess(processModel, experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding process");
-        }
+        return registryService.addProcess(processModel, experimentId);
     }
 
     @Override
     public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException, TException {
-        try {
-            registryService.updateProcess(processModel, processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating process");
-        }
+        registryService.updateProcess(processModel, processId);
     }
 
     @Override
     public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.addTask(taskModel, processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding task");
-        }
+        return registryService.addTask(taskModel, processId);
     }
 
     @Override
     public void deleteTasks(String processId) throws RegistryServiceException, TException {
-        try {
-            registryService.deleteTasks(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting tasks");
-        }
+        registryService.deleteTasks(processId);
     }
 
     @Override
     public UserConfigurationDataModel getUserConfigurationData(String experimentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserConfigurationData(experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while getting user configuration");
-        }
+        return registryService.getUserConfigurationData(experimentId);
     }
 
     @Override
     public ProcessModel getProcess(String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcess(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process");
-        }
+        return registryService.getProcess(processId);
     }
 
     @Override
     public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessList(experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process list");
-        }
+        return registryService.getProcessList(experimentId);
     }
 
     @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessStatus(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process status");
-        }
+        return registryService.getProcessStatus(processId);
     }
 
     @Override
     public List<ProcessModel> getProcessListInState(ProcessState processState)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessListInState(processState);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process list with given status");
-        }
+        return registryService.getProcessListInState(processState);
     }
 
     @Override
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessStatusList(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving process status list for given process Id");
-        }
+        return registryService.getProcessStatusList(processId);
     }
 
     /**
@@ -692,11 +532,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isJobExist(String queryType, String id) throws RegistryServiceException, TException {
-        try {
-            return registryService.isJobExist(queryType, id);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving job");
-        }
+        return registryService.isJobExist(queryType, id);
     }
 
     /**
@@ -704,80 +540,45 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public JobModel getJob(String queryType, String id) throws RegistryServiceException, TException {
-        try {
-            return registryService.getJob(queryType, id);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving job");
-        }
+        return registryService.getJob(queryType, id);
     }
 
     @Override
     public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException, TException {
-        try {
-            return registryService.getJobs(queryType, id);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving jobs for query " + queryType + " and id " + id);
-        }
+        return registryService.getJobs(queryType, id);
     }
 
     @Override
     public int getJobCount(
             org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while getting job count");
-        }
+        return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
     }
 
     @Override
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while getting average time distribution");
-        }
+        return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
     }
 
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessOutputs(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process outputs");
-        }
+        return registryService.getProcessOutputs(processId);
     }
 
     @Override
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessWorkflows(processId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving process workflows for process id " + processId);
-        }
+        return registryService.getProcessWorkflows(processId);
     }
 
     @Override
     public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException, TException {
-        try {
-            registryService.addProcessWorkflow(processWorkflow);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding process workflows for process id " + processWorkflow.getProcessId());
-        }
+        registryService.addProcessWorkflow(processWorkflow);
     }
 
     @Override
     public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getProcessIds(experimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving process ids");
-        }
+        return registryService.getProcessIds(experimentId);
     }
 
     /**
@@ -789,11 +590,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getJobDetails(airavataExperimentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving the job details");
-        }
+        return registryService.getJobDetails(airavataExperimentId);
     }
 
     /**
@@ -805,11 +602,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationModule(appModuleId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application module");
-        }
+        return registryService.getApplicationModule(appModuleId);
     }
 
     /**
@@ -821,11 +614,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllAppModules(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving all application modules");
-        }
+        return registryService.getAllAppModules(gatewayId);
     }
 
     /**
@@ -840,11 +629,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ApplicationModule> getAccessibleAppModules(
             String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving all application modules");
-        }
+        return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
     }
 
     /**
@@ -856,11 +641,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteApplicationModule(appModuleId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting the application module");
-        }
+        return registryService.deleteApplicationModule(appModuleId);
     }
 
     /**
@@ -873,11 +654,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationDeployment(appDeploymentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
-        }
+        return registryService.getApplicationDeployment(appDeploymentId);
     }
 
     /**
@@ -889,11 +666,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteApplicationDeployment(appDeploymentId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting application deployment");
-        }
+        return registryService.deleteApplicationDeployment(appDeploymentId);
     }
 
     /**
@@ -907,11 +680,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllApplicationDeployments(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
-        }
+        return registryService.getAllApplicationDeployments(gatewayId);
     }
 
     /**
@@ -926,12 +695,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
             String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAccessibleApplicationDeployments(
+        return registryService.getAccessibleApplicationDeployments(
                     gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
-        }
     }
 
     /**
@@ -951,12 +716,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<String> accessibleAppDeploymentIds,
             List<String> accessibleComputeResourceIds)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAccessibleApplicationDeploymentsForAppModule(
+        return registryService.getAccessibleApplicationDeploymentsForAppModule(
                     gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
-        }
     }
 
     /**
@@ -968,21 +729,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getAppModuleDeployedResources(appModuleId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
-        }
+        return registryService.getAppModuleDeployedResources(appModuleId);
     }
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationDeployments(appModuleId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
-        }
+        return registryService.getApplicationDeployments(appModuleId);
     }
 
     /**
@@ -995,11 +748,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationInterface(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application interface");
-        }
+        return registryService.getApplicationInterface(appInterfaceId);
     }
 
     /**
@@ -1011,11 +760,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteApplicationInterface(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting application interface");
-        }
+        return registryService.deleteApplicationInterface(appInterfaceId);
     }
 
     /**
@@ -1028,11 +773,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, String> getAllApplicationInterfaceNames(String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllApplicationInterfaceNames(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application interfaces");
-        }
+        return registryService.getAllApplicationInterfaceNames(gatewayId);
     }
 
     /**
@@ -1045,11 +786,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllApplicationInterfaces(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application interfaces");
-        }
+        return registryService.getAllApplicationInterfaces(gatewayId);
     }
 
     /**
@@ -1062,11 +799,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationInputs(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application inputs");
-        }
+        return registryService.getApplicationInputs(appInterfaceId);
     }
 
     /**
@@ -1079,11 +812,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getApplicationOutputs(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving application outputs");
-        }
+        return registryService.getApplicationOutputs(appInterfaceId);
     }
 
     /**
@@ -1097,11 +826,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving available compute resources");
-        }
+        return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
     }
 
     /**
@@ -1114,11 +839,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ComputeResourceDescription getComputeResource(String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getComputeResource(computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving compute resource");
-        }
+        return registryService.getComputeResource(computeResourceId);
     }
 
     /**
@@ -1129,11 +850,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllComputeResourceNames();
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving compute resource");
-        }
+        return registryService.getAllComputeResourceNames();
     }
 
     /**
@@ -1145,11 +862,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteComputeResource(computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting compute resource");
-        }
+        return registryService.deleteComputeResource(computeResourceId);
     }
 
     /**
@@ -1162,11 +875,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public StorageResourceDescription getStorageResource(String storageResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getStorageResource(storageResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving storage resource");
-        }
+        return registryService.getStorageResource(storageResourceId);
     }
 
     /**
@@ -1177,11 +886,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllStorageResourceNames();
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving storage resource");
-        }
+        return registryService.getAllStorageResourceNames();
     }
 
     /**
@@ -1193,11 +898,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteStorageResource(storageResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting storage resource");
-        }
+        return registryService.deleteStorageResource(storageResourceId);
     }
 
     /**
@@ -1207,11 +908,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getLocalJobSubmission(jobSubmissionId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving local job submission interface");
-        }
+        return registryService.getLocalJobSubmission(jobSubmissionId);
     }
 
     /**
@@ -1221,11 +918,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getSSHJobSubmission(jobSubmissionId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving SSH job submission interface");
-        }
+        return registryService.getSSHJobSubmission(jobSubmissionId);
     }
 
     /**
@@ -1243,11 +936,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUnicoreJobSubmission(jobSubmissionId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving Unicore job submission interface");
-        }
+        return registryService.getUnicoreJobSubmission(jobSubmissionId);
     }
 
     /**
@@ -1263,11 +952,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getCloudJobSubmission(jobSubmissionId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving Cloud job submission interface");
-        }
+        return registryService.getCloudJobSubmission(jobSubmissionId);
     }
 
     /**
@@ -1278,11 +963,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getLocalDataMovement(dataMovementId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving local data movement interface");
-        }
+        return registryService.getLocalDataMovement(dataMovementId);
     }
 
     /**
@@ -1293,11 +974,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getSCPDataMovement(dataMovementId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving SCP data movement interface");
-        }
+        return registryService.getSCPDataMovement(dataMovementId);
     }
 
     /**
@@ -1309,11 +986,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUnicoreDataMovement(dataMovementId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving UNICORE data movement interface");
-        }
+        return registryService.getUnicoreDataMovement(dataMovementId);
     }
 
     /**
@@ -1325,11 +998,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGridFTPDataMovement(dataMovementId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving GridFTP data movement interface");
-        }
+        return registryService.getGridFTPDataMovement(dataMovementId);
     }
 
     /**
@@ -1397,30 +1066,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting job submission interface");
-        }
+        return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
     }
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getResourceJobManager(resourceJobManagerId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving resource job manager");
-        }
+        return registryService.getResourceJobManager(resourceJobManagerId);
     }
 
     @Override
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteResourceJobManager(resourceJobManagerId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting resource job manager");
-        }
+        return registryService.deleteResourceJobManager(resourceJobManagerId);
     }
 
     /**
@@ -1434,11 +1091,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteBatchQueue(String computeResourceId, String queueName)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteBatchQueue(computeResourceId, queueName);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting batch queue");
-        }
+        return registryService.deleteBatchQueue(computeResourceId, queueName);
     }
 
     /**
@@ -1451,11 +1104,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGatewayResourceProfile(gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving gateway resource profile");
-        }
+        return registryService.getGatewayResourceProfile(gatewayID);
     }
 
     /**
@@ -1467,11 +1116,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteGatewayResourceProfile(gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing gateway resource profile");
-        }
+        return registryService.deleteGatewayResourceProfile(gatewayID);
     }
 
     /**
@@ -1485,11 +1130,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading gateway compute resource preference");
-        }
+        return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
     /**
@@ -1503,11 +1144,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGatewayStoragePreference(gatewayID, storageId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading gateway data storage preference");
-        }
+        return registryService.getGatewayStoragePreference(gatewayID, storageId);
     }
 
     /**
@@ -1520,11 +1157,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading gateway compute resource preferences");
-        }
+        return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
     }
 
     /**
@@ -1537,11 +1170,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllGatewayStoragePreferences(gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading gateway data storage preferences");
-        }
+        return registryService.getAllGatewayStoragePreferences(gatewayID);
     }
 
     /**
@@ -1552,11 +1181,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllGatewayResourceProfiles();
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading retrieving all gateway profiles");
-        }
+        return registryService.getAllGatewayResourceProfiles();
     }
 
     /**
@@ -1570,11 +1195,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway compute resource preference");
-        }
+        return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
     /**
@@ -1588,212 +1209,125 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteGatewayStoragePreference(String gatewayID, String storageId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway data storage preference");
-        }
+        return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
     }
 
     @Override
     public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
-        try {
-            return registryService.getDataProduct(productUri);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error in retreiving the data product " + productUri);
-        }
+        return registryService.getDataProduct(productUri);
     }
 
     @Override
     public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException, TException {
-        try {
-            return registryService.getParentDataProduct(productUri);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error in retreiving the parent data product for " + productUri);
-        }
+        return registryService.getParentDataProduct(productUri);
     }
 
     @Override
     public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException, TException {
-        try {
-            return registryService.getChildDataProducts(productUri);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error in retreiving the child products for " + productUri);
-        }
+        return registryService.getChildDataProducts(productUri);
     }
 
     @Override
     public List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error in searching the data products for name " + productName);
-        }
+        return registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
     }
 
     @Override
     public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.createGroupResourceProfile(groupResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while creating group resource profile");
-        }
+        return registryService.createGroupResourceProfile(groupResourceProfile);
     }
 
     @Override
     public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateGroupResourceProfile(groupResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating group resource profile");
-        }
+        registryService.updateGroupResourceProfile(groupResourceProfile);
     }
 
     @Override
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupResourceProfile(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group resource profile");
-        }
+        return registryService.getGroupResourceProfile(groupResourceProfileId);
     }
 
     @Override
     public boolean isGroupResourceProfileExists(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.isGroupResourceProfileExists(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group resource profile");
-        }
+        return registryService.isGroupResourceProfileExists(groupResourceProfileId);
     }
 
     @Override
     public boolean removeGroupResourceProfile(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.removeGroupResourceProfile(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing group resource profile");
-        }
+        return registryService.removeGroupResourceProfile(groupResourceProfileId);
     }
 
     @Override
     public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group resource list");
-        }
+        return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
     }
 
     @Override
     public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing group compute preference");
-        }
+        return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
     }
 
     @Override
     public boolean removeGroupComputeResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing group compute resource policy");
-        }
+        return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing group batch queue resource policy");
-        }
+        return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group compute resource preference");
-        }
+        return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
     }
 
     @Override
     public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group compute resource preference");
-        }
+        return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
     }
 
     @Override
     public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving group compute resource policy");
-        }
+        return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving Batch Queue resource policy");
-        }
+        return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving retrieving Group Compute Resource Preference list");
-        }
+        return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
     }
 
     @Override
     public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving retrieving Group Batch Queue Resource policy list");
-        }
+        return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
     }
 
     @Override
     public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while retrieving retrieving Group Compute Resource policy list");
-        }
+        return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
     }
 
     @Override
@@ -1835,11 +1369,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateGatewayStoragePreference(
             String gatewayID, String storageId, StoragePreference storagePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateGatewayStoragePreference(gatewayID, storageId, storagePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway data storage preference");
-        }
+        return registryService.updateGatewayStoragePreference(gatewayID, storageId, storagePreference);
     }
 
     /**
@@ -1855,12 +1385,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateGatewayComputeResourcePreference(
+        return registryService.updateGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway compute resource preference");
-        }
     }
 
     /**
@@ -1877,11 +1403,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean addGatewayStoragePreference(
             String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering gateway resource profile preference");
-        }
+        return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
     }
 
     /**
@@ -1898,12 +1420,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean addGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addGatewayComputeResourcePreference(
+        return registryService.addGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering gateway resource profile preference");
-        }
     }
 
     /**
@@ -1917,11 +1435,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway resource profile");
-        }
+        return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
     }
 
     /**
@@ -1936,31 +1450,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering gateway resource profile");
-        }
+        return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
     }
 
     @Override
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating resource job manager");
-        }
+        return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
     }
 
     @Override
     public String registerResourceJobManager(ResourceJobManager resourceJobManager)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerResourceJobManager(resourceJobManager);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding resource job manager");
-        }
+        return registryService.registerResourceJobManager(resourceJobManager);
     }
 
     /**
@@ -1974,11 +1476,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting data movement interface");
-        }
+        return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
     }
 
     /**
@@ -2013,13 +1511,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addGridFTPDataMovementDetails(
             String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addGridFTPDataMovementDetails(
+        return registryService.addGridFTPDataMovementDetails(
                     computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding data movement interface to resource compute resource");
-        }
     }
 
     /**
@@ -2054,13 +1547,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addUnicoreDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addUnicoreDataMovementDetails(
+        return registryService.addUnicoreDataMovementDetails(
                     resourceId, dmType, priorityOrder, unicoreDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding data movement interface to resource compute resource");
-        }
     }
 
     /**
@@ -2075,11 +1563,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating SCP data movement");
-        }
+        return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
     }
 
     /**
@@ -2098,12 +1582,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addSCPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding data movement interface to resource compute resource");
-        }
+        return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
     }
 
     /**
@@ -2117,11 +1596,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating local data movement interface");
-        }
+        return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
     }
 
     /**
@@ -2140,12 +1615,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addLocalDataMovementDetails(
             String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addLocalDataMovementDetails(
+        return registryService.addLocalDataMovementDetails(
                     resourceId, dataMoveType, priorityOrder, localDataMovement);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding data movement interface to resource");
-        }
     }
 
     /**
@@ -2174,11 +1645,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating Cloud job submission");
-        }
+        return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
     }
 
     /**
@@ -2192,11 +1659,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating SSH job submission");
-        }
+        return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
     }
 
     /**
@@ -2226,12 +1689,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addCloudJobSubmissionDetails(
             String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding job submission interface to resource compute resource");
-        }
+        return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
     }
 
     /**
@@ -2248,13 +1706,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addUNICOREJobSubmissionDetails(
             String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addUNICOREJobSubmissionDetails(
+        return registryService.addUNICOREJobSubmissionDetails(
                     computeResourceId, priorityOrder, unicoreJobSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding job submission interface to resource compute resource");
-        }
     }
 
     /**
@@ -2271,12 +1724,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addSSHForkJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding job submission interface to resource compute resource");
-        }
+        return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
     /**
@@ -2293,12 +1741,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addSSHJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding job submission interface to resource compute resource");
-        }
+        return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
     /**
@@ -2312,11 +1755,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating local job submission");
-        }
+        return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
     }
 
     /**
@@ -2333,12 +1772,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addLocalSubmissionDetails(
             String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while adding job submission interface to resource compute resource");
-        }
+        return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
     }
 
     /**
@@ -2353,11 +1787,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating storage resource");
-        }
+        return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
     }
 
     /**
@@ -2370,11 +1800,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerStorageResource(storageResourceDescription);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while saving storage resource");
-        }
+        return registryService.registerStorageResource(storageResourceDescription);
     }
 
     /**
@@ -2389,11 +1815,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating compute resource");
-        }
+        return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
     }
 
     /**
@@ -2406,11 +1828,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerComputeResource(computeResourceDescription);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while saving compute resource");
-        }
+        return registryService.registerComputeResource(computeResourceDescription);
     }
 
     /**
@@ -2425,11 +1843,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateApplicationInterface(
             String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating application interface");
-        }
+        return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
     }
 
     /**
@@ -2443,11 +1857,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerApplicationInterface(gatewayId, applicationInterface);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding application interface");
-        }
+        return registryService.registerApplicationInterface(gatewayId, applicationInterface);
     }
 
     /**
@@ -2462,11 +1872,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateApplicationDeployment(
             String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating application deployment");
-        }
+        return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
     }
 
     /**
@@ -2481,11 +1887,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String registerApplicationDeployment(
             String gatewayId, ApplicationDeploymentDescription applicationDeployment)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding application deployment");
-        }
+        return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
     }
 
     /**
@@ -2499,11 +1901,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateApplicationModule(appModuleId, applicationModule);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating application module");
-        }
+        return registryService.updateApplicationModule(appModuleId, applicationModule);
     }
 
     /**
@@ -2518,32 +1916,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerApplicationModule(gatewayId, applicationModule);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding application module");
-        }
+        return registryService.registerApplicationModule(gatewayId, applicationModule);
     }
 
     @Override
     public void updateResourceScheduleing(
             String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating scheduling info");
-        }
+        registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
     }
 
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating user configuration");
-        }
+        registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
     }
 
     /**
@@ -2573,11 +1959,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
             throws RegistryServiceException, TException {
-        try {
-            registryService.updateExperiment(airavataExperimentId, experiment);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating experiment");
-        }
+        registryService.updateExperiment(airavataExperimentId, experiment);
     }
 
     /**
@@ -2627,11 +2009,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String createExperiment(String gatewayId, ExperimentModel experiment)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.createExperiment(gatewayId, experiment);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while creating the experiment");
-        }
+        return registryService.createExperiment(gatewayId, experiment);
     }
 
     /**
@@ -2655,11 +2033,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             int limit,
             int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving experiments");
-        }
+        return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
     }
 
     /**
@@ -2682,11 +2056,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             int limit,
             int offset)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving projects");
-        }
+        return registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
     }
 
     /**
@@ -2699,11 +2069,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException, TException {
-        try {
-            registryService.updateProject(projectId, updatedProject);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating the project");
-        }
+        registryService.updateProject(projectId, updatedProject);
     }
 
     /**
@@ -2715,20 +2081,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String createProject(String gatewayId, Project project) throws RegistryServiceException, TException {
-        try {
-            return registryService.createProject(gatewayId, project);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while creating the project");
-        }
+        return registryService.createProject(gatewayId, project);
     }
 
     @Override
     public boolean updateNotification(Notification notification) throws RegistryServiceException, TException {
-        try {
-            return registryService.updateNotification(notification);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating notification");
-        }
+        return registryService.updateNotification(notification);
     }
 
     /**
@@ -2739,11 +2097,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String createNotification(Notification notification) throws RegistryServiceException, TException {
-        try {
-            return registryService.createNotification(notification);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while creating notification");
-        }
+        return registryService.createNotification(notification);
     }
 
     /**
@@ -2757,11 +2111,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException, TException {
-        try {
-            return registryService.updateGateway(gatewayId, updatedGateway);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating the gateway");
-        }
+        return registryService.updateGateway(gatewayId, updatedGateway);
     }
 
     /**
@@ -2773,11 +2123,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
-        try {
-            return registryService.addGateway(gateway);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding gateway");
-        }
+        return registryService.addGateway(gateway);
     }
 
 
@@ -2808,21 +2154,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerUserResourceProfile(UserResourceProfile userResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.registerUserResourceProfile(userResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering user resource profile");
-        }
+        return registryService.registerUserResourceProfile(userResourceProfile);
     }
 
     @Override
     public boolean isUserResourceProfileExists(String userId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.isUserResourceProfileExists(userId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while checking existence of user resource profile");
-        }
+        return registryService.isUserResourceProfileExists(userId, gatewayId);
     }
 
     /**
@@ -2834,11 +2172,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserResourceProfile(userId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving user resource profile");
-        }
+        return registryService.getUserResourceProfile(userId, gatewayId);
     }
 
     /**
@@ -2852,11 +2186,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway resource profile");
-        }
+        return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
     }
 
     /**
@@ -2870,21 +2200,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserResourceProfile(String userId, String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteUserResourceProfile(userId, gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing User resource profile");
-        }
+        return registryService.deleteUserResourceProfile(userId, gatewayID);
     }
 
     @Override
     public String addUser(UserProfile userProfile)
             throws RegistryServiceException, DuplicateEntryException, TException {
-        try {
-            return registryService.addUser(userProfile);
-        } catch (Exception ex) {
-            throw convertToRegistryServiceException(ex, "Error while adding user in registry");
-        }
+        return registryService.addUser(userProfile);
     }
 
     /**
@@ -2905,12 +2227,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addUserComputeResourcePreference(
+        return registryService.addUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering user resource profile preference");
-        }
     }
 
     /**
@@ -2925,11 +2243,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayID, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while fetching compute resource preference");
-        }
+        return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
     }
 
     /**
@@ -2946,12 +2260,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean addUserStoragePreference(
             String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.addUserStoragePreference(
+        return registryService.addUserStoragePreference(
                     userId, gatewayID, storageResourceId, dataStoragePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while registering user resource profile preference");
-        }
     }
 
     /**
@@ -2966,11 +2276,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserComputeResourcePreference getUserComputeResourcePreference(
             String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading user compute resource preference");
-        }
+        return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
     }
 
     /**
@@ -2985,11 +2291,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getUserStoragePreference(userId, gatewayID, storageId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading gateway data storage preference");
-        }
+        return registryService.getUserStoragePreference(userId, gatewayID, storageId);
     }
 
     /**
@@ -3000,11 +2302,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllUserResourceProfiles();
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading retrieving all gateway profiles");
-        }
+        return registryService.getAllUserResourceProfiles();
     }
 
     /**
@@ -3024,12 +2322,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateUserComputeResourcePreference(
+        return registryService.updateUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating user compute resource preference");
-        }
     }
 
     /**
@@ -3046,11 +2340,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateUserStoragePreference(
             String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.updateUserStoragePreference(userId, gatewayID, storageId, userStoragePreference);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating user data storage preference");
-        }
+        return registryService.updateUserStoragePreference(userId, gatewayID, storageId, userStoragePreference);
     }
 
     /**
@@ -3065,11 +2355,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting user compute resource preference");
-        }
+        return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
     }
 
     /**
@@ -3084,11 +2370,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while deleting user storage preference");
-        }
+        return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
     }
 
     /**
@@ -3097,31 +2379,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException, TException {
-        try {
-            return registryService.getLatestQueueStatuses();
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while reading queue status models");
-        }
+        return registryService.getLatestQueueStatuses();
     }
 
     @Override
     public void registerQueueStatuses(List<QueueStatusModel> queueStatuses)
             throws RegistryServiceException, TException {
-        try {
-            registryService.registerQueueStatuses(queueStatuses);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while storing queue status models");
-        }
+        registryService.registerQueueStatuses(queueStatuses);
     }
 
     @Override
     public QueueStatusModel getQueueStatus(String hostName, String queueName)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getQueueStatus(hostName, queueName);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving queue status");
-        }
+        return registryService.getQueueStatus(hostName, queueName);
     }
 
     /**
@@ -3135,12 +2405,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while reading User Resource Profile compute resource preferences");
-        }
+        return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
     }
 
     /**
@@ -3154,12 +2419,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllUserStoragePreferences(userId, gatewayID);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(
-                    e, "Error while reading user resource Profile data storage preferences");
-        }
+        return registryService.getAllUserStoragePreferences(userId, gatewayID);
     }
 
     @Override
@@ -3177,171 +2437,99 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     @Override
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException, TException {
-        try {
-            registryService.updateGatewayGroups(gatewayGroups);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while updating GatewayGroups");
-        }
+        registryService.updateGatewayGroups(gatewayGroups);
     }
 
     @Override
     public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.isGatewayGroupsExists(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error checking existence of GatewayGroups");
-        }
+        return registryService.isGatewayGroupsExists(gatewayId);
     }
 
     @Override
     public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getGatewayGroups(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving GatewayGroups");
-        }
+        return registryService.getGatewayGroups(gatewayId);
     }
 
     @Override
     public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getParser(parserId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving parser");
-        }
+        return registryService.getParser(parserId, gatewayId);
     }
 
     @Override
     public String saveParser(Parser parser) throws RegistryServiceException, TException {
-        try {
-            return registryService.saveParser(parser);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while saving parser");
-        }
+        return registryService.saveParser(parser);
     }
 
     @Override
     public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.listAllParsers(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while listing parsers");
-        }
+        return registryService.listAllParsers(gatewayId);
     }
 
     @Override
     public void removeParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
-        try {
-            registryService.removeParser(parserId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing parser");
-        }
+        registryService.removeParser(parserId, gatewayId);
     }
 
     @Override
     public ParserInput getParserInput(String parserInputId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getParserInput(parserInputId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving parser input");
-        }
+        return registryService.getParserInput(parserInputId, gatewayId);
     }
 
     @Override
     public ParserOutput getParserOutput(String parserOutputId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getParserOutput(parserOutputId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving parser output");
-        }
+        return registryService.getParserOutput(parserOutputId, gatewayId);
     }
 
     @Override
     public ParsingTemplate getParsingTemplate(String templateId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getParsingTemplate(templateId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving parsing template");
-        }
+        return registryService.getParsingTemplate(templateId, gatewayId);
     }
 
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving parsing templates for experiment");
-        }
+        return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
     }
 
     @Override
     public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
-        try {
-            return registryService.saveParsingTemplate(parsingTemplate);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while saving parsing template");
-        }
+        return registryService.saveParsingTemplate(parsingTemplate);
     }
 
     @Override
     public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.listAllParsingTemplates(gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while listing parsing templates");
-        }
+        return registryService.listAllParsingTemplates(gatewayId);
     }
 
     @Override
     public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException, TException {
-        try {
-            registryService.removeParsingTemplate(templateId, gatewayId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing parsing template");
-        }
+        registryService.removeParsingTemplate(templateId, gatewayId);
     }
 
     @Override
     public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while checking gateway usage reporting availability");
-        }
+        return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
     }
 
     @Override
     public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            return registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while retrieving gateway reporting command");
-        }
+        return registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
     }
 
     @Override
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command)
             throws RegistryServiceException, TException {
-        try {
-            registryService.addGatewayUsageReportingCommand(command);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while adding gateway usage reporting command");
-        }
+        registryService.addGatewayUsageReportingCommand(command);
     }
 
     @Override
     public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId)
             throws RegistryServiceException, TException {
-        try {
-            registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Error while removing gateway usage reporting command");
-        }
+        registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
     }
 }

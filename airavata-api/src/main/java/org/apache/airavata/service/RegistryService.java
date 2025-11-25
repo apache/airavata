@@ -172,76 +172,112 @@ public class RegistryService {
         }
     }
 
-    public List<Gateway> getAllGateways() throws RegistryException {
-        List<Gateway> gateways = gatewayRepository.getAllGateways();
-        logger.debug("Airavata retrieved all available gateways...");
-        return gateways;
-    }
-
-    public boolean isGatewayExist(String gatewayId) throws RegistryException {
-        return gatewayRepository.isGatewayExist(gatewayId);
-    }
-
-    public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryException {
-        notificationRepository.deleteNotification(notificationId);
-        return true;
-    }
-
-    public Notification getNotification(String gatewayId, String notificationId) throws RegistryException {
-        return notificationRepository.getNotification(notificationId);
-    }
-
-    public List<Notification> getAllNotifications(String gatewayId) throws RegistryException {
-        List<Notification> notifications = notificationRepository.getAllGatewayNotifications(gatewayId);
-        return notifications;
-    }
-
-    public Project getProject(String projectId) throws RegistryException, ProjectNotFoundException {
-        if (!projectRepository.isProjectExist(projectId)) {
-            logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
-            throw exception;
+    public List<Gateway> getAllGateways() throws RegistryServiceException {
+        try {
+            List<Gateway> gateways = gatewayRepository.getAllGateways();
+            logger.debug("Airavata retrieved all available gateways...");
+            return gateways;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all the gateways");
         }
-        logger.debug("Airavata retrieved project with project Id : " + projectId);
-        Project project = projectRepository.getProject(projectId);
-        return project;
     }
 
-    public boolean deleteProject(String projectId) throws RegistryException, ProjectNotFoundException {
-        if (!projectRepository.isProjectExist(projectId)) {
-            logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
-            throw exception;
+    public boolean isGatewayExist(String gatewayId) throws RegistryServiceException {
+        try {
+            return gatewayRepository.isGatewayExist(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if gateway exists");
         }
-        projectRepository.removeProject(projectId);
-        logger.debug("Airavata deleted project with project Id : " + projectId);
-        return true;
+    }
+
+    public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryServiceException {
+        try {
+            notificationRepository.deleteNotification(notificationId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting notification");
+        }
+    }
+
+    public Notification getNotification(String gatewayId, String notificationId) throws RegistryServiceException {
+        try {
+            return notificationRepository.getNotification(notificationId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving notification");
+        }
+    }
+
+    public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException {
+        try {
+            List<Notification> notifications = notificationRepository.getAllGatewayNotifications(gatewayId);
+            return notifications;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all notifications");
+        }
+    }
+
+    public Project getProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
+        try {
+            if (!projectRepository.isProjectExist(projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            logger.debug("Airavata retrieved project with project Id : " + projectId);
+            Project project = projectRepository.getProject(projectId);
+            return project;
+        } catch (ProjectNotFoundException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the project");
+        }
+    }
+
+    public boolean deleteProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
+        try {
+            if (!projectRepository.isProjectExist(projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            projectRepository.removeProject(projectId);
+            logger.debug("Airavata deleted project with project Id : " + projectId);
+            return true;
+        } catch (ProjectNotFoundException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing the project");
+        }
     }
 
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
-            throws RegistryException {
-        if (!validateString(userName)) {
-            logger.error("Username cannot be empty. Please provide a valid user..");
-            throw new RegistryException("Username cannot be empty. Please provide a valid user..");
-        }
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        List<Project> projects = new ArrayList<>();
-        if (!userRepository.isUserExists(gatewayId, userName)) {
-            logger.warn("User does not exist in the system. Please provide a valid user..");
+            throws RegistryServiceException {
+        try {
+            if (!validateString(userName)) {
+                logger.error("Username cannot be empty. Please provide a valid user..");
+                throw new RegistryException("Username cannot be empty. Please provide a valid user..");
+            }
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            List<Project> projects = new ArrayList<>();
+            if (!userRepository.isUserExists(gatewayId, userName)) {
+                logger.warn("User does not exist in the system. Please provide a valid user..");
+                return projects;
+            }
+            Map<String, String> filters = new HashMap<>();
+            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            projects = projectRepository.searchProjects(
+                    filters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
             return projects;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving projects");
         }
-        Map<String, String> filters = new HashMap<>();
-        filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
-        filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-        projects = projectRepository.searchProjects(
-                filters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
-        logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
-        return projects;
     }
 
     public ExperimentStatistics getExperimentStatistics(
@@ -254,356 +290,484 @@ public class RegistryService {
             List<String> accessibleExpIds,
             int limit,
             int offset)
-            throws RegistryException {
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            throws RegistryServiceException {
+        try {
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            Map<String, String> filters = new HashMap<>();
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime + "");
+            filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime + "");
+            if (userName != null) {
+                filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            }
+            if (applicationName != null) {
+                filters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, applicationName);
+            }
+            if (resourceHostName != null) {
+                filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
+            }
+            limit = Math.min(limit, 1000);
+            ExperimentStatistics result =
+                    experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters, limit, offset);
+            logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : "
+                    + org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime) + " and "
+                    + org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
+            return result;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting experiment statistics");
         }
-        Map<String, String> filters = new HashMap<>();
-        filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-        filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime + "");
-        filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime + "");
-        if (userName != null) {
-            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-        }
-        if (applicationName != null) {
-            filters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, applicationName);
-        }
-        if (resourceHostName != null) {
-            filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
-        }
-        limit = Math.min(limit, 1000);
-        ExperimentStatistics result =
-                experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters, limit, offset);
-        logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : "
-                + org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime) + " and "
-                + org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
-        return result;
     }
 
     public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
-            throws RegistryException {
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            throws RegistryServiceException {
+        try {
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            if (!validateString(projectId)) {
+                logger.error("Project id cannot be empty. Please provide a valid project ID...");
+                throw new RegistryException("Project id cannot be empty. Please provide a valid project ID...");
+            }
+            if (!projectRepository.isProjectExist(projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+            }
+            List<ExperimentModel> experiments = experimentRepository.getExperimentList(
+                    gatewayId,
+                    Constants.FieldConstants.ExperimentConstants.PROJECT_ID,
+                    projectId,
+                    limit,
+                    offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
+                    ResultOrderType.DESC);
+            logger.debug("Airavata retrieved experiments for project : " + projectId);
+            return experiments;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiments");
         }
-        if (!validateString(projectId)) {
-            logger.error("Project id cannot be empty. Please provide a valid project ID...");
-            throw new RegistryException("Project id cannot be empty. Please provide a valid project ID...");
-        }
-        if (!projectRepository.isProjectExist(projectId)) {
-            logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
-        }
-        List<ExperimentModel> experiments = experimentRepository.getExperimentList(
-                gatewayId,
-                Constants.FieldConstants.ExperimentConstants.PROJECT_ID,
-                projectId,
-                limit,
-                offset,
-                Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
-                ResultOrderType.DESC);
-        logger.debug("Airavata retrieved experiments for project : " + projectId);
-        return experiments;
     }
 
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
-            throws RegistryException {
-        if (!validateString(userName)) {
-            logger.error("Username cannot be empty. Please provide a valid user..");
-            throw new RegistryException("Username cannot be empty. Please provide a valid user..");
-        }
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
-        if (!userRepository.isUserExists(gatewayId, userName)) {
-            logger.warn("User does not exist in the system. Please provide a valid user..");
+            throws RegistryServiceException {
+        try {
+            if (!validateString(userName)) {
+                logger.error("Username cannot be empty. Please provide a valid user..");
+                throw new RegistryException("Username cannot be empty. Please provide a valid user..");
+            }
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+            if (!userRepository.isUserExists(gatewayId, userName)) {
+                logger.warn("User does not exist in the system. Please provide a valid user..");
+                return experiments;
+            }
+            experiments = experimentRepository.getExperimentList(
+                    gatewayId,
+                    Constants.FieldConstants.ExperimentConstants.USER_NAME,
+                    userName,
+                    limit,
+                    offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
+                    ResultOrderType.DESC);
+            logger.debug("Airavata retrieved experiments for user : " + userName);
             return experiments;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiments");
         }
-        experiments = experimentRepository.getExperimentList(
-                gatewayId,
-                Constants.FieldConstants.ExperimentConstants.USER_NAME,
-                userName,
-                limit,
-                offset,
-                Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
-                ResultOrderType.DESC);
-        logger.debug("Airavata retrieved experiments for user : " + userName);
-        return experiments;
     }
 
-    public boolean deleteExperiment(String experimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(experimentId)) {
-            throw new RegistryException("Requested experiment id " + experimentId + " does not exist in the system..");
+    public boolean deleteExperiment(String experimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(experimentId)) {
+                throw new RegistryException("Requested experiment id " + experimentId + " does not exist in the system..");
+            }
+            ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
+            if (!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)) {
+                logger.error("Error while deleting the experiment");
+                throw new RegistryException("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
+            }
+            experimentRepository.removeExperiment(experimentId);
+            logger.debug("Airavata removed experiment with experiment id : " + experimentId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting the experiment");
         }
-        ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
-        if (!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)) {
-            logger.error("Error while deleting the experiment");
-            throw new RegistryException("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
-        }
-        experimentRepository.removeExperiment(experimentId);
-        logger.debug("Airavata removed experiment with experiment id : " + experimentId);
-        return true;
     }
 
-    private ExperimentModel getExperimentInternal(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+    private ExperimentModel getExperimentInternal(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            return experimentRepository.getExperiment(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiment");
         }
-        return experimentRepository.getExperiment(airavataExperimentId);
     }
 
-    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
+    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryServiceException {
         return getExperimentInternal(airavataExperimentId);
     }
 
-    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryException {
-        ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
-        List<ProcessModel> processList = processRepository.getProcessList(
-                Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
-        if (processList != null) {
-            processList.stream().forEach(p -> {
-                (p).getTasks().stream().forEach(t -> {
-                    try {
-                        List<JobModel> jobList = jobRepository.getJobList(
-                                Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel) t).getTaskId());
-                        if (jobList != null) {
-                            Collections.sort(jobList, new Comparator<JobModel>() {
-                                @Override
-                                public int compare(JobModel o1, JobModel o2) {
-                                    return (int) (o1.getCreationTime() - o2.getCreationTime());
-                                }
-                            });
-                            t.setJobs(jobList);
+    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
+            List<ProcessModel> processList = processRepository.getProcessList(
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
+            if (processList != null) {
+                processList.stream().forEach(p -> {
+                    (p).getTasks().stream().forEach(t -> {
+                        try {
+                            List<JobModel> jobList = jobRepository.getJobList(
+                                    Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel) t).getTaskId());
+                            if (jobList != null) {
+                                Collections.sort(jobList, new Comparator<JobModel>() {
+                                    @Override
+                                    public int compare(JobModel o1, JobModel o2) {
+                                        return (int) (o1.getCreationTime() - o2.getCreationTime());
+                                    }
+                                });
+                                t.setJobs(jobList);
+                            }
+                        } catch (RegistryException e) {
+                            logger.error(e.getMessage(), e);
                         }
-                    } catch (RegistryException e) {
-                        logger.error(e.getMessage(), e);
-                    }
+                    });
                 });
-            });
-            experimentModel.setProcesses(processList);
+                experimentModel.setProcesses(processList);
+            }
+            logger.debug("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
+            return experimentModel;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiment");
         }
-        logger.debug("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
-        return experimentModel;
     }
 
-    private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Error while retrieving experiment status, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+    private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Error while retrieving experiment status, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            return experimentStatusRepository.getExperimentStatus(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiment status");
         }
-        return experimentStatusRepository.getExperimentStatus(airavataExperimentId);
     }
 
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryException {
-        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
-        logger.debug("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
-        return experimentStatus;
-    }
-
-    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Get experiment outputs failed, experiment {} doesn't exit.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            logger.debug("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
+            return experimentStatus;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiment status");
         }
-        logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
-        return experimentOutputRepository.getExperimentOutputs(airavataExperimentId);
     }
 
-    public void updateJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryException {
-        org.apache.airavata.registry.core.entities.expcatalog.JobPK jobPK =
-                new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
-        jobPK.setTaskId(taskId);
-        jobPK.setJobId(jobId);
-        jobStatusRepository.updateJobStatus(jobStatus, jobPK);
+    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Get experiment outputs failed, experiment {} doesn't exit.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
+            return experimentOutputRepository.getExperimentOutputs(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiment outputs");
+        }
     }
 
-    public void addJob(JobModel jobModel, String processId) throws RegistryException {
-        jobRepository.addJob(jobModel, processId);
+    public void updateJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
+        try {
+            org.apache.airavata.registry.core.entities.expcatalog.JobPK jobPK =
+                    new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
+            jobPK.setTaskId(taskId);
+            jobPK.setJobId(jobId);
+            jobStatusRepository.updateJobStatus(jobStatus, jobPK);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating job status");
+        }
+    }
+
+    public void addJob(JobModel jobModel, String processId) throws RegistryServiceException {
+        try {
+            jobRepository.addJob(jobModel, processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding job");
+        }
     }
 
     // Note: deleteJobs method removed - JobRepository doesn't have this method
     // Jobs should be deleted individually using removeJob(jobPK) or removeJob(jobModel)
 
-    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryException {
-        return processRepository.addProcess(processModel, experimentId);
+    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException {
+        try {
+            return processRepository.addProcess(processModel, experimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding process");
+        }
     }
 
-    public void updateProcess(ProcessModel processModel, String processId) throws RegistryException {
-        processRepository.updateProcess(processModel, processId);
+    public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException {
+        try {
+            processRepository.updateProcess(processModel, processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating process");
+        }
     }
 
-    public String addTask(TaskModel taskModel, String processId) throws RegistryException {
-        return taskRepository.addTask(taskModel, processId);
+    public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException {
+        try {
+            return taskRepository.addTask(taskModel, processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding task");
+        }
     }
 
-    public void deleteTasks(String processId) throws RegistryException {
-        taskRepository.deleteTasks(processId);
+    public void deleteTasks(String processId) throws RegistryServiceException {
+        try {
+            taskRepository.deleteTasks(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting tasks");
+        }
     }
 
-    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
-        return experimentRepository.getUserConfigurationData(experimentId);
+    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException {
+        try {
+            return experimentRepository.getUserConfigurationData(experimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting user configuration");
+        }
     }
 
-    public ProcessModel getProcess(String processId) throws RegistryException {
-        return processRepository.getProcess(processId);
+    public ProcessModel getProcess(String processId) throws RegistryServiceException {
+        try {
+            return processRepository.getProcess(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving process");
+        }
     }
 
-    public List<ProcessModel> getProcessList(String experimentId) throws RegistryException {
-        List<ProcessModel> processModels = processRepository.getProcessList(
-                Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
-        return processModels;
+    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException {
+        try {
+            List<ProcessModel> processModels = processRepository.getProcessList(
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
+            return processModels;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving process list");
+        }
     }
 
-    public ProcessStatus getProcessStatus(String processId) throws RegistryException {
-        return processStatusRepository.getProcessStatus(processId);
+    public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException {
+        try {
+            return processStatusRepository.getProcessStatus(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving process status");
+        }
     }
 
-    public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryException {
-        List<ProcessModel> finalProcessList = new ArrayList<>();
-        int offset = 0;
-        int limit = 100;
-        int count = 0;
-        do {
-            List<ProcessStatus> processStatusList =
-                    processStatusRepository.getProcessStatusList(processState, offset, limit);
-            offset += processStatusList.size();
-            count = processStatusList.size();
-            for (ProcessStatus processStatus : processStatusList) {
-                ProcessStatus latestStatus = processStatusRepository.getProcessStatus(processStatus.getProcessId());
-                if (latestStatus.getState().name().equals(processState.name())) {
-                    finalProcessList.add(processRepository.getProcess(latestStatus.getProcessId()));
+    public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException {
+        try {
+            List<ProcessModel> finalProcessList = new ArrayList<>();
+            int offset = 0;
+            int limit = 100;
+            int count = 0;
+            do {
+                List<ProcessStatus> processStatusList =
+                        processStatusRepository.getProcessStatusList(processState, offset, limit);
+                offset += processStatusList.size();
+                count = processStatusList.size();
+                for (ProcessStatus processStatus : processStatusList) {
+                    ProcessStatus latestStatus = processStatusRepository.getProcessStatus(processStatus.getProcessId());
+                    if (latestStatus.getState().name().equals(processState.name())) {
+                        finalProcessList.add(processRepository.getProcess(latestStatus.getProcessId()));
+                    }
                 }
-            }
-        } while (count == limit);
-        return finalProcessList;
+            } while (count == limit);
+            return finalProcessList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving process list with given status");
+        }
     }
 
-    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
-        return processStatusRepository.getProcessStatusList(processId);
+    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException {
+        try {
+            return processStatusRepository.getProcessStatusList(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving process status list for given process Id");
+        }
     }
 
-    private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
-        if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
-            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
-            if (jobs != null) {
-                for (JobModel jobModel : jobs) {
-                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                        return jobModel;
+    private JobModel fetchJobModel(String queryType, String id) throws RegistryServiceException {
+        try {
+            if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+                List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
+                if (jobs != null) {
+                    for (JobModel jobModel : jobs) {
+                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                            return jobModel;
+                        }
+                    }
+                }
+            } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+                List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+                if (jobs != null) {
+                    for (JobModel jobModel : jobs) {
+                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                            return jobModel;
+                        }
                     }
                 }
             }
-        } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
-            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-            if (jobs != null) {
-                for (JobModel jobModel : jobs) {
-                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                        return jobModel;
-                    }
-                }
+            return null;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while fetching job model");
+        }
+    }
+
+    private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryServiceException {
+        try {
+            List<JobModel> jobs = new ArrayList<>();
+            switch (queryType) {
+                case Constants.FieldConstants.JobConstants.TASK_ID:
+                    jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
+                    break;
+                case Constants.FieldConstants.JobConstants.PROCESS_ID:
+                    jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+                    break;
+                case Constants.FieldConstants.JobConstants.JOB_ID:
+                    jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.JOB_ID, id);
+                    break;
             }
+            return jobs;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while fetching job models");
         }
-        return null;
     }
 
-    private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryException {
-        List<JobModel> jobs = new ArrayList<>();
-        switch (queryType) {
-            case Constants.FieldConstants.JobConstants.TASK_ID:
-                jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
-                break;
-            case Constants.FieldConstants.JobConstants.PROCESS_ID:
-                jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-                break;
-            case Constants.FieldConstants.JobConstants.JOB_ID:
-                jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.JOB_ID, id);
-                break;
-        }
-        return jobs;
-    }
-
-    public boolean isJobExist(String queryType, String id) throws RegistryException {
+    public boolean isJobExist(String queryType, String id) throws RegistryServiceException {
         JobModel jobModel = fetchJobModel(queryType, id);
         return jobModel != null;
     }
 
-    public JobModel getJob(String queryType, String id) throws RegistryException {
-        JobModel jobModel = fetchJobModel(queryType, id);
-        if (jobModel != null) return jobModel;
-        throw new RegistryException("Job not found for queryType: " + queryType + ", id: " + id);
+    public JobModel getJob(String queryType, String id) throws RegistryServiceException {
+        try {
+            JobModel jobModel = fetchJobModel(queryType, id);
+            if (jobModel != null) return jobModel;
+            throw new RegistryException("Job not found for queryType: " + queryType + ", id: " + id);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting job");
+        }
     }
 
-    public List<JobModel> getJobs(String queryType, String id) throws RegistryException {
-        return fetchJobModels(queryType, id);
+    public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException {
+        try {
+            return fetchJobModels(queryType, id);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting jobs");
+        }
     }
 
     public int getJobCount(
             org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
-            throws RegistryException {
-        List<JobStatus> jobStatusList = jobStatusRepository.getDistinctListofJobStatus(
-                gatewayId, jobStatus.getJobState().name(), searchBackTimeInMinutes);
-        return jobStatusList.size();
+            throws RegistryServiceException {
+        try {
+            List<JobStatus> jobStatusList = jobStatusRepository.getDistinctListofJobStatus(
+                    gatewayId, jobStatus.getJobState().name(), searchBackTimeInMinutes);
+            return jobStatusList.size();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting job count");
+        }
     }
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchBackTimeInMinutes)
-            throws RegistryException {
-        return processRepository.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
-    }
-
-    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
-        return processOutputRepository.getProcessOutputs(processId);
-    }
-
-    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException {
-        return processWorkflowRepository.getProcessWorkflows(processId);
-    }
-
-    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryException {
-        processWorkflowRepository.addProcessWorkflow(processWorkflow, processWorkflow.getProcessId());
-    }
-
-    public List<String> getProcessIds(String experimentId) throws RegistryException {
-        return processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
-    }
-
-    public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Error while retrieving job details, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            throws RegistryServiceException {
+        try {
+            return processRepository.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting average time distribution");
         }
-        List<ProcessModel> processModels = processRepository.getProcessList(
-                Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
-        List<JobModel> jobList = new ArrayList<>();
-        if (processModels != null && !processModels.isEmpty()) {
-            for (ProcessModel processModel : processModels) {
-                List<TaskModel> tasks = processModel.getTasks();
-                if (tasks != null && !tasks.isEmpty()) {
-                    for (TaskModel taskModel : tasks) {
-                        String taskId = taskModel.getTaskId();
-                        List<JobModel> taskJobs =
-                                jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
-                        jobList.addAll(taskJobs);
+    }
+
+    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException {
+        try {
+            return processOutputRepository.getProcessOutputs(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting process outputs");
+        }
+    }
+
+    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException {
+        try {
+            return processWorkflowRepository.getProcessWorkflows(processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting process workflows");
+        }
+    }
+
+    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException {
+        try {
+            processWorkflowRepository.addProcessWorkflow(processWorkflow, processWorkflow.getProcessId());
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding process workflow");
+        }
+    }
+
+    public List<String> getProcessIds(String experimentId) throws RegistryServiceException {
+        try {
+            return processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting process ids");
+        }
+    }
+
+    public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Error while retrieving job details, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<ProcessModel> processModels = processRepository.getProcessList(
+                    Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<JobModel> jobList = new ArrayList<>();
+            if (processModels != null && !processModels.isEmpty()) {
+                for (ProcessModel processModel : processModels) {
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()) {
+                        for (TaskModel taskModel : tasks) {
+                            String taskId = taskModel.getTaskId();
+                            List<JobModel> taskJobs =
+                                    jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            jobList.addAll(taskJobs);
+                        }
                     }
                 }
             }
+            logger.debug("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
+            return jobList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting job details");
         }
-        logger.debug("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
-        return jobList;
     }
 
     private boolean validateString(String name) {
@@ -614,98 +778,118 @@ public class RegistryService {
         return valid;
     }
 
-    public boolean isGatewayExistInternal(String gatewayId) throws RegistryException {
-        return gatewayRepository.isGatewayExist(gatewayId);
+    public boolean isGatewayExistInternal(String gatewayId) throws RegistryServiceException {
+        try {
+            return gatewayRepository.isGatewayExist(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if gateway exists");
+        }
     }
 
-    public ApplicationModule getApplicationModule(String appModuleId) throws AppCatalogException {
-        ApplicationModule module = applicationInterfaceRepository.getApplicationModule(appModuleId);
-        logger.debug("Airavata retrieved application module with module id : " + appModuleId);
-        return module;
+    public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException {
+        try {
+            ApplicationModule module = applicationInterfaceRepository.getApplicationModule(appModuleId);
+            logger.debug("Airavata retrieved application module with module id : " + appModuleId);
+            return module;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting application module");
+        }
     }
 
-    public List<ApplicationModule> getAllAppModules(String gatewayId) throws AppCatalogException {
+    public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAllApplicationModules(gatewayId);
+            logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all app modules");
         }
-        List<ApplicationModule> moduleList = applicationInterfaceRepository.getAllApplicationModules(gatewayId);
-        logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
-        return moduleList;
     }
 
     public List<ApplicationModule> getAccessibleAppModules(
             String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAccessibleApplicationModules(
+                    gatewayId, accessibleAppIds, accessibleComputeResourceIds);
+            logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting accessible app modules");
         }
-        List<ApplicationModule> moduleList = applicationInterfaceRepository.getAccessibleApplicationModules(
-                gatewayId, accessibleAppIds, accessibleComputeResourceIds);
-        logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
-        return moduleList;
     }
 
-    public boolean deleteApplicationModule(String appModuleId) throws AppCatalogException {
-        logger.debug("Airavata deleted application module with module id : " + appModuleId);
-        return applicationInterfaceRepository.removeApplicationModule(appModuleId);
+    public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException {
+        try {
+            logger.debug("Airavata deleted application module with module id : " + appModuleId);
+            return applicationInterfaceRepository.removeApplicationModule(appModuleId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application module");
+        }
     }
 
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
-            throws AppCatalogException {
-        ApplicationDeploymentDescription deployement =
+            throws RegistryServiceException {
+        try {
+            ApplicationDeploymentDescription deployement =
                 applicationDeploymentRepository.getApplicationDeployement(appDeploymentId);
-        logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
-        return deployement;
+            logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
+            return deployement;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting application deployment");
+        }
     }
 
-    public boolean deleteApplicationDeployment(String appDeploymentId) throws AppCatalogException {
-        applicationDeploymentRepository.removeAppDeployment(appDeploymentId);
-        logger.debug("Airavata removed application deployment with deployment id : " + appDeploymentId);
-        return true;
+    public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException {
+        try {
+            applicationDeploymentRepository.removeAppDeployment(appDeploymentId);
+            logger.debug("Airavata removed application deployment with deployment id : " + appDeploymentId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application deployment");
+        }
     }
 
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            List<ApplicationDeploymentDescription> deployements =
+                    applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
+            logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all application deployments");
         }
-        List<ApplicationDeploymentDescription> deployements =
-                applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
-        logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
-        return deployements;
     }
 
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
             String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        List<ApplicationDeploymentDescription> deployements =
-                applicationDeploymentRepository.getAccessibleApplicationDeployments(
+            List<ApplicationDeploymentDescription> deployements =
+                    applicationDeploymentRepository.getAccessibleApplicationDeployments(
                         gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
-        return deployements;
+            logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting accessible application deployments");
+        }
     }
 
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
@@ -713,655 +897,851 @@ public class RegistryService {
             String appModuleId,
             List<String> accessibleAppDeploymentIds,
             List<String> accessibleComputeResourceIds)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            List<ApplicationDeploymentDescription> deployments =
+                    applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                            gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            return deployments;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting accessible application deployments for app module");
         }
-        List<ApplicationDeploymentDescription> deployments =
-                applicationDeploymentRepository.getAccessibleApplicationDeployments(
-                        gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        return deployments;
     }
 
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws AppCatalogException {
-        List<String> appDeployments = new ArrayList<>();
-        Map<String, String> filters = new HashMap<>();
-        filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-        List<ApplicationDeploymentDescription> applicationDeployments =
-                applicationDeploymentRepository.getApplicationDeployments(filters);
-        for (ApplicationDeploymentDescription description : applicationDeployments) {
-            appDeployments.add(description.getAppDeploymentId());
+    public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException {
+        try {
+            List<String> appDeployments = new ArrayList<>();
+            Map<String, String> filters = new HashMap<>();
+            filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
+            List<ApplicationDeploymentDescription> applicationDeployments =
+                    applicationDeploymentRepository.getApplicationDeployments(filters);
+            for (ApplicationDeploymentDescription description : applicationDeployments) {
+                appDeployments.add(description.getAppDeploymentId());
+            }
+            logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
+            return appDeployments;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting app module deployed resources");
         }
-        logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
-        return appDeployments;
     }
 
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
-            throws AppCatalogException {
-        Map<String, String> filters = new HashMap<>();
-        filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-        List<ApplicationDeploymentDescription> applicationDeployments =
-                applicationDeploymentRepository.getApplicationDeployments(filters);
-        return applicationDeployments;
+            throws RegistryServiceException {
+        try {
+            Map<String, String> filters = new HashMap<>();
+            filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
+            List<ApplicationDeploymentDescription> applicationDeployments =
+                    applicationDeploymentRepository.getApplicationDeployments(filters);
+            return applicationDeployments;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting application deployments");
+        }
     }
 
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws AppCatalogException {
-        ApplicationInterfaceDescription interfaceDescription =
-                applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
-        logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
-        return interfaceDescription;
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException {
+        try {
+            ApplicationInterfaceDescription interfaceDescription =
+                    applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
+            logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
+            return interfaceDescription;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting application interface");
+        }
     }
 
-    public boolean deleteApplicationInterface(String appInterfaceId) throws AppCatalogException {
-        boolean removeApplicationInterface = applicationInterfaceRepository.removeApplicationInterface(appInterfaceId);
-        logger.debug("Airavata removed application interface with interface id : " + appInterfaceId);
-        return removeApplicationInterface;
+    public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException {
+        try {
+            boolean removeApplicationInterface = applicationInterfaceRepository.removeApplicationInterface(appInterfaceId);
+            logger.debug("Airavata removed application interface with interface id : " + appInterfaceId);
+            return removeApplicationInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application interface");
+        }
     }
 
-    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws AppCatalogException {
+    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        List<ApplicationInterfaceDescription> allApplicationInterfaces =
-                applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
-        Map<String, String> allApplicationInterfacesMap = new HashMap<>();
-        if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()) {
-            for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
-                allApplicationInterfacesMap.put(
-                        interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+            List<ApplicationInterfaceDescription> allApplicationInterfaces =
+                    applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
+            Map<String, String> allApplicationInterfacesMap = new HashMap<>();
+            if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()) {
+                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
+                    allApplicationInterfacesMap.put(
+                            interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+                }
             }
+            logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
+            return allApplicationInterfacesMap;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all application interface names");
         }
-        logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
-        return allApplicationInterfacesMap;
     }
 
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            List<ApplicationInterfaceDescription> interfaces =
+                    applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
+            logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
+            return interfaces;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all application interfaces");
         }
-        List<ApplicationInterfaceDescription> interfaces =
-                applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
-        logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
-        return interfaces;
     }
 
-    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws AppCatalogException {
-        List<InputDataObjectType> applicationInputs =
-                applicationInterfaceRepository.getApplicationInputs(appInterfaceId);
-        logger.debug("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
-        return applicationInputs;
+    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryServiceException {
+        try {
+            List<InputDataObjectType> applicationInputs =
+                    applicationInterfaceRepository.getApplicationInputs(appInterfaceId);
+            logger.debug("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
+            return applicationInputs;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application inputs");
+        }
     }
 
-    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws AppCatalogException {
-        List<OutputDataObjectType> applicationOutputs =
-                applicationInterfaceRepository.getApplicationOutputs(appInterfaceId);
-        logger.debug("Airavata retrieved application outputs for application interface id : " + appInterfaceId);
-        return applicationOutputs;
+    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws RegistryServiceException {
+        try {
+            List<OutputDataObjectType> applicationOutputs =
+                    applicationInterfaceRepository.getApplicationOutputs(appInterfaceId);
+            logger.debug("Airavata retrieved application outputs for application interface id : " + appInterfaceId);
+            return applicationOutputs;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application outputs");
+        }
     }
 
-    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws AppCatalogException {
-        List<OutputDataObjectType> list = getApplicationOutputsInternal(appInterfaceId);
-        logger.debug("Airavata retrieved application outputs for app interface id : " + appInterfaceId);
-        return list;
+    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryServiceException {
+        try {
+            List<OutputDataObjectType> list = getApplicationOutputsInternal(appInterfaceId);
+            logger.debug("Airavata retrieved application outputs for app interface id : " + appInterfaceId);
+            return list;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application outputs");
+        }
     }
 
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws AppCatalogException {
-        Map<String, String> allComputeResources = new ComputeResourceRepository().getAvailableComputeResourceIdList();
-        Map<String, String> availableComputeResources = new HashMap<String, String>();
-        ApplicationInterfaceDescription applicationInterface =
-                applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
-        HashMap<String, String> filters = new HashMap<>();
-        List<String> applicationModules = applicationInterface.getApplicationModules();
-        if (applicationModules != null && !applicationModules.isEmpty()) {
-            for (String moduleId : applicationModules) {
-                filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
-                List<ApplicationDeploymentDescription> applicationDeployments =
-                        applicationDeploymentRepository.getApplicationDeployments(filters);
-                for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
-                    if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null) {
-                        availableComputeResources.put(
-                                deploymentDescription.getComputeHostId(),
-                                allComputeResources.get(deploymentDescription.getComputeHostId()));
+            throws RegistryServiceException {
+        try {
+            Map<String, String> allComputeResources = new ComputeResourceRepository().getAvailableComputeResourceIdList();
+            Map<String, String> availableComputeResources = new HashMap<String, String>();
+            ApplicationInterfaceDescription applicationInterface =
+                    applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
+            HashMap<String, String> filters = new HashMap<>();
+            List<String> applicationModules = applicationInterface.getApplicationModules();
+            if (applicationModules != null && !applicationModules.isEmpty()) {
+                for (String moduleId : applicationModules) {
+                    filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
+                    List<ApplicationDeploymentDescription> applicationDeployments =
+                            applicationDeploymentRepository.getApplicationDeployments(filters);
+                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
+                        if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null) {
+                            availableComputeResources.put(
+                                    deploymentDescription.getComputeHostId(),
+                                    allComputeResources.get(deploymentDescription.getComputeHostId()));
+                        }
                     }
                 }
             }
+            logger.debug("Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
+            return availableComputeResources;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving available app interface compute resources");
         }
-        logger.debug("Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
-        return availableComputeResources;
     }
 
-    public ComputeResourceDescription getComputeResource(String computeResourceId) throws AppCatalogException {
-        ComputeResourceDescription computeResource =
-                new ComputeResourceRepository().getComputeResource(computeResourceId);
-        logger.debug("Airavata retrieved compute resource with compute resource Id : " + computeResourceId);
-        return computeResource;
+    public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException {
+        try {
+            ComputeResourceDescription computeResource =
+                    new ComputeResourceRepository().getComputeResource(computeResourceId);
+            logger.debug("Airavata retrieved compute resource with compute resource Id : " + computeResourceId);
+            return computeResource;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving compute resource");
+        }
     }
 
-    public Map<String, String> getAllComputeResourceNames() throws AppCatalogException {
-        Map<String, String> computeResourceIdList = new ComputeResourceRepository().getAllComputeResourceIdList();
-        logger.debug("Airavata retrieved all the available compute resources...");
-        return computeResourceIdList;
+    public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException {
+        try {
+            Map<String, String> computeResourceIdList = new ComputeResourceRepository().getAllComputeResourceIdList();
+            logger.debug("Airavata retrieved all the available compute resources...");
+            return computeResourceIdList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all compute resource names");
+        }
     }
 
-    public boolean deleteComputeResource(String computeResourceId) throws AppCatalogException {
-        new ComputeResourceRepository().removeComputeResource(computeResourceId);
-        logger.debug("Airavata deleted compute resource with compute resource Id : " + computeResourceId);
-        return true;
+    public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().removeComputeResource(computeResourceId);
+            logger.debug("Airavata deleted compute resource with compute resource Id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting compute resource");
+        }
     }
 
-    public StorageResourceDescription getStorageResource(String storageResourceId) throws AppCatalogException {
-        StorageResourceDescription storageResource = storageResourceRepository.getStorageResource(storageResourceId);
-        logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
-        return storageResource;
+    public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException {
+        try {
+            StorageResourceDescription storageResource = storageResourceRepository.getStorageResource(storageResourceId);
+            logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
+            return storageResource;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving storage resource");
+        }
     }
 
-    public Map<String, String> getAllStorageResourceNames() throws AppCatalogException {
-        Map<String, String> resourceIdList = storageResourceRepository.getAllStorageResourceIdList();
-        logger.debug("Airavata retrieved storage resources list...");
-        return resourceIdList;
+    public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException {
+        try {
+            Map<String, String> resourceIdList = storageResourceRepository.getAllStorageResourceIdList();
+            logger.debug("Airavata retrieved storage resources list...");
+            return resourceIdList;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all storage resource names");
+        }
     }
 
-    public boolean deleteStorageResource(String storageResourceId) throws AppCatalogException {
-        storageResourceRepository.removeStorageResource(storageResourceId);
-        logger.debug("Airavata deleted storage resource with storage resource Id : " + storageResourceId);
-        return true;
+    public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException {
+        try {
+            storageResourceRepository.removeStorageResource(storageResourceId);
+            logger.debug("Airavata deleted storage resource with storage resource Id : " + storageResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting storage resource");
+        }
     }
 
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        LOCALSubmission localJobSubmission = new ComputeResourceRepository().getLocalJobSubmission(jobSubmissionId);
-        logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
-        return localJobSubmission;
+    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException {
+        try {
+            LOCALSubmission localJobSubmission = new ComputeResourceRepository().getLocalJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
+            return localJobSubmission;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving local job submission");
+        }
     }
 
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        SSHJobSubmission sshJobSubmission = new ComputeResourceRepository().getSSHJobSubmission(jobSubmissionId);
-        logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
-        return sshJobSubmission;
+    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException {
+        try {
+            SSHJobSubmission sshJobSubmission = new ComputeResourceRepository().getSSHJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
+            return sshJobSubmission;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving SSH job submission");
+        }
     }
 
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        UnicoreJobSubmission unicoreJobSubmission =
-                new ComputeResourceRepository().getUNICOREJobSubmission(jobSubmissionId);
-        logger.debug("Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
-        return unicoreJobSubmission;
+    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws RegistryServiceException {
+        try {
+            UnicoreJobSubmission unicoreJobSubmission =
+                    new ComputeResourceRepository().getUNICOREJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
+            return unicoreJobSubmission;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving UNICORE job submission");
+        }
     }
 
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        CloudJobSubmission cloudJobSubmission = new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
-        logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
-        return cloudJobSubmission;
+    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException {
+        try {
+            CloudJobSubmission cloudJobSubmission = new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
+            logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
+            return cloudJobSubmission;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving cloud job submission");
+        }
     }
 
     public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder)
-            throws RegistryException {
+            throws RegistryServiceException {
         return false;
     }
 
     public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder)
-            throws RegistryException {
+            throws RegistryServiceException {
         return false;
     }
 
     public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap)
-            throws RegistryException {
+            throws RegistryServiceException {
         return false;
     }
 
-    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws RegistryException {
+    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws RegistryServiceException {
         return false;
     }
 
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws AppCatalogException {
-        new ComputeResourceRepository().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
-        logger.debug("Airavata deleted job submission interface with interface id : " + jobSubmissionInterfaceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+            logger.debug("Airavata deleted job submission interface with interface id : " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting job submission interface");
+        }
     }
 
-    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        return new ComputeResourceRepository().getResourceJobManager(resourceJobManagerId);
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
+        try {
+            return new ComputeResourceRepository().getResourceJobManager(resourceJobManagerId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving resource job manager");
+        }
     }
 
-    public boolean deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        new ComputeResourceRepository().deleteResourceJobManager(resourceJobManagerId);
-        return true;
+    public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().deleteResourceJobManager(resourceJobManagerId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting resource job manager");
+        }
     }
 
-    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        new ComputeResourceRepository().removeBatchQueue(computeResourceId, queueName);
-        return true;
+    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().removeBatchQueue(computeResourceId, queueName);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting batch queue");
+        }
     }
 
-    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws AppCatalogException {
+    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile gatewayResourceProfile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+            logger.debug("Airavata retrieved gateway profile with gateway id : " + gatewayID);
+            return gatewayResourceProfile;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving gateway resource profile");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        GatewayResourceProfile gatewayResourceProfile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
-        logger.debug("Airavata retrieved gateway profile with gateway id : " + gatewayID);
-        return gatewayResourceProfile;
     }
 
-    public boolean deleteGatewayResourceProfile(String gatewayID) throws AppCatalogException {
+    public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            gwyResourceProfileRepository.delete(gatewayID);
+            logger.debug("Airavata deleted gateway profile with gateway id : " + gatewayID);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting gateway resource profile");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        gwyResourceProfileRepository.delete(gatewayID);
-        logger.debug("Airavata deleted gateway profile with gateway id : " + gatewayID);
-        return true;
     }
 
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)) {
+                logger.error(
+                        gatewayID,
+                        "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw new AppCatalogException(
+                        "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+            }
+            if (!computeResourceRepository.isComputeResourceExists(computeResourceId)) {
+                logger.error(
+                        computeResourceId,
+                        "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw new AppCatalogException(
+                        "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+            }
+            ComputeResourcePreference computeResourcePreference =
+                    gwyResourceProfileRepository.getComputeResourcePreference(gatewayID, computeResourceId);
+            logger.debug("Airavata retrieved gateway compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resoruce id : " + computeResourceId);
+            return computeResourcePreference;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving gateway compute resource preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)) {
-            logger.error(
-                    gatewayID,
-                    "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
-            throw new AppCatalogException(
-                    "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
-        }
-        if (!computeResourceRepository.isComputeResourceExists(computeResourceId)) {
-            logger.error(
-                    computeResourceId,
-                    "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
-            throw new AppCatalogException(
-                    "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
-        }
-        ComputeResourcePreference computeResourcePreference =
-                gwyResourceProfileRepository.getComputeResourcePreference(gatewayID, computeResourceId);
-        logger.debug("Airavata retrieved gateway compute resource preference with gateway id : " + gatewayID
-                + " and for compute resoruce id : " + computeResourceId);
-        return computeResourcePreference;
     }
 
     public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)) {
+                logger.error(
+                        gatewayID,
+                        "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw new AppCatalogException(
+                        "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+            }
+            StoragePreference storagePreference = gwyResourceProfileRepository.getStoragePreference(gatewayID, storageId);
+            logger.debug("Airavata retrieved storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageId);
+            return storagePreference;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving gateway storage preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)) {
-            logger.error(
-                    gatewayID,
-                    "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
-            throw new AppCatalogException(
-                    "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
-        }
-        StoragePreference storagePreference = gwyResourceProfileRepository.getStoragePreference(gatewayID, storageId);
-        logger.debug("Airavata retrieved storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageId);
-        return storagePreference;
     }
 
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getComputeResourcePreferences();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all gateway compute resource preferences");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getComputeResourcePreferences();
     }
 
-    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws AppCatalogException {
+    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getStoragePreferences();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all gateway storage preferences");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getStoragePreferences();
     }
 
-    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws AppCatalogException {
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        return gwyResourceProfileRepository.getAllGatewayProfiles();
+    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException {
+        try {
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getAllGatewayProfiles();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all gateway resource profiles");
+        }
     }
 
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting gateway compute resource preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        return gwyResourceProfileRepository.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
     }
 
-    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws AppCatalogException {
+    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting gateway storage preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        return gwyResourceProfileRepository.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
     }
 
-    public DataProductModel getDataProduct(String productUri) throws RegistryException {
-        DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
-        return dataProductModel;
+    public DataProductModel getDataProduct(String productUri) throws RegistryServiceException {
+        try {
+            DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
+            return dataProductModel;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving data product");
+        }
     }
 
-    public DataProductModel getParentDataProduct(String productUri) throws RegistryException {
-        DataProductModel dataProductModel = dataProductRepository.getParentDataProduct(productUri);
-        return dataProductModel;
+    public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException {
+        try {
+            DataProductModel dataProductModel = dataProductRepository.getParentDataProduct(productUri);
+            return dataProductModel;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving parent data product");
+        }
     }
 
-    public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryException {
-        List<DataProductModel> dataProductModels = dataProductRepository.getChildDataProducts(productUri);
-        return dataProductModels;
+    public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException {
+        try {
+            List<DataProductModel> dataProductModels = dataProductRepository.getChildDataProducts(productUri);
+            return dataProductModels;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving child data products");
+        }
     }
 
     public List<DataProductModel> searchDataProductsByName(
-            String gatewayId, String userId, String productName, int limit, int offset) throws RegistryException {
-        List<DataProductModel> dataProductModels =
-                dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
-        return dataProductModels;
+            String gatewayId, String userId, String productName, int limit, int offset) throws RegistryServiceException {
+        try {
+            List<DataProductModel> dataProductModels =
+                    dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            return dataProductModels;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while searching data products by name");
+        }
     }
 
-    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws AppCatalogException {
+    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(groupResourceProfile.getGatewayId())) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+            logger.debug("New Group Resource Profile Created: " + groupResourceProfileId);
+            return groupResourceProfileId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating group resource profile");
         }
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
-        logger.debug("New Group Resource Profile Created: " + groupResourceProfileId);
-        return groupResourceProfileId;
     }
 
-    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        if (!groupResourceProfileRepository.isGroupResourceProfileExists(
-                groupResourceProfile.getGroupResourceProfileId())) {
-            logger.error(
-                    "Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
-            throw new AppCatalogException(
-                    "Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
+    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(
+                    groupResourceProfile.getGroupResourceProfileId())) {
+                logger.error(
+                        "Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
+                throw new AppCatalogException(
+                        "Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
+            }
+            String groupResourceProfileId = groupResourceProfileRepository.updateGroupResourceProfile(groupResourceProfile);
+            logger.debug(" Group Resource Profile updated: " + groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating group resource profile");
         }
-        String groupResourceProfileId = groupResourceProfileRepository.updateGroupResourceProfile(groupResourceProfile);
-        logger.debug(" Group Resource Profile updated: " + groupResourceProfileId);
     }
 
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
-            logger.error("No group resource profile found with matching gatewayId and groupResourceProfileId");
-            throw new AppCatalogException(
-                    "No group resource profile found with matching gatewayId and groupResourceProfileId");
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
+                logger.error("No group resource profile found with matching gatewayId and groupResourceProfileId");
+                throw new AppCatalogException(
+                        "No group resource profile found with matching gatewayId and groupResourceProfileId");
+            }
+            return groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group resource profile");
         }
-        return groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
     }
 
-    public boolean isGroupResourceProfileExists(String groupResourceProfileId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId);
+    public boolean isGroupResourceProfileExists(String groupResourceProfileId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if group resource profile exists");
+        }
     }
 
-    public boolean removeGroupResourceProfile(String groupResourceProfileId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
-            logger.error(
-                    "Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
-            throw new AppCatalogException(
-                    "Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
+    public boolean removeGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
+                logger.error(
+                        "Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
+                throw new AppCatalogException(
+                        "Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
+            }
+            return groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group resource profile");
         }
-        return groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
     }
 
     public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, accessibleGroupResProfileIds);
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, accessibleGroupResProfileIds);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group resource list");
+        }
     }
 
     public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        groupResourceProfileRepository.removeGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
-        logger.debug("Removed compute resource preferences with compute resource ID: " + computeResourceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            groupResourceProfileRepository.removeGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            logger.debug("Removed compute resource preferences with compute resource ID: " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group compute preferences");
+        }
     }
 
-    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        groupResourceProfileRepository.removeComputeResourcePolicy(resourcePolicyId);
-        logger.debug("Removed compute resource policy with resource policy ID: " + resourcePolicyId);
-        return true;
+    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            groupResourceProfileRepository.removeComputeResourcePolicy(resourcePolicyId);
+            logger.debug("Removed compute resource policy with resource policy ID: " + resourcePolicyId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group compute resource policy");
+        }
     }
 
-    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        groupResourceProfileRepository.removeBatchQueueResourcePolicy(resourcePolicyId);
-        logger.debug("Removed batch resource policy with resource policy ID: " + resourcePolicyId);
-        return true;
+    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            groupResourceProfileRepository.removeBatchQueueResourcePolicy(resourcePolicyId);
+            logger.debug("Removed batch resource policy with resource policy ID: " + resourcePolicyId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group batch queue resource policy");
+        }
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourceId, String groupResourceProfileId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        GroupComputeResourcePreference groupComputeResourcePreference =
-                groupResourceProfileRepository.getGroupComputeResourcePreference(
-                        computeResourceId, groupResourceProfileId);
-        if (!(groupComputeResourcePreference != null)) {
-            logger.error("GroupComputeResourcePreference not found");
-            throw new AppCatalogException("GroupComputeResourcePreference not found ");
+            String computeResourceId, String groupResourceProfileId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            GroupComputeResourcePreference groupComputeResourcePreference =
+                    groupResourceProfileRepository.getGroupComputeResourcePreference(
+                            computeResourceId, groupResourceProfileId);
+            if (!(groupComputeResourcePreference != null)) {
+                logger.error("GroupComputeResourcePreference not found");
+                throw new AppCatalogException("GroupComputeResourcePreference not found ");
+            }
+            return groupComputeResourcePreference;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource preference");
         }
-        return groupComputeResourcePreference;
     }
 
     public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.isGroupComputeResourcePreferenceExists(
-                computeResourceId, groupResourceProfileId);
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.isGroupComputeResourcePreferenceExists(
+                    computeResourceId, groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if group compute resource preference exists");
+        }
     }
 
-    public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        ComputeResourcePolicy computeResourcePolicy =
-                groupResourceProfileRepository.getComputeResourcePolicy(resourcePolicyId);
-        if (!(computeResourcePolicy != null)) {
-            logger.error("Group Compute Resource policy not found");
-            throw new AppCatalogException("Group Compute Resource policy not found ");
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            ComputeResourcePolicy computeResourcePolicy =
+                    groupResourceProfileRepository.getComputeResourcePolicy(resourcePolicyId);
+            if (!(computeResourcePolicy != null)) {
+                logger.error("Group Compute Resource policy not found");
+                throw new AppCatalogException("Group Compute Resource policy not found ");
+            }
+            return computeResourcePolicy;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource policy");
         }
-        return computeResourcePolicy;
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        BatchQueueResourcePolicy batchQueueResourcePolicy =
-                groupResourceProfileRepository.getBatchQueueResourcePolicy(resourcePolicyId);
-        if (!(batchQueueResourcePolicy != null)) {
-            logger.error("Group Batch Queue Resource policy not found");
-            throw new AppCatalogException("Group Batch Queue Resource policy not found ");
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            BatchQueueResourcePolicy batchQueueResourcePolicy =
+                    groupResourceProfileRepository.getBatchQueueResourcePolicy(resourcePolicyId);
+            if (!(batchQueueResourcePolicy != null)) {
+                logger.error("Group Batch Queue Resource policy not found");
+                throw new AppCatalogException("Group Batch Queue Resource policy not found ");
+            }
+            return batchQueueResourcePolicy;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving batch queue resource policy");
         }
-        return batchQueueResourcePolicy;
     }
 
     public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId);
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource preference list");
+        }
     }
 
     public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group batch queue resource policy list");
+        }
     }
 
     public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
-            throws AppCatalogException {
-        GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-        return groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId);
+            throws RegistryServiceException {
+        try {
+            GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
+            return groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource policy list");
+        }
     }
 
-    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryException {
-        String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
-        return replicaId;
+    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException {
+        try {
+            String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
+            return replicaId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error in retreiving the replica " + replicaLocationModel.getReplicaName());
+        }
     }
 
-    public String registerDataProduct(DataProductModel dataProductModel) throws RegistryException {
-        String productUrl = dataProductRepository.registerDataProduct(dataProductModel);
-        return productUrl;
+    public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException {
+        try {
+            String productUrl = dataProductRepository.registerDataProduct(dataProductModel);
+            return productUrl;
+        } catch (Throwable e) {
+            throw convertException(e, "Error in registering the data resource" + dataProductModel.getProductName());
+        }
     }
 
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws AppCatalogException {
-        LOCALDataMovement localDataMovement = new ComputeResourceRepository().getLocalDataMovement(dataMovementId);
-        logger.debug("Airavata retrieved local data movement with data movement id: " + dataMovementId);
-        return localDataMovement;
+    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException {
+        try {
+            LOCALDataMovement localDataMovement = new ComputeResourceRepository().getLocalDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved local data movement with data movement id: " + dataMovementId);
+            return localDataMovement;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving local data movement");
+        }
     }
 
-    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws AppCatalogException {
-        SCPDataMovement scpDataMovement = new ComputeResourceRepository().getSCPDataMovement(dataMovementId);
-        logger.debug("Airavata retrieved SCP data movement with data movement id: " + dataMovementId);
-        return scpDataMovement;
+    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException {
+        try {
+            SCPDataMovement scpDataMovement = new ComputeResourceRepository().getSCPDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved SCP data movement with data movement id: " + dataMovementId);
+            return scpDataMovement;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving SCP data movement");
+        }
     }
 
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws AppCatalogException {
-        UnicoreDataMovement unicoreDataMovement =
-                new ComputeResourceRepository().getUNICOREDataMovement(dataMovementId);
-        logger.debug("Airavata retrieved UNICORE data movement with data movement id: " + dataMovementId);
-        return unicoreDataMovement;
+    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws RegistryServiceException {
+        try {
+            UnicoreDataMovement unicoreDataMovement =
+                    new ComputeResourceRepository().getUNICOREDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved UNICORE data movement with data movement id: " + dataMovementId);
+            return unicoreDataMovement;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving UNICORE data movement");
+        }
     }
 
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws AppCatalogException {
-        GridFTPDataMovement gridFTPDataMovement =
-                new ComputeResourceRepository().getGridFTPDataMovement(dataMovementId);
-        logger.debug("Airavata retrieved GRIDFTP data movement with data movement id: " + dataMovementId);
-        return gridFTPDataMovement;
+    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws RegistryServiceException {
+        try {
+            GridFTPDataMovement gridFTPDataMovement =
+                    new ComputeResourceRepository().getGridFTPDataMovement(dataMovementId);
+            logger.debug("Airavata retrieved GRIDFTP data movement with data movement id: " + dataMovementId);
+            return gridFTPDataMovement;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving GRIDFTP data movement");
+        }
     }
 
     // Experiment operations
-    public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryException {
-        if (!validateString(experiment.getExperimentName())) {
-            logger.error("Cannot create experiments with empty experiment name");
-            throw new RegistryException("Cannot create experiments with empty experiment name");
-        }
-        logger.info("Creating experiment with name " + experiment.getExperimentName());
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-
-        if (experiment.getUserConfigurationData() != null
-                && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                && experiment.getUserConfigurationData()
-                        .getComputationalResourceScheduling()
-                        .getResourceHostId()
-                != null) {
-
-            String compResourceId = experiment
-                    .getUserConfigurationData()
-                    .getComputationalResourceScheduling()
-                    .getResourceHostId();
-            try {
-                ComputeResourceDescription computeResourceDescription =
-                        new ComputeResourceRepository().getComputeResource(compResourceId);
-                if (!computeResourceDescription.isEnabled()) {
-                    logger.error("Compute Resource is not enabled by the Admin!");
-                    throw new RegistryException("Compute Resource is not enabled by the Admin!");
-                }
-            } catch (AppCatalogException e) {
-                throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
+    public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryServiceException {
+        try {
+            if (!validateString(experiment.getExperimentName())) {
+                logger.error("Cannot create experiments with empty experiment name");
+                throw new RegistryException("Cannot create experiments with empty experiment name");
             }
-        } else if (experiment.getUserConfigurationData() != null
-                && !experiment
+            logger.info("Creating experiment with name " + experiment.getExperimentName());
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+
+            if (experiment.getUserConfigurationData() != null
+                    && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
+                    && experiment.getUserConfigurationData()
+                            .getComputationalResourceScheduling()
+                            .getResourceHostId()
+                    != null) {
+
+                String compResourceId = experiment
                         .getUserConfigurationData()
-                        .getAutoScheduledCompResourceSchedulingList()
-                        .isEmpty()) {
-            for (ComputationalResourceSchedulingModel computationalResourceScheduling :
-                    experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId();
                 try {
-                    ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
-                            .getComputeResource(computationalResourceScheduling.getResourceHostId());
+                    ComputeResourceDescription computeResourceDescription =
+                            new ComputeResourceRepository().getComputeResource(compResourceId);
                     if (!computeResourceDescription.isEnabled()) {
-                        logger.error("Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
-                                + "" + " is not enabled by the Admin!");
-                        throw new RegistryException(
-                                "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId() + ""
-                                        + " is not enabled by the Admin!");
+                        logger.error("Compute Resource is not enabled by the Admin!");
+                        throw new RegistryException("Compute Resource is not enabled by the Admin!");
                     }
                 } catch (AppCatalogException e) {
                     throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
                 }
+            } else if (experiment.getUserConfigurationData() != null
+                    && !experiment
+                            .getUserConfigurationData()
+                            .getAutoScheduledCompResourceSchedulingList()
+                            .isEmpty()) {
+                for (ComputationalResourceSchedulingModel computationalResourceScheduling :
+                        experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
+                    try {
+                        ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
+                                .getComputeResource(computationalResourceScheduling.getResourceHostId());
+                        if (!computeResourceDescription.isEnabled()) {
+                            logger.error("Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
+                                    + "" + " is not enabled by the Admin!");
+                            throw new RegistryException(
+                                    "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId() + ""
+                                            + " is not enabled by the Admin!");
+                        }
+                    } catch (AppCatalogException e) {
+                        throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
+                    }
+                }
             }
-        }
 
-        experiment.setGatewayId(gatewayId);
-        String experimentId = experimentRepository.addExperiment(experiment);
-        if (experiment.getExperimentType() == ExperimentType.WORKFLOW) {
-            try {
-                workflowRepository.registerWorkflow(experiment.getWorkflow(), experimentId);
-            } catch (WorkflowCatalogException e) {
-                throw new RegistryException("Error registering workflow: " + e.getMessage(), e);
+            experiment.setGatewayId(gatewayId);
+            String experimentId = experimentRepository.addExperiment(experiment);
+            if (experiment.getExperimentType() == ExperimentType.WORKFLOW) {
+                try {
+                    workflowRepository.registerWorkflow(experiment.getWorkflow(), experimentId);
+                } catch (WorkflowCatalogException e) {
+                    throw new RegistryException("Error registering workflow: " + e.getMessage(), e);
+                }
             }
+            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            return experimentId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating experiment");
         }
-        logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
-        return experimentId;
     }
 
     public List<ExperimentSummaryModel> searchExperiments(
@@ -1371,303 +1751,363 @@ public class RegistryService {
             Map<ExperimentSearchFields, String> filters,
             int limit,
             int offset)
-            throws RegistryException {
-        if (!validateString(userName)) {
-            logger.error("Username cannot be empty. Please provide a valid user..");
-            throw new RegistryException("Username cannot be empty. Please provide a valid user..");
-        }
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        if (!userRepository.isUserExists(gatewayId, userName)) {
-            logger.error("User does not exist in the system. Please provide a valid user..");
-            throw new RegistryException("User does not exist in the system. Please provide a valid user..");
-        }
-        List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
-        Map<String, String> regFilters = new HashMap<String, String>();
-        regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-        for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
-            if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.DESCRIPTION, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.STATUS)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.FROM_DATE)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.TO_DATE)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.PROJECT_ID)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.USER_NAME)) {
-                regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, entry.getValue());
-            } else if (entry.getKey().equals(ExperimentSearchFields.JOB_ID)) {
-                regFilters.put(Constants.FieldConstants.JobConstants.JOB_ID, entry.getValue());
-            }
-        }
-
+            throws RegistryServiceException {
         try {
-            if (accessibleExpIds.size() == 0 && !ServerSettings.isEnableSharing()) {
-                if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
-                    regFilters.put(DBConstants.Experiment.USER_NAME, userName);
+            if (!validateString(userName)) {
+                logger.error("Username cannot be empty. Please provide a valid user..");
+                throw new RegistryException("Username cannot be empty. Please provide a valid user..");
+            }
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            if (!userRepository.isUserExists(gatewayId, userName)) {
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                throw new RegistryException("User does not exist in the system. Please provide a valid user..");
+            }
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
+            Map<String, String> regFilters = new HashMap<String, String>();
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
+                if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.DESCRIPTION, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.STATUS)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.FROM_DATE)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.TO_DATE)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.PROJECT_ID)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.PROJECT_ID, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.USER_NAME)) {
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, entry.getValue());
+                } else if (entry.getKey().equals(ExperimentSearchFields.JOB_ID)) {
+                    regFilters.put(Constants.FieldConstants.JobConstants.JOB_ID, entry.getValue());
                 }
             }
-        } catch (Exception e) {
-            logger.warn("Error checking sharing settings, continuing without filter", e);
+
+            try {
+                if (accessibleExpIds.size() == 0 && !ServerSettings.isEnableSharing()) {
+                    if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
+                        regFilters.put(DBConstants.Experiment.USER_NAME, userName);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Error checking sharing settings, continuing without filter", e);
+            }
+            summaries = experimentSummaryRepository.searchAllAccessibleExperiments(
+                    accessibleExpIds,
+                    regFilters,
+                    limit,
+                    offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
+                    ResultOrderType.DESC);
+            logger.debug("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId);
+            return summaries;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while searching experiments");
         }
-        summaries = experimentSummaryRepository.searchAllAccessibleExperiments(
-                accessibleExpIds,
-                regFilters,
-                limit,
-                offset,
-                Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
-                ResultOrderType.DESC);
-        logger.debug("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId);
-        return summaries;
     }
 
-    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-        }
-
-        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
-        if (experimentStatus != null) {
-            ExperimentState experimentState = experimentStatus.getState();
-            switch (experimentState) {
-                case CREATED:
-                case SCHEDULED:
-                case VALIDATED:
-                    if (experiment.getUserConfigurationData() != null
-                            && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                            && experiment.getUserConfigurationData()
-                                    .getComputationalResourceScheduling()
-                                    .getResourceHostId()
-                            != null) {
-                        String compResourceId = experiment
-                                .getUserConfigurationData()
-                                .getComputationalResourceScheduling()
-                                .getResourceHostId();
-                        try {
-                            ComputeResourceDescription computeResourceDescription =
-                                    new ComputeResourceRepository().getComputeResource(compResourceId);
-                            if (!computeResourceDescription.isEnabled()) {
-                                logger.error("Compute Resource is not enabled by the Admin!");
-                                throw new RegistryException("Compute Resource is not enabled by the Admin!");
-                            }
-                        } catch (AppCatalogException e) {
-                            throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
-                        }
-                    }
-                    experimentRepository.updateExperiment(experiment, airavataExperimentId);
-                    logger.debug(
-                            airavataExperimentId,
-                            "Successfully updated experiment {} ",
-                            experiment.getExperimentName());
-                    break;
-                default:
-                    logger.error(
-                            airavataExperimentId,
-                            "Error while updating experiment. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ");
-                    throw new RegistryException(
-                            "Error while updating experiment. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ");
+    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
+
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null) {
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState) {
+                    case CREATED:
+                    case SCHEDULED:
+                    case VALIDATED:
+                        if (experiment.getUserConfigurationData() != null
+                                && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
+                                && experiment.getUserConfigurationData()
+                                        .getComputationalResourceScheduling()
+                                        .getResourceHostId()
+                                != null) {
+                            String compResourceId = experiment
+                                    .getUserConfigurationData()
+                                    .getComputationalResourceScheduling()
+                                    .getResourceHostId();
+                            try {
+                                ComputeResourceDescription computeResourceDescription =
+                                        new ComputeResourceRepository().getComputeResource(compResourceId);
+                                if (!computeResourceDescription.isEnabled()) {
+                                    logger.error("Compute Resource is not enabled by the Admin!");
+                                    throw new RegistryException("Compute Resource is not enabled by the Admin!");
+                                }
+                            } catch (AppCatalogException e) {
+                                throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
+                            }
+                        }
+                        experimentRepository.updateExperiment(experiment, airavataExperimentId);
+                        logger.debug(
+                                airavataExperimentId,
+                                "Successfully updated experiment {} ",
+                                experiment.getExperimentName());
+                        break;
+                    default:
+                        logger.error(
+                                airavataExperimentId,
+                                "Error while updating experiment. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ");
+                        throw new RegistryException(
+                                "Error while updating experiment. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ");
+                }
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating experiment");
         }
     }
 
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
-            throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Update experiment configuration failed, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-        }
-        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
-        if (experimentStatus != null) {
-            ExperimentState experimentState = experimentStatus.getState();
-            switch (experimentState) {
-                case CREATED:
-                case VALIDATED:
-                case CANCELED:
-                case FAILED:
-                    experimentRepository.addUserConfigurationData(userConfiguration, airavataExperimentId);
-                    logger.debug(
-                            airavataExperimentId,
-                            "Successfully updated experiment configuration for experiment {}.",
-                            airavataExperimentId);
-                    break;
-                default:
-                    logger.error(
-                            airavataExperimentId,
-                            "Error while updating experiment {}. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ",
-                            airavataExperimentId);
-                    throw new RegistryException(
-                            "Error while updating experiment. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ");
+            throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Update experiment configuration failed, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-        }
-    }
-
-    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Error while retrieving intermediate outputs, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-        }
-        List<ProcessModel> processModels = processRepository.getProcessList(
-                Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
-        List<OutputDataObjectType> intermediateOutputs = new ArrayList<>();
-        if (processModels != null && !processModels.isEmpty()) {
-            for (ProcessModel processModel : processModels) {
-                List<OutputDataObjectType> processOutputs =
-                        processOutputRepository.getProcessOutputs(processModel.getProcessId());
-                if (processOutputs != null && !processOutputs.isEmpty()) {
-                    intermediateOutputs.addAll(processOutputs);
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null) {
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState) {
+                    case CREATED:
+                    case VALIDATED:
+                    case CANCELED:
+                    case FAILED:
+                        experimentRepository.addUserConfigurationData(userConfiguration, airavataExperimentId);
+                        logger.debug(
+                                airavataExperimentId,
+                                "Successfully updated experiment configuration for experiment {}.",
+                                airavataExperimentId);
+                        break;
+                    default:
+                        logger.error(
+                                airavataExperimentId,
+                                "Error while updating experiment {}. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ",
+                                airavataExperimentId);
+                        throw new RegistryException(
+                                "Error while updating experiment. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ");
                 }
             }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating experiment configuration");
         }
-        logger.debug(
-                "Airavata retrieved intermediate outputs for experiment with experiment id : " + airavataExperimentId);
-        return intermediateOutputs;
     }
 
-    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.error(
-                    airavataExperimentId,
-                    "Error while retrieving job statuses, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Error while retrieving intermediate outputs, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<ProcessModel> processModels = processRepository.getProcessList(
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
+            List<OutputDataObjectType> intermediateOutputs = new ArrayList<>();
+            if (processModels != null && !processModels.isEmpty()) {
+                for (ProcessModel processModel : processModels) {
+                    List<OutputDataObjectType> processOutputs =
+                            processOutputRepository.getProcessOutputs(processModel.getProcessId());
+                    if (processOutputs != null && !processOutputs.isEmpty()) {
+                        intermediateOutputs.addAll(processOutputs);
+                    }
+                }
+            }
+            logger.debug(
+                    "Airavata retrieved intermediate outputs for experiment with experiment id : " + airavataExperimentId);
+            return intermediateOutputs;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving intermediate outputs");
         }
-        Map<String, JobStatus> jobStatus = new HashMap<>();
-        List<ProcessModel> processModels = processRepository.getProcessList(
-                Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
-        if (processModels != null && !processModels.isEmpty()) {
-            for (ProcessModel processModel : processModels) {
-                List<TaskModel> tasks = processModel.getTasks();
-                if (tasks != null && !tasks.isEmpty()) {
-                    for (TaskModel taskModel : tasks) {
-                        String taskId = taskModel.getTaskId();
-                        List<JobModel> taskJobs =
-                                jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
-                        if (taskJobs != null && !taskJobs.isEmpty()) {
-                            for (JobModel jobModel : taskJobs) {
-                                JobPK jobPK = new JobPK();
-                                jobPK.setJobId(jobModel.getJobId());
-                                jobPK.setTaskId(taskId);
-                                JobStatus status = jobStatusRepository.getJobStatus(jobPK);
-                                if (status != null) {
-                                    jobStatus.put(jobModel.getJobId(), status);
+    }
+
+    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.error(
+                        airavataExperimentId,
+                        "Error while retrieving job statuses, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            Map<String, JobStatus> jobStatus = new HashMap<>();
+            List<ProcessModel> processModels = processRepository.getProcessList(
+                    Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
+            if (processModels != null && !processModels.isEmpty()) {
+                for (ProcessModel processModel : processModels) {
+                    List<TaskModel> tasks = processModel.getTasks();
+                    if (tasks != null && !tasks.isEmpty()) {
+                        for (TaskModel taskModel : tasks) {
+                            String taskId = taskModel.getTaskId();
+                            List<JobModel> taskJobs =
+                                    jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                            if (taskJobs != null && !taskJobs.isEmpty()) {
+                                for (JobModel jobModel : taskJobs) {
+                                    JobPK jobPK = new JobPK();
+                                    jobPK.setJobId(jobModel.getJobId());
+                                    jobPK.setTaskId(taskId);
+                                    JobStatus status = jobStatusRepository.getJobStatus(jobPK);
+                                    if (status != null) {
+                                        jobStatus.put(jobModel.getJobId(), status);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            logger.debug("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
+            return jobStatus;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the job statuses");
         }
-        logger.debug("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
-        return jobStatus;
     }
 
     public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id)
-            throws RegistryException {
-        if (ExpCatChildDataType.PROCESS_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-            processOutputRepository.addProcessOutputs(outputs, id);
-        } else if (ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
-            experimentOutputRepository.addExperimentOutputs(outputs, id);
+            throws RegistryServiceException {
+        try {
+            if (ExpCatChildDataType.PROCESS_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
+                processOutputRepository.addProcessOutputs(outputs, id);
+            } else if (ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
+                experimentOutputRepository.addExperimentOutputs(outputs, id);
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding outputs");
         }
     }
 
-    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryException {
-        if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-            experimentErrorRepository.addExperimentError(errorModel, id);
-        } else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-            taskErrorRepository.addTaskError(errorModel, id);
-        } else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-            processErrorRepository.addProcessError(errorModel, id);
+    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException {
+        try {
+            if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                experimentErrorRepository.addExperimentError(errorModel, id);
+            } else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                taskErrorRepository.addTaskError(errorModel, id);
+            } else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                processErrorRepository.addProcessError(errorModel, id);
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding errors");
         }
     }
 
-    public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
-        taskStatusRepository.addTaskStatus(taskStatus, taskId);
+    public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException {
+        try {
+            taskStatusRepository.addTaskStatus(taskStatus, taskId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding task status");
+        }
     }
 
-    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
-        processStatusRepository.addProcessStatus(processStatus, processId);
+    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
+        try {
+            processStatusRepository.addProcessStatus(processStatus, processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding process status");
+        }
     }
 
-    public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
-        processStatusRepository.updateProcessStatus(processStatus, processId);
+    public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
+        try {
+            processStatusRepository.updateProcessStatus(processStatus, processId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating process status");
+        }
     }
 
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
-            throws RegistryException {
-        experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
+            throws RegistryServiceException {
+        try {
+            experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating experiment status");
+        }
     }
 
-    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryException {
-        JobPK jobPK = new JobPK();
-        jobPK.setJobId(jobId);
-        jobPK.setTaskId(taskId);
-        jobStatusRepository.addJobStatus(jobStatus, jobPK);
+    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
+        try {
+            JobPK jobPK = new JobPK();
+            jobPK.setJobId(jobId);
+            jobPK.setTaskId(taskId);
+            jobStatusRepository.addJobStatus(jobStatus, jobPK);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding job status");
+        }
     }
 
-    public void deleteJobs(String processId) throws RegistryException {
-        List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
-        for (JobModel jobModel : jobs) {
-            jobRepository.removeJob(jobModel);
+    public void deleteJobs(String processId) throws RegistryServiceException {
+        try {
+            List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
+            for (JobModel jobModel : jobs) {
+                jobRepository.removeJob(jobModel);
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting jobs");
         }
     }
 
     // Project operations
-    public String createProject(String gatewayId, Project project) throws RegistryException {
-        if (!validateString(project.getName()) || !validateString(project.getOwner())) {
-            logger.error("Project name and owner cannot be empty...");
-            throw new RegistryException("Project name and owner cannot be empty...");
+    public String createProject(String gatewayId, Project project) throws RegistryServiceException {
+        try {
+            if (!validateString(project.getName()) || !validateString(project.getOwner())) {
+                logger.error("Project name and owner cannot be empty...");
+                throw new RegistryException("Project name and owner cannot be empty...");
+            }
+            if (!validateString(gatewayId)) {
+                logger.error("Gateway ID cannot be empty...");
+                throw new RegistryException("Gateway ID cannot be empty...");
+            }
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            String projectId = projectRepository.addProject(project, gatewayId);
+            return projectId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating project");
         }
-        if (!validateString(gatewayId)) {
-            logger.error("Gateway ID cannot be empty...");
-            throw new RegistryException("Gateway ID cannot be empty...");
-        }
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        String projectId = projectRepository.addProject(project, gatewayId);
-        return projectId;
     }
 
-    public void updateProject(String projectId, Project updatedProject) throws RegistryException {
-        if (!validateString(projectId)) {
-            logger.error("Project id cannot be empty...");
-            throw new RegistryException("Project id cannot be empty...");
+    public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException {
+        try {
+            if (!validateString(projectId)) {
+                logger.error("Project id cannot be empty...");
+                throw new RegistryException("Project id cannot be empty...");
+            }
+            if (!projectRepository.isProjectExist(projectId)) {
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+            }
+            projectRepository.updateProject(updatedProject, projectId);
+            logger.debug("Airavata updated project with project Id : " + projectId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating project");
         }
-        if (!projectRepository.isProjectExist(projectId)) {
-            logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
-        }
-        projectRepository.updateProject(updatedProject, projectId);
-        logger.debug("Airavata updated project with project Id : " + projectId);
     }
 
     public List<Project> searchProjects(
@@ -1677,338 +2117,402 @@ public class RegistryService {
             Map<ProjectSearchFields, String> filters,
             int limit,
             int offset)
-            throws RegistryException {
-        if (!validateString(userName)) {
-            logger.error("Username cannot be empty. Please provide a valid user..");
-            throw new RegistryException("Username cannot be empty. Please provide a valid user..");
-        }
-        if (!isGatewayExistInternal(gatewayId)) {
-            logger.error("Gateway does not exist.Please provide a valid gateway id...");
-            throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
-        }
-        if (!userRepository.isUserExists(gatewayId, userName)) {
-            logger.error("User does not exist in the system. Please provide a valid user..");
-            throw new RegistryException("User does not exist in the system. Please provide a valid user..");
-        }
-        List<Project> projects = new ArrayList<>();
-        Map<String, String> regFilters = new HashMap<>();
-        regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-        for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
-            if (entry.getKey().equals(ProjectSearchFields.PROJECT_NAME)) {
-                regFilters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, entry.getValue());
-            } else if (entry.getKey().equals(ProjectSearchFields.PROJECT_DESCRIPTION)) {
-                regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
-            }
-        }
-
+            throws RegistryServiceException {
         try {
-            if (accessibleProjIds.size() == 0 && !ServerSettings.isEnableSharing()) {
-                if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
-                    regFilters.put(DBConstants.Project.OWNER, userName);
+            if (!validateString(userName)) {
+                logger.error("Username cannot be empty. Please provide a valid user..");
+                throw new RegistryException("Username cannot be empty. Please provide a valid user..");
+            }
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            if (!userRepository.isUserExists(gatewayId, userName)) {
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                throw new RegistryException("User does not exist in the system. Please provide a valid user..");
+            }
+            List<Project> projects = new ArrayList<>();
+            Map<String, String> regFilters = new HashMap<>();
+            regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
+                if (entry.getKey().equals(ProjectSearchFields.PROJECT_NAME)) {
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, entry.getValue());
+                } else if (entry.getKey().equals(ProjectSearchFields.PROJECT_DESCRIPTION)) {
+                    regFilters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, entry.getValue());
                 }
             }
-        } catch (Exception e) {
-            logger.warn("Error checking sharing settings, continuing without filter", e);
-        }
 
-        projects = projectRepository.searchAllAccessibleProjects(
-                accessibleProjIds,
-                regFilters,
-                limit,
-                offset,
-                Constants.FieldConstants.ProjectConstants.CREATION_TIME,
-                ResultOrderType.DESC);
-        logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
-        return projects;
+            try {
+                if (accessibleProjIds.size() == 0 && !ServerSettings.isEnableSharing()) {
+                    if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
+                        regFilters.put(DBConstants.Project.OWNER, userName);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Error checking sharing settings, continuing without filter", e);
+            }
+
+            projects = projectRepository.searchAllAccessibleProjects(
+                    accessibleProjIds,
+                    regFilters,
+                    limit,
+                    offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME,
+                    ResultOrderType.DESC);
+            logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
+            return projects;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while searching projects");
+        }
     }
 
     // Gateway Resource Profile operations
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
-            throws AppCatalogException {
-        if (!validateString(gatewayResourceProfile.getGatewayID())) {
-            logger.error("Cannot create gateway profile with empty gateway id");
-            throw new AppCatalogException("Cannot create gateway profile with empty gateway id");
-        }
+            throws RegistryServiceException {
         try {
+            if (!validateString(gatewayResourceProfile.getGatewayID())) {
+                logger.error("Cannot create gateway profile with empty gateway id");
+                throw new AppCatalogException("Cannot create gateway profile with empty gateway id");
+            }
             if (!isGatewayExistInternal(gatewayResourceProfile.getGatewayID())) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            String resourceProfile = gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
+            logger.debug("Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
+            return resourceProfile;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering gateway resource profile");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        String resourceProfile = gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
-        logger.debug("Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
-        return resourceProfile;
     }
 
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            gwyResourceProfileRepository.updateGatewayResourceProfile(gatewayResourceProfile);
+            logger.debug("Airavata updated gateway profile with gateway id : " + gatewayID);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway resource profile");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        gwyResourceProfileRepository.updateGatewayResourceProfile(gatewayResourceProfile);
-        logger.debug("Airavata updated gateway profile with gateway id : " + gatewayID);
-        return true;
     }
 
     public boolean addGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!(gwyResourceProfileRepository.isExists(gatewayID))) {
+                throw new AppCatalogException("Gateway resource profile '" + gatewayID + "' does not exist!!!");
+            }
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+            profile.addToComputeResourcePreferences(computeResourcePreference);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
+            logger.debug("Airavata added gateway compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resource id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding gateway compute resource preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        if (!(gwyResourceProfileRepository.isExists(gatewayID))) {
-            throw new AppCatalogException("Gateway resource profile '" + gatewayID + "' does not exist!!!");
-        }
-        GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
-        profile.addToComputeResourcePreferences(computeResourcePreference);
-        gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
-        logger.debug("Airavata added gateway compute resource preference with gateway id : " + gatewayID
-                + " and for compute resource id : " + computeResourceId);
-        return true;
     }
 
     public boolean updateGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
-        List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
-        ComputeResourcePreference preferenceToRemove = null;
-        for (ComputeResourcePreference preference : computeResourcePreferences) {
-            if (preference.getComputeResourceId().equals(computeResourceId)) {
-                preferenceToRemove = preference;
-                break;
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+            List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
+            ComputeResourcePreference preferenceToRemove = null;
+            for (ComputeResourcePreference preference : computeResourcePreferences) {
+                if (preference.getComputeResourceId().equals(computeResourceId)) {
+                    preferenceToRemove = preference;
+                    break;
+                }
             }
+            if (preferenceToRemove != null) {
+                profile.getComputeResourcePreferences().remove(preferenceToRemove);
+            }
+            profile.getComputeResourcePreferences().add(computeResourcePreference);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
+            logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resource id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway compute resource preference");
         }
-        if (preferenceToRemove != null) {
-            profile.getComputeResourcePreferences().remove(preferenceToRemove);
-        }
-        profile.getComputeResourcePreferences().add(computeResourcePreference);
-        gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
-        logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID
-                + " and for compute resource id : " + computeResourceId);
-        return true;
     }
 
     public boolean addGatewayStoragePreference(
             String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!(gwyResourceProfileRepository.isExists(gatewayID))) {
+                throw new AppCatalogException("Gateway resource profile '" + gatewayID + "' does not exist!!!");
+            }
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+            dataStoragePreference.setStorageResourceId(storageResourceId);
+            profile.addToStoragePreferences(dataStoragePreference);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
+            logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding gateway storage preference");
         }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        if (!(gwyResourceProfileRepository.isExists(gatewayID))) {
-            throw new AppCatalogException("Gateway resource profile '" + gatewayID + "' does not exist!!!");
-        }
-        GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
-        dataStoragePreference.setStorageResourceId(storageResourceId);
-        profile.addToStoragePreferences(dataStoragePreference);
-        gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
-        logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageResourceId);
-        return true;
     }
 
     public boolean updateGatewayStoragePreference(
-            String gatewayID, String storageId, StoragePreference storagePreference) throws AppCatalogException {
+            String gatewayID, String storageId, StoragePreference storagePreference) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayID)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-        GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
-        List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
-        StoragePreference preferenceToRemove = null;
-        for (StoragePreference preference : dataStoragePreferences) {
-            if (preference.getStorageResourceId().equals(storageId)) {
-                preferenceToRemove = preference;
-                break;
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+            List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
+            StoragePreference preferenceToRemove = null;
+            for (StoragePreference preference : dataStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)) {
+                    preferenceToRemove = preference;
+                    break;
+                }
             }
+            if (preferenceToRemove != null) {
+                profile.getStoragePreferences().remove(preferenceToRemove);
+            }
+            profile.getStoragePreferences().add(storagePreference);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
+            logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway storage preference");
         }
-        if (preferenceToRemove != null) {
-            profile.getStoragePreferences().remove(preferenceToRemove);
-        }
-        profile.getStoragePreferences().add(storagePreference);
-        gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
-        logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageId);
-        return true;
     }
 
     // Compute Resource operations
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
-            throws AppCatalogException {
-        String computeResource = new ComputeResourceRepository().addComputeResource(computeResourceDescription);
-        logger.debug("Airavata registered compute resource with compute resource Id : " + computeResource);
-        return computeResource;
+            throws RegistryServiceException {
+        try {
+            String computeResource = new ComputeResourceRepository().addComputeResource(computeResourceDescription);
+            logger.debug("Airavata registered compute resource with compute resource Id : " + computeResource);
+            return computeResource;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering compute resource");
+        }
     }
 
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
-            throws AppCatalogException {
-        new ComputeResourceRepository().updateComputeResource(computeResourceId, computeResourceDescription);
-        logger.debug("Airavata updated compute resource with compute resource Id : " + computeResourceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().updateComputeResource(computeResourceId, computeResourceDescription);
+            logger.debug("Airavata updated compute resource with compute resource Id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating compute resource");
+        }
     }
 
-    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException {
-        return new ComputeResourceRepository().addResourceJobManager(resourceJobManager);
+    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws RegistryServiceException {
+        try {
+            return new ComputeResourceRepository().addResourceJobManager(resourceJobManager);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering resource job manager");
+        }
     }
 
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
-            throws AppCatalogException {
-        new ComputeResourceRepository().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating resource job manager");
+        }
     }
 
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
-            throws AppCatalogException {
-        switch (dmType) {
-            case COMPUTE_RESOURCE:
-                new ComputeResourceRepository().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-                return true;
-            case STORAGE_RESOURCE:
-                storageResourceRepository.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-                return true;
-            default:
-                logger.error(
-                        "Unsupported data movement type specifies.. Please provide the correct data movement type... ");
-                return false;
+            throws RegistryServiceException {
+        try {
+            switch (dmType) {
+                case COMPUTE_RESOURCE:
+                    new ComputeResourceRepository().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                case STORAGE_RESOURCE:
+                    storageResourceRepository.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    return true;
+                default:
+                    logger.error(
+                            "Unsupported data movement type specifies.. Please provide the correct data movement type... ");
+                    return false;
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting data movement interface");
         }
     }
 
     public boolean updateGridFTPDataMovementDetails(
-            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
-        throw new AppCatalogException("updateGridFTPDataMovementDetails is not yet implemented");
+            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException {
+        try {
+            throw new AppCatalogException("updateGridFTPDataMovementDetails is not yet implemented");
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating GridFTP data movement details");
+        }
     }
 
     public String addGridFTPDataMovementDetails(
             String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String addDataMovementInterface = addDataMovementInterface(
-                computeResourceRepository,
-                computeResourceId,
-                dmType,
-                computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement),
-                DataMovementProtocol.GridFTP,
-                priorityOrder);
-        logger.debug("Airavata registered GridFTP data movement for resource Id: " + computeResourceId);
-        return addDataMovementInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String addDataMovementInterface = addDataMovementInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    dmType,
+                    computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement),
+                    DataMovementProtocol.GridFTP,
+                    priorityOrder);
+            logger.debug("Airavata registered GridFTP data movement for resource Id: " + computeResourceId);
+            return addDataMovementInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding GridFTP data movement details");
+        }
     }
 
     public boolean updateUnicoreDataMovementDetails(
-            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
-        throw new AppCatalogException("updateUnicoreDataMovementDetails is not yet implemented");
+            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException {
+        try {
+            throw new AppCatalogException("updateUnicoreDataMovementDetails is not yet implemented");
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating Unicore data movement details");
+        }
     }
 
     public String addUnicoreDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String movementInterface = addDataMovementInterface(
-                computeResourceRepository,
-                resourceId,
-                dmType,
-                computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement),
-                DataMovementProtocol.UNICORE_STORAGE_SERVICE,
-                priorityOrder);
-        logger.debug("Airavata registered UNICORE data movement for resource Id: " + resourceId);
-        return movementInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(
+                    computeResourceRepository,
+                    resourceId,
+                    dmType,
+                    computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement),
+                    DataMovementProtocol.UNICORE_STORAGE_SERVICE,
+                    priorityOrder);
+            logger.debug("Airavata registered UNICORE data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding Unicore data movement details");
+        }
     }
 
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
-            throws AppCatalogException {
-        new ComputeResourceRepository().updateScpDataMovement(scpDataMovement);
-        logger.debug("Airavata updated SCP data movement with data movement id: " + dataMovementInterfaceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().updateScpDataMovement(scpDataMovement);
+            logger.debug("Airavata updated SCP data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating SCP data movement details");
+        }
     }
 
     public String addSCPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String movementInterface = addDataMovementInterface(
-                computeResourceRepository,
-                resourceId,
-                dmType,
-                computeResourceRepository.addScpDataMovement(scpDataMovement),
-                DataMovementProtocol.SCP,
-                priorityOrder);
-        logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
-        return movementInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(
+                    computeResourceRepository,
+                    resourceId,
+                    dmType,
+                    computeResourceRepository.addScpDataMovement(scpDataMovement),
+                    DataMovementProtocol.SCP,
+                    priorityOrder);
+            logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SCP data movement details");
+        }
     }
 
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
-            throws AppCatalogException {
-        new ComputeResourceRepository().updateLocalDataMovement(localDataMovement);
-        logger.debug("Airavata updated local data movement with data movement id: " + dataMovementInterfaceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().updateLocalDataMovement(localDataMovement);
+            logger.debug("Airavata updated local data movement with data movement id: " + dataMovementInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating local data movement details");
+        }
     }
 
     public String addLocalDataMovementDetails(
             String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String movementInterface = addDataMovementInterface(
-                computeResourceRepository,
-                resourceId,
-                dataMoveType,
-                computeResourceRepository.addLocalDataMovement(localDataMovement),
-                DataMovementProtocol.LOCAL,
-                priorityOrder);
-        logger.debug("Airavata registered local data movement for resource Id: " + resourceId);
-        return movementInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(
+                    computeResourceRepository,
+                    resourceId,
+                    dataMoveType,
+                    computeResourceRepository.addLocalDataMovement(localDataMovement),
+                    DataMovementProtocol.LOCAL,
+                    priorityOrder);
+            logger.debug("Airavata registered local data movement for resource Id: " + resourceId);
+            return movementInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding local data movement details");
+        }
     }
 
     // Storage Resource operations
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
-            throws AppCatalogException {
-        String storageResource = storageResourceRepository.addStorageResource(storageResourceDescription);
-        logger.debug("Airavata registered storage resource with storage resource Id : " + storageResource);
-        return storageResource;
+            throws RegistryServiceException {
+        try {
+            String storageResource = storageResourceRepository.addStorageResource(storageResourceDescription);
+            logger.debug("Airavata registered storage resource with storage resource Id : " + storageResource);
+            return storageResource;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering storage resource");
+        }
     }
 
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
-            throws AppCatalogException {
-        storageResourceRepository.updateStorageResource(storageResourceId, storageResourceDescription);
-        logger.debug("Airavata updated storage resource with storage resource Id : " + storageResourceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            storageResourceRepository.updateStorageResource(storageResourceId, storageResourceDescription);
+            logger.debug("Airavata updated storage resource with storage resource Id : " + storageResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating storage resource");
+        }
     }
 
     // Helper methods for job submission and data movement interfaces
@@ -2018,12 +2522,16 @@ public class RegistryService {
             String jobSubmissionInterfaceId,
             JobSubmissionProtocol protocolType,
             int priorityOrder)
-            throws AppCatalogException {
-        JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
-        jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        jobSubmissionInterface.setPriorityOrder(priorityOrder);
-        jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
-        return computeResourceRepository.addJobSubmissionProtocol(computeResourceId, jobSubmissionInterface);
+            throws RegistryServiceException {
+        try {
+            JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
+            jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            jobSubmissionInterface.setPriorityOrder(priorityOrder);
+            jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
+            return computeResourceRepository.addJobSubmissionProtocol(computeResourceId, jobSubmissionInterface);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding job submission interface");
+        }
     }
 
     private String addDataMovementInterface(
@@ -2033,292 +2541,340 @@ public class RegistryService {
             String dataMovementInterfaceId,
             DataMovementProtocol protocolType,
             int priorityOrder)
-            throws AppCatalogException {
-        DataMovementInterface dataMovementInterface = new DataMovementInterface();
-        dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
-        dataMovementInterface.setPriorityOrder(priorityOrder);
-        dataMovementInterface.setDataMovementProtocol(protocolType);
-        if (dmType.equals(DMType.COMPUTE_RESOURCE)) {
-            return computeResourceRepository.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
-        } else if (dmType.equals(DMType.STORAGE_RESOURCE)) {
-            dataMovementInterface.setStorageResourceId(computeResourceId);
-            return storageResourceRepository.addDataMovementInterface(dataMovementInterface);
+            throws RegistryServiceException {
+        try {
+            DataMovementInterface dataMovementInterface = new DataMovementInterface();
+            dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
+            dataMovementInterface.setPriorityOrder(priorityOrder);
+            dataMovementInterface.setDataMovementProtocol(protocolType);
+            if (dmType.equals(DMType.COMPUTE_RESOURCE)) {
+                return computeResourceRepository.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
+            } else if (dmType.equals(DMType.STORAGE_RESOURCE)) {
+                dataMovementInterface.setStorageResourceId(computeResourceId);
+                return storageResourceRepository.addDataMovementInterface(dataMovementInterface);
+            }
+            return null;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding data movement interface");
         }
-        return null;
     }
 
     // Job Submission Interface operations
     public String addSSHJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String submissionInterface = addJobSubmissionInterface(
-                computeResourceRepository,
-                computeResourceId,
-                computeResourceRepository.addSSHJobSubmission(sshJobSubmission),
-                JobSubmissionProtocol.SSH,
-                priorityOrder);
-        logger.debug("Airavata registered SSH job submission for compute resource id: " + computeResourceId);
-        return submissionInterface;
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    computeResourceRepository.addSSHJobSubmission(sshJobSubmission),
+                    JobSubmissionProtocol.SSH,
+                    priorityOrder);
+            logger.debug("Airavata registered SSH job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SSH job submission details");
+        }
     }
 
     public String addSSHForkJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String submissionDetails = addJobSubmissionInterface(
-                computeResourceRepository,
-                computeResourceId,
-                computeResourceRepository.addSSHJobSubmission(sshJobSubmission),
-                JobSubmissionProtocol.SSH_FORK,
-                priorityOrder);
-        logger.debug("Airavata registered Fork job submission for compute resource id: " + computeResourceId);
-        return submissionDetails;
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionDetails = addJobSubmissionInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    computeResourceRepository.addSSHJobSubmission(sshJobSubmission),
+                    JobSubmissionProtocol.SSH_FORK,
+                    priorityOrder);
+            logger.debug("Airavata registered Fork job submission for compute resource id: " + computeResourceId);
+            return submissionDetails;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SSH Fork job submission details");
+        }
     }
 
     public String addLocalSubmissionDetails(
-            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String submissionInterface = addJobSubmissionInterface(
-                computeResourceRepository,
-                computeResourceId,
-                computeResourceRepository.addLocalJobSubmission(localSubmission),
-                JobSubmissionProtocol.LOCAL,
-                priorityOrder);
-        logger.debug("Airavata added local job submission for compute resource id: " + computeResourceId);
-        return submissionInterface;
+            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    computeResourceRepository.addLocalJobSubmission(localSubmission),
+                    JobSubmissionProtocol.LOCAL,
+                    priorityOrder);
+            logger.debug("Airavata added local job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding local submission details");
+        }
     }
 
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
-            throws AppCatalogException {
-        new ComputeResourceRepository().updateLocalJobSubmission(localSubmission);
-        logger.debug(
-                "Airavata updated local job submission for job submission interface id: " + jobSubmissionInterfaceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            new ComputeResourceRepository().updateLocalJobSubmission(localSubmission);
+            logger.debug(
+                    "Airavata updated local job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating local submission details");
+        }
     }
 
     public String addCloudJobSubmissionDetails(
             String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String submissionInterface = addJobSubmissionInterface(
-                computeResourceRepository,
-                computeResourceId,
-                computeResourceRepository.addCloudJobSubmission(cloudSubmission),
-                JobSubmissionProtocol.CLOUD,
-                priorityOrder);
-        logger.debug("Airavata registered Cloud job submission for compute resource id: " + computeResourceId);
-        return submissionInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    computeResourceRepository.addCloudJobSubmission(cloudSubmission),
+                    JobSubmissionProtocol.CLOUD,
+                    priorityOrder);
+            logger.debug("Airavata registered Cloud job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding cloud job submission details");
+        }
     }
 
     public String addUNICOREJobSubmissionDetails(
             String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
-            throws AppCatalogException {
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        String submissionInterface = addJobSubmissionInterface(
-                computeResourceRepository,
-                computeResourceId,
-                computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission),
-                JobSubmissionProtocol.UNICORE,
-                priorityOrder);
-        logger.debug("Airavata registered UNICORE job submission for compute resource id: " + computeResourceId);
-        return submissionInterface;
+            throws RegistryServiceException {
+        try {
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(
+                    computeResourceRepository,
+                    computeResourceId,
+                    computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission),
+                    JobSubmissionProtocol.UNICORE,
+                    priorityOrder);
+            logger.debug("Airavata registered UNICORE job submission for compute resource id: " + computeResourceId);
+            return submissionInterface;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding UNICORE job submission details");
+        }
     }
 
     // Application Interface/Module/Deployment operations
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterface, gatewayId);
+            logger.debug("Airavata registered application interface for gateway id : " + gatewayId);
+            return interfaceId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering application interface");
         }
-        String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterface, gatewayId);
-        logger.debug("Airavata registered application interface for gateway id : " + gatewayId);
-        return interfaceId;
     }
 
     public boolean updateApplicationInterface(
-            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws AppCatalogException {
-        applicationInterfaceRepository.updateApplicationInterface(appInterfaceId, applicationInterface);
-        logger.debug("Airavata updated application interface with interface id : " + appInterfaceId);
-        return true;
+            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws RegistryServiceException {
+        try {
+            applicationInterfaceRepository.updateApplicationInterface(appInterfaceId, applicationInterface);
+            logger.debug("Airavata updated application interface with interface id : " + appInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application interface");
+        }
     }
 
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            String module = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+            logger.debug("Airavata registered application module for gateway id : " + gatewayId);
+            return module;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering application module");
         }
-        String module = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
-        logger.debug("Airavata registered application module for gateway id : " + gatewayId);
-        return module;
     }
 
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
-            throws AppCatalogException {
-        applicationInterfaceRepository.updateApplicationModule(appModuleId, applicationModule);
-        logger.debug("Airavata updated application module with module id: " + appModuleId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            applicationInterfaceRepository.updateApplicationModule(appModuleId, applicationModule);
+            logger.debug("Airavata updated application module with module id: " + appModuleId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application module");
+        }
     }
 
     public String registerApplicationDeployment(
-            String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
+            String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(gatewayId)) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            String deployment = applicationDeploymentRepository.addApplicationDeployment(applicationDeployment, gatewayId);
+            logger.debug("Airavata registered application deployment for gateway id : " + gatewayId);
+            return deployment;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering application deployment");
         }
-        String deployment = applicationDeploymentRepository.addApplicationDeployment(applicationDeployment, gatewayId);
-        logger.debug("Airavata registered application deployment for gateway id : " + gatewayId);
-        return deployment;
     }
 
     public boolean updateApplicationDeployment(
-            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
-        applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId, applicationDeployment);
-        logger.debug("Airavata updated application deployment for deployment id : " + appDeploymentId);
-        return true;
+            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException {
+        try {
+            applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            logger.debug("Airavata updated application deployment for deployment id : " + appDeploymentId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application deployment");
+        }
     }
 
     // User Resource Profile operations
-    public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException {
-        if (!validateString(userResourceProfile.getUserId())) {
-            logger.error("Cannot create user resource profile with empty user id");
-            throw new AppCatalogException("Cannot create user resource profile with empty user id");
-        }
-        if (!validateString(userResourceProfile.getGatewayID())) {
-            logger.error("Cannot create user resource profile with empty gateway id");
-            throw new AppCatalogException("Cannot create user resource profile with empty gateway id");
-        }
+    public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws RegistryServiceException {
         try {
+            if (!validateString(userResourceProfile.getUserId())) {
+                logger.error("Cannot create user resource profile with empty user id");
+                throw new AppCatalogException("Cannot create user resource profile with empty user id");
+            }
+            if (!validateString(userResourceProfile.getGatewayID())) {
+                logger.error("Cannot create user resource profile with empty gateway id");
+                throw new AppCatalogException("Cannot create user resource profile with empty gateway id");
+            }
             if (!userRepository.isUserExists(userResourceProfile.getGatewayID(), userResourceProfile.getUserId())) {
                 logger.error("User does not exist.Please provide a valid user ID...");
                 throw new AppCatalogException("User does not exist.Please provide a valid user ID...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            String resourceProfile = userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
+            logger.debug("Airavata registered user resource profile with gateway id : " + userResourceProfile.getGatewayID()
+                    + "and user id : " + userResourceProfile.getUserId());
+            return resourceProfile;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering user resource profile");
         }
-        String resourceProfile = userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
-        logger.debug("Airavata registered user resource profile with gateway id : " + userResourceProfile.getGatewayID()
-                + "and user id : " + userResourceProfile.getUserId());
-        return resourceProfile;
     }
 
-    public boolean isUserResourceProfileExists(String userId, String gatewayId) throws AppCatalogException {
+    public boolean isUserResourceProfileExists(String userId, String gatewayId) throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayId, userId)) {
                 logger.error("user does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            return userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if user resource profile exists");
         }
-        return userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayId);
     }
 
-    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
+    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayId, userId)) {
                 logger.error("user does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            UserResourceProfile userResourceProfile =
+                    userResourceProfileRepository.getUserResourceProfile(userId, gatewayId);
+            logger.debug("Airavata retrieved User resource profile with user id : " + userId);
+            return userResourceProfile;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting user resource profile");
         }
-        UserResourceProfile userResourceProfile =
-                userResourceProfileRepository.getUserResourceProfile(userId, gatewayId);
-        logger.debug("Airavata retrieved User resource profile with user id : " + userId);
-        return userResourceProfile;
     }
 
     public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("User does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+            logger.debug("Airavata updated gateway profile with gateway id : " + userId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user resource profile");
         }
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
-        logger.debug("Airavata updated gateway profile with gateway id : " + userId);
-        return true;
     }
 
-    public boolean deleteUserResourceProfile(String userId, String gatewayID) throws AppCatalogException {
+    public boolean deleteUserResourceProfile(String userId, String gatewayID) throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            userResourceProfileRepository.removeUserResourceProfile(userId, gatewayID);
+            logger.debug("Airavata deleted User profile with gateway id : " + gatewayID + " and user id : " + userId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting user resource profile");
         }
-        userResourceProfileRepository.removeUserResourceProfile(userId, gatewayID);
-        logger.debug("Airavata deleted User profile with gateway id : " + gatewayID + " and user id : " + userId);
-        return true;
     }
 
     // Resource Scheduling operations
     public void updateResourceScheduleing(
             String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
-            throws RegistryException {
-        if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
-            logger.debug(
-                    airavataExperimentId,
-                    "Update resource scheduling failed, experiment {} doesn't exist.",
-                    airavataExperimentId);
-            throw new RegistryException(
-                    "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-        }
-        ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
-        if (experimentStatus != null) {
-            ExperimentState experimentState = experimentStatus.getState();
-            switch (experimentState) {
-                case CREATED:
-                case VALIDATED:
-                case CANCELED:
-                case FAILED:
-                    processRepository.addProcessResourceSchedule(resourceScheduling, airavataExperimentId);
-                    logger.debug(
-                            airavataExperimentId,
-                            "Successfully updated resource scheduling for the experiment {}.",
-                            airavataExperimentId);
-                    break;
-                default:
-                    logger.error(
-                            airavataExperimentId,
-                            "Error while updating scheduling info. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ");
-                    throw new RegistryException(
-                            "Error while updating experiment. Update experiment is only valid for experiments "
-                                    + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                    + "experiment is in one of above statuses... ");
+            throws RegistryServiceException {
+        try {
+            if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
+                logger.debug(
+                        airavataExperimentId,
+                        "Update resource scheduling failed, experiment {} doesn't exist.",
+                        airavataExperimentId);
+                throw new RegistryException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
+            if (experimentStatus != null) {
+                ExperimentState experimentState = experimentStatus.getState();
+                switch (experimentState) {
+                    case CREATED:
+                    case VALIDATED:
+                    case CANCELED:
+                    case FAILED:
+                        processRepository.addProcessResourceSchedule(resourceScheduling, airavataExperimentId);
+                        logger.debug(
+                                airavataExperimentId,
+                                "Successfully updated resource scheduling for the experiment {}.",
+                                airavataExperimentId);
+                        break;
+                    default:
+                        logger.error(
+                                airavataExperimentId,
+                                "Error while updating scheduling info. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ");
+                        throw new RegistryException(
+                                "Error while updating experiment. Update experiment is only valid for experiments "
+                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
+                                        + "experiment is in one of above statuses... ");
+                }
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating resource scheduling");
         }
     }
 
     // User operations
-    public String addUser(UserProfile userProfile) throws RegistryException {
-        logger.info("Adding User in Registry: " + userProfile);
-        if (userRepository.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
-            throw new RegistryException("User already exists, with userId: " + userProfile.getUserId()
-                    + ", and gatewayId: " + userProfile.getGatewayId());
+    public String addUser(UserProfile userProfile) throws RegistryServiceException {
+        try {
+            logger.info("Adding User in Registry: " + userProfile);
+            if (userRepository.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
+                throw new RegistryException("User already exists, with userId: " + userProfile.getUserId()
+                        + ", and gatewayId: " + userProfile.getGatewayId());
+            }
+            UserProfile savedUser = userRepository.addUser(userProfile);
+            return savedUser.getUserId();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding user");
         }
-        UserProfile savedUser = userRepository.addUser(userProfile);
-        return savedUser.getUserId();
     }
 
     // User Compute/Storage Preference operations
@@ -2327,69 +2883,69 @@ public class RegistryService {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
+                        + "' does not exist!!!");
+            }
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
+            profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata added User compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resource id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding user compute resource preference");
         }
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-            throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                    + "' does not exist!!!");
-        }
-        UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-        profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
-        logger.debug("Airavata added User compute resource preference with gateway id : " + gatewayID
-                + " and for compute resource id : " + computeResourceId);
-        return true;
     }
 
     public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayID, String computeResourceId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (userRepository.isUserExists(gatewayID, userId)
                     && userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
                 return userResourceProfileRepository.isUserComputeResourcePreferenceExists(
                         userId, gatewayID, computeResourceId);
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            return false;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if user compute resource preference exists");
         }
-        return false;
     }
 
     public UserComputeResourcePreference getUserComputeResourcePreference(
-            String userId, String gatewayID, String userComputeResourceId) throws AppCatalogException {
+            String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
+                        + "' does not exist!!!");
+            }
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            if (!computeResourceRepository.isComputeResourceExists(userComputeResourceId)) {
+                logger.error(
+                        userComputeResourceId,
+                        "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw new AppCatalogException(
+                        "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+            }
+            UserComputeResourcePreference userComputeResourcePreference =
+                    userResourceProfileRepository.getUserComputeResourcePreference(
+                            userId, gatewayID, userComputeResourceId);
+            logger.debug("Airavata retrieved user compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resoruce id : " + userComputeResourceId);
+            return userComputeResourcePreference;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting user compute resource preference");
         }
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-            throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                    + "' does not exist!!!");
-        }
-        ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-        if (!computeResourceRepository.isComputeResourceExists(userComputeResourceId)) {
-            logger.error(
-                    userComputeResourceId,
-                    "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
-            throw new AppCatalogException(
-                    "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
-        }
-        UserComputeResourcePreference userComputeResourcePreference =
-                userResourceProfileRepository.getUserComputeResourcePreference(
-                        userId, gatewayID, userComputeResourceId);
-        logger.debug("Airavata retrieved user compute resource preference with gateway id : " + gatewayID
-                + " and for compute resoruce id : " + userComputeResourceId);
-        return userComputeResourcePreference;
     }
 
     public boolean updateUserComputeResourcePreference(
@@ -2397,456 +2953,580 @@ public class RegistryService {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-        List<UserComputeResourcePreference> userComputeResourcePreferences =
-                profile.getUserComputeResourcePreferences();
-        UserComputeResourcePreference preferenceToRemove = null;
-        for (UserComputeResourcePreference preference : userComputeResourcePreferences) {
-            if (preference.getComputeResourceId().equals(computeResourceId)) {
-                preferenceToRemove = preference;
-                break;
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
+            List<UserComputeResourcePreference> userComputeResourcePreferences =
+                    profile.getUserComputeResourcePreferences();
+            UserComputeResourcePreference preferenceToRemove = null;
+            for (UserComputeResourcePreference preference : userComputeResourcePreferences) {
+                if (preference.getComputeResourceId().equals(computeResourceId)) {
+                    preferenceToRemove = preference;
+                    break;
+                }
             }
+            if (preferenceToRemove != null) {
+                profile.getUserComputeResourcePreferences().remove(preferenceToRemove);
+            }
+            profile.getUserComputeResourcePreferences().add(userComputeResourcePreference);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID
+                    + " and for compute resource id : " + computeResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user compute resource preference");
         }
-        if (preferenceToRemove != null) {
-            profile.getUserComputeResourcePreferences().remove(preferenceToRemove);
-        }
-        profile.getUserComputeResourcePreferences().add(userComputeResourcePreference);
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
-        logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID
-                + " and for compute resource id : " + computeResourceId);
-        return true;
     }
 
     public boolean addUserStoragePreference(
             String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
+                        + "' does not exist!!!");
+            }
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
+            dataStoragePreference.setStorageResourceId(storageResourceId);
+            profile.addToUserStoragePreferences(dataStoragePreference);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageResourceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding user storage preference");
         }
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-            throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                    + "' does not exist!!!");
-        }
-        UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-        dataStoragePreference.setStorageResourceId(storageResourceId);
-        profile.addToUserStoragePreferences(dataStoragePreference);
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
-        logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageResourceId);
-        return true;
     }
 
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-            throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                    + "' does not exist!!!");
-        }
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
+                        + "' does not exist!!!");
+            }
 
-        UserStoragePreference storagePreference =
-                userResourceProfileRepository.getUserStoragePreference(userId, gatewayID, storageId);
-        logger.debug("Airavata retrieved user storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageId);
-        return storagePreference;
+            UserStoragePreference storagePreference =
+                    userResourceProfileRepository.getUserStoragePreference(userId, gatewayID, storageId);
+            logger.debug("Airavata retrieved user storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageId);
+            return storagePreference;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting user storage preference");
+        }
     }
 
-    public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
-        return userResourceProfileRepository.getAllUserResourceProfiles();
+    public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException {
+        try {
+            return userResourceProfileRepository.getAllUserResourceProfiles();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all user resource profiles");
+        }
     }
 
     // Gateway Groups operations
-    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryException {
-        if (!gatewayGroupsRepository.isExists(gatewayId)) {
-            final String message = "No GatewayGroups entry exists for " + gatewayId;
-            logger.error(message);
-            throw new RegistryException(message);
+    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException {
+        try {
+            if (!gatewayGroupsRepository.isExists(gatewayId)) {
+                final String message = "No GatewayGroups entry exists for " + gatewayId;
+                logger.error(message);
+                throw new RegistryException(message);
+            }
+            return gatewayGroupsRepository.get(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting gateway groups");
         }
-        return gatewayGroupsRepository.get(gatewayId);
     }
 
     // Parser operations
-    public Parser getParser(String parserId, String gatewayId) throws RegistryException {
-        if (!parserRepository.isExists(parserId)) {
-            final String message = "No Parser Info entry exists for " + parserId;
-            logger.error(message);
-            throw new RegistryException(message);
+    public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException {
+        try {
+            if (!parserRepository.isExists(parserId)) {
+                final String message = "No Parser Info entry exists for " + parserId;
+                logger.error(message);
+                throw new RegistryException(message);
+            }
+            return parserRepository.get(parserId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting parser");
         }
-        return parserRepository.get(parserId);
     }
 
-    public String saveParser(Parser parser) throws RegistryException {
+    public String saveParser(Parser parser) throws RegistryServiceException {
         try {
             Parser saved = parserRepository.saveParser(parser);
             return saved.getId();
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error saving parser: " + e.getMessage(), e);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving parser");
         }
     }
 
-    public void removeParser(String parserId, String gatewayId) throws RegistryException {
-        boolean exists = parserRepository.isExists(parserId);
-        if (exists && !gatewayId.equals(parserRepository.get(parserId).getGatewayId())) {
+    public void removeParser(String parserId, String gatewayId) throws RegistryServiceException {
+        try {
+            boolean exists = parserRepository.isExists(parserId);
+            if (!exists || gatewayId.equals(parserRepository.get(parserId).getGatewayId())) {
+                throw new RegistryException("Parser " + parserId + " does not exist");
+            }
             parserRepository.delete(parserId);
-        } else {
-            throw new RegistryException("Parser " + parserId + " does not exist");
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing parser");
         }
     }
 
-    public ParserInput getParserInput(String parserInputId, String gatewayId) throws RegistryException {
+    public ParserInput getParserInput(String parserInputId, String gatewayId) throws RegistryServiceException {
         if (!parserInputRepository.isExists(parserInputId)) {
-            final String message = "No ParserInput entry exists for " + parserInputId;
-            logger.error(message);
-            throw new RegistryException(message);
+            try {
+                final String message = "No ParserInput entry exists for " + parserInputId;
+                logger.error(message);
+                throw new RegistryException(message);
+        } catch (Throwable e) {
+            throw convertException(e, "Error in getParserInput");
+        }
         }
         return parserInputRepository.get(parserInputId);
     }
 
-    public String saveParserInput(ParserInput parserInput) throws RegistryException {
+    public String saveParserInput(ParserInput parserInput) throws RegistryServiceException {
         ParserInput saved = parserInputRepository.create(parserInput);
         return saved.getId();
     }
 
-    public void removeParserInput(String parserInputId, String gatewayId) throws RegistryException {
-        boolean exists = parserInputRepository.isExists(parserInputId);
-        if (exists) {
+    public void removeParserInput(String parserInputId, String gatewayId) throws RegistryServiceException {
+        try {
+            boolean exists = parserInputRepository.isExists(parserInputId);
+            if (!exists) {
+                throw new RegistryException("ParserInput " + parserInputId + " does not exist");
+            }
             ParserInput parserInput = parserInputRepository.get(parserInputId);
             Parser parser = parserRepository.get(parserInput.getParserId());
-            if (gatewayId.equals(parser.getGatewayId())) {
-                parserInputRepository.delete(parserInputId);
-            } else {
+            if (!gatewayId.equals(parser.getGatewayId())) {
                 throw new RegistryException(
                         "ParserInput " + parserInputId + " does not belong to gateway " + gatewayId);
             }
-        } else {
-            throw new RegistryException("ParserInput " + parserInputId + " does not exist");
+            parserInputRepository.delete(parserInputId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error in removeParserInput");
         }
     }
 
-    public ParserOutput getParserOutput(String parserOutputId, String gatewayId) throws RegistryException {
-        if (!parserOutputRepository.isExists(parserOutputId)) {
-            final String message = "No ParserOutput entry exists for " + parserOutputId;
-            logger.error(message);
-            throw new RegistryException(message);
+    public ParserOutput getParserOutput(String parserOutputId, String gatewayId) throws RegistryServiceException {
+        try {
+            if (!parserOutputRepository.isExists(parserOutputId)) {
+                final String message = "No ParserOutput entry exists for " + parserOutputId;
+                logger.error(message);
+                throw new RegistryException(message);
+            }
+            return parserOutputRepository.get(parserOutputId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error in getParserOutput");
         }
-        return parserOutputRepository.get(parserOutputId);
     }
 
-    public String saveParserOutput(ParserOutput parserOutput) throws RegistryException {
-        ParserOutput saved = parserOutputRepository.create(parserOutput);
-        return saved.getId();
+    public String saveParserOutput(ParserOutput parserOutput) throws RegistryServiceException {
+        try {
+            ParserOutput saved = parserOutputRepository.create(parserOutput);
+            return saved.getId();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving parser output");
+        }
     }
 
-    public void removeParserOutput(String parserOutputId, String gatewayId) throws RegistryException {
-        boolean exists = parserOutputRepository.isExists(parserOutputId);
-        if (exists) {
+    public void removeParserOutput(String parserOutputId, String gatewayId) throws RegistryServiceException {
+        try {
+            boolean exists = parserOutputRepository.isExists(parserOutputId);
+            if (!exists) {
+                throw new RegistryException("ParserOutput " + parserOutputId + " does not exist");
+            }
             ParserOutput parserOutput = parserOutputRepository.get(parserOutputId);
             Parser parser = parserRepository.get(parserOutput.getParserId());
-            if (gatewayId.equals(parser.getGatewayId())) {
-                parserOutputRepository.delete(parserOutputId);
-            } else {
+            if (!gatewayId.equals(parser.getGatewayId())) {
                 throw new RegistryException(
                         "ParserOutput " + parserOutputId + " does not belong to gateway " + gatewayId);
             }
-        } else {
-            throw new RegistryException("ParserOutput " + parserOutputId + " does not exist");
+            parserOutputRepository.delete(parserOutputId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error in removeParserOutput");
         }
     }
 
-    public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryException {
-        if (!parsingTemplateRepository.isExists(templateId)) {
-            final String message = "No ParsingTemplate entry exists for " + templateId;
-            logger.error(message);
-            throw new RegistryException(message);
+    public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
+        try {
+            if (!parsingTemplateRepository.isExists(templateId)) {
+                final String message = "No ParsingTemplate entry exists for " + templateId;
+                logger.error(message);
+                throw new RegistryException(message);
+            }
+            return parsingTemplateRepository.get(templateId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error in getParsingTemplate");
         }
-        return parsingTemplateRepository.get(templateId);
     }
 
-    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryException {
-        ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
-        return saved.getId();
+    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException {
+        try {
+            ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
+            return saved.getId();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving parsing template");
+        }
     }
 
-    public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryException {
-        boolean exists = parsingTemplateRepository.isExists(templateId);
-        if (exists
-                && !gatewayId.equals(parsingTemplateRepository.get(templateId).getGatewayId())) {
+    public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
+        try {
+            boolean exists = parsingTemplateRepository.isExists(templateId);
+            if (!exists || gatewayId.equals(parsingTemplateRepository.get(templateId).getGatewayId())) {
+                throw new RegistryException("Parsing template " + templateId + " does not exist");
+            }
             parsingTemplateRepository.delete(templateId);
-        } else {
-            throw new RegistryException("Parsing template " + templateId + " does not exist");
+        } catch (Throwable e) {
+            throw convertException(e, "Error in removeParsingTemplate");
         }
     }
 
     // Gateway Usage Reporting operations
     public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId)
-            throws RegistryException {
-        return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId);
+            throws RegistryServiceException {
+        try {
+            return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if gateway usage reporting is available");
+        }
     }
 
     public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId)
-            throws RegistryException {
-        if (usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+            throws RegistryServiceException {
+        try {
+            if (!usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+                String message = "No usage reporting information for the gateway " + gatewayId + " and compute resource "
+                        + computeResourceId;
+                logger.error(message);
+                throw new RegistryException(message);
+            }
             return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId, computeResourceId);
-        } else {
-            String message = "No usage reporting information for the gateway " + gatewayId + " and compute resource "
-                    + computeResourceId;
-            logger.error(message);
-            throw new RegistryException(message);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting gateway reporting command");
         }
     }
 
-    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryException {
-        usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
+    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException {
+        try {
+            usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding gateway usage reporting command");
+        }
     }
 
     public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId)
-            throws RegistryException {
-        usageReportingCommandRepository.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
+            throws RegistryServiceException {
+        try {
+            usageReportingCommandRepository.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing gateway usage reporting command");
+        }
     }
 
     public boolean updateCloudJobSubmissionDetails(
-            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        cloudJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        computeResourceRepository.updateCloudJobSubmission(cloudJobSubmission);
-        logger.debug(
-                "Airavata updated Cloud job submission for job submission interface id: " + jobSubmissionInterfaceId);
-        return true;
+            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws RegistryServiceException {
+        try {
+            cloudJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            computeResourceRepository.updateCloudJobSubmission(cloudJobSubmission);
+            logger.debug(
+                    "Airavata updated Cloud job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating cloud job submission details");
+        }
     }
 
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
-            throws AppCatalogException {
-        sshJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        computeResourceRepository.updateSSHJobSubmission(sshJobSubmission);
-        logger.debug(
-                "Airavata updated SSH job submission for job submission interface id: " + jobSubmissionInterfaceId);
-        return true;
+            throws RegistryServiceException {
+        try {
+            sshJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            computeResourceRepository.updateSSHJobSubmission(sshJobSubmission);
+            logger.debug(
+                    "Airavata updated SSH job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating SSH job submission details");
+        }
     }
 
     public boolean updateUnicoreJobSubmissionDetails(
-            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        unicoreJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        computeResourceRepository.updateUNICOREJobSubmission(unicoreJobSubmission);
-        logger.debug(
-                "Airavata updated UNICORE job submission for job submission interface id: " + jobSubmissionInterfaceId);
-        return true;
+            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException {
+        try {
+            unicoreJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            computeResourceRepository.updateUNICOREJobSubmission(unicoreJobSubmission);
+            logger.debug(
+                    "Airavata updated UNICORE job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating Unicore job submission details");
+        }
     }
 
-    public boolean updateNotification(Notification notification) throws RegistryException {
-        notificationRepository.updateNotification(notification);
-        logger.debug("Airavata updated notification with notification id: " + notification.getNotificationId());
-        return true;
+    public boolean updateNotification(Notification notification) throws RegistryServiceException {
+        try {
+            notificationRepository.updateNotification(notification);
+            logger.debug("Airavata updated notification with notification id: " + notification.getNotificationId());
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating notification");
+        }
     }
 
-    public String createNotification(Notification notification) throws RegistryException {
-        String notificationId = notificationRepository.createNotification(notification);
-        logger.debug("Airavata created notification with notification id: " + notificationId);
-        return notificationId;
+    public String createNotification(Notification notification) throws RegistryServiceException {
+        try {
+            String notificationId = notificationRepository.createNotification(notification);
+            logger.debug("Airavata created notification with notification id: " + notificationId);
+            return notificationId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating notification");
+        }
     }
 
     public boolean updateGateway(String gatewayId, Gateway updatedGateway)
-            throws RegistryException, AppCatalogException {
-        if (!gatewayRepository.isGatewayExist(gatewayId)) {
-            logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-            throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+            throws RegistryServiceException {
+        try {
+            if (!gatewayRepository.isGatewayExist(gatewayId)) {
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+            }
+            updatedGateway.setGatewayId(gatewayId);
+            gatewayRepository.updateGateway(gatewayId, updatedGateway);
+            logger.debug("Airavata updated gateway with gateway id: " + gatewayId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway");
         }
-        updatedGateway.setGatewayId(gatewayId);
-        gatewayRepository.updateGateway(gatewayId, updatedGateway);
-        logger.debug("Airavata updated gateway with gateway id: " + gatewayId);
-        return true;
     }
 
-    public String addGateway(Gateway gateway) throws RegistryException, AppCatalogException {
-        if (gatewayRepository.isGatewayExist(gateway.getGatewayId())) {
-            logger.error("Gateway already exists in the system. Please provide a different gateway ID...");
-            throw new AppCatalogException(
-                    "Gateway already exists in the system. Please provide a different gateway ID...");
+    public String addGateway(Gateway gateway) throws RegistryServiceException {
+        try {
+            if (gatewayRepository.isGatewayExist(gateway.getGatewayId())) {
+                logger.error("Gateway already exists in the system. Please provide a different gateway ID...");
+                throw new AppCatalogException(
+                        "Gateway already exists in the system. Please provide a different gateway ID...");
+            }
+            String gatewayId = gatewayRepository.addGateway(gateway);
+            logger.debug("Airavata registered gateway with gateway id: " + gatewayId);
+            return gatewayId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding gateway");
         }
-        String gatewayId = gatewayRepository.addGateway(gateway);
-        logger.debug("Airavata registered gateway with gateway id: " + gatewayId);
-        return gatewayId;
     }
 
     public boolean updateUserStoragePreference(
             String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-            throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                    + "' does not exist!!!");
-        }
-        UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-        List<UserStoragePreference> userStoragePreferences = profile.getUserStoragePreferences();
-        UserStoragePreference preferenceToRemove = null;
-        for (UserStoragePreference preference : userStoragePreferences) {
-            if (preference.getStorageResourceId().equals(storageId)) {
-                preferenceToRemove = preference;
-                break;
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
+                        + "' does not exist!!!");
             }
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
+            List<UserStoragePreference> userStoragePreferences = profile.getUserStoragePreferences();
+            UserStoragePreference preferenceToRemove = null;
+            for (UserStoragePreference preference : userStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)) {
+                    preferenceToRemove = preference;
+                    break;
+                }
+            }
+            if (preferenceToRemove != null) {
+                profile.getUserStoragePreferences().remove(preferenceToRemove);
+            }
+            userStoragePreference.setStorageResourceId(storageId);
+            profile.getUserStoragePreferences().add(userStoragePreference);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID
+                    + " and for storage resource id : " + storageId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user storage preference");
         }
-        if (preferenceToRemove != null) {
-            profile.getUserStoragePreferences().remove(preferenceToRemove);
-        }
-        userStoragePreference.setStorageResourceId(storageId);
-        profile.getUserStoragePreferences().add(userStoragePreference);
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
-        logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID
-                + " and for storage resource id : " + storageId);
-        return true;
     }
 
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            return userResourceProfileRepository.removeUserComputeResourcePreferenceFromGateway(
+                    userId, gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting user compute resource preference");
         }
-        return userResourceProfileRepository.removeUserComputeResourcePreferenceFromGateway(
-                userId, gatewayID, computeResourceId);
     }
 
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
-        }
-        return userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
-    }
-
-    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
-        return queueStatusRepository.getLatestQueueStatuses();
-    }
-
-    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
-        queueStatusRepository.createQueueStatuses(queueStatuses);
-    }
-
-    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryException {
-        Optional<QueueStatusModel> optionalQueueStatusModel = queueStatusRepository.getQueueStatus(hostName, queueName);
-        if (optionalQueueStatusModel.isPresent()) {
-            return optionalQueueStatusModel.get();
-        } else {
-            QueueStatusModel queueStatusModel = new QueueStatusModel();
-            queueStatusModel.setHostName(hostName);
-            queueStatusModel.setQueueName(queueName);
-            queueStatusModel.setQueueUp(false);
-            queueStatusModel.setRunningJobs(0);
-            queueStatusModel.setQueuedJobs(0);
-            queueStatusModel.setTime(0);
-            return queueStatusModel;
+            return userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting user storage preference");
         }
     }
 
-    public void createGatewayGroups(GatewayGroups gatewayGroups) throws RegistryException {
-        if (gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
-            logger.error("GatewayGroups already exists for " + gatewayGroups.getGatewayId());
-            throw new RegistryException(
-                    "GatewayGroups for gatewayId: " + gatewayGroups.getGatewayId() + " already exists.");
+    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException {
+        try {
+            return queueStatusRepository.getLatestQueueStatuses();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving latest queue statuses");
         }
-        gatewayGroupsRepository.create(gatewayGroups);
     }
 
-    public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryException {
-        if (!gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
-            final String message = "No GatewayGroups entry exists for " + gatewayGroups.getGatewayId();
-            logger.error(message);
-            throw new RegistryException(message);
+    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException {
+        try {
+            queueStatusRepository.createQueueStatuses(queueStatuses);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering queue statuses");
         }
-        gatewayGroupsRepository.update(gatewayGroups);
     }
 
-    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryException {
-        return gatewayGroupsRepository.isExists(gatewayId);
+    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException {
+        try {
+            Optional<QueueStatusModel> optionalQueueStatusModel = queueStatusRepository.getQueueStatus(hostName, queueName);
+            if (optionalQueueStatusModel.isPresent()) {
+                return optionalQueueStatusModel.get();
+            } else {
+                QueueStatusModel queueStatusModel = new QueueStatusModel();
+                queueStatusModel.setHostName(hostName);
+                queueStatusModel.setQueueName(queueName);
+                queueStatusModel.setQueueUp(false);
+                queueStatusModel.setRunningJobs(0);
+                queueStatusModel.setQueuedJobs(0);
+                queueStatusModel.setTime(0);
+                return queueStatusModel;
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving queue status");
+        }
     }
 
-    public List<Parser> listAllParsers(String gatewayId) throws RegistryException {
-        return parserRepository.getAllParsers(gatewayId);
+    public void createGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException {
+        try {
+            if (gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
+                logger.error("GatewayGroups already exists for " + gatewayGroups.getGatewayId());
+                throw new RegistryException(
+                        "GatewayGroups for gatewayId: " + gatewayGroups.getGatewayId() + " already exists.");
+            }
+            gatewayGroupsRepository.create(gatewayGroups);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating gateway groups");
+        }
+    }
+
+    public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException {
+        try {
+            if (!gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
+                final String message = "No GatewayGroups entry exists for " + gatewayGroups.getGatewayId();
+                logger.error(message);
+                throw new RegistryException(message);
+            }
+            gatewayGroupsRepository.update(gatewayGroups);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway groups");
+        }
+    }
+
+    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException {
+        try {
+            return gatewayGroupsRepository.isExists(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if gateway groups exist");
+        }
+    }
+
+    public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException {
+        try {
+            return parserRepository.getAllParsers(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while listing all parsers");
+        }
     }
 
     public List<ParsingTemplate> getParsingTemplatesForApplication(String applicationInterfaceId)
-            throws RegistryException {
-        return parsingTemplateRepository.getParsingTemplatesForApplication(applicationInterfaceId);
+            throws RegistryServiceException {
+        try {
+            return parsingTemplateRepository.getParsingTemplatesForApplication(applicationInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving parsing templates for application");
+        }
     }
 
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId)
-            throws RegistryException {
-        ExperimentModel experiment = experimentRepository.getExperiment(experimentId);
-        List<ProcessModel> processes = experiment.getProcesses();
-        if (processes != null && processes.size() > 0) {
-            return parsingTemplateRepository.getParsingTemplatesForApplication(
-                    processes.get(processes.size() - 1).getApplicationInterfaceId());
+            throws RegistryServiceException {
+        try {
+            ExperimentModel experiment = experimentRepository.getExperiment(experimentId);
+            List<ProcessModel> processes = experiment.getProcesses();
+            if (processes != null && processes.size() > 0) {
+                return parsingTemplateRepository.getParsingTemplatesForApplication(
+                        processes.get(processes.size() - 1).getApplicationInterfaceId());
+            }
+            return Collections.emptyList();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving parsing templates for experiment");
         }
-        return Collections.emptyList();
     }
 
-    public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryException {
-        return parsingTemplateRepository.getAllParsingTemplates(gatewayId);
+    public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException {
+        try {
+            return parsingTemplateRepository.getAllParsingTemplates(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while listing all parsing templates");
+        }
     }
 
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("User Resource Profile does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException(
                         "User Resource Profile does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            return userResourceProfileRepository
+                    .getUserResourceProfile(userId, gatewayID)
+                    .getUserComputeResourcePreferences();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all user compute resource preferences");
         }
-        return userResourceProfileRepository
-                .getUserResourceProfile(userId, gatewayID)
-                .getUserComputeResourcePreferences();
     }
 
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
-            throws AppCatalogException {
+            throws RegistryServiceException {
         try {
             if (!userRepository.isUserExists(gatewayID, userId)) {
                 logger.error("User does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-        } catch (RegistryException e) {
-            throw new AppCatalogException(e.getMessage(), e);
+            return userResourceProfileRepository
+                    .getUserResourceProfile(userId, gatewayID)
+                    .getUserStoragePreferences();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all user storage preferences");
         }
-        return userResourceProfileRepository
-                .getUserResourceProfile(userId, gatewayID)
-                .getUserStoragePreferences();
     }
 }

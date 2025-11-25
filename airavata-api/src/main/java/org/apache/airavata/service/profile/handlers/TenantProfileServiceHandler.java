@@ -53,111 +53,48 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.addGateway(authzToken, gateway);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.addGateway(authzToken, gateway);
     }
 
     @Override
     @SecurityCheck
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.updateGateway(authzToken, updatedGateway);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error updating gateway-profile, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error updating gateway-profile, reason: " + ex.getMessage());
-            return false;
-        }
+        return tenantProfileService.updateGateway(authzToken, updatedGateway);
     }
 
     @Override
     @SecurityCheck
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.getGateway(authzToken, airavataInternalGatewayId);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error getting gateway-profile, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting gateway-profile, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.getGateway(authzToken, airavataInternalGatewayId);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.deleteGateway(authzToken, airavataInternalGatewayId, gatewayId);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.deleteGateway(authzToken, airavataInternalGatewayId, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public List<Gateway> getAllGateways(AuthzToken authzToken)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.getAllGateways(authzToken);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting all gateway-profiles, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.getAllGateways(authzToken);
     }
 
     @Override
     @SecurityCheck
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.isGatewayExist(authzToken, gatewayId);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.isGatewayExist(authzToken, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername)
             throws TenantProfileServiceException, AuthorizationException, TException {
-        try {
-            return tenantProfileService.getAllGatewaysForUser(authzToken, requesterUsername);
-        } catch (TenantProfileServiceException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Error getting user's gateway-profiles, reason: " + ex.getMessage(), ex);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting user's gateway-profiles, reason: " + ex.getMessage());
-            throw exception;
-        }
+        return tenantProfileService.getAllGatewaysForUser(authzToken, requesterUsername);
     }
 }

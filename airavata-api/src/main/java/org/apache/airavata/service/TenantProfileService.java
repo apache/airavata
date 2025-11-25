@@ -48,6 +48,13 @@ public class TenantProfileService {
     private TenantProfileRepository tenantProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
 
+    private TenantProfileServiceException convertException(Throwable e, String msg) {
+        logger.error(msg, e);
+        TenantProfileServiceException exception = new TenantProfileServiceException();
+        exception.setMessage(msg + ". More info : " + e.getMessage());
+        return exception;
+    }
+
     public TenantProfileService() {
         logger.debug("Initializing TenantProfileService");
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
