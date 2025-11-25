@@ -73,12 +73,20 @@ import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
+
+    private RegistryServiceException convertException(Throwable e, String msg) {
+        logger.error(msg, e);
+        RegistryServiceException exception = new RegistryServiceException();
+        exception.setMessage(msg + " More info : " + e.getMessage());
+        return exception;
+    }
 
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
@@ -120,32 +128,48 @@ public class RegistryService {
         return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;
     }
 
-    public boolean isUserExists(String gatewayId, String userName) throws RegistryException {
-        return userRepository.isUserExists(gatewayId, userName);
-    }
-
-    public List<String> getAllUsersInGateway(String gatewayId) throws RegistryException {
-        return userRepository.getAllUsernamesInGateway(gatewayId);
-    }
-
-    public Gateway getGateway(String gatewayId) throws RegistryException {
-        if (!gatewayRepository.isGatewayExist(gatewayId)) {
-            logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-            throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+    public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException {
+        try {
+            return userRepository.isUserExists(gatewayId, userName);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while verifying user");
         }
-        Gateway gateway = gatewayRepository.getGateway(gatewayId);
-        logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
-        return gateway;
     }
 
-    public boolean deleteGateway(String gatewayId) throws RegistryException {
-        if (!gatewayRepository.isGatewayExist(gatewayId)) {
-            logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-            throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+    public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException {
+        try {
+            return userRepository.getAllUsernamesInGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving users");
         }
-        gatewayRepository.removeGateway(gatewayId);
-        logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
-        return true;
+    }
+
+    public Gateway getGateway(String gatewayId) throws RegistryServiceException {
+        try {
+            if (!gatewayRepository.isGatewayExist(gatewayId)) {
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+            }
+            Gateway gateway = gatewayRepository.getGateway(gatewayId);
+            logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
+            return gateway;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting the gateway");
+        }
+    }
+
+    public boolean deleteGateway(String gatewayId) throws RegistryServiceException {
+        try {
+            if (!gatewayRepository.isGatewayExist(gatewayId)) {
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+            }
+            gatewayRepository.removeGateway(gatewayId);
+            logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
+            return true;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting the gateway");
+        }
     }
 
     public List<Gateway> getAllGateways() throws RegistryException {
@@ -172,20 +196,24 @@ public class RegistryService {
         return notifications;
     }
 
-    public Project getProject(String projectId) throws RegistryException {
+    public Project getProject(String projectId) throws RegistryException, ProjectNotFoundException {
         if (!projectRepository.isProjectExist(projectId)) {
             logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+            ProjectNotFoundException exception = new ProjectNotFoundException();
+            exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+            throw exception;
         }
         logger.debug("Airavata retrieved project with project Id : " + projectId);
         Project project = projectRepository.getProject(projectId);
         return project;
     }
 
-    public boolean deleteProject(String projectId) throws RegistryException {
+    public boolean deleteProject(String projectId) throws RegistryException, ProjectNotFoundException {
         if (!projectRepository.isProjectExist(projectId)) {
             logger.error("Project does not exist in the system. Please provide a valid project ID...");
-            throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+            ProjectNotFoundException exception = new ProjectNotFoundException();
+            exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+            throw exception;
         }
         projectRepository.removeProject(projectId);
         logger.debug("Airavata deleted project with project Id : " + projectId);
@@ -1281,11 +1309,10 @@ public class RegistryService {
 
         if (experiment.getUserConfigurationData() != null
                 && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                && experiment
-                                .getUserConfigurationData()
-                                .getComputationalResourceScheduling()
-                                .getResourceHostId()
-                        != null) {
+                && experiment.getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId()
+                != null) {
 
             String compResourceId = experiment
                     .getUserConfigurationData()
@@ -1419,11 +1446,10 @@ public class RegistryService {
                 case VALIDATED:
                     if (experiment.getUserConfigurationData() != null
                             && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                            && experiment
-                                            .getUserConfigurationData()
-                                            .getComputationalResourceScheduling()
-                                            .getResourceHostId()
-                                    != null) {
+                            && experiment.getUserConfigurationData()
+                                    .getComputationalResourceScheduling()
+                                    .getResourceHostId()
+                            != null) {
                         String compResourceId = experiment
                                 .getUserConfigurationData()
                                 .getComputationalResourceScheduling()

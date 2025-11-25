@@ -41,6 +41,7 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -72,6 +73,21 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.messaging.event.*;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.thrift.TBase;
+import org.slf4j.MDC;
+
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
@@ -79,6 +95,26 @@ public class OrchestratorService {
     private SimpleOrchestratorImpl orchestrator;
     private CuratorFramework curatorClient;
     private Publisher publisher;
+    private Subscriber statusSubscribe;
+    private Subscriber experimentSubscriber;
+    private String airavataUserName;
+    private String gatewayName;
+
+    public OrchestratorService() throws OrchestratorException {
+        try {
+            this.orchestratorRegistryService = new OrchestratorRegistryService();
+            setAiravataUserName(ServerSettings.getDefaultUser());
+            this.orchestrator = new SimpleOrchestratorImpl();
+            this.publisher = MessagingFactory.getPublisher(Type.STATUS);
+            this.orchestrator.initialize();
+            this.orchestrator.getOrchestratorContext().setPublisher(this.publisher);
+            startCurator();
+            this.statusSubscribe = getStatusSubscriber();
+            this.experimentSubscriber = getExperimentSubscriber();
+        } catch (Exception e) {
+            throw new OrchestratorException("Error initializing OrchestratorService", e);
+        }
+    }
 
     public OrchestratorService(
             OrchestratorRegistryService orchestratorRegistryService,
@@ -98,7 +134,7 @@ public class OrchestratorService {
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
-            throw new Exception("Error retrieving the Experiment by the given experimentID: " + experimentId);
+            throw new ExperimentNotFoundException("Error retrieving the Experiment by the given experimentID: " + experimentId);
         }
 
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
@@ -457,7 +493,7 @@ public class OrchestratorService {
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId)
             throws TException {
-        // FIXME - Workflow support not implemented
+        throw new UnsupportedOperationException("Workflow support not implemented");
     }
 
     public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag) throws Exception {
@@ -512,7 +548,7 @@ public class OrchestratorService {
     public void launchQueuedExperiment(String experimentId) throws Exception {
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
-            throw new Exception("Error retrieving the Experiment by the given experimentID: " + experimentId);
+            throw new ExperimentNotFoundException("Error retrieving the Experiment by the given experimentID: " + experimentId);
         }
 
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
@@ -730,6 +766,149 @@ public class OrchestratorService {
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new TException("Experiment '" + experimentId + "' launch failed.", e);
+        }
+    }
+
+    private void startCurator() throws ApplicationSettingsException {
+        String connectionSting = ServerSettings.getZookeeperConnection();
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
+        curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
+        curatorClient.start();
+    }
+
+    public String getExperimentNodePath(String experimentId) {
+        return ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+    }
+
+    private Subscriber getStatusSubscriber() throws AiravataException {
+        List<String> routingKeys = new ArrayList<>();
+        routingKeys.add("*.*.*");
+        return MessagingFactory.getSubscriber(new ProcessStatusHandler(), routingKeys, Type.STATUS);
+    }
+
+    private Subscriber getExperimentSubscriber() throws AiravataException {
+        List<String> routingKeys = new ArrayList<>();
+        routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+        return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+    }
+
+    private void setAiravataUserName(String airavataUserName) {
+        this.airavataUserName = airavataUserName;
+    }
+
+    private class ProcessStatusHandler implements MessageHandler {
+        @Override
+        public void onMessage(MessageContext message) {
+            if (message.getType().equals(MessageType.PROCESS)) {
+                try {
+                    ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
+                    TBase event = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(event);
+                    ThriftUtils.createThriftFromBytes(bytes, processStatusChangeEvent);
+                    ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
+                    logger.info(
+                            "expId: {}, processId: {} :- Process status changed event received for status {}",
+                            processIdentity.getExperimentId(),
+                            processIdentity.getProcessId(),
+                            processStatusChangeEvent.getState().name());
+                    handleProcessStatusChange(processStatusChangeEvent, processIdentity);
+                } catch (TException e) {
+                    logger.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType()
+                            + "Error" + " while prcessing process status change event");
+                    throw new RuntimeException("Error while updating experiment status", e);
+                } catch (Throwable e) {
+                    logger.error(
+                            "Message Id : " + message.getMessageId() + ", Message type : " + message.getType() + "Error"
+                                    + " while prcessing process status change event",
+                            e);
+                    throw new RuntimeException("Error while updating experiment status", e);
+                }
+            } else {
+                System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message "
+                        + "type " + message.getType().name());
+            }
+        }
+    }
+
+    private class ExperimentHandler implements MessageHandler {
+
+        @Override
+        public void onMessage(MessageContext messageContext) {
+            MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
+            switch (messageContext.getType()) {
+                case EXPERIMENT:
+                    launchExperiment(messageContext);
+                    break;
+                case EXPERIMENT_CANCEL:
+                    cancelExperiment(messageContext);
+                    break;
+                case INTERMEDIATE_OUTPUTS:
+                    handleIntermediateOutputsEvent(messageContext);
+                    break;
+                default:
+                    experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+                    logger.error("Orchestrator got un-support message type : " + messageContext.getType());
+                    break;
+            }
+            MDC.clear();
+        }
+
+        private void cancelExperiment(MessageContext messageContext) {
+            try {
+                byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+                ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+                ThriftUtils.createThriftFromBytes(bytes, expEvent);
+                logger.info(
+                        "Cancelling experiment with experimentId: {} gateway Id: {}",
+                        expEvent.getExperimentId(),
+                        expEvent.getGatewayId());
+                handleCancelExperiment(expEvent);
+            } catch (TException e) {
+                logger.error("Error while cancelling experiment", e);
+                throw new RuntimeException("Error while cancelling experiment", e);
+            } catch (Throwable e) {
+                logger.error("Error while cancelling experiment", e);
+                throw new RuntimeException("Error while cancelling experiment", e);
+            } finally {
+                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+            }
+        }
+
+        private void handleIntermediateOutputsEvent(MessageContext messageContext) {
+            try {
+                byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+                ExperimentIntermediateOutputsEvent event = new ExperimentIntermediateOutputsEvent();
+                ThriftUtils.createThriftFromBytes(bytes, event);
+                logger.info(
+                        "INTERMEDIATE_OUTPUTS event for experimentId: {} gateway Id: {} outputs: {}",
+                        event.getExperimentId(),
+                        event.getGatewayId(),
+                        event.getOutputNames());
+                handleIntermediateOutputsEvent(event);
+            } catch (TException e) {
+                logger.error("Error while fetching intermediate outputs", e);
+                throw new RuntimeException("Error while fetching intermediate outputs", e);
+            } catch (Throwable e) {
+                logger.error("Error while fetching intermediate outputs", e);
+                throw new RuntimeException("Error while fetching intermediate outputs", e);
+            } finally {
+                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+            }
+        }
+
+        private void launchExperiment(MessageContext messageContext) {
+            try {
+                handleLaunchExperimentFromMessage(messageContext);
+            } catch (TException e) {
+                logger.error("Experiment launch failed due to Thrift conversion error", e);
+            } catch (org.apache.airavata.registry.cpi.RegistryException e) {
+                logger.error("Experiment launch failed due to registry error", e);
+            } catch (Throwable e) {
+                logger.error("An unknown issue while launching experiment", e);
+            } finally {
+                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+                MDC.clear();
+            }
         }
     }
 }

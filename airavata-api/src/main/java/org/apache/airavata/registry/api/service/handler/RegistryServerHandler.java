@@ -63,7 +63,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -76,14 +75,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             new org.apache.airavata.service.RegistryService();
 
     // Helper method to convert domain exceptions to Thrift exceptions
-    private RegistryServiceException convertToRegistryServiceException(RegistryException e, String context) {
-        logger.error(context, e);
-        RegistryServiceException exception = new RegistryServiceException();
-        exception.setMessage(context + ". More info : " + e.getMessage());
-        return exception;
-    }
-
-    private RegistryServiceException convertToRegistryServiceException(AppCatalogException e, String context) {
+    private RegistryServiceException convertToRegistryServiceException(Throwable e, String context) {
         logger.error(context, e);
         RegistryServiceException exception = new RegistryServiceException();
         exception.setMessage(context + ". More info : " + e.getMessage());
@@ -107,14 +99,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException, TException {
-        try {
-            return registryService.isUserExists(gatewayId, userName);
-        } catch (RegistryException e) {
-            logger.error("Error while verifying user", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while verifying user. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.isUserExists(gatewayId, userName);
     }
 
     /**
@@ -126,14 +111,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getAllUsersInGateway(gatewayId);
-        } catch (RegistryException e) {
-            logger.error("Error while retrieving users", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while retrieving users. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.getAllUsersInGateway(gatewayId);
     }
 
     /**
@@ -145,14 +123,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Gateway getGateway(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.getGateway(gatewayId);
-        } catch (RegistryException e) {
-            logger.error("Error while getting the gateway", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while getting the gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.getGateway(gatewayId);
     }
 
     /**
@@ -164,14 +135,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGateway(String gatewayId) throws RegistryServiceException, TException {
-        try {
-            return registryService.deleteGateway(gatewayId);
-        } catch (RegistryException e) {
-            logger.error("Error while deleting the gateway", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while deleting the gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return registryService.deleteGateway(gatewayId);
     }
 
     /**
@@ -181,7 +145,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<Gateway> getAllGateways() throws RegistryServiceException, TException {
         try {
             return registryService.getAllGateways();
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while getting all the gateways", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
@@ -200,7 +164,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean isGatewayExist(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.isGatewayExist(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while getting gateway", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
@@ -213,7 +177,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteNotification(gatewayId, notificationId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while deleting notification", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
@@ -226,7 +190,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getNotification(gatewayId, notificationId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while retrieving notification", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retreiving notification. More info : " + e.getMessage());
@@ -238,7 +202,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.getAllNotifications(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while getting all notifications", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
@@ -258,11 +222,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public Project getProject(String projectId) throws RegistryServiceException, TException {
         try {
             return registryService.getProject(projectId);
-        } catch (RegistryException e) {
-            logger.error("Error while retrieving the project", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while retrieving the project. More info : " + e.getMessage());
-            throw exception;
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Error while retrieving the project");
         }
     }
 
@@ -280,7 +241,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteProject(String projectId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteProject(projectId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing the project");
         }
     }
@@ -299,7 +260,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUserProjects(gatewayId, userName, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving projects");
         }
     }
@@ -335,7 +296,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     accessibleExpIds,
                     limit,
                     offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving experiments");
         }
     }
@@ -354,7 +315,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the experiments");
         }
     }
@@ -373,7 +334,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUserExperiments(gatewayId, userName, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the experiments");
         }
     }
@@ -389,7 +350,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteExperiment(experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting the experiment");
         }
     }
@@ -468,7 +429,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getDetailedExperimentTree(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the experiment");
         }
     }
@@ -487,7 +448,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getExperimentStatus(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving experiment status");
         }
     }
@@ -505,7 +466,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getExperimentOutputs(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the experiment outputs");
         }
     }
@@ -523,7 +484,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getIntermediateOutputs(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving intermediate outputs");
         }
     }
@@ -540,7 +501,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getJobStatuses(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the job statuses");
         }
     }
@@ -550,7 +511,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.addExperimentProcessOutputs(outputType, outputs, id);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding outputs");
         }
     }
@@ -560,7 +521,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.addErrors(errorType, errorModel, id);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding errors");
         }
     }
@@ -569,7 +530,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
         try {
             registryService.addTaskStatus(taskStatus, taskId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding task status");
         }
     }
@@ -579,7 +540,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.addProcessStatus(processStatus, processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding process status");
         }
     }
@@ -589,7 +550,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateProcessStatus(processStatus, processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating process status");
         }
     }
@@ -599,7 +560,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateExperimentStatus(experimentStatus, experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating experiment status");
         }
     }
@@ -609,7 +570,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.addJobStatus(jobStatus, taskId, jobId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding job status");
         }
     }
@@ -618,7 +579,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void addJob(JobModel jobModel, String processId) throws RegistryServiceException, TException {
         try {
             registryService.addJob(jobModel, processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding job");
         }
     }
@@ -627,7 +588,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void deleteJobs(String processId) throws RegistryServiceException, TException {
         try {
             registryService.deleteJobs(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting job");
         }
     }
@@ -637,7 +598,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addProcess(processModel, experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding process");
         }
     }
@@ -646,7 +607,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException, TException {
         try {
             registryService.updateProcess(processModel, processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating process");
         }
     }
@@ -655,7 +616,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException, TException {
         try {
             return registryService.addTask(taskModel, processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding task");
         }
     }
@@ -664,7 +625,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void deleteTasks(String processId) throws RegistryServiceException, TException {
         try {
             registryService.deleteTasks(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting tasks");
         }
     }
@@ -674,7 +635,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUserConfigurationData(experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while getting user configuration");
         }
     }
@@ -683,7 +644,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public ProcessModel getProcess(String processId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcess(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process");
         }
     }
@@ -692,7 +653,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessList(experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process list");
         }
     }
@@ -701,7 +662,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessStatus(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process status");
         }
     }
@@ -711,7 +672,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getProcessListInState(processState);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process list with given status");
         }
     }
@@ -720,7 +681,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessStatusList(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving process status list for given process Id");
         }
@@ -733,7 +694,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean isJobExist(String queryType, String id) throws RegistryServiceException, TException {
         try {
             return registryService.isJobExist(queryType, id);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving job");
         }
     }
@@ -745,7 +706,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public JobModel getJob(String queryType, String id) throws RegistryServiceException, TException {
         try {
             return registryService.getJob(queryType, id);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving job");
         }
     }
@@ -754,7 +715,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException, TException {
         try {
             return registryService.getJobs(queryType, id);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving jobs for query " + queryType + " and id " + id);
         }
@@ -766,7 +727,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while getting job count");
         }
     }
@@ -776,7 +737,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while getting average time distribution");
         }
     }
@@ -785,7 +746,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessOutputs(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process outputs");
         }
     }
@@ -794,7 +755,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessWorkflows(processId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving process workflows for process id " + processId);
         }
@@ -804,7 +765,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException, TException {
         try {
             registryService.addProcessWorkflow(processWorkflow);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding process workflows for process id " + processWorkflow.getProcessId());
         }
@@ -814,7 +775,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
         try {
             return registryService.getProcessIds(experimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving process ids");
         }
     }
@@ -830,7 +791,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException, TException {
         try {
             return registryService.getJobDetails(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving the job details");
         }
     }
@@ -846,7 +807,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationModule(appModuleId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application module");
         }
     }
@@ -862,7 +823,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.getAllAppModules(gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving all application modules");
         }
     }
@@ -881,7 +842,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving all application modules");
         }
     }
@@ -897,7 +858,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteApplicationModule(appModuleId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting the application module");
         }
     }
@@ -914,7 +875,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationDeployment(appDeploymentId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
         }
     }
@@ -930,7 +891,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteApplicationDeployment(appDeploymentId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting application deployment");
         }
     }
@@ -948,7 +909,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllApplicationDeployments(gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
         }
     }
@@ -968,7 +929,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.getAccessibleApplicationDeployments(
                     gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
         }
     }
@@ -993,7 +954,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.getAccessibleApplicationDeploymentsForAppModule(
                     gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployments");
         }
     }
@@ -1009,7 +970,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException, TException {
         try {
             return registryService.getAppModuleDeployedResources(appModuleId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
         }
     }
@@ -1019,7 +980,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationDeployments(appModuleId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application deployment");
         }
     }
@@ -1036,7 +997,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationInterface(appInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application interface");
         }
     }
@@ -1052,7 +1013,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteApplicationInterface(appInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting application interface");
         }
     }
@@ -1069,7 +1030,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllApplicationInterfaceNames(gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application interfaces");
         }
     }
@@ -1086,7 +1047,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllApplicationInterfaces(gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application interfaces");
         }
     }
@@ -1103,7 +1064,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationInputs(appInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application inputs");
         }
     }
@@ -1120,7 +1081,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getApplicationOutputs(appInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving application outputs");
         }
     }
@@ -1138,7 +1099,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving available compute resources");
         }
     }
@@ -1155,7 +1116,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getComputeResource(computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving compute resource");
         }
     }
@@ -1170,7 +1131,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException, TException {
         try {
             return registryService.getAllComputeResourceNames();
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving compute resource");
         }
     }
@@ -1186,7 +1147,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteComputeResource(computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting compute resource");
         }
     }
@@ -1203,7 +1164,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getStorageResource(storageResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving storage resource");
         }
     }
@@ -1218,7 +1179,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException, TException {
         try {
             return registryService.getAllStorageResourceNames();
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving storage resource");
         }
     }
@@ -1234,7 +1195,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteStorageResource(storageResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting storage resource");
         }
     }
@@ -1248,7 +1209,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
             return registryService.getLocalJobSubmission(jobSubmissionId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving local job submission interface");
         }
     }
@@ -1262,7 +1223,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
             return registryService.getSSHJobSubmission(jobSubmissionId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving SSH job submission interface");
         }
     }
@@ -1284,7 +1245,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUnicoreJobSubmission(jobSubmissionId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving Unicore job submission interface");
         }
     }
@@ -1304,7 +1265,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getCloudJobSubmission(jobSubmissionId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving Cloud job submission interface");
         }
     }
@@ -1319,7 +1280,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
             return registryService.getLocalDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving local data movement interface");
         }
     }
@@ -1334,7 +1295,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
             return registryService.getSCPDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving SCP data movement interface");
         }
     }
@@ -1350,7 +1311,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUnicoreDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving UNICORE data movement interface");
         }
     }
@@ -1366,7 +1327,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGridFTPDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving GridFTP data movement interface");
         }
     }
@@ -1438,7 +1399,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting job submission interface");
         }
     }
@@ -1448,7 +1409,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getResourceJobManager(resourceJobManagerId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving resource job manager");
         }
     }
@@ -1457,7 +1418,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
         try {
             return registryService.deleteResourceJobManager(resourceJobManagerId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting resource job manager");
         }
     }
@@ -1475,7 +1436,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteBatchQueue(computeResourceId, queueName);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting batch queue");
         }
     }
@@ -1492,7 +1453,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGatewayResourceProfile(gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving gateway resource profile");
         }
     }
@@ -1508,7 +1469,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException, TException {
         try {
             return registryService.deleteGatewayResourceProfile(gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing gateway resource profile");
         }
     }
@@ -1526,7 +1487,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading gateway compute resource preference");
         }
     }
@@ -1544,7 +1505,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGatewayStoragePreference(gatewayID, storageId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading gateway data storage preference");
         }
     }
@@ -1561,7 +1522,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading gateway compute resource preferences");
         }
     }
@@ -1578,7 +1539,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllGatewayStoragePreferences(gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading gateway data storage preferences");
         }
     }
@@ -1593,7 +1554,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException, TException {
         try {
             return registryService.getAllGatewayResourceProfiles();
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading retrieving all gateway profiles");
         }
     }
@@ -1611,7 +1572,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway compute resource preference");
         }
     }
@@ -1629,7 +1590,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway data storage preference");
         }
     }
@@ -1638,7 +1599,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
         try {
             return registryService.getDataProduct(productUri);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error in retreiving the data product " + productUri);
         }
     }
@@ -1647,7 +1608,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException, TException {
         try {
             return registryService.getParentDataProduct(productUri);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error in retreiving the parent data product for " + productUri);
         }
     }
@@ -1656,7 +1617,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException, TException {
         try {
             return registryService.getChildDataProducts(productUri);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error in retreiving the child products for " + productUri);
         }
     }
@@ -1667,7 +1628,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error in searching the data products for name " + productName);
         }
     }
@@ -1677,7 +1638,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.createGroupResourceProfile(groupResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while creating group resource profile");
         }
     }
@@ -1687,7 +1648,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateGroupResourceProfile(groupResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating group resource profile");
         }
     }
@@ -1697,7 +1658,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupResourceProfile(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group resource profile");
         }
     }
@@ -1707,7 +1668,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.isGroupResourceProfileExists(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group resource profile");
         }
     }
@@ -1717,7 +1678,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.removeGroupResourceProfile(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing group resource profile");
         }
     }
@@ -1727,7 +1688,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group resource list");
         }
     }
@@ -1737,7 +1698,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing group compute preference");
         }
     }
@@ -1747,7 +1708,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing group compute resource policy");
         }
     }
@@ -1757,7 +1718,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing group batch queue resource policy");
         }
     }
@@ -1767,7 +1728,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group compute resource preference");
         }
     }
@@ -1777,7 +1738,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group compute resource preference");
         }
     }
@@ -1787,7 +1748,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving group compute resource policy");
         }
     }
@@ -1797,7 +1758,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving Batch Queue resource policy");
         }
     }
@@ -1807,7 +1768,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving retrieving Group Compute Resource Preference list");
         }
@@ -1818,7 +1779,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving retrieving Group Batch Queue Resource policy list");
         }
@@ -1829,7 +1790,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while retrieving retrieving Group Compute Resource policy list");
         }
@@ -1840,7 +1801,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerReplicaLocation(replicaLocationModel);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error in retreiving the replica " + replicaLocationModel.getReplicaName());
         }
@@ -1855,7 +1816,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException, TException {
         try {
             return registryService.registerDataProduct(dataProductModel);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error in registering the data resource" + dataProductModel.getProductName());
         }
@@ -1876,7 +1837,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateGatewayStoragePreference(gatewayID, storageId, storagePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway data storage preference");
         }
     }
@@ -1897,7 +1858,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.updateGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway compute resource preference");
         }
     }
@@ -1918,7 +1879,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering gateway resource profile preference");
         }
     }
@@ -1940,7 +1901,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering gateway resource profile preference");
         }
     }
@@ -1958,7 +1919,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway resource profile");
         }
     }
@@ -1977,7 +1938,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering gateway resource profile");
         }
     }
@@ -1987,7 +1948,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating resource job manager");
         }
     }
@@ -1997,7 +1958,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerResourceJobManager(resourceJobManager);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding resource job manager");
         }
     }
@@ -2015,7 +1976,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting data movement interface");
         }
     }
@@ -2055,7 +2016,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addGridFTPDataMovementDetails(
                     computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding data movement interface to resource compute resource");
         }
@@ -2096,7 +2057,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addUnicoreDataMovementDetails(
                     resourceId, dmType, priorityOrder, unicoreDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding data movement interface to resource compute resource");
         }
@@ -2116,7 +2077,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating SCP data movement");
         }
     }
@@ -2139,7 +2100,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding data movement interface to resource compute resource");
         }
@@ -2158,7 +2119,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating local data movement interface");
         }
     }
@@ -2182,7 +2143,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addLocalDataMovementDetails(
                     resourceId, dataMoveType, priorityOrder, localDataMovement);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding data movement interface to resource");
         }
     }
@@ -2215,7 +2176,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating Cloud job submission");
         }
     }
@@ -2233,7 +2194,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating SSH job submission");
         }
     }
@@ -2267,7 +2228,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding job submission interface to resource compute resource");
         }
@@ -2290,7 +2251,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addUNICOREJobSubmissionDetails(
                     computeResourceId, priorityOrder, unicoreJobSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding job submission interface to resource compute resource");
         }
@@ -2312,7 +2273,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding job submission interface to resource compute resource");
         }
@@ -2334,7 +2295,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding job submission interface to resource compute resource");
         }
@@ -2353,7 +2314,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating local job submission");
         }
     }
@@ -2374,7 +2335,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while adding job submission interface to resource compute resource");
         }
@@ -2394,7 +2355,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating storage resource");
         }
     }
@@ -2411,7 +2372,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerStorageResource(storageResourceDescription);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while saving storage resource");
         }
     }
@@ -2430,7 +2391,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating compute resource");
         }
     }
@@ -2447,7 +2408,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerComputeResource(computeResourceDescription);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while saving compute resource");
         }
     }
@@ -2466,7 +2427,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating application interface");
         }
     }
@@ -2484,7 +2445,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerApplicationInterface(gatewayId, applicationInterface);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding application interface");
         }
     }
@@ -2503,7 +2464,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating application deployment");
         }
     }
@@ -2522,7 +2483,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding application deployment");
         }
     }
@@ -2540,7 +2501,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateApplicationModule(appModuleId, applicationModule);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating application module");
         }
     }
@@ -2559,7 +2520,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerApplicationModule(gatewayId, applicationModule);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding application module");
         }
     }
@@ -2570,7 +2531,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating scheduling info");
         }
     }
@@ -2580,7 +2541,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating user configuration");
         }
     }
@@ -2614,7 +2575,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.updateExperiment(airavataExperimentId, experiment);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating experiment");
         }
     }
@@ -2668,7 +2629,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.createExperiment(gatewayId, experiment);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while creating the experiment");
         }
     }
@@ -2696,7 +2657,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving experiments");
         }
     }
@@ -2723,7 +2684,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving projects");
         }
     }
@@ -2740,7 +2701,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException, TException {
         try {
             registryService.updateProject(projectId, updatedProject);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating the project");
         }
     }
@@ -2756,7 +2717,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String createProject(String gatewayId, Project project) throws RegistryServiceException, TException {
         try {
             return registryService.createProject(gatewayId, project);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while creating the project");
         }
     }
@@ -2765,7 +2726,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateNotification(Notification notification) throws RegistryServiceException, TException {
         try {
             return registryService.updateNotification(notification);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating notification");
         }
     }
@@ -2780,7 +2741,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String createNotification(Notification notification) throws RegistryServiceException, TException {
         try {
             return registryService.createNotification(notification);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while creating notification");
         }
     }
@@ -2798,10 +2759,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException, TException {
         try {
             return registryService.updateGateway(gatewayId, updatedGateway);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating the gateway");
-        } catch (AppCatalogException e) {
-            throw convertToRegistryServiceException(e, "Error while updating gateway profile");
         }
     }
 
@@ -2816,35 +2775,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             return registryService.addGateway(gateway);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding gateway");
-        } catch (AppCatalogException e) {
-            throw convertToRegistryServiceException(e, "Error while adding gateway profile");
         }
     }
 
-    private boolean validateString(String name) {
-        boolean valid = true;
-        if (name == null || name.equals("") || name.trim().length() == 0) {
-            valid = false;
-        }
-        return valid;
-    }
 
-    /*Following method wraps the logic of isGatewayExist method and this is to be called by any other method of the API as needed.*/
-    private boolean isGatewayExistInternal(String gatewayId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
-                    TException {
-        try {
-            return registryService.isGatewayExist(gatewayId);
-        } catch (RegistryException e) {
-            logger.error("Error while getting gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
 
     /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
     private ExperimentModel getExperimentInternal(String airavataExperimentId)
@@ -2852,39 +2788,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     AiravataSystemException, TException {
         try {
             return registryService.getExperiment(airavataExperimentId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             logger.error("Error while retrieving the experiment", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /*Private method wraps the logic of getExperimentStatus method since this method is called internally.*/
-    private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId)
-            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
-                    AiravataSystemException, TException {
-        try {
-            return registryService.getExperimentStatus(airavataExperimentId);
-        } catch (RegistryException e) {
-            logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the experiment status. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    /*This private method wraps the logic of getApplicationOutputs method as this method is called internally in the API.*/
-    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        try {
-            return registryService.getApplicationOutputs(appInterfaceId);
-        } catch (AppCatalogException e) {
-            logger.error(appInterfaceId, "Error while retrieving application outputs...", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -2903,7 +2810,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.registerUserResourceProfile(userResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering user resource profile");
         }
     }
@@ -2913,7 +2820,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.isUserResourceProfileExists(userId, gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while checking existence of user resource profile");
         }
     }
@@ -2929,7 +2836,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUserResourceProfile(userId, gatewayId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving user resource profile");
         }
     }
@@ -2947,7 +2854,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating gateway resource profile");
         }
     }
@@ -2965,7 +2872,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteUserResourceProfile(userId, gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing User resource profile");
         }
     }
@@ -2975,7 +2882,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             return registryService.addUser(userProfile);
-        } catch (RegistryException ex) {
+        } catch (Exception ex) {
             throw convertToRegistryServiceException(ex, "Error while adding user in registry");
         }
     }
@@ -3001,7 +2908,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering user resource profile preference");
         }
     }
@@ -3020,7 +2927,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while fetching compute resource preference");
         }
     }
@@ -3042,7 +2949,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.addUserStoragePreference(
                     userId, gatewayID, storageResourceId, dataStoragePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while registering user resource profile preference");
         }
     }
@@ -3061,7 +2968,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException, TException {
         try {
             return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading user compute resource preference");
         }
     }
@@ -3080,7 +2987,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getUserStoragePreference(userId, gatewayID, storageId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading gateway data storage preference");
         }
     }
@@ -3095,7 +3002,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException, TException {
         try {
             return registryService.getAllUserResourceProfiles();
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading retrieving all gateway profiles");
         }
     }
@@ -3120,7 +3027,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             return registryService.updateUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating user compute resource preference");
         }
     }
@@ -3141,7 +3048,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.updateUserStoragePreference(userId, gatewayID, storageId, userStoragePreference);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating user data storage preference");
         }
     }
@@ -3160,7 +3067,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting user compute resource preference");
         }
     }
@@ -3179,7 +3086,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while deleting user storage preference");
         }
     }
@@ -3192,7 +3099,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException, TException {
         try {
             return registryService.getLatestQueueStatuses();
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while reading queue status models");
         }
     }
@@ -3202,7 +3109,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.registerQueueStatuses(queueStatuses);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while storing queue status models");
         }
     }
@@ -3212,7 +3119,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getQueueStatus(hostName, queueName);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving queue status");
         }
     }
@@ -3230,7 +3137,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while reading User Resource Profile compute resource preferences");
         }
@@ -3249,7 +3156,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getAllUserStoragePreferences(userId, gatewayID);
-        } catch (AppCatalogException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error while reading user resource Profile data storage preferences");
         }
@@ -3260,7 +3167,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             registryService.createGatewayGroups(gatewayGroups);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             if (e.getMessage() != null && e.getMessage().contains("already exists")) {
                 throw new DuplicateEntryException(e.getMessage());
             }
@@ -3272,7 +3179,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException, TException {
         try {
             registryService.updateGatewayGroups(gatewayGroups);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while updating GatewayGroups");
         }
     }
@@ -3281,7 +3188,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.isGatewayGroupsExists(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error checking existence of GatewayGroups");
         }
     }
@@ -3290,7 +3197,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.getGatewayGroups(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving GatewayGroups");
         }
     }
@@ -3299,7 +3206,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.getParser(parserId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving parser");
         }
     }
@@ -3308,7 +3215,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String saveParser(Parser parser) throws RegistryServiceException, TException {
         try {
             return registryService.saveParser(parser);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while saving parser");
         }
     }
@@ -3317,7 +3224,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.listAllParsers(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while listing parsers");
         }
     }
@@ -3326,7 +3233,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void removeParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
         try {
             registryService.removeParser(parserId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing parser");
         }
     }
@@ -3336,7 +3243,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getParserInput(parserInputId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving parser input");
         }
     }
@@ -3346,7 +3253,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getParserOutput(parserOutputId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving parser output");
         }
     }
@@ -3356,7 +3263,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getParsingTemplate(templateId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving parsing template");
         }
     }
@@ -3366,7 +3273,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving parsing templates for experiment");
         }
     }
@@ -3375,7 +3282,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
         try {
             return registryService.saveParsingTemplate(parsingTemplate);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while saving parsing template");
         }
     }
@@ -3384,7 +3291,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException, TException {
         try {
             return registryService.listAllParsingTemplates(gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while listing parsing templates");
         }
     }
@@ -3393,7 +3300,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException, TException {
         try {
             registryService.removeParsingTemplate(templateId, gatewayId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing parsing template");
         }
     }
@@ -3403,7 +3310,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while checking gateway usage reporting availability");
         }
     }
@@ -3413,7 +3320,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             return registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while retrieving gateway reporting command");
         }
     }
@@ -3423,7 +3330,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.addGatewayUsageReportingCommand(command);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while adding gateway usage reporting command");
         }
     }
@@ -3433,7 +3340,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throws RegistryServiceException, TException {
         try {
             registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
-        } catch (RegistryException e) {
+        } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Error while removing gateway usage reporting command");
         }
     }

@@ -71,7 +71,12 @@ public class CredentialStoreService {
         credentialReader = new CredentialReaderImpl(dbUtil);
     }
 
-    public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
+    private org.apache.airavata.credential.store.exception.CredentialStoreException convertException(Throwable e, String msg) {
+        logger.error(msg, e);
+        return new org.apache.airavata.credential.store.exception.CredentialStoreException(msg);
+    }
+
+    public String addSSHCredential(SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException {
         try {
             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential =
                     new org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential();
@@ -96,12 +101,8 @@ public class CredentialStoreService {
             credential.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
             sshCredentialWriter.writeCredentials(credential);
             return token;
-        } catch (CredentialStoreException e) {
-            logger.error("Error occurred while saving SSH Credentials.", e);
-            throw new CredentialStoreException("Error occurred while saving SSH Credentials.");
-        } catch (Exception e) {
-            logger.error("Error occurred while generating key pair.", e);
-            throw new CredentialStoreException("Error occurred while generating key pair..");
+        } catch (Throwable e) {
+            throw convertException(e, "Error occurred while saving SSH Credentials.");
         }
     }
 

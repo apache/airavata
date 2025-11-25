@@ -57,7 +57,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.addGateway(authzToken, gateway);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
@@ -73,7 +73,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.updateGateway(authzToken, updatedGateway);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error updating gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error updating gateway-profile, reason: " + ex.getMessage());
@@ -89,7 +89,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.getGateway(authzToken, airavataInternalGatewayId);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error getting gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting gateway-profile, reason: " + ex.getMessage());
@@ -105,7 +105,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.deleteGateway(authzToken, airavataInternalGatewayId, gatewayId);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
@@ -121,7 +121,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.getAllGateways(authzToken);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting all gateway-profiles, reason: " + ex.getMessage());
@@ -137,7 +137,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.isGatewayExist(authzToken, gatewayId);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
@@ -153,7 +153,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             return tenantProfileService.getAllGatewaysForUser(authzToken, requesterUsername);
         } catch (TenantProfileServiceException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Error getting user's gateway-profiles, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting user's gateway-profiles, reason: " + ex.getMessage());
