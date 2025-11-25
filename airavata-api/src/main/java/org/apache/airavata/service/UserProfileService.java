@@ -49,6 +49,13 @@ public class UserProfileService {
     private UserProfileRepository userProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
+    private UserProfileServiceException convertException(Throwable e, String msg) {
+        logger.error(msg, e);
+        UserProfileServiceException exception = new UserProfileServiceException();
+        exception.setMessage(msg + ". More info : " + e.getMessage());
+        return exception;
+    }
+
     public UserProfileService() {
         userProfileRepository = new UserProfileRepository();
     }

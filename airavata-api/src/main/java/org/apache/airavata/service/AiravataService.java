@@ -33,10 +33,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -58,7 +60,9 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
+import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
@@ -109,6 +113,8 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
@@ -127,6 +133,42 @@ import org.slf4j.LoggerFactory;
 
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
+
+    private record StorageInfoContext(String loginUserName, String credentialToken, org.apache.airavata.agents.api.AgentAdaptor adaptor) {}
+
+    private boolean validateString(String name) {
+        boolean valid = true;
+        if (name == null || name.equals("") || name.trim().length() == 0) {
+            valid = false;
+        }
+        return valid;
+    }
+
+    private AiravataClientException clientException(AiravataErrorType errorType, String parameter) {
+        AiravataClientException exception = new AiravataClientException();
+        exception.setAiravataErrorType(errorType);
+        exception.setParameter(parameter);
+        return exception;
+    }
+
+    private boolean safeIsUserResourceProfileExists(AuthzToken authzToken, String userId, String gatewayId) {
+        try {
+            return isUserResourceProfileExists(userId, gatewayId);
+        } catch (Throwable e) {
+            logger.error("Error checking if user resource profile exists", e);
+            return false;
+        }
+    }
+
+    private boolean isGatewayResourceProfileExists(String gatewayId) {
+        try {
+            GatewayResourceProfile profile = getGatewayResourceProfile(gatewayId);
+            return profile != null;
+        } catch (Throwable e) {
+            logger.error("Error while checking if gateway resource profile exists", e);
+            return false;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private static <E extends Throwable> RuntimeException sneakyThrow(Throwable e) throws E {
@@ -310,7 +352,7 @@ public class AiravataService {
         }
     }
 
-    public List<String> getAllUsersInGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<String> getAllUsersInGateway(String gatewayId) {
         try {
             return registryService.getAllUsersInGateway(gatewayId);
         } catch (Throwable e) {
@@ -318,8 +360,7 @@ public class AiravataService {
         }
     }
 
-    public boolean updateGateway(String gatewayId, Gateway updatedGateway)
-            throws RegistryException, AppCatalogException, TException {
+    public boolean updateGateway(String gatewayId, Gateway updatedGateway) {
         try {
             return registryService.updateGateway(gatewayId, updatedGateway);
         } catch (Throwable e) {
@@ -327,15 +368,17 @@ public class AiravataService {
         }
     }
 
-    public Gateway getGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public Gateway getGateway(String gatewayId) {
         try {
-            return registryService.getGateway(gatewayId);
+            Gateway result = registryService.getGateway(gatewayId);
+            logger.debug("Airavata found the gateway with " + gatewayId);
+            return result;
         } catch (Throwable e) {
             throw convertException(e, "Error while getting the gateway");
         }
     }
 
-    public boolean deleteGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteGateway(String gatewayId) {
         try {
             return registryService.deleteGateway(gatewayId);
         } catch (Throwable e) {
@@ -343,23 +386,25 @@ public class AiravataService {
         }
     }
 
-    public List<Gateway> getAllGateways() throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<Gateway> getAllGateways() {
         try {
+            logger.debug("Airavata searching for all gateways");
             return registryService.getAllGateways();
         } catch (Throwable e) {
             throw convertException(e, "Error while getting all the gateways");
         }
     }
 
-    public boolean isGatewayExist(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean isGatewayExist(String gatewayId) {
         try {
+            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits");
             return registryService.isGatewayExist(gatewayId);
         } catch (Throwable e) {
             throw convertException(e, "Error while getting gateway");
         }
     }
 
-    public String createNotification(Notification notification) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String createNotification(Notification notification) {
         try {
             return registryService.createNotification(notification);
         } catch (Throwable e) {
@@ -367,7 +412,7 @@ public class AiravataService {
         }
     }
 
-    public boolean updateNotification(Notification notification) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean updateNotification(Notification notification) {
         try {
             return registryService.updateNotification(notification);
         } catch (Throwable e) {
@@ -375,7 +420,7 @@ public class AiravataService {
         }
     }
 
-    public boolean deleteNotification(String gatewayId, String notificationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteNotification(String gatewayId, String notificationId) {
         try {
             return registryService.deleteNotification(gatewayId, notificationId);
         } catch (Throwable e) {
@@ -383,7 +428,7 @@ public class AiravataService {
         }
     }
 
-    public Notification getNotification(String gatewayId, String notificationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public Notification getNotification(String gatewayId, String notificationId) {
         try {
             return registryService.getNotification(gatewayId, notificationId);
         } catch (Throwable e) {
@@ -391,7 +436,7 @@ public class AiravataService {
         }
     }
 
-    public List<Notification> getAllNotifications(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<Notification> getAllNotifications(String gatewayId) {
         try {
             return registryService.getAllNotifications(gatewayId);
         } catch (Throwable e) {
@@ -399,15 +444,17 @@ public class AiravataService {
         }
     }
 
-    public String registerDataProduct(DataProductModel dataProductModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String registerDataProduct(DataProductModel dataProductModel) {
         try {
             return registryService.registerDataProduct(dataProductModel);
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering data product");
+            String msg = "Error in registering the data resource" + dataProductModel.getProductName() + ".";
+            logger.error(msg, e);
+            throw convertException(e, msg);
         }
     }
 
-    public DataProductModel getDataProduct(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public DataProductModel getDataProduct(String productUri) {
         try {
             return registryService.getDataProduct(productUri);
         } catch (Throwable e) {
@@ -415,39 +462,46 @@ public class AiravataService {
         }
     }
 
-    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) {
         try {
             return registryService.registerReplicaLocation(replicaLocationModel);
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering replica location");
+            String msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + ".";
+            logger.error(msg, e);
+            throw convertException(e, msg);
         }
     }
 
-    public DataProductModel getParentDataProduct(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public DataProductModel getParentDataProduct(String productUri) {
         try {
             return registryService.getParentDataProduct(productUri);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving parent data product");
+            String msg = "Error in retreiving the parent data product for " + productUri + ".";
+            logger.error(msg, e);
+            throw convertException(e, msg);
         }
     }
 
-    public List<DataProductModel> getChildDataProducts(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<DataProductModel> getChildDataProducts(String productUri) {
         try {
             return registryService.getChildDataProducts(productUri);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving child data products");
+            String msg = "Error in retreiving the child products for " + productUri + ".";
+            logger.error(msg, e);
+            throw convertException(e, msg);
         }
     }
 
-    public boolean isUserExists(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean isUserExists(String gatewayId, String userName) {
         try {
+            logger.debug("Checking if the user" + userName + "exists in the gateway" + gatewayId);
             return registryService.isUserExists(gatewayId, userName);
         } catch (Throwable e) {
             throw convertException(e, "Error while verifying user");
         }
     }
 
-    public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public Project getProject(String projectId) {
         try {
             return registryService.getProject(projectId);
         } catch (Throwable e) {
@@ -455,7 +509,7 @@ public class AiravataService {
         }
     }
 
-    public String createProject(String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String createProject(String gatewayId, Project project) {
         try {
             return registryService.createProject(gatewayId, project);
         } catch (Throwable e) {
@@ -463,7 +517,7 @@ public class AiravataService {
         }
     }
 
-    public void updateProject(String projectId, Project updatedProject) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public void updateProject(String projectId, Project updatedProject) {
         try {
             registryService.updateProject(projectId, updatedProject);
         } catch (Throwable e) {
@@ -471,7 +525,7 @@ public class AiravataService {
         }
     }
 
-    public boolean deleteProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean deleteProject(String projectId) {
         try {
             return registryService.deleteProject(projectId);
         } catch (Throwable e) {
@@ -588,15 +642,23 @@ public class AiravataService {
         }
     }
 
-    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
-        return registryService.getExperiment(airavataExperimentId);
+    public ExperimentModel getExperiment(String airavataExperimentId) {
+        try {
+            return registryService.getExperiment(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiment");
+        }
     }
 
-    public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryException {
-        return registryService.createExperiment(gatewayId, experiment);
+    public String createExperiment(String gatewayId, ExperimentModel experiment) {
+        try {
+            return registryService.createExperiment(gatewayId, experiment);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating experiment");
+        }
     }
 
-    public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws TException {
+    public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws AuthorizationException {
         try {
             ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
             if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingExperiment.getUserName())
@@ -613,12 +675,14 @@ public class AiravataService {
             } else {
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
+        } catch (AuthorizationException e) {
+            throw e;
         } catch (Throwable e) {
             throw convertException(e, "Error while getting the experiment");
         }
     }
 
-    public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId) throws TException {
+    public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId) throws AuthorizationException {
         try {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
@@ -627,12 +691,14 @@ public class AiravataService {
             } else {
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
+        } catch (AuthorizationException e) {
+            throw e;
         } catch (Throwable e) {
             throw convertException(e, "Error while getting experiment by admin");
         }
     }
 
-    public void updateExperiment(AuthzToken authzToken, String airavataExperimentId, ExperimentModel experiment) throws TException {
+    public void updateExperiment(AuthzToken authzToken, String airavataExperimentId, ExperimentModel experiment) throws AuthorizationException {
          try {
             ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -664,12 +730,176 @@ public class AiravataService {
          }
     }
 
-    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryException {
-        registryService.updateExperiment(airavataExperimentId, experiment);
+    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) {
+        try {
+            registryService.updateExperiment(airavataExperimentId, experiment);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating experiment");
+        }
     }
 
-    public boolean deleteExperiment(String experimentId) throws RegistryException {
-        return registryService.deleteExperiment(experimentId);
+    public boolean deleteExperiment(String experimentId) {
+        try {
+            return registryService.deleteExperiment(experimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting experiment");
+        }
+    }
+
+    public String cloneExperimentInternal(
+            AuthzToken authzToken,
+            String existingExperimentID,
+            String newExperimentName,
+            String newExperimentProjectId,
+            ExperimentModel existingExperiment)
+            throws ExperimentNotFoundException, ProjectNotFoundException, AuthorizationException {
+        try {
+            if (existingExperiment == null) {
+                logger.error(
+                        existingExperimentID,
+                        "Error while cloning experiment {}, experiment doesn't exist.",
+                        existingExperimentID);
+                throw new ExperimentNotFoundException(
+                        "Requested experiment id " + existingExperimentID + " does not exist in the system..");
+            }
+            if (newExperimentProjectId != null) {
+                // getProject will apply sharing permissions
+                Project project = getProjectWithAuth(authzToken, newExperimentProjectId);
+                if (project == null) {
+                    logger.error(
+                            "Error while cloning experiment {}, project {} doesn't exist.",
+                            existingExperimentID,
+                            newExperimentProjectId);
+                    throw new ProjectNotFoundException(
+                            "Requested project id " + newExperimentProjectId + " does not exist in the system..");
+                }
+                existingExperiment.setProjectId(project.getProjectID());
+            }
+
+            // make sure user has write access to the project
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            if (!userHasAccess(
+                    gatewayId, userId + "@" + gatewayId, existingExperiment.getProjectId(), gatewayId + ":WRITE")) {
+                logger.error(
+                        "Error while cloning experiment {}, user doesn't have write access to project {}",
+                        existingExperimentID,
+                        existingExperiment.getProjectId());
+                throw new AuthorizationException("User does not have permission to clone an experiment in this project");
+            }
+
+            existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+            if (existingExperiment.getExecutionId() != null) {
+                try {
+                    List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getExecutionId());
+                    existingExperiment.setExperimentOutputs(applicationOutputs);
+                } catch (Throwable e) {
+                    logger.warn("Error getting application outputs for experiment clone: " + e.getMessage());
+                }
+            }
+            if (validateString(newExperimentName)) {
+                existingExperiment.setExperimentName(newExperimentName);
+            }
+            existingExperiment.unsetErrors();
+            existingExperiment.unsetProcesses();
+            existingExperiment.unsetExperimentStatus();
+            if (existingExperiment.getUserConfigurationData() != null
+                    && existingExperiment.getUserConfigurationData().getComputationalResourceScheduling() != null
+                    && existingExperiment
+                                    .getUserConfigurationData()
+                                    .getComputationalResourceScheduling()
+                                    .getResourceHostId()
+                            != null) {
+                String compResourceId = existingExperiment
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId();
+
+                try {
+                    ComputeResourceDescription computeResource = getComputeResource(compResourceId);
+                    if (!computeResource.isEnabled()) {
+                        existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
+                    }
+                } catch (Throwable e) {
+                    logger.warn("Error getting compute resource for experiment clone: " + e.getMessage());
+                }
+            }
+            logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
+            existingExperiment.setUserName(userId);
+            
+            String expId = createExperiment(gatewayId, existingExperiment);
+            if (ServerSettings.isEnableSharing()) {
+                try {
+                    Entity entity = new Entity();
+                    entity.setEntityId(expId);
+                    final String domainId = existingExperiment.getGatewayId();
+                    entity.setDomainId(domainId);
+                    entity.setEntityTypeId(domainId + ":" + "EXPERIMENT");
+                    entity.setOwnerId(existingExperiment.getUserName() + "@" + domainId);
+                    entity.setName(existingExperiment.getExperimentName());
+                    entity.setDescription(existingExperiment.getDescription());
+                    createEntity(entity);
+                    shareEntityWithAdminGatewayGroups(entity);
+                } catch (Throwable ex) {
+                    logger.error(ex.getMessage(), ex);
+                    logger.error("rolling back experiment creation Exp ID : " + expId);
+                    try {
+                        deleteExperiment(expId);
+                    } catch (Throwable e) {
+                        logger.error("Error deleting experiment during rollback: " + e.getMessage());
+                    }
+                    throw convertException(ex, "Error while creating entity for cloned experiment");
+                }
+            }
+
+            return expId;
+        } catch (ExperimentNotFoundException | ProjectNotFoundException | AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while cloning experiment");
+        }
+    }
+
+    public void terminateExperiment(Publisher experimentPublisher, String airavataExperimentId, String gatewayId)
+            throws ExperimentNotFoundException {
+        try {
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+            ExperimentStatus experimentLastStatus = getExperimentStatus(airavataExperimentId);
+            if (existingExperiment == null) {
+                logger.error(
+                        airavataExperimentId,
+                        "Error while cancelling experiment {}, experiment doesn't exist.",
+                        airavataExperimentId);
+                throw new ExperimentNotFoundException(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            switch (experimentLastStatus.getState()) {
+                case COMPLETED:
+                case CANCELED:
+                case FAILED:
+                case CANCELING:
+                    logger.warn(
+                            "Can't terminate already {} experiment",
+                            existingExperiment
+                                    .getExperimentStatus()
+                                    .get(0)
+                                    .getState()
+                                    .name());
+                    break;
+                case CREATED:
+                    logger.warn("Experiment termination is only allowed for launched experiments.");
+                    break;
+                default:
+                    publishExperimentCancelEvent(experimentPublisher, gatewayId, airavataExperimentId);
+                    logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
+                    break;
+            }
+        } catch (ExperimentNotFoundException e) {
+            throw e;
+        } catch (Throwable e) {
+            logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
+            throw convertException(e, "Error occurred");
+        }
     }
 
     public List<ExperimentSummaryModel> searchExperiments(
@@ -783,122 +1013,218 @@ public class AiravataService {
         }
     }
 
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryException {
-        return registryService.getExperimentStatus(airavataExperimentId);
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) {
+        try {
+            return registryService.getExperimentStatus(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiment status");
+        }
     }
 
-    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryException {
-        return registryService.getExperimentOutputs(airavataExperimentId);
+    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) {
+        try {
+            return registryService.getExperimentOutputs(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiment outputs");
+        }
     }
 
-    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryException {
-        return registryService.getDetailedExperimentTree(airavataExperimentId);
+    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) {
+        try {
+            return registryService.getDetailedExperimentTree(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving detailed experiment tree");
+        }
     }
 
-    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws AppCatalogException {
-        return registryService.getApplicationOutputs(appInterfaceId);
+    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) {
+        try {
+            return registryService.getApplicationOutputs(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application outputs");
+        }
     }
 
-    public ComputeResourceDescription getComputeResource(String computeResourceId) throws AppCatalogException {
-        return registryService.getComputeResource(computeResourceId);
+    public ComputeResourceDescription getComputeResource(String computeResourceId) {
+        try {
+            return registryService.getComputeResource(computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving compute resource");
+        }
     }
 
-    public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
-            throws AppCatalogException {
-        return registryService.registerComputeResource(computeResourceDescription);
+    public String registerComputeResource(ComputeResourceDescription computeResourceDescription) {
+        try {
+            return registryService.registerComputeResource(computeResourceDescription);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving compute resource");
+        }
     }
 
     public boolean updateComputeResource(
-            String computeResourceId, ComputeResourceDescription computeResourceDescription)
-            throws AppCatalogException {
-        return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
+            String computeResourceId, ComputeResourceDescription computeResourceDescription) {
+        try {
+            return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating compute resource");
+        }
     }
 
-    public boolean deleteComputeResource(String computeResourceId) throws AppCatalogException {
-        return registryService.deleteComputeResource(computeResourceId);
+    public boolean deleteComputeResource(String computeResourceId) {
+        try {
+            return registryService.deleteComputeResource(computeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting compute resource");
+        }
     }
 
-    public Map<String, String> getAllComputeResourceNames() throws AppCatalogException {
-        return registryService.getAllComputeResourceNames();
+    public Map<String, String> getAllComputeResourceNames() {
+        try {
+            return registryService.getAllComputeResourceNames();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving compute resource names");
+        }
     }
 
-    public String registerStorageResource(StorageResourceDescription storageResourceDescription)
-            throws AppCatalogException {
-        return registryService.registerStorageResource(storageResourceDescription);
+    public String registerStorageResource(StorageResourceDescription storageResourceDescription) {
+        try {
+            return registryService.registerStorageResource(storageResourceDescription);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving storage resource");
+        }
     }
 
-    public StorageResourceDescription getStorageResource(String storageResourceId) throws AppCatalogException {
-        return registryService.getStorageResource(storageResourceId);
+    public StorageResourceDescription getStorageResource(String storageResourceId) {
+        try {
+            return registryService.getStorageResource(storageResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving storage resource");
+        }
     }
 
     public boolean updateStorageResource(
-            String storageResourceId, StorageResourceDescription storageResourceDescription)
-            throws AppCatalogException {
-        return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
+            String storageResourceId, StorageResourceDescription storageResourceDescription) {
+        try {
+            return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating storage resource");
+        }
     }
 
-    public boolean deleteStorageResource(String storageResourceId) throws AppCatalogException {
-        return registryService.deleteStorageResource(storageResourceId);
+    public boolean deleteStorageResource(String storageResourceId) {
+        try {
+            return registryService.deleteStorageResource(storageResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting storage resource");
+        }
     }
 
-    public Map<String, String> getAllStorageResourceNames() throws AppCatalogException {
-        return registryService.getAllStorageResourceNames();
+    public Map<String, String> getAllStorageResourceNames() {
+        try {
+            return registryService.getAllStorageResourceNames();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving storage resource names");
+        }
     }
 
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
-            throws AppCatalogException {
-        return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering gateway resource profile");
+        }
     }
 
-    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws AppCatalogException {
-        return registryService.getGatewayResourceProfile(gatewayID);
+    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) {
+        try {
+            return registryService.getGatewayResourceProfile(gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving gateway resource profile");
+        }
     }
 
-    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
-            throws AppCatalogException {
-        return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) {
+        try {
+            return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway resource profile");
+        }
     }
 
-    public boolean deleteGatewayResourceProfile(String gatewayID) throws AppCatalogException {
-        return registryService.deleteGatewayResourceProfile(gatewayID);
+    public boolean deleteGatewayResourceProfile(String gatewayID) {
+        try {
+            return registryService.deleteGatewayResourceProfile(gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing gateway resource profile");
+        }
     }
 
-    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
-        return registryService.getUserResourceProfile(userId, gatewayId);
+    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) {
+        try {
+            return registryService.getUserResourceProfile(userId, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving user resource profile");
+        }
     }
 
-    public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
-            throws AppCatalogException {
-        return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+    public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile) {
+        try {
+            return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user resource profile");
+        }
     }
 
-    public boolean deleteUserResourceProfile(String userId, String gatewayID) throws AppCatalogException {
-        return registryService.deleteUserResourceProfile(userId, gatewayID);
+    public boolean deleteUserResourceProfile(String userId, String gatewayID) {
+        try {
+            return registryService.deleteUserResourceProfile(userId, gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing user resource profile");
+        }
     }
 
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws AppCatalogException {
-        return registryService.getGroupResourceProfile(groupResourceProfileId);
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) {
+        try {
+            return registryService.getGroupResourceProfile(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group resource profile");
+        }
     }
 
-    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws AppCatalogException {
-        registryService.updateGroupResourceProfile(groupResourceProfile);
+    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
+        try {
+            registryService.updateGroupResourceProfile(groupResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating group resource profile");
+        }
     }
 
-    public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
-            throws AppCatalogException {
-        return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+    public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds) {
+        try {
+            return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group resource list");
+        }
     }
 
-    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryException {
-        return registryService.getGatewayGroups(gatewayId);
+    public GatewayGroups getGatewayGroups(String gatewayId) {
+        try {
+            return registryService.getGatewayGroups(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving gateway groups");
+        }
     }
 
-    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryException {
-        return registryService.isGatewayGroupsExists(gatewayId);
+    public boolean isGatewayGroupsExists(String gatewayId) {
+        try {
+            return registryService.isGatewayGroupsExists(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking if gateway groups exist");
+        }
     }
 
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
-            throws TException {
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) {
         try {
             registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
         } catch (Throwable e) {
@@ -907,8 +1233,7 @@ public class AiravataService {
     }
 
     public void updateResourceScheduleing(
-            String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
-            throws TException {
+            String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) {
         try {
             registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
         } catch (Throwable e) {
@@ -917,80 +1242,248 @@ public class AiravataService {
     }
 
     public String registerApplicationDeployment(
-            String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
-        return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
+            String gatewayId, ApplicationDeploymentDescription applicationDeployment) {
+        try {
+            return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering application deployment");
+        }
     }
 
-    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
-            throws AppCatalogException {
-        return registryService.getApplicationDeployment(appDeploymentId);
+    public String registerApplicationDeploymentWithSharing(
+            AuthzToken authzToken, String gatewayId, ApplicationDeploymentDescription applicationDeployment) {
+        try {
+            String result = registerApplicationDeployment(gatewayId, applicationDeployment);
+            if (ServerSettings.isEnableSharing()) {
+                Entity entity = new Entity();
+                entity.setEntityId(result);
+                final String domainId = gatewayId;
+                entity.setDomainId(domainId);
+                entity.setEntityTypeId(domainId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                entity.setOwnerId(userName + "@" + domainId);
+                entity.setName(result);
+                entity.setDescription(applicationDeployment.getAppDeploymentDescription());
+                createEntity(entity);
+                shareEntityWithAdminGatewayGroups(entity);
+            }
+            return result;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering application deployment");
+        }
+    }
+
+    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) {
+        try {
+            return registryService.getApplicationDeployment(appDeploymentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application deployment");
+        }
+    }
+
+    public ApplicationDeploymentDescription getApplicationDeploymentWithAuth(AuthzToken authzToken, String appDeploymentId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.READ);
+                if (!hasAccess) {
+                    throw new AuthorizationException(
+                            "User does not have access to application deployment " + appDeploymentId);
+                }
+            }
+            return getApplicationDeployment(appDeploymentId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application deployment");
+        }
     }
 
     public boolean updateApplicationDeployment(
-            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws AppCatalogException {
-        return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) {
+        try {
+            return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application deployment");
+        }
     }
 
-    public boolean deleteApplicationDeployment(String appDeploymentId) throws AppCatalogException {
-        return registryService.deleteApplicationDeployment(appDeploymentId);
+    public boolean updateApplicationDeploymentWithAuth(
+            AuthzToken authzToken, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                if (!hasAccess) {
+                    throw new AuthorizationException(
+                            "User does not have WRITE access to application deployment " + appDeploymentId);
+                }
+            }
+            return updateApplicationDeployment(appDeploymentId, applicationDeployment);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application deployment");
+        }
     }
 
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws AppCatalogException {
-        return registryService.getApplicationInterface(appInterfaceId);
+    public boolean deleteApplicationDeployment(String appDeploymentId) {
+        try {
+            return registryService.deleteApplicationDeployment(appDeploymentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application deployment");
+        }
     }
 
-    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
-            throws AppCatalogException {
-        return registryService.getApplicationDeployments(appModuleId);
+    public boolean deleteApplicationDeploymentWithAuth(AuthzToken authzToken, String appDeploymentId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                final boolean hasAccess = userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                if (!hasAccess) {
+                    throw new AuthorizationException(
+                            "User does not have WRITE access to application deployment " + appDeploymentId);
+                }
+            }
+            return deleteApplicationDeployment(appDeploymentId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application deployment");
+        }
     }
 
-    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
-            throws AppCatalogException {
-        return registryService.registerApplicationInterface(gatewayId, applicationInterface);
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) {
+        try {
+            return registryService.getApplicationInterface(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application interface");
+        }
+    }
+
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) {
+        try {
+            return registryService.getApplicationDeployments(appModuleId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application deployments");
+        }
+    }
+
+    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) {
+        try {
+            return registryService.registerApplicationInterface(gatewayId, applicationInterface);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding application interface");
+        }
+    }
+
+    public String cloneApplicationInterface(String existingAppInterfaceID, String newApplicationName, String gatewayId)
+            throws AiravataSystemException {
+        try {
+            ApplicationInterfaceDescription existingInterface = getApplicationInterface(existingAppInterfaceID);
+            if (existingInterface == null) {
+                logger.error(
+                        "Provided application interface does not exist.Please provide a valid application interface id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+
+            existingInterface.setApplicationName(newApplicationName);
+            existingInterface.setApplicationInterfaceId(airavata_commonsConstants.DEFAULT_ID);
+            String interfaceId = registerApplicationInterface(gatewayId, existingInterface);
+            logger.debug("Airavata cloned application interface : " + existingAppInterfaceID + " for gateway id : "
+                    + gatewayId);
+            return interfaceId;
+        } catch (AiravataSystemException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Provided application interface does not exist.Please provide a valid application interface id...");
+        }
     }
 
     public boolean updateApplicationInterface(
-            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws AppCatalogException {
-        return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
+            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) {
+        try {
+            return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application interface");
+        }
     }
 
-    public boolean deleteApplicationInterface(String appInterfaceId) throws AppCatalogException {
-        return registryService.deleteApplicationInterface(appInterfaceId);
+    public boolean deleteApplicationInterface(String appInterfaceId) {
+        try {
+            return registryService.deleteApplicationInterface(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application interface");
+        }
     }
 
-    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws AppCatalogException {
-        return registryService.getAllApplicationInterfaceNames(gatewayId);
+    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) {
+        try {
+            return registryService.getAllApplicationInterfaceNames(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application interfaces");
+        }
     }
 
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
-            throws AppCatalogException {
-        return registryService.getAllApplicationInterfaces(gatewayId);
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) {
+        try {
+            return registryService.getAllApplicationInterfaces(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application interfaces");
+        }
     }
 
-    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws AppCatalogException {
-        return registryService.getApplicationInputs(appInterfaceId);
+    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getApplicationInputs(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application inputs");
+        }
     }
 
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
-            throws AppCatalogException {
-        return registryService.registerApplicationModule(gatewayId, applicationModule);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerApplicationModule(gatewayId, applicationModule);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding application module");
+        }
     }
 
-    public ApplicationModule getApplicationModule(String appModuleId) throws AppCatalogException {
-        return registryService.getApplicationModule(appModuleId);
+    public ApplicationModule getApplicationModule(String appModuleId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getApplicationModule(appModuleId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application module");
+        }
     }
 
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
-            throws AppCatalogException {
-        return registryService.updateApplicationModule(appModuleId, applicationModule);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateApplicationModule(appModuleId, applicationModule);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating application module");
+        }
     }
 
-    public List<ApplicationModule> getAllAppModules(String gatewayId) throws AppCatalogException {
-        return registryService.getAllAppModules(gatewayId);
+    public List<ApplicationModule> getAllAppModules(String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllAppModules(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all application modules");
+        }
     }
 
-    public boolean deleteApplicationModule(String appModuleId) throws AppCatalogException {
-        return registryService.deleteApplicationModule(appModuleId);
+    public boolean deleteApplicationModule(String appModuleId) {
+        try {
+            return registryService.deleteApplicationModule(appModuleId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting application module");
+        }
     }
 
     public List<ApplicationModule> getAccessibleAppModules(
@@ -1040,97 +1533,180 @@ public class AiravataService {
         return getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
-    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryException {
-        return registryService.getJobStatuses(airavataExperimentId);
+    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) {
+        try {
+            return registryService.getJobStatuses(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving job statuses");
+        }
     }
 
-    public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryException {
-        return registryService.getJobDetails(airavataExperimentId);
+    public List<JobModel> getJobDetails(String airavataExperimentId) {
+        try {
+            return registryService.getJobDetails(airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving job details");
+        }
     }
 
     public String addLocalSubmissionDetails(
-            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws AppCatalogException {
-        return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
+            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) {
+        try {
+            return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding local job submission interface");
+        }
     }
 
     public String addSSHJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) {
+        try {
+            return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SSH job submission interface");
+        }
     }
 
     public String addSSHForkJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) {
+        try {
+            return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SSH fork job submission interface");
+        }
     }
 
     public String addCloudJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission)
-            throws AppCatalogException {
-        return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
+            String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) {
+        try {
+            return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding cloud job submission interface");
+        }
     }
 
     public String addUNICOREJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
-            throws AppCatalogException {
-        return registryService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
+            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) {
+        try {
+            return registryService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding UNICORE job submission interface");
+        }
     }
 
-    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
-            throws AppCatalogException {
-        return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
+    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) {
+        try {
+            return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating local job submission interface");
+        }
     }
 
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        return registryService.getLocalJobSubmission(jobSubmissionId);
+    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getLocalJobSubmission(jobSubmissionId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving local job submission interface");
+        }
     }
 
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        return registryService.getSSHJobSubmission(jobSubmissionId);
+    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) {
+        try {
+            return registryService.getSSHJobSubmission(jobSubmissionId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving SSH job submission");
+        }
     }
 
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        return registryService.getCloudJobSubmission(jobSubmissionId);
+    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) {
+        try {
+            return registryService.getCloudJobSubmission(jobSubmissionId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving cloud job submission");
+        }
     }
 
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws AppCatalogException {
-        return registryService.getUnicoreJobSubmission(jobSubmissionId);
+    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) {
+        try {
+            return registryService.getUnicoreJobSubmission(jobSubmissionId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving UNICORE job submission");
+        }
     }
 
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
-            throws AppCatalogException {
-        return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating job submission interface");
+        }
     }
 
     public boolean updateCloudJobSubmissionDetails(
-            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission);
+            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating job submission interface");
+        }
     }
 
     public boolean updateUnicoreJobSubmissionDetails(
-            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        return registryService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
+            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating job submission interface");
+        }
     }
 
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws AppCatalogException {
-        return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting job submission interface");
+        }
     }
 
-    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException {
-        return registryService.registerResourceJobManager(resourceJobManager);
+    public String registerResourceJobManager(ResourceJobManager resourceJobManager)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerResourceJobManager(resourceJobManager);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding resource job manager");
+        }
     }
 
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
-            throws AppCatalogException {
-        return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating resource job manager");
+        }
     }
 
-    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        return registryService.getResourceJobManager(resourceJobManagerId);
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getResourceJobManager(resourceJobManagerId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving resource job manager");
+        }
     }
 
-    public boolean deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        return registryService.deleteResourceJobManager(resourceJobManagerId);
+    public boolean deleteResourceJobManager(String resourceJobManagerId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteResourceJobManager(resourceJobManagerId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting resource job manager");
+        }
     }
 
     public String addPasswordCredential( PasswordCredential passwordCredential)
@@ -1162,28 +1738,49 @@ public class AiravataService {
 
     public String addLocalDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, LOCALDataMovement localDataMovement)
-            throws AppCatalogException {
-        return registryService.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding data movement interface to resource");
+        }
     }
 
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
-            throws AppCatalogException {
-        return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating local data movement interface");
+        }
     }
 
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws AppCatalogException {
-        return registryService.getLocalDataMovement(dataMovementId);
+    public LOCALDataMovement getLocalDataMovement(String dataMovementId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getLocalDataMovement(dataMovementId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving local data movement interface");
+        }
     }
 
     public String addSCPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
-            throws AppCatalogException {
-        return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding SCP data movement interface");
+        }
     }
 
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
-            throws AppCatalogException {
-        return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating SCP data movement interface");
+        }
     }
 
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
@@ -1287,8 +1884,13 @@ public class AiravataService {
         return getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws AppCatalogException {
-        return registryService.getAppModuleDeployedResources(appModuleId);
+    public List<String> getAppModuleDeployedResources(String appModuleId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAppModuleDeployedResources(appModuleId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application deployment");
+        }
     }
 
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
@@ -1296,70 +1898,169 @@ public class AiravataService {
             String gatewayId,
             List<String> accessibleAppDeploymentIds,
             List<String> accessibleComputeResourceIds)
-            throws AppCatalogException {
-        return registryService.getAccessibleApplicationDeploymentsForAppModule(
-                gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAccessibleApplicationDeploymentsForAppModule(
+                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving accessible application deployments");
+        }
     }
 
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws AppCatalogException {
-        return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
+    public List<ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+            AuthzToken authzToken, String appModuleId, String groupResourceProfileId)
+            throws AuthorizationException {
+        try {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            
+            // Get list of compute resources for this Group Resource Profile
+            if (!userHasAccessInternal(authzToken, groupResourceProfileId, ResourcePermissionType.READ)) {
+                throw new AuthorizationException(
+                        "User is not authorized to access Group Resource Profile " + groupResourceProfileId);
+            }
+            GroupResourceProfile groupResourceProfile = getGroupResourceProfile(groupResourceProfileId);
+            List<String> accessibleComputeResourceIds = groupResourceProfile.getComputePreferences().stream()
+                    .map(compPref -> compPref.getComputeResourceId())
+                    .collect(Collectors.toList());
+
+            // Get list of accessible Application Deployments
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+            SearchCriteria entityTypeFilter = new SearchCriteria();
+            entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            sharingFilters.add(entityTypeFilter);
+            SearchCriteria permissionTypeFilter = new SearchCriteria();
+            permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+            permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
+            sharingFilters.add(permissionTypeFilter);
+            searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
+                    .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
+
+            return getAccessibleApplicationDeploymentsForAppModule(
+                    appModuleId, gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving application deployments");
+        }
     }
 
-    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws AppCatalogException {
-        return registryService.getSCPDataMovement(dataMovementId);
+    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) {
+        try {
+            return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving available compute resources");
+        }
+    }
+
+    public SCPDataMovement getSCPDataMovement(String dataMovementId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getSCPDataMovement(dataMovementId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving SCP data movement interface");
+        }
     }
 
     public String addUnicoreDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
-            throws AppCatalogException {
-        return registryService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding UNICORE data movement interface");
+        }
     }
 
     public boolean updateUnicoreDataMovementDetails(
-            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
-        return registryService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
+            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating unicore data movement interface");
+        }
     }
 
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws AppCatalogException {
-        return registryService.getUnicoreDataMovement(dataMovementId);
+    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getUnicoreDataMovement(dataMovementId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving UNICORE data movement interface");
+        }
     }
 
     public String addGridFTPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
-            throws AppCatalogException {
-        return registryService.addGridFTPDataMovementDetails(resourceId, dmType, priorityOrder, gridFTPDataMovement);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addGridFTPDataMovementDetails(resourceId, dmType, priorityOrder, gridFTPDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding GridFTP data movement interface");
+        }
     }
 
     public boolean updateGridFTPDataMovementDetails(
-            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
-        return registryService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
+            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating GridFTP data movement interface");
+        }
     }
 
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws AppCatalogException {
-        return registryService.getGridFTPDataMovement(dataMovementId);
+    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getGridFTPDataMovement(dataMovementId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving GridFTP data movement interface");
+        }
     }
 
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
-            throws AppCatalogException {
-        return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting data movement interface");
+        }
     }
 
-    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        return registryService.deleteBatchQueue(computeResourceId, queueName);
+    public boolean deleteBatchQueue(String computeResourceId, String queueName)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteBatchQueue(computeResourceId, queueName);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting batch queue");
+        }
     }
 
     public boolean addGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws AppCatalogException {
-        return registryService.addGatewayComputeResourcePreference(
-                gatewayID, computeResourceId, computeResourcePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addGatewayComputeResourcePreference(
+                    gatewayID, computeResourceId, computeResourcePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering gateway resource profile preference");
+        }
     }
 
     public boolean addGatewayStoragePreference(
             String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
-            throws AppCatalogException {
-        return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering gateway storage preference");
+        }
     }
 
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
@@ -1377,41 +2078,78 @@ public class AiravataService {
         return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
     }
 
-    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws AppCatalogException {
-        return registryService.getAllGatewayStoragePreferences(gatewayID);
+    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) {
+        try {
+            return registryService.getAllGatewayStoragePreferences(gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all gateway storage preferences");
+        }
     }
 
-    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws AppCatalogException {
-        return registryService.getAllGatewayResourceProfiles();
+    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() {
+        try {
+            return registryService.getAllGatewayResourceProfiles();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving all gateway resource profiles");
+        }
     }
 
     public boolean updateGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws AppCatalogException {
-        return registryService.updateGatewayComputeResourcePreference(
-                gatewayID, computeResourceId, computeResourcePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateGatewayComputeResourcePreference(
+                    gatewayID, computeResourceId, computeResourcePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway compute resource preference");
+        }
     }
 
     public boolean updateGatewayStoragePreference(
-            String gatewayID, String storageId, StoragePreference dataStoragePreference) throws AppCatalogException {
-        return registryService.updateGatewayStoragePreference(gatewayID, storageId, dataStoragePreference);
+            String gatewayID, String storageId, StoragePreference dataStoragePreference)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateGatewayStoragePreference(gatewayID, storageId, dataStoragePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway data storage preference");
+        }
     }
 
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
-            throws AppCatalogException {
-        return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            logger.error(gatewayID, "Error while deleting gateway compute resource preference...", e);
+            throw convertException(e, "Error while deleting gateway compute resource preference");
+        }
     }
 
-    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws AppCatalogException {
-        return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
+    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting gateway data storage preference");
+        }
     }
 
-    public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException {
-        return registryService.registerUserResourceProfile(userResourceProfile);
+    public String registerUserResourceProfile(UserResourceProfile userResourceProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerUserResourceProfile(userResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering user resource profile");
+        }
     }
 
-    public boolean isUserResourceProfileExists(String userId, String gatewayId) throws AppCatalogException {
-        return registryService.isUserResourceProfileExists(userId, gatewayId);
+    public boolean isUserResourceProfileExists(String userId, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.isUserResourceProfileExists(userId, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while checking existence of user resource profile");
+        }
     }
 
     public boolean addUserComputeResourcePreference(
@@ -1419,40 +2157,71 @@ public class AiravataService {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws AppCatalogException {
-        return registryService.addUserComputeResourcePreference(
-                userId, gatewayID, computeResourceId, userComputeResourcePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addUserComputeResourcePreference(
+                    userId, gatewayID, computeResourceId, userComputeResourcePreference);
+        } catch (Throwable e) {
+            logger.error(userId, "Error while registering user resource profile preference...", e);
+            throw convertException(e, "Error while registering user resource profile preference");
+        }
     }
 
     public boolean addUserStoragePreference(
             String userId, String gatewayID, String userStorageResourceId, UserStoragePreference dataStoragePreference)
-            throws AppCatalogException {
-        return registryService.addUserStoragePreference(
-                userId, gatewayID, userStorageResourceId, dataStoragePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.addUserStoragePreference(
+                    userId, gatewayID, userStorageResourceId, dataStoragePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering user storage preference");
+        }
     }
 
     public UserComputeResourcePreference getUserComputeResourcePreference(
-            String userId, String gatewayID, String userComputeResourceId) throws AppCatalogException {
-        return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+            String userId, String gatewayID, String userComputeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while reading user compute resource preference");
+        }
     }
 
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String userStorageId)
-            throws AppCatalogException {
-        return registryService.getUserStoragePreference(userId, gatewayID, userStorageId);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getUserStoragePreference(userId, gatewayID, userStorageId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while reading user data storage preference");
+        }
     }
 
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
-            throws AppCatalogException {
-        return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while reading User compute resource preferences");
+        }
     }
 
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
-            throws AppCatalogException {
-        return registryService.getAllUserStoragePreferences(userId, gatewayID);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllUserStoragePreferences(userId, gatewayID);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while reading User data storage preferences");
+        }
     }
 
-    public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
-        return registryService.getAllUserResourceProfiles();
+    public List<UserResourceProfile> getAllUserResourceProfiles()
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllUserResourceProfiles();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while reading retrieving all user resource profiles");
+        }
     }
 
     public boolean updateUserComputeResourcePreference(
@@ -1460,94 +2229,169 @@ public class AiravataService {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws AppCatalogException {
-        return registryService.updateUserComputeResourcePreference(
-                userId, gatewayID, computeResourceId, userComputeResourcePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateUserComputeResourcePreference(
+                    userId, gatewayID, computeResourceId, userComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user compute resource preference");
+        }
     }
 
     public boolean updateUserStoragePreference(
             String userId, String gatewayID, String userStorageId, UserStoragePreference userStoragePreference)
-            throws AppCatalogException {
-        return registryService.updateUserStoragePreference(userId, gatewayID, userStorageId, userStoragePreference);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateUserStoragePreference(userId, gatewayID, userStorageId, userStoragePreference);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating user data storage preference");
+        }
     }
 
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId)
-            throws AppCatalogException {
-        return registryService.deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+        } catch (Throwable e) {
+            logger.error(userId, "Error while deleting user compute resource preference...", e);
+            throw convertException(e, "Error while deleting user compute resource preference");
+        }
     }
 
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String userStorageId)
-            throws AppCatalogException {
-        return registryService.deleteUserStoragePreference(userId, gatewayID, userStorageId);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteUserStoragePreference(userId, gatewayID, userStorageId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting user data storage preference");
+        }
     }
 
-    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
-        return registryService.getLatestQueueStatuses();
+    public List<QueueStatusModel> getLatestQueueStatuses() {
+        try {
+            return registryService.getLatestQueueStatuses();
+        } catch (Throwable e) {
+            String msg = "Error in retrieving queue statuses";
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
     }
 
-    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws AppCatalogException {
-        return registryService.createGroupResourceProfile(groupResourceProfile);
+    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
+        try {
+            return registryService.createGroupResourceProfile(groupResourceProfile);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating group resource profile");
+        }
     }
 
-    public boolean removeGroupResourceProfile(String groupResourceProfileId) throws AppCatalogException {
-        return registryService.removeGroupResourceProfile(groupResourceProfileId);
+    public boolean removeGroupResourceProfile(String groupResourceProfileId) {
+        try {
+            return registryService.removeGroupResourceProfile(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group resource profile");
+        }
     }
 
-    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
-            throws AppCatalogException {
-        return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
+    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId) {
+        try {
+            return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group compute preferences");
+        }
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourceId, String groupResourceProfileId) throws AppCatalogException {
-        return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            String computeResourceId, String groupResourceProfileId) {
+        try {
+            return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource preference");
+        }
     }
 
     public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId) throws AppCatalogException {
         return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
     }
 
-    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
+    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) {
+        try {
+            return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group compute resource policy");
+        }
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
+        try {
+            return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving batch queue resource policy");
+        }
     }
 
-    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws AppCatalogException {
-        return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
+    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) {
+        try {
+            return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing group batch queue resource policy");
+        }
     }
 
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
-            throws AppCatalogException {
-        return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId) {
+        try {
+            return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource preference list");
+        }
     }
 
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
-            throws AppCatalogException {
-        return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId) {
+        try {
+            return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group batch queue resource policy list");
+        }
     }
 
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
-            throws AppCatalogException {
-        return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId) {
+        try {
+            return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving group compute resource policy list");
+        }
     }
 
-    public Parser getParser(String parserId, String gatewayId) throws RegistryException {
-        return registryService.getParser(parserId, gatewayId);
+    public Parser getParser(String parserId, String gatewayId) {
+        try {
+            return registryService.getParser(parserId, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving parser");
+        }
     }
 
-    public String saveParser(Parser parser) throws RegistryException {
-        return registryService.saveParser(parser);
+    public String saveParser(Parser parser) {
+        try {
+            return registryService.saveParser(parser);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while saving parser");
+        }
     }
 
-    public List<Parser> listAllParsers(String gatewayId) throws RegistryException {
-        return registryService.listAllParsers(gatewayId);
+    public List<Parser> listAllParsers(String gatewayId) {
+        try {
+            return registryService.listAllParsers(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while listing all parsers");
+        }
     }
 
-    public void removeParser(String parserId, String gatewayId) throws RegistryException {
-        registryService.removeParser(parserId, gatewayId);
+    public void removeParser(String parserId, String gatewayId) {
+        try {
+            registryService.removeParser(parserId, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing parser");
+        }
     }
 
     public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryException {
@@ -1937,19 +2781,24 @@ public class AiravataService {
             Publisher statusPublisher,
             String gatewayId,
             ExperimentModel experiment)
-            throws Exception {
-        String experimentId = createExperimentWithSharing( gatewayId, experiment);
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
+            String experimentId = createExperimentWithSharing( gatewayId, experiment);
 
-        if (statusPublisher != null) {
-            ExperimentStatusChangeEvent event =
-                    new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
-            String messageId = AiravataUtils.getId("EXPERIMENT");
-            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            statusPublisher.publish(messageContext);
+            if (statusPublisher != null) {
+                ExperimentStatusChangeEvent event =
+                        new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
+                String messageId = AiravataUtils.getId("EXPERIMENT");
+                MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                statusPublisher.publish(messageContext);
+            }
+
+            return experimentId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating the experiment");
         }
-
-        return experimentId;
     }
 
     public void validateLaunchExperimentAccess(
@@ -2035,35 +2884,44 @@ public class AiravataService {
     }
 
     public boolean deleteExperimentWithAuth(
-             AuthzToken authzToken, String experimentId) throws Exception {
-        ExperimentModel experimentModel = getExperiment(experimentId);
+             AuthzToken authzToken, String experimentId) throws AuthorizationException, InvalidRequestException {
+        try {
+            ExperimentModel experimentModel = getExperiment(experimentId);
 
-        if (ServerSettings.isEnableSharing()
-                        && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(experimentModel.getUserName())
-                || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())) {
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
-                throw new AuthorizationException("User does not have permission to access this resource");
+            if (ServerSettings.isEnableSharing()
+                            && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(experimentModel.getUserName())
+                    || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
             }
-        }
 
-        if (!(experimentModel.getExperimentStatus().get(0).getState()
-                == org.apache.airavata.model.status.ExperimentState.CREATED)) {
-            throw new Exception("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
+            if (!(experimentModel.getExperimentStatus().get(0).getState()
+                    == org.apache.airavata.model.status.ExperimentState.CREATED)) {
+                throw new InvalidRequestException("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
+            }
+            return deleteExperiment(experimentId);
+        } catch (AuthorizationException | InvalidRequestException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting experiment");
         }
-        return deleteExperiment(experimentId);
     }
 
-    public ResourceType getResourceType( String domainId, String entityId)
-            throws TException {
-        Entity entity = sharingRegistryService.getEntity(domainId, entityId);
-        for (ResourceType resourceType : ResourceType.values()) {
-            if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
-                return resourceType;
+    public ResourceType getResourceType( String domainId, String entityId) {
+        try {
+            Entity entity = sharingRegistryService.getEntity(domainId, entityId);
+            for (ResourceType resourceType : ResourceType.values()) {
+                if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
+                    return resourceType;
+                }
             }
+            throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting resource type");
         }
-        throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
     }
 
     // Gateway management methods with sharing registry integration
@@ -2186,51 +3044,67 @@ public class AiravataService {
             String airavataExperimentId,
             List<String> outputNames,
             Publisher experimentPublisher)
-            throws Exception {
-        // Verify that user has WRITE access to experiment
-        final boolean hasAccess =
-                userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
-        if (!hasAccess) {
-            throw new Exception("User does not have WRITE access to this experiment");
-        }
-
-        // Verify that the experiment's job is currently ACTIVE
-        ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
-        List<JobModel> jobs = getJobDetails(airavataExperimentId);
-        boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
-            if (j.getJobStatusesSize() > 0) {
-                return j.getJobStatuses().get(j.getJobStatusesSize() - 1).getJobState() == JobState.ACTIVE;
-            } else {
-                return false;
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            // Verify that user has WRITE access to experiment
+            final boolean hasAccess =
+                    userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+            if (!hasAccess) {
+                String msg = "User does not have WRITE access to this experiment";
+                logger.error(msg);
+                throw new AuthorizationException(msg);
             }
-        });
-        if (!anyJobIsActive) {
-            throw new Exception("Experiment does not have currently ACTIVE job");
-        }
 
-        // Figure out if there are any currently running intermediate output fetching processes for outputNames
-        // First, find any existing intermediate output fetch processes for outputNames
-        List<ProcessModel> intermediateOutputFetchProcesses = existingExperiment.getProcesses().stream()
-                .filter(p -> {
-                    // Filter out completed or failed processes
-                    if (p.getProcessStatusesSize() > 0) {
-                        ProcessStatus latestStatus = p.getProcessStatuses().get(p.getProcessStatusesSize() - 1);
-                        if (latestStatus.getState() == ProcessState.COMPLETED
-                                || latestStatus.getState() == ProcessState.FAILED) {
-                            return false;
+            // Verify that the experiment's job is currently ACTIVE
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+            List<JobModel> jobs = getJobDetails(airavataExperimentId);
+            boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
+                if (j.getJobStatusesSize() > 0) {
+                    return j.getJobStatuses().get(j.getJobStatusesSize() - 1).getJobState() == JobState.ACTIVE;
+                } else {
+                    return false;
+                }
+            });
+            if (!anyJobIsActive) {
+                String msg = "Experiment does not have currently ACTIVE job";
+                logger.error(msg);
+                throw new InvalidRequestException(msg);
+            }
+
+            // Figure out if there are any currently running intermediate output fetching processes for outputNames
+            // First, find any existing intermediate output fetch processes for outputNames
+            List<ProcessModel> intermediateOutputFetchProcesses = existingExperiment.getProcesses().stream()
+                    .filter(p -> {
+                        // Filter out completed or failed processes
+                        if (p.getProcessStatusesSize() > 0) {
+                            ProcessStatus latestStatus = p.getProcessStatuses().get(p.getProcessStatusesSize() - 1);
+                            if (latestStatus.getState() == ProcessState.COMPLETED
+                                    || latestStatus.getState() == ProcessState.FAILED) {
+                                return false;
+                            }
                         }
-                    }
-                    return true;
-                })
-                .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
-                .filter(p -> p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName())))
-                .collect(Collectors.toList());
-        if (!intermediateOutputFetchProcesses.isEmpty()) {
-            throw new Exception("There are already intermediate output fetching tasks running for those outputs.");
-        }
+                        return true;
+                    })
+                    .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
+                    .filter(p -> p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName())))
+                    .collect(Collectors.toList());
+            if (!intermediateOutputFetchProcesses.isEmpty()) {
+                String msg = "There are already intermediate output fetching tasks running for those outputs.";
+                logger.error(msg);
+                throw new InvalidRequestException(msg);
+            }
 
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        publishExperimentIntermediateOutputsEvent(experimentPublisher, gatewayId, airavataExperimentId, outputNames);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            publishExperimentIntermediateOutputsEvent(experimentPublisher, gatewayId, airavataExperimentId, outputNames);
+        } catch (AuthorizationException | InvalidRequestException e) {
+            throw e;
+        } catch (Throwable e) {
+            logger.error(
+                    "Error while processing request to fetch intermediate outputs for experiment: "
+                            + airavataExperimentId,
+                    e);
+            throw convertException(e, "Error occurred");
+        }
     }
 
     /**
@@ -2241,44 +3115,58 @@ public class AiravataService {
             AuthzToken authzToken,
             String airavataExperimentId,
             List<String> outputNames)
-            throws Exception {
-        // Verify that user has READ access to experiment
-        final boolean hasAccess =
-                userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.READ);
-        if (!hasAccess) {
-            throw new Exception("User does not have READ access to this experiment");
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            // Verify that user has READ access to experiment
+            final boolean hasAccess =
+                    userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.READ);
+            if (!hasAccess) {
+                String msg = "User does not have READ access to this experiment";
+                logger.debug(msg);
+                throw new AuthorizationException(msg);
+            }
+
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+
+            // Find the most recent intermediate output fetching process for the outputNames
+            // Assumption: only one of these output fetching processes runs at a
+            // time so we only need to check the status of the most recent one
+            Optional<ProcessModel> mostRecentOutputFetchProcess = existingExperiment.getProcesses().stream()
+                    .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
+                    .filter(p -> {
+                        List<String> names =
+                                p.getProcessOutputs().stream().map(o -> o.getName()).collect(Collectors.toList());
+                        return new HashSet<>(names).equals(new HashSet<>(outputNames));
+                    })
+                    .sorted(Comparator.comparing(ProcessModel::getLastUpdateTime).reversed())
+                    .findFirst();
+
+            if (!mostRecentOutputFetchProcess.isPresent()) {
+                String msg = "No matching intermediate output fetching process found.";
+                logger.debug(msg);
+                throw new InvalidRequestException(msg);
+            }
+
+            ProcessStatus result;
+            // Determine the most recent status for the most recent process
+            ProcessModel process = mostRecentOutputFetchProcess.get();
+            if (process.getProcessStatusesSize() > 0) {
+                result = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
+            } else {
+                // Process has no statuses so it must be created but not yet running
+                result = new ProcessStatus(ProcessState.CREATED);
+            }
+
+            return result;
+        } catch (AuthorizationException | InvalidRequestException e) {
+            throw e;
+        } catch (Throwable e) {
+            logger.error(
+                    "Error while processing request to get intermediate output process status for experiment: "
+                            + airavataExperimentId,
+                    e);
+            throw convertException(e, "Error occurred");
         }
-
-        ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
-
-        // Find the most recent intermediate output fetching process for the outputNames
-        // Assumption: only one of these output fetching processes runs at a
-        // time so we only need to check the status of the most recent one
-        Optional<ProcessModel> mostRecentOutputFetchProcess = existingExperiment.getProcesses().stream()
-                .filter(p -> p.getTasks().stream().allMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING))
-                .filter(p -> {
-                    List<String> names =
-                            p.getProcessOutputs().stream().map(o -> o.getName()).collect(Collectors.toList());
-                    return new HashSet<>(names).equals(new HashSet<>(outputNames));
-                })
-                .sorted(Comparator.comparing(ProcessModel::getLastUpdateTime).reversed())
-                .findFirst();
-
-        if (!mostRecentOutputFetchProcess.isPresent()) {
-            throw new Exception("No matching intermediate output fetching process found.");
-        }
-
-        ProcessStatus result;
-        // Determine the most recent status for the most recent process
-        ProcessModel process = mostRecentOutputFetchProcess.get();
-        if (process.getProcessStatusesSize() > 0) {
-            result = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
-        } else {
-            // Process has no statuses so it must be created but not yet running
-            result = new ProcessStatus(ProcessState.CREATED);
-        }
-
-        return result;
     }
 
     // Access control methods
@@ -2423,7 +3311,7 @@ public class AiravataService {
                         + groupResourceProfileId);
                 try {
                     removeGroupResourceProfile(groupResourceProfileId);
-                } catch (AppCatalogException rollbackEx) {
+                } catch (Throwable rollbackEx) {
                     logger.error("Failed to rollback group resource profile deletion", rollbackEx);
                 }
                 throw new Exception("Failed to create sharing registry record", ex);
@@ -2464,6 +3352,7 @@ public class AiravataService {
             Publisher experimentPublisher)
             throws TException {
         try {
+            logger.info("Launching experiment {}", airavataExperimentId);
             ExperimentModel experiment = getExperiment(airavataExperimentId);
 
             if (experiment == null) {
@@ -2571,8 +3460,12 @@ public class AiravataService {
         return sharingRegistryService.shareEntityWithUsers(domainId, entityId, userList, permissionTypeId, cascade);
     }
 
-    public org.apache.airavata.model.credential.store.SSHCredential getSSHCredential(String token, String gatewayId) throws org.apache.airavata.credential.store.store.CredentialStoreException {
-        return credentialStoreService.getSSHCredential(token, gatewayId);
+    public SSHCredential getSSHCredential(String token, String gatewayId) {
+        try {
+            return credentialStoreService.getSSHCredential(token, gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving SSH credential");
+        }
     }
 
     public void createEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
@@ -2597,5 +3490,917 @@ public class AiravataService {
 
     public boolean deleteEntity(String domainId, String entityId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
         return sharingRegistryService.deleteEntity(domainId, entityId);
+    }
+
+    /**
+     * Resolves compute resource storage info context (login username, credential token, and adaptor).
+     * Handles user preference → group preference fallback for both login and credentials.
+     */
+    private StorageInfoContext resolveComputeStorageInfoContext(
+            AuthzToken authzToken, String gatewayId, String userId, String resourceId)
+            throws Exception {
+        String loginUserName = null;
+        boolean loginFromUserPref = false;
+        GroupComputeResourcePreference groupComputePref = null;
+        GroupResourceProfile groupResourceProfile = null;
+
+        UserComputeResourcePreference userComputePref = null;
+        if (safeIsUserResourceProfileExists(authzToken, userId, gatewayId)) {
+            userComputePref = getUserComputeResourcePreference(userId, gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "User resource profile does not exist for user {} in gateway {}, will try group preferences",
+                    userId,
+                    gatewayId);
+        }
+
+        if (userComputePref != null
+                && userComputePref.getLoginUserName() != null
+                && !userComputePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = userComputePref.getLoginUserName();
+            loginFromUserPref = true;
+            logger.debug("Using user preference login username: {}", loginUserName);
+
+        } else {
+            // Fallback to GroupComputeResourcePreference
+            List<GroupResourceProfile> groupResourceProfiles = getGroupResourceListWithSharing(authzToken, gatewayId);
+            for (GroupResourceProfile groupProfile : groupResourceProfiles) {
+                List<GroupComputeResourcePreference> groupComputePrefs = groupProfile.getComputePreferences();
+
+                if (groupComputePrefs != null && !groupComputePrefs.isEmpty()) {
+                    for (GroupComputeResourcePreference groupPref : groupComputePrefs) {
+                        if (resourceId.equals(groupPref.getComputeResourceId())
+                                && groupPref.getLoginUserName() != null
+                                && !groupPref.getLoginUserName().trim().isEmpty()) {
+                            loginUserName = groupPref.getLoginUserName();
+                            groupComputePref = groupPref;
+                            groupResourceProfile = groupProfile;
+                            logger.debug(
+                                    "Using login username from group compute resource preference for resource {}",
+                                    resourceId);
+                            break;
+                        }
+                    }
+                }
+                if (loginUserName != null) {
+                    break;
+                }
+            }
+            if (loginUserName == null) {
+                logger.debug("No login username found for compute resource {}", resourceId);
+                throw new InvalidRequestException("No login username found for compute resource " + resourceId);
+            }
+        }
+
+        // Resolve credential token based on where login came from
+        String credentialToken;
+        if (loginFromUserPref) {
+            // Login username came from user preference. Use user preference token → user profile token
+            if (userComputePref != null
+                    && userComputePref.getResourceSpecificCredentialStoreToken() != null
+                    && !userComputePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
+                credentialToken = userComputePref.getResourceSpecificCredentialStoreToken();
+            } else {
+                UserResourceProfile userResourceProfile = getUserResourceProfile(userId, gatewayId);
+                if (userResourceProfile == null
+                        || userResourceProfile.getCredentialStoreToken() == null
+                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
+                    throw clientException(
+                            AiravataErrorType.AUTHENTICATION_FAILURE,
+                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                }
+                credentialToken = userResourceProfile.getCredentialStoreToken();
+            }
+        } else {
+            // Login username came from group preference. Use group preference token → group profile default token →
+            // user profile token (fallback)
+            if (groupComputePref != null
+                    && groupComputePref.getResourceSpecificCredentialStoreToken() != null
+                    && !groupComputePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
+                credentialToken = groupComputePref.getResourceSpecificCredentialStoreToken();
+
+            } else if (groupResourceProfile != null
+                    && groupResourceProfile.getDefaultCredentialStoreToken() != null
+                    && !groupResourceProfile
+                            .getDefaultCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
+                credentialToken = groupResourceProfile.getDefaultCredentialStoreToken();
+
+            } else {
+                UserResourceProfile userResourceProfile = getUserResourceProfile(userId, gatewayId);
+                if (userResourceProfile == null
+                        || userResourceProfile.getCredentialStoreToken() == null
+                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
+                    throw clientException(
+                            AiravataErrorType.AUTHENTICATION_FAILURE,
+                            "No credential store token found for compute resource " + resourceId);
+                }
+                credentialToken = userResourceProfile.getCredentialStoreToken();
+            }
+        }
+
+        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
+                .fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+        logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
+
+        return new StorageInfoContext(loginUserName, credentialToken, adaptor);
+    }
+
+    /**
+     * Resolves storage resource storage info context (login username, credential token, and adaptor).
+     * Handles user preference → gateway preference fallback for both login and credentials.
+     */
+    private StorageInfoContext resolveStorageStorageInfoContext(
+            AuthzToken authzToken, String gatewayId, String userId, String resourceId)
+            throws Exception {
+        UserStoragePreference userStoragePref = null;
+        if (safeIsUserResourceProfileExists(authzToken, userId, gatewayId)) {
+            userStoragePref = getUserStoragePreference(userId, gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "User resource profile does not exist for user {} in gateway {}, will try gateway preferences",
+                    userId,
+                    gatewayId);
+        }
+
+        StoragePreference storagePref = null;
+        if (isGatewayResourceProfileExists(gatewayId)) {
+            storagePref = getGatewayStoragePreference(gatewayId, resourceId);
+        } else {
+            logger.debug(
+                    "Gateway resource profile does not exist for gateway {}, will check if user preference exists",
+                    gatewayId);
+        }
+
+        String loginUserName;
+        boolean loginFromUserPref;
+
+        if (userStoragePref != null
+                && userStoragePref.getLoginUserName() != null
+                && !userStoragePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = userStoragePref.getLoginUserName();
+            loginFromUserPref = true;
+            logger.debug("Using login username from user storage preference for resource {}", resourceId);
+
+        } else if (storagePref != null
+                && storagePref.getLoginUserName() != null
+                && !storagePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = storagePref.getLoginUserName();
+            loginFromUserPref = false;
+            logger.debug("Using login username from gateway storage preference for resource {}", resourceId);
+
+        } else {
+            logger.error("No login username found for storage resource {}", resourceId);
+            throw new InvalidRequestException("No login username found for storage resource " + resourceId);
+        }
+
+        // Resolve credential token based on where login came from
+        String credentialToken;
+        if (loginFromUserPref) {
+            // Login came from user preference. Use user preference token or user profile token
+            if (userStoragePref != null
+                    && userStoragePref.getResourceSpecificCredentialStoreToken() != null
+                    && !userStoragePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
+                credentialToken = userStoragePref.getResourceSpecificCredentialStoreToken();
+                logger.debug("Using login username from user preference for resource {}", resourceId);
+
+            } else {
+                UserResourceProfile userResourceProfile = getUserResourceProfile(userId, gatewayId);
+                if (userResourceProfile == null
+                        || userResourceProfile.getCredentialStoreToken() == null
+                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
+                    throw clientException(
+                            AiravataErrorType.AUTHENTICATION_FAILURE,
+                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                }
+                credentialToken = userResourceProfile.getCredentialStoreToken();
+            }
+        } else {
+            // Login came from gateway preference. Use gateway preference token or gateway profile token
+            if (storagePref != null
+                    && storagePref.getResourceSpecificCredentialStoreToken() != null
+                    && !storagePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
+                credentialToken = storagePref.getResourceSpecificCredentialStoreToken();
+
+            } else {
+                GatewayResourceProfile gatewayResourceProfile = getGatewayResourceProfile(gatewayId);
+                if (gatewayResourceProfile == null
+                        || gatewayResourceProfile.getCredentialStoreToken() == null
+                        || gatewayResourceProfile
+                                .getCredentialStoreToken()
+                                .trim()
+                                .isEmpty()) {
+                    logger.error("No credential store token found for gateway {}", gatewayId);
+                    throw clientException(
+                            AiravataErrorType.AUTHENTICATION_FAILURE,
+                            "No credential store token found for gateway " + gatewayId);
+                }
+                credentialToken = gatewayResourceProfile.getCredentialStoreToken();
+            }
+        }
+
+        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
+                .fetchStorageSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+        logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
+
+        return new StorageInfoContext(loginUserName, credentialToken, adaptor);
+    }
+
+    public StorageVolumeInfo getResourceStorageInfo(
+            AuthzToken authzToken, String resourceId, String location)
+            throws InvalidRequestException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            StorageInfoContext context;
+
+            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
+            try {
+                ComputeResourceDescription computeResource = getComputeResource(resourceId);
+                if (computeResource != null) {
+                    computeResourceOp = Optional.of(computeResource);
+                }
+            } catch (Throwable e) {
+                logger.debug("Compute resource {} not found: {}", resourceId, e.getMessage());
+            }
+
+            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
+            if (computeResourceOp.isEmpty()) {
+                try {
+                    StorageResourceDescription storageResource = getStorageResource(resourceId);
+                    if (storageResource != null) {
+                        storageResourceOp = Optional.of(storageResource);
+                    }
+                } catch (Throwable e) {
+                    logger.debug("Storage resource {} not found: {}", resourceId, e.getMessage());
+                }
+            }
+
+            if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
+                logger.error(
+                        "Resource with ID {} not found as either compute resource or storage resource", resourceId);
+                throw new InvalidRequestException("Resource with ID '" + resourceId
+                        + "' not found as either compute resource or storage resource");
+            }
+
+            if (computeResourceOp.isPresent()) {
+                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveComputeStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            } else {
+                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveStorageStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            }
+
+            return context.adaptor().getStorageVolumeInfo(location);
+        } catch (InvalidRequestException e) {
+            logger.error("Error while retrieving storage resource.", e);
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving storage resource");
+        }
+    }
+
+    public StorageDirectoryInfo getStorageDirectoryInfo(
+            AuthzToken authzToken, String resourceId, String location)
+            throws InvalidRequestException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            StorageInfoContext context;
+
+            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
+            try {
+                ComputeResourceDescription computeResource = getComputeResource(resourceId);
+                if (computeResource != null) {
+                    computeResourceOp = Optional.of(computeResource);
+                }
+            } catch (Throwable e) {
+                logger.debug("Compute resource {} not found: {}", resourceId, e.getMessage());
+            }
+
+            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
+            if (computeResourceOp.isEmpty()) {
+                try {
+                    StorageResourceDescription storageResource = getStorageResource(resourceId);
+                    if (storageResource != null) {
+                        storageResourceOp = Optional.of(storageResource);
+                    }
+                } catch (Throwable e) {
+                    logger.debug("Storage resource {} not found: {}", resourceId, e.getMessage());
+                }
+            }
+
+            if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
+                logger.error(
+                        "Resource with ID {} not found as either compute resource or storage resource", resourceId);
+                throw new InvalidRequestException("Resource with ID '" + resourceId
+                        + "' not found as either compute resource or storage resource");
+            }
+
+            if (computeResourceOp.isPresent()) {
+                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveComputeStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            } else {
+                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
+                context = resolveStorageStorageInfoContext(authzToken, gatewayId, userId, resourceId);
+            }
+
+            return context.adaptor().getStorageDirectoryInfo(location);
+        } catch (InvalidRequestException e) {
+            logger.error("Error while retrieving storage resource.", e);
+            throw e;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving storage directory info");
+        }
+    }
+
+    public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId) {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            logger.debug("Checking if user {} has SSH account on compute resource {} in gateway {}", userId, computeResourceId, gatewayId);
+            return org.apache.airavata.accountprovisioning.SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error occurred while checking if user has an SSH Account");
+        }
+    }
+
+    public boolean isSSHAccountSetupComplete(
+            AuthzToken authzToken, String computeResourceId, String airavataCredStoreToken) {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.debug("Checking if SSH account setup is complete for user {} on compute resource {} in gateway {}", userId, computeResourceId, gatewayId);
+            
+            SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
+            return org.apache.airavata.accountprovisioning.SSHAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
+        } catch (Throwable e) {
+            throw convertException(e, "Error occurred while checking if setup of SSH account is complete");
+        }
+    }
+
+    public UserComputeResourcePreference setupSSHAccount(
+            AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken) {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            logger.debug("Setting up SSH account for user {} on compute resource {} in gateway {}", userId, computeResourceId, gatewayId);
+            
+            SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
+            return org.apache.airavata.accountprovisioning.SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
+        } catch (Throwable e) {
+            throw convertException(e, "Error occurred while automatically setting up SSH account for user");
+        }
+    }
+
+    public boolean shareResourceWithUsers(
+            AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
+            throws AuthorizationException, AiravataClientException {
+        try {
+            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException(
+                        "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
+            }
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            for (Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()) {
+                if (userPermission.getValue().equals(ResourcePermissionType.WRITE)) {
+                    shareEntityWithUsers(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(userPermission.getKey()),
+                            gatewayId + ":" + "WRITE",
+                            true);
+                } else if (userPermission.getValue().equals(ResourcePermissionType.READ)) {
+                    shareEntityWithUsers(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(userPermission.getKey()),
+                            gatewayId + ":" + "READ",
+                            true);
+                } else if (userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(gatewayId);
+                        shareEntityWithUsers(
+                                gatewayId,
+                                resourceId,
+                                Arrays.asList(userPermission.getKey()),
+                                gatewayId + ":" + "MANAGE_SHARING",
+                                true);
+                    } else {
+                        throw new AuthorizationException(
+                                "User is not allowed to grant sharing permission because the user is not the resource owner.");
+                    }
+                } else {
+                    logger.error("Invalid ResourcePermissionType : {}", userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            return true;
+        } catch (AuthorizationException | AiravataClientException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error in sharing resource with users. Resource ID : " + resourceId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean shareResourceWithGroups(
+            AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> groupPermissionList)
+            throws AuthorizationException, AiravataClientException {
+        try {
+            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException(
+                        "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
+            }
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            for (Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()) {
+                if (groupPermission.getValue().equals(ResourcePermissionType.WRITE)) {
+                    shareEntityWithGroups(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(groupPermission.getKey()),
+                            gatewayId + ":" + "WRITE",
+                            true);
+                } else if (groupPermission.getValue().equals(ResourcePermissionType.READ)) {
+                    shareEntityWithGroups(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(groupPermission.getKey()),
+                            gatewayId + ":" + "READ",
+                            true);
+                } else if (groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(gatewayId);
+                        shareEntityWithGroups(
+                                gatewayId,
+                                resourceId,
+                                Arrays.asList(groupPermission.getKey()),
+                                gatewayId + ":" + "MANAGE_SHARING",
+                                true);
+                    } else {
+                        throw new AuthorizationException(
+                                "User is not allowed to grant sharing permission because the user is not the resource owner.");
+                    }
+                } else {
+                    logger.error("Invalid ResourcePermissionType : {}", groupPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            return true;
+        } catch (AuthorizationException | AiravataClientException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error in sharing resource with groups. Resource ID : " + resourceId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean revokeSharingOfResourceFromUsers(
+            AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
+            throws AuthorizationException, AiravataClientException {
+        try {
+            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException(
+                        "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
+            }
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            for (Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()) {
+                if (userPermission.getValue().equals(ResourcePermissionType.WRITE)) {
+                    revokeEntitySharingFromUsers(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(userPermission.getKey()),
+                            gatewayId + ":" + "WRITE");
+                } else if (userPermission.getValue().equals(ResourcePermissionType.READ)) {
+                    revokeEntitySharingFromUsers(
+                            gatewayId,
+                            resourceId,
+                            Arrays.asList(userPermission.getKey()),
+                            gatewayId + ":" + "READ");
+                } else if (userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(gatewayId);
+                        revokeEntitySharingFromUsers(
+                                gatewayId,
+                                resourceId,
+                                Arrays.asList(userPermission.getKey()),
+                                gatewayId + ":" + "MANAGE_SHARING");
+                    } else {
+                        throw new AuthorizationException(
+                                "User is not allowed to change sharing permission because the user is not the resource owner.");
+                    }
+                } else {
+                    logger.error("Invalid ResourcePermissionType : {}", userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            return true;
+        } catch (AuthorizationException | AiravataClientException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error in revoking access to resource from users. Resource ID : " + resourceId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean revokeSharingOfResourceFromGroups(
+            AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> groupPermissionList)
+            throws AuthorizationException, AiravataClientException, InvalidRequestException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+                throw new AuthorizationException(
+                        "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
+            }
+            // For certain resource types, restrict them from being unshared with admin groups
+            ResourceType resourceType = getResourceType(gatewayId, resourceId);
+            Set<ResourceType> adminRestrictedResourceTypes = new HashSet<>(Arrays.asList(
+                    ResourceType.EXPERIMENT, ResourceType.APPLICATION_DEPLOYMENT, ResourceType.GROUP_RESOURCE_PROFILE));
+            if (adminRestrictedResourceTypes.contains(resourceType)) {
+                // Prevent removing Admins WRITE/MANAGE_SHARING access and Read Only Admins READ access
+                GatewayGroups gatewayGroups = retrieveGatewayGroups(gatewayId);
+                if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                        && groupPermissionList
+                                .get(gatewayGroups.getAdminsGroupId())
+                                .equals(ResourcePermissionType.WRITE)) {
+                    throw new InvalidRequestException("Not allowed to remove Admins group's WRITE access.");
+                }
+                if (groupPermissionList.containsKey(gatewayGroups.getReadOnlyAdminsGroupId())
+                        && groupPermissionList
+                                .get(gatewayGroups.getReadOnlyAdminsGroupId())
+                                .equals(ResourcePermissionType.READ)) {
+                    throw new InvalidRequestException("Not allowed to remove Read Only Admins group's READ access.");
+                }
+                if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                        && groupPermissionList
+                                .get(gatewayGroups.getAdminsGroupId())
+                                .equals(ResourcePermissionType.READ)) {
+                    throw new InvalidRequestException("Not allowed to remove Admins group's READ access.");
+                }
+                if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
+                        && groupPermissionList
+                                .get(gatewayGroups.getAdminsGroupId())
+                                .equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    throw new InvalidRequestException("Not allowed to remove Admins group's MANAGE_SHARING access.");
+                }
+            }
+            for (Map.Entry<String, ResourcePermissionType> groupPermission : groupPermissionList.entrySet()) {
+                if (groupPermission.getValue().equals(ResourcePermissionType.WRITE)) {
+                    revokeEntitySharingFromGroups(
+                            gatewayId, resourceId, Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "WRITE");
+                } else if (groupPermission.getValue().equals(ResourcePermissionType.READ)) {
+                    revokeEntitySharingFromGroups(
+                            gatewayId, resourceId, Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
+                } else if (groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
+                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                        createManageSharingPermissionTypeIfMissing(gatewayId);
+                        revokeEntitySharingFromGroups(
+                                gatewayId,
+                                resourceId,
+                                Arrays.asList(groupPermission.getKey()),
+                                gatewayId + ":" + "MANAGE_SHARING");
+                    } else {
+                        throw new AuthorizationException(
+                                "User is not allowed to change sharing because the user is not the resource owner");
+                    }
+                } else {
+                    logger.error("Invalid ResourcePermissionType : {}", groupPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
+            }
+            return true;
+        } catch (AuthorizationException | AiravataClientException | InvalidRequestException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public GroupResourceProfile getGroupResourceProfileWithAuth(AuthzToken authzToken, String groupResourceProfileId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupResourceProfile(groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            logger.error(
+                    "Error while retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId,
+                    e);
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean removeGroupResourceProfileWithAuth(AuthzToken authzToken, String groupResourceProfileId)
+            throws AuthorizationException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (ServerSettings.isEnableSharing()) {
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to remove group resource profile");
+                }
+            }
+            boolean result = removeGroupResourceProfile(groupResourceProfileId);
+            if (result) {
+                deleteEntity(gatewayId, groupResourceProfileId);
+            }
+            return result;
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error removing group resource profile. groupResourceProfileId: " + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean removeGroupComputePrefsWithAuth(
+            AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to remove group compute preferences");
+                }
+            }
+            return removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error removing group compute preferences. GroupResourceProfileId: " + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean removeGroupComputeResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                ComputeResourcePolicy computeResourcePolicy = getGroupComputeResourcePolicy(resourcePolicyId);
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(
+                        gatewayId,
+                        userId + "@" + gatewayId,
+                        computeResourcePolicy.getGroupResourceProfileId(),
+                        gatewayId + ":WRITE")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to remove group compute resource policy");
+                }
+            }
+            return removeGroupComputeResourcePolicy(resourcePolicyId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error removing group compute resource policy. ResourcePolicyId: " + resourcePolicyId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public boolean removeGroupBatchQueueResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                BatchQueueResourcePolicy batchQueueResourcePolicy = getBatchQueueResourcePolicy(resourcePolicyId);
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(
+                        gatewayId,
+                        userId + "@" + gatewayId,
+                        batchQueueResourcePolicy.getGroupResourceProfileId(),
+                        gatewayId + ":WRITE")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to remove batch queue resource policy");
+                }
+            }
+            return removeGroupBatchQueueResourcePolicy(resourcePolicyId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error removing batch queue resource policy. ResourcePolicyId: " + resourcePolicyId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public GroupComputeResourcePreference getGroupComputeResourcePreferenceWithAuth(
+            AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving Group compute preference. GroupResourceProfileId: " + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public ComputeResourcePolicy getGroupComputeResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                ComputeResourcePolicy computeResourcePolicy = getGroupComputeResourcePolicy(resourcePolicyId);
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(
+                        gatewayId,
+                        userId + "@" + gatewayId,
+                        computeResourcePolicy.getGroupResourceProfileId(),
+                        gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupComputeResourcePolicy(resourcePolicyId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving Group compute resource policy. ResourcePolicyId: " + resourcePolicyId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+            throws AuthorizationException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                BatchQueueResourcePolicy batchQueueResourcePolicy = getBatchQueueResourcePolicy(resourcePolicyId);
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(
+                        gatewayId,
+                        userId + "@" + gatewayId,
+                        batchQueueResourcePolicy.getGroupResourceProfileId(),
+                        gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getBatchQueueResourcePolicy(resourcePolicyId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving batch queue resource policy. ResourcePolicyId: " + resourcePolicyId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public void updateGroupResourceProfileWithAuth(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
+            throws AuthorizationException {
+        try {
+            validateGroupResourceProfile(authzToken, groupResourceProfile);
+            if (!userHasAccessInternal(
+                    authzToken,
+                    groupResourceProfile.getGroupResourceProfileId(),
+                    ResourcePermissionType.WRITE)) {
+                throw new AuthorizationException("User does not have permission to update group resource profile");
+            }
+            updateGroupResourceProfile(groupResourceProfile);
+        } catch (AuthorizationException e) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName + " not allowed access to update GroupResourceProfile "
+                    + groupResourceProfile.getGroupResourceProfileId() + ", reason: " + e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error updating group resource profile. groupResourceProfileId: "
+                    + groupResourceProfile.getGroupResourceProfileId();
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefListWithAuth(
+            AuthzToken authzToken, String groupResourceProfileId) {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupComputeResourcePrefList(groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving Group compute resource preference. GroupResourceProfileId: "
+                    + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyListWithAuth(
+            AuthzToken authzToken, String groupResourceProfileId) {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving Group batch queue resource policy list. GroupResourceProfileId: "
+                    + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyListWithAuth(
+            AuthzToken authzToken, String groupResourceProfileId) {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                    throw new AuthorizationException(
+                            "User does not have permission to access group resource profile");
+                }
+            }
+            return getGroupComputeResourcePolicyList(groupResourceProfileId);
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error retrieving Group compute resource policy list. GroupResourceProfileId: "
+                    + groupResourceProfileId;
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
+    }
+
+    public String createGroupResourceProfileWithAuth(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
+            throws AuthorizationException {
+        try {
+            String result = createGroupResourceProfileWithSharing(authzToken, groupResourceProfile);
+            return result;
+        } catch (AuthorizationException e) {
+            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            logger.info("User " + userName
+                    + " not allowed access to resources referenced in this GroupResourceProfile. Reason: "
+                    + e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            String msg = "Error creating group resource profile.";
+            logger.error(msg, e);
+            throw convertException(e, msg);
+        }
     }
 }

@@ -29,12 +29,9 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamA
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
-    private static final Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
     private org.apache.airavata.service.IamAdminService iamAdminService;
 
     public IamAdminServicesHandler() {
@@ -50,30 +47,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @SecurityCheck
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
             throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.setUpGateway(authzToken, gateway);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
-            throw iamAdminServicesException;
-        }
+        return iamAdminService.setUpGateway(authzToken, gateway);
     }
 
     @Override
     @SecurityCheck
     public boolean isUsernameAvailable(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.isUsernameAvailable(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while checking username availability, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.isUsernameAvailable(authzToken, username);
     }
 
     @Override
@@ -86,150 +67,70 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             String lastName,
             String newPassword)
             throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.registerUser(authzToken, username, emailAddress, firstName, lastName, newPassword);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.registerUser(authzToken, username, emailAddress, firstName, lastName, newPassword);
     }
 
     @Override
     @SecurityCheck
     public boolean enableUser(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.enableUser(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while enabling user account, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.enableUser(authzToken, username);
     }
 
     @Override
     @SecurityCheck
     public boolean isUserEnabled(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.isUserEnabled(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.isUserEnabled(authzToken, username);
     }
 
     @Override
     @SecurityCheck
     public boolean isUserExist(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.isUserExist(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while checking if user account exists, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.isUserExist(authzToken, username);
     }
 
     @Override
     @SecurityCheck
     public UserProfile getUser(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.getUser(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.getUser(authzToken, username);
     }
 
     @Override
     @SecurityCheck
     public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.getUsers(authzToken, offset, limit, search);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.getUsers(authzToken, offset, limit, search);
     }
 
     @Override
     @SecurityCheck
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.resetUserPassword(authzToken, username, newPassword);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.resetUserPassword(authzToken, username, newPassword);
     }
 
     @Override
     @SecurityCheck
     public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.findUsers(authzToken, email, userId);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.findUsers(authzToken, email, userId);
     }
 
     @Override
     @SecurityCheck
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            iamAdminService.updateUserProfile(authzToken, userDetails);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while updating user profile, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        iamAdminService.updateUserProfile(authzToken, userDetails);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteUser(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.deleteUser(authzToken, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while deleting user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.deleteUser(authzToken, username);
     }
 
     @Override
@@ -237,15 +138,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Deprecated
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.addRoleToUser(authzToken, username, roleName);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while adding role to user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.addRoleToUser(authzToken, username, roleName);
     }
 
     @Override
@@ -253,15 +146,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Deprecated
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.removeRoleFromUser(authzToken, username, roleName);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while removing role from user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.removeRoleFromUser(authzToken, username, roleName);
     }
 
     @Override
@@ -269,14 +154,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Deprecated
     public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
-        try {
-            return iamAdminService.getUsersWithRole(authzToken, roleName);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
-        }
+        return iamAdminService.getUsersWithRole(authzToken, roleName);
     }
 }

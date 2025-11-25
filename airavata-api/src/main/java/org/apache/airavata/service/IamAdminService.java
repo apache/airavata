@@ -52,6 +52,11 @@ public class IamAdminService {
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
+    private IamAdminServicesException convertException(Throwable e, String msg) {
+        logger.error(msg, e);
+        return new IamAdminServicesException(msg + ". More info : " + e.getMessage());
+    }
+
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
@@ -78,9 +83,15 @@ public class IamAdminService {
     }
 
     public boolean isUsernameAvailable(AuthzToken authzToken, String username) throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
+        try {
+            TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
+        } catch (IamAdminServicesException e) {
+            throw e;
+        } catch (Throwable ex) {
+            throw convertException(ex, "Error while checking username availability");
+        }
     }
 
     public boolean registerUser(
@@ -214,16 +225,28 @@ public class IamAdminService {
     }
 
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String username = userDetails.getUserId();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
+        try {
+            TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+            String username = userDetails.getUserId();
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
+        } catch (IamAdminServicesException e) {
+            throw e;
+        } catch (Throwable ex) {
+            throw convertException(ex, "Error while updating user profile");
+        }
     }
 
     public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
+        try {
+            TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
+        } catch (IamAdminServicesException e) {
+            throw e;
+        } catch (Throwable ex) {
+            throw convertException(ex, "Error while deleting user");
+        }
     }
 
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
