@@ -52,6 +52,7 @@ public class TenantProfileService {
         logger.error(msg, e);
         TenantProfileServiceException exception = new TenantProfileServiceException();
         exception.setMessage(msg + ". More info : " + e.getMessage());
+        exception.initCause(e);
         return exception;
     }
 
@@ -92,6 +93,7 @@ public class TenantProfileService {
             logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -122,7 +124,8 @@ public class TenantProfileService {
             logger.error("Error updating gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error updating gateway-profile, reason: " + ex.getMessage());
-            return false;
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -138,6 +141,7 @@ public class TenantProfileService {
             logger.error("Error getting gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting gateway-profile, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -162,6 +166,7 @@ public class TenantProfileService {
             logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -173,6 +178,7 @@ public class TenantProfileService {
             logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting all gateway-profiles, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -185,6 +191,7 @@ public class TenantProfileService {
             logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -197,6 +204,7 @@ public class TenantProfileService {
             logger.error("Error getting user's gateway-profiles, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting user's gateway-profiles, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }
@@ -210,6 +218,7 @@ public class TenantProfileService {
             logger.error("Error checking if duplicate gateway-profile exists, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if duplicate gateway-profiles exists, reason: " + ex.getMessage());
+            exception.initCause(ex);
             throw exception;
         }
     }

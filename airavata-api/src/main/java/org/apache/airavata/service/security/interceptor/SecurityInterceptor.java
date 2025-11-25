@@ -74,10 +74,14 @@ public class SecurityInterceptor implements MethodInterceptor {
             }
         } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);
-            throw new AuthorizationException("Error in authenticating or authorizing user.");
+            AuthorizationException exception = new AuthorizationException("Error in authenticating or authorizing user.");
+            exception.initCause(e);
+            throw exception;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AuthorizationException("Internal error in authenticating or authorizing user.");
+            AuthorizationException exception = new AuthorizationException("Internal error in authenticating or authorizing user.");
+            exception.initCause(e);
+            throw exception;
         }
     }
 }

@@ -85,6 +85,7 @@ public class RegistryService {
         logger.error(msg, e);
         RegistryServiceException exception = new RegistryServiceException();
         exception.setMessage(msg + " More info : " + e.getMessage());
+        exception.initCause(e);
         return exception;
     }
 

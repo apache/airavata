@@ -54,7 +54,9 @@ public class IamAdminService {
 
     private IamAdminServicesException convertException(Throwable e, String msg) {
         logger.error(msg, e);
-        return new IamAdminServicesException(msg + ". More info : " + e.getMessage());
+        IamAdminServicesException exception = new IamAdminServicesException(msg + ". More info : " + e.getMessage());
+        exception.initCause(e);
+        return exception;
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException {
@@ -77,7 +79,8 @@ public class IamAdminService {
             return gatewayWithIdAndSecret;
         } catch (TException | ApplicationSettingsException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException("Gateway Setup Failed, reason: " + ex.getMessage());
+            iamAdminServicesException.initCause(ex);
             throw iamAdminServicesException;
         }
     }
@@ -112,7 +115,9 @@ public class IamAdminService {
         } catch (TException ex) {
             String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -143,7 +148,9 @@ public class IamAdminService {
         } catch (TException | AiravataException ex) {
             String msg = "Error while enabling user account, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -155,7 +162,9 @@ public class IamAdminService {
         } catch (Exception ex) {
             String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -167,7 +176,9 @@ public class IamAdminService {
         } catch (Exception ex) {
             String msg = "Error while checking if user account exists, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -179,7 +190,9 @@ public class IamAdminService {
         } catch (Exception ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -192,7 +205,9 @@ public class IamAdminService {
         } catch (Exception ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -207,7 +222,9 @@ public class IamAdminService {
         } catch (TException ex) {
             String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -220,7 +237,9 @@ public class IamAdminService {
         } catch (TException ex) {
             String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -259,7 +278,9 @@ public class IamAdminService {
         } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while adding role to user, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -273,7 +294,9 @@ public class IamAdminService {
         } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while removing role from user, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -286,7 +309,9 @@ public class IamAdminService {
         } catch (Exception ex) {
             String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
             logger.error(msg, ex);
-            throw new IamAdminServicesException(msg);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 

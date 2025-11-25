@@ -191,12 +191,14 @@ public class AiravataService {
             org.apache.airavata.model.error.AiravataSystemException exception = new org.apache.airavata.model.error.AiravataSystemException();
             exception.setAiravataErrorType(org.apache.airavata.model.error.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + ". More info : " + e.getMessage());
+            exception.initCause(e);
             throw sneakyThrow(exception);
         }
         logger.error(msg, e);
         org.apache.airavata.model.error.AiravataSystemException exception = new org.apache.airavata.model.error.AiravataSystemException();
         exception.setAiravataErrorType(org.apache.airavata.model.error.AiravataErrorType.INTERNAL_ERROR);
         exception.setMessage(msg + ". More info : " + e.getMessage());
+        exception.initCause(e);
         throw sneakyThrow(exception);
     }
 

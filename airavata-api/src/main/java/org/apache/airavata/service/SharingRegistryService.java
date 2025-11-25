@@ -37,7 +37,9 @@ public class SharingRegistryService {
 
     private SharingRegistryException convertException(Throwable ex, String context) {
         logger.error(context + ": " + ex.getMessage(), ex);
-        return new SharingRegistryException(context + ": " + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        SharingRegistryException exception = new SharingRegistryException(context + ": " + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        exception.initCause(ex);
+        return exception;
     }
 
     /**
@@ -68,7 +70,9 @@ public class SharingRegistryService {
             throw e;
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException exception = new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -84,7 +88,9 @@ public class SharingRegistryService {
             throw e;
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException exception = new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -95,7 +101,9 @@ public class SharingRegistryService {
             throw e;
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException exception = new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -107,7 +115,9 @@ public class SharingRegistryService {
             throw e;
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            SharingRegistryException exception = new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            exception.initCause(ex);
+            throw exception;
         }
     }
 

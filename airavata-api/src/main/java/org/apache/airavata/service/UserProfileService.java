@@ -53,6 +53,7 @@ public class UserProfileService {
         logger.error(msg, e);
         UserProfileServiceException exception = new UserProfileServiceException();
         exception.setMessage(msg + ". More info : " + e.getMessage());
+        exception.initCause(e);
         return exception;
     }
 
@@ -96,6 +97,7 @@ public class UserProfileService {
             logger.error("Error while initializing user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while initializing user profile. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -120,6 +122,7 @@ public class UserProfileService {
             logger.error("Error while creating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while creating user profile. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -142,6 +145,7 @@ public class UserProfileService {
             logger.error("Error while Updating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while Updating user profile. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -173,6 +177,7 @@ public class UserProfileService {
             logger.error("Error retrieving user profile by ID", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error retrieving user profile by ID. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -196,6 +201,7 @@ public class UserProfileService {
             logger.error("Error while deleting user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while deleting user profile. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -211,6 +217,7 @@ public class UserProfileService {
             logger.error("Error while retrieving user profile List", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while retrieving user profile List. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -224,6 +231,7 @@ public class UserProfileService {
             logger.error("Error while finding user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -237,6 +245,7 @@ public class UserProfileService {
             logger.error("Failed to create IAM Admin Services client", e);
             UserProfileServiceException ex =
                     new UserProfileServiceException("Failed to create IAM Admin Services client");
+            ex.initCause(e);
             throw ex;
         }
     }
