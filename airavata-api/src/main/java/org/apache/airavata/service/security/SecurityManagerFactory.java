@@ -39,15 +39,15 @@ public class SecurityManagerFactory {
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         } catch (ApplicationSettingsException e) {
             String error = "Error in reading the configuration related to Security Manager class.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         } catch (InstantiationException | IllegalAccessException e) {
             String error = "Error in instantiating the Security Manager class.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         }
     }
 }

@@ -50,6 +50,7 @@ public class GroupManagerService {
         logger.error(msg, e);
         GroupManagerServiceException exception = new GroupManagerServiceException();
         exception.setMessage(msg + ". More info : " + e.getMessage());
+        exception.initCause(e);
         return exception;
     }
 
@@ -79,6 +80,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -108,6 +110,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -129,6 +132,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -147,6 +151,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -164,6 +169,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         } finally {
             closeSharingClient(sharingClient);
@@ -184,6 +190,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -205,6 +212,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -225,6 +233,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -245,6 +254,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -264,6 +274,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -283,6 +294,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -297,6 +309,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -311,6 +324,7 @@ public class GroupManagerService {
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }

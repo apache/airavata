@@ -134,10 +134,10 @@ public class CredentialStoreService {
             return token;
         } catch (CredentialStoreException e) {
             logger.error("Error occurred while saving Certificate Credentials.", e);
-            throw new CredentialStoreException("Error occurred while saving Certificate Credentials.");
+            throw new CredentialStoreException("Error occurred while saving Certificate Credentials.", e);
         } catch (Exception e) {
             logger.error("Error occurred while converting to X509 certificate.", e);
-            throw new CredentialStoreException("Error occurred while converting to X509 certificate..");
+            throw new CredentialStoreException("Error occurred while converting to X509 certificate..", e);
         }
     }
 
@@ -156,10 +156,10 @@ public class CredentialStoreService {
             return token;
         } catch (CredentialStoreException e) {
             logger.error("Error occurred while saving PWD Credentials.", e);
-            throw new CredentialStoreException("Error occurred while saving PWD Credentials.");
+            throw new CredentialStoreException("Error occurred while saving PWD Credentials.", e);
         } catch (Exception e) {
             logger.error("Error occurred while registering PWD Credentials.", e);
-            throw new CredentialStoreException("Error occurred while registering PWD Credentials..");
+            throw new CredentialStoreException("Error occurred while registering PWD Credentials..", e);
         }
     }
 
@@ -194,7 +194,7 @@ public class CredentialStoreService {
                             + gatewayId,
                     e);
             throw new CredentialStoreException("Error occurred while retrieving SSH credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
+                    + " and gateway id - " + gatewayId, e);
         }
     }
 
@@ -254,7 +254,7 @@ public class CredentialStoreService {
             final String msg = "Error occurred while retrieving " + type + " credential Summary for tokens - "
                     + accessibleTokenIds + " and gateway id - " + gatewayId;
             logger.error(msg, e);
-            throw new CredentialStoreException(msg);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -350,7 +350,7 @@ public class CredentialStoreService {
                             + " and gateway id - " + gatewayId,
                     e);
             throw new CredentialStoreException("Error occurred while retrieving Certificate credential for token - "
-                    + tokenId + " and gateway id - " + gatewayId);
+                    + tokenId + " and gateway id - " + gatewayId, e);
         }
     }
 
@@ -382,7 +382,7 @@ public class CredentialStoreService {
                             + gatewayId,
                     e);
             throw new CredentialStoreException("Error occurred while retrieving PWD credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
+                    + " and gateway id - " + gatewayId, e);
         }
     }
 
@@ -417,7 +417,7 @@ public class CredentialStoreService {
                 }
             } catch (CredentialStoreException e) {
                 logger.error("Error occurred while retrieving credential Summary", e);
-                throw new CredentialStoreException("Error occurred while retrieving credential Summary");
+                throw new CredentialStoreException("Error occurred while retrieving credential Summary", e);
             }
             return summaryList;
         } else {
@@ -469,7 +469,7 @@ public class CredentialStoreService {
                 }
             } catch (CredentialStoreException e) {
                 logger.error("Error occurred while retrieving credential Summary", e);
-                throw new CredentialStoreException("Error occurred while retrieving credential Summary");
+                throw new CredentialStoreException("Error occurred while retrieving credential Summary", e);
             }
             return summaryList;
         } else {
@@ -500,7 +500,7 @@ public class CredentialStoreService {
             }
         } catch (CredentialStoreException e) {
             logger.error("Error occurred while retrieving credentials", e);
-            throw new CredentialStoreException("Error occurred while retrieving credentials");
+            throw new CredentialStoreException("Error occurred while retrieving credentials", e);
         }
         return pwdCredMap;
     }
@@ -515,7 +515,7 @@ public class CredentialStoreService {
                             + gatewayId,
                     e);
             throw new CredentialStoreException("Error occurred while deleting SSH credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
+                    + " and gateway id - " + gatewayId, e);
         }
     }
 
@@ -529,7 +529,7 @@ public class CredentialStoreService {
                             + gatewayId,
                     e);
             throw new CredentialStoreException("Error occurred while deleting PWD credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
+                    + " and gateway id - " + gatewayId, e);
         }
     }
 }
