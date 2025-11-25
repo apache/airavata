@@ -53,7 +53,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.initializeUserProfile(authzToken);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while initializing user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while initializing user profile. More info : " + e.getMessage());
@@ -69,7 +69,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.addUserProfile(authzToken, userProfile);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while creating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while creating user profile. More info : " + e.getMessage());
@@ -85,7 +85,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.updateUserProfile(authzToken, userProfile);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while Updating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while Updating user profile. More info : " + e.getMessage());
@@ -101,7 +101,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.getUserProfileById(authzToken, userId, gatewayId);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error retrieving user profile by ID", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error retrieving user profile by ID. More info : " + e.getMessage());
@@ -117,7 +117,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.deleteUserProfile(authzToken, userId, gatewayId);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while deleting user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while deleting user profile. More info : " + e.getMessage());
@@ -133,7 +133,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while retrieving user profile List", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while retrieving user profile List. More info : " + e.getMessage());
@@ -148,7 +148,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             return userProfileService.doesUserExist(authzToken, userId, gatewayId);
         } catch (UserProfileServiceException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Error while finding user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());

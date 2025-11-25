@@ -49,218 +49,88 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public String createGroup(AuthzToken authzToken, GroupModel groupModel)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.createGroup(authzToken, groupModel);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Creating Group";
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.createGroup(authzToken, groupModel);
     }
 
     @Override
     @SecurityCheck
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.updateGroup(authzToken, groupModel);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Updating Group";
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.updateGroup(authzToken, groupModel);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.deleteGroup(authzToken, groupId, ownerId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Deleting Group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.deleteGroup(authzToken, groupId, ownerId);
     }
 
     @Override
     @SecurityCheck
     public GroupModel getGroup(AuthzToken authzToken, String groupId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.getGroup(authzToken, groupId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Retreiving Group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.getGroup(authzToken, groupId);
     }
 
     @Override
     @SecurityCheck
     public List<GroupModel> getGroups(AuthzToken authzToken)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.getGroups(authzToken);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Retrieving Groups";
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.getGroups(authzToken);
     }
 
     @Override
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.getAllGroupsUserBelongs(authzToken, userName);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Retreiving All Groups for User. User ID: " + userName;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.getAllGroupsUserBelongs(authzToken, userName);
     }
 
     @Override
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.addUsersToGroup(authzToken, userIds, groupId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error adding users to group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.addUsersToGroup(authzToken, userIds, groupId);
     }
 
     @Override
     public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.removeUsersFromGroup(authzToken, userIds, groupId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error remove users to group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.removeUsersFromGroup(authzToken, userIds, groupId);
     }
 
     @Override
     @SecurityCheck
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.transferGroupOwnership(authzToken, groupId, newOwnerId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Transferring Group Ownership";
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.transferGroupOwnership(authzToken, groupId, newOwnerId);
     }
 
     @Override
     @SecurityCheck
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.addGroupAdmins(authzToken, groupId, adminIds);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Adding Admins to Group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.addGroupAdmins(authzToken, groupId, adminIds);
     }
 
     @Override
     @SecurityCheck
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.removeGroupAdmins(authzToken, groupId, adminIds);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Removing Admins from the Group. Group ID: " + groupId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.removeGroupAdmins(authzToken, groupId, adminIds);
     }
 
     @Override
     @SecurityCheck
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.hasAdminAccess(authzToken, groupId, adminId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Checking Admin Access for the Group. Group ID: " + groupId + " Admin ID: " + adminId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.hasAdminAccess(authzToken, groupId, adminId);
     }
 
     @Override
     @SecurityCheck
     public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId)
             throws GroupManagerServiceException, AuthorizationException, TException {
-        try {
-            return groupManagerService.hasOwnerAccess(authzToken, groupId, ownerId);
-        } catch (GroupManagerServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            String msg = "Error Checking Owner Access for the Group. Group ID: " + groupId + " Owner ID: " + ownerId;
-            logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return groupManagerService.hasOwnerAccess(authzToken, groupId, ownerId);
     }
 }

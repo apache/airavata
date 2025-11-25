@@ -51,17 +51,7 @@ public class CredentialStoreServerHandler
     @Override
     public String addSSHCredential(SSHCredential sshCredential)
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        try {
-            return credentialStoreService.addSSHCredential(sshCredential);
-        } catch (CredentialStoreException e) {
-            log.error("Error occurred while saving SSH Credentials.", e);
-            throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
-                    "Error occurred while saving SSH Credentials.");
-        } catch (Exception e) {
-            log.error("Error occurred while saving SSH Credentials.", e);
-            throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
-                    "Error occurred while saving SSH Credentials.");
-        }
+        return credentialStoreService.addSSHCredential(sshCredential);
     }
 
     @Override
@@ -73,7 +63,7 @@ public class CredentialStoreServerHandler
             log.error("Error occurred while saving Certificate Credentials.", e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
                     "Error occurred while saving Certificate Credentials.");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Error occurred while saving Certificate Credentials.", e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
                     "Error occurred while saving Certificate Credentials.");
@@ -89,7 +79,7 @@ public class CredentialStoreServerHandler
             log.error("Error occurred while saving PWD Credentials.", e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
                     "Error occurred while saving PWD Credentials.");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Error occurred while saving PWD Credentials.", e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
                     "Error occurred while saving PWD Credentials.");

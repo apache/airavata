@@ -54,7 +54,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.setUpGateway(authzToken, gateway);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
             throw iamAdminServicesException;
@@ -69,7 +69,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.isUsernameAvailable(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while checking username availability, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -90,7 +90,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.registerUser(authzToken, username, emailAddress, firstName, lastName, newPassword);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -105,7 +105,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.enableUser(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while enabling user account, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -120,7 +120,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.isUserEnabled(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -135,7 +135,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.isUserExist(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while checking if user account exists, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -150,7 +150,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.getUser(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -165,7 +165,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.getUsers(authzToken, offset, limit, search);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -180,7 +180,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.resetUserPassword(authzToken, username, newPassword);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -195,7 +195,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.findUsers(authzToken, email, userId);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -210,7 +210,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             iamAdminService.updateUserProfile(authzToken, userDetails);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while updating user profile, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -225,7 +225,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.deleteUser(authzToken, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while deleting user, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -241,7 +241,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.addRoleToUser(authzToken, username, roleName);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while adding role to user, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -257,7 +257,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.removeRoleFromUser(authzToken, username, roleName);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while removing role from user, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -273,7 +273,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             return iamAdminService.getUsersWithRole(authzToken, roleName);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);

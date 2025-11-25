@@ -36,8 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -104,6 +103,12 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
@@ -116,7 +121,6 @@ import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,92 +128,395 @@ import org.slf4j.LoggerFactory;
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> RuntimeException sneakyThrow(Throwable e) throws E {
+        throw (E) e;
+    }
+
+    private RuntimeException convertException(Throwable e, String msg) {
+        if (e instanceof org.apache.airavata.model.error.InvalidRequestException ||
+            e instanceof org.apache.airavata.model.error.AiravataClientException ||
+            e instanceof org.apache.airavata.model.error.AiravataSystemException ||
+            e instanceof org.apache.airavata.model.error.AuthorizationException ||
+            e instanceof org.apache.airavata.model.error.ExperimentNotFoundException ||
+            e instanceof org.apache.airavata.model.error.ProjectNotFoundException) {
+            throw sneakyThrow(e);
+        }
+        if (e instanceof RegistryException || e instanceof AppCatalogException ||
+            e instanceof org.apache.airavata.credential.store.store.CredentialStoreException ||
+            e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
+            logger.error(msg, e);
+            org.apache.airavata.model.error.AiravataSystemException exception = new org.apache.airavata.model.error.AiravataSystemException();
+            exception.setAiravataErrorType(org.apache.airavata.model.error.AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + ". More info : " + e.getMessage());
+            throw sneakyThrow(exception);
+        }
+        logger.error(msg, e);
+        org.apache.airavata.model.error.AiravataSystemException exception = new org.apache.airavata.model.error.AiravataSystemException();
+        exception.setAiravataErrorType(org.apache.airavata.model.error.AiravataErrorType.INTERNAL_ERROR);
+        exception.setMessage(msg + ". More info : " + e.getMessage());
+        throw sneakyThrow(exception);
+    }
+
     private org.apache.airavata.service.RegistryService registryService =
             new org.apache.airavata.service.RegistryService();
 
-    public List<String> getAllUsersInGateway(String gatewayId) throws RegistryException {
-        return registryService.getAllUsersInGateway(gatewayId);
+    private org.apache.airavata.service.SharingRegistryService sharingRegistryService =
+            new org.apache.airavata.service.SharingRegistryService();
+
+    private org.apache.airavata.service.CredentialStoreService credentialStoreService;
+
+    public AiravataService() {
+        try {
+            credentialStoreService = new org.apache.airavata.service.CredentialStoreService();
+        } catch (Exception e) {
+            logger.error("Failed to initialize CredentialStoreService", e);
+            throw new RuntimeException("Failed to initialize CredentialStoreService", e);
+        }
+    }
+
+    public void init() {
+        try {
+            initSharingRegistry();
+            postInitDefaultGateway();
+        } catch (Exception e) {
+            logger.error("Error occurred while initializing Airavata Service", e);
+            throw new RuntimeException("Error occurred while initializing Airavata Service", e);
+        }
+    }
+
+
+    private void postInitDefaultGateway() {
+        try {
+            GatewayResourceProfile gatewayResourceProfile = getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());
+            if (gatewayResourceProfile != null && gatewayResourceProfile.getIdentityServerPwdCredToken() == null) {
+
+                logger.debug("Starting to add the password credential for default gateway : "
+                        + ServerSettings.getDefaultUserGateway());
+
+                PasswordCredential passwordCredential = new PasswordCredential();
+                passwordCredential.setPortalUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setGatewayId(ServerSettings.getDefaultUserGateway());
+                passwordCredential.setLoginUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setPassword(ServerSettings.getDefaultUserPassword());
+                passwordCredential.setDescription("Credentials for default gateway");
+                String token = null;
+                try {
+                    logger.info("Creating password credential for default gateway");
+                    token = addPasswordCredential(passwordCredential);
+                } catch (Throwable ex) {
+                    logger.error(
+                            "Failed to create the password credential for the default gateway : "
+                                    + ServerSettings.getDefaultUserGateway(),
+                            ex);
+                }
+
+                if (token != null) {
+                    logger.debug("Adding password credential token " + token + " to the default gateway : "
+                            + ServerSettings.getDefaultUserGateway());
+                    gatewayResourceProfile.setIdentityServerPwdCredToken(token);
+                    gatewayResourceProfile.setIdentityServerTenant(ServerSettings.getDefaultUserGateway());
+                    updateGatewayResourceProfile(
+                            ServerSettings.getDefaultUserGateway(), gatewayResourceProfile);
+                }
+            }
+        } catch (Throwable e) {
+            logger.error("Failed to add the password credentials for the default gateway", e);
+        }
+    }
+
+    private void initSharingRegistry() throws Exception {
+        try {
+            if (!isDomainExists(ServerSettings.getDefaultUserGateway())) {
+                Domain domain = new Domain();
+                domain.setDomainId(ServerSettings.getDefaultUserGateway());
+                domain.setName(ServerSettings.getDefaultUserGateway());
+                domain.setDescription("Domain entry for " + domain.getName());
+                createDomain(domain);
+
+                User user = new User();
+                user.setDomainId(domain.getDomainId());
+                user.setUserId(ServerSettings.getDefaultUser() + "@" + ServerSettings.getDefaultUserGateway());
+                user.setUserName(ServerSettings.getDefaultUser());
+                createUser(user);
+
+                // Creating Entity Types for each domain
+                EntityType entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName("PROJECT");
+                entityType.setDescription("Project entity type");
+                createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName("EXPERIMENT");
+                entityType.setDescription("Experiment entity type");
+                createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName("FILE");
+                entityType.setDescription("File entity type");
+                createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName("APPLICATION-DEPLOYMENT");
+                entityType.setDescription("Application Deployment entity type");
+                createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDescription("Group Resource Profile entity type");
+                createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDomainId(domain.getDomainId());
+                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+                entityType.setDescription("Credential Store Token entity type");
+                createEntityType(entityType);
+
+                // Creating Permission Types for each domain
+                PermissionType permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":READ");
+                permissionType.setDomainId(domain.getDomainId());
+                permissionType.setName("READ");
+                permissionType.setDescription("Read permission type");
+                createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":WRITE");
+                permissionType.setDomainId(domain.getDomainId());
+                permissionType.setName("WRITE");
+                permissionType.setDescription("Write permission type");
+                createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.getDomainId() + ":MANAGE_SHARING");
+                permissionType.setDomainId(domain.getDomainId());
+                permissionType.setName("MANAGE_SHARING");
+                permissionType.setDescription("Sharing permission type");
+                createPermissionType(permissionType);
+            }
+        } catch (Throwable ex) {
+            throw ex;
+        }
+    }
+
+    public List<String> getAllUsersInGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllUsersInGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving users");
+        }
     }
 
     public boolean updateGateway(String gatewayId, Gateway updatedGateway)
-            throws RegistryException, AppCatalogException {
-        return registryService.updateGateway(gatewayId, updatedGateway);
+            throws RegistryException, AppCatalogException, TException {
+        try {
+            return registryService.updateGateway(gatewayId, updatedGateway);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating gateway");
+        }
     }
 
-    public Gateway getGateway(String gatewayId) throws RegistryException {
-        return registryService.getGateway(gatewayId);
+    public Gateway getGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting the gateway");
+        }
     }
 
-    public boolean deleteGateway(String gatewayId) throws RegistryException {
-        return registryService.deleteGateway(gatewayId);
+    public boolean deleteGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting the gateway");
+        }
     }
 
-    public List<Gateway> getAllGateways() throws RegistryException {
-        return registryService.getAllGateways();
+    public List<Gateway> getAllGateways() throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllGateways();
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all the gateways");
+        }
     }
 
-    public boolean isGatewayExist(String gatewayId) throws RegistryException {
-        return registryService.isGatewayExist(gatewayId);
+    public boolean isGatewayExist(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.isGatewayExist(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting gateway");
+        }
     }
 
-    public String createNotification(Notification notification) throws RegistryException {
-        return registryService.createNotification(notification);
+    public String createNotification(Notification notification) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.createNotification(notification);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating notification");
+        }
     }
 
-    public boolean updateNotification(Notification notification) throws RegistryException {
-        return registryService.updateNotification(notification);
+    public boolean updateNotification(Notification notification) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.updateNotification(notification);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating notification");
+        }
     }
 
-    public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryException {
-        return registryService.deleteNotification(gatewayId, notificationId);
+    public boolean deleteNotification(String gatewayId, String notificationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteNotification(gatewayId, notificationId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while deleting notification");
+        }
     }
 
-    public Notification getNotification(String gatewayId, String notificationId) throws RegistryException {
-        return registryService.getNotification(gatewayId, notificationId);
+    public Notification getNotification(String gatewayId, String notificationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getNotification(gatewayId, notificationId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving notification");
+        }
     }
 
-    public List<Notification> getAllNotifications(String gatewayId) throws RegistryException {
-        return registryService.getAllNotifications(gatewayId);
+    public List<Notification> getAllNotifications(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getAllNotifications(gatewayId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting all notifications");
+        }
     }
 
-    public String registerDataProduct(DataProductModel dataProductModel) throws RegistryException {
-        return registryService.registerDataProduct(dataProductModel);
+    public String registerDataProduct(DataProductModel dataProductModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerDataProduct(dataProductModel);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering data product");
+        }
     }
 
-    public DataProductModel getDataProduct(String productUri) throws RegistryException {
-        return registryService.getDataProduct(productUri);
+    public DataProductModel getDataProduct(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getDataProduct(productUri);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving data product");
+        }
     }
 
-    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryException {
-        return registryService.registerReplicaLocation(replicaLocationModel);
+    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.registerReplicaLocation(replicaLocationModel);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while registering replica location");
+        }
     }
 
-    public DataProductModel getParentDataProduct(String productUri) throws RegistryException {
-        return registryService.getParentDataProduct(productUri);
+    public DataProductModel getParentDataProduct(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getParentDataProduct(productUri);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving parent data product");
+        }
     }
 
-    public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryException {
-        return registryService.getChildDataProducts(productUri);
+    public List<DataProductModel> getChildDataProducts(String productUri) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getChildDataProducts(productUri);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving child data products");
+        }
     }
 
-    public boolean isUserExists(String gatewayId, String userName) throws RegistryException {
-        return registryService.isUserExists(gatewayId, userName);
+    public boolean isUserExists(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.isUserExists(gatewayId, userName);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while verifying user");
+        }
     }
 
-    public Project getProject(String projectId) throws RegistryException {
-        return registryService.getProject(projectId);
+    public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.getProject(projectId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the project");
+        }
     }
 
-    public String createProject(String gatewayId, Project project) throws RegistryException {
-        return registryService.createProject(gatewayId, project);
+    public String createProject(String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.createProject(gatewayId, project);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while creating project");
+        }
     }
 
-    public void updateProject(String projectId, Project updatedProject) throws RegistryException {
-        registryService.updateProject(projectId, updatedProject);
+    public void updateProject(String projectId, Project updatedProject) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            registryService.updateProject(projectId, updatedProject);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating project");
+        }
     }
 
-    public boolean deleteProject(String projectId) throws RegistryException {
-        return registryService.deleteProject(projectId);
+    public boolean deleteProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return registryService.deleteProject(projectId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while removing the project");
+        }
+    }
+
+    public List<Project> searchProjectsWithSharing(
+            AuthzToken authzToken,
+            String gatewayId,
+            String userName,
+            Map<ProjectSearchFields, String> filters,
+            int limit,
+            int offset) throws TException {
+         try {
+            List<String> accessibleProjIds = new ArrayList<>();
+            List<Project> result;
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                sharingFilters.add(searchCriteria);
+                sharingRegistryService.searchEntities(
+                                authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                                userName + "@" + gatewayId,
+                                sharingFilters,
+                                0,
+                                Integer.MAX_VALUE)
+                        .stream()
+                        .forEach(e -> accessibleProjIds.add(e.getEntityId()));
+                if (accessibleProjIds.isEmpty()) {
+                    result = Collections.emptyList();
+                } else {
+                    result = registryService.searchProjects(
+                            gatewayId, userName, accessibleProjIds, filters, limit, offset);
+                }
+            } else {
+                result = registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
+            }
+            return result;
+         } catch (Throwable e) {
+             throw convertException(e, "Error while retrieving projects");
+         }
     }
 
     public List<Project> searchProjects(
@@ -233,6 +540,27 @@ public class AiravataService {
         return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
     }
 
+    public List<ExperimentModel> getExperimentsInProject(
+            AuthzToken authzToken, String projectId, int limit, int offset)
+            throws TException {
+        try {
+            Project project = getProject(projectId);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (ServerSettings.isEnableSharing()
+                            && (!authzToken.getClaimsMap().get(Constants.USER_NAME).equals(project.getOwner())
+                    || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(project.getGatewayId()))) {
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+            }
+            return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving the experiments");
+        }
+    }
+
     public ExperimentStatistics getExperimentStatistics(
             String gatewayId,
             long fromTime,
@@ -243,7 +571,8 @@ public class AiravataService {
             List<String> accessibleExpIds,
             int limit,
             int offset)
-            throws RegistryException {
+            throws TException {
+        try {
         return registryService.getExperimentStatistics(
                 gatewayId,
                 fromTime,
@@ -254,6 +583,9 @@ public class AiravataService {
                 accessibleExpIds,
                 limit,
                 offset);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting experiment statistics");
+        }
     }
 
     public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
@@ -262,6 +594,74 @@ public class AiravataService {
 
     public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryException {
         return registryService.createExperiment(gatewayId, experiment);
+    }
+
+    public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws TException {
+        try {
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+            if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingExperiment.getUserName())
+                    && authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingExperiment.getGatewayId())) {
+                return existingExperiment;
+            } else if (ServerSettings.isEnableSharing()) {
+                String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                if (!userHasAccess(
+                        gatewayId, userId + "@" + gatewayId, airavataExperimentId, gatewayId + ":READ")) {
+                    throw new AuthorizationException("User does not have permission to access this resource");
+                }
+                return existingExperiment;
+            } else {
+                throw new AuthorizationException("User does not have permission to access this resource");
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting the experiment");
+        }
+    }
+
+    public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId) throws TException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+            if (gatewayId.equals(existingExperiment.getGatewayId())) {
+                return existingExperiment;
+            } else {
+                throw new AuthorizationException("User does not have permission to access this resource");
+            }
+        } catch (Throwable e) {
+            throw convertException(e, "Error while getting experiment by admin");
+        }
+    }
+
+    public void updateExperiment(AuthzToken authzToken, String airavataExperimentId, ExperimentModel experiment) throws TException {
+         try {
+            ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (ServerSettings.isEnableSharing()
+                            && (!authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingExperiment.getUserName())
+                    || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingExperiment.getGatewayId()))) {
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, airavataExperimentId, gatewayId + ":WRITE")) {
+                        throw new AuthorizationException("User does not have permission to access this resource");
+                    }
+            }
+
+            try {
+                // Update name, description and parent on Entity
+                // TODO: update the experiment via a DB event
+                Entity entity = getEntity(gatewayId, airavataExperimentId);
+                entity.setName(experiment.getExperimentName());
+                entity.setDescription(experiment.getDescription());
+                entity.setParentEntityId(experiment.getProjectId());
+                updateEntity(entity);
+            } catch (Throwable e) {
+                throw new Exception("Failed to update entity in sharing registry", e);
+            }
+
+            updateExperiment(airavataExperimentId, experiment);
+         } catch (Throwable e) {
+             throw convertException(e, "Error while updating experiment");
+         }
     }
 
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryException {
@@ -287,14 +687,15 @@ public class AiravataService {
      * Search experiments with sharing registry integration - processes filters and builds search criteria
      */
     public List<ExperimentSummaryModel> searchExperimentsWithSharing(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String gatewayId,
             String userName,
             Map<ExperimentSearchFields, String> filters,
             int limit,
             int offset)
-            throws Exception {
+            throws TException {
+        try {
         List<String> accessibleExpIds = new ArrayList<>();
         Map<ExperimentSearchFields, String> filtersCopy = new HashMap<>(filters);
         List<SearchCriteria> sharingFilters = new ArrayList<>();
@@ -363,7 +764,7 @@ public class AiravataService {
             searchOffset = offset;
             searchLimit = limit;
         }
-        sharingClient
+        sharingRegistryService
                 .searchEntities(
                         authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId,
@@ -377,6 +778,9 @@ public class AiravataService {
             finalOffset = 0;
         }
         return searchExperiments(gatewayId, userName, accessibleExpIds, filtersCopy, limit, finalOffset);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving experiments");
+        }
     }
 
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryException {
@@ -494,14 +898,22 @@ public class AiravataService {
     }
 
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
-            throws RegistryException {
-        registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
+            throws TException {
+        try {
+            registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating experiment configuration");
+        }
     }
 
     public void updateResourceScheduleing(
             String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
-            throws RegistryException {
-        registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
+            throws TException {
+        try {
+            registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while updating resource scheduling");
+        }
     }
 
     public String registerApplicationDeployment(
@@ -591,7 +1003,7 @@ public class AiravataService {
      * Get accessible app modules with sharing registry integration
      */
     public List<ApplicationModule> getAccessibleAppModulesWithSharing(
-            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String gatewayId) throws Exception {
+             AuthzToken authzToken, String gatewayId) throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         List<String> accessibleAppDeploymentIds = new ArrayList<>();
         if (ServerSettings.isEnableSharing()) {
@@ -606,7 +1018,7 @@ public class AiravataService {
             permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
             permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
             sharingFilters.add(permissionTypeFilter);
-            sharingClient
+            sharingRegistryService
                     .searchEntities(
                             authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                             userName + "@" + gatewayId,
@@ -617,7 +1029,7 @@ public class AiravataService {
         }
         List<String> accessibleComputeResourceIds = new ArrayList<>();
         List<GroupResourceProfile> groupResourceProfileList =
-                getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
+                getGroupResourceListWithSharing( authzToken, gatewayId);
         for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
             List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                     groupResourceProfile.getComputePreferences();
@@ -721,31 +1133,31 @@ public class AiravataService {
         return registryService.deleteResourceJobManager(resourceJobManagerId);
     }
 
-    public String addPasswordCredential(CredentialStoreService.Client csClient, PasswordCredential passwordCredential)
+    public String addPasswordCredential( PasswordCredential passwordCredential)
             throws CredentialStoreException, TException {
-        return csClient.addPasswordCredential(passwordCredential);
+        return credentialStoreService.addPasswordCredential(passwordCredential);
     }
 
-    public void deletePWDCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+    public void deletePWDCredential( String tokenId, String gatewayId)
             throws CredentialStoreException, TException {
-        csClient.deletePWDCredential(tokenId, gatewayId);
+        credentialStoreService.deletePWDCredential(tokenId, gatewayId);
     }
 
-    public boolean deleteSSHCredential(CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+    public boolean deleteSSHCredential( String tokenId, String gatewayId)
             throws CredentialStoreException, TException {
-        return csClient.deleteSSHCredential(tokenId, gatewayId);
+        return credentialStoreService.deleteSSHCredential(tokenId, gatewayId);
     }
 
     public CredentialSummary getCredentialSummary(
-            CredentialStoreService.Client csClient, String tokenId, String gatewayId)
+             String tokenId, String gatewayId)
             throws CredentialStoreException, TException {
-        return csClient.getCredentialSummary(tokenId, gatewayId);
+        return credentialStoreService.getCredentialSummary(tokenId, gatewayId);
     }
 
     public List<CredentialSummary> getAllCredentialSummaries(
-            CredentialStoreService.Client csClient, SummaryType type, List<String> accessibleTokenIds, String gatewayId)
+             SummaryType type, List<String> accessibleTokenIds, String gatewayId)
             throws CredentialStoreException, TException {
-        return csClient.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
+        return credentialStoreService.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
     }
 
     public String addLocalDataMovementDetails(
@@ -783,40 +1195,43 @@ public class AiravataService {
      * Get user projects with sharing registry integration
      */
     public List<Project> getUserProjectsWithSharing(
-            SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String gatewayId,
             String userName,
             int limit,
             int offset)
-            throws Exception {
-        if (ServerSettings.isEnableSharing()) {
-            // user projects + user accessible projects
-            List<String> accessibleProjectIds = new ArrayList<>();
-            List<SearchCriteria> filters = new ArrayList<>();
-            SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-            searchCriteria.setValue(gatewayId + ":PROJECT");
-            filters.add(searchCriteria);
-            sharingClient
-                    .searchEntities(
-                            authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                            userName + "@" + gatewayId,
-                            filters,
-                            0,
-                            -1)
-                    .stream()
-                    .forEach(p -> accessibleProjectIds.add(p.getEntityId()));
-            List<Project> result;
-            if (accessibleProjectIds.isEmpty()) {
-                result = Collections.emptyList();
+            throws TException {
+        try {
+            if (ServerSettings.isEnableSharing()) {
+                // user projects + user accessible projects
+                List<String> accessibleProjectIds = new ArrayList<>();
+                List<SearchCriteria> filters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                filters.add(searchCriteria);
+                sharingRegistryService
+                        .searchEntities(
+                                authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                                userName + "@" + gatewayId,
+                                filters,
+                                0,
+                                -1)
+                        .stream()
+                        .forEach(p -> accessibleProjectIds.add(p.getEntityId()));
+                List<Project> result;
+                if (accessibleProjectIds.isEmpty()) {
+                    result = Collections.emptyList();
+                } else {
+                    result = searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+                }
+                return result;
             } else {
-                result = searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+                return getUserProjects(gatewayId, userName, limit, offset);
             }
-            return result;
-        } else {
-            return getUserProjects(gatewayId, userName, limit, offset);
+        } catch (Throwable e) {
+            throw convertException(e, "Error while retrieving user projects");
         }
     }
 
@@ -831,7 +1246,7 @@ public class AiravataService {
      * Get accessible application deployments with sharing registry integration
      */
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsWithSharing(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String gatewayId,
             ResourcePermissionType permissionType)
@@ -850,7 +1265,7 @@ public class AiravataService {
             permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
             permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
             sharingFilters.add(permissionTypeFilter);
-            sharingClient
+            sharingRegistryService
                     .searchEntities(
                             authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                             userName + "@" + gatewayId,
@@ -861,7 +1276,7 @@ public class AiravataService {
         }
         List<String> accessibleComputeResourceIds = new ArrayList<>();
         List<GroupResourceProfile> groupResourceProfileList =
-                getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
+                getGroupResourceListWithSharing( authzToken, gatewayId);
         for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
             List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                     groupResourceProfile.getComputePreferences();
@@ -1169,45 +1584,43 @@ public class AiravataService {
         }
     }
 
-    public void createManageSharingPermissionTypeIfMissing(SharingRegistryService.Client sharingClient, String domainId)
+    public void createManageSharingPermissionTypeIfMissing( String domainId)
             throws TException {
         // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING permission, so add it if missing
         String permissionTypeId = domainId + ":MANAGE_SHARING";
         try {
-            if (!sharingClient.isPermissionExists(domainId, permissionTypeId)) {
+            if (!sharingRegistryService.isPermissionExists(domainId, permissionTypeId)) {
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(permissionTypeId);
                 permissionType.setDomainId(domainId);
                 permissionType.setName("MANAGE_SHARING");
                 permissionType.setDescription("Manage sharing permission type");
-                sharingClient.createPermissionType(permissionType);
+                sharingRegistryService.createPermissionType(permissionType);
                 logger.info("Created MANAGE_SHARING permission type for domain " + domainId);
             }
-        } catch (TException e) {
-            throw e;
         } catch (Exception e) {
             throw new TException("Error creating MANAGE_SHARING permission type", e);
         }
     }
 
-    public void shareEntityWithAdminGatewayGroups(SharingRegistryService.Client sharingClient, Entity entity)
+    public void shareEntityWithAdminGatewayGroups( Entity entity)
             throws TException {
         final String domainId = entity.getDomainId();
         GatewayGroups gatewayGroups = retrieveGatewayGroups(domainId);
-        createManageSharingPermissionTypeIfMissing(sharingClient, domainId);
-        sharingClient.shareEntityWithGroups(
+        createManageSharingPermissionTypeIfMissing( domainId);
+        sharingRegistryService.shareEntityWithGroups(
                 domainId,
                 entity.getEntityId(),
                 Arrays.asList(gatewayGroups.getAdminsGroupId()),
                 domainId + ":MANAGE_SHARING",
                 true);
-        sharingClient.shareEntityWithGroups(
+        sharingRegistryService.shareEntityWithGroups(
                 domainId,
                 entity.getEntityId(),
                 Arrays.asList(gatewayGroups.getAdminsGroupId()),
                 domainId + ":WRITE",
                 true);
-        sharingClient.shareEntityWithGroups(
+        sharingRegistryService.shareEntityWithGroups(
                 domainId,
                 entity.getEntityId(),
                 Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
@@ -1216,27 +1629,27 @@ public class AiravataService {
     }
 
     public boolean userHasAccessInternal(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String entityId,
             ResourcePermissionType permissionType) {
         final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
         try {
-            final boolean hasOwnerAccess = sharingClient.userHasAccess(
+            final boolean hasOwnerAccess = sharingRegistryService.userHasAccess(
                     domainId, userId, entityId, domainId + ":" + ResourcePermissionType.OWNER);
             boolean hasAccess = false;
             if (permissionType.equals(ResourcePermissionType.WRITE)) {
                 hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
+                        || sharingRegistryService.userHasAccess(
                                 domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
+                        || sharingRegistryService.userHasAccess(
                                 domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
             } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
                 hasAccess = hasOwnerAccess
-                        || sharingClient.userHasAccess(
+                        || sharingRegistryService.userHasAccess(
                                 domainId, userId, entityId, domainId + ":" + ResourcePermissionType.MANAGE_SHARING);
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
                 hasAccess = hasOwnerAccess;
@@ -1249,40 +1662,43 @@ public class AiravataService {
 
     // Credential management methods
     public String generateAndRegisterSSHKeys(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
             String gatewayId,
             String userName,
             String description)
-            throws Exception {
-        SSHCredential sshCredential = new SSHCredential();
-        sshCredential.setUsername(userName);
-        sshCredential.setGatewayId(gatewayId);
-        sshCredential.setDescription(description);
-        String key = csClient.addSSHCredential(sshCredential);
+            throws TException {
         try {
-            Entity entity = new Entity();
-            entity.setEntityId(key);
-            entity.setDomainId(gatewayId);
-            entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
-            entity.setOwnerId(userName + "@" + gatewayId);
-            entity.setName(key);
-            entity.setDescription(description);
-            sharingClient.createEntity(entity);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            logger.error(
-                    "Rolling back ssh key creation for user " + userName + " and description [" + description + "]");
-            csClient.deleteSSHCredential(key, gatewayId);
-            throw new Exception("Failed to create sharing registry record", ex);
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUsername(userName);
+            sshCredential.setGatewayId(gatewayId);
+            sshCredential.setDescription(description);
+            String key = credentialStoreService.addSSHCredential(sshCredential);
+
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(key);
+                entity.setDomainId(gatewayId);
+                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
+                entity.setOwnerId(userName + "@" + gatewayId);
+                entity.setName(key);
+                entity.setDescription(description);
+                sharingRegistryService.createEntity(entity);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+                logger.error(
+                        "Rolling back ssh key creation for user " + userName + " and description [" + description + "]");
+                credentialStoreService.deleteSSHCredential(key, gatewayId);
+                throw new Exception("Failed to create sharing registry record", ex);
+            }
+            logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
+            return key;
+        } catch (Throwable e) {
+            throw convertException(e, "Error occurred while registering SSH Credential");
         }
-        logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
-        return key;
     }
 
     public String registerPwdCredential(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
+            
+            
             String gatewayId,
             String userName,
             String loginUserName,
@@ -1295,7 +1711,7 @@ public class AiravataService {
         pwdCredential.setPassword(password);
         pwdCredential.setDescription(description);
         pwdCredential.setGatewayId(gatewayId);
-        String key = addPasswordCredential(csClient, pwdCredential);
+        String key = addPasswordCredential( pwdCredential);
         try {
             Entity entity = new Entity();
             entity.setEntityId(key);
@@ -1304,13 +1720,13 @@ public class AiravataService {
             entity.setOwnerId(userName + "@" + gatewayId);
             entity.setName(key);
             entity.setDescription(description);
-            sharingClient.createEntity(entity);
+            sharingRegistryService.createEntity(entity);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             logger.error("Rolling back password registration for user " + userName + " and description [" + description
                     + "]");
             try {
-                deletePWDCredential(csClient, key, gatewayId);
+                deletePWDCredential( key, gatewayId);
             } catch (Exception rollbackEx) {
                 logger.error("Failed to rollback password credential deletion", rollbackEx);
             }
@@ -1322,23 +1738,23 @@ public class AiravataService {
     }
 
     public CredentialSummary getCredentialSummaryWithAuth(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
+            
+            
             AuthzToken authzToken,
             String tokenId,
             String gatewayId)
-            throws Exception {
-        if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
-            throw new Exception("User does not have permission to access this resource");
+            throws AuthorizationException, Exception {
+        if (!userHasAccessInternal( authzToken, tokenId, ResourcePermissionType.READ)) {
+            throw new AuthorizationException("User does not have permission to access this resource");
         }
-        CredentialSummary credentialSummary = getCredentialSummary(csClient, tokenId, gatewayId);
+        CredentialSummary credentialSummary = getCredentialSummary( tokenId, gatewayId);
         logger.debug("Airavata retrived the credential summary for token " + tokenId + "GatewayId: " + gatewayId);
         return credentialSummary;
     }
 
     public List<CredentialSummary> getAllCredentialSummariesWithAuth(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
+            
+            
             AuthzToken authzToken,
             SummaryType type,
             String gatewayId,
@@ -1351,51 +1767,52 @@ public class AiravataService {
         searchCriteria.setValue(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
         filters.add(searchCriteria);
         List<String> accessibleTokenIds =
-                sharingClient.searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1).stream()
+                sharingRegistryService.searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1).stream()
                         .map(p -> p.getEntityId())
                         .collect(Collectors.toList());
         List<CredentialSummary> credentialSummaries =
-                getAllCredentialSummaries(csClient, type, accessibleTokenIds, gatewayId);
+                getAllCredentialSummaries( type, accessibleTokenIds, gatewayId);
         logger.debug(
                 "Airavata successfully retrived credential summaries of type " + type + " GatewayId: " + gatewayId);
         return credentialSummaries;
     }
 
     public boolean deleteSSHPubKey(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
+            
+            
             AuthzToken authzToken,
             String airavataCredStoreToken,
             String gatewayId)
-            throws Exception {
-        if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-            throw new Exception("User does not have permission to delete this resource.");
+            throws AuthorizationException, Exception {
+        if (!userHasAccessInternal( authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            throw new AuthorizationException("User does not have permission to delete this resource.");
         }
         logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
                 + airavataCredStoreToken);
-        return deleteSSHCredential(csClient, airavataCredStoreToken, gatewayId);
+        return deleteSSHCredential( airavataCredStoreToken, gatewayId);
     }
 
     public boolean deletePWDCredentialWithAuth(
-            CredentialStoreService.Client csClient,
-            SharingRegistryService.Client sharingClient,
+            
+            
             AuthzToken authzToken,
             String airavataCredStoreToken,
             String gatewayId)
-            throws Exception {
-        if (!userHasAccessInternal(sharingClient, authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-            throw new Exception("User does not have permission to delete this resource.");
+            throws AuthorizationException, Exception {
+        if (!userHasAccessInternal( authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            throw new AuthorizationException("User does not have permission to delete this resource.");
         }
         logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
                 + airavataCredStoreToken);
-        deletePWDCredential(csClient, airavataCredStoreToken, gatewayId);
+        deletePWDCredential( airavataCredStoreToken, gatewayId);
         return true;
     }
 
     // Project management methods with sharing registry integration
     public String createProjectWithSharing(
-            SharingRegistryService.Client sharingClient, String gatewayId, Project project) throws Exception {
+             String gatewayId, Project project) throws Exception {
         String projectId = createProject(gatewayId, project);
+        // TODO: verify that gatewayId and project.gatewayId match authzToken
         if (ServerSettings.isEnableSharing()) {
             try {
                 Entity entity = new Entity();
@@ -1406,15 +1823,11 @@ public class AiravataService {
                 entity.setOwnerId(project.getOwner() + "@" + domainId);
                 entity.setName(project.getName());
                 entity.setDescription(project.getDescription());
-                sharingClient.createEntity(entity);
+                sharingRegistryService.createEntity(entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
                 logger.error("Rolling back project creation Proj ID : " + projectId);
-                try {
-                    deleteProject(projectId);
-                } catch (RegistryException rollbackEx) {
-                    logger.error("Failed to rollback project deletion", rollbackEx);
-                }
+                deleteProject(projectId);
                 throw new Exception("Failed to create entry for project in Sharing Registry", ex);
             }
         }
@@ -1423,7 +1836,7 @@ public class AiravataService {
     }
 
     public void updateProjectWithAuth(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String projectId,
             Project updatedProject)
@@ -1434,30 +1847,30 @@ public class AiravataService {
                 || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingProject.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
-                throw new Exception("User does not have permission to access this resource");
+            if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
+                throw new AuthorizationException("User does not have permission to access this resource");
             }
         }
         if (!updatedProject.getOwner().equals(existingProject.getOwner())) {
-            throw new Exception("Owner of a project cannot be changed");
+            throw new InvalidRequestException("Owner of a project cannot be changed");
         }
         if (!updatedProject.getGatewayId().equals(existingProject.getGatewayId())) {
-            throw new Exception("Gateway ID of a project cannot be changed");
+            throw new InvalidRequestException("Gateway ID of a project cannot be changed");
         }
         updateProject(projectId, updatedProject);
         logger.debug("Airavata updated project with project Id : " + projectId);
     }
 
     public boolean deleteProjectWithAuth(
-            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String projectId) throws Exception {
+             AuthzToken authzToken, String projectId) throws ProjectNotFoundException, AuthorizationException, Exception {
         Project existingProject = getProject(projectId);
         if (ServerSettings.isEnableSharing()
                         && !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingProject.getOwner())
                 || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingProject.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
-                throw new Exception("User does not have permission to access this resource");
+            if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
+                throw new AuthorizationException("User does not have permission to access this resource");
             }
         }
         boolean ret = deleteProject(projectId);
@@ -1466,7 +1879,7 @@ public class AiravataService {
     }
 
     public Project getProjectWithAuth(
-            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String projectId) throws Exception {
+             AuthzToken authzToken, String projectId) throws ProjectNotFoundException, AuthorizationException, Exception {
         Project project = getProject(projectId);
         if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(project.getOwner())
                 && authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(project.getGatewayId())) {
@@ -1474,8 +1887,8 @@ public class AiravataService {
         } else if (ServerSettings.isEnableSharing()) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
-                throw new Exception("User does not have permission to access this resource");
+            if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
+                throw new AuthorizationException("User does not have permission to access this resource");
             }
             return project;
         } else {
@@ -1485,7 +1898,7 @@ public class AiravataService {
 
     // Experiment management methods with sharing registry integration
     public String createExperimentWithSharing(
-            SharingRegistryService.Client sharingClient, String gatewayId, ExperimentModel experiment)
+             String gatewayId, ExperimentModel experiment)
             throws Exception {
         String experimentId = createExperiment(gatewayId, experiment);
 
@@ -1501,8 +1914,8 @@ public class AiravataService {
                 entity.setDescription(experiment.getDescription());
                 entity.setParentEntityId(experiment.getProjectId());
 
-                sharingClient.createEntity(entity);
-                shareEntityWithAdminGatewayGroups(sharingClient, entity);
+                sharingRegistryService.createEntity(entity);
+                shareEntityWithAdminGatewayGroups( entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
                 logger.error("Rolling back experiment creation Exp ID : " + experimentId);
@@ -1520,12 +1933,12 @@ public class AiravataService {
     }
 
     public String createExperimentWithSharingAndPublish(
-            SharingRegistryService.Client sharingClient,
+            
             Publisher statusPublisher,
             String gatewayId,
             ExperimentModel experiment)
             throws Exception {
-        String experimentId = createExperimentWithSharing(sharingClient, gatewayId, experiment);
+        String experimentId = createExperimentWithSharing( gatewayId, experiment);
 
         if (statusPublisher != null) {
             ExperimentStatusChangeEvent event =
@@ -1540,7 +1953,7 @@ public class AiravataService {
     }
 
     public void validateLaunchExperimentAccess(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String gatewayId,
             ExperimentModel experiment)
@@ -1554,7 +1967,7 @@ public class AiravataService {
         }
 
         // Verify user has READ access to groupResourceProfileId
-        if (!sharingClient.userHasAccess(
+        if (!sharingRegistryService.userHasAccess(
                 gatewayId,
                 username + "@" + gatewayId,
                 experiment.getUserConfigurationData().getGroupResourceProfileId(),
@@ -1587,7 +2000,7 @@ public class AiravataService {
             if (applicationDeploymentDescription.isPresent()) {
                 final String appDeploymentId =
                         applicationDeploymentDescription.get().getAppDeploymentId();
-                if (!sharingClient.userHasAccess(
+                if (!sharingRegistryService.userHasAccess(
                         gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
                     throw new Exception("User " + username + " in gateway " + gatewayId
                             + " doesn't have access to app deployment " + appDeploymentId);
@@ -1611,7 +2024,7 @@ public class AiravataService {
                 if (applicationDeploymentDescription.isPresent()) {
                     final String appDeploymentId =
                             applicationDeploymentDescription.get().getAppDeploymentId();
-                    if (!sharingClient.userHasAccess(
+                    if (!sharingRegistryService.userHasAccess(
                             gatewayId, username + "@" + gatewayId, appDeploymentId, gatewayId + ":READ")) {
                         throw new Exception("User " + username + " in gateway " + gatewayId
                                 + " doesn't have access to app deployment " + appDeploymentId);
@@ -1622,7 +2035,7 @@ public class AiravataService {
     }
 
     public boolean deleteExperimentWithAuth(
-            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String experimentId) throws Exception {
+             AuthzToken authzToken, String experimentId) throws Exception {
         ExperimentModel experimentModel = getExperiment(experimentId);
 
         if (ServerSettings.isEnableSharing()
@@ -1630,8 +2043,8 @@ public class AiravataService {
                 || !authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(experimentModel.getGatewayId())) {
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
-                throw new Exception("User does not have permission to access this resource");
+            if (!sharingRegistryService.userHasAccess(gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
+                throw new AuthorizationException("User does not have permission to access this resource");
             }
         }
 
@@ -1642,9 +2055,9 @@ public class AiravataService {
         return deleteExperiment(experimentId);
     }
 
-    public ResourceType getResourceType(SharingRegistryService.Client sharingClient, String domainId, String entityId)
+    public ResourceType getResourceType( String domainId, String entityId)
             throws TException {
-        Entity entity = sharingClient.getEntity(domainId, entityId);
+        Entity entity = sharingRegistryService.getEntity(domainId, entityId);
         for (ResourceType resourceType : ResourceType.values()) {
             if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
                 return resourceType;
@@ -1654,76 +2067,78 @@ public class AiravataService {
     }
 
     // Gateway management methods with sharing registry integration
-    public String addGatewayWithSharing(
-            RegistryService.Client registryClient, SharingRegistryService.Client sharingClient, Gateway gateway)
-            throws Exception {
-        String gatewayId = registryClient.addGateway(gateway);
-        Domain domain = new Domain();
-        domain.setDomainId(gateway.getGatewayId());
-        domain.setName(gateway.getGatewayName());
-        domain.setDescription("Domain entry for " + domain.getName());
-        sharingClient.createDomain(domain);
+    public String addGatewayWithSharing(Gateway gateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            String gatewayId = registryService.addGateway(gateway);
+            Domain domain = new Domain();
+            domain.setDomainId(gateway.getGatewayId());
+            domain.setName(gateway.getGatewayName());
+            domain.setDescription("Domain entry for " + domain.getName());
+            sharingRegistryService.createDomain(domain);
 
-        // Creating Entity Types for each domain
-        EntityType entityType = new EntityType();
-        entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
-        entityType.setDomainId(domain.getDomainId());
-        entityType.setName("PROJECT");
-        entityType.setDescription("Project entity type");
-        sharingClient.createEntityType(entityType);
+            // Creating Entity Types for each domain
+            EntityType entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName("PROJECT");
+            entityType.setDescription("Project entity type");
+            sharingRegistryService.createEntityType(entityType);
 
-        entityType = new EntityType();
-        entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
-        entityType.setDomainId(domain.getDomainId());
-        entityType.setName("EXPERIMENT");
-        entityType.setDescription("Experiment entity type");
-        sharingClient.createEntityType(entityType);
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName("EXPERIMENT");
+            entityType.setDescription("Experiment entity type");
+            sharingRegistryService.createEntityType(entityType);
 
-        entityType = new EntityType();
-        entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
-        entityType.setDomainId(domain.getDomainId());
-        entityType.setName("FILE");
-        entityType.setDescription("File entity type");
-        sharingClient.createEntityType(entityType);
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName("FILE");
+            entityType.setDescription("File entity type");
+            sharingRegistryService.createEntityType(entityType);
 
-        entityType = new EntityType();
-        entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
-        entityType.setDomainId(domain.getDomainId());
-        entityType.setName("APPLICATION-DEPLOYMENT");
-        entityType.setDescription("Application Deployment entity type");
-        sharingClient.createEntityType(entityType);
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName("APPLICATION-DEPLOYMENT");
+            entityType.setDescription("Application Deployment entity type");
+            sharingRegistryService.createEntityType(entityType);
 
-        entityType = new EntityType();
-        entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
-        entityType.setDomainId(domain.getDomainId());
-        entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
-        entityType.setDescription("Group Resource Profile entity type");
-        sharingClient.createEntityType(entityType);
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDescription("Group Resource Profile entity type");
+            sharingRegistryService.createEntityType(entityType);
 
-        // Creating Permission Types for each domain
-        PermissionType permissionType = new PermissionType();
-        permissionType.setPermissionTypeId(domain.getDomainId() + ":READ");
-        permissionType.setDomainId(domain.getDomainId());
-        permissionType.setName("READ");
-        permissionType.setDescription("Read permission type");
-        sharingClient.createPermissionType(permissionType);
+            // Creating Permission Types for each domain
+            PermissionType permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.getDomainId() + ":READ");
+            permissionType.setDomainId(domain.getDomainId());
+            permissionType.setName("READ");
+            permissionType.setDescription("Read permission type");
+            sharingRegistryService.createPermissionType(permissionType);
 
-        permissionType = new PermissionType();
-        permissionType.setPermissionTypeId(domain.getDomainId() + ":WRITE");
-        permissionType.setDomainId(domain.getDomainId());
-        permissionType.setName("WRITE");
-        permissionType.setDescription("Write permission type");
-        sharingClient.createPermissionType(permissionType);
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.getDomainId() + ":WRITE");
+            permissionType.setDomainId(domain.getDomainId());
+            permissionType.setName("WRITE");
+            permissionType.setDescription("Write permission type");
+            sharingRegistryService.createPermissionType(permissionType);
 
-        permissionType = new PermissionType();
-        permissionType.setPermissionTypeId(domain.getDomainId() + ":MANAGE_SHARING");
-        permissionType.setDomainId(domain.getDomainId());
-        permissionType.setName("MANAGE_SHARING");
-        permissionType.setDescription("Sharing permission type");
-        sharingClient.createPermissionType(permissionType);
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.getDomainId() + ":MANAGE_SHARING");
+            permissionType.setDomainId(domain.getDomainId());
+            permissionType.setName("MANAGE_SHARING");
+            permissionType.setDescription("Sharing permission type");
+            sharingRegistryService.createPermissionType(permissionType);
 
-        logger.debug("Airavata successfully created the gateway with " + gatewayId);
-        return gatewayId;
+            logger.debug("Airavata successfully created the gateway with " + gatewayId);
+            return gatewayId;
+        } catch (Throwable e) {
+            throw convertException(e, "Error while adding gateway");
+        }
     }
 
     // Event publishing methods
@@ -1766,7 +2181,7 @@ public class AiravataService {
      * Validate and fetch intermediate outputs - checks access, job state, and existing processes
      */
     public void validateAndFetchIntermediateOutputs(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String airavataExperimentId,
             List<String> outputNames,
@@ -1774,7 +2189,7 @@ public class AiravataService {
             throws Exception {
         // Verify that user has WRITE access to experiment
         final boolean hasAccess =
-                userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+                userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
         if (!hasAccess) {
             throw new Exception("User does not have WRITE access to this experiment");
         }
@@ -1822,14 +2237,14 @@ public class AiravataService {
      * Get intermediate output process status - finds the most recent matching process and returns its status
      */
     public ProcessStatus getIntermediateOutputProcessStatusInternal(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String airavataExperimentId,
             List<String> outputNames)
             throws Exception {
         // Verify that user has READ access to experiment
         final boolean hasAccess =
-                userHasAccessInternal(sharingClient, authzToken, airavataExperimentId, ResourcePermissionType.READ);
+                userHasAccessInternal( authzToken, airavataExperimentId, ResourcePermissionType.READ);
         if (!hasAccess) {
             throw new Exception("User does not have READ access to this experiment");
         }
@@ -1868,51 +2283,51 @@ public class AiravataService {
 
     // Access control methods
     public List<String> getAllAccessibleUsers(
-            SharingRegistryService.Client sharingClient,
+            
             String gatewayId,
             String resourceId,
             ResourcePermissionType permissionType,
-            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction)
+            BiFunction<SharingRegistryService, ResourcePermissionType, Collection<User>> userListFunction)
             throws Exception {
         HashSet<String> accessibleUsers = new HashSet<>();
         if (permissionType.equals(ResourcePermissionType.WRITE)) {
-            userListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.WRITE).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
-            userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.OWNER).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
         } else if (permissionType.equals(ResourcePermissionType.READ)) {
-            userListFunction.apply(sharingClient, ResourcePermissionType.READ).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.READ).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
-            userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.OWNER).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
         } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-            userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.OWNER).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
         } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
-            userListFunction.apply(sharingClient, ResourcePermissionType.MANAGE_SHARING).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.MANAGE_SHARING).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
-            userListFunction.apply(sharingClient, ResourcePermissionType.OWNER).stream()
+            userListFunction.apply(sharingRegistryService, ResourcePermissionType.OWNER).stream()
                     .forEach(u -> accessibleUsers.add(u.getUserId()));
         }
         return new ArrayList<>(accessibleUsers);
     }
 
     public List<String> getAllAccessibleGroups(
-            SharingRegistryService.Client sharingClient,
+            
             String gatewayId,
             String resourceId,
             ResourcePermissionType permissionType,
-            BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction)
+            BiFunction<SharingRegistryService, ResourcePermissionType, Collection<UserGroup>> groupListFunction)
             throws Exception {
         HashSet<String> accessibleGroups = new HashSet<>();
         if (permissionType.equals(ResourcePermissionType.WRITE)) {
-            groupListFunction.apply(sharingClient, ResourcePermissionType.WRITE).stream()
+            groupListFunction.apply(sharingRegistryService, ResourcePermissionType.WRITE).stream()
                     .forEach(g -> accessibleGroups.add(g.getGroupId()));
         } else if (permissionType.equals(ResourcePermissionType.READ)) {
-            groupListFunction.apply(sharingClient, ResourcePermissionType.READ).stream()
+            groupListFunction.apply(sharingRegistryService, ResourcePermissionType.READ).stream()
                     .forEach(g -> accessibleGroups.add(g.getGroupId()));
         } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
-            groupListFunction.apply(sharingClient, ResourcePermissionType.MANAGE_SHARING).stream()
+            groupListFunction.apply(sharingRegistryService, ResourcePermissionType.MANAGE_SHARING).stream()
                     .forEach(g -> accessibleGroups.add(g.getGroupId()));
         }
         return new ArrayList<>(accessibleGroups);
@@ -1922,19 +2337,19 @@ public class AiravataService {
      * Get all accessible users for a resource (includes shared and directly shared)
      */
     public List<String> getAllAccessibleUsersWithSharing(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String resourceId,
             ResourcePermissionType permissionType,
             boolean directlySharedOnly)
             throws Exception {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<User>> userListFunction;
+        BiFunction<SharingRegistryService, ResourcePermissionType, Collection<User>> userListFunction;
         if (directlySharedOnly) {
             userListFunction = (c, t) -> {
                 try {
                     return c.getListOfDirectlySharedUsers(gatewayId, resourceId, gatewayId + ":" + t.name());
-                } catch (TException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
@@ -1942,31 +2357,31 @@ public class AiravataService {
             userListFunction = (c, t) -> {
                 try {
                     return c.getListOfSharedUsers(gatewayId, resourceId, gatewayId + ":" + t.name());
-                } catch (TException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
         }
-        return getAllAccessibleUsers(sharingClient, gatewayId, resourceId, permissionType, userListFunction);
+        return getAllAccessibleUsers( gatewayId, resourceId, permissionType, userListFunction);
     }
 
     /**
      * Get all accessible groups for a resource (includes shared and directly shared)
      */
     public List<String> getAllAccessibleGroupsWithSharing(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             String resourceId,
             ResourcePermissionType permissionType,
             boolean directlySharedOnly)
             throws Exception {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        BiFunction<SharingRegistryService.Client, ResourcePermissionType, Collection<UserGroup>> groupListFunction;
+        BiFunction<SharingRegistryService, ResourcePermissionType, Collection<UserGroup>> groupListFunction;
         if (directlySharedOnly) {
             groupListFunction = (c, t) -> {
                 try {
                     return c.getListOfDirectlySharedGroups(gatewayId, resourceId, gatewayId + ":" + t.name());
-                } catch (TException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
@@ -1974,22 +2389,22 @@ public class AiravataService {
             groupListFunction = (c, t) -> {
                 try {
                     return c.getListOfSharedGroups(gatewayId, resourceId, gatewayId + ":" + t.name());
-                } catch (TException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
         }
-        return getAllAccessibleGroups(sharingClient, gatewayId, resourceId, permissionType, groupListFunction);
+        return getAllAccessibleGroups( gatewayId, resourceId, permissionType, groupListFunction);
     }
 
     // Group resource profile management with sharing registry integration
     public String createGroupResourceProfileWithSharing(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             GroupResourceProfile groupResourceProfile)
             throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        validateGroupResourceProfile(sharingClient, authzToken, groupResourceProfile);
+        validateGroupResourceProfile( authzToken, groupResourceProfile);
         String groupResourceProfileId = createGroupResourceProfile(groupResourceProfile);
         if (ServerSettings.isEnableSharing()) {
             try {
@@ -2000,8 +2415,8 @@ public class AiravataService {
                 entity.setOwnerId(userName + "@" + groupResourceProfile.getGatewayId());
                 entity.setName(groupResourceProfile.getGroupResourceProfileName());
 
-                sharingClient.createEntity(entity);
-                shareEntityWithAdminGatewayGroups(sharingClient, entity);
+                sharingRegistryService.createEntity(entity);
+                shareEntityWithAdminGatewayGroups( entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
                 logger.error("Rolling back group resource profile creation Group Resource Profile ID : "
@@ -2018,7 +2433,7 @@ public class AiravataService {
     }
 
     public void validateGroupResourceProfile(
-            SharingRegistryService.Client sharingClient,
+            
             AuthzToken authzToken,
             GroupResourceProfile groupResourceProfile)
             throws Exception {
@@ -2035,7 +2450,7 @@ public class AiravataService {
             tokenIds.add(groupResourceProfile.getDefaultCredentialStoreToken());
         }
         for (String tokenId : tokenIds) {
-            if (!userHasAccessInternal(sharingClient, authzToken, tokenId, ResourcePermissionType.READ)) {
+            if (!userHasAccessInternal( authzToken, tokenId, ResourcePermissionType.READ)) {
                 throw new Exception("User does not have READ permission to credential token " + tokenId + ".");
             }
         }
@@ -2043,49 +2458,52 @@ public class AiravataService {
 
     // Launch experiment business logic
     public void launchExperimentWithValidation(
-            SharingRegistryService.Client sharingClient,
             AuthzToken authzToken,
             String gatewayId,
             String airavataExperimentId,
             Publisher experimentPublisher)
-            throws Exception {
-        ExperimentModel experiment = getExperiment(airavataExperimentId);
+            throws TException {
+        try {
+            ExperimentModel experiment = getExperiment(airavataExperimentId);
 
-        if (experiment == null) {
-            throw new Exception("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-        }
-        String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-
-        // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
-        if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
-            List<GroupResourceProfile> groupResourceProfiles =
-                    getGroupResourceListWithSharing(sharingClient, authzToken, gatewayId);
-            if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
-                // Just pick the first one
-                final String groupResourceProfileId =
-                        groupResourceProfiles.get(0).getGroupResourceProfileId();
-                logger.warn(
-                        "Experiment {} doesn't have groupResourceProfileId, picking first one user has access to: {}",
-                        airavataExperimentId,
-                        groupResourceProfileId);
-                experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
-                updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
-            } else {
-                throw new Exception("User " + username + " in gateway " + gatewayId
-                        + " doesn't have access to any group resource profiles.");
+            if (experiment == null) {
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-        }
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
-        // Validate access to group resource profile and application deployments
-        validateLaunchExperimentAccess(sharingClient, authzToken, gatewayId, experiment);
-        publishExperimentSubmitEvent(experimentPublisher, gatewayId, airavataExperimentId);
+            // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
+            if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
+                List<GroupResourceProfile> groupResourceProfiles =
+                        getGroupResourceListWithSharing( authzToken, gatewayId);
+                if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
+                    // Just pick the first one
+                    final String groupResourceProfileId =
+                            groupResourceProfiles.get(0).getGroupResourceProfileId();
+                    logger.warn(
+                            "Experiment {} doesn't have groupResourceProfileId, picking first one user has access to: {}",
+                            airavataExperimentId,
+                            groupResourceProfileId);
+                    experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
+                    updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
+                } else {
+                    throw new Exception("User " + username + " in gateway " + gatewayId
+                            + " doesn't have access to any group resource profiles.");
+                }
+            }
+
+            // Validate access to group resource profile and application deployments
+            validateLaunchExperimentAccess( authzToken, gatewayId, experiment);
+            publishExperimentSubmitEvent(experimentPublisher, gatewayId, airavataExperimentId);
+        } catch (Throwable e) {
+            throw convertException(e, "Error launching experiment");
+        }
     }
 
     /**
      * Get group resource list with sharing registry integration
      */
     public List<GroupResourceProfile> getGroupResourceListWithSharing(
-            SharingRegistryService.Client sharingClient, AuthzToken authzToken, String gatewayId) throws Exception {
+             AuthzToken authzToken, String gatewayId) throws Exception {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         List<String> accessibleGroupResProfileIds = new ArrayList<>();
         if (ServerSettings.isEnableSharing()) {
@@ -2095,7 +2513,7 @@ public class AiravataService {
             searchCriteria.setSearchCondition(SearchCondition.EQUAL);
             searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
             filters.add(searchCriteria);
-            sharingClient
+            sharingRegistryService
                     .searchEntities(
                             authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                             userName + "@" + gatewayId,
@@ -2106,5 +2524,78 @@ public class AiravataService {
                     .forEach(p -> accessibleGroupResProfileIds.add(p.getEntityId()));
         }
         return getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+    }
+
+    // Sharing Registry Delegation Methods for ServerHandler
+    public boolean isDomainExists(String domainId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.isDomainExists(domainId);
+    }
+
+    public String createDomain(Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        return sharingRegistryService.createDomain(domain);
+    }
+
+    public String createUser(User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        return sharingRegistryService.createUser(user);
+    }
+
+    public String createGroup(UserGroup group) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        return sharingRegistryService.createGroup(group);
+    }
+
+    public boolean addUsersToGroup(String domainId, List<String> userIds, String groupId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.addUsersToGroup(domainId, userIds, groupId);
+    }
+
+    public String createEntityType(org.apache.airavata.sharing.registry.models.EntityType entityType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        return sharingRegistryService.createEntityType(entityType);
+    }
+
+    public String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        return sharingRegistryService.createPermissionType(permissionType);
+    }
+
+    public boolean userHasAccess(String domainId, String userId, String entityId, String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.userHasAccess(domainId, userId, entityId, permissionTypeId);
+    }
+
+    public org.apache.airavata.sharing.registry.models.Entity getEntity(String domainId, String entityId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.getEntity(domainId, entityId);
+    }
+
+    public void updateEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        sharingRegistryService.updateEntity(entity);
+    }
+
+    public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascade) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.shareEntityWithUsers(domainId, entityId, userList, permissionTypeId, cascade);
+    }
+
+    public org.apache.airavata.model.credential.store.SSHCredential getSSHCredential(String token, String gatewayId) throws org.apache.airavata.credential.store.store.CredentialStoreException {
+        return credentialStoreService.getSSHCredential(token, gatewayId);
+    }
+
+    public void createEntity(org.apache.airavata.sharing.registry.models.Entity entity) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.sharing.registry.models.DuplicateEntryException {
+        sharingRegistryService.createEntity(entity);
+    }
+
+    public java.util.List<org.apache.airavata.sharing.registry.models.Entity> searchEntities(String domainId, String userId, java.util.List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.searchEntities(domainId, userId, filters, offset, limit);
+    }
+
+    public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascade) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.shareEntityWithGroups(domainId, entityId, groupList, permissionTypeId, cascade);
+    }
+
+    public boolean revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.revokeEntitySharingFromUsers(domainId, entityId, userList, permissionTypeId);
+    }
+
+    public boolean revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.revokeEntitySharingFromGroups(domainId, entityId, groupList, permissionTypeId);
+    }
+
+    public boolean deleteEntity(String domainId, String entityId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException {
+        return sharingRegistryService.deleteEntity(domainId, entityId);
     }
 }
