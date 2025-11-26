@@ -20,6 +20,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
@@ -39,7 +40,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 

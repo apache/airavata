@@ -20,6 +20,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
@@ -45,7 +46,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 

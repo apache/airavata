@@ -20,12 +20,12 @@
 package org.apache.airavata.orchestrator.server;
 
 import java.util.*;
+import org.apache.airavata.api.server.handler.ThriftExceptionHandler;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.registry.core.RegistryException;
-import org.apache.thrift.TException;
+import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +37,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * Query orchestrator server to fetch the CPI version
      */
     @Override
-    public String getAPIVersion() throws TException {
-        return null;
+    public String getAPIVersion() throws AiravataSystemException {
+        return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
-    public OrchestratorServerHandler() throws OrchestratorException, TException {
+    public OrchestratorServerHandler() {
         try {
             orchestratorService = new org.apache.airavata.service.OrchestratorService();
-        } catch (OrchestratorException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
+        } catch (Exception e) {
+            log.error("Error while initializing orchestrator service", e);
+            throw new RuntimeException("Error while initializing orchestrator service", e);
         }
     }
 
@@ -58,9 +58,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      */
-    public boolean launchExperiment(String experimentId, String gatewayId) throws OrchestratorException {
-        return orchestratorService.launchExperimentWithErrorHandling(
-                experimentId, gatewayId, org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
+    @Override
+    public boolean launchExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
+        try {
+            return orchestratorService.launchExperimentWithErrorHandling(
+                    experimentId, gatewayId, org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
+        } catch (Throwable e) {
+            ThriftExceptionHandler.convertException(e, "Error launching experiment: " + experimentId);
+            return false; // unreachable
+        }
     }
 
     /**
@@ -70,18 +76,29 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      * @return
-     * @throws RegistryException
-     * @throws LaunchValidationException
-     * @throws OrchestratorException
      */
-    public boolean validateExperiment(String experimentId) throws RegistryException, LaunchValidationException, OrchestratorException {
-        return orchestratorService.validateExperiment(experimentId);
+    @Override
+    public boolean validateExperiment(String experimentId) throws LaunchValidationException {
+        try {
+            return orchestratorService.validateExperiment(experimentId);
+        } catch (LaunchValidationException e) {
+            throw e;
+        } catch (Throwable e) {
+            ThriftExceptionHandler.convertException(e, "Error validating experiment: " + experimentId);
+            return false; // unreachable
+        }
     }
 
     @Override
-    public boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws LaunchValidationException, RegistryException, OrchestratorException {
-        return orchestratorService.validateProcess(experimentId, processes);
+    public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException {
+        try {
+            return orchestratorService.validateProcess(experimentId, processes);
+        } catch (LaunchValidationException e) {
+            throw e;
+        } catch (Throwable e) {
+            ThriftExceptionHandler.convertException(e, "Error validating process: " + experimentId);
+            return false; // unreachable
+        }
     }
 
     /**
@@ -90,20 +107,34 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      * @return
-     * @throws TException
      */
-    public boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
-        log.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
-        return orchestratorService.terminateExperiment(experimentId, gatewayId);
+    @Override
+    public boolean terminateExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
+        log.info("Experiment: {} is cancelling  !!!!!", experimentId);
+        try {
+            return orchestratorService.terminateExperiment(experimentId, gatewayId);
+        } catch (Throwable e) {
+            ThriftExceptionHandler.convertException(e, "Error terminating experiment: " + experimentId);
+            return false; // unreachable
+        }
     }
 
-    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
-            throws RegistryException, OrchestratorException, AppCatalogException {
-        orchestratorService.fetchIntermediateOutputs(experimentId, gatewayId, outputNames);
+    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) {
+        try {
+            orchestratorService.fetchIntermediateOutputs(experimentId, gatewayId, outputNames);
+        } catch (Throwable e) {
+            log.error("Error fetching intermediate outputs for experiment: " + experimentId, e);
+            ThriftExceptionHandler.convertException(e, "Error fetching intermediate outputs: " + experimentId);
+        }
     }
 
     @Override
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
-        return orchestratorService.launchProcess(processId, airavataCredStoreToken, gatewayId);
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws AiravataSystemException {
+        try {
+            return orchestratorService.launchProcess(processId, airavataCredStoreToken, gatewayId);
+        } catch (Throwable e) {
+            ThriftExceptionHandler.convertException(e, "Error launching process: " + processId);
+            return false; // unreachable
+        }
     }
 }

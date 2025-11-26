@@ -22,6 +22,7 @@ package org.apache.airavata.sharing.registry.server;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBInitializer;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
@@ -45,7 +46,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return sharing_cpiConstants.SHARING_CPI_VERSION;
     }
 
@@ -165,7 +166,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public List<UserGroup> getGroups(String domain, int offset, int limit) throws TException {
+    public List<UserGroup> getGroups(String domain, int offset, int limit) throws SharingRegistryException {
         return sharingRegistryService.getGroups(domain, offset, limit);
     }
 
