@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

@@ -83,7 +83,7 @@ public class RegistryService {
 
     private RegistryServiceException convertException(Throwable e, String msg) {
         logger.error(msg, e);
-        RegistryServiceException exception = new RegistryServiceException();
+        var exception = new RegistryServiceException();
         exception.setMessage(msg + " More info : " + e.getMessage());
         exception.initCause(e);
         return exception;
@@ -151,7 +151,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
             }
-            Gateway gateway = gatewayRepository.getGateway(gatewayId);
+            var gateway = gatewayRepository.getGateway(gatewayId);
             logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
             return gateway;
         } catch (Throwable e) {
@@ -175,7 +175,7 @@ public class RegistryService {
 
     public List<Gateway> getAllGateways() throws RegistryServiceException {
         try {
-            List<Gateway> gateways = gatewayRepository.getAllGateways();
+            var gateways = gatewayRepository.getAllGateways();
             logger.debug("Airavata retrieved all available gateways...");
             return gateways;
         } catch (Throwable e) {
@@ -226,7 +226,7 @@ public class RegistryService {
                 throw exception;
             }
             logger.debug("Airavata retrieved project with project Id : " + projectId);
-            Project project = projectRepository.getProject(projectId);
+            var project = projectRepository.getProject(projectId);
             return project;
         } catch (ProjectNotFoundException e) {
             throw e;
@@ -419,14 +419,14 @@ public class RegistryService {
 
     public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException {
         try {
-            ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
-            List<ProcessModel> processList = processRepository.getProcessList(
+            var experimentModel = getExperimentInternal(airavataExperimentId);
+            var processList = processRepository.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
             if (processList != null) {
                 processList.stream().forEach(p -> {
                     (p).getTasks().stream().forEach(t -> {
                         try {
-                            List<JobModel> jobList = jobRepository.getJobList(
+                            var jobList = jobRepository.getJobList(
                                     Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel) t).getTaskId());
                             if (jobList != null) {
                                 Collections.sort(jobList, new Comparator<JobModel>() {
@@ -496,7 +496,7 @@ public class RegistryService {
 
     public void updateJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
         try {
-            org.apache.airavata.registry.core.entities.expcatalog.JobPK jobPK =
+            var jobPK =
                     new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
             jobPK.setTaskId(taskId);
             jobPK.setJobId(jobId);
@@ -567,7 +567,7 @@ public class RegistryService {
 
     public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException {
         try {
-            List<ProcessModel> processModels = processRepository.getProcessList(
+            var processModels = processRepository.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
             return processModels;
         } catch (Throwable e) {
@@ -585,17 +585,17 @@ public class RegistryService {
 
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException {
         try {
-            List<ProcessModel> finalProcessList = new ArrayList<>();
+            var finalProcessList = new ArrayList<ProcessModel>();
             int offset = 0;
             int limit = 100;
             int count = 0;
             do {
-                List<ProcessStatus> processStatusList =
+                var processStatusList =
                         processStatusRepository.getProcessStatusList(processState, offset, limit);
                 offset += processStatusList.size();
                 count = processStatusList.size();
                 for (ProcessStatus processStatus : processStatusList) {
-                    ProcessStatus latestStatus = processStatusRepository.getProcessStatus(processStatus.getProcessId());
+                    var latestStatus = processStatusRepository.getProcessStatus(processStatus.getProcessId());
                     if (latestStatus.getState().name().equals(processState.name())) {
                         finalProcessList.add(processRepository.getProcess(latestStatus.getProcessId()));
                     }
@@ -618,7 +618,7 @@ public class RegistryService {
     private JobModel fetchJobModel(String queryType, String id) throws RegistryServiceException {
         try {
             if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
-                List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
+                var jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
                 if (jobs != null) {
                     for (JobModel jobModel : jobs) {
                         if (jobModel.getJobId() != null || !jobModel.equals("")) {
@@ -627,7 +627,7 @@ public class RegistryService {
                     }
                 }
             } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
-                List<JobModel> jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+                var jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
                 if (jobs != null) {
                     for (JobModel jobModel : jobs) {
                         if (jobModel.getJobId() != null || !jobModel.equals("")) {
@@ -644,7 +644,7 @@ public class RegistryService {
 
     private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryServiceException {
         try {
-            List<JobModel> jobs = new ArrayList<>();
+            List<JobModel> jobs;
             switch (queryType) {
                 case Constants.FieldConstants.JobConstants.TASK_ID:
                     jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
@@ -654,6 +654,9 @@ public class RegistryService {
                     break;
                 case Constants.FieldConstants.JobConstants.JOB_ID:
                     jobs = jobRepository.getJobList(Constants.FieldConstants.JobConstants.JOB_ID, id);
+                    break;
+                default:
+                    jobs = new ArrayList<>();
                     break;
             }
             return jobs;
@@ -669,7 +672,7 @@ public class RegistryService {
 
     public JobModel getJob(String queryType, String id) throws RegistryServiceException {
         try {
-            JobModel jobModel = fetchJobModel(queryType, id);
+            var jobModel = fetchJobModel(queryType, id);
             if (jobModel != null) return jobModel;
             throw new RegistryException("Job not found for queryType: " + queryType + ", id: " + id);
         } catch (Throwable e) {
@@ -689,7 +692,7 @@ public class RegistryService {
             org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException {
         try {
-            List<JobStatus> jobStatusList = jobStatusRepository.getDistinctListofJobStatus(
+            var jobStatusList = jobStatusRepository.getDistinctListofJobStatus(
                     gatewayId, jobStatus.getJobState().name(), searchBackTimeInMinutes);
             return jobStatusList.size();
         } catch (Throwable e) {
@@ -748,16 +751,16 @@ public class RegistryService {
                 throw new RegistryException(
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            List<ProcessModel> processModels = processRepository.getProcessList(
+            var processModels = processRepository.getProcessList(
                     Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
-            List<JobModel> jobList = new ArrayList<>();
+            var jobList = new ArrayList<JobModel>();
             if (processModels != null && !processModels.isEmpty()) {
                 for (ProcessModel processModel : processModels) {
-                    List<TaskModel> tasks = processModel.getTasks();
+                    var tasks = processModel.getTasks();
                     if (tasks != null && !tasks.isEmpty()) {
                         for (TaskModel taskModel : tasks) {
-                            String taskId = taskModel.getTaskId();
-                            List<JobModel> taskJobs =
+                            var taskId = taskModel.getTaskId();
+                            var taskJobs =
                                     jobRepository.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
                             jobList.addAll(taskJobs);
                         }
@@ -789,7 +792,7 @@ public class RegistryService {
 
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException {
         try {
-            ApplicationModule module = applicationInterfaceRepository.getApplicationModule(appModuleId);
+            var module = applicationInterfaceRepository.getApplicationModule(appModuleId);
             logger.debug("Airavata retrieved application module with module id : " + appModuleId);
             return module;
         } catch (Throwable e) {
@@ -803,7 +806,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAllApplicationModules(gatewayId);
+            var moduleList = applicationInterfaceRepository.getAllApplicationModules(gatewayId);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (Throwable e) {
@@ -819,7 +822,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAccessibleApplicationModules(
+            var moduleList = applicationInterfaceRepository.getAccessibleApplicationModules(
                     gatewayId, accessibleAppIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
@@ -840,7 +843,7 @@ public class RegistryService {
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
             throws RegistryServiceException {
         try {
-            ApplicationDeploymentDescription deployement =
+            var deployement =
                 applicationDeploymentRepository.getApplicationDeployement(appDeploymentId);
             logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
             return deployement;
@@ -866,7 +869,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ApplicationDeploymentDescription> deployements =
+            var deployements =
                     applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
@@ -883,7 +886,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ApplicationDeploymentDescription> deployements =
+            var deployements =
                     applicationDeploymentRepository.getAccessibleApplicationDeployments(
                         gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
@@ -904,7 +907,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ApplicationDeploymentDescription> deployments =
+            var deployments =
                     applicationDeploymentRepository.getAccessibleApplicationDeployments(
                             gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             return deployments;
@@ -915,10 +918,10 @@ public class RegistryService {
 
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException {
         try {
-            List<String> appDeployments = new ArrayList<>();
-            Map<String, String> filters = new HashMap<>();
+            var appDeployments = new ArrayList<String>();
+            var filters = new HashMap<String, String>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments =
+            var applicationDeployments =
                     applicationDeploymentRepository.getApplicationDeployments(filters);
             for (ApplicationDeploymentDescription description : applicationDeployments) {
                 appDeployments.add(description.getAppDeploymentId());
@@ -933,9 +936,9 @@ public class RegistryService {
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
             throws RegistryServiceException {
         try {
-            Map<String, String> filters = new HashMap<>();
+            var filters = new HashMap<String, String>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments =
+            var applicationDeployments =
                     applicationDeploymentRepository.getApplicationDeployments(filters);
             return applicationDeployments;
         } catch (Throwable e) {
@@ -945,7 +948,7 @@ public class RegistryService {
 
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException {
         try {
-            ApplicationInterfaceDescription interfaceDescription =
+            var interfaceDescription =
                     applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
             logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
             return interfaceDescription;

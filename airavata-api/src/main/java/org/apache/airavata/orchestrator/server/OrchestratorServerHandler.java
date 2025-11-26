@@ -20,12 +20,11 @@
 package org.apache.airavata.orchestrator.server;
 
 import java.util.*;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.registry.core.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      */
-    public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
+    public boolean launchExperiment(String experimentId, String gatewayId) throws OrchestratorException {
         return orchestratorService.launchExperimentWithErrorHandling(
                 experimentId, gatewayId, org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
     }
@@ -71,15 +70,17 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      *
      * @param experimentId
      * @return
-     * @throws TException
+     * @throws RegistryException
+     * @throws LaunchValidationException
+     * @throws OrchestratorException
      */
-    public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
+    public boolean validateExperiment(String experimentId) throws RegistryException, LaunchValidationException, OrchestratorException {
         return orchestratorService.validateExperiment(experimentId);
     }
 
     @Override
     public boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws LaunchValidationException, TException {
+            throws LaunchValidationException, RegistryException, OrchestratorException {
         return orchestratorService.validateProcess(experimentId, processes);
     }
 
@@ -91,18 +92,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * @return
      * @throws TException
      */
-    public boolean terminateExperiment(String experimentId, String gatewayId) throws TException {
+    public boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
         log.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         return orchestratorService.terminateExperiment(experimentId, gatewayId);
     }
 
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
-            throws TException {
+            throws RegistryException, OrchestratorException, AppCatalogException {
         orchestratorService.fetchIntermediateOutputs(experimentId, gatewayId, outputNames);
     }
 
     @Override
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
         return orchestratorService.launchProcess(processId, airavataCredStoreToken, gatewayId);
     }
 }

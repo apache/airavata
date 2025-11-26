@@ -48,7 +48,7 @@ public class GroupManagerService {
 
     private GroupManagerServiceException convertException(Throwable e, String msg) {
         logger.error(msg, e);
-        GroupManagerServiceException exception = new GroupManagerServiceException();
+        var exception = new GroupManagerServiceException();
         exception.setMessage(msg + ". More info : " + e.getMessage());
         exception.initCause(e);
         return exception;
@@ -57,28 +57,28 @@ public class GroupManagerService {
     public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException {
         try {
             // TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            var sharingClient = getSharingRegistryServiceClient();
 
-            UserGroup sharingUserGroup = new UserGroup();
+            var sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(UUID.randomUUID().toString());
             sharingUserGroup.setName(groupModel.getName());
             sharingUserGroup.setDescription(groupModel.getDescription());
             sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
-            String gatewayId = getDomainId(authzToken);
+            var gatewayId = getDomainId(authzToken);
             sharingUserGroup.setDomainId(gatewayId);
             sharingUserGroup.setOwnerId(getUserId(authzToken));
 
-            String groupId = sharingClient.createGroup(sharingUserGroup);
+            var groupId = sharingClient.createGroup(sharingUserGroup);
             internalAddUsersToGroup(sharingClient, gatewayId, groupModel.getMembers(), groupId);
             if (groupModel.getAdmins() != null && !groupModel.getAdmins().isEmpty()) {
                 sharingClient.addGroupAdmins(gatewayId, groupId, groupModel.getAdmins());
             }
             return groupId;
         } catch (Exception e) {
-            String msg = "Error Creating Group";
+            var msg = "Error Creating Group";
             logger.error(msg, e);
-            GroupManagerServiceException exception = new GroupManagerServiceException();
+            var exception = new GroupManagerServiceException();
             exception.setMessage(msg + " More info : " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -87,15 +87,15 @@ public class GroupManagerService {
 
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            String userId = getUserId(authzToken);
-            String domainId = getDomainId(authzToken);
+            var sharingClient = getSharingRegistryServiceClient();
+            var userId = getUserId(authzToken);
+            var domainId = getDomainId(authzToken);
             if (!(sharingClient.hasOwnerAccess(domainId, groupModel.getId(), userId)
                     || sharingClient.hasAdminAccess(domainId, groupModel.getId(), userId))) {
                 throw new GroupManagerServiceException("User does not have permission to update group");
             }
 
-            UserGroup sharingUserGroup = new UserGroup();
+            var sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(groupModel.getId());
             sharingUserGroup.setName(groupModel.getName());
             sharingUserGroup.setDescription(groupModel.getDescription());
