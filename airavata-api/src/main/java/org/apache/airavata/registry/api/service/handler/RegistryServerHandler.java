@@ -47,6 +47,7 @@ import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
@@ -63,7 +64,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Fetch Apache Registry API version
      */
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return registry_apiConstants.REGISTRY_API_VERSION;
     }
 

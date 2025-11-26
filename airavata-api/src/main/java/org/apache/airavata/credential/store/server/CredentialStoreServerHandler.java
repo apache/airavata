@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.model.credential.store.*;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class CredentialStoreServerHandler
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return credential_store_cpiConstants.CS_CPI_VERSION;
     }
 

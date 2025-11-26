@@ -2,7 +2,6 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,8 @@ public class ThriftExceptionHandler {
         // Convert service exceptions to AiravataSystemException
         if (e instanceof RegistryException || e instanceof AppCatalogException ||
             e instanceof org.apache.airavata.credential.store.store.CredentialStoreException ||
-            e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
+            e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException ||
+            e instanceof org.apache.airavata.orchestrator.core.exception.OrchestratorException) {
             logger.error(context, e);
             org.apache.airavata.model.error.AiravataSystemException exception = new org.apache.airavata.model.error.AiravataSystemException();
             exception.setAiravataErrorType(org.apache.airavata.model.error.AiravataErrorType.INTERNAL_ERROR);

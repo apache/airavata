@@ -118,7 +118,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Query Airavata to fetch the API version
      */
     @Override
-    public String getAPIVersion() {
+    public String getAPIVersion() throws AiravataSystemException {
         return airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 

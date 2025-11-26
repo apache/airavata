@@ -60,8 +60,7 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -202,7 +201,7 @@ public class OrchestratorService {
                     } else {
                         logger.error("Could not find a replica for the URI " + pi.getValue());
                     }
-                } catch (RegistryException e) {
+                } catch (RegistryServiceException e) {
                     throw new Exception("Error while launching experiment", e);
                 }
             } else if (pi.getType().equals(DataType.URI_COLLECTION)
@@ -229,7 +228,7 @@ public class OrchestratorService {
                         }
                     }
                     pi.setValue(StringUtils.join(filePathList, ','));
-                } catch (RegistryException e) {
+                } catch (RegistryServiceException e) {
                     throw new Exception("Error while launching experiment", e);
                 }
             }
@@ -237,7 +236,7 @@ public class OrchestratorService {
     }
 
     public String getCredentialToken(ExperimentModel experiment, UserConfigurationDataModel userConfigurationData)
-            throws OrchestratorException, AppCatalogException {
+            throws OrchestratorException, RegistryServiceException {
         String token = null;
         final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
         if (groupResourceProfileId == null) {
@@ -274,13 +273,13 @@ public class OrchestratorService {
     }
 
     public boolean validateExperiment(String experimentId)
-            throws LaunchValidationException, RegistryException, OrchestratorException {
+            throws LaunchValidationException, RegistryServiceException, OrchestratorException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(experimentId);
         return orchestrator.validateExperiment(experimentModel).isValidationState();
     }
 
     public boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws LaunchValidationException, RegistryException, OrchestratorException {
+            throws LaunchValidationException, RegistryServiceException, OrchestratorException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(experimentId);
         for (ProcessModel processModel : processes) {
             boolean state =
@@ -292,12 +291,12 @@ public class OrchestratorService {
         return true;
     }
 
-    public boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
+    public boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryServiceException, OrchestratorException {
         logger.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         return validateStatesAndCancel(experimentId, gatewayId);
     }
 
-    private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
+    private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws RegistryServiceException, OrchestratorException {
         ExperimentStatus experimentStatus = orchestratorRegistryService.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:
@@ -368,12 +367,12 @@ public class OrchestratorService {
     }
 
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
-            throws RegistryException, OrchestratorException, AppCatalogException {
+            throws RegistryServiceException, OrchestratorException {
         submitIntermediateOutputsProcess(experimentId, gatewayId, outputNames);
     }
 
     private void submitIntermediateOutputsProcess(String experimentId, String gatewayId, List<String> outputNames)
-            throws RegistryException, OrchestratorException, AppCatalogException {
+            throws RegistryServiceException, OrchestratorException {
 
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(experimentId);
         ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
@@ -409,7 +408,7 @@ public class OrchestratorService {
 
             String token = getCredentialToken(experimentModel, experimentModel.getUserConfigurationData());
             orchestrator.launchProcess(processModel, token);
-        } catch (RegistryException | OrchestratorException | AppCatalogException e) {
+        } catch (RegistryServiceException | OrchestratorException e) {
             logger.error("Failed to launch process for intermediate output fetching", e);
 
             ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
@@ -421,7 +420,7 @@ public class OrchestratorService {
         }
     }
 
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws RegistryException, OrchestratorException, AppCatalogException {
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws RegistryServiceException, OrchestratorException {
         ProcessStatus processStatus = orchestratorRegistryService.getProcessStatus(processId);
 
         switch (processStatus.getState()) {
@@ -456,13 +455,13 @@ public class OrchestratorService {
     }
 
     private ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
-            throws OrchestratorException, AppCatalogException {
+            throws OrchestratorException, RegistryServiceException {
         String selectedModuleId = getModuleId(applicationId);
         return getAppDeploymentForModule(processModel, selectedModuleId);
     }
 
     private ApplicationDeploymentDescription getAppDeploymentForModule(
-            ProcessModel processModel, String selectedModuleId) throws OrchestratorException, AppCatalogException {
+            ProcessModel processModel, String selectedModuleId) throws OrchestratorException, RegistryServiceException {
 
         List<ApplicationDeploymentDescription> applicationDeployements =
                 orchestratorRegistryService.getApplicationDeployments(selectedModuleId);
@@ -489,7 +488,7 @@ public class OrchestratorService {
         return deploymentMap.get(ComputeResourceDescription);
     }
 
-    private String getModuleId(String applicationId) throws OrchestratorException, AppCatalogException {
+    private String getModuleId(String applicationId) throws OrchestratorException, RegistryServiceException {
         ApplicationInterfaceDescription applicationInterface =
                 orchestratorRegistryService.getApplicationInterface(applicationId);
         List<String> applicationModules = applicationInterface.getApplicationModules();
@@ -523,7 +522,7 @@ public class OrchestratorService {
         }
     }
 
-    public void addProcessValidationErrors(String experimentId, ErrorModel details) throws RegistryException {
+    public void addProcessValidationErrors(String experimentId, ErrorModel details) throws RegistryServiceException {
         orchestratorRegistryService.addErrors(OrchestratorConstants.EXPERIMENT_ERROR, details, experimentId);
     }
 
@@ -539,7 +538,7 @@ public class OrchestratorService {
                 launchProcess(processId, airavataCredStoreToken, gatewayId);
             }
             return true;
-        } catch (RegistryException e) {
+        } catch (RegistryServiceException e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Error while retrieving process IDs");
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
@@ -680,10 +679,8 @@ public class OrchestratorService {
                     orchestratorRegistryService.registerQueueStatuses(queueStatusModels);
                 }
             }
-        } catch (RegistryException e) {
+        } catch (RegistryServiceException e) {
             logger.error("Error while registering queue statuses", e);
-        } catch (AppCatalogException e) {
-            logger.error("Error while getting compute resource for queue status", e);
         }
     }
 
@@ -739,17 +736,17 @@ public class OrchestratorService {
         } catch (AiravataException e) {
             logger.error(
                     "expId : " + experimentId + " Error while publishing experiment status to " + status.toString(), e);
-        } catch (RegistryException e) {
+        } catch (RegistryServiceException e) {
             logger.error(
                     "expId : " + experimentId + " Error while updating experiment status to " + status.toString(), e);
         }
     }
 
-    public ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException {
+    public ExperimentStatus getExperimentStatus(String experimentId) throws RegistryServiceException {
         return orchestratorRegistryService.getExperimentStatus(experimentId);
     }
 
-    public ProcessModel getProcess(String processId) throws RegistryException {
+    public ProcessModel getProcess(String processId) throws RegistryServiceException {
         return orchestratorRegistryService.getProcess(processId);
     }
 
@@ -789,15 +786,9 @@ public class OrchestratorService {
                     "Experiment '" + experimentId + "' launch failed. Experiment failed to validate: "
                             + launchValidationException.getErrorMessage(),
                     launchValidationException);
-        } catch (RegistryException e) {
+        } catch (RegistryServiceException e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Registry error: " + e.getMessage());
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
-            throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
-        } catch (AppCatalogException e) {
-            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
-            status.setReason("App catalog error: " + e.getMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
@@ -930,10 +921,10 @@ public class OrchestratorService {
         private void launchExperiment(MessageContext messageContext) {
             try {
                 handleLaunchExperimentFromMessage(messageContext);
+            } catch (RegistryServiceException e) {
+                logger.error("Experiment launch failed due to registry error", e);
             } catch (TException e) {
                 logger.error("Experiment launch failed due to Thrift conversion error", e);
-            } catch (RegistryException e) {
-                logger.error("Experiment launch failed due to registry error", e);
             } catch (Throwable e) {
                 logger.error("An unknown issue while launching experiment", e);
             } finally {

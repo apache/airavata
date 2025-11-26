@@ -20,6 +20,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
@@ -38,7 +39,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
     }
 

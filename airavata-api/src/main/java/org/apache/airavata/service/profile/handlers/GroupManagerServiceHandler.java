@@ -20,6 +20,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
@@ -41,7 +42,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TException {
+    public String getAPIVersion() throws AiravataSystemException {
         return group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
