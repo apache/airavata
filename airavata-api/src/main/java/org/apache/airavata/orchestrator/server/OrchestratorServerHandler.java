@@ -20,7 +20,7 @@
 package org.apache.airavata.orchestrator.server;
 
 import java.util.*;
-import org.apache.airavata.api.server.handler.ThriftExceptionHandler;
+import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
@@ -62,10 +62,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     public boolean launchExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
         try {
             return orchestratorService.launchExperimentWithErrorHandling(
-                    experimentId, gatewayId, org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
+                    experimentId,
+                    gatewayId,
+                    org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
         } catch (Throwable e) {
-            ThriftExceptionHandler.convertException(e, "Error launching experiment: " + experimentId);
-            return false; // unreachable
+            log.error("Error launching experiment: " + experimentId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error launching experiment: " + experimentId + ". More info: " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -84,8 +90,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         } catch (LaunchValidationException e) {
             throw e;
         } catch (Throwable e) {
-            ThriftExceptionHandler.convertException(e, "Error validating experiment: " + experimentId);
-            return false; // unreachable
+            log.error("Error validating experiment: " + experimentId, e);
+            LaunchValidationException exception = new LaunchValidationException();
+            exception.setErrorMessage(
+                    "Error validating experiment: " + experimentId + ". More info: " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -96,8 +105,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         } catch (LaunchValidationException e) {
             throw e;
         } catch (Throwable e) {
-            ThriftExceptionHandler.convertException(e, "Error validating process: " + experimentId);
-            return false; // unreachable
+            log.error("Error validating process: " + experimentId, e);
+            LaunchValidationException exception = new LaunchValidationException();
+            exception.setErrorMessage("Error validating process: " + experimentId + ". More info: " + e.getMessage());
+            throw exception;
         }
     }
 
@@ -114,27 +125,42 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         try {
             return orchestratorService.terminateExperiment(experimentId, gatewayId);
         } catch (Throwable e) {
-            ThriftExceptionHandler.convertException(e, "Error terminating experiment: " + experimentId);
-            return false; // unreachable
+            log.error("Error terminating experiment: " + experimentId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error terminating experiment: " + experimentId + ". More info: " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) {
+    public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
+            throws AiravataSystemException {
         try {
             orchestratorService.fetchIntermediateOutputs(experimentId, gatewayId, outputNames);
         } catch (Throwable e) {
             log.error("Error fetching intermediate outputs for experiment: " + experimentId, e);
-            ThriftExceptionHandler.convertException(e, "Error fetching intermediate outputs: " + experimentId);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error fetching intermediate outputs for experiment: " + experimentId + ". More info: "
+                    + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     @Override
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws AiravataSystemException {
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
+            throws AiravataSystemException {
         try {
             return orchestratorService.launchProcess(processId, airavataCredStoreToken, gatewayId);
         } catch (Throwable e) {
-            ThriftExceptionHandler.convertException(e, "Error launching process: " + processId);
-            return false; // unreachable
+            log.error("Error launching process: " + processId, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error launching process: " + processId + ". More info: " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 }

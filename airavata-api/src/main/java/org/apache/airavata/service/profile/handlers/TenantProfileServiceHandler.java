@@ -28,7 +28,6 @@ import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,49 +52,49 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @Override
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.addGateway(authzToken, gateway);
     }
 
     @Override
     @SecurityCheck
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.updateGateway(authzToken, updatedGateway);
     }
 
     @Override
     @SecurityCheck
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.getGateway(authzToken, airavataInternalGatewayId);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.deleteGateway(authzToken, airavataInternalGatewayId, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public List<Gateway> getAllGateways(AuthzToken authzToken)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.getAllGateways(authzToken);
     }
 
     @Override
     @SecurityCheck
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.isGatewayExist(authzToken, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername)
-            throws TenantProfileServiceException, AuthorizationException, TException {
+            throws TenantProfileServiceException, AuthorizationException {
         return tenantProfileService.getAllGatewaysForUser(authzToken, requesterUsername);
     }
 }

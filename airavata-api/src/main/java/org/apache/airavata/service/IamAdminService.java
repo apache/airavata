@@ -52,13 +52,6 @@ public class IamAdminService {
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
-    private IamAdminServicesException convertException(Throwable e, String msg) {
-        logger.error(msg, e);
-        var exception = new IamAdminServicesException(msg + ". More info : " + e.getMessage());
-        exception.initCause(e);
-        return exception;
-    }
-
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException {
         var keycloakclient = new TenantManagementKeycloakImpl();
         var isSuperAdminCredentials = getSuperAdminPasswordCredential();
@@ -79,7 +72,8 @@ public class IamAdminService {
             return gatewayWithIdAndSecret;
         } catch (TException | ApplicationSettingsException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            var iamAdminServicesException = new IamAdminServicesException("Gateway Setup Failed, reason: " + ex.getMessage());
+            var iamAdminServicesException =
+                    new IamAdminServicesException("Gateway Setup Failed, reason: " + ex.getMessage());
             iamAdminServicesException.initCause(ex);
             throw iamAdminServicesException;
         }
@@ -93,7 +87,11 @@ public class IamAdminService {
         } catch (IamAdminServicesException e) {
             throw e;
         } catch (Throwable ex) {
-            throw convertException(ex, "Error while checking username availability");
+            logger.error("Error while checking username availability", ex);
+            var exception = new IamAdminServicesException(
+                    "Error while checking username availability. More info : " + ex.getMessage());
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -252,7 +250,11 @@ public class IamAdminService {
         } catch (IamAdminServicesException e) {
             throw e;
         } catch (Throwable ex) {
-            throw convertException(ex, "Error while updating user profile");
+            logger.error("Error while updating user profile", ex);
+            var exception =
+                    new IamAdminServicesException("Error while updating user profile. More info : " + ex.getMessage());
+            exception.initCause(ex);
+            throw exception;
         }
     }
 
@@ -264,7 +266,10 @@ public class IamAdminService {
         } catch (IamAdminServicesException e) {
             throw e;
         } catch (Throwable ex) {
-            throw convertException(ex, "Error while deleting user");
+            logger.error("Error while deleting user", ex);
+            var exception = new IamAdminServicesException("Error while deleting user. More info : " + ex.getMessage());
+            exception.initCause(ex);
+            throw exception;
         }
     }
 

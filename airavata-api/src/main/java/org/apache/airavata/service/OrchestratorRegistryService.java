@@ -72,7 +72,8 @@ public class OrchestratorRegistryService {
         return registryService.getExperimentStatus(airavataExperimentId);
     }
 
-    public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryServiceException {
+    public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
+            throws RegistryServiceException {
         registryService.updateExperimentStatus(experimentStatus, experimentId);
     }
 
@@ -104,7 +105,8 @@ public class OrchestratorRegistryService {
         return registryService.getApplicationOutputs(appInterfaceId);
     }
 
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException {
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
+            throws RegistryServiceException {
         return registryService.getApplicationInterface(appInterfaceId);
     }
 

@@ -28,7 +28,6 @@ import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,89 +48,89 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @Override
     @SecurityCheck
     public String createGroup(AuthzToken authzToken, GroupModel groupModel)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.createGroup(authzToken, groupModel);
     }
 
     @Override
     @SecurityCheck
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.updateGroup(authzToken, groupModel);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.deleteGroup(authzToken, groupId, ownerId);
     }
 
     @Override
     @SecurityCheck
     public GroupModel getGroup(AuthzToken authzToken, String groupId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.getGroup(authzToken, groupId);
     }
 
     @Override
     @SecurityCheck
     public List<GroupModel> getGroups(AuthzToken authzToken)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.getGroups(authzToken);
     }
 
     @Override
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.getAllGroupsUserBelongs(authzToken, userName);
     }
 
     @Override
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.addUsersToGroup(authzToken, userIds, groupId);
     }
 
     @Override
     public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.removeUsersFromGroup(authzToken, userIds, groupId);
     }
 
     @Override
     @SecurityCheck
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.transferGroupOwnership(authzToken, groupId, newOwnerId);
     }
 
     @Override
     @SecurityCheck
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.addGroupAdmins(authzToken, groupId, adminIds);
     }
 
     @Override
     @SecurityCheck
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.removeGroupAdmins(authzToken, groupId, adminIds);
     }
 
     @Override
     @SecurityCheck
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.hasAdminAccess(authzToken, groupId, adminId);
     }
 
     @Override
     @SecurityCheck
     public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId)
-            throws GroupManagerServiceException, AuthorizationException, TException {
+            throws GroupManagerServiceException, AuthorizationException {
         return groupManagerService.hasOwnerAccess(authzToken, groupId, ownerId);
     }
 }
