@@ -73,6 +73,10 @@ public class OrchestratorRegistryService {
         return registryService.getExperimentStatus(airavataExperimentId);
     }
 
+    public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryException {
+        registryService.updateExperimentStatus(experimentStatus, experimentId);
+    }
+
     public String addProcess(ProcessModel processModel, String experimentId) throws RegistryException {
         return registryService.addProcess(processModel, experimentId);
     }

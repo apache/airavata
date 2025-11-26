@@ -862,7 +862,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException {
             // getExperiment will apply sharing permissions
-            ExperimentModel existingExperiment = this.getExperiment(authzToken, existingExperimentID);
+            ExperimentModel existingExperiment = airavataService.getExperiment(authzToken, existingExperimentID);
         return airavataService.cloneExperimentInternal(
                     authzToken,
                     existingExperimentID,
@@ -878,7 +878,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException {
             // get existing experiment by bypassing normal sharing permissions for the admin user
-            ExperimentModel existingExperiment = this.getExperimentByAdmin(authzToken, existingExperimentID);
+            ExperimentModel existingExperiment = airavataService.getExperimentByAdmin(authzToken, existingExperimentID);
         return airavataService.cloneExperimentInternal(
                     authzToken,
                     existingExperimentID,

@@ -54,32 +54,32 @@ public class IamAdminService {
 
     private IamAdminServicesException convertException(Throwable e, String msg) {
         logger.error(msg, e);
-        IamAdminServicesException exception = new IamAdminServicesException(msg + ". More info : " + e.getMessage());
+        var exception = new IamAdminServicesException(msg + ". More info : " + e.getMessage());
         exception.initCause(e);
         return exception;
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
-        PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
+        var keycloakclient = new TenantManagementKeycloakImpl();
+        var isSuperAdminCredentials = getSuperAdminPasswordCredential();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
             // Load the tenant admin password stored in gateway request
-            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
+            var credentialStoreClient = getCredentialStoreServiceClient();
             // Admin password token should already be stored under requested gateway's gatewayId
-            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(
+            var tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(
                     gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
             if (!keycloakclient.createTenantAdminAccount(
                     isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
-            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
+            var gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
         } catch (TException | ApplicationSettingsException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException("Gateway Setup Failed, reason: " + ex.getMessage());
+            var iamAdminServicesException = new IamAdminServicesException("Gateway Setup Failed, reason: " + ex.getMessage());
             iamAdminServicesException.initCause(ex);
             throw iamAdminServicesException;
         }
@@ -87,8 +87,8 @@ public class IamAdminService {
 
     public boolean isUsernameAvailable(AuthzToken authzToken, String username) throws IamAdminServicesException {
         try {
-            TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var keycloakClient = new TenantManagementKeycloakImpl();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException e) {
             throw e;
