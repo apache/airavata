@@ -47,8 +47,8 @@ import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -64,7 +64,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return true/false
      */
     @Override
-    public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException, TException {
+    public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException {
         return registryService.isUserExists(gatewayId, userName);
     }
 
@@ -110,7 +109,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * list of usernames of the users in the gateway
      */
     @Override
-    public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException, TException {
+    public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException {
         return registryService.getAllUsersInGateway(gatewayId);
     }
 
@@ -122,7 +121,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Gateway obejct.
      */
     @Override
-    public Gateway getGateway(String gatewayId) throws RegistryServiceException, TException {
+    public Gateway getGateway(String gatewayId) throws RegistryServiceException {
         return registryService.getGateway(gatewayId);
     }
 
@@ -134,7 +133,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Boolean identifier for the success or failure of the deletion operation.
      */
     @Override
-    public boolean deleteGateway(String gatewayId) throws RegistryServiceException, TException {
+    public boolean deleteGateway(String gatewayId) throws RegistryServiceException {
         return registryService.deleteGateway(gatewayId);
     }
 
@@ -142,7 +141,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Get All the Gateways Connected to Airavata.
      */
     @Override
-    public List<Gateway> getAllGateways() throws RegistryServiceException, TException {
+    public List<Gateway> getAllGateways() throws RegistryServiceException {
         return registryService.getAllGateways();
     }
 
@@ -154,24 +153,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * return the gatewayId of the existing gateway.
      */
     @Override
-    public boolean isGatewayExist(String gatewayId) throws RegistryServiceException, TException {
+    public boolean isGatewayExist(String gatewayId) throws RegistryServiceException {
         return registryService.isGatewayExist(gatewayId);
     }
 
     @Override
-    public boolean deleteNotification(String gatewayId, String notificationId)
-            throws RegistryServiceException, TException {
+    public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryServiceException {
         return registryService.deleteNotification(gatewayId, notificationId);
     }
 
     @Override
-    public Notification getNotification(String gatewayId, String notificationId)
-            throws RegistryServiceException, TException {
+    public Notification getNotification(String gatewayId, String notificationId) throws RegistryServiceException {
         return registryService.getNotification(gatewayId, notificationId);
     }
 
     @Override
-    public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException, TException {
+    public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException {
         return registryService.getAllNotifications(gatewayId);
     }
 
@@ -184,7 +181,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * project data model will be returned.
      */
     @Override
-    public Project getProject(String projectId) throws RegistryServiceException, TException {
+    public Project getProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
         return registryService.getProject(projectId);
     }
 
@@ -199,7 +196,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * NOTE: This method is not used within gateways connected with Airavata.
      */
     @Override
-    public boolean deleteProject(String projectId) throws RegistryServiceException, TException {
+    public boolean deleteProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
         return registryService.deleteProject(projectId);
     }
 
@@ -214,7 +211,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getUserProjects(gatewayId, userName, limit, offset);
     }
 
@@ -237,7 +234,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<String> accessibleExpIds,
             int limit,
             int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getExperimentStatistics(
                 gatewayId,
                 fromTime,
@@ -261,7 +258,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
     }
 
@@ -276,7 +273,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getUserExperiments(gatewayId, userName, limit, offset);
     }
 
@@ -288,7 +285,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *                            Identifier for the success or failure of the deletion operation.
      */
     @Override
-    public boolean deleteExperiment(String experimentId) throws RegistryServiceException, TException {
+    public boolean deleteExperiment(String experimentId) throws RegistryServiceException {
         return registryService.deleteExperiment(experimentId);
     }
 
@@ -331,7 +328,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param airavataExperimentId
      */
     @Override
-    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryServiceException, TException {
+    public ExperimentModel getExperiment(String airavataExperimentId)
+            throws RegistryServiceException, ExperimentNotFoundException {
         ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
         return experimentModel;
     }
@@ -362,8 +360,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *                                     rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId)
-            throws RegistryServiceException, TException {
+    public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException {
         return registryService.getDetailedExperimentTree(airavataExperimentId);
     }
 
@@ -377,8 +374,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * ExperimentStatus model with the current status will be returned.
      */
     @Override
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId)
-            throws RegistryServiceException, TException {
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException {
         return registryService.getExperimentStatus(airavataExperimentId);
     }
 
@@ -392,7 +388,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getExperimentOutputs(airavataExperimentId);
     }
 
@@ -406,7 +402,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getIntermediateOutputs(airavataExperimentId);
     }
 
@@ -418,112 +414,104 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *                                    Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
      */
     @Override
-    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId)
-            throws RegistryServiceException, TException {
+    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryServiceException {
         return registryService.getJobStatuses(airavataExperimentId);
     }
 
     @Override
     public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.addExperimentProcessOutputs(outputType, outputs, id);
     }
 
     @Override
-    public void addErrors(String errorType, ErrorModel errorModel, String id)
-            throws RegistryServiceException, TException {
+    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException {
         registryService.addErrors(errorType, errorModel, id);
     }
 
     @Override
-    public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
+    public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException {
         registryService.addTaskStatus(taskStatus, taskId);
     }
 
     @Override
-    public void addProcessStatus(ProcessStatus processStatus, String processId)
-            throws RegistryServiceException, TException {
+    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
         registryService.addProcessStatus(processStatus, processId);
     }
 
     @Override
-    public void updateProcessStatus(ProcessStatus processStatus, String processId)
-            throws RegistryServiceException, TException {
+    public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
         registryService.updateProcessStatus(processStatus, processId);
     }
 
     @Override
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.updateExperimentStatus(experimentStatus, experimentId);
     }
 
     @Override
-    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId)
-            throws RegistryServiceException, TException {
+    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
         registryService.addJobStatus(jobStatus, taskId, jobId);
     }
 
     @Override
-    public void addJob(JobModel jobModel, String processId) throws RegistryServiceException, TException {
+    public void addJob(JobModel jobModel, String processId) throws RegistryServiceException {
         registryService.addJob(jobModel, processId);
     }
 
     @Override
-    public void deleteJobs(String processId) throws RegistryServiceException, TException {
+    public void deleteJobs(String processId) throws RegistryServiceException {
         registryService.deleteJobs(processId);
     }
 
     @Override
-    public String addProcess(ProcessModel processModel, String experimentId)
-            throws RegistryServiceException, TException {
+    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException {
         return registryService.addProcess(processModel, experimentId);
     }
 
     @Override
-    public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException, TException {
+    public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException {
         registryService.updateProcess(processModel, processId);
     }
 
     @Override
-    public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException, TException {
+    public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException {
         return registryService.addTask(taskModel, processId);
     }
 
     @Override
-    public void deleteTasks(String processId) throws RegistryServiceException, TException {
+    public void deleteTasks(String processId) throws RegistryServiceException {
         registryService.deleteTasks(processId);
     }
 
     @Override
-    public UserConfigurationDataModel getUserConfigurationData(String experimentId)
-            throws RegistryServiceException, TException {
+    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException {
         return registryService.getUserConfigurationData(experimentId);
     }
 
     @Override
-    public ProcessModel getProcess(String processId) throws RegistryServiceException, TException {
+    public ProcessModel getProcess(String processId) throws RegistryServiceException {
         return registryService.getProcess(processId);
     }
 
     @Override
-    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
+    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException {
         return registryService.getProcessList(experimentId);
     }
 
     @Override
-    public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
+    public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException {
         return registryService.getProcessStatus(processId);
     }
 
     @Override
-    public List<ProcessModel> getProcessListInState(ProcessState processState)
-            throws RegistryServiceException, TException {
+    public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException {
         return registryService.getProcessListInState(processState);
     }
 
     @Override
-    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException, TException {
+    public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException {
         return registryService.getProcessStatusList(processId);
     }
 
@@ -531,7 +519,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * queryType can be PROCESS_ID or TASK_ID
      */
     @Override
-    public boolean isJobExist(String queryType, String id) throws RegistryServiceException, TException {
+    public boolean isJobExist(String queryType, String id) throws RegistryServiceException {
         return registryService.isJobExist(queryType, id);
     }
 
@@ -539,45 +527,45 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * queryType can be PROCESS_ID or TASK_ID
      */
     @Override
-    public JobModel getJob(String queryType, String id) throws RegistryServiceException, TException {
+    public JobModel getJob(String queryType, String id) throws RegistryServiceException {
         return registryService.getJob(queryType, id);
     }
 
     @Override
-    public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException, TException {
+    public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException {
         return registryService.getJobs(queryType, id);
     }
 
     @Override
     public int getJobCount(
             org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
     }
 
     @Override
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchBackTimeInMinutes)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
     }
 
     @Override
-    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
+    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException {
         return registryService.getProcessOutputs(processId);
     }
 
     @Override
-    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException, TException {
+    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException {
         return registryService.getProcessWorkflows(processId);
     }
 
     @Override
-    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException, TException {
+    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException {
         registryService.addProcessWorkflow(processWorkflow);
     }
 
     @Override
-    public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
+    public List<String> getProcessIds(String experimentId) throws RegistryServiceException {
         return registryService.getProcessIds(experimentId);
     }
 
@@ -589,7 +577,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *                                    Job details.
      */
     @Override
-    public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException, TException {
+    public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException {
         return registryService.getJobDetails(airavataExperimentId);
     }
 
@@ -601,7 +589,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns an Application Module Object.
      */
     @Override
-    public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException, TException {
+    public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException {
         return registryService.getApplicationModule(appModuleId);
     }
 
@@ -613,7 +601,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the list of all Application Module Objects.
      */
     @Override
-    public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
+    public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException {
         return registryService.getAllAppModules(gatewayId);
     }
 
@@ -628,7 +616,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ApplicationModule> getAccessibleAppModules(
             String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
     }
 
@@ -640,7 +628,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException, TException {
+    public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException {
         return registryService.deleteApplicationModule(appModuleId);
     }
 
@@ -653,7 +641,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getApplicationDeployment(appDeploymentId);
     }
 
@@ -665,7 +653,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
+    public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException {
         return registryService.deleteApplicationDeployment(appDeploymentId);
     }
 
@@ -679,7 +667,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAllApplicationDeployments(gatewayId);
     }
 
@@ -694,9 +682,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
             String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAccessibleApplicationDeployments(
-                    gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+                gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
     /**
@@ -715,9 +703,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String appModuleId,
             List<String> accessibleAppDeploymentIds,
             List<String> accessibleComputeResourceIds)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAccessibleApplicationDeploymentsForAppModule(
-                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+                gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
     }
 
     /**
@@ -728,13 +716,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a list of Deployed Resources.
      */
     @Override
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException, TException {
+    public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException {
         return registryService.getAppModuleDeployedResources(appModuleId);
     }
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getApplicationDeployments(appModuleId);
     }
 
@@ -747,7 +735,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getApplicationInterface(appInterfaceId);
     }
 
@@ -759,7 +747,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
+    public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException {
         return registryService.deleteApplicationInterface(appInterfaceId);
     }
 
@@ -771,8 +759,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a list of application interfaces with corresponsing ID's
      */
     @Override
-    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId)
-            throws RegistryServiceException, TException {
+    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws RegistryServiceException {
         return registryService.getAllApplicationInterfaceNames(gatewayId);
     }
 
@@ -785,7 +772,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAllApplicationInterfaces(gatewayId);
     }
 
@@ -797,8 +784,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a list of application inputs.
      */
     @Override
-    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId)
-            throws RegistryServiceException, TException {
+    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryServiceException {
         return registryService.getApplicationInputs(appInterfaceId);
     }
 
@@ -810,8 +796,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a list of application outputs.
      */
     @Override
-    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId)
-            throws RegistryServiceException, TException {
+    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryServiceException {
         return registryService.getApplicationOutputs(appInterfaceId);
     }
 
@@ -825,7 +810,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
     }
 
@@ -837,8 +822,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
-    public ComputeResourceDescription getComputeResource(String computeResourceId)
-            throws RegistryServiceException, TException {
+    public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException {
         return registryService.getComputeResource(computeResourceId);
     }
 
@@ -849,7 +833,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
-    public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException, TException {
+    public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException {
         return registryService.getAllComputeResourceNames();
     }
 
@@ -861,7 +845,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException, TException {
+    public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException {
         return registryService.deleteComputeResource(computeResourceId);
     }
 
@@ -873,8 +857,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Storage Resource Object created from the datamodel..
      */
     @Override
-    public StorageResourceDescription getStorageResource(String storageResourceId)
-            throws RegistryServiceException, TException {
+    public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException {
         return registryService.getStorageResource(storageResourceId);
     }
 
@@ -885,7 +868,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
-    public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException, TException {
+    public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException {
         return registryService.getAllStorageResourceNames();
     }
 
@@ -897,7 +880,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException, TException {
+    public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException {
         return registryService.deleteStorageResource(storageResourceId);
     }
 
@@ -907,7 +890,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param jobSubmissionId@return LOCALSubmission instance
      */
     @Override
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
+    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException {
         return registryService.getLocalJobSubmission(jobSubmissionId);
     }
 
@@ -917,7 +900,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param jobSubmissionId@return SSHJobSubmission instance
      */
     @Override
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
+    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException {
         return registryService.getSSHJobSubmission(jobSubmissionId);
     }
 
@@ -934,8 +917,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param jobSubmissionId
      */
     @Override
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId)
-            throws RegistryServiceException, TException {
+    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws RegistryServiceException {
         return registryService.getUnicoreJobSubmission(jobSubmissionId);
     }
 
@@ -950,8 +932,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param jobSubmissionId
      */
     @Override
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId)
-            throws RegistryServiceException, TException {
+    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException {
         return registryService.getCloudJobSubmission(jobSubmissionId);
     }
 
@@ -962,7 +943,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return LOCALDataMovement instance
      */
     @Override
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException, TException {
+    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException {
         return registryService.getLocalDataMovement(dataMovementId);
     }
 
@@ -973,7 +954,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return SCPDataMovement instance
      */
     @Override
-    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
+    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException {
         return registryService.getSCPDataMovement(dataMovementId);
     }
 
@@ -984,8 +965,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return UnicoreDataMovement instance
      */
     @Override
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId)
-            throws RegistryServiceException, TException {
+    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws RegistryServiceException {
         return registryService.getUnicoreDataMovement(dataMovementId);
     }
 
@@ -996,8 +976,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return GridFTPDataMovement instance
      */
     @Override
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId)
-            throws RegistryServiceException, TException {
+    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws RegistryServiceException {
         return registryService.getGridFTPDataMovement(dataMovementId);
     }
 
@@ -1011,7 +990,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return false;
     }
 
@@ -1025,7 +1004,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return false;
     }
 
@@ -1038,7 +1017,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return false;
     }
 
@@ -1051,7 +1030,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return false;
     }
 
@@ -1065,18 +1044,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
     }
 
     @Override
-    public ResourceJobManager getResourceJobManager(String resourceJobManagerId)
-            throws RegistryServiceException, TException {
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
         return registryService.getResourceJobManager(resourceJobManagerId);
     }
 
     @Override
-    public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
+    public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
         return registryService.deleteResourceJobManager(resourceJobManagerId);
     }
 
@@ -1089,8 +1067,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteBatchQueue(String computeResourceId, String queueName)
-            throws RegistryServiceException, TException {
+    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws RegistryServiceException {
         return registryService.deleteBatchQueue(computeResourceId, queueName);
     }
 
@@ -1102,8 +1079,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Gateway Resource Profile Object.
      */
     @Override
-    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID)
-            throws RegistryServiceException, TException {
+    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
         return registryService.getGatewayResourceProfile(gatewayID);
     }
 
@@ -1115,7 +1091,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException, TException {
+    public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
         return registryService.deleteGatewayResourceProfile(gatewayID);
     }
 
@@ -1129,7 +1105,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
@@ -1143,7 +1119,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGatewayStoragePreference(gatewayID, storageId);
     }
 
@@ -1156,7 +1132,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
     }
 
@@ -1168,8 +1144,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the StoragePreference object.
      */
     @Override
-    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID)
-            throws RegistryServiceException, TException {
+    public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws RegistryServiceException {
         return registryService.getAllGatewayStoragePreferences(gatewayID);
     }
 
@@ -1180,7 +1155,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns all the GatewayResourcePrifle list object.
      */
     @Override
-    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException, TException {
+    public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException {
         return registryService.getAllGatewayResourceProfiles();
     }
 
@@ -1194,7 +1169,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
 
@@ -1207,132 +1182,125 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId)
-            throws RegistryServiceException, TException {
+    public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws RegistryServiceException {
         return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
     }
 
     @Override
-    public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
+    public DataProductModel getDataProduct(String productUri) throws RegistryServiceException {
         return registryService.getDataProduct(productUri);
     }
 
     @Override
-    public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException, TException {
+    public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException {
         return registryService.getParentDataProduct(productUri);
     }
 
     @Override
-    public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException, TException {
+    public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException {
         return registryService.getChildDataProducts(productUri);
     }
 
     @Override
     public List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
     }
 
     @Override
     public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.createGroupResourceProfile(groupResourceProfile);
     }
 
     @Override
-    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile)
-            throws RegistryServiceException, TException {
+    public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException {
         registryService.updateGroupResourceProfile(groupResourceProfile);
     }
 
     @Override
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
         return registryService.getGroupResourceProfile(groupResourceProfileId);
     }
 
     @Override
-    public boolean isGroupResourceProfileExists(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+    public boolean isGroupResourceProfileExists(String groupResourceProfileId) throws RegistryServiceException {
         return registryService.isGroupResourceProfileExists(groupResourceProfileId);
     }
 
     @Override
-    public boolean removeGroupResourceProfile(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+    public boolean removeGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
         return registryService.removeGroupResourceProfile(groupResourceProfileId);
     }
 
     @Override
     public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
     }
 
     @Override
     public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
     }
 
     @Override
-    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId)
-            throws RegistryServiceException, TException {
+    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
         return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
     }
 
     @Override
-    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId)
-            throws RegistryServiceException, TException {
+    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
         return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
+            String computeResourceId, String groupResourceProfileId) throws RegistryServiceException {
         return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
     }
 
     @Override
     public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
     }
 
     @Override
     public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
     }
 
     @Override
     public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
     }
 
     @Override
     public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
     }
 
     @Override
     public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
     }
 
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         try {
             return registryService.registerReplicaLocation(replicaLocationModel);
         } catch (Throwable e) {
@@ -1347,7 +1315,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param dataProductModel
      */
     @Override
-    public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException, TException {
+    public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException {
         try {
             return registryService.registerDataProduct(dataProductModel);
         } catch (Throwable e) {
@@ -1367,8 +1335,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGatewayStoragePreference(
-            String gatewayID, String storageId, StoragePreference storagePreference)
-            throws RegistryServiceException, TException {
+            String gatewayID, String storageId, StoragePreference storagePreference) throws RegistryServiceException {
         return registryService.updateGatewayStoragePreference(gatewayID, storageId, storagePreference);
     }
 
@@ -1384,9 +1351,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateGatewayComputeResourcePreference(
-                    gatewayID, computeResourceId, computeResourcePreference);
+                gatewayID, computeResourceId, computeResourcePreference);
     }
 
     /**
@@ -1402,7 +1369,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean addGatewayStoragePreference(
             String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
     }
 
@@ -1419,9 +1386,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean addGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addGatewayComputeResourcePreference(
-                    gatewayID, computeResourceId, computeResourcePreference);
+                gatewayID, computeResourceId, computeResourcePreference);
     }
 
     /**
@@ -1434,7 +1401,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
     }
 
@@ -1449,19 +1416,18 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
     }
 
     @Override
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
     }
 
     @Override
-    public String registerResourceJobManager(ResourceJobManager resourceJobManager)
-            throws RegistryServiceException, TException {
+    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws RegistryServiceException {
         return registryService.registerResourceJobManager(resourceJobManager);
     }
 
@@ -1475,7 +1441,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
     }
 
@@ -1490,8 +1456,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateGridFTPDataMovementDetails(
-            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)
-            throws RegistryServiceException, TException {
+            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException {
         throw new RegistryServiceException("updateGridFTPDataMovementDetails is not yet implemented");
     }
 
@@ -1510,9 +1475,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addGridFTPDataMovementDetails(
             String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addGridFTPDataMovementDetails(
-                    computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
+                computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
     }
 
     /**
@@ -1526,8 +1491,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUnicoreDataMovementDetails(
-            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)
-            throws RegistryServiceException, TException {
+            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException {
         throw new RegistryServiceException("updateUnicoreDataMovementDetails is not yet implemented");
     }
 
@@ -1546,9 +1510,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addUnicoreDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
-            throws RegistryServiceException, TException {
-        return registryService.addUnicoreDataMovementDetails(
-                    resourceId, dmType, priorityOrder, unicoreDataMovement);
+            throws RegistryServiceException {
+        return registryService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement);
     }
 
     /**
@@ -1562,7 +1525,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
     }
 
@@ -1581,7 +1544,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSCPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
     }
 
@@ -1595,7 +1558,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
     }
 
@@ -1614,9 +1577,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addLocalDataMovementDetails(
             String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
-            throws RegistryServiceException, TException {
-        return registryService.addLocalDataMovementDetails(
-                    resourceId, dataMoveType, priorityOrder, localDataMovement);
+            throws RegistryServiceException {
+        return registryService.addLocalDataMovementDetails(resourceId, dataMoveType, priorityOrder, localDataMovement);
     }
 
     /**
@@ -1630,7 +1592,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUnicoreJobSubmissionDetails(
             String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         throw new RegistryServiceException("updateUnicoreJobSubmissionDetails is not yet implemented");
     }
 
@@ -1644,7 +1606,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
     }
 
@@ -1658,7 +1620,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
     }
 
@@ -1688,7 +1650,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addCloudJobSubmissionDetails(
             String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
     }
 
@@ -1705,9 +1667,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addUNICOREJobSubmissionDetails(
             String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
-            throws RegistryServiceException, TException {
-        return registryService.addUNICOREJobSubmissionDetails(
-                    computeResourceId, priorityOrder, unicoreJobSubmission);
+            throws RegistryServiceException {
+        return registryService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
     }
 
     /**
@@ -1723,7 +1684,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSSHForkJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
@@ -1740,7 +1701,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSSHJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
     }
 
@@ -1754,7 +1715,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
     }
 
@@ -1771,7 +1732,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addLocalSubmissionDetails(
             String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
     }
 
@@ -1786,7 +1747,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
     }
 
@@ -1799,7 +1760,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.registerStorageResource(storageResourceDescription);
     }
 
@@ -1814,7 +1775,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
     }
 
@@ -1827,7 +1788,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.registerComputeResource(computeResourceDescription);
     }
 
@@ -1842,7 +1803,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationInterface(
             String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
     }
 
@@ -1856,7 +1817,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.registerApplicationInterface(gatewayId, applicationInterface);
     }
 
@@ -1871,7 +1832,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationDeployment(
             String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
     }
 
@@ -1885,8 +1846,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationDeployment(
-            String gatewayId, ApplicationDeploymentDescription applicationDeployment)
-            throws RegistryServiceException, TException {
+            String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException {
         return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
     }
 
@@ -1900,7 +1860,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateApplicationModule(appModuleId, applicationModule);
     }
 
@@ -1915,20 +1875,20 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.registerApplicationModule(gatewayId, applicationModule);
     }
 
     @Override
     public void updateResourceScheduleing(
             String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
     }
 
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
     }
 
@@ -1958,7 +1918,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.updateExperiment(airavataExperimentId, experiment);
     }
 
@@ -2007,8 +1967,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param experiment
      */
     @Override
-    public String createExperiment(String gatewayId, ExperimentModel experiment)
-            throws RegistryServiceException, TException {
+    public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryServiceException {
         return registryService.createExperiment(gatewayId, experiment);
     }
 
@@ -2032,7 +1991,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             Map<ExperimentSearchFields, String> filters,
             int limit,
             int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
     }
 
@@ -2055,7 +2014,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             Map<ProjectSearchFields, String> filters,
             int limit,
             int offset)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
     }
 
@@ -2068,7 +2027,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Currently this does not return any value.
      */
     @Override
-    public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException, TException {
+    public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException {
         registryService.updateProject(projectId, updatedProject);
     }
 
@@ -2080,12 +2039,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param project
      */
     @Override
-    public String createProject(String gatewayId, Project project) throws RegistryServiceException, TException {
+    public String createProject(String gatewayId, Project project) throws RegistryServiceException {
         return registryService.createProject(gatewayId, project);
     }
 
     @Override
-    public boolean updateNotification(Notification notification) throws RegistryServiceException, TException {
+    public boolean updateNotification(Notification notification) throws RegistryServiceException {
         return registryService.updateNotification(notification);
     }
 
@@ -2096,7 +2055,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @param notification
      */
     @Override
-    public String createNotification(Notification notification) throws RegistryServiceException, TException {
+    public String createNotification(Notification notification) throws RegistryServiceException {
         return registryService.createNotification(notification);
     }
 
@@ -2110,7 +2069,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @throws AiravataClientException
      */
     @Override
-    public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException, TException {
+    public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException {
         return registryService.updateGateway(gatewayId, updatedGateway);
     }
 
@@ -2122,18 +2081,25 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Th unique identifier of the  newly registered gateway.
      */
     @Override
-    public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
+    public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException {
         return registryService.addGateway(gateway);
     }
 
-
-
     /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
     private ExperimentModel getExperimentInternal(String airavataExperimentId)
-            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
-                    AiravataSystemException, TException {
+            throws RegistryServiceException, ExperimentNotFoundException {
         try {
             return registryService.getExperiment(airavataExperimentId);
+        } catch (RegistryServiceException e) {
+            // Check if this is a "not found" error based on the message
+            if (e.getMessage() != null && e.getMessage().contains("does not exist")) {
+                logger.error("Experiment not found: " + airavataExperimentId, e);
+                ExperimentNotFoundException exception = new ExperimentNotFoundException();
+                exception.setMessage(
+                        "Requested experiment id " + airavataExperimentId + " does not exist in the system.");
+                throw exception;
+            }
+            throw e;
         } catch (Throwable e) {
             logger.error("Error while retrieving the experiment", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2152,14 +2118,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public String registerUserResourceProfile(UserResourceProfile userResourceProfile)
-            throws RegistryServiceException, TException {
+    public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws RegistryServiceException {
         return registryService.registerUserResourceProfile(userResourceProfile);
     }
 
     @Override
-    public boolean isUserResourceProfileExists(String userId, String gatewayId)
-            throws RegistryServiceException, TException {
+    public boolean isUserResourceProfileExists(String userId, String gatewayId) throws RegistryServiceException {
         return registryService.isUserResourceProfileExists(userId, gatewayId);
     }
 
@@ -2170,8 +2134,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * @return UserResourceProfile object
      */
     @Override
-    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId)
-            throws RegistryServiceException, TException {
+    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException {
         return registryService.getUserResourceProfile(userId, gatewayId);
     }
 
@@ -2185,7 +2148,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
     }
 
@@ -2198,14 +2161,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteUserResourceProfile(String userId, String gatewayID)
-            throws RegistryServiceException, TException {
+    public boolean deleteUserResourceProfile(String userId, String gatewayID) throws RegistryServiceException {
         return registryService.deleteUserResourceProfile(userId, gatewayID);
     }
 
     @Override
-    public String addUser(UserProfile userProfile)
-            throws RegistryServiceException, DuplicateEntryException, TException {
+    public String addUser(UserProfile userProfile) throws RegistryServiceException, DuplicateEntryException {
         return registryService.addUser(userProfile);
     }
 
@@ -2226,9 +2187,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.addUserComputeResourcePreference(
-                    userId, gatewayID, computeResourceId, userComputeResourcePreference);
+                userId, gatewayID, computeResourceId, userComputeResourcePreference);
     }
 
     /**
@@ -2242,7 +2203,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayID, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
     }
 
@@ -2259,9 +2220,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean addUserStoragePreference(
             String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference)
-            throws RegistryServiceException, TException {
-        return registryService.addUserStoragePreference(
-                    userId, gatewayID, storageResourceId, dataStoragePreference);
+            throws RegistryServiceException {
+        return registryService.addUserStoragePreference(userId, gatewayID, storageResourceId, dataStoragePreference);
     }
 
     /**
@@ -2275,7 +2235,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public UserComputeResourcePreference getUserComputeResourcePreference(
-            String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException, TException {
+            String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException {
         return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
     }
 
@@ -2290,7 +2250,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getUserStoragePreference(userId, gatewayID, storageId);
     }
 
@@ -2301,7 +2261,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns all the UserResourceProfile list object.
      */
     @Override
-    public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException, TException {
+    public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException {
         return registryService.getAllUserResourceProfiles();
     }
 
@@ -2321,9 +2281,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             String gatewayID,
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateUserComputeResourcePreference(
-                    userId, gatewayID, computeResourceId, userComputeResourcePreference);
+                userId, gatewayID, computeResourceId, userComputeResourcePreference);
     }
 
     /**
@@ -2339,7 +2299,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateUserStoragePreference(
             String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.updateUserStoragePreference(userId, gatewayID, storageId, userStoragePreference);
     }
 
@@ -2354,7 +2314,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
     }
 
@@ -2369,7 +2329,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
     }
 
@@ -2378,19 +2338,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * *
      */
     @Override
-    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException, TException {
+    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException {
         return registryService.getLatestQueueStatuses();
     }
 
     @Override
-    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses)
-            throws RegistryServiceException, TException {
+    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException {
         registryService.registerQueueStatuses(queueStatuses);
     }
 
     @Override
-    public QueueStatusModel getQueueStatus(String hostName, String queueName)
-            throws RegistryServiceException, TException {
+    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException {
         return registryService.getQueueStatus(hostName, queueName);
     }
 
@@ -2404,7 +2362,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
     }
 
@@ -2418,13 +2376,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
      */
     @Override
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getAllUserStoragePreferences(userId, gatewayID);
     }
 
     @Override
     public void createGatewayGroups(GatewayGroups gatewayGroups)
-            throws RegistryServiceException, DuplicateEntryException, TException {
+            throws RegistryServiceException, DuplicateEntryException {
         try {
             registryService.createGatewayGroups(gatewayGroups);
         } catch (Throwable e) {
@@ -2436,100 +2394,96 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException, TException {
+    public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException {
         registryService.updateGatewayGroups(gatewayGroups);
     }
 
     @Override
-    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException, TException {
+    public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException {
         return registryService.isGatewayGroupsExists(gatewayId);
     }
 
     @Override
-    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException, TException {
+    public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException {
         return registryService.getGatewayGroups(gatewayId);
     }
 
     @Override
-    public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
+    public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException {
         return registryService.getParser(parserId, gatewayId);
     }
 
     @Override
-    public String saveParser(Parser parser) throws RegistryServiceException, TException {
+    public String saveParser(Parser parser) throws RegistryServiceException {
         return registryService.saveParser(parser);
     }
 
     @Override
-    public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException, TException {
+    public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException {
         return registryService.listAllParsers(gatewayId);
     }
 
     @Override
-    public void removeParser(String parserId, String gatewayId) throws RegistryServiceException, TException {
+    public void removeParser(String parserId, String gatewayId) throws RegistryServiceException {
         registryService.removeParser(parserId, gatewayId);
     }
 
     @Override
-    public ParserInput getParserInput(String parserInputId, String gatewayId)
-            throws RegistryServiceException, TException {
+    public ParserInput getParserInput(String parserInputId, String gatewayId) throws RegistryServiceException {
         return registryService.getParserInput(parserInputId, gatewayId);
     }
 
     @Override
-    public ParserOutput getParserOutput(String parserOutputId, String gatewayId)
-            throws RegistryServiceException, TException {
+    public ParserOutput getParserOutput(String parserOutputId, String gatewayId) throws RegistryServiceException {
         return registryService.getParserOutput(parserOutputId, gatewayId);
     }
 
     @Override
-    public ParsingTemplate getParsingTemplate(String templateId, String gatewayId)
-            throws RegistryServiceException, TException {
+    public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
         return registryService.getParsingTemplate(templateId, gatewayId);
     }
 
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
     }
 
     @Override
-    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException, TException {
+    public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException {
         return registryService.saveParsingTemplate(parsingTemplate);
     }
 
     @Override
-    public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException, TException {
+    public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException {
         return registryService.listAllParsingTemplates(gatewayId);
     }
 
     @Override
-    public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException, TException {
+    public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
         registryService.removeParsingTemplate(templateId, gatewayId);
     }
 
     @Override
     public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
     }
 
     @Override
     public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         return registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
     }
 
     @Override
-    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command)
-            throws RegistryServiceException, TException {
+    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException {
         registryService.addGatewayUsageReportingCommand(command);
     }
 
     @Override
     public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId)
-            throws RegistryServiceException, TException {
+            throws RegistryServiceException {
         registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
     }
 }

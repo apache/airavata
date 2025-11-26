@@ -61,6 +61,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.core.repositories.appcatalog.*;
 import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
@@ -73,21 +74,12 @@ import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
-
-    private RegistryServiceException convertException(Throwable e, String msg) {
-        logger.error(msg, e);
-        var exception = new RegistryServiceException();
-        exception.setMessage(msg + " More info : " + e.getMessage());
-        exception.initCause(e);
-        return exception;
-    }
 
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
@@ -133,7 +125,11 @@ public class RegistryService {
         try {
             return userRepository.isUserExists(gatewayId, userName);
         } catch (Throwable e) {
-            throw convertException(e, "Error while verifying user");
+            logger.error("Error while verifying user", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while verifying user More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -141,7 +137,11 @@ public class RegistryService {
         try {
             return userRepository.getAllUsernamesInGateway(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving users");
+            logger.error("Error while retrieving users", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving users More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -149,13 +149,18 @@ public class RegistryService {
         try {
             if (!gatewayRepository.isGatewayExist(gatewayId)) {
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException(
+                        "Gateway does not exist in the system. Please provide a valid gateway ID...");
             }
             var gateway = gatewayRepository.getGateway(gatewayId);
             logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
             return gateway;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting the gateway");
+            logger.error("Error while getting the gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting the gateway More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -163,13 +168,18 @@ public class RegistryService {
         try {
             if (!gatewayRepository.isGatewayExist(gatewayId)) {
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException(
+                        "Gateway does not exist in the system. Please provide a valid gateway ID...");
             }
             gatewayRepository.removeGateway(gatewayId);
             logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting the gateway");
+            logger.error("Error while deleting the gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting the gateway More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -179,7 +189,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved all available gateways...");
             return gateways;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting all the gateways");
+            logger.error("Error while getting all the gateways", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all the gateways More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -187,7 +201,11 @@ public class RegistryService {
         try {
             return gatewayRepository.isGatewayExist(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if gateway exists");
+            logger.error("Error while checking if gateway exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking if gateway exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -196,7 +214,11 @@ public class RegistryService {
             notificationRepository.deleteNotification(notificationId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting notification");
+            logger.error("Error while deleting notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting notification More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -204,7 +226,11 @@ public class RegistryService {
         try {
             return notificationRepository.getNotification(notificationId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving notification");
+            logger.error("Error while retrieving notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving notification More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -213,7 +239,11 @@ public class RegistryService {
             List<Notification> notifications = notificationRepository.getAllGatewayNotifications(gatewayId);
             return notifications;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting all notifications");
+            logger.error("Error while getting all notifications", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all notifications More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -231,7 +261,11 @@ public class RegistryService {
         } catch (ProjectNotFoundException e) {
             throw e;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the project");
+            logger.error("Error while retrieving the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the project More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -249,7 +283,11 @@ public class RegistryService {
         } catch (ProjectNotFoundException e) {
             throw e;
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing the project");
+            logger.error("Error while removing the project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing the project More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -273,11 +311,19 @@ public class RegistryService {
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             projects = projectRepository.searchProjects(
-                    filters, limit, offset, Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+                    filters,
+                    limit,
+                    offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME,
+                    ResultOrderType.DESC);
             logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
             return projects;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving projects");
+            logger.error("Error while retrieving projects", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving projects More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -311,14 +357,18 @@ public class RegistryService {
                 filters.put(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID, resourceHostName);
             }
             limit = Math.min(limit, 1000);
-            ExperimentStatistics result =
-                    experimentSummaryRepository.getAccessibleExperimentStatistics(accessibleExpIds, filters, limit, offset);
+            ExperimentStatistics result = experimentSummaryRepository.getAccessibleExperimentStatistics(
+                    accessibleExpIds, filters, limit, offset);
             logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : "
                     + org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime) + " and "
                     + org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
             return result;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting experiment statistics");
+            logger.error("Error while getting experiment statistics", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting experiment statistics More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -335,7 +385,8 @@ public class RegistryService {
             }
             if (!projectRepository.isProjectExist(projectId)) {
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+                throw new RegistryException(
+                        "Project does not exist in the system. Please provide a valid project ID...");
             }
             List<ExperimentModel> experiments = experimentRepository.getExperimentList(
                     gatewayId,
@@ -348,7 +399,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved experiments for project : " + projectId);
             return experiments;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the experiments");
+            logger.error("Error while retrieving the experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -379,25 +434,35 @@ public class RegistryService {
             logger.debug("Airavata retrieved experiments for user : " + userName);
             return experiments;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the experiments");
+            logger.error("Error while retrieving the experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException {
         try {
             if (!experimentRepository.isExperimentExist(experimentId)) {
-                throw new RegistryException("Requested experiment id " + experimentId + " does not exist in the system..");
+                throw new RegistryException(
+                        "Requested experiment id " + experimentId + " does not exist in the system..");
             }
             ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
             if (!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)) {
                 logger.error("Error while deleting the experiment");
-                throw new RegistryException("Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
+                throw new RegistryException(
+                        "Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
             }
             experimentRepository.removeExperiment(experimentId);
             logger.debug("Airavata removed experiment with experiment id : " + experimentId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting the experiment");
+            logger.error("Error while deleting the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting the experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -409,7 +474,11 @@ public class RegistryService {
             }
             return experimentRepository.getExperiment(airavataExperimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the experiment");
+            logger.error("Error while retrieving the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -447,7 +516,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
             return experimentModel;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the experiment");
+            logger.error("Error while retrieving the experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -463,7 +536,11 @@ public class RegistryService {
             }
             return experimentStatusRepository.getExperimentStatus(airavataExperimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving experiment status");
+            logger.error("Error while retrieving experiment status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving experiment status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -473,11 +550,16 @@ public class RegistryService {
             logger.debug("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
             return experimentStatus;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving experiment status");
+            logger.error("Error while retrieving experiment status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving experiment status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws RegistryServiceException {
+    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId)
+            throws RegistryServiceException {
         try {
             if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
                 logger.error(
@@ -490,19 +572,26 @@ public class RegistryService {
             logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
             return experimentOutputRepository.getExperimentOutputs(airavataExperimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the experiment outputs");
+            logger.error("Error while retrieving the experiment outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the experiment outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public void updateJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
         try {
-            var jobPK =
-                    new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
+            var jobPK = new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
             jobPK.setTaskId(taskId);
             jobPK.setJobId(jobId);
             jobStatusRepository.updateJobStatus(jobStatus, jobPK);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating job status");
+            logger.error("Error while updating job status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating job status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -510,7 +599,11 @@ public class RegistryService {
         try {
             jobRepository.addJob(jobModel, processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding job");
+            logger.error("Error while adding job", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -521,7 +614,11 @@ public class RegistryService {
         try {
             return processRepository.addProcess(processModel, experimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding process");
+            logger.error("Error while adding process", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding process More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -529,7 +626,11 @@ public class RegistryService {
         try {
             processRepository.updateProcess(processModel, processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating process");
+            logger.error("Error while updating process", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating process More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -537,7 +638,11 @@ public class RegistryService {
         try {
             return taskRepository.addTask(taskModel, processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding task");
+            logger.error("Error while adding task", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding task More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -545,7 +650,11 @@ public class RegistryService {
         try {
             taskRepository.deleteTasks(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting tasks");
+            logger.error("Error while deleting tasks", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting tasks More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -553,7 +662,11 @@ public class RegistryService {
         try {
             return experimentRepository.getUserConfigurationData(experimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting user configuration");
+            logger.error("Error while getting user configuration", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting user configuration More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -561,7 +674,11 @@ public class RegistryService {
         try {
             return processRepository.getProcess(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving process");
+            logger.error("Error while retrieving process", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving process More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -571,7 +688,11 @@ public class RegistryService {
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
             return processModels;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving process list");
+            logger.error("Error while retrieving process list", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving process list More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -579,7 +700,11 @@ public class RegistryService {
         try {
             return processStatusRepository.getProcessStatus(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving process status");
+            logger.error("Error while retrieving process status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving process status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -590,8 +715,7 @@ public class RegistryService {
             int limit = 100;
             int count = 0;
             do {
-                var processStatusList =
-                        processStatusRepository.getProcessStatusList(processState, offset, limit);
+                var processStatusList = processStatusRepository.getProcessStatusList(processState, offset, limit);
                 offset += processStatusList.size();
                 count = processStatusList.size();
                 for (ProcessStatus processStatus : processStatusList) {
@@ -603,7 +727,11 @@ public class RegistryService {
             } while (count == limit);
             return finalProcessList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving process list with given status");
+            logger.error("Error while retrieving process list with given status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving process list with given status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -611,7 +739,12 @@ public class RegistryService {
         try {
             return processStatusRepository.getProcessStatusList(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving process status list for given process Id");
+            logger.error("Error while retrieving process status list for given process Id", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving process status list for given process Id More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -638,7 +771,11 @@ public class RegistryService {
             }
             return null;
         } catch (Throwable e) {
-            throw convertException(e, "Error while fetching job model");
+            logger.error("Error while fetching job model", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while fetching job model More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -661,7 +798,11 @@ public class RegistryService {
             }
             return jobs;
         } catch (Throwable e) {
-            throw convertException(e, "Error while fetching job models");
+            logger.error("Error while fetching job models", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while fetching job models More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -676,7 +817,11 @@ public class RegistryService {
             if (jobModel != null) return jobModel;
             throw new RegistryException("Job not found for queryType: " + queryType + ", id: " + id);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting job");
+            logger.error("Error while getting job", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting job More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -684,7 +829,11 @@ public class RegistryService {
         try {
             return fetchJobModels(queryType, id);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting jobs");
+            logger.error("Error while getting jobs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting jobs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -696,7 +845,11 @@ public class RegistryService {
                     gatewayId, jobStatus.getJobState().name(), searchBackTimeInMinutes);
             return jobStatusList.size();
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting job count");
+            logger.error("Error while getting job count", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting job count More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -705,7 +858,11 @@ public class RegistryService {
         try {
             return processRepository.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting average time distribution");
+            logger.error("Error while getting average time distribution", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting average time distribution More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -713,7 +870,11 @@ public class RegistryService {
         try {
             return processOutputRepository.getProcessOutputs(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting process outputs");
+            logger.error("Error while getting process outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting process outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -721,7 +882,11 @@ public class RegistryService {
         try {
             return processWorkflowRepository.getProcessWorkflows(processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting process workflows");
+            logger.error("Error while getting process workflows", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting process workflows More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -729,7 +894,11 @@ public class RegistryService {
         try {
             processWorkflowRepository.addProcessWorkflow(processWorkflow, processWorkflow.getProcessId());
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding process workflow");
+            logger.error("Error while adding process workflow", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding process workflow More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -737,7 +906,11 @@ public class RegistryService {
         try {
             return processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting process ids");
+            logger.error("Error while getting process ids", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting process ids More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -770,7 +943,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
             return jobList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting job details");
+            logger.error("Error while getting job details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting job details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -786,7 +963,11 @@ public class RegistryService {
         try {
             return gatewayRepository.isGatewayExist(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if gateway exists");
+            logger.error("Error while checking if gateway exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking if gateway exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -796,7 +977,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved application module with module id : " + appModuleId);
             return module;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting application module");
+            logger.error("Error while getting application module", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting application module More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -810,7 +995,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting all app modules");
+            logger.error("Error while getting all app modules", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all app modules More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -827,7 +1016,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting accessible app modules");
+            logger.error("Error while getting accessible app modules", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting accessible app modules More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -836,19 +1029,26 @@ public class RegistryService {
             logger.debug("Airavata deleted application module with module id : " + appModuleId);
             return applicationInterfaceRepository.removeApplicationModule(appModuleId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting application module");
+            logger.error("Error while deleting application module", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting application module More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
             throws RegistryServiceException {
         try {
-            var deployement =
-                applicationDeploymentRepository.getApplicationDeployement(appDeploymentId);
+            var deployement = applicationDeploymentRepository.getApplicationDeployement(appDeploymentId);
             logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
             return deployement;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting application deployment");
+            logger.error("Error while getting application deployment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting application deployment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -858,7 +1058,11 @@ public class RegistryService {
             logger.debug("Airavata removed application deployment with deployment id : " + appDeploymentId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting application deployment");
+            logger.error("Error while deleting application deployment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting application deployment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -869,12 +1073,15 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            var deployements =
-                    applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
+            var deployements = applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting all application deployments");
+            logger.error("Error while getting all application deployments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all application deployments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -886,13 +1093,17 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            var deployements =
-                    applicationDeploymentRepository.getAccessibleApplicationDeployments(
-                        gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            var deployements = applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                    gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting accessible application deployments");
+            logger.error("Error while getting accessible application deployments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while getting accessible application deployments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -907,12 +1118,16 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            var deployments =
-                    applicationDeploymentRepository.getAccessibleApplicationDeployments(
-                            gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            var deployments = applicationDeploymentRepository.getAccessibleApplicationDeployments(
+                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             return deployments;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting accessible application deployments for app module");
+            logger.error("Error while getting accessible application deployments for app module", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting accessible application deployments for app module More info : "
+                    + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -921,15 +1136,18 @@ public class RegistryService {
             var appDeployments = new ArrayList<String>();
             var filters = new HashMap<String, String>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            var applicationDeployments =
-                    applicationDeploymentRepository.getApplicationDeployments(filters);
+            var applicationDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
             for (ApplicationDeploymentDescription description : applicationDeployments) {
                 appDeployments.add(description.getAppDeploymentId());
             }
             logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
             return appDeployments;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting app module deployed resources");
+            logger.error("Error while getting app module deployed resources", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting app module deployed resources More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -938,32 +1156,44 @@ public class RegistryService {
         try {
             var filters = new HashMap<String, String>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            var applicationDeployments =
-                    applicationDeploymentRepository.getApplicationDeployments(filters);
+            var applicationDeployments = applicationDeploymentRepository.getApplicationDeployments(filters);
             return applicationDeployments;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting application deployments");
+            logger.error("Error while getting application deployments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting application deployments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException {
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
+            throws RegistryServiceException {
         try {
-            var interfaceDescription =
-                    applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
+            var interfaceDescription = applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
             logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
             return interfaceDescription;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting application interface");
+            logger.error("Error while getting application interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting application interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException {
         try {
-            boolean removeApplicationInterface = applicationInterfaceRepository.removeApplicationInterface(appInterfaceId);
+            boolean removeApplicationInterface =
+                    applicationInterfaceRepository.removeApplicationInterface(appInterfaceId);
             logger.debug("Airavata removed application interface with interface id : " + appInterfaceId);
             return removeApplicationInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting application interface");
+            logger.error("Error while deleting application interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting application interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -979,13 +1209,19 @@ public class RegistryService {
             if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()) {
                 for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
                     allApplicationInterfacesMap.put(
-                            interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+                            interfaceDescription.getApplicationInterfaceId(),
+                            interfaceDescription.getApplicationName());
                 }
             }
             logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
             return allApplicationInterfacesMap;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all application interface names");
+            logger.error("Error while retrieving all application interface names", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving all application interface names More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1001,7 +1237,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
             return interfaces;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all application interfaces");
+            logger.error("Error while retrieving all application interfaces", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all application interfaces More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1012,18 +1252,27 @@ public class RegistryService {
             logger.debug("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
             return applicationInputs;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving application inputs");
+            logger.error("Error while retrieving application inputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application inputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws RegistryServiceException {
+    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId)
+            throws RegistryServiceException {
         try {
             List<OutputDataObjectType> applicationOutputs =
                     applicationInterfaceRepository.getApplicationOutputs(appInterfaceId);
             logger.debug("Airavata retrieved application outputs for application interface id : " + appInterfaceId);
             return applicationOutputs;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving application outputs");
+            logger.error("Error while retrieving application outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1033,14 +1282,19 @@ public class RegistryService {
             logger.debug("Airavata retrieved application outputs for app interface id : " + appInterfaceId);
             return list;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving application outputs");
+            logger.error("Error while retrieving application outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
             throws RegistryServiceException {
         try {
-            Map<String, String> allComputeResources = new ComputeResourceRepository().getAvailableComputeResourceIdList();
+            Map<String, String> allComputeResources =
+                    new ComputeResourceRepository().getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
@@ -1060,10 +1314,16 @@ public class RegistryService {
                     }
                 }
             }
-            logger.debug("Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
+            logger.debug(
+                    "Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
             return availableComputeResources;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving available app interface compute resources");
+            logger.error("Error while retrieving available app interface compute resources", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving available app interface compute resources More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1074,7 +1334,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved compute resource with compute resource Id : " + computeResourceId);
             return computeResource;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving compute resource");
+            logger.error("Error while retrieving compute resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving compute resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1084,7 +1348,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved all the available compute resources...");
             return computeResourceIdList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all compute resource names");
+            logger.error("Error while retrieving all compute resource names", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all compute resource names More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1094,17 +1362,26 @@ public class RegistryService {
             logger.debug("Airavata deleted compute resource with compute resource Id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting compute resource");
+            logger.error("Error while deleting compute resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting compute resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException {
         try {
-            StorageResourceDescription storageResource = storageResourceRepository.getStorageResource(storageResourceId);
+            StorageResourceDescription storageResource =
+                    storageResourceRepository.getStorageResource(storageResourceId);
             logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
             return storageResource;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving storage resource");
+            logger.error("Error while retrieving storage resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving storage resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1114,7 +1391,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved storage resources list...");
             return resourceIdList;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all storage resource names");
+            logger.error("Error while retrieving all storage resource names", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all storage resource names More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1124,7 +1405,11 @@ public class RegistryService {
             logger.debug("Airavata deleted storage resource with storage resource Id : " + storageResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting storage resource");
+            logger.error("Error while deleting storage resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting storage resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1134,7 +1419,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
             return localJobSubmission;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving local job submission");
+            logger.error("Error while retrieving local job submission", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving local job submission More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1144,7 +1433,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
             return sshJobSubmission;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving SSH job submission");
+            logger.error("Error while retrieving SSH job submission", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving SSH job submission More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1152,20 +1445,30 @@ public class RegistryService {
         try {
             UnicoreJobSubmission unicoreJobSubmission =
                     new ComputeResourceRepository().getUNICOREJobSubmission(jobSubmissionId);
-            logger.debug("Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
+            logger.debug(
+                    "Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
             return unicoreJobSubmission;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving UNICORE job submission");
+            logger.error("Error while retrieving UNICORE job submission", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving UNICORE job submission More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException {
         try {
-            CloudJobSubmission cloudJobSubmission = new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
+            CloudJobSubmission cloudJobSubmission =
+                    new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
             logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
             return cloudJobSubmission;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving cloud job submission");
+            logger.error("Error while retrieving cloud job submission", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving cloud job submission More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1184,7 +1487,8 @@ public class RegistryService {
         return false;
     }
 
-    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws RegistryServiceException {
+    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap)
+            throws RegistryServiceException {
         return false;
     }
 
@@ -1195,7 +1499,11 @@ public class RegistryService {
             logger.debug("Airavata deleted job submission interface with interface id : " + jobSubmissionInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting job submission interface");
+            logger.error("Error while deleting job submission interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting job submission interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1203,7 +1511,11 @@ public class RegistryService {
         try {
             return new ComputeResourceRepository().getResourceJobManager(resourceJobManagerId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving resource job manager");
+            logger.error("Error while retrieving resource job manager", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving resource job manager More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1212,7 +1524,11 @@ public class RegistryService {
             new ComputeResourceRepository().deleteResourceJobManager(resourceJobManagerId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting resource job manager");
+            logger.error("Error while deleting resource job manager", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting resource job manager More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1221,7 +1537,11 @@ public class RegistryService {
             new ComputeResourceRepository().removeBatchQueue(computeResourceId, queueName);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting batch queue");
+            logger.error("Error while deleting batch queue", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting batch queue More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1236,7 +1556,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved gateway profile with gateway id : " + gatewayID);
             return gatewayResourceProfile;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving gateway resource profile");
+            logger.error("Error while retrieving gateway resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving gateway resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1251,7 +1575,11 @@ public class RegistryService {
             logger.debug("Airavata deleted gateway profile with gateway id : " + gatewayID);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting gateway resource profile");
+            logger.error("Error while deleting gateway resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting gateway resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1284,7 +1612,12 @@ public class RegistryService {
                     + " and for compute resoruce id : " + computeResourceId);
             return computeResourcePreference;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving gateway compute resource preference");
+            logger.error("Error while retrieving gateway compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving gateway compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1303,12 +1636,17 @@ public class RegistryService {
                 throw new AppCatalogException(
                         "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
             }
-            StoragePreference storagePreference = gwyResourceProfileRepository.getStoragePreference(gatewayID, storageId);
+            StoragePreference storagePreference =
+                    gwyResourceProfileRepository.getStoragePreference(gatewayID, storageId);
             logger.debug("Airavata retrieved storage resource preference with gateway id : " + gatewayID
                     + " and for storage resource id : " + storageId);
             return storagePreference;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving gateway storage preference");
+            logger.error("Error while retrieving gateway storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving gateway storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1322,7 +1660,12 @@ public class RegistryService {
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getComputeResourcePreferences();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all gateway compute resource preferences");
+            logger.error("Error while retrieving all gateway compute resource preferences", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving all gateway compute resource preferences More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1335,7 +1678,12 @@ public class RegistryService {
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getStoragePreferences();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all gateway storage preferences");
+            logger.error("Error while retrieving all gateway storage preferences", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving all gateway storage preferences More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1344,7 +1692,11 @@ public class RegistryService {
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             return gwyResourceProfileRepository.getAllGatewayProfiles();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all gateway resource profiles");
+            logger.error("Error while retrieving all gateway resource profiles", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all gateway resource profiles More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1356,9 +1708,15 @@ public class RegistryService {
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-            return gwyResourceProfileRepository.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
+            return gwyResourceProfileRepository.removeComputeResourcePreferenceFromGateway(
+                    gatewayID, computeResourceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting gateway compute resource preference");
+            logger.error("Error while deleting gateway compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while deleting gateway compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1371,7 +1729,11 @@ public class RegistryService {
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             return gwyResourceProfileRepository.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting gateway storage preference");
+            logger.error("Error while deleting gateway storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting gateway storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1380,7 +1742,11 @@ public class RegistryService {
             DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
             return dataProductModel;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving data product");
+            logger.error("Error while retrieving data product", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving data product More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1389,7 +1755,11 @@ public class RegistryService {
             DataProductModel dataProductModel = dataProductRepository.getParentDataProduct(productUri);
             return dataProductModel;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving parent data product");
+            logger.error("Error while retrieving parent data product", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving parent data product More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1398,33 +1768,48 @@ public class RegistryService {
             List<DataProductModel> dataProductModels = dataProductRepository.getChildDataProducts(productUri);
             return dataProductModels;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving child data products");
+            logger.error("Error while retrieving child data products", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving child data products More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public List<DataProductModel> searchDataProductsByName(
-            String gatewayId, String userId, String productName, int limit, int offset) throws RegistryServiceException {
+            String gatewayId, String userId, String productName, int limit, int offset)
+            throws RegistryServiceException {
         try {
             List<DataProductModel> dataProductModels =
                     dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
             return dataProductModels;
         } catch (Throwable e) {
-            throw convertException(e, "Error while searching data products by name");
+            logger.error("Error while searching data products by name", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while searching data products by name More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException {
+    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile)
+            throws RegistryServiceException {
         try {
             if (!isGatewayExistInternal(groupResourceProfile.getGatewayId())) {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+            String groupResourceProfileId =
+                    groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
             logger.debug("New Group Resource Profile Created: " + groupResourceProfileId);
             return groupResourceProfileId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while creating group resource profile");
+            logger.error("Error while creating group resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating group resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1438,10 +1823,15 @@ public class RegistryService {
                 throw new AppCatalogException(
                         "Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
             }
-            String groupResourceProfileId = groupResourceProfileRepository.updateGroupResourceProfile(groupResourceProfile);
+            String groupResourceProfileId =
+                    groupResourceProfileRepository.updateGroupResourceProfile(groupResourceProfile);
             logger.debug(" Group Resource Profile updated: " + groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating group resource profile");
+            logger.error("Error while updating group resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating group resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1455,7 +1845,11 @@ public class RegistryService {
             }
             return groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group resource profile");
+            logger.error("Error while retrieving group resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving group resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1464,7 +1858,11 @@ public class RegistryService {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             return groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if group resource profile exists");
+            logger.error("Error while checking if group resource profile exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking if group resource profile exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1479,7 +1877,11 @@ public class RegistryService {
             }
             return groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing group resource profile");
+            logger.error("Error while removing group resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing group resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1489,7 +1891,11 @@ public class RegistryService {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             return groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, accessibleGroupResProfileIds);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group resource list");
+            logger.error("Error while retrieving group resource list", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving group resource list More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1497,11 +1903,16 @@ public class RegistryService {
             throws RegistryServiceException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            groupResourceProfileRepository.removeGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            groupResourceProfileRepository.removeGroupComputeResourcePreference(
+                    computeResourceId, groupResourceProfileId);
             logger.debug("Removed compute resource preferences with compute resource ID: " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing group compute preferences");
+            logger.error("Error while removing group compute preferences", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing group compute preferences More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1512,7 +1923,11 @@ public class RegistryService {
             logger.debug("Removed compute resource policy with resource policy ID: " + resourcePolicyId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing group compute resource policy");
+            logger.error("Error while removing group compute resource policy", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing group compute resource policy More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1523,7 +1938,12 @@ public class RegistryService {
             logger.debug("Removed batch resource policy with resource policy ID: " + resourcePolicyId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing group batch queue resource policy");
+            logger.error("Error while removing group batch queue resource policy", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while removing group batch queue resource policy More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1540,7 +1960,12 @@ public class RegistryService {
             }
             return groupComputeResourcePreference;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group compute resource preference");
+            logger.error("Error while retrieving group compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving group compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1551,11 +1976,17 @@ public class RegistryService {
             return groupResourceProfileRepository.isGroupComputeResourcePreferenceExists(
                     computeResourceId, groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if group compute resource preference exists");
+            logger.error("Error while checking if group compute resource preference exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while checking if group compute resource preference exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId)
+            throws RegistryServiceException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             ComputeResourcePolicy computeResourcePolicy =
@@ -1566,11 +1997,16 @@ public class RegistryService {
             }
             return computeResourcePolicy;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group compute resource policy");
+            logger.error("Error while retrieving group compute resource policy", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving group compute resource policy More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId)
+            throws RegistryServiceException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             BatchQueueResourcePolicy batchQueueResourcePolicy =
@@ -1581,7 +2017,11 @@ public class RegistryService {
             }
             return batchQueueResourcePolicy;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving batch queue resource policy");
+            logger.error("Error while retrieving batch queue resource policy", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving batch queue resource policy More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1591,7 +2031,12 @@ public class RegistryService {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             return groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group compute resource preference list");
+            logger.error("Error while retrieving group compute resource preference list", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving group compute resource preference list More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1601,7 +2046,12 @@ public class RegistryService {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             return groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group batch queue resource policy list");
+            logger.error("Error while retrieving group batch queue resource policy list", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving group batch queue resource policy list More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1611,16 +2061,27 @@ public class RegistryService {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             return groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving group compute resource policy list");
+            logger.error("Error while retrieving group compute resource policy list", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving group compute resource policy list More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException {
+    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
+            throws RegistryServiceException {
         try {
             String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
             return replicaId;
         } catch (Throwable e) {
-            throw convertException(e, "Error in retreiving the replica " + replicaLocationModel.getReplicaName());
+            logger.error("Error in retreiving the replica " + replicaLocationModel.getReplicaName(), e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in retreiving the replica " + replicaLocationModel.getReplicaName()
+                    + " More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1629,7 +2090,12 @@ public class RegistryService {
             String productUrl = dataProductRepository.registerDataProduct(dataProductModel);
             return productUrl;
         } catch (Throwable e) {
-            throw convertException(e, "Error in registering the data resource" + dataProductModel.getProductName());
+            logger.error("Error in registering the data resource" + dataProductModel.getProductName(), e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in registering the data resource" + dataProductModel.getProductName()
+                    + " More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1639,7 +2105,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved local data movement with data movement id: " + dataMovementId);
             return localDataMovement;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving local data movement");
+            logger.error("Error while retrieving local data movement", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving local data movement More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1649,7 +2119,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved SCP data movement with data movement id: " + dataMovementId);
             return scpDataMovement;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving SCP data movement");
+            logger.error("Error while retrieving SCP data movement", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving SCP data movement More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1660,7 +2134,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved UNICORE data movement with data movement id: " + dataMovementId);
             return unicoreDataMovement;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving UNICORE data movement");
+            logger.error("Error while retrieving UNICORE data movement", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving UNICORE data movement More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1671,7 +2149,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved GRIDFTP data movement with data movement id: " + dataMovementId);
             return gridFTPDataMovement;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving GRIDFTP data movement");
+            logger.error("Error while retrieving GRIDFTP data movement", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving GRIDFTP data movement More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1690,10 +2172,11 @@ public class RegistryService {
 
             if (experiment.getUserConfigurationData() != null
                     && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                    && experiment.getUserConfigurationData()
-                            .getComputationalResourceScheduling()
-                            .getResourceHostId()
-                    != null) {
+                    && experiment
+                                    .getUserConfigurationData()
+                                    .getComputationalResourceScheduling()
+                                    .getResourceHostId()
+                            != null) {
 
                 String compResourceId = experiment
                         .getUserConfigurationData()
@@ -1720,11 +2203,12 @@ public class RegistryService {
                         ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
                                 .getComputeResource(computationalResourceScheduling.getResourceHostId());
                         if (!computeResourceDescription.isEnabled()) {
-                            logger.error("Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
-                                    + "" + " is not enabled by the Admin!");
+                            logger.error(
+                                    "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
+                                            + "" + " is not enabled by the Admin!");
                             throw new RegistryException(
-                                    "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId() + ""
-                                            + " is not enabled by the Admin!");
+                                    "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
+                                            + "" + " is not enabled by the Admin!");
                         }
                     } catch (AppCatalogException e) {
                         throw new RegistryException("Error checking compute resource: " + e.getMessage(), e);
@@ -1741,10 +2225,15 @@ public class RegistryService {
                     throw new RegistryException("Error registering workflow: " + e.getMessage(), e);
                 }
             }
-            logger.debug(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
+            logger.debug(
+                    experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             return experimentId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while creating experiment");
+            logger.error("Error while creating experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1813,15 +2302,22 @@ public class RegistryService {
             logger.debug("Airavata retrieved experiments for user : " + userName + " and gateway id : " + gatewayId);
             return summaries;
         } catch (Throwable e) {
-            throw convertException(e, "Error while searching experiments");
+            logger.error("Error while searching experiments", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while searching experiments More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws RegistryServiceException {
+    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
+            throws RegistryServiceException {
         try {
             if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
                 logger.error(
-                        airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
+                        airavataExperimentId,
+                        "Update request failed, Experiment {} doesn't exist.",
+                        airavataExperimentId);
                 throw new RegistryException(
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
@@ -1835,10 +2331,11 @@ public class RegistryService {
                     case VALIDATED:
                         if (experiment.getUserConfigurationData() != null
                                 && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                                && experiment.getUserConfigurationData()
-                                        .getComputationalResourceScheduling()
-                                        .getResourceHostId()
-                                != null) {
+                                && experiment
+                                                .getUserConfigurationData()
+                                                .getComputationalResourceScheduling()
+                                                .getResourceHostId()
+                                        != null) {
                             String compResourceId = experiment
                                     .getUserConfigurationData()
                                     .getComputationalResourceScheduling()
@@ -1873,7 +2370,11 @@ public class RegistryService {
                 }
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating experiment");
+            logger.error("Error while updating experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1916,11 +2417,16 @@ public class RegistryService {
                 }
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating experiment configuration");
+            logger.error("Error while updating experiment configuration", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating experiment configuration More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId) throws RegistryServiceException {
+    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId)
+            throws RegistryServiceException {
         try {
             if (!experimentRepository.isExperimentExist(airavataExperimentId)) {
                 logger.error(
@@ -1942,11 +2448,15 @@ public class RegistryService {
                     }
                 }
             }
-            logger.debug(
-                    "Airavata retrieved intermediate outputs for experiment with experiment id : " + airavataExperimentId);
+            logger.debug("Airavata retrieved intermediate outputs for experiment with experiment id : "
+                    + airavataExperimentId);
             return intermediateOutputs;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving intermediate outputs");
+            logger.error("Error while retrieving intermediate outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving intermediate outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -1989,7 +2499,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
             return jobStatus;
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving the job statuses");
+            logger.error("Error while retrieving the job statuses", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving the job statuses More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2002,7 +2516,11 @@ public class RegistryService {
                 experimentOutputRepository.addExperimentOutputs(outputs, id);
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding outputs");
+            logger.error("Error while adding outputs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding outputs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2016,7 +2534,11 @@ public class RegistryService {
                 processErrorRepository.addProcessError(errorModel, id);
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding errors");
+            logger.error("Error while adding errors", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding errors More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2024,7 +2546,11 @@ public class RegistryService {
         try {
             taskStatusRepository.addTaskStatus(taskStatus, taskId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding task status");
+            logger.error("Error while adding task status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding task status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2032,7 +2558,11 @@ public class RegistryService {
         try {
             processStatusRepository.addProcessStatus(processStatus, processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding process status");
+            logger.error("Error while adding process status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding process status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2040,7 +2570,11 @@ public class RegistryService {
         try {
             processStatusRepository.updateProcessStatus(processStatus, processId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating process status");
+            logger.error("Error while updating process status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating process status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2049,7 +2583,11 @@ public class RegistryService {
         try {
             experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating experiment status");
+            logger.error("Error while updating experiment status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating experiment status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2060,7 +2598,11 @@ public class RegistryService {
             jobPK.setTaskId(taskId);
             jobStatusRepository.addJobStatus(jobStatus, jobPK);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding job status");
+            logger.error("Error while adding job status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2071,7 +2613,11 @@ public class RegistryService {
                 jobRepository.removeJob(jobModel);
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting jobs");
+            logger.error("Error while deleting jobs", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting jobs More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2093,7 +2639,11 @@ public class RegistryService {
             String projectId = projectRepository.addProject(project, gatewayId);
             return projectId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while creating project");
+            logger.error("Error while creating project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating project More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2105,12 +2655,17 @@ public class RegistryService {
             }
             if (!projectRepository.isProjectExist(projectId)) {
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                throw new RegistryException("Project does not exist in the system. Please provide a valid project ID...");
+                throw new RegistryException(
+                        "Project does not exist in the system. Please provide a valid project ID...");
             }
             projectRepository.updateProject(updatedProject, projectId);
             logger.debug("Airavata updated project with project Id : " + projectId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating project");
+            logger.error("Error while updating project", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating project More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2166,7 +2721,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved projects for user : " + userName + " and gateway id : " + gatewayId);
             return projects;
         } catch (Throwable e) {
-            throw convertException(e, "Error while searching projects");
+            logger.error("Error while searching projects", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while searching projects More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2184,10 +2743,15 @@ public class RegistryService {
             }
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             String resourceProfile = gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
-            logger.debug("Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
+            logger.debug(
+                    "Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
             return resourceProfile;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering gateway resource profile");
+            logger.error("Error while registering gateway resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering gateway resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2203,7 +2767,11 @@ public class RegistryService {
             logger.debug("Airavata updated gateway profile with gateway id : " + gatewayID);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating gateway resource profile");
+            logger.error("Error while updating gateway resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2226,7 +2794,12 @@ public class RegistryService {
                     + " and for compute resource id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding gateway compute resource preference");
+            logger.error("Error while adding gateway compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while adding gateway compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2257,7 +2830,12 @@ public class RegistryService {
                     + " and for compute resource id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating gateway compute resource preference");
+            logger.error("Error while updating gateway compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while updating gateway compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2281,7 +2859,11 @@ public class RegistryService {
                     + " and for storage resource id : " + storageResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding gateway storage preference");
+            logger.error("Error while adding gateway storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding gateway storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2311,7 +2893,11 @@ public class RegistryService {
                     + " and for storage resource id : " + storageId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating gateway storage preference");
+            logger.error("Error while updating gateway storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2323,7 +2909,11 @@ public class RegistryService {
             logger.debug("Airavata registered compute resource with compute resource Id : " + computeResource);
             return computeResource;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering compute resource");
+            logger.error("Error while registering compute resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering compute resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2335,7 +2925,11 @@ public class RegistryService {
             logger.debug("Airavata updated compute resource with compute resource Id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating compute resource");
+            logger.error("Error while updating compute resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating compute resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2343,7 +2937,11 @@ public class RegistryService {
         try {
             return new ComputeResourceRepository().addResourceJobManager(resourceJobManager);
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering resource job manager");
+            logger.error("Error while registering resource job manager", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering resource job manager More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2353,7 +2951,11 @@ public class RegistryService {
             new ComputeResourceRepository().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating resource job manager");
+            logger.error("Error while updating resource job manager", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating resource job manager More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2363,11 +2965,13 @@ public class RegistryService {
             switch (dmType) {
                 case COMPUTE_RESOURCE:
                     new ComputeResourceRepository().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    logger.debug(
+                            "Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
                     return true;
                 case STORAGE_RESOURCE:
                     storageResourceRepository.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                    logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
+                    logger.debug(
+                            "Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
                     return true;
                 default:
                     logger.error(
@@ -2375,7 +2979,11 @@ public class RegistryService {
                     return false;
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting data movement interface");
+            logger.error("Error while deleting data movement interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting data movement interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2384,7 +2992,11 @@ public class RegistryService {
         try {
             throw new AppCatalogException("updateGridFTPDataMovementDetails is not yet implemented");
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating GridFTP data movement details");
+            logger.error("Error while updating GridFTP data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating GridFTP data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2403,7 +3015,11 @@ public class RegistryService {
             logger.debug("Airavata registered GridFTP data movement for resource Id: " + computeResourceId);
             return addDataMovementInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding GridFTP data movement details");
+            logger.error("Error while adding GridFTP data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding GridFTP data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2412,7 +3028,11 @@ public class RegistryService {
         try {
             throw new AppCatalogException("updateUnicoreDataMovementDetails is not yet implemented");
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating Unicore data movement details");
+            logger.error("Error while updating Unicore data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating Unicore data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2431,7 +3051,11 @@ public class RegistryService {
             logger.debug("Airavata registered UNICORE data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding Unicore data movement details");
+            logger.error("Error while adding Unicore data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding Unicore data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2442,7 +3066,11 @@ public class RegistryService {
             logger.debug("Airavata updated SCP data movement with data movement id: " + dataMovementInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating SCP data movement details");
+            logger.error("Error while updating SCP data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating SCP data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2461,7 +3089,11 @@ public class RegistryService {
             logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding SCP data movement details");
+            logger.error("Error while adding SCP data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding SCP data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2472,7 +3104,11 @@ public class RegistryService {
             logger.debug("Airavata updated local data movement with data movement id: " + dataMovementInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating local data movement details");
+            logger.error("Error while updating local data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating local data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2491,7 +3127,11 @@ public class RegistryService {
             logger.debug("Airavata registered local data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding local data movement details");
+            logger.error("Error while adding local data movement details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding local data movement details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2503,7 +3143,11 @@ public class RegistryService {
             logger.debug("Airavata registered storage resource with storage resource Id : " + storageResource);
             return storageResource;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering storage resource");
+            logger.error("Error while registering storage resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering storage resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2515,7 +3159,11 @@ public class RegistryService {
             logger.debug("Airavata updated storage resource with storage resource Id : " + storageResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating storage resource");
+            logger.error("Error while updating storage resource", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating storage resource More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2534,7 +3182,11 @@ public class RegistryService {
             jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
             return computeResourceRepository.addJobSubmissionProtocol(computeResourceId, jobSubmissionInterface);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding job submission interface");
+            logger.error("Error while adding job submission interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding job submission interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2552,20 +3204,26 @@ public class RegistryService {
             dataMovementInterface.setPriorityOrder(priorityOrder);
             dataMovementInterface.setDataMovementProtocol(protocolType);
             if (dmType.equals(DMType.COMPUTE_RESOURCE)) {
-                return computeResourceRepository.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
+                return computeResourceRepository.addDataMovementProtocol(
+                        computeResourceId, dmType, dataMovementInterface);
             } else if (dmType.equals(DMType.STORAGE_RESOURCE)) {
                 dataMovementInterface.setStorageResourceId(computeResourceId);
                 return storageResourceRepository.addDataMovementInterface(dataMovementInterface);
             }
             return null;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding data movement interface");
+            logger.error("Error while adding data movement interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding data movement interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     // Job Submission Interface operations
     public String addSSHJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException {
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
+            throws RegistryServiceException {
         try {
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             String submissionInterface = addJobSubmissionInterface(
@@ -2577,12 +3235,17 @@ public class RegistryService {
             logger.debug("Airavata registered SSH job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding SSH job submission details");
+            logger.error("Error while adding SSH job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding SSH job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public String addSSHForkJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException {
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
+            throws RegistryServiceException {
         try {
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             String submissionDetails = addJobSubmissionInterface(
@@ -2594,12 +3257,17 @@ public class RegistryService {
             logger.debug("Airavata registered Fork job submission for compute resource id: " + computeResourceId);
             return submissionDetails;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding SSH Fork job submission details");
+            logger.error("Error while adding SSH Fork job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding SSH Fork job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public String addLocalSubmissionDetails(
-            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws RegistryServiceException {
+            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
+            throws RegistryServiceException {
         try {
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             String submissionInterface = addJobSubmissionInterface(
@@ -2611,7 +3279,11 @@ public class RegistryService {
             logger.debug("Airavata added local job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding local submission details");
+            logger.error("Error while adding local submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding local submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2619,11 +3291,15 @@ public class RegistryService {
             throws RegistryServiceException {
         try {
             new ComputeResourceRepository().updateLocalJobSubmission(localSubmission);
-            logger.debug(
-                    "Airavata updated local job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            logger.debug("Airavata updated local job submission for job submission interface id: "
+                    + jobSubmissionInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating local submission details");
+            logger.error("Error while updating local submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating local submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2641,7 +3317,11 @@ public class RegistryService {
             logger.debug("Airavata registered Cloud job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding cloud job submission details");
+            logger.error("Error while adding cloud job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding cloud job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2659,7 +3339,11 @@ public class RegistryService {
             logger.debug("Airavata registered UNICORE job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding UNICORE job submission details");
+            logger.error("Error while adding UNICORE job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding UNICORE job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2671,22 +3355,32 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterface, gatewayId);
+            String interfaceId =
+                    applicationInterfaceRepository.addApplicationInterface(applicationInterface, gatewayId);
             logger.debug("Airavata registered application interface for gateway id : " + gatewayId);
             return interfaceId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering application interface");
+            logger.error("Error while registering application interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering application interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public boolean updateApplicationInterface(
-            String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws RegistryServiceException {
+            String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
+            throws RegistryServiceException {
         try {
             applicationInterfaceRepository.updateApplicationInterface(appInterfaceId, applicationInterface);
             logger.debug("Airavata updated application interface with interface id : " + appInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating application interface");
+            logger.error("Error while updating application interface", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application interface More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2701,7 +3395,11 @@ public class RegistryService {
             logger.debug("Airavata registered application module for gateway id : " + gatewayId);
             return module;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering application module");
+            logger.error("Error while registering application module", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering application module More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2712,7 +3410,11 @@ public class RegistryService {
             logger.debug("Airavata updated application module with module id: " + appModuleId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating application module");
+            logger.error("Error while updating application module", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application module More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2723,22 +3425,32 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            String deployment = applicationDeploymentRepository.addApplicationDeployment(applicationDeployment, gatewayId);
+            String deployment =
+                    applicationDeploymentRepository.addApplicationDeployment(applicationDeployment, gatewayId);
             logger.debug("Airavata registered application deployment for gateway id : " + gatewayId);
             return deployment;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering application deployment");
+            logger.error("Error while registering application deployment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering application deployment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public boolean updateApplicationDeployment(
-            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException {
+            String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
+            throws RegistryServiceException {
         try {
             applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId, applicationDeployment);
             logger.debug("Airavata updated application deployment for deployment id : " + appDeploymentId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating application deployment");
+            logger.error("Error while updating application deployment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating application deployment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2758,11 +3470,15 @@ public class RegistryService {
                 throw new AppCatalogException("User does not exist.Please provide a valid user ID...");
             }
             String resourceProfile = userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
-            logger.debug("Airavata registered user resource profile with gateway id : " + userResourceProfile.getGatewayID()
-                    + "and user id : " + userResourceProfile.getUserId());
+            logger.debug("Airavata registered user resource profile with gateway id : "
+                    + userResourceProfile.getGatewayID() + "and user id : " + userResourceProfile.getUserId());
             return resourceProfile;
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering user resource profile");
+            logger.error("Error while registering user resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering user resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2774,7 +3490,11 @@ public class RegistryService {
             }
             return userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if user resource profile exists");
+            logger.error("Error while checking if user resource profile exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking if user resource profile exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2789,7 +3509,11 @@ public class RegistryService {
             logger.debug("Airavata retrieved User resource profile with user id : " + userId);
             return userResourceProfile;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting user resource profile");
+            logger.error("Error while getting user resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting user resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2804,7 +3528,11 @@ public class RegistryService {
             logger.debug("Airavata updated gateway profile with gateway id : " + userId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating user resource profile");
+            logger.error("Error while updating user resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2818,7 +3546,11 @@ public class RegistryService {
             logger.debug("Airavata deleted User profile with gateway id : " + gatewayID + " and user id : " + userId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting user resource profile");
+            logger.error("Error while deleting user resource profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting user resource profile More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2862,7 +3594,11 @@ public class RegistryService {
                 }
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating resource scheduling");
+            logger.error("Error while updating resource scheduling", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating resource scheduling More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2877,7 +3613,11 @@ public class RegistryService {
             UserProfile savedUser = userRepository.addUser(userProfile);
             return savedUser.getUserId();
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding user");
+            logger.error("Error while adding user", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding user More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2894,8 +3634,8 @@ public class RegistryService {
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
             if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                        + "' does not exist!!!");
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id"
+                        + gatewayID + "' does not exist!!!");
             }
             UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
             profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
@@ -2904,7 +3644,11 @@ public class RegistryService {
                     + " and for compute resource id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding user compute resource preference");
+            logger.error("Error while adding user compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding user compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2918,7 +3662,12 @@ public class RegistryService {
             }
             return false;
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if user compute resource preference exists");
+            logger.error("Error while checking if user compute resource preference exists", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while checking if user compute resource preference exists More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2930,8 +3679,8 @@ public class RegistryService {
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
             if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                        + "' does not exist!!!");
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id"
+                        + gatewayID + "' does not exist!!!");
             }
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             if (!computeResourceRepository.isComputeResourceExists(userComputeResourceId)) {
@@ -2948,7 +3697,11 @@ public class RegistryService {
                     + " and for compute resoruce id : " + userComputeResourceId);
             return userComputeResourcePreference;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting user compute resource preference");
+            logger.error("Error while getting user compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting user compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2982,7 +3735,11 @@ public class RegistryService {
                     + " and for compute resource id : " + computeResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating user compute resource preference");
+            logger.error("Error while updating user compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -2995,8 +3752,8 @@ public class RegistryService {
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
             if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                        + "' does not exist!!!");
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id"
+                        + gatewayID + "' does not exist!!!");
             }
             UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
             dataStoragePreference.setStorageResourceId(storageResourceId);
@@ -3006,7 +3763,11 @@ public class RegistryService {
                     + " and for storage resource id : " + storageResourceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding user storage preference");
+            logger.error("Error while adding user storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding user storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3018,8 +3779,8 @@ public class RegistryService {
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
             if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                        + "' does not exist!!!");
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id"
+                        + gatewayID + "' does not exist!!!");
             }
 
             UserStoragePreference storagePreference =
@@ -3028,7 +3789,11 @@ public class RegistryService {
                     + " and for storage resource id : " + storageId);
             return storagePreference;
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting user storage preference");
+            logger.error("Error while getting user storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting user storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3036,7 +3801,11 @@ public class RegistryService {
         try {
             return userResourceProfileRepository.getAllUserResourceProfiles();
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting all user resource profiles");
+            logger.error("Error while getting all user resource profiles", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting all user resource profiles More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3050,7 +3819,11 @@ public class RegistryService {
             }
             return gatewayGroupsRepository.get(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting gateway groups");
+            logger.error("Error while getting gateway groups", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting gateway groups More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3064,7 +3837,11 @@ public class RegistryService {
             }
             return parserRepository.get(parserId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting parser");
+            logger.error("Error while getting parser", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting parser More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3073,7 +3850,11 @@ public class RegistryService {
             Parser saved = parserRepository.saveParser(parser);
             return saved.getId();
         } catch (Throwable e) {
-            throw convertException(e, "Error while saving parser");
+            logger.error("Error while saving parser", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving parser More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3085,7 +3866,11 @@ public class RegistryService {
             }
             parserRepository.delete(parserId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing parser");
+            logger.error("Error while removing parser", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing parser More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3095,9 +3880,13 @@ public class RegistryService {
                 final String message = "No ParserInput entry exists for " + parserInputId;
                 logger.error(message);
                 throw new RegistryException(message);
-        } catch (Throwable e) {
-            throw convertException(e, "Error in getParserInput");
-        }
+            } catch (Throwable e) {
+                logger.error("Error in getParserInput", e);
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Error in getParserInput More info : " + e.getMessage());
+                exception.initCause(e);
+                throw exception;
+            }
         }
         return parserInputRepository.get(parserInputId);
     }
@@ -3121,7 +3910,11 @@ public class RegistryService {
             }
             parserInputRepository.delete(parserInputId);
         } catch (Throwable e) {
-            throw convertException(e, "Error in removeParserInput");
+            logger.error("Error in removeParserInput", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in removeParserInput More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3134,7 +3927,11 @@ public class RegistryService {
             }
             return parserOutputRepository.get(parserOutputId);
         } catch (Throwable e) {
-            throw convertException(e, "Error in getParserOutput");
+            logger.error("Error in getParserOutput", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in getParserOutput More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3143,7 +3940,11 @@ public class RegistryService {
             ParserOutput saved = parserOutputRepository.create(parserOutput);
             return saved.getId();
         } catch (Throwable e) {
-            throw convertException(e, "Error while saving parser output");
+            logger.error("Error while saving parser output", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving parser output More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3161,7 +3962,11 @@ public class RegistryService {
             }
             parserOutputRepository.delete(parserOutputId);
         } catch (Throwable e) {
-            throw convertException(e, "Error in removeParserOutput");
+            logger.error("Error in removeParserOutput", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in removeParserOutput More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3174,7 +3979,11 @@ public class RegistryService {
             }
             return parsingTemplateRepository.get(templateId);
         } catch (Throwable e) {
-            throw convertException(e, "Error in getParsingTemplate");
+            logger.error("Error in getParsingTemplate", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in getParsingTemplate More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3183,19 +3992,29 @@ public class RegistryService {
             ParsingTemplate saved = parsingTemplateRepository.create(parsingTemplate);
             return saved.getId();
         } catch (Throwable e) {
-            throw convertException(e, "Error while saving parsing template");
+            logger.error("Error while saving parsing template", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while saving parsing template More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
         try {
             boolean exists = parsingTemplateRepository.isExists(templateId);
-            if (!exists || gatewayId.equals(parsingTemplateRepository.get(templateId).getGatewayId())) {
+            if (!exists
+                    || gatewayId.equals(
+                            parsingTemplateRepository.get(templateId).getGatewayId())) {
                 throw new RegistryException("Parsing template " + templateId + " does not exist");
             }
             parsingTemplateRepository.delete(templateId);
         } catch (Throwable e) {
-            throw convertException(e, "Error in removeParsingTemplate");
+            logger.error("Error in removeParsingTemplate", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error in removeParsingTemplate More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3205,7 +4024,12 @@ public class RegistryService {
         try {
             return usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if gateway usage reporting is available");
+            logger.error("Error while checking if gateway usage reporting is available", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while checking if gateway usage reporting is available More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3213,14 +4037,18 @@ public class RegistryService {
             throws RegistryServiceException {
         try {
             if (!usageReportingCommandRepository.isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
-                String message = "No usage reporting information for the gateway " + gatewayId + " and compute resource "
-                        + computeResourceId;
+                String message = "No usage reporting information for the gateway " + gatewayId
+                        + " and compute resource " + computeResourceId;
                 logger.error(message);
                 throw new RegistryException(message);
             }
             return usageReportingCommandRepository.getGatewayUsageReportingCommand(gatewayId, computeResourceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while getting gateway reporting command");
+            logger.error("Error while getting gateway reporting command", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while getting gateway reporting command More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3228,7 +4056,11 @@ public class RegistryService {
         try {
             usageReportingCommandRepository.addGatewayUsageReportingCommand(command);
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding gateway usage reporting command");
+            logger.error("Error while adding gateway usage reporting command", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding gateway usage reporting command More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3237,7 +4069,11 @@ public class RegistryService {
         try {
             usageReportingCommandRepository.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while removing gateway usage reporting command");
+            logger.error("Error while removing gateway usage reporting command", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing gateway usage reporting command More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3246,11 +4082,15 @@ public class RegistryService {
         try {
             cloudJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
             computeResourceRepository.updateCloudJobSubmission(cloudJobSubmission);
-            logger.debug(
-                    "Airavata updated Cloud job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            logger.debug("Airavata updated Cloud job submission for job submission interface id: "
+                    + jobSubmissionInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating cloud job submission details");
+            logger.error("Error while updating cloud job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating cloud job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3263,20 +4103,29 @@ public class RegistryService {
                     "Airavata updated SSH job submission for job submission interface id: " + jobSubmissionInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating SSH job submission details");
+            logger.error("Error while updating SSH job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating SSH job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public boolean updateUnicoreJobSubmissionDetails(
-            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException {
+            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)
+            throws RegistryServiceException {
         try {
             unicoreJobSubmission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
             computeResourceRepository.updateUNICOREJobSubmission(unicoreJobSubmission);
-            logger.debug(
-                    "Airavata updated UNICORE job submission for job submission interface id: " + jobSubmissionInterfaceId);
+            logger.debug("Airavata updated UNICORE job submission for job submission interface id: "
+                    + jobSubmissionInterfaceId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating Unicore job submission details");
+            logger.error("Error while updating Unicore job submission details", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating Unicore job submission details More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3286,7 +4135,11 @@ public class RegistryService {
             logger.debug("Airavata updated notification with notification id: " + notification.getNotificationId());
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating notification");
+            logger.error("Error while updating notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating notification More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3296,23 +4149,31 @@ public class RegistryService {
             logger.debug("Airavata created notification with notification id: " + notificationId);
             return notificationId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while creating notification");
+            logger.error("Error while creating notification", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating notification More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public boolean updateGateway(String gatewayId, Gateway updatedGateway)
-            throws RegistryServiceException {
+    public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException {
         try {
             if (!gatewayRepository.isGatewayExist(gatewayId)) {
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
-                throw new RegistryException("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw new RegistryException(
+                        "Gateway does not exist in the system. Please provide a valid gateway ID...");
             }
             updatedGateway.setGatewayId(gatewayId);
             gatewayRepository.updateGateway(gatewayId, updatedGateway);
             logger.debug("Airavata updated gateway with gateway id: " + gatewayId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating gateway");
+            logger.error("Error while updating gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3327,7 +4188,11 @@ public class RegistryService {
             logger.debug("Airavata registered gateway with gateway id: " + gatewayId);
             return gatewayId;
         } catch (Throwable e) {
-            throw convertException(e, "Error while adding gateway");
+            logger.error("Error while adding gateway", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while adding gateway More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3340,8 +4205,8 @@ public class RegistryService {
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
             if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
-                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id" + gatewayID
-                        + "' does not exist!!!");
+                throw new AppCatalogException("User resource profile with user id'" + userId + " &  gateway Id"
+                        + gatewayID + "' does not exist!!!");
             }
             UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
             List<UserStoragePreference> userStoragePreferences = profile.getUserStoragePreferences();
@@ -3362,7 +4227,11 @@ public class RegistryService {
                     + " and for storage resource id : " + storageId);
             return true;
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating user storage preference");
+            logger.error("Error while updating user storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3376,7 +4245,11 @@ public class RegistryService {
             return userResourceProfileRepository.removeUserComputeResourcePreferenceFromGateway(
                     userId, gatewayID, computeResourceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting user compute resource preference");
+            logger.error("Error while deleting user compute resource preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting user compute resource preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3387,9 +4260,14 @@ public class RegistryService {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new AppCatalogException("user does not exist.Please provide a valid user id...");
             }
-            return userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
+            return userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(
+                    userId, gatewayID, storageId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while deleting user storage preference");
+            logger.error("Error while deleting user storage preference", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while deleting user storage preference More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3397,7 +4275,11 @@ public class RegistryService {
         try {
             return queueStatusRepository.getLatestQueueStatuses();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving latest queue statuses");
+            logger.error("Error while retrieving latest queue statuses", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving latest queue statuses More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3405,13 +4287,18 @@ public class RegistryService {
         try {
             queueStatusRepository.createQueueStatuses(queueStatuses);
         } catch (Throwable e) {
-            throw convertException(e, "Error while registering queue statuses");
+            logger.error("Error while registering queue statuses", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering queue statuses More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException {
         try {
-            Optional<QueueStatusModel> optionalQueueStatusModel = queueStatusRepository.getQueueStatus(hostName, queueName);
+            Optional<QueueStatusModel> optionalQueueStatusModel =
+                    queueStatusRepository.getQueueStatus(hostName, queueName);
             if (optionalQueueStatusModel.isPresent()) {
                 return optionalQueueStatusModel.get();
             } else {
@@ -3425,7 +4312,11 @@ public class RegistryService {
                 return queueStatusModel;
             }
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving queue status");
+            logger.error("Error while retrieving queue status", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving queue status More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3438,7 +4329,11 @@ public class RegistryService {
             }
             gatewayGroupsRepository.create(gatewayGroups);
         } catch (Throwable e) {
-            throw convertException(e, "Error while creating gateway groups");
+            logger.error("Error while creating gateway groups", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while creating gateway groups More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3451,7 +4346,11 @@ public class RegistryService {
             }
             gatewayGroupsRepository.update(gatewayGroups);
         } catch (Throwable e) {
-            throw convertException(e, "Error while updating gateway groups");
+            logger.error("Error while updating gateway groups", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway groups More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3459,7 +4358,11 @@ public class RegistryService {
         try {
             return gatewayGroupsRepository.isExists(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while checking if gateway groups exist");
+            logger.error("Error while checking if gateway groups exist", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while checking if gateway groups exist More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3467,7 +4370,11 @@ public class RegistryService {
         try {
             return parserRepository.getAllParsers(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while listing all parsers");
+            logger.error("Error while listing all parsers", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while listing all parsers More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3476,7 +4383,12 @@ public class RegistryService {
         try {
             return parsingTemplateRepository.getParsingTemplatesForApplication(applicationInterfaceId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving parsing templates for application");
+            logger.error("Error while retrieving parsing templates for application", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving parsing templates for application More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3491,7 +4403,12 @@ public class RegistryService {
             }
             return Collections.emptyList();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving parsing templates for experiment");
+            logger.error("Error while retrieving parsing templates for experiment", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving parsing templates for experiment More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3499,7 +4416,11 @@ public class RegistryService {
         try {
             return parsingTemplateRepository.getAllParsingTemplates(gatewayId);
         } catch (Throwable e) {
-            throw convertException(e, "Error while listing all parsing templates");
+            logger.error("Error while listing all parsing templates", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while listing all parsing templates More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3515,7 +4436,12 @@ public class RegistryService {
                     .getUserResourceProfile(userId, gatewayID)
                     .getUserComputeResourcePreferences();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all user compute resource preferences");
+            logger.error("Error while retrieving all user compute resource preferences", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(
+                    "Error while retrieving all user compute resource preferences More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 
@@ -3530,7 +4456,11 @@ public class RegistryService {
                     .getUserResourceProfile(userId, gatewayID)
                     .getUserStoragePreferences();
         } catch (Throwable e) {
-            throw convertException(e, "Error while retrieving all user storage preferences");
+            logger.error("Error while retrieving all user storage preferences", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all user storage preferences More info : " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 }

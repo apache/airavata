@@ -24,13 +24,12 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
-import org.apache.thrift.TException;
 
-public class UserProfileServiceHandler implements UserProfileService.Iface {
+public class UserProfileServiceHandler
+        implements org.apache.airavata.service.profile.user.cpi.UserProfileService.Iface {
 
     private org.apache.airavata.service.UserProfileService userProfileService;
 
@@ -46,48 +45,48 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     @Override
     @SecurityCheck
     public String initializeUserProfile(AuthzToken authzToken)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.initializeUserProfile(authzToken);
     }
 
     @Override
     @SecurityCheck
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.addUserProfile(authzToken, userProfile);
     }
 
     @Override
     @SecurityCheck
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.updateUserProfile(authzToken, userProfile);
     }
 
     @Override
     @SecurityCheck
     public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.getUserProfileById(authzToken, userId, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public boolean deleteUserProfile(AuthzToken authzToken, String userId, String gatewayId)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.deleteUserProfile(authzToken, userId, gatewayId);
     }
 
     @Override
     @SecurityCheck
     public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
     }
 
     @Override
     public boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId)
-            throws UserProfileServiceException, AuthorizationException, TException {
+            throws UserProfileServiceException, AuthorizationException {
         return userProfileService.doesUserExist(authzToken, userId, gatewayId);
     }
 }

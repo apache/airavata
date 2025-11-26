@@ -49,14 +49,6 @@ public class UserProfileService {
     private UserProfileRepository userProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
-    private UserProfileServiceException convertException(Throwable e, String msg) {
-        logger.error(msg, e);
-        UserProfileServiceException exception = new UserProfileServiceException();
-        exception.setMessage(msg + ". More info : " + e.getMessage());
-        exception.initCause(e);
-        return exception;
-    }
-
     public UserProfileService() {
         userProfileRepository = new UserProfileRepository();
     }
@@ -150,8 +142,7 @@ public class UserProfileService {
         }
     }
 
-    private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile)
-            throws UserProfileServiceException {
+    private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         return () -> {
             try {

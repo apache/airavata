@@ -46,14 +46,6 @@ public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
 
-    private GroupManagerServiceException convertException(Throwable e, String msg) {
-        logger.error(msg, e);
-        var exception = new GroupManagerServiceException();
-        exception.setMessage(msg + ". More info : " + e.getMessage());
-        exception.initCause(e);
-        return exception;
-    }
-
     public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException {
         try {
             // TODO Validations for authorization

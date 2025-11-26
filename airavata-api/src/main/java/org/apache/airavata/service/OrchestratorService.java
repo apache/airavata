@@ -22,13 +22,20 @@ package org.apache.airavata.service;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
 import org.apache.airavata.metascheduler.process.scheduling.api.ProcessSchedulerImpl;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -44,9 +51,11 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -62,24 +71,15 @@ import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.logging.MDCConstants;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
-import org.apache.airavata.model.messaging.event.*;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.MDC;
 
 public class OrchestratorService {
@@ -119,14 +119,22 @@ public class OrchestratorService {
         this.publisher = publisher;
     }
 
-    public boolean launchExperiment(String experimentId, String gatewayId) throws Exception {
+    public boolean launchExperiment(String experimentId, String gatewayId)
+            throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
+                    LaunchValidationException {
         String experimentNodePath = getExperimentNodePath(experimentId);
-        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
-        String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
-        ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
+        try {
+            ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
+            String experimentCancelNode =
+                    ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+            ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
+        } catch (Exception e) {
+            throw new OrchestratorException("Error creating ZooKeeper nodes for experiment: " + experimentId, e);
+        }
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
-            throw new ExperimentNotFoundException("Error retrieving the Experiment by the given experimentID: " + experimentId);
+            throw new ExperimentNotFoundException(
+                    "Error retrieving the Experiment by the given experimentID: " + experimentId);
         }
 
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
@@ -151,7 +159,8 @@ public class OrchestratorService {
     }
 
     private boolean launchSingleAppExperiment(
-            ExperimentModel experiment, String experimentId, String gatewayId, String token) throws Exception {
+            ExperimentModel experiment, String experimentId, String gatewayId, String token)
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
         List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
         for (ProcessModel processModel : processes) {
@@ -166,7 +175,13 @@ public class OrchestratorService {
 
         if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()
                 && !validateProcess(experimentId, processes)) {
-            throw new Exception("Validating process fails for given experiment Id : " + experimentId);
+            LaunchValidationException exception = new LaunchValidationException();
+            ValidationResults validationResults = new ValidationResults();
+            validationResults.setValidationState(false);
+            validationResults.setValidationResultList(new ArrayList<>());
+            exception.setValidationResult(validationResults);
+            exception.setErrorMessage("Validating process fails for given experiment Id : " + experimentId);
+            throw exception;
         }
 
         ProcessScheduler scheduler = new ProcessSchedulerImpl();
@@ -184,53 +199,44 @@ public class OrchestratorService {
         }
     }
 
-    private void resolveInputReplicas(ProcessModel processModel) throws Exception {
+    private void resolveInputReplicas(ProcessModel processModel) throws RegistryServiceException {
         for (var pi : processModel.getProcessInputs()) {
             if (pi.getType().equals(DataType.URI)
                     && pi.getValue() != null
                     && pi.getValue().startsWith("airavata-dp://")) {
-                try {
-                    DataProductModel dataProductModel = orchestratorRegistryService.getDataProduct(pi.getValue());
-                    Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
-                            .filter(rpModel -> rpModel.getReplicaLocationCategory()
-                                    .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
-                            .findFirst();
-                    if (rpLocation.isPresent()) {
-                        pi.setValue(rpLocation.get().getFilePath());
-                        pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
-                    } else {
-                        logger.error("Could not find a replica for the URI " + pi.getValue());
-                    }
-                } catch (RegistryServiceException e) {
-                    throw new Exception("Error while launching experiment", e);
+                DataProductModel dataProductModel = orchestratorRegistryService.getDataProduct(pi.getValue());
+                Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
+                        .filter(rpModel ->
+                                rpModel.getReplicaLocationCategory().equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
+                        .findFirst();
+                if (rpLocation.isPresent()) {
+                    pi.setValue(rpLocation.get().getFilePath());
+                    pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
+                } else {
+                    logger.error("Could not find a replica for the URI " + pi.getValue());
                 }
             } else if (pi.getType().equals(DataType.URI_COLLECTION)
                     && pi.getValue() != null
                     && pi.getValue().contains("airavata-dp://")) {
-                try {
-                    String[] uriList = pi.getValue().split(",");
-                    final ArrayList<String> filePathList = new ArrayList<>();
-                    for (String uri : uriList) {
-                        if (uri.startsWith("airavata-dp://")) {
-                            DataProductModel dataProductModel = orchestratorRegistryService.getDataProduct(uri);
-                            Optional<DataReplicaLocationModel> rpLocation =
-                                    dataProductModel.getReplicaLocations().stream()
-                                            .filter(rpModel -> rpModel.getReplicaLocationCategory()
-                                                    .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
-                                            .findFirst();
-                            if (rpLocation.isPresent()) {
-                                filePathList.add(rpLocation.get().getFilePath());
-                            } else {
-                                logger.error("Could not find a replica for the URI " + pi.getValue());
-                            }
+                String[] uriList = pi.getValue().split(",");
+                final ArrayList<String> filePathList = new ArrayList<>();
+                for (String uri : uriList) {
+                    if (uri.startsWith("airavata-dp://")) {
+                        DataProductModel dataProductModel = orchestratorRegistryService.getDataProduct(uri);
+                        Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
+                                .filter(rpModel -> rpModel.getReplicaLocationCategory()
+                                        .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
+                                .findFirst();
+                        if (rpLocation.isPresent()) {
+                            filePathList.add(rpLocation.get().getFilePath());
                         } else {
-                            filePathList.add(uri);
+                            logger.error("Could not find a replica for the URI " + pi.getValue());
                         }
+                    } else {
+                        filePathList.add(uri);
                     }
-                    pi.setValue(StringUtils.join(filePathList, ','));
-                } catch (RegistryServiceException e) {
-                    throw new Exception("Error while launching experiment", e);
                 }
+                pi.setValue(StringUtils.join(filePathList, ','));
             }
         }
     }
@@ -291,12 +297,14 @@ public class OrchestratorService {
         return true;
     }
 
-    public boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryServiceException, OrchestratorException {
+    public boolean terminateExperiment(String experimentId, String gatewayId)
+            throws RegistryServiceException, OrchestratorException {
         logger.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         return validateStatesAndCancel(experimentId, gatewayId);
     }
 
-    private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws RegistryServiceException, OrchestratorException {
+    private boolean validateStatesAndCancel(String experimentId, String gatewayId)
+            throws RegistryServiceException, OrchestratorException {
         ExperimentStatus experimentStatus = orchestratorRegistryService.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:
@@ -343,7 +351,8 @@ public class OrchestratorService {
                     stat = curatorClient.checkExists().forPath(expCancelNodePath);
                 } catch (Exception e) {
                     logger.error("Error checking existence of Zookeeper node: " + expCancelNodePath, e);
-                    throw new OrchestratorException("Error checking existence of Zookeeper node: " + expCancelNodePath, e);
+                    throw new OrchestratorException(
+                            "Error checking existence of Zookeeper node: " + expCancelNodePath, e);
                 }
                 if (stat != null) {
                     try {
@@ -353,7 +362,8 @@ public class OrchestratorService {
                                 .forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST.getBytes());
                     } catch (Exception e) {
                         logger.error("Error setting data for Zookeeper node: " + expCancelNodePath, e);
-                        throw new OrchestratorException("Error setting data for Zookeeper node: " + expCancelNodePath, e);
+                        throw new OrchestratorException(
+                                "Error setting data for Zookeeper node: " + expCancelNodePath, e);
                     }
                     ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
                     status.setReason("Experiment cancel request processed");
@@ -420,7 +430,8 @@ public class OrchestratorService {
         }
     }
 
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws RegistryServiceException, OrchestratorException {
+    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
+            throws RegistryServiceException, OrchestratorException {
         ProcessStatus processStatus = orchestratorRegistryService.getProcessStatus(processId);
 
         switch (processStatus.getState()) {
@@ -478,10 +489,15 @@ public class OrchestratorService {
                 Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[] {}));
         HostScheduler hostScheduler;
         try {
-            var schedulerClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+            var schedulerClass =
+                    Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
             hostScheduler = schedulerClass.getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | ApplicationSettingsException | NoSuchMethodException
-                 | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ClassNotFoundException
+                | ApplicationSettingsException
+                | NoSuchMethodException
+                | InstantiationException
+                | IllegalAccessException
+                | InvocationTargetException e) {
             throw new OrchestratorException("Failed to instantiate HostScheduler", e);
         }
         ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
@@ -504,7 +520,8 @@ public class OrchestratorService {
         throw new UnsupportedOperationException("Workflow support not implemented");
     }
 
-    public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag) throws Exception {
+    public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag)
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = orchestratorRegistryService.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {
@@ -516,8 +533,14 @@ public class OrchestratorService {
                 }
             }
             if (!validateProcess(experiment.getExperimentId(), processModels)) {
-                throw new Exception(
+                LaunchValidationException exception = new LaunchValidationException();
+                ValidationResults validationResults = new ValidationResults();
+                validationResults.setValidationState(false);
+                validationResults.setValidationResultList(new ArrayList<>());
+                exception.setValidationResult(validationResults);
+                exception.setErrorMessage(
                         "Validating process fails for given experiment Id : " + experiment.getExperimentId());
+                throw exception;
             }
         }
     }
@@ -531,7 +554,8 @@ public class OrchestratorService {
     }
 
     public boolean launchSingleAppExperimentInternal(
-            String experimentId, String airavataCredStoreToken, String gatewayId) throws Exception {
+            String experimentId, String airavataCredStoreToken, String gatewayId)
+            throws RegistryServiceException, OrchestratorException {
         try {
             List<String> processIds = orchestratorRegistryService.getProcessIds(experimentId);
             for (String processId : processIds) {
@@ -543,8 +567,8 @@ public class OrchestratorService {
             status.setReason("Error while retrieving process IDs");
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             logger.error("expId: " + experimentId + ", Error while retrieving process IDs", e);
-            throw new Exception("Error while retrieving process IDs", e);
-        } catch (Exception e) {
+            throw e;
+        } catch (OrchestratorException e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Error while launching processes");
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
@@ -553,10 +577,13 @@ public class OrchestratorService {
         }
     }
 
-    public void launchQueuedExperiment(String experimentId) throws Exception {
+    public void launchQueuedExperiment(String experimentId)
+            throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
+                    LaunchValidationException {
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
-            throw new ExperimentNotFoundException("Error retrieving the Experiment by the given experimentID: " + experimentId);
+            throw new ExperimentNotFoundException(
+                    "Error retrieving the Experiment by the given experimentID: " + experimentId);
         }
 
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
@@ -575,7 +602,9 @@ public class OrchestratorService {
     }
 
     public void handleProcessStatusChange(
-            ProcessStatusChangeEvent processStatusChangeEvent, ProcessIdentifier processIdentity) throws Exception {
+            ProcessStatusChangeEvent processStatusChangeEvent, ProcessIdentifier processIdentity)
+            throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
+                    LaunchValidationException {
         ExperimentStatus status = new ExperimentStatus();
 
         // Check if this is an intermediate output fetching process
@@ -684,7 +713,9 @@ public class OrchestratorService {
         }
     }
 
-    public void handleLaunchExperiment(ExperimentSubmitEvent expEvent) throws Exception {
+    public void handleLaunchExperiment(ExperimentSubmitEvent expEvent)
+            throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
+                    LaunchValidationException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
         if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
             launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
@@ -694,7 +725,9 @@ public class OrchestratorService {
     /**
      * Handle launch experiment from message context with deserialization and redelivery checks
      */
-    public void handleLaunchExperimentFromMessage(MessageContext messageContext) throws Exception {
+    public void handleLaunchExperimentFromMessage(MessageContext messageContext)
+            throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
+                    LaunchValidationException, TException {
         ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
         byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
         ThriftUtils.createThriftFromBytes(bytes, expEvent);
@@ -710,7 +743,8 @@ public class OrchestratorService {
         }
     }
 
-    public void handleCancelExperiment(ExperimentSubmitEvent expEvent) throws Exception {
+    public void handleCancelExperiment(ExperimentSubmitEvent expEvent)
+            throws RegistryServiceException, OrchestratorException {
         terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
     }
 
@@ -846,13 +880,15 @@ public class OrchestratorService {
     //                 throw new RuntimeException("Error while updating experiment status", e);
     //             } catch (Throwable e) {
     //                 logger.error(
-    //                         "Message Id : " + message.getMessageId() + ", Message type : " + message.getType() + "Error"
+    //                         "Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
+    // "Error"
     //                                 + " while prcessing process status change event",
     //                         e);
     //                 throw new RuntimeException("Error while updating experiment status", e);
     //             }
     //         } else {
-    //             System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message "
+    //             System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message
+    // "
     //                     + "type " + message.getType().name());
     //         }
     //     }
