@@ -16,7 +16,7 @@
 #id=kafka-rest-test-server
 #schema.registry.url=http://localhost:8081
 #zookeeper.connect=localhost:2181
-bootstrap.servers=PLAINTEXT://{{ groups['kafka'][0] }}:{{ kafka_listener_port }}
+bootstrap.servers=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ kafka_listener_port }}
 listeners=http://{{ ansible_default_ipv4.address }}:{{ kafka_rest_proxy_listener_port }}
 #
 # Configure interceptor classes for sending consumer and producer metrics to Confluent Control Center

@@ -1,0 +1,115 @@
+---
+# Sensitive configuration variables (will be encrypted)
+# Copy this file to vault.yml, fill in CHANGEME values, then encrypt:
+# ansible-vault encrypt vault.yml
+
+# Database passwords
+registry_jdbc_password: "CHANGEME_DB_PASSWORD"
+appcatalog_jdbc_password: "CHANGEME_DB_PASSWORD"
+replicacatalog_jdbc_password: "CHANGEME_DB_PASSWORD"
+workflowcatalog_jdbc_password: "CHANGEME_DB_PASSWORD"
+sharingcatalog_jdbc_password: "CHANGEME_DB_PASSWORD"
+profile_service_jdbc_password: "CHANGEME_DB_PASSWORD"
+credential_store_jdbc_password: "CHANGEME_DB_PASSWORD"
+
+# Database URLs
+registry_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/experiment_catalog"
+appcatalog_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/app_catalog"
+replicacatalog_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/replica_catalog"
+workflowcatalog_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/workflow_catalog"
+sharingcatalog_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/sharing_catalog"
+profile_service_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/profile_service"
+credential_store_jdbc_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/credential_store"
+
+# IAM/Keycloak credentials
+iam_server_url: "https://CHANGEME_IAM_SERVER"
+iam_admin_username: "admin"
+iam_admin_password: "CHANGEME_IAM_PASSWORD"
+
+# Keycloak admin account (for Keycloak 24+)
+keycloak_master_account_username: "admin"
+keycloak_master_account_password: "CHANGEME_KEYCLOAK_ADMIN_PASSWORD"
+
+# Keycloak database credentials
+keycloak_db_username: "keycloak"
+keycloak_db_password: "CHANGEME_KEYCLOAK_DB_PASSWORD"
+
+# Keycloak realm client configuration
+# PGA client (for Airavata Gateway)
+keycloak_pga_client_secret: "CHANGEME_PGA_CLIENT_SECRET"
+keycloak_pga_redirect_uris:
+  - "https://CHANGEME_GATEWAY_HOST/callback-url"
+  - "https://CHANGEME_GATEWAY_HOST/"
+  - "https://CHANGEME_GATEWAY_HOST/auth/callback*"
+keycloak_pga_web_origins:
+  - "https://CHANGEME_GATEWAY_HOST"
+
+# CS-JupyterLab client
+keycloak_jupyterlab_client_secret: "CHANGEME_JUPYTERLAB_CLIENT_SECRET"
+keycloak_jupyterlab_redirect_uris:
+  - "https://CHANGEME_JUPYTERLAB_HOST/hub/oauth_callback"
+
+# CILogon identity provider
+keycloak_cilogon_client_id: "CHANGEME_CILOGON_CLIENT_ID"
+keycloak_cilogon_client_secret: "CHANGEME_CILOGON_CLIENT_SECRET"
+
+# OAuth secrets
+default_registry_password: "CHANGEME_REGISTRY_PASSWORD"
+default_registry_oauth_client_secret: "CHANGEME_OAUTH_SECRET"
+
+# RabbitMQ
+rabbitmq_user: "guest"
+rabbitmq_password: "guest"
+rabbitmq_vhost: "CHANGEME_VHOST"
+rabbitmq_broker_url: "amqp://guest:guest@localhost:5672/CHANGEME_VHOST"
+
+# Zookeeper
+zookeeper_connection: "localhost:2181"
+
+# Email monitoring
+email_based_monitor_address: "CHANGEME_EMAIL_ADDRESS"
+email_based_monitor_password: "CHANGEME_EMAIL_PASSWORD"
+
+# Kafka
+kafka_broker_url: "localhost:9092"
+job_status_publish_endpoint: "http://CHANGEME_API_HOST:8082/topics/helix-airavata-mq"
+
+# Tunnel tokens (for agent service)
+tunnel_server_host: "CHANGEME_TUNNEL_HOST"
+tunnel_server_port: 17000
+tunnel_server_token: "CHANGEME_TUNNEL_TOKEN"
+tunnel_server_api_url: "http://CHANGEME_TUNNEL_HOST:8000"
+
+# Keystore passwords
+keystore_password: "CHANGEME_KEYSTORE_PASSWORD"
+credential_store_keystore_password: "CHANGEME_CRED_STORE_PASSWORD"
+
+# Agent service datasource
+agent_service_datasource_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/app_catalog"
+agent_service_datasource_username: "root"
+agent_service_datasource_password: "CHANGEME_DB_PASSWORD"
+
+# Research service datasource
+research_service_datasource_url: "jdbc:mariadb://CHANGEME_DB_HOST:3306/research_catalog"
+research_service_datasource_username: "root"
+research_service_datasource_password: "CHANGEME_DB_PASSWORD"
+
+# Agent service Airavata settings
+agent_service_airavata_url: "localhost"
+agent_service_airavata_port: 8930
+agent_service_airavata_secure: false
+
+# Research service URLs
+research_hub_url: "https://CHANGEME_RESEARCH_HUB"
+research_hub_dev_user: "airavata@apache.org"
+research_hub_admin_api_key: "CHANGEME_API_KEY"
+research_hub_limit: 10
+research_portal_dev_url: "https://CHANGEME_PORTAL"
+research_portal_url: "https://CHANGEME_PORTAL"
+openid_url: "https://CHANGEME_AUTH_SERVER/realms/default/.well-known/openid-configuration"
+user_profile_server_url: "CHANGEME_PROFILE_SERVER"
+user_profile_server_port: 8962
+
+# Keystore file
+vault_keystore_file: "files/airavata.sym.p12"
+

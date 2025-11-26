@@ -19,23 +19,59 @@
 #
 
 ---
-- name: Install OpenJDK 11 (CentOS)
-  yum: name="{{ openjdk_version }}" state=present update_cache=yes
+- name: Install OpenJDK 17 (CentOS)
+  yum:
+    name: "{{ openjdk_version }}"
+    state: present
+    update_cache: yes
   become: yes
   tags:
     - always
   when: ansible_distribution == "CentOS"
 
-- name: Install OpenJDK 11 (Rocky)
+- name: Install OpenJDK 17 (Rocky)
   dnf: name="{{ openjdk_version_rocky }}"
   become: yes
   tags:
     - always
   when: ansible_distribution == "Rocky"
 
+- name: Install OpenJDK 17 (Ubuntu/Debian)
+  apt:
+    name: openjdk-17-jdk
+    state: present
+    update_cache: yes
+  become: yes
+  tags:
+    - always
+  when: ansible_os_family == "Debian"
+
+- name: Set Java home for Ubuntu/Debian
+  set_fact:
+    java_home: "{{ java_home_ubuntu }}"
+  when: ansible_os_family == "Debian"
+
+- name: Find actual Java installation path (Ubuntu/Debian)
+  shell: find /usr/lib/jvm -name java -type f -path "*/bin/java" 2>/dev/null | head -1 | xargs dirname | xargs dirname
+  register: actual_java_home
+  changed_when: false
+  when: ansible_os_family == "Debian"
+
+- name: Update Java home with actual path (Ubuntu/Debian)
+  set_fact:
+    java_home: "{{ actual_java_home.stdout }}"
+  when: ansible_os_family == "Debian" and actual_java_home.stdout != ""
 
 # NOTE: If you see a file not found error, try running rm /var/lib/alternatives/{{ item.exe }} in the target machine
-- name: set {{ java_home }} as default
+# On Ubuntu/Debian, the package manager already handles alternatives, so we only need to verify the path exists
+- name: Verify Java path exists before setting alternatives
+  stat:
+    path: "{{ java_home }}/bin/java"
+  register: java_path_check
+  changed_when: false
+  failed_when: false
+
+- name: set {{ java_home }} as default (Ubuntu/Debian - only if path exists)
   alternatives:
     name="{{ item.exe }}"
     link="/usr/bin/{{ item.exe }}"
@@ -46,5 +82,21 @@
     - { path: "{{ java_home }}/bin", exe: 'javac' }
     - { path: "{{ java_home }}/bin", exe: 'javadoc' }
   become: yes
+  when: ansible_os_family == "Debian" and (java_path_check.stat.exists | default(false))
   tags:
-       - always
+    - always
+
+- name: set {{ java_home }} as default (CentOS/Rocky)
+  alternatives:
+    name="{{ item.exe }}"
+    link="/usr/bin/{{ item.exe }}"
+    path="{{ item.path }}/{{ item.exe }}"
+  with_items:
+    - { path: "{{ java_home }}/bin", exe: 'java' }
+    - { path: "{{ java_home }}/bin", exe: 'keytool' }
+    - { path: "{{ java_home }}/bin", exe: 'javac' }
+    - { path: "{{ java_home }}/bin", exe: 'javadoc' }
+  become: yes
+  when: ansible_os_family == "RedHat"
+  tags:
+    - always
