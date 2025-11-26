@@ -448,6 +448,7 @@ under the License.
           <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
           <addDefaultConstructor>true</addDefaultConstructor>
           <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+          <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
         </configuration>
         <executions>
           <execution>
