@@ -22,7 +22,6 @@ package org.apache.airavata.sharing.registry.server;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
