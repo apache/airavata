@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
@@ -127,7 +129,8 @@ public class OutputDataStagingTask extends DataStagingTask {
             // Fetch and validate compute resource adaptor
             AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
-            List<URI> destinationURIs = new ArrayList<URI>();
+            List<URI> destinationURIs = new ArrayList<>();
+            List<String> successfullyTransferredSourcePaths = new ArrayList<>();
 
             if (sourceFileName.contains("*")) {
                 // if file is declared as a wild card
@@ -180,15 +183,16 @@ public class OutputDataStagingTask extends DataStagingTask {
                             storageResourceAdaptor);
                     if (transferred) {
                         destinationURIs.add(destinationURI);
+                        successfullyTransferredSourcePaths.add(newSourceURI.getPath());
                     } else {
-                        logger.warn("File " + sourceFileName + " did not transfer");
+                        logger.warn("File {} did not transfer", sourceFileName);
                     }
 
                     if (processOutput.getType() == DataType.URI) {
                         if (filePaths.size() > 1) {
                             logger.warn(
-                                    "More than one file matched wildcard, but output type is URI. Skipping remaining matches: "
-                                            + filePaths.subList(1, filePaths.size()));
+                                    "More than one file matched wildcard, but output type is URI. Skipping remaining matches: {}",
+                                    filePaths.subList(1, filePaths.size()));
                         }
                         break;
                     }
@@ -206,6 +210,31 @@ public class OutputDataStagingTask extends DataStagingTask {
                                         .map(this::escapeSpecialCharacters)
                                         .collect(Collectors.toList()));
                     }
+
+                    try {
+                        ApplicationInterfaceDescription appInterface =
+                                getTaskContext().getApplicationInterfaceDescription();
+                        if (appInterface != null && appInterface.isCleanAfterStaged()) {
+                            logger.info(
+                                    "cleanAfterStaged is enabled, deleting source files after successful staging for task with the Id: {}",
+                                    getTaskId());
+                            // Delete only successfully transferred source files
+                            boolean allDeleted = deleteSourceFiles(successfullyTransferredSourcePaths, adaptor);
+                            if (!allDeleted) {
+                                logger.warn(
+                                        "Some source files could not be deleted after staging for task {}.",
+                                        getTaskId());
+                            } else if (!successfullyTransferredSourcePaths.isEmpty()) {
+                                logger.info(
+                                        "Successfully deleted all {} source file(s) after staging for task {}",
+                                        successfullyTransferredSourcePaths.size(),
+                                        getTaskId());
+                            }
+                            deleteEmptyDirectoryIfNeeded(sourceParentPath, adaptor);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Failed to clean up source files after staging for task {}", getTaskId(), e);
+                    }
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
@@ -216,8 +245,33 @@ public class OutputDataStagingTask extends DataStagingTask {
                         sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {
                     saveExperimentOutput(processOutput.getName(), escapeSpecialCharacters(destinationURI.toString()));
+
+                    try {
+                        ApplicationInterfaceDescription appInterface =
+                                getTaskContext().getApplicationInterfaceDescription();
+                        if (appInterface != null && appInterface.isCleanAfterStaged()) {
+                            logger.info(
+                                    "cleanAfterStaged is enabled, deleting source file after successful staging for task with the Id: {}",
+                                    getTaskId());
+                            boolean deleted = deleteSourceFiles(List.of(sourceURI.getPath()), adaptor);
+                            if (!deleted) {
+                                logger.warn("Source file could not be deleted after staging for task {}.", getTaskId());
+                            } else {
+                                logger.info("Successfully deleted source file after staging for task {}", getTaskId());
+                            }
+                            String sourceParentPath = (new File(sourceURI.getPath()))
+                                    .getParentFile()
+                                    .getPath();
+                            deleteEmptyDirectoryIfNeeded(sourceParentPath, adaptor);
+                        }
+                    } catch (Exception e) {
+                        logger.warn(
+                                "Failed to clean up source file after staging for task {}. Staging completed successfully.",
+                                getTaskId(),
+                                e);
+                    }
                 } else {
-                    logger.warn("File " + sourceFileName + " did not transfer");
+                    logger.warn("File {} did not transfer", sourceFileName);
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }
@@ -233,6 +287,78 @@ public class OutputDataStagingTask extends DataStagingTask {
         } catch (Exception e) {
             logger.error("Unknown error while executing output data staging task " + getTaskId(), e);
             return onFail("Unknown error while executing output data staging task " + getTaskId(), false, e);
+        }
+    }
+
+    private boolean deleteSourceFiles(List<String> filePaths, AgentAdaptor adaptor) {
+        boolean allSucceeded = true;
+        for (String filePath : filePaths) {
+            if (filePath == null || filePath.trim().isEmpty()) {
+                continue;
+            }
+            try {
+                String escapedPath = filePath.replace("'", "'\"'\"'");
+                String deleteCommand = "rm -f '" + escapedPath + "'";
+
+                logger.debug("Deleting source file: {}", filePath);
+                CommandOutput deleteOutput = adaptor.executeCommand(deleteCommand, null);
+
+                if (deleteOutput.getExitCode() != 0) {
+                    logger.warn(
+                            "Failed to delete source file {} (exit code: {}). Stdout: {}, Stderr: {}",
+                            filePath,
+                            deleteOutput.getExitCode(),
+                            deleteOutput.getStdOut(),
+                            deleteOutput.getStdError());
+                    allSucceeded = false;
+                } else {
+                    logger.debug("Successfully deleted source file: {}", filePath);
+                }
+            } catch (AgentException e) {
+                logger.warn("Exception while deleting source file {}: {}", filePath, e.getMessage(), e);
+                allSucceeded = false;
+            } catch (Exception e) {
+                logger.warn("Unexpected error while deleting source file {}: {}", filePath, e.getMessage(), e);
+                allSucceeded = false;
+            }
+        }
+        return allSucceeded;
+    }
+
+    private void deleteEmptyDirectoryIfNeeded(String directoryPath, AgentAdaptor adaptor) {
+        if (directoryPath == null || directoryPath.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            List<String> directoryContents = adaptor.listDirectory(directoryPath);
+            if (directoryContents == null || directoryContents.isEmpty()) {
+                String escapedPath = directoryPath.replace("'", "'\"'\"'");
+                String rmdirCommand = "rmdir '" + escapedPath + "'";
+
+                logger.debug("Removing empty directory: {}", directoryPath);
+                CommandOutput rmdirOutput = adaptor.executeCommand(rmdirCommand, null);
+
+                if (rmdirOutput.getExitCode() != 0) {
+                    logger.debug(
+                            "Could not remove directory {} (may not be empty or may have been removed already). Exit code: {}, Stderr: {}",
+                            directoryPath,
+                            rmdirOutput.getExitCode(),
+                            rmdirOutput.getStdError());
+                } else {
+                    logger.debug("Successfully removed empty directory: {}", directoryPath);
+                }
+            } else {
+                logger.debug(
+                        "Directory {} is not empty (contains {} items), skipping removal",
+                        directoryPath,
+                        directoryContents.size());
+            }
+        } catch (AgentException e) {
+            logger.debug("Could not check or remove directory {}: {}", directoryPath, e.getMessage());
+
+        } catch (Exception e) {
+            logger.debug("Unexpected error while checking directory {}: {}", directoryPath, e.getMessage());
         }
     }
 

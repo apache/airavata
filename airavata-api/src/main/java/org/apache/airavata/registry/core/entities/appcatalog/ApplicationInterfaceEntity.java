@@ -58,6 +58,9 @@ public class ApplicationInterfaceEntity implements Serializable {
     @Column(name = "HAS_OPTIONAL_FILE_INPUTS")
     private boolean hasOptionalFileInputs;
 
+    @Column(name = "CLEAN_AFTER_STAGED")
+    private boolean cleanAfterStaged;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "APP_MODULE_MAPPING", joinColumns = @JoinColumn(name = "INTERFACE_ID"))
     @Column(name = "MODULE_ID")
@@ -143,6 +146,14 @@ public class ApplicationInterfaceEntity implements Serializable {
 
     public void setHasOptionalFileInputs(boolean hasOptionalFileInputs) {
         this.hasOptionalFileInputs = hasOptionalFileInputs;
+    }
+
+    public boolean getCleanAfterStaged() {
+        return cleanAfterStaged;
+    }
+
+    public void setCleanAfterStaged(boolean cleanAfterStaged) {
+        this.cleanAfterStaged = cleanAfterStaged;
     }
 
     public List<String> getApplicationModules() {

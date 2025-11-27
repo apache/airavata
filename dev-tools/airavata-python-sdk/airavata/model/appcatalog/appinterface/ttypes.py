@@ -45,12 +45,13 @@ class ApplicationInterfaceDescription(object):
      - applicationOutputs
      - archiveWorkingDirectory
      - hasOptionalFileInputs
+     - cleanAfterStaged
 
     """
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, applicationInterfaceId: str = "DO_NOT_SET_AT_CLIENTS", applicationName: str = None, applicationDescription: typing.Optional[str] = None, applicationModules: typing.Optional[list[str]] = None, applicationInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, applicationOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, archiveWorkingDirectory: typing.Optional[bool] = False, hasOptionalFileInputs: typing.Optional[bool] = None,):
+    def __init__(self, applicationInterfaceId: str = "DO_NOT_SET_AT_CLIENTS", applicationName: str = None, applicationDescription: typing.Optional[str] = None, applicationModules: typing.Optional[list[str]] = None, applicationInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, applicationOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, archiveWorkingDirectory: typing.Optional[bool] = False, hasOptionalFileInputs: typing.Optional[bool] = None, cleanAfterStaged: typing.Optional[bool] = False,):
         self.applicationInterfaceId: str = applicationInterfaceId
         self.applicationName: str = applicationName
         self.applicationDescription: typing.Optional[str] = applicationDescription
@@ -59,6 +60,7 @@ class ApplicationInterfaceDescription(object):
         self.applicationOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = applicationOutputs
         self.archiveWorkingDirectory: typing.Optional[bool] = archiveWorkingDirectory
         self.hasOptionalFileInputs: typing.Optional[bool] = hasOptionalFileInputs
+        self.cleanAfterStaged: typing.Optional[bool] = cleanAfterStaged
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -126,6 +128,11 @@ class ApplicationInterfaceDescription(object):
                     self.hasOptionalFileInputs = iprot.readBool()
                 else:
                     iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.BOOL:
+                    self.cleanAfterStaged = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -178,6 +185,10 @@ class ApplicationInterfaceDescription(object):
             oprot.writeFieldBegin('hasOptionalFileInputs', TType.BOOL, 8)
             oprot.writeBool(self.hasOptionalFileInputs)
             oprot.writeFieldEnd()
+        if self.cleanAfterStaged is not None:
+            oprot.writeFieldBegin('cleanAfterStaged', TType.BOOL, 9)
+            oprot.writeBool(self.cleanAfterStaged)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -209,6 +220,7 @@ ApplicationInterfaceDescription.thrift_spec = (
     (6, TType.LIST, 'applicationOutputs', (TType.STRUCT, [airavata.model.application.io.ttypes.OutputDataObjectType, None], False), None, ),  # 6
     (7, TType.BOOL, 'archiveWorkingDirectory', None, False, ),  # 7
     (8, TType.BOOL, 'hasOptionalFileInputs', None, None, ),  # 8
+    (9, TType.BOOL, 'cleanAfterStaged', None, False, ),  # 9
 )
 fix_spec(all_structs)
 del all_structs
