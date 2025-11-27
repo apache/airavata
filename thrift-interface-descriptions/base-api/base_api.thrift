@@ -5,6 +5,8 @@ namespace perl ApacheAiravataBaseAPI
 namespace py airavata.base.api
 namespace js ApacheAiravataBaseAPI
 
+include "../airavata-apis/airavata_errors.thrift"
+
 service BaseAPI {
-    string getAPIVersion()
+    string getAPIVersion() throws (1: airavata_errors.AiravataSystemException ase)
 }

@@ -35,6 +35,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntityType;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
@@ -174,8 +175,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                                 // Creating Entity Types for each domain
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":PROJECT");
-                                org.apache.airavata.sharing.registry.models.EntityType entityType =
-                                        new org.apache.airavata.sharing.registry.models.EntityType();
+                                EntityType entityType = new EntityType();
                                 entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
                                 entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("PROJECT");
