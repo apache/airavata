@@ -45,7 +45,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public String getAPIVersion() throws AiravataSystemException {
+    public String getAPIVersion() {
         return sharing_cpiConstants.SHARING_CPI_VERSION;
     }
 
