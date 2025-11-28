@@ -56,6 +56,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -91,6 +92,7 @@ public class TaskContext {
     private String gatewayId;
     private String taskId;
 
+    private ExperimentModel experimentModel;
     private ProcessModel processModel;
     private JobModel jobModel;
     private Object subTaskModel = null;
@@ -174,6 +176,10 @@ public class TaskContext {
 
     public void setProcessModel(ProcessModel processModel) {
         this.processModel = processModel;
+    }
+
+    public void setExperimentModel(ExperimentModel experimentModel) {
+        this.experimentModel = experimentModel;
     }
 
     public String getWorkingDir() throws Exception {
@@ -1002,6 +1008,7 @@ public class TaskContext {
         private RegistryService.Client registryClient;
         private UserProfileService.Client profileClient;
         private ProcessModel processModel;
+        private ExperimentModel experimentModel;
 
         @SuppressWarnings("WeakerAccess")
         public TaskContextBuilder(String processId, String gatewayId, String taskId) throws Exception {
@@ -1015,6 +1022,11 @@ public class TaskContext {
 
         public TaskContextBuilder setProcessModel(ProcessModel processModel) {
             this.processModel = processModel;
+            return this;
+        }
+
+        public TaskContextBuilder setExperimentModel(ExperimentModel experimentModel) {
+            this.experimentModel = experimentModel;
             return this;
         }
 
@@ -1040,6 +1052,7 @@ public class TaskContext {
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setRegistryClient(registryClient);
             ctx.setProcessModel(processModel);
+            ctx.setExperimentModel(experimentModel);
             ctx.setProfileClient(profileClient);
             return ctx;
         }

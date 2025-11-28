@@ -43,6 +43,8 @@ public interface AgentAdaptor {
 
     void createDirectory(String path, boolean recursive) throws AgentException;
 
+    void deleteDirectory(String path) throws AgentException;
+
     void uploadFile(String localFile, String remoteFile) throws AgentException;
 
     void uploadFile(InputStream localInStream, FileMetadata metadata, String remoteFile) throws AgentException;

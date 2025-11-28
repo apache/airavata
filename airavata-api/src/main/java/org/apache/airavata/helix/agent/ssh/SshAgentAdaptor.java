@@ -182,6 +182,40 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
+    @Override
+    public void deleteDirectory(String path) throws AgentException {
+        String command = "rm -rf "  + path;
+        ChannelExec channelExec = null;
+        try {
+            channelExec = (ChannelExec) session.openChannel("exec");
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            channelExec.setCommand(command);
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+            channelExec.connect();
+
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+
+            if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("mkdir:")) {
+                throw new AgentException(stdOutReader.getStdError());
+            }
+        } catch (JSchException e) {
+            System.out.println("Unable to retrieve command output. Command - " + command + " on server - "
+                    + session.getHost() + ":" + session.getPort() + " connecting user name - "
+                    + session.getUserName());
+            throw new AgentException(e);
+        } catch (IOException e) {
+            logger.error("Failed to delete directory " + path, e);
+            throw new AgentException("Failed to delete directory " + path, e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+        }
+    }
+
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
 
         FileInputStream fis;

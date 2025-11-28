@@ -278,6 +278,30 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public void deleteDirectory(String path) throws AgentException {
+        SFTPClientWrapper sftpClient = null;
+        try {
+            sftpClient = sshjClient.newSFTPClientWrapper();
+            sftpClient.rmdir(path);
+        } catch (Exception e) {
+            if (e instanceof ConnectionException) {
+                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+            }
+            logger.error("Error while deleting directory " + path, e);
+            throw new AgentException(e);
+
+        } finally {
+            Optional.ofNullable(sftpClient).ifPresent(client -> {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            });
+        }
+    }
+
+    @Override
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
         SCPFileTransferWrapper fileTransfer = null;
         try {

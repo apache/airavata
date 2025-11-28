@@ -41,6 +41,8 @@ public interface StorageResourceAdaptor extends AgentAdaptor {
 
     public void createDirectory(String path, boolean recursive) throws AgentException;
 
+    public void deleteDirectory(String path) throws AgentException;
+
     public List<String> listDirectory(String path) throws AgentException;
 
     public Boolean doesFileExist(String filePath) throws AgentException;
