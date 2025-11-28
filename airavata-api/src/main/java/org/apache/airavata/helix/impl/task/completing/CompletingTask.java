@@ -53,7 +53,7 @@ public class CompletingTask extends AiravataTask {
                                 getTaskContext().getComputeResourceCredentialToken(),
                                 getTaskContext().getComputeResourceLoginUserName());
                 logger.info("Cleaning up the working directory {}", taskContext.getWorkingDir());
-                //adaptor.deleteDirectory(getTaskContext().getWorkingDir());
+                adaptor.deleteDirectory(getTaskContext().getWorkingDir());
             }
         } catch (Exception e) {
             logger.error("Failed clean up experiment " + getExperimentId(), e);
