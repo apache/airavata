@@ -171,7 +171,7 @@ public class SFTPDeleteDirTest {
         adaptor.deleteDirectory("dir1");
         List<String> itemsAfter = adaptor.listDirectory("/");
 
-        Assertions.assertTrue(itemsBefore.get(0).equals("dir1"));
+        Assertions.assertTrue(itemsBefore.contains("dir1"));
         Assertions.assertTrue(itemsAfter.isEmpty());
     }
 }
