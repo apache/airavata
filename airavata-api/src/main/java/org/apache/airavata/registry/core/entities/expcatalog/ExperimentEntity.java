@@ -50,7 +50,7 @@ public class ExperimentEntity implements Serializable {
 
     @Column(name = "CLEANUP_STRATEGY")
     @Enumerated(EnumType.STRING)
-    public ExperimentCleanupStrategy cleanupStrategy;
+    public ExperimentCleanupStrategy cleanUpStrategy;
 
     @Column(name = "USER_NAME")
     public String userName;
@@ -269,12 +269,12 @@ public class ExperimentEntity implements Serializable {
         this.experimentStatus = experimentStatus;
     }
 
-    public ExperimentCleanupStrategy getCleanupStrategy() {
-        return cleanupStrategy;
+    public ExperimentCleanupStrategy getCleanUpStrategy() {
+        return cleanUpStrategy;
     }
 
-    public void setCleanupStrategy(ExperimentCleanupStrategy cleanupStrategy) {
-        this.cleanupStrategy = cleanupStrategy;
+    public void setCleanUpStrategy(ExperimentCleanupStrategy cleanUpStrategy) {
+        this.cleanUpStrategy = cleanUpStrategy;
     }
 
     public List<ProcessEntity> getProcesses() {

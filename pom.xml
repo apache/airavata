@@ -612,9 +612,6 @@ under the License.
                     <skipTests>${skipTests}</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m --add-opens java.base/java.lang=ALL-UNNAMED
-                        -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar
-                    </argLine>
                     <reuseForks>false</reuseForks>
                     <excludes>
                         <exclude>**/IT.java</exclude>
