@@ -151,8 +151,12 @@ public class SFTPDeleteDirTest {
         List<String> itemsBefore = adaptor.listDirectory("/");
         adaptor.deleteDirectory("dir1");
         List<String> itemsAfter = adaptor.listDirectory("/");
-        System.out.printf("Before: %s\n", itemsBefore);
-        System.out.printf("After: %s\n", itemsAfter);
+
+        Assertions.assertTrue(itemsBefore.contains("dir1"));
+        Assertions.assertTrue(itemsBefore.contains("dir2"));
+
+        Assertions.assertFalse(itemsAfter.contains("dir1"));
+        Assertions.assertTrue(itemsAfter.contains("dir2"));
 
     }
 
