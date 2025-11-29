@@ -70,7 +70,7 @@ public abstract class AiravataTask extends AbstractTask {
     private static Publisher statusPublisher;
 
     private ProcessModel processModel;
-    private  ExperimentModel experimentModel;
+    private ExperimentModel experimentModel;
     private ComputeResourceDescription computeResourceDescription;
     private TaskContext taskContext;
     private String taskName;

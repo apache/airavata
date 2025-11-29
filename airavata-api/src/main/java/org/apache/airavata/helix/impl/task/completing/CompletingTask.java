@@ -44,8 +44,7 @@ public class CompletingTask extends AiravataTask {
 
         try {
             if (getExperimentModel().getCleanUpStrategy() == ExperimentCleanupStrategy.ALWAYS) {
-                AgentAdaptor adaptor = helper
-                        .getAdaptorSupport()
+                AgentAdaptor adaptor = helper.getAdaptorSupport()
                         .fetchAdaptor(
                                 getTaskContext().getGatewayId(),
                                 getTaskContext().getComputeResourceId(),
