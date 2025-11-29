@@ -70,6 +70,7 @@ public abstract class AiravataTask extends AbstractTask {
     private static Publisher statusPublisher;
 
     private ProcessModel processModel;
+    private ExperimentModel experimentModel;
     private ComputeResourceDescription computeResourceDescription;
     private TaskContext taskContext;
     private String taskName;
@@ -519,6 +520,7 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             logger.info("Loading context for task " + getTaskId());
             processModel = getRegistryServiceClient().getProcess(processId);
+            experimentModel = getRegistryServiceClient().getExperiment(experimentId);
 
             this.computeResourceDescription =
                     getRegistryServiceClient().getComputeResource(this.processModel.getComputeResourceId());
@@ -527,6 +529,7 @@ public abstract class AiravataTask extends AbstractTask {
                             getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
                     .setProfileClient(getUserProfileClient())
+                    .setExperimentModel(getExperimentModel())
                     .setProcessModel(getProcessModel());
 
             this.taskContext = taskContextBuilder.build();
@@ -601,6 +604,10 @@ public abstract class AiravataTask extends AbstractTask {
 
     protected ProcessModel getProcessModel() {
         return processModel;
+    }
+
+    protected ExperimentModel getExperimentModel() {
+        return experimentModel;
     }
 
     public void setSkipAllStatusPublish(boolean skipAllStatusPublish) {

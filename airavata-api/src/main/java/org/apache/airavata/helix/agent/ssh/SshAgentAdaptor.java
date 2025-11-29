@@ -182,6 +182,48 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
+    @Override
+    public void deleteDirectory(String path) throws AgentException {
+        if (path == null || path.trim().isEmpty()) {
+            throw new AgentException("Directory path cannot be null or empty");
+        }
+        String escapedPath = path.replace("'", "'\"'\"'");
+        String command = "rm -rf '" + escapedPath + "'";
+        ChannelExec channelExec = null;
+        try {
+            channelExec = (ChannelExec) session.openChannel("exec");
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            channelExec.setCommand(command);
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+            channelExec.connect();
+
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+
+            if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("rm:")) {
+                throw new AgentException(stdOutReader.getStdError());
+            }
+        } catch (JSchException e) {
+            logger.error(
+                    "Unable to retrieve command output. Command - {} on server - {}:{} connecting user name - {}",
+                    command,
+                    session.getHost(),
+                    session.getPort(),
+                    session.getUserName(),
+                    e);
+            throw new AgentException(e);
+        } catch (IOException e) {
+            logger.error("Failed to delete directory {}", path, e);
+            throw new AgentException("Failed to delete directory " + path, e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+        }
+    }
+
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
 
         FileInputStream fis;

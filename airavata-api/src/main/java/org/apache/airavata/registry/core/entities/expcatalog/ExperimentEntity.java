@@ -23,6 +23,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.model.experiment.ExperimentCleanupStrategy;
 import org.apache.airavata.model.experiment.ExperimentType;
 
 /**
@@ -46,6 +47,10 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "EXPERIMENT_TYPE")
     @Enumerated(EnumType.STRING)
     public ExperimentType experimentType;
+
+    @Column(name = "CLEANUP_STRATEGY")
+    @Enumerated(EnumType.STRING)
+    public ExperimentCleanupStrategy cleanupStrategy;
 
     @Column(name = "USER_NAME")
     public String userName;
@@ -262,6 +267,14 @@ public class ExperimentEntity implements Serializable {
 
     public void setExperimentStatus(List<ExperimentStatusEntity> experimentStatus) {
         this.experimentStatus = experimentStatus;
+    }
+
+    public ExperimentCleanupStrategy getCleanupStrategy() {
+        return cleanupStrategy;
+    }
+
+    public void setCleanupStrategy(ExperimentCleanupStrategy cleanupStrategy) {
+        this.cleanupStrategy = cleanupStrategy;
     }
 
     public List<ProcessEntity> getProcesses() {

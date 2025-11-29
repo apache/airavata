@@ -73,6 +73,13 @@ struct UserConfigurationDataModel {
     13: optional list<scheduling_model.ComputationalResourceSchedulingModel> autoScheduledCompResourceSchedulingList,
 }
 
+enum ExperimentCleanupStrategy {
+    NONE,
+    ALWAYS,
+    ONLY_COMPLETED,
+    ONLY_FAILED
+}
+
 /**
  * A structure holding the experiment metadata and its child models.
  *
@@ -110,7 +117,8 @@ struct ExperimentModel {
     17: optional list<status_models.ExperimentStatus> experimentStatus,
     18: optional list<airavata_commons.ErrorModel> errors,
     19: optional list<process_model.ProcessModel> processes,
-    20: optional workflow_model.AiravataWorkflow workflow
+    20: optional workflow_model.AiravataWorkflow workflow,
+    21: optional ExperimentCleanupStrategy cleanUpStrategy = ExperimentCleanupStrategy.NONE
     }
 
 struct ExperimentSummaryModel {

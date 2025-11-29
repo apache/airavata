@@ -19,10 +19,12 @@
 */
 package org.apache.airavata.helix.impl.task.completing;
 
+import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.experiment.ExperimentCleanupStrategy;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -39,6 +41,22 @@ public class CompletingTask extends AiravataTask {
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
         cleanup();
+
+        try {
+            if (getExperimentModel().getCleanUpStrategy() == ExperimentCleanupStrategy.ALWAYS) {
+                AgentAdaptor adaptor = helper.getAdaptorSupport()
+                        .fetchAdaptor(
+                                getTaskContext().getGatewayId(),
+                                getTaskContext().getComputeResourceId(),
+                                getTaskContext().getJobSubmissionProtocol(),
+                                getTaskContext().getComputeResourceCredentialToken(),
+                                getTaskContext().getComputeResourceLoginUserName());
+                logger.info("Cleaning up the working directory {}", taskContext.getWorkingDir());
+                adaptor.deleteDirectory(getTaskContext().getWorkingDir());
+            }
+        } catch (Exception e) {
+            logger.error("Failed clean up experiment " + getExperimentId(), e);
+        }
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 

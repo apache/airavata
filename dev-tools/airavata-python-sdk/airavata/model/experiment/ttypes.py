@@ -51,6 +51,14 @@ class ProjectSearchFields(IntEnum):
 
 
 
+class ExperimentCleanupStrategy(IntEnum):
+    NONE = 0
+    ALWAYS = 1
+    ONLY_COMPLETED = 2
+    ONLY_FAILED = 3
+
+
+
 class UserConfigurationDataModel(object):
     """
     A structure holding the experiment configuration.
@@ -298,12 +306,13 @@ class ExperimentModel(object):
      - errors
      - processes
      - workflow
+     - cleanUpStrategy
 
     """
     thrift_spec: typing.Any = None
 
 
-    def __init__(self, experimentId: str = "DO_NOT_SET_AT_CLIENTS", projectId: str = None, gatewayId: str = None, experimentType: ExperimentType =     ExperimentType.SINGLE_APPLICATION, userName: str = None, experimentName: str = None, creationTime: typing.Optional[int] = None, description: typing.Optional[str] = None, executionId: typing.Optional[str] = None, gatewayExecutionId: typing.Optional[str] = None, gatewayInstanceId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, userConfigurationData: typing.Optional[UserConfigurationDataModel] = None, experimentInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, experimentOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, experimentStatus: typing.Optional[list[airavata.model.status.ttypes.ExperimentStatus]] = None, errors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, processes: typing.Optional[list[airavata.model.process.ttypes.ProcessModel]] = None, workflow: typing.Optional[airavata.model.workflow.ttypes.AiravataWorkflow] = None,):
+    def __init__(self, experimentId: str = "DO_NOT_SET_AT_CLIENTS", projectId: str = None, gatewayId: str = None, experimentType: ExperimentType =     ExperimentType.SINGLE_APPLICATION, userName: str = None, experimentName: str = None, creationTime: typing.Optional[int] = None, description: typing.Optional[str] = None, executionId: typing.Optional[str] = None, gatewayExecutionId: typing.Optional[str] = None, gatewayInstanceId: typing.Optional[str] = None, enableEmailNotification: typing.Optional[bool] = None, emailAddresses: typing.Optional[list[str]] = None, userConfigurationData: typing.Optional[UserConfigurationDataModel] = None, experimentInputs: typing.Optional[list[airavata.model.application.io.ttypes.InputDataObjectType]] = None, experimentOutputs: typing.Optional[list[airavata.model.application.io.ttypes.OutputDataObjectType]] = None, experimentStatus: typing.Optional[list[airavata.model.status.ttypes.ExperimentStatus]] = None, errors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = None, processes: typing.Optional[list[airavata.model.process.ttypes.ProcessModel]] = None, workflow: typing.Optional[airavata.model.workflow.ttypes.AiravataWorkflow] = None, cleanUpStrategy: typing.Optional[ExperimentCleanupStrategy] =     ExperimentCleanupStrategy.NONE,):
         self.experimentId: str = experimentId
         self.projectId: str = projectId
         self.gatewayId: str = gatewayId
@@ -324,10 +333,14 @@ class ExperimentModel(object):
         self.errors: typing.Optional[list[airavata.model.commons.ttypes.ErrorModel]] = errors
         self.processes: typing.Optional[list[airavata.model.process.ttypes.ProcessModel]] = processes
         self.workflow: typing.Optional[airavata.model.workflow.ttypes.AiravataWorkflow] = workflow
+        self.cleanUpStrategy: typing.Optional[ExperimentCleanupStrategy] = cleanUpStrategy
 
     def __setattr__(self, name, value):
         if name == "experimentType":
             super().__setattr__(name, value if hasattr(value, 'value') else ExperimentType.__members__.get(value))
+            return
+        if name == "cleanUpStrategy":
+            super().__setattr__(name, value if hasattr(value, 'value') else ExperimentCleanupStrategy.__members__.get(value))
             return
         super().__setattr__(name, value)
 
@@ -478,6 +491,11 @@ class ExperimentModel(object):
                     self.workflow.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 21:
+                if ftype == TType.I32:
+                    self.cleanUpStrategy = ExperimentCleanupStrategy(iprot.readI32())
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -586,6 +604,10 @@ class ExperimentModel(object):
         if self.workflow is not None:
             oprot.writeFieldBegin('workflow', TType.STRUCT, 20)
             self.workflow.write(oprot)
+            oprot.writeFieldEnd()
+        if self.cleanUpStrategy is not None:
+            oprot.writeFieldBegin('cleanUpStrategy', TType.I32, 21)
+            oprot.writeI32(self.cleanUpStrategy.value)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1080,6 +1102,7 @@ ExperimentModel.thrift_spec = (
     (18, TType.LIST, 'errors', (TType.STRUCT, [airavata.model.commons.ttypes.ErrorModel, None], False), None, ),  # 18
     (19, TType.LIST, 'processes', (TType.STRUCT, [airavata.model.process.ttypes.ProcessModel, None], False), None, ),  # 19
     (20, TType.STRUCT, 'workflow', [airavata.model.workflow.ttypes.AiravataWorkflow, None], None, ),  # 20
+    (21, TType.I32, 'cleanUpStrategy', None,     ExperimentCleanupStrategy.NONE, ),  # 21
 )
 all_structs.append(ExperimentSummaryModel)
 ExperimentSummaryModel.thrift_spec = (
