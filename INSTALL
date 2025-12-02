@@ -1,13 +1,15 @@
 For detailed installation and further instructions please refer http://airavata.apache.org/:
 Documentation section in left hand panel. The website lists step by step instructions
 
-Installing  Apache Airavata 0.17
+Installing  Apache Airavata 0.21-SNAPSHOT
 ------------------------------------------------
 
 Prerequisites
 -------------
-Java 1.8 or later
-Maven 3 or later
+Java 17 or later (Java 21 recommended)
+Maven 3.8 or later
+Docker 20.10+ (optional, for containerized deployment)
+Docker Compose 2.0+ (optional, for containerized deployment)
 
 Build Apache Airavata from Source
 ---------------------------------
@@ -26,6 +28,31 @@ Running Tests
       the Apache Airavata download site.
     - Extract the binary distributions and once the binary is unzipped, instructions to run the tests should be followed 
       from README files found within.
+
+Docker Deployment (Recommended)
+--------------------------------
+* Build the project first:
+	$ mvn clean install -DskipTests
+* Start all services with Docker Compose:
+	$ docker-compose up -d
+* View logs:
+	$ docker-compose logs -f
+* Stop all services:
+	$ docker-compose down
+
+Service Endpoints (Docker):
+- API Server: localhost:8930
+- RabbitMQ Management: localhost:15672
+- MySQL: localhost:3306
+
+Security Note
+-------------
+The default Docker configuration uses default passwords for development.
+For production deployments, ALWAYS:
+1. Change all default passwords
+2. Use environment variables for credentials
+3. Implement proper secrets management
+4. See docker-compose.yml for configuration options
 
 Tutorials 
 ----------
