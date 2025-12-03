@@ -25,17 +25,29 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.service.IamAdminService;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
-    private org.apache.airavata.service.IamAdminService iamAdminService;
+    private static final Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
+    private IamAdminService iamAdminService;
 
-    public IamAdminServicesHandler() {
-        iamAdminService = new org.apache.airavata.service.IamAdminService();
+    public IamAdminServicesHandler() throws IamAdminServicesException {
+        try {
+            iamAdminService = new org.apache.airavata.service.IamAdminService();
+        } catch (Throwable e) {
+            String msg = "Error initializing IamAdminServicesHandler, reason: " + e.getMessage();
+            logger.error(msg, e);
+            var exception = new IamAdminServicesException(msg);
+            exception.initCause(e);
+            throw exception;
+        }
     }
 
     @Override

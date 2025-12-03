@@ -34,14 +34,10 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OrchestratorRegistryService {
-    private static final Logger logger = LoggerFactory.getLogger(OrchestratorRegistryService.class);
 
-    private org.apache.airavata.service.RegistryService registryService =
-            new org.apache.airavata.service.RegistryService();
+    private RegistryService registryService = new RegistryService();
 
     public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryServiceException {
         return registryService.getExperiment(airavataExperimentId);

@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.credential.store.server;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -28,19 +26,19 @@ import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.service.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import sun.security.provider.X509Factory;
 
 public class CredentialStoreServerHandler
         implements org.apache.airavata.credential.store.cpi.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
-    private org.apache.airavata.service.CredentialStoreService credentialStoreService;
+    private CredentialStoreService credentialStoreService;
 
     public CredentialStoreServerHandler()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    SQLException, IOException {
-        credentialStoreService = new org.apache.airavata.service.CredentialStoreService();
+            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
+                    InstantiationException {
+        credentialStoreService = new CredentialStoreService();
     }
 
     @Override

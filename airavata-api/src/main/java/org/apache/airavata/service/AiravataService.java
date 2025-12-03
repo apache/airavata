@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
@@ -43,7 +44,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -117,8 +120,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.DuplicateEntryException;
@@ -150,10 +151,13 @@ public class AiravataService {
         return valid;
     }
 
-    private AiravataSystemException airavataSystemException(AiravataErrorType errorType, String message) {
-        var exception = new AiravataSystemException();
-        exception.setAiravataErrorType(errorType);
+    private AiravataSystemException airavataSystemException(
+            AiravataErrorType errorType, String message, Throwable cause) {
+        var exception = new AiravataSystemException(errorType);
         exception.setMessage(message);
+        if (cause != null) {
+            exception.initCause(cause);
+        }
         return exception;
     }
 
@@ -176,18 +180,27 @@ public class AiravataService {
         }
     }
 
-    private RegistryService registryService = new RegistryService();
-
-    private SharingRegistryService sharingRegistryService = new SharingRegistryService();
-
+    private RegistryService registryService;
+    private SharingRegistryService sharingRegistryService;
     private CredentialStoreService credentialStoreService;
+    private Publisher statusPublisher;
+    private Publisher experimentPublisher;
 
     public AiravataService() {
         try {
+            registryService = new RegistryService();
+            logger.info("Initialized RegistryService");
+            sharingRegistryService = new SharingRegistryService();
+            logger.info("Initialized SharingRegistryService");
             credentialStoreService = new CredentialStoreService();
+            logger.info("Initialized CredentialStoreService");
+            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+            logger.info("Initialized StatusPublisher");
+            experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
+            logger.info("Initialized ExperimentPublisher");
         } catch (Exception e) {
-            logger.error("Failed to initialize CredentialStoreService", e);
-            throw new RuntimeException("Failed to initialize CredentialStoreService", e);
+            logger.error("Error initializing AiravataService", e);
+            throw new RuntimeException("Error initializing AiravataService", e);
         }
     }
 
@@ -329,12 +342,9 @@ public class AiravataService {
         try {
             return registryService.getAllUsersInGateway(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving users", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving users. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving users: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -342,12 +352,9 @@ public class AiravataService {
         try {
             return registryService.updateGateway(gatewayId, updatedGateway);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating gateway: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -357,12 +364,9 @@ public class AiravataService {
             logger.debug("Airavata found the gateway with " + gatewayId);
             return result;
         } catch (RegistryServiceException e) {
-            logger.error("Error while getting the gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting the gateway: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -370,12 +374,9 @@ public class AiravataService {
         try {
             return registryService.deleteGateway(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting the gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting the gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting the gateway: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -384,12 +385,9 @@ public class AiravataService {
             logger.debug("Airavata searching for all gateways");
             return registryService.getAllGateways();
         } catch (RegistryServiceException e) {
-            logger.error("Error while getting all the gateways", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting all the gateways: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -398,12 +396,9 @@ public class AiravataService {
             logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits");
             return registryService.isGatewayExist(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while getting gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting gateway: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -411,12 +406,9 @@ public class AiravataService {
         try {
             return registryService.createNotification(notification);
         } catch (RegistryServiceException e) {
-            logger.error("Error while creating notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating notification. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while creating notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -424,12 +416,9 @@ public class AiravataService {
         try {
             return registryService.updateNotification(notification);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating notification. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -437,12 +426,9 @@ public class AiravataService {
         try {
             return registryService.deleteNotification(gatewayId, notificationId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -450,12 +436,9 @@ public class AiravataService {
         try {
             return registryService.getNotification(gatewayId, notificationId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving notification. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -463,12 +446,9 @@ public class AiravataService {
         try {
             return registryService.getAllNotifications(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while getting all notifications", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting all notifications: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -478,12 +458,7 @@ public class AiravataService {
         } catch (Throwable e) {
             var msg = "Error in registering the data resource" + dataProductModel.getProductName() + ".";
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -491,12 +466,9 @@ public class AiravataService {
         try {
             return registryService.getDataProduct(productUri);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving data product", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving data product. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving data product: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -505,14 +477,9 @@ public class AiravataService {
         try {
             return registryService.registerReplicaLocation(replicaLocationModel);
         } catch (Throwable e) {
-            var msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + ".";
+            var msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + "." + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -520,14 +487,9 @@ public class AiravataService {
         try {
             return registryService.getParentDataProduct(productUri);
         } catch (Throwable e) {
-            var msg = "Error in retreiving the parent data product for " + productUri + ".";
+            var msg = "Error in retreiving the parent data product for " + productUri + "." + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -535,14 +497,9 @@ public class AiravataService {
         try {
             return registryService.getChildDataProducts(productUri);
         } catch (Throwable e) {
-            var msg = "Error in retreiving the child products for " + productUri + ".";
+            var msg = "Error in retreiving the child products for " + productUri + "." + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -551,12 +508,9 @@ public class AiravataService {
             logger.debug("Checking if the user" + userName + "exists in the gateway" + gatewayId);
             return registryService.isUserExists(gatewayId, userName);
         } catch (RegistryServiceException e) {
-            logger.error("Error while verifying user", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while verifying user. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while verifying user: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -566,25 +520,9 @@ public class AiravataService {
         } catch (ProjectNotFoundException e) {
             throw e;
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving the project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        }
-    }
-
-    public String createProject(String gatewayId, Project project) throws AiravataSystemException {
-        try {
-            return registryService.createProject(gatewayId, project);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while creating project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving the project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -592,12 +530,9 @@ public class AiravataService {
         try {
             registryService.updateProject(projectId, updatedProject);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -607,16 +542,13 @@ public class AiravataService {
         } catch (ProjectNotFoundException e) {
             throw e;
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing the project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing the project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public List<Project> searchProjectsWithSharing(
+    public List<Project> searchProjects(
             AuthzToken authzToken,
             String gatewayId,
             String userName,
@@ -653,20 +585,10 @@ public class AiravataService {
                 result = registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
             }
             return result;
-        } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error while retrieving projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error while retrieving projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving projects: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -686,12 +608,9 @@ public class AiravataService {
         try {
             return registryService.getUserExperiments(gatewayId, userName, limit, offset);
         } catch (RegistryServiceException e) {
-            logger.error("Error occurred while getting user experiments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting user experiments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting user experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -700,12 +619,9 @@ public class AiravataService {
         try {
             return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
         } catch (RegistryServiceException e) {
-            logger.error("Error occurred while getting experiments in project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting experiments in project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting experiments in project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -728,20 +644,10 @@ public class AiravataService {
             return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
         } catch (AuthorizationException | ProjectNotFoundException | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while retrieving the experiments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the experiments. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException | RegistryServiceException e) {
-            logger.error("Error while retrieving the experiments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the experiments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException | RegistryServiceException e) {
+            String msg = "Error while retrieving the experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -768,12 +674,9 @@ public class AiravataService {
                     limit,
                     offset);
         } catch (RegistryServiceException e) {
-            logger.error("Error while getting experiment statistics", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting experiment statistics. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting experiment statistics: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -781,25 +684,28 @@ public class AiravataService {
         try {
             return registryService.getExperiment(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException {
+    private String createExperimentInternal(String gatewayId, ExperimentModel experiment)
+            throws AiravataSystemException {
         try {
-            return registryService.createExperiment(gatewayId, experiment);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while creating experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            var experimentId = registryService.createExperiment(gatewayId, experiment);
+            if (statusPublisher != null) {
+                var event = new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
+                var messageId = AiravataUtils.getId("EXPERIMENT");
+                var messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                statusPublisher.publish(messageContext);
+            }
+            return experimentId;
+        } catch (RegistryServiceException | AiravataException e) {
+            String msg = "Error while creating experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -822,20 +728,10 @@ public class AiravataService {
             }
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while getting the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the experiment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException e) {
-            logger.error("Error while getting the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException e) {
+            String msg = "Error while getting the experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -871,35 +767,21 @@ public class AiravataService {
                 }
             }
 
-            try {
-                // Update name, description and parent on Entity
-                // TODO: update the experiment via a DB event
-                var entity = getEntity(gatewayId, airavataExperimentId);
-                entity.delegate().setName(experiment.getExperimentName());
-                entity.delegate().setDescription(experiment.getDescription());
-                entity.delegate().setParentEntityId(experiment.getProjectId());
-                updateEntity(entity);
-            } catch (Throwable e) {
-                throw new Exception("Failed to update entity in sharing registry", e);
-            }
+            // Update name, description and parent on Entity
+            // TODO: update the experiment via a DB event
+            var entity = getEntity(gatewayId, airavataExperimentId);
+            entity.delegate().setName(experiment.getExperimentName());
+            entity.delegate().setDescription(experiment.getDescription());
+            entity.delegate().setParentEntityId(experiment.getProjectId());
+            updateEntity(entity);
 
             updateExperiment(airavataExperimentId, experiment);
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
-        } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error while updating experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Exception e) {
-            logger.error("Error while updating experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            String msg = "Error while updating experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -908,12 +790,9 @@ public class AiravataService {
         try {
             registryService.updateExperiment(airavataExperimentId, experiment);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -921,16 +800,13 @@ public class AiravataService {
         try {
             return registryService.deleteExperiment(experimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public String cloneExperimentInternal(
+    public String cloneExperiment(
             AuthzToken authzToken,
             String existingExperimentID,
             String newExperimentName,
@@ -949,7 +825,7 @@ public class AiravataService {
             }
             if (newExperimentProjectId != null) {
                 // getProject will apply sharing permissions
-                var project = getProjectWithAuth(authzToken, newExperimentProjectId);
+                var project = getProject(authzToken, newExperimentProjectId);
                 if (project == null) {
                     logger.error(
                             "Error while cloning experiment {}, project {} doesn't exist.",
@@ -1014,7 +890,7 @@ public class AiravataService {
             logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
             existingExperiment.setUserName(userId);
 
-            var expId = createExperiment(gatewayId, existingExperiment);
+            var expId = createExperimentInternal(gatewayId, existingExperiment);
             if (ServerSettings.isEnableSharing()) {
                 try {
                     var entity = new Entity();
@@ -1036,12 +912,10 @@ public class AiravataService {
                         logger.error("Error deleting experiment during rollback: " + e.getMessage());
                     }
                     logger.error("Error while creating entity for cloned experiment", ex);
-                    AiravataSystemException exception = new AiravataSystemException();
-                    exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                    exception.setMessage(
-                            "Error while creating entity for cloned experiment. More info : " + ex.getMessage());
-                    exception.initCause(ex);
-                    throw exception;
+                    throw airavataSystemException(
+                            AiravataErrorType.INTERNAL_ERROR,
+                            "Error while creating entity for cloned experiment. More info : " + ex.getMessage(),
+                            ex);
                 }
             }
 
@@ -1052,16 +926,13 @@ public class AiravataService {
                 | AiravataSystemException e) {
             throw e;
         } catch (SharingRegistryException | ApplicationSettingsException e) {
-            logger.error("Error while cloning experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while cloning experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while cloning experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public void terminateExperiment(Publisher experimentPublisher, String airavataExperimentId, String gatewayId)
+    public void terminateExperiment(String airavataExperimentId, String gatewayId)
             throws ExperimentNotFoundException, AiravataSystemException {
         try {
             var existingExperiment = getExperiment(airavataExperimentId);
@@ -1098,13 +969,9 @@ public class AiravataService {
         } catch (ExperimentNotFoundException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
-            logger.error("Error occurred", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while cancelling the experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1120,9 +987,10 @@ public class AiravataService {
     }
 
     /**
-     * Search experiments with sharing registry integration - processes filters and builds search criteria
+     * Search experiments with sharing registry integration - processes filters and
+     * builds search criteria
      */
-    public List<ExperimentSummaryModel> searchExperimentsWithSharing(
+    public List<ExperimentSummaryModel> searchExperiments(
             AuthzToken authzToken,
             String gatewayId,
             String userName,
@@ -1208,18 +1076,16 @@ public class AiravataService {
                             searchLimit)
                     .forEach(e -> accessibleExpIds.add(e.getEntityId()));
             int finalOffset = offset;
-            // If no more filtering to be done (either empty or all done through sharing API), set the offset to 0
+            // If no more filtering to be done (either empty or all done through sharing
+            // API), set the offset to 0
             if (filteredInSharing) {
                 finalOffset = 0;
             }
             return searchExperiments(gatewayId, userName, accessibleExpIds, filtersCopy, limit, finalOffset);
         } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error while retrieving experiments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1227,12 +1093,9 @@ public class AiravataService {
         try {
             return registryService.getExperimentStatus(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving experiment status", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving experiment status. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving experiment status: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1240,12 +1103,9 @@ public class AiravataService {
         try {
             return registryService.getExperimentOutputs(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving experiment outputs", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving experiment outputs. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving experiment outputs: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1253,12 +1113,9 @@ public class AiravataService {
         try {
             return registryService.getDetailedExperimentTree(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving detailed experiment tree", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving detailed experiment tree. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving detailed experiment tree: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1266,12 +1123,9 @@ public class AiravataService {
         try {
             return registryService.getApplicationOutputs(appInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application outputs", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application outputs: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1279,12 +1133,9 @@ public class AiravataService {
         try {
             return registryService.getComputeResource(computeResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving compute resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving compute resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1293,12 +1144,9 @@ public class AiravataService {
         try {
             return registryService.registerComputeResource(computeResourceDescription);
         } catch (RegistryServiceException e) {
-            logger.error("Error while saving compute resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while saving compute resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while saving compute resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1308,12 +1156,9 @@ public class AiravataService {
         try {
             return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating compute resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating compute resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating compute resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1321,12 +1166,9 @@ public class AiravataService {
         try {
             return registryService.deleteComputeResource(computeResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting compute resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting compute resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting compute resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1334,12 +1176,9 @@ public class AiravataService {
         try {
             return registryService.getAllComputeResourceNames();
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving compute resource names", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving compute resource names. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving compute resource names: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1348,12 +1187,9 @@ public class AiravataService {
         try {
             return registryService.registerStorageResource(storageResourceDescription);
         } catch (RegistryServiceException e) {
-            logger.error("Error while saving storage resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while saving storage resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while saving storage resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1361,12 +1197,9 @@ public class AiravataService {
         try {
             return registryService.getStorageResource(storageResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving storage resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving storage resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving storage resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1376,12 +1209,9 @@ public class AiravataService {
         try {
             return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating storage resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating storage resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating storage resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1389,12 +1219,9 @@ public class AiravataService {
         try {
             return registryService.deleteStorageResource(storageResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting storage resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting storage resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting storage resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1402,12 +1229,9 @@ public class AiravataService {
         try {
             return registryService.getAllStorageResourceNames();
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving storage resource names", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving storage resource names. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving storage resource names: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1416,12 +1240,9 @@ public class AiravataService {
         try {
             return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering gateway resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering gateway resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering gateway resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1429,12 +1250,9 @@ public class AiravataService {
         try {
             return registryService.getGatewayResourceProfile(gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving gateway resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving gateway resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving gateway resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1443,12 +1261,9 @@ public class AiravataService {
         try {
             return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating gateway resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating gateway resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1456,12 +1271,9 @@ public class AiravataService {
         try {
             return registryService.deleteGatewayResourceProfile(gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing gateway resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing gateway resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing gateway resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1469,12 +1281,9 @@ public class AiravataService {
         try {
             return registryService.getUserResourceProfile(userId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving user resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving user resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1483,12 +1292,9 @@ public class AiravataService {
         try {
             return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating user resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating user resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating user resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1496,12 +1302,9 @@ public class AiravataService {
         try {
             return registryService.deleteUserResourceProfile(userId, gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing user resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing user resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing user resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1509,12 +1312,9 @@ public class AiravataService {
         try {
             return registryService.getGroupResourceProfile(groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving group resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1522,12 +1322,9 @@ public class AiravataService {
         try {
             registryService.updateGroupResourceProfile(groupResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating group resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating group resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating group resource profile: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1536,12 +1333,9 @@ public class AiravataService {
         try {
             return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group resource list", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving group resource list. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group resource list: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1549,12 +1343,9 @@ public class AiravataService {
         try {
             return registryService.getGatewayGroups(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving gateway groups", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving gateway groups. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving gateway groups: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1562,12 +1353,9 @@ public class AiravataService {
         try {
             return registryService.isGatewayGroupsExists(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while checking if gateway groups exist", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while checking if gateway groups exist. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while checking if gateway groups exist: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1576,12 +1364,9 @@ public class AiravataService {
         try {
             registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating experiment configuration", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating experiment configuration. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating experiment configuration: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1591,12 +1376,9 @@ public class AiravataService {
         try {
             registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating resource scheduling", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating resource scheduling. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating resource scheduling: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1605,16 +1387,13 @@ public class AiravataService {
         try {
             return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public String registerApplicationDeploymentWithSharing(
+    public String registerApplicationDeployment(
             AuthzToken authzToken, String gatewayId, ApplicationDeploymentDescription applicationDeployment)
             throws AiravataSystemException, InvalidRequestException, AuthorizationException {
         try {
@@ -1636,12 +1415,9 @@ public class AiravataService {
         } catch (InvalidRequestException | AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error("Error while registering application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1650,22 +1426,17 @@ public class AiravataService {
         try {
             return registryService.getApplicationDeployment(appDeploymentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public ApplicationDeploymentDescription getApplicationDeploymentWithAuth(
-            AuthzToken authzToken, String appDeploymentId)
+    public ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
             if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess =
-                        userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.READ);
+                final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.READ);
                 if (!hasAccess) {
                     throw new AuthorizationException(
                             "User does not have access to application deployment " + appDeploymentId);
@@ -1675,12 +1446,9 @@ public class AiravataService {
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
         } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while getting application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting application deployment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1690,22 +1458,18 @@ public class AiravataService {
         try {
             return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean updateApplicationDeploymentWithAuth(
+    public boolean updateApplicationDeployment(
             AuthzToken authzToken, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess =
-                        userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
                 if (!hasAccess) {
                     throw new AuthorizationException(
                             "User does not have WRITE access to application deployment " + appDeploymentId);
@@ -1715,12 +1479,9 @@ public class AiravataService {
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
         } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while updating application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while updating application deployment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while updating application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1728,21 +1489,17 @@ public class AiravataService {
         try {
             return registryService.deleteApplicationDeployment(appDeploymentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean deleteApplicationDeploymentWithAuth(AuthzToken authzToken, String appDeploymentId)
+    public boolean deleteApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
             if (ServerSettings.isEnableSharing()) {
-                final boolean hasAccess =
-                        userHasAccessInternal(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
+                final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
                 if (!hasAccess) {
                     throw new AuthorizationException(
                             "User does not have WRITE access to application deployment " + appDeploymentId);
@@ -1752,12 +1509,9 @@ public class AiravataService {
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
         } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while deleting application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting application deployment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while deleting application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1766,12 +1520,9 @@ public class AiravataService {
         try {
             return registryService.getApplicationInterface(appInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1780,12 +1531,9 @@ public class AiravataService {
         try {
             return registryService.getApplicationDeployments(appModuleId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application deployments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application deployments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1794,12 +1542,9 @@ public class AiravataService {
         try {
             return registryService.registerApplicationInterface(gatewayId, applicationInterface);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding application interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding application interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding application interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1808,9 +1553,10 @@ public class AiravataService {
         try {
             var existingInterface = getApplicationInterface(existingAppInterfaceID);
             if (existingInterface == null) {
-                logger.error(
-                        "Provided application interface does not exist.Please provide a valid application interface id...");
-                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+                String msg =
+                        "Provided application interface does not exist.Please provide a valid application interface id...";
+                logger.error(msg);
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, null);
             }
 
             existingInterface.setApplicationName(newApplicationName);
@@ -1830,12 +1576,9 @@ public class AiravataService {
         try {
             return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating application interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating application interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating application interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1843,12 +1586,9 @@ public class AiravataService {
         try {
             return registryService.deleteApplicationInterface(appInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting application interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting application interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting application interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1856,12 +1596,9 @@ public class AiravataService {
         try {
             return registryService.getAllApplicationInterfaceNames(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application interfaces", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application interfaces: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1870,12 +1607,9 @@ public class AiravataService {
         try {
             return registryService.getAllApplicationInterfaces(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application interfaces", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application interfaces: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1883,12 +1617,9 @@ public class AiravataService {
         try {
             return registryService.getApplicationInputs(appInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application inputs", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application inputs. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application inputs: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1897,12 +1628,9 @@ public class AiravataService {
         try {
             return registryService.registerApplicationModule(gatewayId, applicationModule);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding application module", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding application module. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding application module: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1910,12 +1638,9 @@ public class AiravataService {
         try {
             return registryService.getApplicationModule(appModuleId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application module", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application module. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application module: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1924,12 +1649,9 @@ public class AiravataService {
         try {
             return registryService.updateApplicationModule(appModuleId, applicationModule);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating application module", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating application module. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating application module: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1937,12 +1659,9 @@ public class AiravataService {
         try {
             return registryService.getAllAppModules(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving all application modules", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving all application modules: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1950,12 +1669,9 @@ public class AiravataService {
         try {
             return registryService.deleteApplicationModule(appModuleId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting application module", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting application module. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting application module: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -1968,7 +1684,7 @@ public class AiravataService {
     /**
      * Get accessible app modules with sharing registry integration
      */
-    public List<ApplicationModule> getAccessibleAppModulesWithSharing(AuthzToken authzToken, String gatewayId)
+    public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataSystemException, AuthorizationException {
         try {
             var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -1995,8 +1711,7 @@ public class AiravataService {
                         .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             var accessibleComputeResourceIds = new ArrayList<String>();
-            List<GroupResourceProfile> groupResourceProfileList =
-                    getGroupResourceListWithSharing(authzToken, gatewayId);
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
             for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
                 List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                         groupResourceProfile.getComputePreferences();
@@ -2008,20 +1723,10 @@ public class AiravataService {
             return getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
         } catch (AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while getting accessible app modules", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting accessible app modules. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error occurred while getting accessible app modules", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting accessible app modules. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | RegistryServiceException | SharingRegistryException e) {
+            String msg = "Error occurred while getting accessible app modules: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2029,12 +1734,9 @@ public class AiravataService {
         try {
             return registryService.getJobStatuses(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving job statuses", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving job statuses. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving job statuses: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2042,12 +1744,9 @@ public class AiravataService {
         try {
             return registryService.getJobDetails(airavataExperimentId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving job details", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving job details. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving job details: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2057,19 +1756,9 @@ public class AiravataService {
         try {
             return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding local job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding local job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Throwable e) {
-            logger.error("Error while adding local job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding local job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding local job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2079,12 +1768,9 @@ public class AiravataService {
         try {
             return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding SSH job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding SSH job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding SSH job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2094,12 +1780,9 @@ public class AiravataService {
         try {
             return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding SSH fork job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding SSH fork job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding SSH fork job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2109,12 +1792,9 @@ public class AiravataService {
         try {
             return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding cloud job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding cloud job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding cloud job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2125,12 +1805,9 @@ public class AiravataService {
             return registryService.addUNICOREJobSubmissionDetails(
                     computeResourceId, priorityOrder, unicoreJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding UNICORE job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding UNICORE job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding UNICORE job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2138,20 +1815,10 @@ public class AiravataService {
             throws AiravataSystemException {
         try {
             return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while updating local job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating local job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error while updating local job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating local job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating local job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2159,13 +1826,9 @@ public class AiravataService {
         try {
             return registryService.getLocalJobSubmission(jobSubmissionId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving local job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving local job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving local job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2173,12 +1836,9 @@ public class AiravataService {
         try {
             return registryService.getSSHJobSubmission(jobSubmissionId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving SSH job submission", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving SSH job submission. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving SSH job submission: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2186,12 +1846,9 @@ public class AiravataService {
         try {
             return registryService.getCloudJobSubmission(jobSubmissionId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving cloud job submission", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving cloud job submission. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving cloud job submission: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2199,12 +1856,9 @@ public class AiravataService {
         try {
             return registryService.getUnicoreJobSubmission(jobSubmissionId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving UNICORE job submission", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving UNICORE job submission. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving UNICORE job submission: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2213,12 +1867,9 @@ public class AiravataService {
         try {
             return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2227,12 +1878,9 @@ public class AiravataService {
         try {
             return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2241,12 +1889,9 @@ public class AiravataService {
         try {
             return registryService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2255,12 +1900,9 @@ public class AiravataService {
         try {
             return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting job submission interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting job submission interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting job submission interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2268,12 +1910,9 @@ public class AiravataService {
         try {
             return registryService.registerResourceJobManager(resourceJobManager);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding resource job manager: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2282,52 +1921,29 @@ public class AiravataService {
         try {
             return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating resource job manager: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AiravataSystemException {
         try {
             return registryService.getResourceJobManager(resourceJobManagerId);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error while retrieving resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving resource job manager: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws AiravataSystemException {
         try {
             return registryService.deleteResourceJobManager(resourceJobManagerId);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while deleting resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error while deleting resource job manager", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting resource job manager. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting resource job manager: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2358,13 +1974,9 @@ public class AiravataService {
         try {
             return registryService.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding data movement interface to resource", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while adding data movement interface to resource. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding data movement interface to resource: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2373,12 +1985,9 @@ public class AiravataService {
         try {
             return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating local data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating local data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating local data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2386,12 +1995,9 @@ public class AiravataService {
         try {
             return registryService.getLocalDataMovement(dataMovementId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving local data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving local data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving local data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2401,12 +2007,9 @@ public class AiravataService {
         try {
             return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding SCP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding SCP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding SCP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2415,12 +2018,9 @@ public class AiravataService {
         try {
             return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating SCP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating SCP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating SCP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2432,7 +2032,7 @@ public class AiravataService {
     /**
      * Get user projects with sharing registry integration
      */
-    public List<Project> getUserProjectsWithSharing(
+    public List<Project> getUserProjects(
             AuthzToken authzToken, String gatewayId, String userName, int limit, int offset)
             throws AiravataSystemException {
         try {
@@ -2464,20 +2064,10 @@ public class AiravataService {
             } else {
                 return getUserProjects(gatewayId, userName, limit, offset);
             }
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while retrieving user projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving user projects. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error while retrieving user projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving user projects. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | RegistryServiceException | SharingRegistryException e) {
+            String msg = "Error while retrieving user projects: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2491,7 +2081,7 @@ public class AiravataService {
     /**
      * Get accessible application deployments with sharing registry integration
      */
-    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsWithSharing(
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
             AuthzToken authzToken, String gatewayId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataSystemException, AuthorizationException {
         try {
@@ -2519,8 +2109,7 @@ public class AiravataService {
                         .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             var accessibleComputeResourceIds = new ArrayList<String>();
-            List<GroupResourceProfile> groupResourceProfileList =
-                    getGroupResourceListWithSharing(authzToken, gatewayId);
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
             for (GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
                 List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
                         groupResourceProfile.getComputePreferences();
@@ -2531,22 +2120,10 @@ public class AiravataService {
             }
             return getAccessibleApplicationDeployments(
                     gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while getting accessible application deployments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error occurred while getting accessible application deployments. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (RegistryServiceException | SharingRegistryException e) {
-            logger.error("Error occurred while getting accessible application deployments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error occurred while getting accessible application deployments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | RegistryServiceException | SharingRegistryException e) {
+            String msg = "Error occurred while getting accessible application deployments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2554,12 +2131,9 @@ public class AiravataService {
         try {
             return registryService.getAppModuleDeployedResources(appModuleId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving application deployment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application deployment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2573,13 +2147,9 @@ public class AiravataService {
             return registryService.getAccessibleApplicationDeploymentsForAppModule(
                     gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving accessible application deployments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving accessible application deployments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving accessible application deployments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2591,7 +2161,7 @@ public class AiravataService {
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
 
             // Get list of compute resources for this Group Resource Profile
-            if (!userHasAccessInternal(authzToken, groupResourceProfileId, ResourcePermissionType.READ)) {
+            if (!userHasAccess(authzToken, groupResourceProfileId, ResourcePermissionType.READ)) {
                 throw new AuthorizationException(
                         "User is not authorized to access Group Resource Profile " + groupResourceProfileId);
             }
@@ -2621,12 +2191,9 @@ public class AiravataService {
         } catch (AiravataSystemException e) {
             throw e;
         } catch (SharingRegistryException e) {
-            logger.error("Error while retrieving application deployments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving application deployments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2635,12 +2202,9 @@ public class AiravataService {
         try {
             return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving available compute resources", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving available compute resources. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving available compute resources: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2648,12 +2212,9 @@ public class AiravataService {
         try {
             return registryService.getSCPDataMovement(dataMovementId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving SCP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving SCP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving SCP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2664,12 +2225,9 @@ public class AiravataService {
             return registryService.addUnicoreDataMovementDetails(
                     resourceId, dmType, priorityOrder, unicoreDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding UNICORE data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding UNICORE data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding UNICORE data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2678,12 +2236,9 @@ public class AiravataService {
         try {
             return registryService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating unicore data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating unicore data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating unicore data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2691,13 +2246,9 @@ public class AiravataService {
         try {
             return registryService.getUnicoreDataMovement(dataMovementId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving UNICORE data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving UNICORE data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving UNICORE data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2708,12 +2259,9 @@ public class AiravataService {
             return registryService.addGridFTPDataMovementDetails(
                     resourceId, dmType, priorityOrder, gridFTPDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while adding GridFTP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding GridFTP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while adding GridFTP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2722,12 +2270,9 @@ public class AiravataService {
         try {
             return registryService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating GridFTP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating GridFTP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating GridFTP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2735,13 +2280,9 @@ public class AiravataService {
         try {
             return registryService.getGridFTPDataMovement(dataMovementId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving GridFTP data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving GridFTP data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving GridFTP data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2750,12 +2291,9 @@ public class AiravataService {
         try {
             return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting data movement interface", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting data movement interface. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting data movement interface: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2763,12 +2301,9 @@ public class AiravataService {
         try {
             return registryService.deleteBatchQueue(computeResourceId, queueName);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting batch queue", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting batch queue. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting batch queue: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2779,13 +2314,9 @@ public class AiravataService {
             return registryService.addGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering gateway resource profile preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while registering gateway resource profile preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering gateway resource profile preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2795,12 +2326,9 @@ public class AiravataService {
         try {
             return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering gateway storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering gateway storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering gateway storage preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2809,13 +2337,9 @@ public class AiravataService {
         try {
             return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving gateway compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving gateway compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving gateway compute resource preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2824,12 +2348,9 @@ public class AiravataService {
         try {
             return registryService.getGatewayStoragePreference(gatewayID, storageId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving gateway storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving gateway storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving gateway storage preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2838,43 +2359,19 @@ public class AiravataService {
         try {
             return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving all gateway compute resource preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving all gateway compute resource preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Throwable e) {
-            logger.error("Error while retrieving all gateway compute resource preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving all gateway compute resource preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving all gateway compute resource preferences: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws AiravataSystemException {
         try {
             return registryService.getAllGatewayStoragePreferences(gatewayID);
-        } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving all gateway storage preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving all gateway storage preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error while retrieving all gateway storage preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving all gateway storage preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving all gateway storage preferences: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2882,19 +2379,9 @@ public class AiravataService {
         try {
             return registryService.getAllGatewayResourceProfiles();
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving all gateway resource profiles", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving all gateway resource profiles. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Throwable e) {
-            logger.error("Error while retrieving all gateway resource profiles", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving all gateway resource profiles. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving all gateway resource profiles: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2905,21 +2392,9 @@ public class AiravataService {
             return registryService.updateGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, computeResourcePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating gateway compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while updating gateway compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Throwable e) {
-            logger.error("Error while updating gateway compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while updating gateway compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating gateway compute resource preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2929,19 +2404,9 @@ public class AiravataService {
         try {
             return registryService.updateGatewayStoragePreference(gatewayID, storageId, dataStoragePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating gateway data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Throwable e) {
-            logger.error("Error while updating gateway data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating gateway data storage preference: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2950,14 +2415,10 @@ public class AiravataService {
         try {
             return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
         } catch (Throwable e) {
-            logger.error(gatewayID, "Error while deleting gateway compute resource preference...", e);
-            logger.error("Error while deleting gateway compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while deleting gateway compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting gateway compute resource preference: " + gatewayID + " "
+                    + computeResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2965,12 +2426,10 @@ public class AiravataService {
         try {
             return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting gateway data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting gateway data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting gateway data storage preference: " + gatewayID + " " + storageId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2978,12 +2437,10 @@ public class AiravataService {
         try {
             return registryService.registerUserResourceProfile(userResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering user resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering user resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering user resource profile: " + userResourceProfile.getUserId() + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -2991,13 +2448,10 @@ public class AiravataService {
         try {
             return registryService.isUserResourceProfileExists(userId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while checking existence of user resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while checking existence of user resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while checking existence of user resource profile: " + userId + " " + gatewayId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3011,14 +2465,10 @@ public class AiravataService {
             return registryService.addUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
         } catch (Throwable e) {
-            logger.error(userId, "Error while registering user resource profile preference...", e);
-            logger.error("Error while registering user resource profile preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while registering user resource profile preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering user resource profile preference: " + userId + " " + gatewayID + " "
+                    + computeResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3029,12 +2479,10 @@ public class AiravataService {
             return registryService.addUserStoragePreference(
                     userId, gatewayID, userStorageResourceId, dataStoragePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while registering user storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while registering user storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while registering user storage preference: " + userId + " " + gatewayID + " "
+                    + userStorageResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3043,12 +2491,10 @@ public class AiravataService {
         try {
             return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while reading user compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while reading user compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while reading user compute resource preference: " + userId + " " + gatewayID + " "
+                    + userComputeResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3057,12 +2503,10 @@ public class AiravataService {
         try {
             return registryService.getUserStoragePreference(userId, gatewayID, userStorageId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while reading user data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while reading user data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while reading user data storage preference: " + userId + " " + gatewayID + " "
+                    + userStorageId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3071,13 +2515,10 @@ public class AiravataService {
         try {
             return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while reading User compute resource preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while reading User compute resource preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while reading User compute resource preferences: " + userId + " " + gatewayID + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3086,12 +2527,10 @@ public class AiravataService {
         try {
             return registryService.getAllUserStoragePreferences(userId, gatewayID);
         } catch (RegistryServiceException e) {
-            logger.error("Error while reading User data storage preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while reading User data storage preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while reading User data storage preferences: " + userId + " " + gatewayID + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3099,13 +2538,9 @@ public class AiravataService {
         try {
             return registryService.getAllUserResourceProfiles();
         } catch (RegistryServiceException e) {
-            logger.error("Error while reading retrieving all user resource profiles", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while reading retrieving all user resource profiles. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while reading retrieving all user resource profiles: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3119,13 +2554,10 @@ public class AiravataService {
             return registryService.updateUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, userComputeResourcePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating user compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while updating user compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating user compute resource preference: " + userId + " " + gatewayID + " "
+                    + computeResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3135,12 +2567,10 @@ public class AiravataService {
         try {
             return registryService.updateUserStoragePreference(userId, gatewayID, userStorageId, userStoragePreference);
         } catch (RegistryServiceException e) {
-            logger.error("Error while updating user data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating user data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while updating user data storage preference: " + userId + " " + gatewayID + " "
+                    + userStorageId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3149,14 +2579,10 @@ public class AiravataService {
         try {
             return registryService.deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
         } catch (Throwable e) {
-            logger.error(userId, "Error while deleting user compute resource preference...", e);
-            logger.error("Error while deleting user compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while deleting user compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting user compute resource preference: " + userId + " " + gatewayID + " "
+                    + userComputeResourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3165,12 +2591,10 @@ public class AiravataService {
         try {
             return registryService.deleteUserStoragePreference(userId, gatewayID, userStorageId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while deleting user data storage preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting user data storage preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while deleting user data storage preference: " + userId + " " + gatewayID + " "
+                    + userStorageId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3178,14 +2602,9 @@ public class AiravataService {
         try {
             return registryService.getLatestQueueStatuses();
         } catch (Throwable e) {
-            var msg = "Error in retrieving queue statuses";
+            String msg = "Error in retrieving queue statuses: " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3193,12 +2612,10 @@ public class AiravataService {
         try {
             return registryService.createGroupResourceProfile(groupResourceProfile);
         } catch (RegistryServiceException e) {
-            logger.error("Error while creating group resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating group resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while creating group resource profile: "
+                    + groupResourceProfile.getGroupResourceProfileId() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3206,12 +2623,10 @@ public class AiravataService {
         try {
             return registryService.removeGroupResourceProfile(groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing group resource profile", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing group resource profile. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while removing group resource profile: " + groupResourceProfileId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3220,12 +2635,10 @@ public class AiravataService {
         try {
             return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing group compute preferences", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing group compute preferences. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing group compute preferences: " + computeResourceId + " "
+                    + groupResourceProfileId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3234,13 +2647,10 @@ public class AiravataService {
         try {
             return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group compute resource preference", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving group compute resource preference. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group compute resource preference: " + computeResourceId + " "
+                    + groupResourceProfileId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3248,12 +2658,10 @@ public class AiravataService {
         try {
             return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group compute resource policy", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving group compute resource policy. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while retrieving group compute resource policy: " + resourcePolicyId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3261,12 +2669,10 @@ public class AiravataService {
         try {
             return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing group compute resource policy", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing group compute resource policy. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while removing group compute resource policy: " + resourcePolicyId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3275,12 +2681,10 @@ public class AiravataService {
         try {
             return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving batch queue resource policy", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving batch queue resource policy. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while retrieving batch queue resource policy: " + resourcePolicyId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3288,13 +2692,10 @@ public class AiravataService {
         try {
             return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing group batch queue resource policy", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while removing group batch queue resource policy. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing group batch queue resource policy: " + resourcePolicyId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3303,13 +2704,10 @@ public class AiravataService {
         try {
             return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group compute resource preference list", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving group compute resource preference list. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group compute resource preference list: " + groupResourceProfileId
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3318,13 +2716,10 @@ public class AiravataService {
         try {
             return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group batch queue resource policy list", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving group batch queue resource policy list. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group batch queue resource policy list: " + groupResourceProfileId
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3333,13 +2728,10 @@ public class AiravataService {
         try {
             return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving group compute resource policy list", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving group compute resource policy list. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving group compute resource policy list: " + groupResourceProfileId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3347,12 +2739,9 @@ public class AiravataService {
         try {
             return registryService.getParser(parserId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving parser", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving parser. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving parser: " + parserId + " " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3360,12 +2749,10 @@ public class AiravataService {
         try {
             return registryService.saveParser(parser);
         } catch (RegistryServiceException e) {
-            logger.error("Error while saving parser", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while saving parser. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while saving parser: " + parser.getId() + " " + parser.getGatewayId() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3373,12 +2760,9 @@ public class AiravataService {
         try {
             return registryService.listAllParsers(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while listing all parsers", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while listing all parsers. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while listing all parsers: " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3386,12 +2770,9 @@ public class AiravataService {
         try {
             registryService.removeParser(parserId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing parser", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing parser. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while removing parser: " + parserId + " " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3399,12 +2780,10 @@ public class AiravataService {
         try {
             return registryService.getParsingTemplate(templateId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving parsing template", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving parsing template. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while retrieving parsing template: " + templateId + " " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3413,13 +2792,10 @@ public class AiravataService {
         try {
             return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while retrieving parsing templates for experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while retrieving parsing templates for experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving parsing templates for experiment: " + experimentId + " " + gatewayId
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3427,12 +2803,10 @@ public class AiravataService {
         try {
             return registryService.saveParsingTemplate(parsingTemplate);
         } catch (RegistryServiceException e) {
-            logger.error("Error while saving parsing template", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while saving parsing template. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while saving parsing template: " + parsingTemplate.getId() + " "
+                    + parsingTemplate.getGatewayId() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3440,12 +2814,10 @@ public class AiravataService {
         try {
             registryService.removeParsingTemplate(templateId, gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while removing parsing template", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while removing parsing template. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg =
+                    "Error while removing parsing template: " + templateId + " " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3453,12 +2825,9 @@ public class AiravataService {
         try {
             return registryService.listAllParsingTemplates(gatewayId);
         } catch (RegistryServiceException e) {
-            logger.error("Error while listing all parsing templates", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while listing all parsing templates. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while listing all parsing templates: " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3476,7 +2845,8 @@ public class AiravataService {
     }
 
     public void createManageSharingPermissionTypeIfMissing(String domainId) throws AiravataSystemException {
-        // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING permission, so add it if missing
+        // AIRAVATA-3297 Some gateways were created without the MANAGE_SHARING
+        // permission, so add it if missing
         var permissionTypeId = domainId + ":MANAGE_SHARING";
         try {
             if (!sharingRegistryService.isPermissionExists(domainId, permissionTypeId)) {
@@ -3489,11 +2859,9 @@ public class AiravataService {
                 logger.info("Created MANAGE_SHARING permission type for domain " + domainId);
             }
         } catch (Exception e) {
-            var exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error creating MANAGE_SHARING permission type. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error creating MANAGE_SHARING permission type: " + domainId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3523,8 +2891,8 @@ public class AiravataService {
                 true);
     }
 
-    public boolean userHasAccessInternal(
-            AuthzToken authzToken, String entityId, ResourcePermissionType permissionType) {
+    public boolean userHasAccess(AuthzToken authzToken, String entityId, ResourcePermissionType permissionType)
+            throws AiravataSystemException {
         final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
         try {
@@ -3548,7 +2916,10 @@ public class AiravataService {
             }
             return hasAccess;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to check if user has access", e);
+            String msg = "Error while checking if user has access: " + entityId + " " + permissionType + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3572,28 +2943,20 @@ public class AiravataService {
                 entity.setDescription(description);
                 sharingRegistryService.createEntity(entity);
             } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description
-                        + "]");
+                String msg = "Error while creating SSH credential: " + userName + " " + description + " "
+                        + ex.getMessage() + ". rolling back ssh key creation";
+                logger.error(msg, ex);
                 credentialStoreService.deleteSSHCredential(key, gatewayId);
-                logger.error("Failed to create sharing registry record", ex);
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                exception.setMessage("Failed to create sharing registry record. More info : " + ex.getMessage());
-                exception.initCause(ex);
-                throw exception;
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, ex);
             }
             logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
             return key;
         } catch (AiravataSystemException e) {
             throw e;
         } catch (CredentialStoreException e) {
-            logger.error("Error occurred while registering SSH Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while registering SSH Credential: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3618,58 +2981,47 @@ public class AiravataService {
                 entity.setDescription(description);
                 sharingRegistryService.createEntity(entity);
             } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back password registration for user " + userName + " and description ["
-                        + description + "]");
+                String msg = "Error while registering password credential: " + userName + " " + description + " "
+                        + ex.getMessage() + ". rolling back password registration";
+                logger.error(msg, ex);
                 try {
                     deletePWDCredential(key, gatewayId);
                 } catch (Exception rollbackEx) {
                     logger.error("Failed to rollback password credential deletion", rollbackEx);
                 }
-                logger.error("Failed to create sharing registry record", ex);
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                exception.setMessage("Failed to create sharing registry record. More info : " + ex.getMessage());
-                exception.initCause(ex);
-                throw exception;
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, ex);
             }
-            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : "
-                    + loginUserName);
+            logger.debug("Generated PWD credential for gateway: " + gatewayId + ", user: " + loginUserName);
             return key;
         } catch (AiravataSystemException e) {
             throw e;
         } catch (CredentialStoreException e) {
-            logger.error("Error occurred while registering password credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while registering password credential. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while registering password credential: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public CredentialSummary getCredentialSummaryWithAuth(AuthzToken authzToken, String tokenId, String gatewayId)
+    public CredentialSummary getCredentialSummary(AuthzToken authzToken, String tokenId, String gatewayId)
             throws AiravataSystemException, AuthorizationException {
         try {
-            if (!userHasAccessInternal(authzToken, tokenId, ResourcePermissionType.READ)) {
+            if (!userHasAccess(authzToken, tokenId, ResourcePermissionType.READ)) {
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
             var credentialSummary = getCredentialSummary(tokenId, gatewayId);
-            logger.debug("Airavata retrived the credential summary for token " + tokenId + "GatewayId: " + gatewayId);
+            logger.debug("Retrieved the credential summary for token: " + tokenId + ", GatewayId: " + gatewayId);
             return credentialSummary;
         } catch (AuthorizationException e) {
             throw e;
         } catch (CredentialStoreException e) {
-            logger.error("Error occurred while getting credential summary", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting credential summary. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting credential summary: " + tokenId + " " + gatewayId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public List<CredentialSummary> getAllCredentialSummariesWithAuth(
+    public List<CredentialSummary> getAllCredentialSummaries(
             AuthzToken authzToken, SummaryType type, String gatewayId, String userName)
             throws AiravataSystemException, InvalidRequestException {
         try {
@@ -3687,67 +3039,59 @@ public class AiravataService {
                             .collect(Collectors.toList());
             List<CredentialSummary> credentialSummaries =
                     getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
-            logger.debug(
-                    "Airavata successfully retrived credential summaries of type " + type + " GatewayId: " + gatewayId);
+            logger.debug("Successfully retrieved credential summaries of type: " + type + ", GatewayId: " + gatewayId);
             return credentialSummaries;
         } catch (CredentialStoreException | SharingRegistryException e) {
-            logger.error("Error occurred while getting all credential summaries", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error occurred while getting all credential summaries. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting all credential summaries: " + type + " " + gatewayId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId)
             throws AiravataSystemException, AuthorizationException {
         try {
-            if (!userHasAccessInternal(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            if (!userHasAccess(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 throw new AuthorizationException("User does not have permission to delete this resource.");
             }
-            logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
+            logger.debug("Deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
                     + airavataCredStoreToken);
             return deleteSSHCredential(airavataCredStoreToken, gatewayId);
         } catch (AuthorizationException e) {
             throw e;
         } catch (CredentialStoreException e) {
-            logger.error("Error occurred while deleting SSH pub key", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting SSH pub key. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while deleting SSH pub key: " + airavataCredStoreToken + " " + gatewayId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean deletePWDCredentialWithAuth(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId)
+    public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken, String gatewayId)
             throws AiravataSystemException, AuthorizationException {
         try {
-            if (!userHasAccessInternal(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            if (!userHasAccess(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 throw new AuthorizationException("User does not have permission to delete this resource.");
             }
-            logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
+            logger.debug("Deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
                     + airavataCredStoreToken);
             deletePWDCredential(airavataCredStoreToken, gatewayId);
             return true;
         } catch (AuthorizationException e) {
             throw e;
         } catch (CredentialStoreException e) {
-            logger.error("Error occurred while deleting PWD credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting PWD credential. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while deleting PWD credential: " + airavataCredStoreToken + " " + gatewayId
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     // Project management methods with sharing registry integration
-    public String createProjectWithSharing(String gatewayId, Project project) throws AiravataSystemException {
+    public String createProject(String gatewayId, Project project) throws AiravataSystemException {
         try {
-            var projectId = createProject(gatewayId, project);
+            var projectId = registryService.createProject(gatewayId, project);
             // TODO: verify that gatewayId and project.gatewayId match authzToken
             if (ServerSettings.isEnableSharing()) {
                 try {
@@ -3768,30 +3112,25 @@ public class AiravataService {
                     } catch (ProjectNotFoundException e) {
                         // Ignore - project may not exist if creation failed
                     }
-                    logger.error("Failed to create entry for project in Sharing Registry", ex);
-                    AiravataSystemException exception = new AiravataSystemException();
-                    exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                    exception.setMessage(
-                            "Failed to create entry for project in Sharing Registry. More info : " + ex.getMessage());
-                    exception.initCause(ex);
-                    throw exception;
+                    String msg =
+                            "Failed to create entry for project in Sharing Registry. More info : " + ex.getMessage();
+                    logger.error(msg, ex);
+                    throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, ex);
                 }
             }
             logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
             return projectId;
         } catch (AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while creating project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while creating project. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            String msg = "Error occurred while creating project: " + project.getName() + " " + project.getDescription()
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public void updateProjectWithAuth(AuthzToken authzToken, String projectId, Project updatedProject)
+    public void updateProject(AuthzToken authzToken, String projectId, Project updatedProject)
             throws InvalidRequestException, AiravataSystemException, ProjectNotFoundException, AuthorizationException {
         try {
             var existingProject = getProject(projectId);
@@ -3815,30 +3154,21 @@ public class AiravataService {
                 throw new InvalidRequestException("Gateway ID of a project cannot be changed");
             }
             updateProject(projectId, updatedProject);
-            logger.debug("Airavata updated project with project Id : " + projectId);
+            logger.debug("Updated project with project Id : " + projectId);
         } catch (ProjectNotFoundException
                 | AuthorizationException
                 | InvalidRequestException
                 | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while updating project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while updating project. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException e) {
-            logger.error("Error occurred while updating project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while updating project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException e) {
+            String msg = "Error occurred while updating project: " + projectId + " " + updatedProject.getName() + " "
+                    + updatedProject.getDescription() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean deleteProjectWithAuth(AuthzToken authzToken, String projectId)
+    public boolean deleteProject(AuthzToken authzToken, String projectId)
             throws AiravataSystemException, ProjectNotFoundException, AuthorizationException {
         try {
             var existingProject = getProject(projectId);
@@ -3860,24 +3190,14 @@ public class AiravataService {
             return ret;
         } catch (ProjectNotFoundException | AuthorizationException | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while deleting project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting project. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException e) {
-            logger.error("Error occurred while deleting project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException e) {
+            String msg = "Error occurred while deleting project: " + projectId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public Project getProjectWithAuth(AuthzToken authzToken, String projectId)
+    public Project getProject(AuthzToken authzToken, String projectId)
             throws AiravataSystemException, ProjectNotFoundException, AuthorizationException {
         try {
             var project = getProject(projectId);
@@ -3897,29 +3217,17 @@ public class AiravataService {
             }
         } catch (ProjectNotFoundException | AuthorizationException | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while getting project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting project. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException e) {
-            logger.error("Error occurred while getting project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting project. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException e) {
+            String msg = "Error occurred while getting project: " + projectId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     // Experiment management methods with sharing registry integration
-    public String createExperimentWithSharing(String gatewayId, ExperimentModel experiment)
-            throws AiravataSystemException {
+    public String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException {
         try {
-            var experimentId = createExperiment(gatewayId, experiment);
-
+            var experimentId = createExperimentInternal(gatewayId, experiment);
             if (ServerSettings.isEnableSharing()) {
                 try {
                     var entity = new Entity();
@@ -3938,11 +3246,10 @@ public class AiravataService {
                     logger.error(ex.getMessage(), ex);
                     logger.error("Rolling back experiment creation Exp ID : " + experimentId);
                     deleteExperiment(experimentId);
-                    var exception = new AiravataSystemException();
-                    exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-                    exception.setMessage("Failed to create sharing registry record. " + ex.getMessage());
-                    exception.initCause(ex);
-                    throw exception;
+                    throw airavataSystemException(
+                            AiravataErrorType.INTERNAL_ERROR,
+                            "Failed to create sharing registry record. " + ex.getMessage(),
+                            ex);
                 }
             }
 
@@ -3954,41 +3261,11 @@ public class AiravataService {
             return experimentId;
         } catch (AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while creating experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while creating experiment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        }
-    }
-
-    public String createExperimentWithSharingAndPublish(
-            Publisher statusPublisher, String gatewayId, ExperimentModel experiment)
-            throws InvalidRequestException, AiravataSystemException, AuthorizationException {
-        try {
-            logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
-            var experimentId = createExperimentWithSharing(gatewayId, experiment);
-
-            if (statusPublisher != null) {
-                var event = new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
-                var messageId = AiravataUtils.getId("EXPERIMENT");
-                var messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                statusPublisher.publish(messageContext);
-            }
-
-            return experimentId;
-        } catch (AiravataSystemException e) {
-            throw e;
         } catch (Throwable e) {
-            logger.error("Error while creating the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating the experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while creating experiment: " + experiment.getExperimentName() + " "
+                    + experiment.getExperimentId() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3996,7 +3273,8 @@ public class AiravataService {
             throws InvalidRequestException, AuthorizationException, AiravataSystemException, SharingRegistryException {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
-        // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the user
+        // For backwards compatibility, if there is no groupResourceProfileId, look up
+        // one that is shared with the user
         if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
             // This will be handled by the handler calling getGroupResourceList
             throw new InvalidRequestException("Experiment doesn't have groupResourceProfileId");
@@ -4097,20 +3375,10 @@ public class AiravataService {
             return deleteExperiment(experimentId);
         } catch (AuthorizationException | InvalidRequestException | AiravataSystemException e) {
             throw e;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error occurred while deleting experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting experiment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException e) {
-            logger.error("Error occurred while deleting experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting experiment. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (ApplicationSettingsException | SharingRegistryException e) {
+            String msg = "Error occurred while deleting experiment: " + experimentId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4124,17 +3392,14 @@ public class AiravataService {
             }
             throw new RuntimeException("Unrecognized entity type id: " + entity.getEntityTypeId());
         } catch (SharingRegistryException e) {
-            logger.error("Error while getting resource type", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting resource type. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while getting resource type: " + domainId + " " + entityId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     // Gateway management methods with sharing registry integration
-    public String addGatewayWithSharing(Gateway gateway) throws AiravataSystemException {
+    public String addGateway(Gateway gateway) throws AiravataSystemException {
         try {
             var gatewayId = registryService.addGateway(gateway);
             Domain domain = new Domain();
@@ -4201,37 +3466,33 @@ public class AiravataService {
             permissionType.setDescription("Sharing permission type");
             sharingRegistryService.createPermissionType(permissionType);
 
-            logger.debug("Airavata successfully created the gateway with " + gatewayId);
+            logger.debug("Successfully created the gateway with " + gatewayId);
             return gatewayId;
-        } catch (RegistryServiceException e) {
-            logger.error("Error while adding gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (SharingRegistryException | DuplicateEntryException e) {
-            logger.error("Error while adding gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (RegistryServiceException | SharingRegistryException | DuplicateEntryException e) {
+            String msg = "Error while adding gateway: " + gateway.getGatewayId() + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     // Event publishing methods
     public void publishExperimentSubmitEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
-            throws Exception {
+            throws AiravataSystemException {
         var event = new ExperimentSubmitEvent(experimentId, gatewayId);
         var messageContext = new MessageContext(
                 event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        try {
+            experimentPublisher.publish(messageContext);
+        } catch (AiravataException e) {
+            String msg = "Error while publishing experiment submit event: " + experimentId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
     }
 
     public void publishExperimentCancelEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
-            throws Exception {
+            throws AiravataSystemException {
         var event = new ExperimentSubmitEvent(experimentId, gatewayId);
         var messageContext = new MessageContext(
                 event,
@@ -4239,12 +3500,18 @@ public class AiravataService {
                 "CANCEL.EXP-" + UUID.randomUUID().toString(),
                 gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        try {
+            experimentPublisher.publish(messageContext);
+        } catch (AiravataException e) {
+            String msg = "Error while publishing experiment cancel event: " + experimentId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
     }
 
     public void publishExperimentIntermediateOutputsEvent(
             Publisher experimentPublisher, String gatewayId, String experimentId, List<String> outputNames)
-            throws Exception {
+            throws AiravataSystemException {
         var event = new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
         var messageContext = new MessageContext(
                 event,
@@ -4252,19 +3519,25 @@ public class AiravataService {
                 "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(),
                 gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        try {
+            experimentPublisher.publish(messageContext);
+        } catch (AiravataException e) {
+            String msg = "Error while publishing experiment intermediate outputs event: " + experimentId + " "
+                    + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
     }
 
     /**
-     * Validate and fetch intermediate outputs - checks access, job state, and existing processes
+     * Validate and fetch intermediate outputs - checks access, job state, and
+     * existing processes
      */
-    public void validateAndFetchIntermediateOutputs(
-            AuthzToken authzToken, String airavataExperimentId, List<String> outputNames, Publisher experimentPublisher)
+    public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, AiravataSystemException, AuthorizationException {
         try {
             // Verify that user has WRITE access to experiment
-            final boolean hasAccess =
-                    userHasAccessInternal(authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
+            final boolean hasAccess = userHasAccess(authzToken, airavataExperimentId, ResourcePermissionType.WRITE);
             if (!hasAccess) {
                 var msg = "User does not have WRITE access to this experiment";
                 logger.error(msg);
@@ -4287,7 +3560,8 @@ public class AiravataService {
                 throw new InvalidRequestException(msg);
             }
 
-            // Figure out if there are any currently running intermediate output fetching processes for outputNames
+            // Figure out if there are any currently running intermediate output fetching
+            // processes for outputNames
             // First, find any existing intermediate output fetch processes for outputNames
             List<ProcessModel> intermediateOutputFetchProcesses = existingExperiment.getProcesses().stream()
                     .filter(p -> {
@@ -4320,28 +3594,23 @@ public class AiravataService {
         } catch (AuthorizationException | InvalidRequestException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error(
-                    "Error while processing request to fetch intermediate outputs for experiment: "
-                            + airavataExperimentId,
-                    e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while processing request to fetch intermediate outputs for experiment: "
+                    + airavataExperimentId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     /**
-     * Get intermediate output process status - finds the most recent matching process and returns its status
+     * Get intermediate output process status - finds the most recent matching
+     * process and returns its status
      */
-    public ProcessStatus getIntermediateOutputProcessStatusInternal(
+    public ProcessStatus getIntermediateOutputProcessStatus(
             AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, AiravataSystemException, AuthorizationException {
         try {
             // Verify that user has READ access to experiment
-            final boolean hasAccess =
-                    userHasAccessInternal(authzToken, airavataExperimentId, ResourcePermissionType.READ);
+            final boolean hasAccess = userHasAccess(authzToken, airavataExperimentId, ResourcePermissionType.READ);
             if (!hasAccess) {
                 var msg = "User does not have READ access to this experiment";
                 logger.debug(msg);
@@ -4385,16 +3654,10 @@ public class AiravataService {
         } catch (AuthorizationException | InvalidRequestException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error(
-                    "Error while processing request to get intermediate output process status for experiment: "
-                            + airavataExperimentId,
-                    e);
-            logger.error("Error occurred", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while processing request to get intermediate output process status for experiment: "
+                    + airavataExperimentId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4449,7 +3712,7 @@ public class AiravataService {
     /**
      * Get all accessible users for a resource (includes shared and directly shared)
      */
-    public List<String> getAllAccessibleUsersWithSharing(
+    public List<String> getAllAccessibleUsers(
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType, boolean directlySharedOnly)
             throws AiravataSystemException {
         try {
@@ -4474,19 +3737,17 @@ public class AiravataService {
             }
             return getAllAccessibleUsers(gatewayId, resourceId, permissionType, userListFunction);
         } catch (Exception e) {
-            logger.error("Error occurred while getting all accessible users", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting all accessible users. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting all accessible users: " + resourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     /**
-     * Get all accessible groups for a resource (includes shared and directly shared)
+     * Get all accessible groups for a resource (includes shared and directly
+     * shared)
      */
-    public List<String> getAllAccessibleGroupsWithSharing(
+    public List<String> getAllAccessibleGroups(
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType, boolean directlySharedOnly)
             throws AiravataSystemException {
         try {
@@ -4511,12 +3772,9 @@ public class AiravataService {
             }
             return getAllAccessibleGroups(gatewayId, resourceId, permissionType, groupListFunction);
         } catch (Exception e) {
-            logger.error("Error occurred while getting all accessible groups", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting all accessible groups. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting all accessible groups: " + resourceId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4545,22 +3803,24 @@ public class AiravataService {
                     | InvalidRequestException
                     | AuthorizationException
                     | ApplicationSettingsException ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back group resource profile creation Group Resource Profile ID : "
-                        + groupResourceProfileId);
+                String msg = "Error while creating group resource profile: " + groupResourceProfileId + " "
+                        + ex.getMessage() + ". Rolling back group resource profile creation.";
+                logger.error(msg, ex);
                 try {
                     removeGroupResourceProfile(groupResourceProfileId);
                 } catch (Throwable rollbackEx) {
-                    logger.error("Failed to rollback group resource profile deletion", rollbackEx);
+                    String rollbackMsg = "Failed to rollback group resource profile creation: " + groupResourceProfileId
+                            + " " + rollbackEx.getMessage();
+                    logger.error(rollbackMsg, rollbackEx);
                 }
-                throw ex;
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, ex);
             }
         }
         return groupResourceProfileId;
     }
 
     public void validateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
-            throws AuthorizationException {
+            throws AuthorizationException, AiravataSystemException {
         Set<String> tokenIds = new HashSet<>();
         if (groupResourceProfile.getComputePreferences() != null) {
             for (GroupComputeResourcePreference groupComputeResourcePreference :
@@ -4574,16 +3834,15 @@ public class AiravataService {
             tokenIds.add(groupResourceProfile.getDefaultCredentialStoreToken());
         }
         for (String tokenId : tokenIds) {
-            if (!userHasAccessInternal(authzToken, tokenId, ResourcePermissionType.READ)) {
-                throw new AuthorizationException(
-                        "User does not have READ permission to credential token " + tokenId + ".");
+            if (!userHasAccess(authzToken, tokenId, ResourcePermissionType.READ)) {
+                String msg = "User does not have READ permission to credential token " + tokenId + ".";
+                throw new AuthorizationException(msg);
             }
         }
     }
 
     // Launch experiment business logic
-    public void launchExperimentWithValidation(
-            AuthzToken authzToken, String gatewayId, String airavataExperimentId, Publisher experimentPublisher)
+    public void launchExperiment(AuthzToken authzToken, String gatewayId, String airavataExperimentId)
             throws InvalidRequestException, AiravataSystemException, AuthorizationException,
                     ExperimentNotFoundException, ProjectNotFoundException {
         try {
@@ -4596,11 +3855,11 @@ public class AiravataService {
             }
             String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
-            // For backwards compatibility, if there is no groupResourceProfileId, look up one that is shared with the
+            // For backwards compatibility, if there is no groupResourceProfileId, look up
+            // one that is shared with the
             // user
             if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
-                List<GroupResourceProfile> groupResourceProfiles =
-                        getGroupResourceListWithSharing(authzToken, gatewayId);
+                List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
                 if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
                     // Just pick the first one
                     final String groupResourceProfileId =
@@ -4612,8 +3871,10 @@ public class AiravataService {
                     experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
                     updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
                 } else {
-                    throw new Exception("User " + username + " in gateway " + gatewayId
-                            + " doesn't have access to any group resource profiles.");
+                    String msg = "User " + username + " in gateway " + gatewayId
+                            + " doesn't have access to any group resource profiles.";
+                    logger.error(msg);
+                    throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, null);
                 }
             }
 
@@ -4623,30 +3884,19 @@ public class AiravataService {
         } catch (InvalidRequestException
                 | AiravataSystemException
                 | AuthorizationException
-                | ExperimentNotFoundException
-                | ProjectNotFoundException e) {
+                | ExperimentNotFoundException e) {
             throw e;
-        } catch (RegistryException | AppCatalogException | CredentialStoreException | SharingRegistryException e) {
-            logger.error("Error launching experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error launching experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         } catch (Throwable e) {
-            logger.error("Error launching experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error launching experiment. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error launching experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
     /**
      * Get group resource list with sharing registry integration
      */
-    public List<GroupResourceProfile> getGroupResourceListWithSharing(AuthzToken authzToken, String gatewayId)
+    public List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId)
             throws AiravataSystemException {
         try {
             String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -4670,12 +3920,9 @@ public class AiravataService {
             }
             return getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
         } catch (ApplicationSettingsException | SharingRegistryException e) {
-            logger.error("Error occurred while getting group resource list", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting group resource list. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting group resource list: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4733,12 +3980,9 @@ public class AiravataService {
         try {
             return credentialStoreService.getSSHCredential(token, gatewayId);
         } catch (CredentialStoreException e) {
-            logger.error("Error while retrieving SSH credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving SSH credential. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error while retrieving SSH credential: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4777,8 +4021,10 @@ public class AiravataService {
     }
 
     /**
-     * Resolves compute resource storage info context (login username, credential token, and adaptor).
-     * Handles user preference → group preference fallback for both login and credentials.
+     * Resolves compute resource storage info context (login username, credential
+     * token, and adaptor).
+     * Handles user preference → group preference fallback for both login and
+     * credentials.
      */
     private StorageInfoContext resolveComputeStorageInfoContext(
             AuthzToken authzToken, String gatewayId, String userId, String resourceId)
@@ -4807,7 +4053,7 @@ public class AiravataService {
 
         } else {
             // Fallback to GroupComputeResourcePreference
-            var groupResourceProfiles = getGroupResourceListWithSharing(authzToken, gatewayId);
+            var groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
             for (GroupResourceProfile groupProfile : groupResourceProfiles) {
                 List<GroupComputeResourcePreference> groupComputePrefs = groupProfile.getComputePreferences();
 
@@ -4839,7 +4085,8 @@ public class AiravataService {
         // Resolve credential token based on where login came from
         String credentialToken;
         if (loginFromUserPref) {
-            // Login username came from user preference. Use user preference token → user profile token
+            // Login username came from user preference. Use user preference token → user
+            // profile token
             if (userComputePref != null
                     && userComputePref.getResourceSpecificCredentialStoreToken() != null
                     && !userComputePref
@@ -4852,15 +4099,15 @@ public class AiravataService {
                 if (userResourceProfile == null
                         || userResourceProfile.getCredentialStoreToken() == null
                         || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw airavataSystemException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                    String msg = "No credential store token found for user " + userId + " in gateway " + gatewayId;
+                    logger.error(msg);
+                    throw airavataSystemException(AiravataErrorType.AUTHENTICATION_FAILURE, msg, null);
                 }
                 credentialToken = userResourceProfile.getCredentialStoreToken();
             }
         } else {
-            // Login username came from group preference. Use group preference token → group profile default token →
+            // Login username came from group preference. Use group preference token → group
+            // profile default token →
             // user profile token (fallback)
             if (groupComputePref != null
                     && groupComputePref.getResourceSpecificCredentialStoreToken() != null
@@ -4883,10 +4130,9 @@ public class AiravataService {
                 if (userResourceProfile == null
                         || userResourceProfile.getCredentialStoreToken() == null
                         || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw airavataSystemException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for compute resource " + resourceId);
+                    String msg = "No credential store token found for user " + userId + " in gateway " + gatewayId;
+                    logger.error(msg);
+                    throw airavataSystemException(AiravataErrorType.AUTHENTICATION_FAILURE, msg, null);
                 }
                 credentialToken = userResourceProfile.getCredentialStoreToken();
             }
@@ -4900,8 +4146,10 @@ public class AiravataService {
     }
 
     /**
-     * Resolves storage resource storage info context (login username, credential token, and adaptor).
-     * Handles user preference → gateway preference fallback for both login and credentials.
+     * Resolves storage resource storage info context (login username, credential
+     * token, and adaptor).
+     * Handles user preference → gateway preference fallback for both login and
+     * credentials.
      */
     private StorageInfoContext resolveStorageStorageInfoContext(
             AuthzToken authzToken, String gatewayId, String userId, String resourceId)
@@ -4951,7 +4199,8 @@ public class AiravataService {
         // Resolve credential token based on where login came from
         String credentialToken;
         if (loginFromUserPref) {
-            // Login came from user preference. Use user preference token or user profile token
+            // Login came from user preference. Use user preference token or user profile
+            // token
             if (userStoragePref != null
                     && userStoragePref.getResourceSpecificCredentialStoreToken() != null
                     && !userStoragePref
@@ -4966,15 +4215,15 @@ public class AiravataService {
                 if (userResourceProfile == null
                         || userResourceProfile.getCredentialStoreToken() == null
                         || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw airavataSystemException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                    String msg = "No credential store token found for user " + userId + " in gateway " + gatewayId;
+                    logger.error(msg);
+                    throw airavataSystemException(AiravataErrorType.AUTHENTICATION_FAILURE, msg, null);
                 }
                 credentialToken = userResourceProfile.getCredentialStoreToken();
             }
         } else {
-            // Login came from gateway preference. Use gateway preference token or gateway profile token
+            // Login came from gateway preference. Use gateway preference token or gateway
+            // profile token
             if (storagePref != null
                     && storagePref.getResourceSpecificCredentialStoreToken() != null
                     && !storagePref
@@ -4991,10 +4240,9 @@ public class AiravataService {
                                 .getCredentialStoreToken()
                                 .trim()
                                 .isEmpty()) {
-                    logger.error("No credential store token found for gateway {}", gatewayId);
-                    throw airavataSystemException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for gateway " + gatewayId);
+                    String msg = "No credential store token found for gateway " + gatewayId;
+                    logger.error(msg);
+                    throw airavataSystemException(AiravataErrorType.AUTHENTICATION_FAILURE, msg, null);
                 }
                 credentialToken = gatewayResourceProfile.getCredentialStoreToken();
             }
@@ -5055,12 +4303,9 @@ public class AiravataService {
         } catch (InvalidRequestException | AiravataSystemException | AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error("Error occurred while getting resource storage info", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting resource storage info. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting resource storage info: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5112,12 +4357,9 @@ public class AiravataService {
         } catch (InvalidRequestException | AiravataSystemException | AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error("Error occurred while getting storage directory info", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while getting storage directory info. More info: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while getting storage directory info: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5132,13 +4374,9 @@ public class AiravataService {
                     gatewayId);
             return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
         } catch (Throwable e) {
-            logger.error("Error occurred while checking if user has an SSH Account", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error occurred while checking if user has an SSH Account. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while checking if user has an SSH Account: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5157,13 +4395,9 @@ public class AiravataService {
             SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
             return SSHAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
         } catch (Throwable e) {
-            logger.error("Error occurred while checking if setup of SSH account is complete", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error occurred while checking if setup of SSH account is complete. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while checking if setup of SSH account is complete: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5183,13 +4417,9 @@ public class AiravataService {
         } catch (AiravataSystemException e) {
             throw e;
         } catch (Throwable e) {
-            logger.error("Error occurred while automatically setting up SSH account for user", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while automatically setting up SSH account for user. More info : "
-                    + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error occurred while automatically setting up SSH account for user: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5197,8 +4427,8 @@ public class AiravataService {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
-                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+            if (!userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccess(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
                 throw new AuthorizationException(
                         "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
@@ -5219,7 +4449,7 @@ public class AiravataService {
                             gatewayId + ":" + "READ",
                             true);
                 } else if (userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                    if (userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)) {
                         createManageSharingPermissionTypeIfMissing(gatewayId);
                         shareEntityWithUsers(
                                 gatewayId,
@@ -5242,13 +4472,9 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error in sharing resource with users. Resource ID : " + resourceId;
+            String msg = "Error in sharing resource with users. Resource ID : " + resourceId + ": " + e.getMessage();
             logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5256,8 +4482,8 @@ public class AiravataService {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> groupPermissionList)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
-                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+            if (!userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccess(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
                 throw new AuthorizationException(
                         "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
@@ -5278,7 +4504,7 @@ public class AiravataService {
                             gatewayId + ":" + "READ",
                             true);
                 } else if (groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                    if (userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)) {
                         createManageSharingPermissionTypeIfMissing(gatewayId);
                         shareEntityWithGroups(
                                 gatewayId,
@@ -5301,14 +4527,10 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error in sharing resource with groups. Resource ID : " + resourceId;
+            var msg = "Error in sharing resource with groups. Resource ID : " + resourceId + ". More info : "
+                    + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5316,8 +4538,8 @@ public class AiravataService {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
-            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
-                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+            if (!userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccess(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
                 throw new AuthorizationException(
                         "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
@@ -5330,7 +4552,7 @@ public class AiravataService {
                     revokeEntitySharingFromUsers(
                             gatewayId, resourceId, Arrays.asList(userPermission.getKey()), gatewayId + ":" + "READ");
                 } else if (userPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                    if (userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)) {
                         createManageSharingPermissionTypeIfMissing(gatewayId);
                         revokeEntitySharingFromUsers(
                                 gatewayId,
@@ -5354,11 +4576,7 @@ public class AiravataService {
         } catch (Throwable e) {
             var msg = "Error in revoking access to resource from users. Resource ID : " + resourceId;
             logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -5367,17 +4585,19 @@ public class AiravataService {
             throws AuthorizationException, InvalidRequestException, AiravataSystemException {
         try {
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (!userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)
-                    && !userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
+            if (!userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)
+                    && !userHasAccess(authzToken, resourceId, ResourcePermissionType.MANAGE_SHARING)) {
                 throw new AuthorizationException(
                         "User is not allowed to change sharing because the user is either not the resource owner or does not have access to share the resource");
             }
-            // For certain resource types, restrict them from being unshared with admin groups
+            // For certain resource types, restrict them from being unshared with admin
+            // groups
             ResourceType resourceType = getResourceType(gatewayId, resourceId);
             Set<ResourceType> adminRestrictedResourceTypes = new HashSet<>(Arrays.asList(
                     ResourceType.EXPERIMENT, ResourceType.APPLICATION_DEPLOYMENT, ResourceType.GROUP_RESOURCE_PROFILE));
             if (adminRestrictedResourceTypes.contains(resourceType)) {
-                // Prevent removing Admins WRITE/MANAGE_SHARING access and Read Only Admins READ access
+                // Prevent removing Admins WRITE/MANAGE_SHARING access and Read Only Admins READ
+                // access
                 GatewayGroups gatewayGroups = retrieveGatewayGroups(gatewayId);
                 if (groupPermissionList.containsKey(gatewayGroups.getAdminsGroupId())
                         && groupPermissionList
@@ -5412,7 +4632,7 @@ public class AiravataService {
                     revokeEntitySharingFromGroups(
                             gatewayId, resourceId, Arrays.asList(groupPermission.getKey()), gatewayId + ":" + "READ");
                 } else if (groupPermission.getValue().equals(ResourcePermissionType.MANAGE_SHARING)) {
-                    if (userHasAccessInternal(authzToken, resourceId, ResourcePermissionType.OWNER)) {
+                    if (userHasAccess(authzToken, resourceId, ResourcePermissionType.OWNER)) {
                         createManageSharingPermissionTypeIfMissing(gatewayId);
                         revokeEntitySharingFromGroups(
                                 gatewayId,
@@ -5434,18 +4654,14 @@ public class AiravataService {
         } catch (AuthorizationException | InvalidRequestException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId;
+            String msg = "Error in revoking access to resource from groups. Resource ID : " + resourceId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public GroupResourceProfile getGroupResourceProfileWithAuth(AuthzToken authzToken, String groupResourceProfileId)
+    public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
@@ -5457,22 +4673,16 @@ public class AiravataService {
             }
             return getGroupResourceProfile(groupResourceProfileId);
         } catch (AuthorizationException e) {
-            logger.error(
-                    "Error while retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId,
-                    e);
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId;
+            String msg = "Error retrieving group resource profile. groupResourceProfileId: " + groupResourceProfileId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean removeGroupResourceProfileWithAuth(AuthzToken authzToken, String groupResourceProfileId)
+    public boolean removeGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -5492,16 +4702,11 @@ public class AiravataService {
         } catch (Throwable e) {
             var msg = "Error removing group resource profile. groupResourceProfileId: " + groupResourceProfileId;
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean removeGroupComputePrefsWithAuth(
+    public boolean removeGroupComputePrefs(
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
@@ -5517,18 +4722,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error removing group compute preferences. GroupResourceProfileId: " + groupResourceProfileId;
+            var msg = "Error removing group compute preferences. GroupResourceProfileId: " + groupResourceProfileId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean removeGroupComputeResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+    public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
@@ -5548,18 +4749,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error removing group compute resource policy. ResourcePolicyId: " + resourcePolicyId;
+            String msg = "Error removing group compute resource policy. ResourcePolicyId: " + resourcePolicyId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public boolean removeGroupBatchQueueResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+    public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
@@ -5579,18 +4776,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error removing batch queue resource policy. ResourcePolicyId: " + resourcePolicyId;
+            String msg = "Error removing batch queue resource policy. ResourcePolicyId: " + resourcePolicyId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public GroupComputeResourcePreference getGroupComputeResourcePreferenceWithAuth(
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
@@ -5605,18 +4798,14 @@ public class AiravataService {
         } catch (AuthorizationException | AiravataSystemException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving Group compute preference. GroupResourceProfileId: " + groupResourceProfileId;
+            String msg = "Error retrieving Group compute preference. GroupResourceProfileId: " + groupResourceProfileId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public ComputeResourcePolicy getGroupComputeResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
@@ -5635,18 +4824,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving Group compute resource policy. ResourcePolicyId: " + resourcePolicyId;
+            String msg = "Error retrieving Group compute resource policy. ResourcePolicyId: " + resourcePolicyId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicyWithAuth(AuthzToken authzToken, String resourcePolicyId)
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
             if (ServerSettings.isEnableSharing()) {
@@ -5665,22 +4850,18 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving batch queue resource policy. ResourcePolicyId: " + resourcePolicyId;
+            String msg = "Error retrieving batch queue resource policy. ResourcePolicyId: " + resourcePolicyId
+                    + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public void updateGroupResourceProfileWithAuth(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
+    public void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
             throws AuthorizationException, AiravataSystemException {
         try {
             validateGroupResourceProfile(authzToken, groupResourceProfile);
-            if (!userHasAccessInternal(
+            if (!userHasAccess(
                     authzToken, groupResourceProfile.getGroupResourceProfileId(), ResourcePermissionType.WRITE)) {
                 throw new AuthorizationException("User does not have permission to update group resource profile");
             }
@@ -5691,19 +4872,14 @@ public class AiravataService {
                     + groupResourceProfile.getGroupResourceProfileId() + ", reason: " + e.getMessage());
             throw e;
         } catch (Throwable e) {
-            var msg = "Error updating group resource profile. groupResourceProfileId: "
-                    + groupResourceProfile.getGroupResourceProfileId();
+            String msg = "Error updating group resource profile. groupResourceProfileId: "
+                    + groupResourceProfile.getGroupResourceProfileId() + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefListWithAuth(
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
@@ -5718,19 +4894,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving Group compute resource preference. GroupResourceProfileId: "
-                    + groupResourceProfileId;
+            String msg = "Error retrieving Group compute resource preference. GroupResourceProfileId: "
+                    + groupResourceProfileId + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyListWithAuth(
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
@@ -5745,19 +4916,14 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving Group batch queue resource policy list. GroupResourceProfileId: "
-                    + groupResourceProfileId;
+            String msg = "Error retrieving Group batch queue resource policy list. GroupResourceProfileId: "
+                    + groupResourceProfileId + ". More info : " + e.getMessage();
             logger.error(msg, e);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyListWithAuth(
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
@@ -5772,18 +4938,13 @@ public class AiravataService {
         } catch (AuthorizationException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error retrieving Group compute resource policy list. GroupResourceProfileId: "
-                    + groupResourceProfileId;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            String msg = "Error retrieving Group compute resource policy list. GroupResourceProfileId: "
+                    + groupResourceProfileId + ". More info : " + e.getMessage();
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
-    public String createGroupResourceProfileWithAuth(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
+    public String createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
             var result = createGroupResourceProfileWithSharing(authzToken, groupResourceProfile);
@@ -5791,13 +4952,9 @@ public class AiravataService {
         } catch (AuthorizationException | AiravataSystemException | InvalidRequestException e) {
             throw e;
         } catch (Throwable e) {
-            var msg = "Error creating group resource profile.";
+            String msg = "Error creating group resource profile. More info : " + e.getMessage();
             logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 }

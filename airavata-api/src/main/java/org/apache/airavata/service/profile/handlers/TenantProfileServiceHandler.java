@@ -39,9 +39,17 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
     private org.apache.airavata.service.TenantProfileService tenantProfileService;
 
-    public TenantProfileServiceHandler() {
+    public TenantProfileServiceHandler() throws TenantProfileServiceException {
         logger.debug("Initializing TenantProfileServiceHandler");
-        tenantProfileService = new org.apache.airavata.service.TenantProfileService();
+        try {
+            tenantProfileService = new org.apache.airavata.service.TenantProfileService();
+        } catch (Throwable e) {
+            String msg = "Error initializing TenantProfileServiceHandler, reason: " + e.getMessage();
+            logger.error(msg, e);
+            var exception = new TenantProfileServiceException(msg);
+            exception.initCause(e);
+            throw exception;
+        }
     }
 
     @Override

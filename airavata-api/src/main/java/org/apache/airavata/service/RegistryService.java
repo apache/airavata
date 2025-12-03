@@ -156,9 +156,9 @@ public class RegistryService {
             logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
             return gateway;
         } catch (Throwable e) {
-            logger.error("Error while getting the gateway", e);
-            RegistryServiceException exception = new RegistryServiceException();
-            exception.setMessage("Error while getting the gateway More info : " + e.getMessage());
+            String msg = "Error while getting the gateway: " + e.getMessage();
+            logger.error(msg, e);
+            var exception = new RegistryServiceException(msg);
             exception.initCause(e);
             throw exception;
         }

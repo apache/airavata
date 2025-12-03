@@ -19,31 +19,31 @@
 */
 package org.apache.airavata.orchestrator.server;
 
-import java.util.*;
+import java.util.List;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
+import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.service.OrchestratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OrchestratorServerHandler implements OrchestratorService.Iface {
+public class OrchestratorServerHandler implements org.apache.airavata.orchestrator.cpi.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
-    private org.apache.airavata.service.OrchestratorService orchestratorService;
+    private OrchestratorService orchestratorService;
 
     /**
      * Query orchestrator server to fetch the CPI version
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
+        return org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
     public OrchestratorServerHandler() {
         try {
-            orchestratorService = new org.apache.airavata.service.OrchestratorService();
+            orchestratorService = new OrchestratorService();
         } catch (Exception e) {
             log.error("Error while initializing orchestrator service", e);
             throw new RuntimeException("Error while initializing orchestrator service", e);
@@ -60,11 +60,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      */
     @Override
     public boolean launchExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
+        var pool = OrchestratorServerThreadPoolExecutor.getCachedThreadPool();
         try {
-            return orchestratorService.launchExperimentWithErrorHandling(
-                    experimentId,
-                    gatewayId,
-                    org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor.getCachedThreadPool());
+            return orchestratorService.launchExperiment(experimentId, gatewayId, pool);
         } catch (Throwable e) {
             log.error("Error launching experiment: " + experimentId, e);
             AiravataSystemException exception = new AiravataSystemException();

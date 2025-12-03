@@ -22,6 +22,7 @@ package org.apache.airavata.service;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
@@ -119,7 +120,7 @@ public class OrchestratorService {
         this.publisher = publisher;
     }
 
-    public boolean launchExperiment(String experimentId, String gatewayId)
+    private boolean launchExperimentInternal(String experimentId, String gatewayId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
                     LaunchValidationException {
         String experimentNodePath = getExperimentNodePath(experimentId);
@@ -718,7 +719,7 @@ public class OrchestratorService {
                     LaunchValidationException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
         if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
-            launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+            launchExperimentInternal(expEvent.getExperimentId(), expEvent.getGatewayId());
         }
     }
 
@@ -784,11 +785,10 @@ public class OrchestratorService {
         return orchestratorRegistryService.getProcess(processId);
     }
 
-    public boolean launchExperimentWithErrorHandling(
-            String experimentId, String gatewayId, java.util.concurrent.ExecutorService executorService)
+    public boolean launchExperiment(String experimentId, String gatewayId, ExecutorService executorService)
             throws OrchestratorException {
         try {
-            boolean result = launchExperiment(experimentId, gatewayId);
+            boolean result = launchExperimentInternal(experimentId, gatewayId);
             if (result) {
                 ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
                 String token = getCredentialToken(experiment, experiment.getUserConfigurationData());
@@ -842,57 +842,11 @@ public class OrchestratorService {
         curatorClient.start();
     }
 
-    // private Subscriber getStatusSubscriber() throws AiravataException {
-    //     List<String> routingKeys = new ArrayList<>();
-    //     routingKeys.add("*.*.*");
-    //     return MessagingFactory.getSubscriber(new ProcessStatusHandler(), routingKeys, Type.STATUS);
-    // }
-
     private Subscriber getExperimentSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
         return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
     }
-
-    // private void setAiravataUserName(String airavataUserName) {
-    //     this.airavataUserName = airavataUserName;
-    // }
-
-    // private class ProcessStatusHandler implements MessageHandler {
-    //     @Override
-    //     public void onMessage(MessageContext message) {
-    //         if (message.getType().equals(MessageType.PROCESS)) {
-    //             try {
-    //                 ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
-    //                 TBase event = message.getEvent();
-    //                 byte[] bytes = ThriftUtils.serializeThriftObject(event);
-    //                 ThriftUtils.createThriftFromBytes(bytes, processStatusChangeEvent);
-    //                 ProcessIdentifier processIdentity = processStatusChangeEvent.getProcessIdentity();
-    //                 logger.info(
-    //                         "expId: {}, processId: {} :- Process status changed event received for status {}",
-    //                         processIdentity.getExperimentId(),
-    //                         processIdentity.getProcessId(),
-    //                         processStatusChangeEvent.getState().name());
-    //                 handleProcessStatusChange(processStatusChangeEvent, processIdentity);
-    //             } catch (OrchestratorException e) {
-    //                 logger.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType()
-    //                         + "Error" + " while prcessing process status change event");
-    //                 throw new RuntimeException("Error while updating experiment status", e);
-    //             } catch (Throwable e) {
-    //                 logger.error(
-    //                         "Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
-    // "Error"
-    //                                 + " while prcessing process status change event",
-    //                         e);
-    //                 throw new RuntimeException("Error while updating experiment status", e);
-    //             }
-    //         } else {
-    //             System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message
-    // "
-    //                     + "type " + message.getType().name());
-    //         }
-    //     }
-    // }
 
     private class ExperimentHandler implements MessageHandler {
 

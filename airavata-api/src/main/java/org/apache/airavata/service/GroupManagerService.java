@@ -23,34 +23,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
     private UserProfileRepository userProfileRepository = new UserProfileRepository();
+    private SharingRegistryService sharingService = new SharingRegistryService();
 
     public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException {
         try {
             // TODO Validations for authorization
-            var sharingClient = getSharingRegistryServiceClient();
-
             var sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(UUID.randomUUID().toString());
             sharingUserGroup.setName(groupModel.getName());
@@ -61,10 +55,10 @@ public class GroupManagerService {
             sharingUserGroup.setDomainId(gatewayId);
             sharingUserGroup.setOwnerId(getUserId(authzToken));
 
-            var groupId = sharingClient.createGroup(sharingUserGroup);
-            internalAddUsersToGroup(sharingClient, gatewayId, groupModel.getMembers(), groupId);
+            var groupId = sharingService.createGroup(sharingUserGroup);
+            internalAddUsersToGroup(sharingService, gatewayId, groupModel.getMembers(), groupId);
             if (groupModel.getAdmins() != null && !groupModel.getAdmins().isEmpty()) {
-                sharingClient.addGroupAdmins(gatewayId, groupId, groupModel.getAdmins());
+                sharingService.addGroupAdmins(gatewayId, groupId, groupModel.getAdmins());
             }
             return groupId;
         } catch (Exception e) {
@@ -79,11 +73,10 @@ public class GroupManagerService {
 
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException {
         try {
-            var sharingClient = getSharingRegistryServiceClient();
             var userId = getUserId(authzToken);
             var domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupModel.getId(), userId)
-                    || sharingClient.hasAdminAccess(domainId, groupModel.getId(), userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupModel.getId(), userId)
+                    || sharingService.hasAdminAccess(domainId, groupModel.getId(), userId))) {
                 throw new GroupManagerServiceException("User does not have permission to update group");
             }
 
@@ -95,7 +88,7 @@ public class GroupManagerService {
             sharingUserGroup.setDomainId(getDomainId(authzToken));
 
             // adding and removal of users should be handle separately
-            sharingClient.updateGroup(sharingUserGroup);
+            sharingService.updateGroup(sharingUserGroup);
             return true;
         } catch (Exception e) {
             String msg = "Error Updating Group";
@@ -110,14 +103,13 @@ public class GroupManagerService {
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have permission to delete group");
             }
 
-            sharingClient.deleteGroup(getDomainId(authzToken), groupId);
+            sharingService.deleteGroup(getDomainId(authzToken), groupId);
             return true;
         } catch (Exception e) {
             String msg = "Error Deleting Group. Group ID: " + groupId;
@@ -131,12 +123,9 @@ public class GroupManagerService {
 
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             final String domainId = getDomainId(authzToken);
-            UserGroup userGroup = sharingClient.getGroup(domainId, groupId);
-
-            GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
-
+            UserGroup userGroup = sharingService.getGroup(domainId, groupId);
+            GroupModel groupModel = convertToGroupModel(userGroup, sharingService);
             return groupModel;
         } catch (Exception e) {
             String msg = "Error Retreiving Group. Group ID: " + groupId;
@@ -150,12 +139,9 @@ public class GroupManagerService {
 
     public List<GroupModel> getGroups(AuthzToken authzToken) throws GroupManagerServiceException {
         final String domainId = getDomainId(authzToken);
-        SharingRegistryService.Client sharingClient = null;
         try {
-            sharingClient = getSharingRegistryServiceClient();
-            List<UserGroup> userGroups = sharingClient.getGroups(domainId, 0, -1);
-
-            return convertToGroupModels(userGroups, sharingClient);
+            List<UserGroup> userGroups = sharingService.getGroups(domainId, 0, -1);
+            return convertToGroupModels(userGroups, sharingService);
         } catch (Exception e) {
             String msg = "Error Retrieving Groups. Domain ID: " + domainId;
             logger.error(msg, e);
@@ -163,20 +149,15 @@ public class GroupManagerService {
             exception.setMessage(msg + " More info : " + e.getMessage());
             exception.initCause(e);
             throw exception;
-        } finally {
-            closeSharingClient(sharingClient);
         }
     }
 
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            List<GroupModel> groupModels = new ArrayList<GroupModel>();
             final String domainId = getDomainId(authzToken);
-            List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(domainId, userName);
-
-            return convertToGroupModels(userGroups, sharingClient);
+            List<UserGroup> userGroups = sharingService.getAllMemberGroupsForUser(domainId, userName);
+            return convertToGroupModels(userGroups, sharingService);
         } catch (Exception e) {
             String msg = "Error Retreiving All Groups for User. User ID: " + userName;
             logger.error(msg, e);
@@ -190,14 +171,13 @@ public class GroupManagerService {
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId)
-                    || sharingClient.hasAdminAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId)
+                    || sharingService.hasAdminAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have access to add users to the group");
             }
-            return internalAddUsersToGroup(sharingClient, domainId, userIds, groupId);
+            return internalAddUsersToGroup(sharingService, domainId, userIds, groupId);
 
         } catch (Exception e) {
             String msg = "Error adding users to group. Group ID: " + groupId;
@@ -212,14 +192,13 @@ public class GroupManagerService {
     public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId)
-                    || sharingClient.hasAdminAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId)
+                    || sharingService.hasAdminAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have access to remove users to the group");
             }
-            return sharingClient.removeUsersFromGroup(domainId, userIds, groupId);
+            return sharingService.removeUsersFromGroup(domainId, userIds, groupId);
         } catch (Exception e) {
             String msg = "Error remove users to group. Group ID: " + groupId;
             logger.error(msg, e);
@@ -233,14 +212,13 @@ public class GroupManagerService {
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException(
                         "User does not have Owner permission to transfer group ownership");
             }
-            return sharingClient.transferGroupOwnership(getDomainId(authzToken), groupId, newOwnerId);
+            return sharingService.transferGroupOwnership(getDomainId(authzToken), groupId, newOwnerId);
         } catch (Exception e) {
             String msg = "Error Transferring Group Ownership";
             logger.error(msg, e);
@@ -254,13 +232,12 @@ public class GroupManagerService {
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have Owner permission to add group admins");
             }
-            return sharingClient.addGroupAdmins(getDomainId(authzToken), groupId, adminIds);
+            return sharingService.addGroupAdmins(getDomainId(authzToken), groupId, adminIds);
         } catch (Exception e) {
             String msg = "Error Adding Admins to Group. Group ID: " + groupId;
             logger.error(msg, e);
@@ -274,13 +251,12 @@ public class GroupManagerService {
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             String userId = getUserId(authzToken);
             String domainId = getDomainId(authzToken);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
+            if (!(sharingService.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have Owner permission to remove group admins");
             }
-            return sharingClient.removeGroupAdmins(getDomainId(authzToken), groupId, adminIds);
+            return sharingService.removeGroupAdmins(getDomainId(authzToken), groupId, adminIds);
         } catch (Exception e) {
             String msg = "Error Removing Admins from the Group. Group ID: " + groupId;
             logger.error(msg, e);
@@ -294,8 +270,7 @@ public class GroupManagerService {
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            return sharingClient.hasAdminAccess(getDomainId(authzToken), groupId, adminId);
+            return sharingService.hasAdminAccess(getDomainId(authzToken), groupId, adminId);
         } catch (Exception e) {
             String msg = "Error Checking Admin Access for the Group. Group ID: " + groupId + " Admin ID: " + adminId;
             logger.error(msg, e);
@@ -309,8 +284,7 @@ public class GroupManagerService {
     public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId)
             throws GroupManagerServiceException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            return sharingClient.hasOwnerAccess(getDomainId(authzToken), groupId, ownerId);
+            return sharingService.hasOwnerAccess(getDomainId(authzToken), groupId, ownerId);
         } catch (Exception e) {
             String msg = "Error Checking Owner Access for the Group. Group ID: " + groupId + " Owner ID: " + ownerId;
             logger.error(msg, e);
@@ -318,18 +292,6 @@ public class GroupManagerService {
             exception.setMessage(msg + " More info : " + e.getMessage());
             exception.initCause(e);
             throw exception;
-        }
-    }
-
-    // TODO: replace these methods with ThriftClientPool (see AIRAVATA-2607)
-    private SharingRegistryService.Client getSharingRegistryServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
-        final String serverHost = ServerSettings.getSharingRegistryHost();
-        try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
-        } catch (SharingRegistryException e) {
-            throw new TException("Unable to create sharing registry client...", e);
         }
     }
 
@@ -341,21 +303,21 @@ public class GroupManagerService {
         return authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + getDomainId(authzToken);
     }
 
-    private List<GroupModel> convertToGroupModels(
-            List<UserGroup> userGroups, SharingRegistryService.Client sharingClient) throws TException {
+    private List<GroupModel> convertToGroupModels(List<UserGroup> userGroups, SharingRegistryService sharingService)
+            throws SharingRegistryException {
 
         List<GroupModel> groupModels = new ArrayList<>();
 
         for (UserGroup userGroup : userGroups) {
-            GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
+            GroupModel groupModel = convertToGroupModel(userGroup, sharingService);
 
             groupModels.add(groupModel);
         }
         return groupModels;
     }
 
-    private GroupModel convertToGroupModel(UserGroup userGroup, SharingRegistryService.Client sharingClient)
-            throws TException {
+    private GroupModel convertToGroupModel(UserGroup userGroup, SharingRegistryService sharingService)
+            throws SharingRegistryException {
         GroupModel groupModel = new GroupModel();
         groupModel.setId(userGroup.getGroupId());
         groupModel.setName(userGroup.getName());
@@ -366,30 +328,19 @@ public class GroupManagerService {
                 .collect(Collectors.toList());
         groupModel.setAdmins(admins);
 
-        sharingClient.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream()
+        sharingService.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream()
                 .forEach(user -> groupModel.addToMembers(user.getUserId()));
         return groupModel;
     }
 
-    private void closeSharingClient(SharingRegistryService.Client sharingClient) {
-        if (sharingClient != null) {
-            if (sharingClient.getInputProtocol().getTransport().isOpen()) {
-                sharingClient.getInputProtocol().getTransport().close();
-            }
-            if (sharingClient.getOutputProtocol().getTransport().isOpen()) {
-                sharingClient.getOutputProtocol().getTransport().close();
-            }
-        }
-    }
-
     private boolean internalAddUsersToGroup(
-            SharingRegistryService.Client sharingClient, String domainId, List<String> userIds, String groupId)
-            throws SharingRegistryException, TException {
+            SharingRegistryService sharingService, String domainId, List<String> userIds, String groupId)
+            throws SharingRegistryException {
 
         // FIXME: workaround for UserProfiles that failed to sync to the sharing
         // registry: create any missing users in the sharing registry
         for (String userId : userIds) {
-            if (!sharingClient.isUserExists(domainId, userId)) {
+            if (!sharingService.isUserExists(domainId, userId)) {
                 User user = new User();
                 user.setDomainId(domainId);
                 user.setUserId(userId);
@@ -402,9 +353,9 @@ public class GroupManagerService {
                                 : null);
                 user.setFirstName(userProfile.getFirstName());
                 user.setLastName(userProfile.getLastName());
-                sharingClient.createUser(user);
+                sharingService.createUser(user);
             }
         }
-        return sharingClient.addUsersToGroup(domainId, userIds, groupId);
+        return sharingService.addUsersToGroup(domainId, userIds, groupId);
     }
 }

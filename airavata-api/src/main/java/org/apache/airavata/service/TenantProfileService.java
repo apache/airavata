@@ -24,10 +24,6 @@ import java.util.UUID;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
@@ -47,10 +43,23 @@ public class TenantProfileService {
 
     private TenantProfileRepository tenantProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
+    private CredentialStoreService credentialStoreService;
 
-    public TenantProfileService() {
+    public TenantProfileService() throws TenantProfileServiceException {
         logger.debug("Initializing TenantProfileService");
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
+        try {
+            this.credentialStoreService = new CredentialStoreService();
+        } catch (ApplicationSettingsException
+                | IllegalAccessException
+                | ClassNotFoundException
+                | InstantiationException e) {
+            String msg = "Error initializing TenantProfileService, reason: " + e.getMessage();
+            logger.error(msg, e);
+            var exception = new TenantProfileServiceException(msg);
+            exception.initCause(e);
+            throw exception;
+        }
     }
 
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException {
@@ -219,32 +228,20 @@ public class TenantProfileService {
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
             throws TException, ApplicationSettingsException {
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
         try {
             String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential adminPasswordCredential =
-                    csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
+            PasswordCredential adminPasswordCredential = credentialStoreService.getPasswordCredential(
+                    gateway.getIdentityServerPasswordToken(), requestGatewayId);
             adminPasswordCredential.setGatewayId(gateway.getGatewayId());
-            String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
+            String newAdminPasswordCredentialToken =
+                    credentialStoreService.addPasswordCredential(adminPasswordCredential);
             gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-        } finally {
-            if (csClient.getInputProtocol().getTransport().isOpen()) {
-                csClient.getInputProtocol().getTransport().close();
-            }
-            if (csClient.getOutputProtocol().getTransport().isOpen()) {
-                csClient.getOutputProtocol().getTransport().close();
-            }
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+        } catch (Exception ex) {
+            String msg = "Error copying admin password to gateway, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new TenantProfileServiceException(msg);
+            exception.initCause(ex);
+            throw exception;
         }
     }
 }

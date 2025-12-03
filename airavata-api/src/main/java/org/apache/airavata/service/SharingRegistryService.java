@@ -62,9 +62,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
+            String msg = "Error while creating domain: domainId=" + domain.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
             SharingRegistryException exception =
-                    new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -81,9 +82,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
+            String msg = "Error while updating domain: domainId=" + domain.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
             SharingRegistryException exception =
-                    new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -95,9 +97,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
+            String msg = "Error while checking if domain exists: domainId=" + domainId + ", " + ex.getMessage();
+            logger.error(msg, ex);
             SharingRegistryException exception =
-                    new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -110,9 +113,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error(ex.getMessage(), ex);
+            String msg = "Error while deleting domain: domainId=" + domainId + ", " + ex.getMessage();
+            logger.error(msg, ex);
             SharingRegistryException exception =
-                    new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -124,9 +128,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while getting domain: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting domain: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting domain: domainId=" + domainId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            SharingRegistryException exception =
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -138,9 +143,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while getting domains: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting domains: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting domains: offset=" + offset + ", limit=" + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            SharingRegistryException exception =
+                    new SharingRegistryException(msg + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
             exception.initCause(ex);
             throw exception;
         }
@@ -150,13 +156,13 @@ public class SharingRegistryService {
      * * User Operations
      * *
      */
-    public String createUser(User user) throws SharingRegistryException, DuplicateEntryException {
+    public String createUser(User user) throws SharingRegistryException {
         try {
             UserPK userPK = new UserPK();
             userPK.setUserId(user.getUserId());
             userPK.setDomainId(user.getDomainId());
             if ((new UserRepository()).get(userPK) != null)
-                throw new DuplicateEntryException("There exist user with given user id");
+                throw new SharingRegistryException("There exist user with given user id");
 
             user.setCreatedTime(System.currentTimeMillis());
             user.setUpdatedTime(System.currentTimeMillis());
@@ -181,12 +187,13 @@ public class SharingRegistryService {
             }
 
             return user.getUserId();
-        } catch (SharingRegistryException | DuplicateEntryException e) {
+        } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while creating user: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while creating user: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while creating user: userId=" + user.getUserId() + ", domainId=" + user.getDomainId()
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -214,9 +221,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while updating user: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while updating user: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while updating user: userId=" + user.getUserId() + ", domainId=" + user.getDomainId()
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -231,9 +239,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while checking if user exists: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking if user exists: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking if user exists: domainId=" + domainId + ", userId=" + userId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -254,9 +263,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while deleting user: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while deleting user: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg =
+                    "Error while deleting user: domainId=" + domainId + ", userId=" + userId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -271,9 +281,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while getting user: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting user: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg =
+                    "Error while getting user: domainId=" + domainId + ", userId=" + userId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -285,9 +296,10 @@ public class SharingRegistryService {
             filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
             return (new UserRepository()).select(filters, offset, limit);
         } catch (Throwable ex) {
-            logger.error("Error while getting users: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting users: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting users: domain=" + domain + ", offset=" + offset + ", limit=" + limit
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -317,9 +329,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while creating group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while creating group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while creating group: groupId=" + group.getGroupId() + ", domainId="
+                    + group.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -344,9 +357,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while updating group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while updating group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while updating group: groupId=" + group.getGroupId() + ", domainId="
+                    + group.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -359,9 +373,10 @@ public class SharingRegistryService {
             userGroupPK.setGroupId(groupId);
             return (new UserGroupRepository()).isExists(userGroupPK);
         } catch (Throwable ex) {
-            logger.error("Error while checking if group exists: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking if group exists: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking if group exists: domainId=" + domainId + ", groupId=" + groupId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -375,9 +390,10 @@ public class SharingRegistryService {
             (new UserGroupRepository()).delete(userGroupPK);
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while deleting group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while deleting group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while deleting group: domainId=" + domainId + ", groupId=" + groupId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -390,9 +406,10 @@ public class SharingRegistryService {
             userGroupPK.setDomainId(domainId);
             return (new UserGroupRepository()).get(userGroupPK);
         } catch (Throwable ex) {
-            logger.error("Error while getting group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg =
+                    "Error while getting group: domainId=" + domainId + ", groupId=" + groupId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -407,9 +424,10 @@ public class SharingRegistryService {
             filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
             return (new UserGroupRepository()).select(filters, offset, limit);
         } catch (Throwable ex) {
-            logger.error("Error while getting groups: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting groups: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting groups: domain=" + domain + ", offset=" + offset + ", limit=" + limit
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -430,9 +448,10 @@ public class SharingRegistryService {
             }
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while adding users to group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while adding users to group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while adding users to group: domainId=" + domainId + ", userIds=" + userIds
+                    + ", groupId=" + groupId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -459,9 +478,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while removing users from group: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while removing users from group: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while removing users from group: domainId=" + domainId + ", userIds=" + userIds
+                    + ", groupId=" + groupId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -500,10 +520,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while transferring group ownership: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while transferring group ownership: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while transferring group ownership: domainId=" + domainId + ", groupId=" + groupId
+                    + ", newOwnerId=" + newOwnerId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -546,9 +566,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while adding group admins: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while adding group admins: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while adding group admins: domainId=" + domainId + ", groupId=" + groupId
+                    + ", adminIds=" + adminIds + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -566,9 +587,10 @@ public class SharingRegistryService {
             }
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while removing group admins: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while removing group admins: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while removing group admins: domainId=" + domainId + ", groupId=" + groupId
+                    + ", adminIds=" + adminIds + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -584,9 +606,10 @@ public class SharingRegistryService {
             if ((new GroupAdminRepository()).get(groupAdminPK) != null) return true;
             return false;
         } catch (Throwable ex) {
-            logger.error("Error while checking admin access: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking admin access: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking admin access: domainId=" + domainId + ", groupId=" + groupId
+                    + ", adminId=" + adminId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -602,9 +625,10 @@ public class SharingRegistryService {
             if (getGroup.getOwnerId().equals(ownerId)) return true;
             return false;
         } catch (Throwable ex) {
-            logger.error("Error while checking owner access: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking owner access: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking owner access: domainId=" + domainId + ", groupId=" + groupId
+                    + ", ownerId=" + ownerId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -617,10 +641,10 @@ public class SharingRegistryService {
             List<User> groupMemberUsers = (new GroupMembershipRepository()).getAllChildUsers(domainId, groupId);
             return groupMemberUsers;
         } catch (Throwable ex) {
-            logger.error("Error while getting group members of type user: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting group members of type user: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting group members of type user: domainId=" + domainId + ", groupId=" + groupId
+                    + ", offset=" + offset + ", limit=" + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -633,10 +657,10 @@ public class SharingRegistryService {
             List<UserGroup> groupMemberGroups = (new GroupMembershipRepository()).getAllChildGroups(domainId, groupId);
             return groupMemberGroups;
         } catch (Throwable ex) {
-            logger.error("Error while getting group members of type group: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting group members of type group: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting group members of type group: domainId=" + domainId + ", groupId="
+                    + groupId + ", offset=" + offset + ", limit=" + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -658,10 +682,10 @@ public class SharingRegistryService {
             }
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while adding child groups to parent group: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while adding child groups to parent group: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while adding child groups to parent group: domainId=" + domainId + ", childIds="
+                    + childIds + ", groupId=" + groupId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -677,10 +701,10 @@ public class SharingRegistryService {
             (new GroupMembershipRepository()).delete(groupMembershipPK);
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while removing child group from parent group: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while removing child group from parent group: "
-                            + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while removing child group from parent group: domainId=" + domainId + ", childId="
+                    + childId + ", groupId=" + groupId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -691,10 +715,10 @@ public class SharingRegistryService {
             GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
             return groupMembershipRepository.getAllMemberGroupsForUser(domainId, userId);
         } catch (Throwable ex) {
-            logger.error("Error while getting all member groups for user: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting all member groups for user: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting all member groups for user: domainId=" + domainId + ", userId=" + userId
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -719,9 +743,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while creating entity type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while creating entity type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while creating entity type: entityTypeId=" + entityType.getEntityTypeId()
+                    + ", domainId=" + entityType.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -741,9 +766,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while updating entity type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while updating entity type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while updating entity type: entityTypeId=" + entityType.getEntityTypeId()
+                    + ", domainId=" + entityType.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -756,10 +782,10 @@ public class SharingRegistryService {
             entityTypePK.setEntityTypeId(entityTypeId);
             return (new EntityTypeRepository()).isExists(entityTypePK);
         } catch (Throwable ex) {
-            logger.error("Error while checking if entity type exists: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while checking if entity type exists: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking if entity type exists: domainId=" + domainId + ", entityTypeId="
+                    + entityTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -773,9 +799,10 @@ public class SharingRegistryService {
             (new EntityTypeRepository()).delete(entityTypePK);
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while deleting entity type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while deleting entity type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while deleting entity type: domainId=" + domainId + ", entityTypeId=" + entityTypeId
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -788,9 +815,10 @@ public class SharingRegistryService {
             entityTypePK.setEntityTypeId(entityTypeId);
             return (new EntityTypeRepository()).get(entityTypePK);
         } catch (Throwable ex) {
-            logger.error("Error while getting entity type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting entity type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting entity type: domainId=" + domainId + ", entityTypeId=" + entityTypeId
+                    + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -802,9 +830,10 @@ public class SharingRegistryService {
             filters.put(DBConstants.EntityTypeTable.DOMAIN_ID, domain);
             return (new EntityTypeRepository()).select(filters, offset, limit);
         } catch (Throwable ex) {
-            logger.error("Error while getting entity types: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting entity types: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting entity types: domain=" + domain + ", offset=" + offset + ", limit="
+                    + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -829,9 +858,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while creating permission type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while creating permission type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg =
+                    "Error while creating permission type: permissionTypeId=" + permissionType.getPermissionTypeId()
+                            + ", domainId=" + permissionType.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -850,9 +881,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while updating permission type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while updating permission type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg =
+                    "Error while updating permission type: permissionTypeId=" + permissionType.getPermissionTypeId()
+                            + ", domainId=" + permissionType.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -865,10 +898,10 @@ public class SharingRegistryService {
             permissionTypePK.setPermissionTypeId(permissionId);
             return (new PermissionTypeRepository()).isExists(permissionTypePK);
         } catch (Throwable ex) {
-            logger.error("Error while checking if permission exists: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while checking if permission exists: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking if permission exists: domainId=" + domainId + ", permissionId="
+                    + permissionId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -882,9 +915,10 @@ public class SharingRegistryService {
             (new PermissionTypeRepository()).delete(permissionTypePK);
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while deleting permission type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while deleting permission type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while deleting permission type: domainId=" + domainId + ", permissionTypeId="
+                    + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -897,9 +931,10 @@ public class SharingRegistryService {
             permissionTypePK.setPermissionTypeId(permissionTypeId);
             return (new PermissionTypeRepository()).get(permissionTypePK);
         } catch (Throwable ex) {
-            logger.error("Error while getting permission type: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting permission type: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting permission type: domainId=" + domainId + ", permissionTypeId="
+                    + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -912,9 +947,10 @@ public class SharingRegistryService {
             filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domain);
             return (new PermissionTypeRepository()).select(filters, offset, limit);
         } catch (Throwable ex) {
-            logger.error("Error while getting permission types: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting permission types: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting permission types: domain=" + domain + ", offset=" + offset + ", limit="
+                    + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -975,9 +1011,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while creating entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while creating entity: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while creating entity: entityId=" + entity.getEntityId() + ", domainId="
+                    + entity.getDomainId() + ", ownerId=" + entity.getOwnerId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1004,10 +1041,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while adding cascading permissions for entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while adding cascading permissions for entity: "
-                            + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while adding cascading permissions for entity: entityId=" + entity.getEntityId()
+                    + ", domainId=" + entity.getDomainId() + ", parentEntityId=" + entity.getParentEntityId() + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1049,9 +1087,10 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while updating entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while updating entity: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while updating entity: entityId=" + entity.getEntityId() + ", domainId="
+                    + entity.getDomainId() + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1064,9 +1103,10 @@ public class SharingRegistryService {
             entityPK.setEntityId(entityId);
             return (new EntityRepository()).isExists(entityPK);
         } catch (Throwable ex) {
-            logger.error("Error while checking if entity exists: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking if entity exists: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking if entity exists: domainId=" + domainId + ", entityId=" + entityId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1081,9 +1121,10 @@ public class SharingRegistryService {
             (new EntityRepository()).delete(entityPK);
             return true;
         } catch (Throwable ex) {
-            logger.error("Error while deleting entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while deleting entity: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while deleting entity: domainId=" + domainId + ", entityId=" + entityId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1096,9 +1137,10 @@ public class SharingRegistryService {
             entityPK.setEntityId(entityId);
             return (new EntityRepository()).get(entityPK);
         } catch (Throwable ex) {
-            logger.error("Error while getting entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while getting entity: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting entity: domainId=" + domainId + ", entityId=" + entityId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1115,9 +1157,10 @@ public class SharingRegistryService {
                             .forEach(gm -> groupIds.add(gm.getParentId()));
             return (new EntityRepository()).searchEntities(domainId, groupIds, filters, offset, limit);
         } catch (Throwable ex) {
-            logger.error("Error while searching entities: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while searching entities: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while searching entities: domainId=" + domainId + ", userId=" + userId + ", filters="
+                    + filters + ", offset=" + offset + ", limit=" + limit + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1128,10 +1171,10 @@ public class SharingRegistryService {
         try {
             return (new UserRepository()).getAccessibleUsers(domainId, entityId, permissionTypeId);
         } catch (Throwable ex) {
-            logger.error("Error while getting list of shared users: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting list of shared users: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting list of shared users: domainId=" + domainId + ", entityId=" + entityId
+                    + ", permissionTypeId=" + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1142,10 +1185,10 @@ public class SharingRegistryService {
         try {
             return (new UserRepository()).getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
         } catch (Throwable ex) {
-            logger.error("Error while getting list of directly shared users: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting list of directly shared users: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting list of directly shared users: domainId=" + domainId + ", entityId="
+                    + entityId + ", permissionTypeId=" + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1156,10 +1199,10 @@ public class SharingRegistryService {
         try {
             return (new UserGroupRepository()).getAccessibleGroups(domainId, entityId, permissionTypeId);
         } catch (Throwable ex) {
-            logger.error("Error while getting list of shared groups: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting list of shared groups: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting list of shared groups: domainId=" + domainId + ", entityId=" + entityId
+                    + ", permissionTypeId=" + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1170,10 +1213,10 @@ public class SharingRegistryService {
         try {
             return (new UserGroupRepository()).getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
         } catch (Throwable ex) {
-            logger.error("Error while getting list of directly shared groups: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while getting list of directly shared groups: "
-                            + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while getting list of directly shared groups: domainId=" + domainId + ", entityId="
+                    + entityId + ", permissionTypeId=" + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1187,9 +1230,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while sharing entity with users: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while sharing entity with users: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while sharing entity with users: domainId=" + domainId + ", entityId=" + entityId
+                    + ", userList=" + userList + ", permissionTypeId=" + permissionTypeId + ", cascadePermission="
+                    + cascadePermission + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1207,9 +1252,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while sharing entity with groups: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while sharing entity with groups: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while sharing entity with groups: domainId=" + domainId + ", entityId=" + entityId
+                    + ", groupList=" + groupList + ", permissionTypeId=" + permissionTypeId + ", cascadePermission="
+                    + cascadePermission + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1286,9 +1333,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while sharing entity: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while sharing entity: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while sharing entity: domainId=" + domainId + ", entityId=" + entityId
+                    + ", groupOrUserList=" + groupOrUserList + ", permissionTypeId=" + permissionTypeId
+                    + ", cascadePermission=" + cascadePermission + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1305,10 +1354,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while revoking entity sharing from users: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while revoking entity sharing from users: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while revoking entity sharing from users: domainId=" + domainId + ", entityId="
+                    + entityId + ", userList=" + userList + ", permissionTypeId=" + permissionTypeId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1325,10 +1375,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while revoking entity sharing from groups: " + ex.getMessage(), ex);
-            SharingRegistryException exception =
-                    new SharingRegistryException("Error while revoking entity sharing from groups: " + ex.getMessage()
-                            + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while revoking entity sharing from groups: domainId=" + domainId + ", entityId="
+                    + entityId + ", groupList=" + groupList + ", permissionTypeId=" + permissionTypeId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1352,9 +1403,10 @@ public class SharingRegistryService {
                                     permissionTypeId,
                                     (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId)));
         } catch (Throwable ex) {
-            logger.error("Error while checking user access: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while checking user access: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while checking user access: domainId=" + domainId + ", userId=" + userId + ", entityId="
+                    + entityId + ", permissionTypeId=" + permissionTypeId + ", " + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
@@ -1409,9 +1461,11 @@ public class SharingRegistryService {
         } catch (SharingRegistryException e) {
             throw e;
         } catch (Throwable ex) {
-            logger.error("Error while revoking entity sharing: " + ex.getMessage(), ex);
-            SharingRegistryException exception = new SharingRegistryException("Error while revoking entity sharing: "
-                    + ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+            String msg = "Error while revoking entity sharing: domainId=" + domainId + ", entityId=" + entityId
+                    + ", groupOrUserList=" + groupOrUserList + ", permissionTypeId=" + permissionTypeId + ", "
+                    + ex.getMessage();
+            logger.error(msg, ex);
+            var exception = new SharingRegistryException(msg);
             exception.initCause(ex);
             throw exception;
         }
