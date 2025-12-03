@@ -21,6 +21,7 @@ package org.apache.airavata.research.service.dto;
 
 import java.util.Set;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.model.entity.ResourceAuthor;
 
 public class CreateResourceRequest {
 
@@ -28,7 +29,7 @@ public class CreateResourceRequest {
     public String description;
     public String headerImage;
     Set<String> tags;
-    Set<String> authors;
+    Set<ResourceAuthor> authors;
     PrivacyEnum privacy;
 
     public PrivacyEnum getPrivacy() {
@@ -39,11 +40,11 @@ public class CreateResourceRequest {
         this.privacy = privacy;
     }
 
-    public Set<String> getAuthors() {
+    public Set<ResourceAuthor> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<String> authors) {
+    public void setAuthors(Set<ResourceAuthor> authors) {
         this.authors = authors;
     }
 

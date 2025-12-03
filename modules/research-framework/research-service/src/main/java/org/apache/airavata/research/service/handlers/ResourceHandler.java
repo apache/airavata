@@ -37,14 +37,18 @@ import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
+import org.apache.airavata.research.service.model.entity.ResourceAuthor;
 import org.apache.airavata.research.service.model.entity.ResourceStar;
+import org.apache.airavata.research.service.model.entity.ResourceVerificationActivity;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.apache.airavata.research.service.model.repo.ResourceStarRepository;
+import org.apache.airavata.research.service.model.repo.ResourceVerificationActivityRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,29 +65,39 @@ public class ResourceHandler {
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
     private final ResourceStarRepository resourceStarRepository;
+    private final ResourceVerificationActivityRepository verificationActivityRepository;
+
+    @Value("#{'${airavata.research-portal.admin-emails}'.split(',')}")
+    private Set<String> cybershuttleAdminEmails;
 
     public ResourceHandler(
             AiravataService airavataService,
             TagRepository tagRepository,
             ResourceRepository resourceRepository,
             ProjectRepository projectRepository,
-            ResourceStarRepository resourceStarRepository) {
+            ResourceStarRepository resourceStarRepository,
+            ResourceVerificationActivityRepository verificationActivityRepository) {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
         this.projectRepository = projectRepository;
         this.resourceStarRepository = resourceStarRepository;
+        this.verificationActivityRepository = verificationActivityRepository;
     }
 
     public void initializeResource(Resource resource) {
-        Set<String> userSet = new HashSet<>();
-        for (String authorId : resource.getAuthors()) {
+        Set<ResourceAuthor> userSet = new HashSet<>();
+        for (ResourceAuthor author : resource.getAuthors()) {
             try {
-                UserProfile fetchedUser = airavataService.getUserProfile(authorId);
-                userSet.add(fetchedUser.getUserId());
+                UserProfile fetchedUser = airavataService.getUserProfile(author.getAuthorId());
+                ResourceAuthor newAuthor = new ResourceAuthor();
+                newAuthor.setAuthorId(fetchedUser.getUserId());
+                newAuthor.setRole(author.getRole());
+                userSet.add(newAuthor);
             } catch (Exception e) {
-                LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);
-                throw new EntityNotFoundException("Error while fetching user profile with the userId: " + authorId, e);
+                LOGGER.error("Error while fetching user profile with the userId: {}", author.getAuthorId(), e);
+                throw new EntityNotFoundException(
+                        "Error while fetching user profile with the userId: " + author.getAuthorId(), e);
             }
         }
 
@@ -115,10 +129,10 @@ public class ResourceHandler {
         // check that the logged in author is at least one of the authors making the request
         String currentUserId = UserContext.userId();
         boolean found = false;
-        for (String authorId : createResourceRequest.getAuthors()) {
-            if (authorId.equalsIgnoreCase(currentUserId)) {
+        for (ResourceAuthor author : createResourceRequest.getAuthors()) {
+            author.setAuthorId(author.getAuthorId().toLowerCase());
+            if (author.getAuthorId().equalsIgnoreCase(currentUserId)) {
                 found = true;
-                break;
             }
         }
         if (!found) {
@@ -128,9 +142,7 @@ public class ResourceHandler {
 
         resource.setName(createResourceRequest.getName());
         resource.setDescription(createResourceRequest.getDescription());
-        resource.setAuthors(createResourceRequest.getAuthors().stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet()));
+        resource.setAuthors(createResourceRequest.getAuthors());
         Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
         for (String tag : createResourceRequest.getTags()) {
             org.apache.airavata.research.service.model.entity.Tag t =
@@ -164,8 +176,8 @@ public class ResourceHandler {
 
         // ensure that the user making the request is one of the current authors
         boolean found = false;
-        for (String authorId : resource.getAuthors()) {
-            if (authorId.equalsIgnoreCase(UserContext.userId())) {
+        for (ResourceAuthor author : resource.getAuthors()) {
+            if (author.getAuthorId().equalsIgnoreCase(UserContext.userId())) {
                 found = true;
                 break;
             }
@@ -238,7 +250,10 @@ public class ResourceHandler {
         if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
             return resource;
         } else if (isAuthenticated
-                && resource.getAuthors().contains(UserContext.userId().toLowerCase())) {
+                && resource.getAuthors().stream()
+                        .map(ResourceAuthor::getAuthorId)
+                        .anyMatch(
+                                authorId -> authorId.equals(UserContext.userId().toLowerCase()))) {
             return resource;
         } else {
             throw new EntityNotFoundException("Resource not found: " + id);
@@ -255,7 +270,9 @@ public class ResourceHandler {
         Resource resource = opResource.get();
 
         String userEmail = UserContext.userId();
-        if (!resource.getAuthors().contains(userEmail.toLowerCase())) {
+        if (!resource.getAuthors().stream()
+                .map(ResourceAuthor::getAuthorId)
+                .anyMatch(authorId -> authorId.equals(UserContext.userId().toLowerCase()))) {
             String errorMsg = String.format(
                     "User %s not authorized to delete resource: %s (%s), type: %s",
                     userEmail, resource.getName(), id, resource.getType().toString());
@@ -293,6 +310,43 @@ public class ResourceHandler {
         return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase(), UserContext.userId());
     }
 
+    public Resource submitResourceForVerification(String id) {
+        Resource resource = getResourceById(id);
+        String userId = UserContext.userId();
+
+        if (!isResourceAuthor(resource, userId)) {
+            throw new IllegalArgumentException(
+                    String.format("User %s is not authorized to request verification for resource %s", userId, id));
+        }
+
+        resource.setStatus(StatusEnum.PENDING);
+        resourceRepository.save(resource);
+
+        ResourceVerificationActivity activity = new ResourceVerificationActivity();
+        activity.setResource(resource);
+        activity.setUserId(userId);
+        activity.setStatus(StatusEnum.PENDING);
+        verificationActivityRepository.save(activity);
+
+        return resource;
+    }
+
+    public List<ResourceVerificationActivity> getResourceVerificationActivities(String id) {
+        Resource resource = getResourceById(id);
+        String userId = UserContext.userId();
+
+        if (!isResourceAuthor(resource, userId) && !cybershuttleAdminEmails.contains(userId.toLowerCase())) {
+            throw new IllegalArgumentException(String.format(
+                    "User %s is not authorized to pull verification activities for resource %s", userId, id));
+        }
+
+        return verificationActivityRepository.findAllByResourceOrderByUpdatedAtDesc(resource);
+    }
+
+    public List<Resource> getAllResourcesWithStatus(List<StatusEnum> includeStatus) {
+        return resourceRepository.findAllByStatusInOrderByCreatedAtDesc(includeStatus);
+    }
+
     private Page<Resource> getAllPublicResources(
             int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -319,5 +373,9 @@ public class ResourceHandler {
 
         return resourceRepository.findAllByTypesAndAllTagsForUser(
                 typeList, tag, (long) tag.length, nameSearch.toLowerCase(), userId, pageable);
+    }
+
+    private boolean isResourceAuthor(Resource resource, String userId) {
+        return resource.getAuthors().stream().map(ResourceAuthor::getAuthorId).anyMatch(userId::equals);
     }
 }

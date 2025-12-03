@@ -29,10 +29,12 @@ airavata:
     adminApiKey: "JUPYTER_ADMIN_API_KEY"
     limit: 10
   research-portal:
-    url: http://airavata.host:5173
-    dev-url: http://airavata.host:5173
+    url: http://localhost:5173
+    dev-url: http://localhost:5173
+    admin-notification-email: "TO_EMAIL@gmail.com"
+    admin-emails: ganning.xu@gatech.edu,ljayathilake3@gatech.edu,yasith@gatech.edu,smarru@gatech.edu,dimuthuw@gatech.edu
   openid:
-    url: "http://airavata.host:18080/realms/default"
+    url: "http://localhost:18080/realms/default"
   user-profile:
     server:
       url: airavata.host
@@ -55,6 +57,17 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: youremail@gmail.com
+    password: your-app-password # Use an App Password from Google
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   api-docs:
