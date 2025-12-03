@@ -59,7 +59,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
             AuthzCache.getInstance().put(authzCacheIndex, authzCacheEntry);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.");
+            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.", e);
         }
     }
 
@@ -69,7 +69,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
             return AuthzCache.getInstance().containsKey(authzCacheIndex);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.");
+            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
             return AuthzCache.getInstance().get(authzCacheIndex);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.");
+            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.", e);
         }
     }
 
@@ -89,7 +89,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
             AuthzCache.getInstance().remove(authzCacheIndex);
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.");
+            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
             AuthzCache.getInstance().clear();
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.");
+            throw new AiravataSecurityException("Error in obtaining the authorization cache instance.", e);
         }
     }
 }

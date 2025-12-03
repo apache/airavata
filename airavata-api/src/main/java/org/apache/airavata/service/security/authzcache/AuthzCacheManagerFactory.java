@@ -39,19 +39,19 @@ public class AuthzCacheManagerFactory {
         } catch (ClassNotFoundException e) {
             String error = "Authorization Cache Manager class could not be found.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         } catch (ApplicationSettingsException e) {
             String error = "Error in reading the configuration related to Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         } catch (InstantiationException e) {
             String error = "Error in instantiating the Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         } catch (IllegalAccessException e) {
             String error = "Error in instantiating the Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error);
+            throw new AiravataSecurityException(error, e);
         }
     }
 }
