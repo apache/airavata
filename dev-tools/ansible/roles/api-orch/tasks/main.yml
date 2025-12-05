@@ -67,6 +67,12 @@
   command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
   become_user: root
   when: not stat_api_server_ssl_cert_result.stat.exists
+  register: certbot_result
+
+- name: run prepareLetsEncryptCertificates.sh script to combine certificates
+  shell: "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh"
+  become_user: root
+  when: stat_api_server_ssl_cert_result.stat.exists or (certbot_result is defined and certbot_result is succeeded)
 
 - name: set certificate renewal post-hook
   command: certbot renew --force-renewal --installer null --webroot --post-hook "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version]}}.service" --quiet

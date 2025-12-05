@@ -11,4 +11,9 @@ for CERTIFICATE in `find /etc/letsencrypt/live/* -type d`; do
   mkdir -p /etc/ssl/$CERTIFICATE/
   cat /etc/letsencrypt/live/$CERTIFICATE/fullchain.pem /etc/letsencrypt/live/$CERTIFICATE/privkey.pem > /etc/ssl/$CERTIFICATE/$CERTIFICATE.pem
 
+  chmod 640 /etc/ssl/$CERTIFICATE/$CERTIFICATE.pem
+  chmod 750 /etc/ssl/$CERTIFICATE/
+  chown root:haproxy /etc/ssl/$CERTIFICATE/$CERTIFICATE.pem
+  chown root:haproxy /etc/ssl/$CERTIFICATE/
+
 done

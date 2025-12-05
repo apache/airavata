@@ -21,6 +21,7 @@ user_home: "/home/{{ user }}"
 
 # Service ports
 api_server_port: 8930
+api_server_tls_port: 9930
 profile_service_port: 8962
 registry_port: 8970
 registry_server_port: 8970
@@ -93,6 +94,20 @@ embedded_zk: false
 
 # API Server public hostname (for HAProxy SSL termination)
 api_server_public_hostname: "api.dev.cybershuttle.org"
+
+# API Server connection settings for Django
+api_server_host: "{{ api_server_public_hostname }}"
+api_secured: true
+
+api_server_bind_host: "0.0.0.0"
+orchestrator_bind_host: "0.0.0.0"
+registry_bind_host: "0.0.0.0"
+sharing_registry_bind_host: "0.0.0.0"
+cred_store_server_bind_host: "0.0.0.0"
+profile_service_bind_host: "0.0.0.0"
+
+# TLS Configuration
+tls_enable: false
 
 # Let's Encrypt email for certificate notifications
 letsencrypt_email: "admin@cybershuttle.org"

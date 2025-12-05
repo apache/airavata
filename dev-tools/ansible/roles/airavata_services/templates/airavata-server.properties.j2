@@ -78,14 +78,14 @@ enable.sharing={{ enable_sharing }}
 #  Sharing Registry Server Configuration
 ###########################################################################
 sharing_server={{ sharing_server_class }}
-sharing.registry.server.host={{ sharing_registry_server_host }}
+sharing.registry.server.host={{ sharing_registry_bind_host | default(sharing_registry_server_host) }}
 sharing.registry.server.port={{ sharing_registry_port }}
 
 ###########################################################################
 #  Registry Server Configurations
 ###########################################################################
 regserver={{ regserver_class }}
-regserver.server.host={{ regserver_server_host }}
+regserver.server.host={{ registry_bind_host | default(regserver_server_host) }}
 regserver.server.port={{ registry_server_port }}
 regserver.server.min.threads={{ orchestrator_server_min_threads }}
 
@@ -100,7 +100,7 @@ super.tenant.gatewayId={{ super_tenant_gatewayId }}
 #  API Server Configurations
 ###########################################################################
 apiserver.class={{ apiserver_class }}
-apiserver.host={{ api_server_host }}
+apiserver.host={{ api_server_bind_host | default(api_server_host) }}
 apiserver.port={{ api_server_port }}
 api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
 api.server.monitoring.host={{ api_server_monitoring_host }}
@@ -110,7 +110,7 @@ api.server.monitoring.port={{ api_server_monitoring_port }}
 #  Orchestrator Server Configurations
 ###########################################################################
 orchestrator={{ orchestrator_class }}
-orchestrator.server.host={{ orchestrator_server_host }}
+orchestrator.server.host={{ orchestrator_bind_host | default(orchestrator_server_host) }}
 orchestrator.server.port={{ orchestrator_server_port }}
 orchestrator.server.min.threads={{ orchestrator_server_min_threads }}
 
@@ -136,7 +136,7 @@ credential.store.jdbc.url={{ credential_store_jdbc_url }}
 credential.store.jdbc.user={{ credential_store_jdbc_user }}
 credential.store.jdbc.password={{ credential_store_jdbc_password }}
 credential.store.jdbc.driver={{ credential_store_jdbc_driver }}
-credential.store.server.host={{ cred_store_server_host }}
+credential.store.server.host={{ cred_store_server_bind_host | default(cred_store_server_host) }}
 credential.store.server.port={{ cred_store_port }}
 credential.store.class={{ credential_store_class }}
 credential.store.jdbc.validationQuery={{ credential_store_validation_query }}
@@ -173,7 +173,7 @@ in.memory.cache.size={{ in_memory_cache_size }}
 ###########################################################################
 # Profile Service Configuration
 ###########################################################################
-profile.service.server.host={{ profile_service_host }}
+profile.service.server.host={{ profile_service_bind_host }}
 profile.service.server.port={{ profile_service_port }}
 profile_service.class={{ profile_service_class }}
 # MariaDB properties
