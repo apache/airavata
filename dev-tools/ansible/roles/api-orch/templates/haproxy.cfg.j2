@@ -45,11 +45,12 @@ global
 #---------------------------------------------------------------------
 defaults
     log                     global
-    option                  httplog
+    mode                    tcp
+    option                  tcplog
     option                  dontlognull
-    option http-server-close
-    option forwardfor       except 127.0.0.0/8
-    option                  redispatch
+    timeout connect         5s
+    timeout client          50s
+    timeout server          50s
 
 #---------------------------------------------------------------------
 # main frontend which proxys to the backends
@@ -62,14 +63,13 @@ frontend main
   default_backend fix-backend
 
 #---------------------------------------------------------------------
-# static backend for serving up images, stylesheets and such
-#---------------------------------------------------------------------
-
-#---------------------------------------------------------------------
 # round robin balancing between the various backends
 #---------------------------------------------------------------------
 backend fix-backend
   mode tcp
   log global
   option tcplog
-  server quickfix {{ api_server_host }}:{{ api_server_port }} check
+  timeout connect         5s
+  timeout client          50s
+  timeout server          50s
+  server quickfix 127.0.0.1:{{ api_server_port }} check

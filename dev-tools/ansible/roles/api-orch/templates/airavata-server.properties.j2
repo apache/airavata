@@ -105,7 +105,7 @@ sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
 #  Sharing Registry Server Configuration
 ###########################################################################
 sharing_server=org.apache.airavata.sharing.registry.server.SharingRegistryServer
-sharing.registry.server.host={{ sharing_registry_host }}
+sharing.registry.server.host={{ sharing_registry_bind_host }}
 sharing.registry.server.port={{ sharing_registry_port }}
 
 ###########################################################################
@@ -120,14 +120,14 @@ sharing.registry.server.port={{ sharing_registry_port }}
 #  API Server Configurations
 ###########################################################################
 apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
-apiserver.host={{ api_server_host }}
+apiserver.host={{ api_server_bind_host }}
 apiserver.port={{ api_server_port }}
 
 ###########################################################################
 #  Orchestrator Server Configurations
 ###########################################################################
 orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
-orchestrator.server.host={{ orchestrator_host }}
+orchestrator.server.host={{ orchestrator_bind_host }}
 orchestrator.server.port={{ orchestrator_port }}
 orchestrator.server.min.threads=50
 job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
@@ -138,7 +138,7 @@ host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostSchedul
 #  Registry Server Configurations
 ###########################################################################
 regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
-regserver.server.host={{registry_host}}
+regserver.server.host={{registry_bind_host}}
 regserver.server.port={{registry_port}}
 regserver.server.min.threads=50
 
@@ -163,7 +163,7 @@ credential.store.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ credential_stor
 credential.store.jdbc.user={{ db_user }}
 credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=org.mariadb.jdbc.Driver
-credential.store.server.host={{ cred_store_server_host }}
+credential.store.server.host={{ cred_store_server_bind_host }}
 credential.store.server.port={{ cred_store_port }}
 credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
 credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
@@ -245,7 +245,7 @@ in.memory.cache.size=1000
 ###########################################################################
 # Profile Service Configuration
 ###########################################################################
-profile.service.server.host={{ profile_service_host }}
+profile.service.server.host={{ profile_service_bind_host }}
 profile.service.server.port={{ profile_service_port }}
 profile_service.class=org.apache.airavata.service.profile.server.ProfileServiceServer
 # MariaDB properties

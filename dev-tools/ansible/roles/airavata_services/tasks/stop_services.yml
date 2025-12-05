@@ -1,0 +1,287 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Check if API Server binary exists
+  stat:
+    path: "{{ api_server_dir }}/bin/orchestrator.sh"
+  register: api_server_exists
+  tags:
+    - stop
+
+- name: Stop API Server orchestrator if exists
+  shell: "{{ api_server_dir }}/bin/orchestrator.sh -d stop api-orch"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server controller if exists
+  shell: "{{ api_server_dir }}/bin/controller.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server participant if exists
+  shell: "{{ api_server_dir }}/bin/participant.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server pre-wm if exists
+  shell: "{{ api_server_dir }}/bin/pre-wm.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server post-wm if exists
+  shell: "{{ api_server_dir }}/bin/post-wm.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server email-monitor if exists
+  shell: "{{ api_server_dir }}/bin/email-monitor.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Stop API Server realtime-monitor if exists
+  shell: "{{ api_server_dir }}/bin/realtime-monitor.sh -d stop"
+  when: api_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if Agent Service binary exists
+  stat:
+    path: "{{ agent_service_dir }}/bin/agent-service.sh"
+  register: agent_service_exists
+  tags:
+    - stop
+
+- name: Stop Agent Service if exists
+  shell: "{{ agent_service_dir }}/bin/agent-service.sh -d stop"
+  when: agent_service_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if Research Service binary exists
+  stat:
+    path: "{{ research_service_dir }}/bin/research-service.sh"
+  register: research_service_exists
+  tags:
+    - stop
+
+- name: Stop Research Service if exists
+  shell: "{{ research_service_dir }}/bin/research-service.sh -d stop"
+  when: research_service_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if File Server binary exists
+  stat:
+    path: "{{ file_server_dir }}/bin/file-service.sh"
+  register: file_server_exists
+  tags:
+    - stop
+
+- name: Stop File Server if exists
+  shell: "{{ file_server_dir }}/bin/file-service.sh -d stop"
+  when: file_server_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Check if REST Proxy binary exists
+  stat:
+    path: "{{ restproxy_dir }}/bin/restproxy.sh"
+  register: restproxy_exists
+  tags:
+    - stop
+
+- name: Stop REST Proxy if exists
+  shell: "{{ restproxy_dir }}/bin/restproxy.sh -d stop"
+  when: restproxy_exists.stat.exists
+  tags:
+    - stop
+  ignore_errors: yes
+
+- name: Wait for services to fully stop
+  wait_for:
+    timeout: 30
+  tags:
+    - stop
+
+- name: Define Airavata service ports
+  set_fact:
+    airavata_ports:
+      - port: "{{ api_server_port }}"
+        service: "API Server"
+      - port: "{{ orchestrator_server_port }}"
+        service: "Orchestrator"
+      - port: "{{ registry_server_port }}"
+        service: "Registry"
+      - port: "{{ sharing_registry_port }}"
+        service: "Sharing Registry"
+      - port: "{{ cred_store_port }}"
+        service: "Credential Store"
+      - port: "{{ profile_service_port }}"
+        service: "Profile Service"
+      - port: "{{ agent_service_server_port }}"
+        service: "Agent Service"
+      - port: "{{ research_service_server_port }}"
+        service: "Research Service"
+      - port: "{{ file_server_port }}"
+        service: "File Server"
+      - port: "{{ restproxy_port }}"
+        service: "REST Proxy"
+      - port: "{{ participant_monitoring_port }}"
+        service: "Participant Monitoring"
+      - port: "{{ api_server_monitoring_port }}"
+        service: "API Server Monitoring"
+      - port: "{{ pre_wm_monitoring_port }}"
+        service: "Pre-WM Monitoring"
+      - port: "{{ post_wm_monitoring_port }}"
+        service: "Post-WM Monitoring"
+  tags:
+    - stop
+
+- name: Check which ports are still in use after stopping services
+  shell: |
+    if command -v ss >/dev/null 2>&1; then
+      ss -tuln | grep -E '^[^ ]* *[^ ]* *[^ ]* *[^ ]* *[^ ]* *LISTEN' | awk '{print $5}' | sed 's/.*://' | sort -u
+    elif command -v netstat >/dev/null 2>&1; then
+      netstat -tuln | grep LISTEN | awk '{print $4}' | sed 's/.*://' | sort -u
+    else
+      echo ""
+    fi
+  register: ports_in_use
+  changed_when: false
+  tags:
+    - stop
+
+- name: Find processes still using Airavata ports (graceful kill)
+  shell: |
+    PORT="{{ item.port }}"
+    SERVICE="{{ item.service }}"
+    PID=""
+    
+    if command -v ss >/dev/null 2>&1; then
+      # Try with sed (more portable than grep -P)
+      PID=$(ss -tulpn 2>/dev/null | grep ":${PORT} " | sed -n 's/.*pid=\([0-9]*\).*/\1/p' | head -1)
+    elif command -v netstat >/dev/null 2>&1; then
+      PID=$(netstat -tulpn 2>/dev/null | grep ":${PORT} " | awk '{print $7}' | cut -d'/' -f1 | head -1)
+    fi
+    
+    if [ -z "$PID" ] || [ "$PID" == "-" ]; then
+      if command -v lsof >/dev/null 2>&1; then
+        PID=$(lsof -ti:${PORT} 2>/dev/null | head -1)
+      fi
+    fi
+    
+    if [ -n "$PID" ] && [ "$PID" != "-" ] && [ "$PID" != "" ]; then
+      echo "Found process $PID using port $PORT ($SERVICE), attempting graceful kill..."
+      kill -TERM "$PID" 2>/dev/null || true
+      sleep 2
+      if kill -0 "$PID" 2>/dev/null; then
+        echo "Process $PID still running, forcing kill..."
+        kill -KILL "$PID" 2>/dev/null || true
+        sleep 1
+      fi
+      echo "Process $PID terminated"
+    else
+      echo "No process found using port $PORT ($SERVICE)"
+    fi
+  loop: "{{ airavata_ports }}"
+  when: ports_in_use.stdout != "" and item.port|string in ports_in_use.stdout_lines
+  ignore_errors: yes
+  tags:
+    - stop
+
+- name: Wait for ports to be freed
+  wait_for:
+    timeout: 10
+  tags:
+    - stop
+
+- name: Verify all Airavata ports are free
+  shell: |
+    PORT="{{ item.port }}"
+    SERVICE="{{ item.service }}"
+    if command -v ss >/dev/null 2>&1; then
+      IN_USE=$(ss -tuln | grep -c ":${PORT} " || echo "0")
+    elif command -v netstat >/dev/null 2>&1; then
+      IN_USE=$(netstat -tuln 2>/dev/null | grep -c ":${PORT} " || echo "0")
+    elif command -v lsof >/dev/null 2>&1; then
+      IN_USE=$(lsof -ti:${PORT} 2>/dev/null | wc -l || echo "0")
+    else
+      IN_USE="0"
+    fi
+    
+    if [ "$IN_USE" != "0" ]; then
+      echo "WARNING: Port ${PORT} (${SERVICE}) is still in use"
+      exit 1
+    else
+      echo "Port ${PORT} (${SERVICE}) is free"
+    fi
+  loop: "{{ airavata_ports }}"
+  failed_when: false
+  changed_when: false
+  tags:
+    - stop
+
+- name: Define Airavata service log directories
+  set_fact:
+    airavata_log_dirs:
+      - { service: "API Server", path: "{{ api_server_dir }}/logs" }
+      - { service: "Agent Service", path: "{{ agent_service_dir }}/logs" }
+      - { service: "Research Service", path: "{{ research_service_dir }}/logs" }
+      - { service: "File Server", path: "{{ file_server_dir }}/logs" }
+      - { service: "REST Proxy", path: "{{ restproxy_dir }}/logs" }
+  when: archive_logs_on_stop | bool
+
+- name: Check log directories
+  stat:
+    path: "{{ item.path }}"
+  register: airavata_log_dir_stats
+  loop: "{{ airavata_log_dirs }}"
+  when: archive_logs_on_stop | bool
+
+- name: Archive Airavata service logs
+  shell: |
+    ts=$(date +%Y%m%d%H%M%S)
+    dest_dir="{{ item.item.path }}/archive/${ts}"
+    mkdir -p "${dest_dir}"
+    find "{{ item.item.path }}" -maxdepth 1 -type f -name "*.log*" -print -exec mv {} "${dest_dir}/" \;
+  args:
+    executable: /bin/bash
+  loop: "{{ airavata_log_dir_stats.results }}"
+  when: archive_logs_on_stop | bool and item.stat.exists
+  changed_when: true
+  tags:
+    - stop

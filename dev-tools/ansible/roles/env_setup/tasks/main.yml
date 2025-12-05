@@ -26,7 +26,11 @@
   become: yes
 
 - name: Create a new user "{{ user }}"
-  user: name={{ user }} group={{ group }}
+  user:
+    name: "{{ user }}"
+    group: "{{ group }}"
+    shell: /bin/bash
+    create_home: yes
   become: yes
 
 - name: Install Firewalld (RedHat)
@@ -38,7 +42,7 @@
   apt: name=firewalld state=latest update_cache=yes
   become: yes
   when: ansible_os_family == "Debian"
-
+  register: firewalld_install_debian
 
   # TODO: stop iptables service, can't have both iptables and firewalld on same host
 # firewalld is just a frontend for iptables - so we can't remove it
@@ -49,9 +53,23 @@
 #     - iptables
 #     - ip6tables
 
-- name: Start firewalld service
-  service: name=firewalld state=started
+- name: Check if firewalld service file exists (systemd custom location)
+  stat:
+    path: /etc/systemd/system/firewalld.service
+  register: firewalld_service_file_systemd
   become: yes
+
+- name: Check if firewalld service file exists (Debian/Ubuntu standard location)
+  stat:
+    path: /lib/systemd/system/firewalld.service
+  register: firewalld_service_file_lib
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Start firewalld service
+  service: name=firewalld state=started enabled=yes
+  become: yes
+  when: (firewalld_service_file_systemd.stat.exists | default(false)) or (firewalld_service_file_lib.stat.exists | default(false)) or ansible_os_family == "RedHat"
 
 - name: open firewall port 22 for SSH connections (Redhat or Rocky)
   firewalld: port="22/tcp"

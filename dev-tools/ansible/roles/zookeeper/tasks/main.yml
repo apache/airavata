@@ -46,12 +46,6 @@
     - restart zookeeper
   become: yes
 
-- name: Copy java.env file
-  template: src=java.env.j2 dest="{{ zookeeper_dir }}/conf/java.env" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
-  notify:
-    - restart zookeeper
-  become: yes
-
 - name: Check if systemd exists
   stat: path=/usr/lib/systemd/system/
   register: systemd_check
@@ -67,4 +61,12 @@
 - name: reload systemd daemons
   command: systemctl daemon-reload
   become: yes
+
+- name: Start and enable Zookeeper service
+  service:
+    name: zookeeper
+    state: started
+    enabled: yes
+  become: yes
+  when: systemd_check.stat.exists == true
 ...
