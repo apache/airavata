@@ -26,8 +26,12 @@ import java.util.Arrays;
 import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobManagerCommandGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(JobManagerCommandGenerator.class);
+
     private static SQLData createSQLData() {
         SQLData data = new SQLData();
         data.setTableName("JOB_MANAGER_COMMAND");
@@ -52,7 +56,7 @@ public class JobManagerCommandGenerator {
     public static void testSqlGen() {
         SQLData data = createSQLData();
         SQLGenerator sqlGenerator = new SQLGenerator();
-        System.out.println(sqlGenerator.generateSQLCreateQuery(data));
+        logger.info(sqlGenerator.generateSQLCreateQuery(data));
     }
 
     public static void testJPAClassGen() {
@@ -60,9 +64,9 @@ public class JobManagerCommandGenerator {
         JPAClassGenerator jpaClassGenerator = new JPAClassGenerator();
         jpaClassGenerator.setJpaClassPackageName("org.apache.aiaravata.application.catalog.data.model");
         JPAClassModel model = jpaClassGenerator.createJPAClassModel(data);
-        System.out.println(jpaClassGenerator.generateJPAClass(model));
-        System.out.println(jpaClassGenerator.generateJPAPKClass(model.pkClassModel));
-        System.out.println(jpaClassGenerator.generatePersistenceXmlEntry(model));
+        logger.info(jpaClassGenerator.generateJPAClass(model));
+        logger.info(jpaClassGenerator.generateJPAPKClass(model.pkClassModel));
+        logger.info(jpaClassGenerator.generatePersistenceXmlEntry(model));
     }
 
     public static void testJPAResourceClassGen() {
@@ -76,10 +80,10 @@ public class JobManagerCommandGenerator {
         jpaResourceClassGenerator.setQueryGeneratorClassName("AppCatalogQueryGenerator");
 
         JPAResourceClassModel model2 = jpaResourceClassGenerator.createJPAResourceClassModel(model);
-        System.out.println(jpaResourceClassGenerator.generateJPAResourceClass(model2));
-        System.out.println(jpaResourceClassGenerator.generateAbstractResourceClassUpdates(model2));
-        System.out.println(jpaResourceClassGenerator.generateAppCatalogResourceTypeUpdates(model2));
-        System.out.println(jpaResourceClassGenerator.generateAppCatalogJPAUtilUpdates(model2));
+        logger.info(jpaResourceClassGenerator.generateJPAResourceClass(model2));
+        logger.info(jpaResourceClassGenerator.generateAbstractResourceClassUpdates(model2));
+        logger.info(jpaResourceClassGenerator.generateAppCatalogResourceTypeUpdates(model2));
+        logger.info(jpaResourceClassGenerator.generateAppCatalogJPAUtilUpdates(model2));
     }
 
     public static void main(String[] args) {

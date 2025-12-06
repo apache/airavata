@@ -21,7 +21,6 @@ package org.apache.airavata.helix.adaptor;
 
 import java.util.Optional;
 import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -29,12 +28,30 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResourceAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
+
+    private RegistryService registryService;
+    private CredentialStoreService credentialService;
+
+    public SSHJStorageAdaptor() throws AgentException {
+        super();
+        try {
+            ServiceFactory factory = ServiceFactory.getInstance();
+            this.registryService = factory.getRegistryService();
+            this.credentialService = factory.getCredentialStoreService();
+        } catch (ServiceFactoryException e) {
+            throw new AgentException("Failed to get services from ServiceFactory", e);
+        }
+    }
 
     @Override
     public void init(String storageResourceId, String gatewayId, String loginUser, String token) throws AgentException {
@@ -43,7 +60,7 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
 
             StorageResourceDescription storageResourceDescription =
-                    AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+                    registryService.getStorageResource(storageResourceId);
 
             logger.info("Fetching data movement interfaces for storage resource " + storageResourceId);
 
@@ -56,11 +73,11 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
                     new AgentException("Could not find a SCP interface for storage resource " + storageResourceId));
 
             SCPDataMovement scpDataMovement =
-                    AgentUtils.getRegistryServiceClient().getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
+                    registryService.getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

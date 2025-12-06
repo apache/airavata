@@ -20,7 +20,7 @@
 . $(dirname $0)/setenv.sh
 
 SERVICE_NAME="orchestrator"
-MAIN_CLASS="org.apache.airavata.server.ServerMain"
+MAIN_CLASS="org.apache.airavata.main.ThriftAPI"
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 
 SERVERS=""

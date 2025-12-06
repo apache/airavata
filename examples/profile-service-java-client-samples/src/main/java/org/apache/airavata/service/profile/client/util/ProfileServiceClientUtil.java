@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.client.util;
+package org.apache.airavata.profile.client.util;
 
 import java.net.URL;
 import java.util.Properties;

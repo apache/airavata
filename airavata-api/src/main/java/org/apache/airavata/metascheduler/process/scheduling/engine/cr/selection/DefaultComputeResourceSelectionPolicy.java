@@ -27,7 +27,9 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +44,17 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService.Client registryClient = this.registryClientPool.getResource();
+        RegistryService registryService;
         try {
-            ProcessModel processModel = registryClient.getProcess(processId);
+            registryService = ServiceFactory.getInstance().getRegistryService();
+        } catch (ServiceFactoryException e) {
+            LOGGER.error("Failed to get RegistryService from ServiceFactory", e);
+            return Optional.empty();
+        }
+        try {
+            ProcessModel processModel = registryService.getProcess(processId);
 
-            ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
+            ExperimentModel experiment = registryService.getExperiment(processModel.getExperimentId());
 
             UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
 
@@ -56,7 +64,7 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
 
             String computeResourceId = computationalResourceSchedulingModel.getResourceHostId();
 
-            ComputeResourceDescription comResourceDes = registryClient.getComputeResource(computeResourceId);
+            ComputeResourceDescription comResourceDes = registryService.getComputeResource(computeResourceId);
 
             GroupComputeResourcePreference computeResourcePreference =
                     getGroupComputeResourcePreference(computeResourceId, processModel.getGroupResourceProfileId());
@@ -64,18 +72,12 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
             String hostName = comResourceDes.getHostName();
             String queueName = computationalResourceSchedulingModel.getQueueName();
 
-            QueueStatusModel queueStatusModel = registryClient.getQueueStatus(hostName, queueName);
+            QueueStatusModel queueStatusModel = registryService.getQueueStatus(hostName, queueName);
             if (queueStatusModel.isQueueUp()) {
                 return Optional.of(computationalResourceSchedulingModel);
             }
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
-            this.registryClientPool.returnBrokenResource(registryClient);
-            registryClient = null;
-        } finally {
-            if (registryClient != null) {
-                this.registryClientPool.returnResource(registryClient);
-            }
         }
         return Optional.empty();
     }

@@ -29,7 +29,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class HTCondorEmailParser implements EmailParser {
      * Returns : JobStatusResult
      * Purpose : Responsible for parsing the email to access an HTCondor job status
      */
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
         // Job Status Results
         JobStatusResult jobStatusResult = new JobStatusResult();
@@ -69,7 +69,7 @@ public class HTCondorEmailParser implements EmailParser {
             parseJobState((String) message.getContent(), jobStatusResult);
 
             String processId = fetchProcessId((String) message.getContent());
-            List<JobModel> jobs = registryClient.getJobs("processId", processId);
+            List<JobModel> jobs = registryService.getJobs("processId", processId);
             Optional<JobModel> firstJob = jobs.stream()
                     .filter(job -> job.getJobId().equals(jobStatusResult.getJobId()))
                     .findFirst();

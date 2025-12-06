@@ -28,6 +28,8 @@ import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(OpenApiConfig.class);
 
     @Value("${airavata.openid.url}")
     private String openIdConfigURL;
@@ -71,7 +75,7 @@ public class OpenApiConfig {
 
     @Bean
     public OpenApiCustomizer globalHeaderCustomizer() {
-        System.out.println("Applying global header customizer...");
+        logger.info("Applying global header customizer...");
         return openApi -> {
             Parameter claimsHeader = new Parameter()
                     .in("header")

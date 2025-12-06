@@ -36,7 +36,6 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.ReadDirReq;
 import org.apache.airavata.fuse.ReadDirRes;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -108,7 +107,7 @@ public class AiravataFileService {
                             .build());
                 }
             }
-        } catch (TException | ExecutionException e) {
+        } catch (Exception e) {
             LOGGER.error("Failed to fetch experiments when trying to read the directory");
             responseObserver.onError(Status.INTERNAL
                     .withDescription("Failed to fetch experiments  when trying to read the directory")

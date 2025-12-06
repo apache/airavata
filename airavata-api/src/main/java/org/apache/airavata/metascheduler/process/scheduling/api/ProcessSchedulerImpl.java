@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
-import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -34,7 +32,8 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,23 +43,13 @@ import org.slf4j.LoggerFactory;
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
 
-    private ThriftClientPool<RegistryService.Client> registryClientPool;
-
-    public ProcessSchedulerImpl() {
-        try {
-            registryClientPool = Utils.getRegistryServiceClientPool();
-        } catch (Exception e) {
-            LOGGER.error("Error occurred while fetching registry client pool", e);
-        }
-    }
-
     @Override
     public boolean canLaunch(String experimentId) {
-        final RegistryService.Client registryClient = this.registryClientPool.getResource();
         try {
-            List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            List<ProcessModel> processModels = registryService.getProcessList(experimentId);
 
-            ExperimentModel experiment = registryClient.getExperiment(experimentId);
+            ExperimentModel experiment = registryService.getExperiment(experimentId);
             boolean allProcessesScheduled = true;
 
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
@@ -69,7 +58,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                     Class.forName(selectionPolicyClass).newInstance();
 
             for (ProcessModel processModel : processModels) {
-                ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+                ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());
 
                 if (processStatus.getState().equals(ProcessState.CREATED)
                         || processStatus.getState().equals(ProcessState.VALIDATED)) {
@@ -97,7 +86,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                         UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
                         userConfigurationDataModel.setComputationalResourceScheduling(resourceSchedulingModel);
                         experiment.setUserConfigurationData(userConfigurationDataModel);
-                        registryClient.updateExperiment(experimentId, experiment);
+                        registryService.updateExperiment(experimentId, experiment);
 
                         List<InputDataObjectType> processInputDataObjectTypeList = processModel.getProcessInputs();
                         processInputDataObjectTypeList.forEach(obj -> {
@@ -113,12 +102,12 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
                         processModel.setProcessResourceSchedule(resourceSchedulingModel);
                         processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
 
-                        registryClient.updateProcess(processModel, processModel.getProcessId());
+                        registryService.updateProcess(processModel, processModel.getProcessId());
 
                     } else {
                         ProcessStatus newProcessStatus = new ProcessStatus();
                         newProcessStatus.setState(ProcessState.QUEUED);
-                        registryClient.updateProcessStatus(newProcessStatus, processModel.getProcessId());
+                        registryService.updateProcessStatus(newProcessStatus, processModel.getProcessId());
                         allProcessesScheduled = false;
                     }
                 }
@@ -126,8 +115,6 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);
-        } finally {
-            this.registryClientPool.returnResource(registryClient);
         }
 
         return false;

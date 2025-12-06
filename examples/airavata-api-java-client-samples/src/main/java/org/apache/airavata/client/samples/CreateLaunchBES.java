@@ -42,16 +42,16 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CreateLaunchBES {
 
+    private static final Logger logger = LoggerFactory.getLogger(CreateLaunchBES.class);
+
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
 
-    private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
@@ -71,7 +71,7 @@ public class CreateLaunchBES {
 
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-        System.out.println("API version is " + airavataClient.getAPIVersion());
+        logger.info("API version is {}", airavataClient.getAPIVersion());
         //        createGateway();
         //        getGateway("testGatewayId");
         //        registerApplications(); // run this only the first time
@@ -85,8 +85,8 @@ public class CreateLaunchBES {
             Map<String, String> availableAppInterfaceComputeResources =
                     airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), appInterfaceId);
             for (String key : availableAppInterfaceComputeResources.keySet()) {
-                System.out.println("id : " + key);
-                System.out.println("name : " + availableAppInterfaceComputeResources.get(key));
+                logger.info("id : {}", key);
+                logger.info("name : {}", availableAppInterfaceComputeResources.get(key));
             }
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -94,7 +94,7 @@ public class CreateLaunchBES {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -105,14 +105,14 @@ public class CreateLaunchBES {
             gateway.setGatewayId("testGatewayId2");
             gateway.setGatewayName("testGateway2");
             gatewayId = airavataClient.addGateway(new AuthzToken(""), gateway);
-            System.out.println(gatewayId);
+            logger.info("Gateway ID: {}", gatewayId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -123,32 +123,32 @@ public class CreateLaunchBES {
             gateway.setDomain("testDomain");
             airavataClient.updateGateway(new AuthzToken(""), gatewayId, gateway);
             List<Gateway> allGateways = airavataClient.getAllGateways(new AuthzToken(""));
-            System.out.println(allGateways.size());
+            logger.info("All Gateways: {}", allGateways.size());
             if (airavataClient.isGatewayExist(new AuthzToken(""), gatewayId)) {
                 Gateway gateway1 = airavataClient.getGateway(new AuthzToken(""), gatewayId);
-                System.out.println(gateway1.getGatewayName());
+                logger.info("Gateway Name: {}", gateway1.getGatewayName());
             }
             boolean b = airavataClient.deleteGateway(new AuthzToken(""), "testGatewayId2");
-            System.out.println(b);
+            logger.info("Gateway Deleted: {}", b);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void createAndLaunchExp() throws TException {
+    public static void createAndLaunchExp() {
         List<String> experimentIds = new ArrayList<String>();
         try {
             for (int i = 0; i < 1; i++) {
                 //                final String expId = createEchoExperimentForFSD(airavataClient);
                 final String expId = createMPIExperimentForFSD(airavataClient);
                 experimentIds.add(expId);
-                System.out.println("Experiment ID : " + expId);
+                logger.info("Experiment ID : {}", expId);
                 //                updateExperiment(airavata, expId);
                 launchExperiment(airavataClient, expId);
             }
@@ -156,8 +156,7 @@ public class CreateLaunchBES {
             Thread.sleep(10000);
             for (String exId : experimentIds) {
                 ExperimentModel experiment = airavataClient.getExperiment(new AuthzToken(""), exId);
-                System.out.println(experiment.getExperimentId() + " "
-                        + experiment.getExperimentStatus().get(0).getState().name());
+                logger.info("Experiment ID: {} State: {}", experiment.getExperimentId(), experiment.getExperimentStatus().get(0).getState().name());
             }
 
         } catch (Exception e) {
@@ -166,7 +165,7 @@ public class CreateLaunchBES {
         }
     }
 
-    public static void launchExperiment(Airavata.Client client, String expId) throws TException {
+    public static void launchExperiment(Airavata.Client client, String expId) {
         try {
             client.launchExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
@@ -181,9 +180,9 @@ public class CreateLaunchBES {
         } catch (AiravataClientException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
@@ -206,9 +205,7 @@ public class CreateLaunchBES {
         registerSampleApplications.registerAppInterfaces();
     }
 
-    public static String registerUnicoreEndpoint(
-            String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol)
-            throws TException {
+    public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) {
 
         ComputeResourceDescription computeResourceDescription =
                 RegisterSampleApplicationsUtils.createComputeResourceDescription(hostName, hostDesc, null, null);
@@ -217,7 +214,7 @@ public class CreateLaunchBES {
 
         if (fsdResourceId.isEmpty()) throw new AiravataClientException();
 
-        System.out.println("FSD Compute ResourceID: " + fsdResourceId);
+        logger.info("FSD Compute ResourceID: {}", fsdResourceId);
 
         JobSubmissionInterface jobSubmission =
                 RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
@@ -228,7 +225,7 @@ public class CreateLaunchBES {
         return jobSubmission.getJobSubmissionInterfaceId();
     }
 
-    public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
+    public static String createEchoExperimentForFSD(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
@@ -276,14 +273,14 @@ public class CreateLaunchBES {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
         return null;
     }
 
-    public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
+    public static String createMPIExperimentForFSD(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), mpiAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
@@ -345,9 +342,9 @@ public class CreateLaunchBES {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
         return null;
     }
@@ -361,7 +358,7 @@ public class CreateLaunchBES {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -376,7 +373,7 @@ public class CreateLaunchBES {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -388,7 +385,7 @@ public class CreateLaunchBES {
             List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
                 for (ErrorModel error : errors) {
-                    System.out.println("ERROR MESSAGE : " + error.getActualErrorMessage());
+                    logger.info("ERROR MESSAGE : {}", error.getActualErrorMessage());
                 }
             }
 

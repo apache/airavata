@@ -32,10 +32,12 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StorageResourceManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(StorageResourceManager.class);
     private StoragePreference gatewayStoragePreference;
     private StorageResourceDescription storageResource;
     private String storageResourceId;
@@ -80,8 +82,7 @@ public class StorageResourceManager {
             String user,
             String project,
             String experiment,
-            String gatewayId)
-            throws TException, AgentException {
+            String gatewayId) {
 
         String experimentDirectory = getExperimentDirectory(user, project, experiment);
 
@@ -101,7 +102,7 @@ public class StorageResourceManager {
         replicaLocationModel.setFilePath("file://" + storageResource.getHostName() + ":" + uploadFilePath);
 
         dataProductModel.setReplicaLocations(Collections.singletonList(replicaLocationModel));
-        System.out.println("Registring " + uploadFilePath);
+        logger.info("Registring {}", uploadFilePath);
         return airavataClient.registerDataProduct(new AuthzToken(""), dataProductModel);
     }
 

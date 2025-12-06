@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.sharing.registry.service.cpi
+namespace java org.apache.airavata.sharing.service.cpi
 namespace php Airavata.API.Sharing
 namespace py airavata.api.sharing
 

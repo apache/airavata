@@ -22,9 +22,11 @@ package org.apache.airavata.tools.load;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.model.security.AuthzToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Configuration {
-
+    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
     private String userId;
 
     private String gatewayId;
@@ -51,9 +53,8 @@ public class Configuration {
     private AuthzToken authzToken;
 
     public AuthzToken getAuthzToken() throws Exception {
-
         if (authzToken == null) {
-            System.out.print("Enter password for user " + getUserId() + " in gateway " + getGatewayId() + " : ");
+            logger.info("Enter password for user {} in gateway {} : ", getUserId(), getGatewayId());
             String pw = new String(System.console().readPassword());
             authzToken = Authenticator.getAuthzToken(
                     getUserId(),

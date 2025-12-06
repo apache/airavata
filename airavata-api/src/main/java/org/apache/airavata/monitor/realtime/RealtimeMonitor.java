@@ -28,7 +28,6 @@ import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.MonitoringException;
 import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
-import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -46,6 +45,7 @@ public class RealtimeMonitor extends AbstractMonitor {
     private final String brokerTopic;
 
     public RealtimeMonitor() throws ApplicationSettingsException {
+        super();
         parser = new RealtimeJobStatusParser();
         publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
         brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
@@ -69,22 +69,20 @@ public class RealtimeMonitor extends AbstractMonitor {
 
         while (true) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
             consumerRecords.forEach(record -> {
                 try {
-                    process(record.key(), record.value(), registryClient);
+                    process(record.key(), record.value());
                 } catch (Exception e) {
                     logger.error("Error while processing message {}", record.value(), e);
                 }
             });
-            getRegistryClientPool().returnResource(registryClient);
             consumer.commitAsync();
         }
     }
 
-    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+    private void process(String key, String value) throws MonitoringException {
         logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
-        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
+        JobStatusResult statusResult = parser.parse(value, publisherId, getRegistryService());
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);

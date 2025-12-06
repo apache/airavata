@@ -42,7 +42,7 @@ import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
-import org.apache.thrift.TException;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +131,7 @@ public class GroovyMapBuilder {
                         }
                     }*/
                 }
-            } catch (TException e) {
+            } catch (Exception e) {
                 logger.error("Error while getting job submission sub task model", e);
             }
         }
@@ -502,7 +502,7 @@ public class GroovyMapBuilder {
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
             SSHJobSubmission sshJobSubmission =
-                    taskContext.getRegistryClient().getSSHJobSubmission(jobSubmissionInterfaceId);
+                    ServiceFactory.getInstance().getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {

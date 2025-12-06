@@ -29,6 +29,10 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +47,18 @@ public class SshAgentAdaptor implements AgentAdaptor {
     private static final Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
 
     private Session session = null;
+    protected RegistryService registryService;
+    protected CredentialStoreService credentialService;
+
+    public SshAgentAdaptor() throws AgentException {
+        try {
+            ServiceFactory factory = ServiceFactory.getInstance();
+            this.registryService = factory.getRegistryService();
+            this.credentialService = factory.getCredentialStoreService();
+        } catch (ServiceFactoryException e) {
+            throw new AgentException("Failed to get services from ServiceFactory", e);
+        }
+    }
 
     public void init(AdaptorParams adaptorParams) throws AgentException {
 
@@ -85,11 +101,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
             ComputeResourceDescription computeResourceDescription =
-                    AgentUtils.getRegistryServiceClient().getComputeResource(computeResourceId);
+                    registryService.getComputeResource(computeResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
@@ -168,13 +184,15 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 throw new AgentException(stdOutReader.getStdError());
             }
         } catch (JSchException e) {
-            System.out.println("Unable to retrieve command output. Command - " + command + " on server - "
-                    + session.getHost() + ":" + session.getPort() + " connecting user name - "
-                    + session.getUserName());
-            throw new AgentException(e);
+            String msg = String.format(
+                    "Unable to retrieve command output for command=%s on server=%s:%s connecting username=%s",
+                    command, session.getHost(), session.getPort(), session.getUserName());
+            logger.error(msg, e);
+            throw new AgentException(msg, e);
         } catch (IOException e) {
-            logger.error("Failed to create directory " + path, e);
-            throw new AgentException("Failed to create directory " + path, e);
+            String msg = String.format("Failed to create directory %s", path);
+            logger.error(msg, e);
+            throw new AgentException(msg, e);
         } finally {
             if (channelExec != null) {
                 channelExec.disconnect();
@@ -398,7 +416,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
                     }
                 }
 
-                // System.out.println("filesize="+filesize+", file="+file);
+                logger.debug("filesize={}, file={}", filesize, file);
 
                 // send '\0'
                 buf[0] = 0;
@@ -698,10 +716,10 @@ public class SshAgentAdaptor implements AgentAdaptor {
             } while (c != '\n');
             // FIXME: Redundant
             if (b == 1) { // error
-                System.out.print(sb.toString());
+                logger.error(sb.toString());
             }
             if (b == 2) { // fatal error
-                System.out.print(sb.toString());
+                logger.error(sb.toString());
             }
             // log.warn(sb.toString());
         }

@@ -23,16 +23,16 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CancelExperiments {
 
+    private static final Logger logger = LoggerFactory.getLogger(CancelExperiments.class);
+
     // FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
-    private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client client;
@@ -42,15 +42,14 @@ public class CancelExperiments {
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             String expeId = "echoExperiment_31c132fd-87ea-4781-803c-ae5f04a79baf";
             terminateExperiment(client, expeId);
-
-            System.out.println("retrieved exp id : " + expeId);
+            logger.info("retrieved exp id : {}", expeId);
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public static void terminateExperiment(Airavata.Client client, String expId) throws TException {
+    public static void terminateExperiment(Airavata.Client client, String expId) {
         try {
             client.terminateExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
@@ -65,9 +64,9 @@ public class CancelExperiments {
         } catch (AiravataClientException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 }

@@ -20,26 +20,23 @@
 package org.apache.airavata.service;
 
 import java.util.List;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
-import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.service.security.AiravataSecurityManager;
-import org.apache.airavata.service.security.SecurityManagerFactory;
-import org.apache.airavata.service.security.UserInfo;
-import org.apache.thrift.TException;
+import org.apache.airavata.security.AiravataSecurityManager;
+import org.apache.airavata.security.SecurityManagerFactory;
+import org.apache.airavata.security.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,22 +76,35 @@ public class UserProfileService {
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                try {
+                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                } catch (AiravataException e) {
+                    logger.error("Error publishing user profile creation event", e);
+                }
                 // return userId
                 return userProfile.getUserId();
             } else {
-                throw new Exception("User creation failed. Please try again.");
+                throw new UserProfileServiceException("User creation failed. Please try again.");
             }
-        } catch (Exception e) {
-            logger.error("Error while initializing user profile", e);
+        } catch (AiravataSecurityException e) {
+            String message = "Error while initializing user profile: security error";
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while initializing user profile. More info : " + e.getMessage());
+            exception.setMessage(message);
+            exception.initCause(e);
+            throw exception;
+        } catch (RuntimeException e) {
+            String message = "Error while initializing user profile: " + e.getMessage();
+            logger.error(message, e);
+            UserProfileServiceException exception = new UserProfileServiceException();
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
     }
 
-    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
+    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
+            throws UserProfileServiceException, IamAdminServicesException {
         try {
             // Lowercase user id and internal id
             userProfile.setUserId(userProfile.getUserId().toLowerCase());
@@ -104,23 +114,28 @@ public class UserProfileService {
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                try {
+                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                } catch (AiravataException e) {
+                    logger.error("Error publishing user profile creation event", e);
+                }
                 // return userId
                 return userProfile.getUserId();
             } else {
-                throw new Exception("User creation failed. Please try again.");
+                throw new UserProfileServiceException("User creation failed. Please try again.");
             }
-        } catch (Exception e) {
-            logger.error("Error while creating user profile", e);
+        } catch (RuntimeException e) {
+            String message = "Error while creating user profile: " + e.getMessage();
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while creating user profile. More info : " + e.getMessage());
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
     }
 
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
-            throws UserProfileServiceException {
+            throws UserProfileServiceException, IamAdminServicesException {
         try {
             // After updating the user profile in the database but before committing the transaction, the
             // following will update the user profile in the IAM service also. If the update in the IAM service
@@ -129,14 +144,30 @@ public class UserProfileService {
             if (userProfileRepository.updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
-                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
+                try {
+                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
+                } catch (AiravataException e) {
+                    logger.error("Error publishing user profile update event", e);
+                }
                 return true;
             }
             return false;
-        } catch (Exception e) {
-            logger.error("Error while Updating user profile", e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while Updating user profile. More info : " + e.getMessage());
+        } catch (RuntimeException e) {
+            // Check if the RuntimeException wraps a UserProfileServiceException or IamAdminServicesException
+            if (e.getCause() instanceof UserProfileServiceException) {
+                throw (UserProfileServiceException) e.getCause();
+            }
+            if (e.getCause() instanceof IamAdminServicesException) {
+                throw (IamAdminServicesException) e.getCause();
+            }
+            String msg = String.format(
+                    "Error while updating user profile: userId=%s, gatewayId=%s, airavataInternalUserId=%s. Reason: %s",
+                    userProfile.getUserId(),
+                    userProfile.getGatewayId(),
+                    userProfile.getAiravataInternalUserId(),
+                    e.getMessage());
+            logger.error(msg, e);
+            UserProfileServiceException exception = new UserProfileServiceException(msg);
             exception.initCause(e);
             throw exception;
         }
@@ -149,10 +180,36 @@ public class UserProfileService {
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 AuthzToken serviceAccountAuthzToken =
                         securityManager.getUserManagementServiceAccountAuthzToken(gatewayId);
-                IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
-                iamAdminServicesClient.updateUserProfile(serviceAccountAuthzToken, userProfile);
-            } catch (AiravataSecurityException | TException e) {
-                throw new RuntimeException("Failed to update user profile in IAM service", e);
+                IamAdminService iamAdminService = getIamAdminService();
+                iamAdminService.updateUserProfile(serviceAccountAuthzToken, userProfile);
+            } catch (AiravataSecurityException e) {
+                String msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
+                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                logger.error(msg, e);
+                UserProfileServiceException exception = new UserProfileServiceException(msg);
+                exception.initCause(e);
+                throw new RuntimeException(exception);
+            } catch (ServiceFactoryException e) {
+                String msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
+                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                logger.error(msg, e);
+                UserProfileServiceException exception = new UserProfileServiceException(msg);
+                exception.initCause(e);
+                throw new RuntimeException(exception);
+            } catch (IamAdminServicesException e) {
+                String msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
+                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                logger.error(msg, e);
+                throw new RuntimeException(e);
+            } catch (UserProfileServiceException e) {
+                String msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
+                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                logger.error(msg, e);
+                throw new RuntimeException(e);
             }
         };
     }
@@ -163,11 +220,13 @@ public class UserProfileService {
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
             if (userProfile != null) return userProfile;
             else
-                throw new Exception("User with userId: " + userId + ", in Gateway: " + gatewayId + ", does not exist.");
-        } catch (Exception e) {
-            logger.error("Error retrieving user profile by ID", e);
+                throw new UserProfileServiceException(
+                        "User with userId: " + userId + ", in Gateway: " + gatewayId + ", does not exist.");
+        } catch (RuntimeException e) {
+            String message = "Error retrieving user profile by ID: " + e.getMessage();
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error retrieving user profile by ID. More info : " + e.getMessage());
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
@@ -185,13 +244,18 @@ public class UserProfileService {
 
             if (deleteSuccess) {
                 // delete userProfile at end-places
-                dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
+                try {
+                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
+                } catch (AiravataException e) {
+                    logger.error("Error publishing user profile deletion event", e);
+                }
             }
             return deleteSuccess;
-        } catch (Exception e) {
-            logger.error("Error while deleting user profile", e);
+        } catch (RuntimeException e) {
+            String message = "Error while deleting user profile: " + e.getMessage();
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while deleting user profile. More info : " + e.getMessage());
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
@@ -203,11 +267,12 @@ public class UserProfileService {
             List<UserProfile> usersInGateway =
                     userProfileRepository.getAllUserProfilesInGateway(gatewayId, offset, limit);
             if (usersInGateway != null) return usersInGateway;
-            else throw new Exception("There are no users for the requested gatewayId: " + gatewayId);
-        } catch (Exception e) {
-            logger.error("Error while retrieving user profile List", e);
+            else throw new UserProfileServiceException("There are no users for the requested gatewayId: " + gatewayId);
+        } catch (RuntimeException e) {
+            String message = "Error while retrieving user profile List: " + e.getMessage();
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while retrieving user profile List. More info : " + e.getMessage());
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
@@ -218,24 +283,29 @@ public class UserProfileService {
         try {
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
             return null != userProfile;
-        } catch (Exception e) {
-            logger.error("Error while finding user profile", e);
+        } catch (RuntimeException e) {
+            String message = "Error while finding user profile: " + e.getMessage();
+            logger.error(message, e);
             UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
     }
 
-    private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
+    private IamAdminService getIamAdminService() throws UserProfileServiceException, ServiceFactoryException {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException | org.apache.airavata.common.exception.ApplicationSettingsException e) {
-            logger.error("Failed to create IAM Admin Services client", e);
-            UserProfileServiceException ex =
-                    new UserProfileServiceException("Failed to create IAM Admin Services client");
+            return ServiceFactory.getInstance().getIamAdminService();
+        } catch (ServiceFactoryException e) {
+            logger.error("Failed to create IAM Admin Service", e);
+            UserProfileServiceException ex = new UserProfileServiceException("Failed to create IAM Admin Service");
+            ex.initCause(e);
+            throw ex;
+        } catch (RuntimeException e) {
+            String message = "Failed to create IAM Admin Service: " + e.getMessage();
+            logger.error(message, e);
+            UserProfileServiceException ex = new UserProfileServiceException();
+            ex.setMessage(message);
             ex.initCause(e);
             throw ex;
         }

@@ -20,12 +20,13 @@
 package org.apache.airavata.service;
 
 import java.util.List;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -34,10 +35,10 @@ import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
+import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,18 +49,42 @@ public class IamAdminService {
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
 
-    public IamAdminService() throws ApplicationSettingsException {
+    public IamAdminService() throws ApplicationSettingsException, IamAdminServicesException, ServiceFactoryException {
         try {
-            credentialStoreService = new CredentialStoreService();
-            registryService = new RegistryService();
-        } catch (Throwable e) {
-            throw new RuntimeException("Unable to create credential store and registry services", e);
+            credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
+        } catch (ServiceFactoryException e) {
+            String msg = String.format("Unable to create credential store service: %s", e.getMessage());
+            logger.error(msg, e);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(e);
+            throw exception;
+        }
+
+        try {
+            registryService = ServiceFactory.getInstance().getRegistryService();
+        } catch (ServiceFactoryException e) {
+            String msg = String.format("Unable to create registry service. Reason: %s", e.getMessage());
+            logger.error(msg, e);
+            IamAdminServicesException exception = new IamAdminServicesException(msg);
+            exception.initCause(e);
+            throw exception;
         }
     }
 
-    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException {
+    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
+            throws IamAdminServicesException, CredentialStoreException {
         var keycloakclient = new TenantManagementKeycloakImpl();
-        var isSuperAdminCredentials = getSuperAdminPasswordCredential();
+        PasswordCredential isSuperAdminCredentials;
+        try {
+            isSuperAdminCredentials = getSuperAdminPasswordCredential();
+        } catch (IamAdminServicesException e) {
+            String msg = String.format(
+                    "Error getting super admin credentials for gateway setup: gatewayId=%s, gatewayName=%s. Reason: %s",
+                    gateway.getGatewayId(), gateway.getGatewayName(), e.getMessage());
+            logger.error(msg, e);
+            throw e;
+        }
+
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
@@ -74,8 +99,10 @@ public class IamAdminService {
             }
             var gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (Throwable ex) {
-            String msg = "Gateway Setup Failed, reason: " + ex.getMessage();
+        } catch (CredentialStoreException e) {
+            throw e;
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format("Gateway Setup Failed: %s", ex.getMessage());
             logger.error(msg, ex);
             IamAdminServicesException exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -90,12 +117,6 @@ public class IamAdminService {
             return keycloakClient.isUsernameAvailable(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException e) {
             throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while checking username availability, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
         }
     }
 
@@ -114,8 +135,9 @@ public class IamAdminService {
                     authzToken.getAccessToken(), gatewayId, username, emailAddress, firstName, lastName, newPassword))
                 return true;
             else return false;
-        } catch (Throwable ex) {
-            String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg =
+                    String.format("Error while registering user=%s into IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -147,8 +169,10 @@ public class IamAdminService {
             } else {
                 return false;
             }
-        } catch (Throwable ex) {
-            String msg = "Error while enabling user account, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            throw ex;
+        } catch (AiravataException ex) {
+            String msg = String.format("Error while enabling user=%s in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -161,8 +185,9 @@ public class IamAdminService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.isUserAccountEnabled(authzToken.getAccessToken(), gatewayId, username);
-        } catch (Exception ex) {
-            String msg = "Error while checking if user account is enabled, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while checking if user=%s is enabled in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -175,8 +200,9 @@ public class IamAdminService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.isUserExist(authzToken.getAccessToken(), gatewayId, username);
-        } catch (Exception ex) {
-            String msg = "Error while checking if user account exists, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while checking if user=%s exists in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -189,8 +215,9 @@ public class IamAdminService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
-        } catch (Exception ex) {
-            String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while retrieving user=%s profile from IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -204,8 +231,8 @@ public class IamAdminService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.getUsers(authzToken.getAccessToken(), gatewayId, offset, limit, search);
-        } catch (Exception ex) {
-            String msg = "Error while retrieving user profile from IAM backend, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format("Error while retrieving users from IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -221,8 +248,9 @@ public class IamAdminService {
             if (keycloakclient.resetUserPassword(authzToken.getAccessToken(), gatewayId, username, newPassword))
                 return true;
             else return false;
-        } catch (Throwable ex) {
-            String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while resetting user=%s password in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -236,8 +264,8 @@ public class IamAdminService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.findUser(authzToken.getAccessToken(), gatewayId, email, userId);
-        } catch (Throwable ex) {
-            String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format("Error while finding users in IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -251,10 +279,10 @@ public class IamAdminService {
             String username = userDetails.getUserId();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while updating user profile, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while updating user=%s profile in IAM backend: %s",
+                    userDetails.getUserId(), ex.getMessage());
             logger.error(msg, ex);
             var exception = new IamAdminServicesException(msg);
             exception.initCause(ex);
@@ -267,96 +295,64 @@ public class IamAdminService {
             TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Throwable ex) {
-            String msg = "Error while deleting user, reason: " + ex.getMessage();
+        } catch (IamAdminServicesException ex) {
+            String msg = String.format("Error while deleting user=%s in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw ex;
         }
     }
 
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException {
+            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (Throwable ex) {
-            String msg = "Error while adding role to user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
-        }
+        PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+        return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
     }
 
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException {
+            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (Throwable ex) {
-            String msg = "Error while removing role from user, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
-        }
+        PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+        return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
     }
 
-    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException {
+    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
+            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
-        } catch (Exception ex) {
-            String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
-        }
+        PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+        return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
     }
 
-    private PasswordCredential getSuperAdminPasswordCredential() {
+    private PasswordCredential getSuperAdminPasswordCredential() throws IamAdminServicesException {
         PasswordCredential isSuperAdminCredentials = new PasswordCredential();
         try {
             isSuperAdminCredentials.setLoginUserName(ServerSettings.getIamServerSuperAdminUsername());
+        } catch (ApplicationSettingsException e) {
+            String msg = String.format("Unable to get IAM super admin username from settings: %s", e.getMessage());
+            logger.error(msg, e);
+            var exception = new IamAdminServicesException(msg);
+            exception.initCause(e);
+            throw exception;
+        }
+
+        try {
             isSuperAdminCredentials.setPassword(ServerSettings.getIamServerSuperAdminPassword());
         } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to get settings for IAM super admin username/password", e);
+            String msg = String.format("Unable to get IAM super admin password from settings: %s", e.getMessage());
+            logger.error(msg, e);
+            var exception = new IamAdminServicesException(msg);
+            exception.initCause(e);
+            throw exception;
         }
         return isSuperAdminCredentials;
     }
 
-    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws IamAdminServicesException {
-
-        GatewayResourceProfile gwrp = null;
-        try {
-            gwrp = registryService.getGatewayResourceProfile(tenantId);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while getting gateway resource profile, reason: " + e.getMessage();
-            logger.error(msg, e);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
-        try {
-            return credentialStoreService.getPasswordCredential(
-                    gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
-        } catch (CredentialStoreException e) {
-            String msg = "Error while getting password credential, reason: " + e.getMessage();
-            logger.error(msg, e);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
+    private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
+            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
+        GatewayResourceProfile gwrp = registryService.getGatewayResourceProfile(tenantId);
+        return credentialStoreService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 }

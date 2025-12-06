@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class AiravataCustomMailParser implements EmailParser {
     private static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         parseSubject(message.getSubject(), jobStatusResult);

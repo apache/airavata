@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.agent.storage;
 
 import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.helix.agent.ssh.SshAdaptorParams;
@@ -34,18 +33,21 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceAdaptorImpl.class);
 
+    public StorageResourceAdaptorImpl() throws AgentException {
+        super();
+    }
+
     @Override
     public void init(String storageResourceId, String gatewayId, String loginUser, String token) throws AgentException {
 
         try {
             logger.info("Initializing Storage Resource Adaptor for storage resource : " + storageResourceId
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
-            StorageResourceDescription storageResource =
-                    AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+            StorageResourceDescription storageResource = registryService.getStorageResource(storageResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }

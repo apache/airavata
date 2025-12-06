@@ -37,10 +37,12 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnitLoad {
 
+    private static final Logger logger = LoggerFactory.getLogger(UnitLoad.class);
     private String apiHost;
     private int apiPort;
     private StorageResourceManager storageResourceManager;
@@ -96,7 +98,7 @@ public class UnitLoad {
                     long randomLong = (long) randomDouble;
                     Thread.sleep(randomLong);
                     experiments.add(submitExperiment(config, id + "-" + i));
-                } catch (TException | ApplicationSettingsException | AgentException | InterruptedException e) {
+                } catch (ApplicationSettingsException | AgentException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -104,7 +106,7 @@ public class UnitLoad {
         }
     }
 
-    private String submitExperiment(Configuration config, String suffix) throws TException, AgentException, ApplicationSettingsException {
+    private String submitExperiment(Configuration config, String suffix) {
 
         String experimentName = config.getExperimentBaseName() + suffix;
 
@@ -178,7 +180,7 @@ public class UnitLoad {
         String experimentId = airavataClient.createExperiment(authzToken, config.getGatewayId(), experimentModel);
 
         airavataClient.launchExperiment(authzToken, experimentId, config.getGatewayId());
-        System.out.println(experimentId);
+        logger.info("Experiment ID: {}", experimentId);
 
         ExperimentModel experiment = airavataClient.getExperiment(authzToken, experimentId);
         return experimentId;

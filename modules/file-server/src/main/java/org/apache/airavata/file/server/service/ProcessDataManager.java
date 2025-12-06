@@ -22,7 +22,6 @@ package org.apache.airavata.file.server.service;
 import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
@@ -31,7 +30,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,28 +44,21 @@ public class ProcessDataManager extends OutputDataStagingTask {
     private ProcessModel process;
     ExperimentModel experiment;
 
-    public ProcessDataManager(
-            ThriftClientPool<RegistryService.Client> registryClientPool,
-            String processId,
-            AdaptorSupport adaptorSupport)
+    public ProcessDataManager(RegistryService registryService, String processId, AdaptorSupport adaptorSupport)
             throws Exception {
 
         this.adaptorSupport = adaptorSupport;
-        RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            process = regClient.getProcess(processId);
-            experiment = regClient.getExperiment(process.getExperimentId());
+            process = registryService.getProcess(processId);
+            experiment = registryService.getExperiment(process.getExperimentId());
 
             setTaskId(UUID.randomUUID().toString());
             setProcessId(processId);
             setExperimentId(process.getExperimentId());
             setGatewayId(experiment.getGatewayId());
             loadContext();
-
-            registryClientPool.returnResource(regClient);
         } catch (Exception e) {
             logger.error("Failed to initialize the output data mover for process {}", processId, e);
-            registryClientPool.returnBrokenResource(regClient);
             throw e;
         }
         this.processId = processId;
@@ -77,7 +69,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
             logger.info("Using AWS adaptor for process {}", processId);
 
             AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
-            SSHCredential sshCredential = AgentUtils.getCredentialClient()
+            SSHCredential sshCredential = AgentUtils.getCredentialService()
                     .getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
 
             logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);

@@ -45,7 +45,7 @@ public class JobVerificationTask extends AiravataTask {
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
-            List<JobModel> jobs = getRegistryServiceClient().getJobs("processId", getProcessId());
+            List<JobModel> jobs = getRegistryService().getJobs("processId", getProcessId());
 
             logger.info("Fetching jobs for process " + getProcessId() + " to verify to saturation");
 
@@ -59,7 +59,7 @@ public class JobVerificationTask extends AiravataTask {
 
             JobManagerConfiguration jobManagerConfiguration =
                     JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                            getRegistryServiceClient(),
+                            getRegistryService(),
                             getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getPreferredJobSubmissionInterface()));
 

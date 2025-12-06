@@ -36,10 +36,12 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 public class LoadClient {
-
+    private static final Logger logger = LoggerFactory.getLogger(LoadClient.class);
     private String privateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
     private String publicKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa.pub";
     private String passPhrase = null;
@@ -91,12 +93,11 @@ public class LoadClient {
                 Future<List<String>> experimentsPerUser = completion.take();
                 allExperiments.addAll(experimentsPerUser.get());
             }
-            System.out.println("All experiments ");
-            System.out.println(allExperiments);
+            logger.info("All experiments : {}", allExperiments);
             statusMonitor.monitorExperiments(allExperiments);
         }
         destroyStorageResourceManagers();
-        System.out.println("Finished load ");
+        logger.info("Finished load ");
         System.exit(0);
     }
 
@@ -154,20 +155,20 @@ public class LoadClient {
         if (cmd.hasOption("config")) {
             loadClient.configFile = cmd.getOptionValue("config");
         } else {
-            System.out.println("Error : Load config file should be specified");
+            logger.error("Error : Load config file should be specified");
             System.exit(0);
         }
 
         if (cmd.hasOption("privateKeyPath")) {
             loadClient.privateKeyFile = cmd.getOptionValue("privateKeyPath");
         } else {
-            System.out.println("Using default private key file " + loadClient.privateKeyFile);
+            logger.info("Using default private key file {}", loadClient.privateKeyFile);
         }
 
         if (cmd.hasOption("publicKeyPath")) {
             loadClient.publicKeyFile = cmd.getOptionValue("publicKeyPath");
         } else {
-            System.out.println("Using default public key file " + loadClient.publicKeyFile);
+            logger.info("Using default public key file {}", loadClient.publicKeyFile);
         }
 
         if (cmd.hasOption("passPhrase")) {

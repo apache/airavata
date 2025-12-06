@@ -77,7 +77,7 @@ The Orchestrator spins up 7 servers (of type `org.apache.airavata.common.utils.I
 - **Registry** - Manages metadata and definitions for executable tasks and applications.
   (`org.apache.airavata.registry.api.service.RegistryAPIServer`)
 - **Credential Store** - Manages secure storage and retrieval of credentials for accessing registered compute resources.
-  (`org.apache.airavata.credential.store.server.CredentialStoreServer`)
+  (`org.apache.airavata.credential.server.CredentialStoreServer`)
 - **Sharing Registry** - Handles sharing and permissioning of Airavata resources between users and groups.
   (`org.apache.airavata.sharing.registry.server.SharingRegistryServer`)
 - **Orchestrator** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.

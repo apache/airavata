@@ -21,10 +21,10 @@ package org.apache.airavata.helix.impl.workflow;
 
 import java.util.*;
 import java.util.concurrent.*;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
@@ -47,9 +47,12 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.monitor.platform.MonitoringServer;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -109,7 +112,13 @@ public class PostWorkflowManager extends WorkflowManager {
             return false;
         }
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService registryService;
+        try {
+            registryService = ServiceFactory.getInstance().getRegistryService();
+        } catch (ServiceFactoryException e) {
+            logger.error("Failed to get RegistryService from ServiceFactory", e);
+            return false;
+        }
 
         var jobId = jobStatusResult.getJobId();
         var jobName = jobStatusResult.getJobName();
@@ -118,7 +127,7 @@ public class PostWorkflowManager extends WorkflowManager {
         logger.info("processing JobStatusUpdate<{}> from {}: {}", jobId, publisherId, jobStatusResult);
 
         try {
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobId);
+            List<JobModel> jobs = registryService.getJobs("jobId", jobId);
             logger.info("Found {} jobs in registry with id={}", jobs.size(), jobId);
             if (!jobs.isEmpty()) {
                 jobs = jobs.stream()
@@ -128,16 +137,14 @@ public class PostWorkflowManager extends WorkflowManager {
             }
             if (jobs.size() != 1) {
                 logger.error("Found {} job(s) in registry with id={} and name={}", jobs.size(), jobId, jobName);
-                getRegistryClientPool().returnResource(registryClient);
                 return false;
             }
             JobModel jobModel = jobs.get(0);
-            ProcessModel processModel = registryClient.getProcess(jobModel.getProcessId());
-            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+            ProcessModel processModel = registryService.getProcess(jobModel.getProcessId());
+            ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());
+            ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());
 
             var processState = processStatus.getState();
-            getRegistryClientPool().returnResource(registryClient);
 
             if (experimentModel != null) {
                 jobModel.getJobStatuses()
@@ -205,7 +212,6 @@ public class PostWorkflowManager extends WorkflowManager {
                     jobStatusResult.getJobId(),
                     jobStatusResult.getState().name(),
                     e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -213,30 +219,28 @@ public class PostWorkflowManager extends WorkflowManager {
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         postwfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService registryService = getRegistryService();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
+            processModel = registryService.getProcess(processId);
             var experimentId = processModel.getExperimentId();
             var crId = processModel.getComputeResourceId();
             var grpId = processModel.getGroupResourceProfileId();
 
-            experimentModel = registryClient.getExperiment(experimentId);
-            ResourceType resourceType = registryClient
+            experimentModel = registryService.getExperiment(experimentId);
+            ResourceType resourceType = registryService
                     .getGroupComputeResourcePreference(crId, grpId)
                     .getResourceType();
 
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
-        } catch (Exception e) {
+        } catch (RegistryServiceException e) {
             logger.error("Failed to fetch experiment/process from registry for pid={}", processId, e);
             throw new Exception("Failed to fetch experiment/process from registry for pid=" + processId, e);
-        } finally {
-            getRegistryClientPool().returnResource(registryClient);
         }
 
         String taskDag = processModel.getTaskDag();
@@ -401,15 +405,13 @@ public class PostWorkflowManager extends WorkflowManager {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+            RegistryService registryService = getRegistryService();
 
             try {
-                registryClient.addJobStatus(jobStatus, taskId, jobId);
-                getRegistryClientPool().returnResource(registryClient);
+                registryService.addJobStatus(jobStatus, taskId, jobId);
 
-            } catch (Exception e) {
+            } catch (RegistryServiceException e) {
                 logger.error("Failed to add job status " + jobId, e);
-                getRegistryClientPool().returnBrokenResource(registryClient);
             }
 
             JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);

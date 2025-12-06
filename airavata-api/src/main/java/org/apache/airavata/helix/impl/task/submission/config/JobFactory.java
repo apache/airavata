@@ -22,8 +22,9 @@ package org.apache.airavata.helix.impl.task.submission.config;
 import org.apache.airavata.helix.impl.task.submission.config.app.*;
 import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,26 +46,26 @@ public class JobFactory {
     }
 
     public static ResourceJobManager getResourceJobManager(
-            RegistryService.Client registryClient,
+            RegistryService registryService,
             JobSubmissionProtocol submissionProtocol,
             JobSubmissionInterface jobSubmissionInterface)
             throws Exception {
         try {
             if (submissionProtocol == JobSubmissionProtocol.SSH) {
                 SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getSSHJobSubmission(registryService, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
                 LOCALSubmission localJobSubmission =
-                        getLocalJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getLocalJobSubmission(registryService, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK) {
                 SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                        getSSHJobSubmission(registryService, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
@@ -85,21 +86,21 @@ public class JobFactory {
                 + jobSubmissionInterface.getJobSubmissionInterfaceId());
     }
 
-    public static LOCALSubmission getLocalJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static LOCALSubmission getLocalJobSubmission(RegistryService registryService, String submissionId)
             throws AppCatalogException {
         try {
-            return registryClient.getLocalJobSubmission(submissionId);
-        } catch (Exception e) {
+            return registryService.getLocalJobSubmission(submissionId);
+        } catch (RegistryServiceException e) {
             String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
             throw new AppCatalogException(errorMsg, e);
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static SSHJobSubmission getSSHJobSubmission(RegistryService registryService, String submissionId)
             throws AppCatalogException {
         try {
-            return registryClient.getSSHJobSubmission(submissionId);
-        } catch (Exception e) {
+            return registryService.getSSHJobSubmission(submissionId);
+        } catch (RegistryServiceException e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             throw new AppCatalogException(errorMsg, e);
         }

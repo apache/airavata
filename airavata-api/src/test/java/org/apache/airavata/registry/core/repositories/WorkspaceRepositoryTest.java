@@ -19,7 +19,11 @@
 */
 package org.apache.airavata.registry.core.repositories;
 
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+
 public class WorkspaceRepositoryTest {
+
     //    private final static Logger logger = LoggerFactory.getLogger(WorkspaceRepositoryTest.class);
     //
     //    private GatewayRepository gatewayRepository;
@@ -86,7 +90,7 @@ public class WorkspaceRepositoryTest {
     //        userProfile.setComments(USER_COMMENT);
     //        userProfileRepository.update(userProfile);
     //        userProfile = userProfileRepository.get(userId);
-    //        System.out.println(userProfile.getComments());
+    //        logger.info("Comments: {}", userProfile.getComments());
     //        Assertions.assertEquals(userProfile.getComments(), USER_COMMENT);
     //
     //		/*

@@ -27,13 +27,12 @@ import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.function.Function;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.RabbitMQProperties;
 import org.apache.airavata.model.messaging.event.Message;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,12 +88,8 @@ public class RabbitMQPublisher implements Publisher {
             // messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);
-        } catch (TException e) {
-            String msg = "Error while deserializing the object";
-            log.error(msg, e);
-            throw new AiravataException(msg, e);
         } catch (Exception e) {
-            String msg = "Error while sending to rabbitmq";
+            String msg = "Error while publishing message";
             log.error(msg, e);
             throw new AiravataException(msg, e);
         }
@@ -121,12 +116,8 @@ public class RabbitMQPublisher implements Publisher {
             // messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);
-        } catch (TException e) {
-            String msg = "Error while deserializing the object";
-            log.error(msg, e);
-            throw new AiravataException(msg, e);
         } catch (Exception e) {
-            String msg = "Error while sending to rabbitmq";
+            String msg = "Error while publishing message";
             log.error(msg, e);
             throw new AiravataException(msg, e);
         }

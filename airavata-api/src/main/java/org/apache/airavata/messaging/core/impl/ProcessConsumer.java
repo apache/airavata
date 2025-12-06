@@ -25,17 +25,15 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.Message;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +59,6 @@ public class ProcessConsumer extends DefaultConsumer {
 
         try {
             ThriftUtils.createThriftFromBytes(body, message);
-            TBase event = null;
             String gatewayId = null;
             long deliveryTag = envelope.getDeliveryTag();
             if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
@@ -71,7 +68,7 @@ public class ProcessConsumer extends DefaultConsumer {
                         + " and with message type:" + message.getMessageType() + ", for processId:"
                         + processSubmitEvent.getProcessId()
                         + ", expId:" + processSubmitEvent.getExperimentId());
-                event = processSubmitEvent;
+                var event = processSubmitEvent;
                 gatewayId = processSubmitEvent.getGatewayId();
                 MessageContext messageContext = new MessageContext(
                         event, message.getMessageType(), message.getMessageId(), gatewayId, deliveryTag);
@@ -84,7 +81,7 @@ public class ProcessConsumer extends DefaultConsumer {
                 log.info(" Message Received with message id '" + message.getMessageId()
                         + " and with message type:" + message.getMessageType() + ", for processId:"
                         + processTerminateEvent.getProcessId());
-                event = processTerminateEvent;
+                var event = processTerminateEvent;
                 gatewayId = processTerminateEvent.getGatewayId();
                 MessageContext messageContext = new MessageContext(
                         event, message.getMessageType(), message.getMessageId(), gatewayId, deliveryTag);
@@ -99,8 +96,8 @@ public class ProcessConsumer extends DefaultConsumer {
                         deliveryTag);
                 sendAck(deliveryTag);
             }
-        } catch (TException e) {
-            String msg = "Failed to de-serialize the thrift message, from routing keys:" + envelope.getRoutingKey();
+        } catch (Exception e) {
+            String msg = "Failed to handle process message, reason: " + e.getMessage();
             log.warn(msg, e);
         }
     }

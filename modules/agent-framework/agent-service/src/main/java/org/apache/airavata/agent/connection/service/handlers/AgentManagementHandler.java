@@ -35,6 +35,10 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -106,7 +110,7 @@ public class AgentManagementHandler {
 
             return experiment;
 
-        } catch (TException e) {
+        } catch (Exception e) {
             LOGGER.error("Error while extracting the experiment with the id: {}", experimentId);
             throw new RuntimeException("Error while extracting the experiment with the id: " + experimentId, e);
         }
@@ -172,7 +176,7 @@ public class AgentManagementHandler {
                     .airavata()
                     .launchExperiment(UserContext.authzToken(), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName);
-        } catch (TException e) {
+        } catch (Exception e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
             throw new RuntimeException(
                     "Error while creating the experiment with the name: " + req.getExperimentName(), e);
@@ -201,14 +205,15 @@ public class AgentManagementHandler {
                 LOGGER.error("No process found for experiment id: {}", expId);
                 return null;
             }
-        } catch (TException e) {
+        } catch (Exception e) {
             LOGGER.error("Error while extracting the process model for experiment id: {}", expId, e);
             throw new RuntimeException(e);
         }
     }
 
     private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
-            throws TException {
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
+                    TException {
         Airavata.Client airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();

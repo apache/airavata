@@ -39,9 +39,9 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration =
                 JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryServiceClient(),
+                        getRegistryService(),
                         getTaskContext().getJobSubmissionProtocol(),
                         getTaskContext().getPreferredJobSubmissionInterface()));
 
@@ -175,7 +175,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration =
                 JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryServiceClient(),
+                        getRegistryService(),
                         getTaskContext().getJobSubmissionProtocol(),
                         getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(
@@ -187,7 +187,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobId) throws Exception {
 
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
-                getRegistryServiceClient(),
+                getRegistryService(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
 
@@ -208,7 +208,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
 
         ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
-                getRegistryServiceClient(),
+                getRegistryService(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
 
@@ -226,8 +226,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void saveJobModel(JobModel jobModel) throws TException {
-        getRegistryServiceClient().addJob(jobModel, getProcessId());
+    public void saveJobModel(JobModel jobModel) throws RegistryServiceException {
+        getRegistryService().addJob(jobModel, getProcessId());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -253,7 +253,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
+            getRegistryService().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             /*JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 

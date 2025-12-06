@@ -19,11 +19,14 @@
 */
 package org.apache.airavata.service;
 
+import jakarta.persistence.PersistenceException;
 import java.util.List;
 import java.util.UUID;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
@@ -31,10 +34,9 @@ import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
-import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfileRepository;
-import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
-import org.apache.thrift.TException;
+import org.apache.airavata.profile.commons.tenant.entities.GatewayEntity;
+import org.apache.airavata.profile.tenant.core.repositories.TenantProfileRepository;
+import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +51,8 @@ public class TenantProfileService {
         logger.debug("Initializing TenantProfileService");
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
         try {
-            this.credentialStoreService = new CredentialStoreService();
-        } catch (ApplicationSettingsException
-                | IllegalAccessException
-                | ClassNotFoundException
-                | InstantiationException e) {
+            this.credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
+        } catch (ServiceFactoryException e) {
             String msg = "Error initializing TenantProfileService, reason: " + e.getMessage();
             logger.error(msg, e);
             var exception = new TenantProfileServiceException(msg);
@@ -62,7 +61,8 @@ public class TenantProfileService {
         }
     }
 
-    public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException {
+    public String addGateway(AuthzToken authzToken, Gateway gateway)
+            throws TenantProfileServiceException, CredentialStoreException {
         try {
             // Assign UUID to gateway
             gateway.setAiravataInternalGatewayId(UUID.randomUUID().toString());
@@ -79,32 +79,57 @@ public class TenantProfileService {
                         logger.info(
                                 "Gateway with ID: {}, is now APPROVED, replicating to subscribers.",
                                 gateway.getGatewayId());
-                        dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
+                        try {
+                            dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
+                        } catch (AiravataException e) {
+                            logger.error("Error publishing gateway creation event", e);
+                        }
                     }
                     // return internal id
                     return gateway.getAiravataInternalGatewayId();
                 } else {
-                    throw new Exception("Gateway object is null.");
+                    throw new TenantProfileServiceException("Gateway object is null.");
                 }
             } else {
                 throw new TenantProfileServiceException(
                         "An approved Gateway already exists with the same GatewayId, Name or URL");
             }
-        } catch (Exception ex) {
-            logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
+        } catch (CredentialStoreException e) {
+            throw e;
+        } catch (ApplicationSettingsException e) {
+            String message = "Error adding gateway-profile: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
+            throw exception;
+        } catch (PersistenceException e) {
+            String message = "Error adding gateway-profile: " + e.getMessage();
+            logger.error(message, e);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
 
-    public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway) throws TenantProfileServiceException {
+    public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
+            throws TenantProfileServiceException, CredentialStoreException {
         try {
 
             // if admin password token changes then copy the admin password and store under this gateway id and then
             // update the admin password token
-            Gateway existingGateway = tenantProfileRepository.getGateway(updatedGateway.getAiravataInternalGatewayId());
+            Gateway existingGateway;
+            try {
+                existingGateway = tenantProfileRepository.getGateway(updatedGateway.getAiravataInternalGatewayId());
+            } catch (Exception e) {
+                String message = "Error getting gateway: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             if (updatedGateway.getIdentityServerPasswordToken() != null
                     && (existingGateway.getIdentityServerPasswordToken() == null
                             || !existingGateway
@@ -116,16 +141,30 @@ public class TenantProfileService {
             if (tenantProfileRepository.update(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
                 // replicate tenant at end-places
-                dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
+                try {
+                    dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
+                } catch (AiravataException e) {
+                    logger.error("Error publishing gateway update event", e);
+                }
                 return true;
             } else {
                 return false;
             }
-        } catch (Exception ex) {
-            logger.error("Error updating gateway-profile, reason: " + ex.getMessage(), ex);
+        } catch (CredentialStoreException e) {
+            throw e;
+        } catch (ApplicationSettingsException e) {
+            String message = "Error updating gateway-profile: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error updating gateway-profile, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
+            throw exception;
+        } catch (PersistenceException e) {
+            String message = "Error updating gateway-profile: " + e.getMessage();
+            logger.error(message, e);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -133,16 +172,28 @@ public class TenantProfileService {
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId)
             throws TenantProfileServiceException {
         try {
-            Gateway gateway = tenantProfileRepository.getGateway(airavataInternalGatewayId);
+            Gateway gateway;
+            try {
+                gateway = tenantProfileRepository.getGateway(airavataInternalGatewayId);
+            } catch (Exception e) {
+                String message = "Error getting gateway: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             if (gateway == null) {
-                throw new Exception("Could not find Gateway with internal ID: " + airavataInternalGatewayId);
+                throw new TenantProfileServiceException(
+                        "Could not find Gateway with internal ID: " + airavataInternalGatewayId);
             }
             return gateway;
-        } catch (Exception ex) {
-            logger.error("Error getting gateway-profile, reason: " + ex.getMessage(), ex);
+        } catch (PersistenceException e) {
+            String message = "Error getting gateway-profile: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting gateway-profile, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -155,44 +206,70 @@ public class TenantProfileService {
             boolean deleteSuccess = tenantProfileRepository.delete(airavataInternalGatewayId);
             if (deleteSuccess) {
                 // delete tenant at end-places
-                dbEventPublisherUtils.publish(
-                        EntityType.TENANT,
-                        CrudType.DELETE,
-                        // pass along gateway datamodel, with correct gatewayId;
-                        // approvalstatus is not used for delete, hence set dummy value
-                        new Gateway(gatewayId, GatewayApprovalStatus.DEACTIVATED));
+                try {
+                    dbEventPublisherUtils.publish(
+                            EntityType.TENANT,
+                            CrudType.DELETE,
+                            // pass along gateway datamodel, with correct gatewayId;
+                            // approvalstatus is not used for delete, hence set dummy value
+                            new Gateway(gatewayId, GatewayApprovalStatus.DEACTIVATED));
+                } catch (AiravataException e) {
+                    logger.error("Error publishing gateway deletion event", e);
+                }
             }
             return deleteSuccess;
-        } catch (Exception ex) {
-            logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
+        } catch (PersistenceException e) {
+            String message = "Error deleting gateway-profile: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
 
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException {
         try {
-            return tenantProfileRepository.getAllGateways();
-        } catch (Exception ex) {
-            logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
+            try {
+                return tenantProfileRepository.getAllGateways();
+            } catch (Exception e) {
+                String message = "Error getting all gateways: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
+        } catch (PersistenceException e) {
+            String message = "Error getting all gateway-profiles: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting all gateway-profiles, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
 
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException {
         try {
-            Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
+            Gateway gateway;
+            try {
+                gateway = tenantProfileRepository.getGateway(gatewayId);
+            } catch (Exception e) {
+                String message = "Error checking if gateway exists: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             return (gateway != null);
-        } catch (Exception ex) {
-            logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
+        } catch (PersistenceException e) {
+            String message = "Error checking if gateway-profile exists: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -200,26 +277,47 @@ public class TenantProfileService {
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername)
             throws TenantProfileServiceException {
         try {
-            return tenantProfileRepository.getAllGatewaysForUser(requesterUsername);
-        } catch (Exception ex) {
-            logger.error("Error getting user's gateway-profiles, reason: " + ex.getMessage(), ex);
+            try {
+                return tenantProfileRepository.getAllGatewaysForUser(requesterUsername);
+            } catch (Exception e) {
+                String message = "Error getting user's gateways: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
+        } catch (PersistenceException e) {
+            String message = "Error getting user's gateway-profiles: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error getting user's gateway-profiles, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
 
     private boolean checkDuplicateGateway(Gateway gateway) throws TenantProfileServiceException {
         try {
-            Gateway duplicateGateway = tenantProfileRepository.getDuplicateGateway(
-                    gateway.getGatewayId(), gateway.getGatewayName(), gateway.getGatewayURL());
+            Gateway duplicateGateway;
+            try {
+                duplicateGateway = tenantProfileRepository.getDuplicateGateway(
+                        gateway.getGatewayId(), gateway.getGatewayName(), gateway.getGatewayURL());
+            } catch (Exception e) {
+                String message = "Error checking duplicate gateway: " + e.getMessage();
+                logger.error(message, e);
+                TenantProfileServiceException exception = new TenantProfileServiceException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             return duplicateGateway != null;
-        } catch (Exception ex) {
-            logger.error("Error checking if duplicate gateway-profile exists, reason: " + ex.getMessage(), ex);
+        } catch (PersistenceException e) {
+            String message = "Error checking if duplicate gateway-profile exists: " + e.getMessage();
+            logger.error(message, e);
             TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage("Error checking if duplicate gateway-profiles exists, reason: " + ex.getMessage());
-            exception.initCause(ex);
+            exception.setMessage(message);
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -227,21 +325,12 @@ public class TenantProfileService {
     // admin passwords are stored in credential store in the super portal gateway and need to be
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
-            throws TException, ApplicationSettingsException {
-        try {
-            String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential adminPasswordCredential = credentialStoreService.getPasswordCredential(
-                    gateway.getIdentityServerPasswordToken(), requestGatewayId);
-            adminPasswordCredential.setGatewayId(gateway.getGatewayId());
-            String newAdminPasswordCredentialToken =
-                    credentialStoreService.addPasswordCredential(adminPasswordCredential);
-            gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-        } catch (Exception ex) {
-            String msg = "Error copying admin password to gateway, reason: " + ex.getMessage();
-            logger.error(msg, ex);
-            var exception = new TenantProfileServiceException(msg);
-            exception.initCause(ex);
-            throw exception;
-        }
+            throws ApplicationSettingsException, TenantProfileServiceException, CredentialStoreException {
+        String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        PasswordCredential adminPasswordCredential = credentialStoreService.getPasswordCredential(
+                gateway.getIdentityServerPasswordToken(), requestGatewayId);
+        adminPasswordCredential.setGatewayId(gateway.getGatewayId());
+        String newAdminPasswordCredentialToken = credentialStoreService.addPasswordCredential(adminPasswordCredential);
+        gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
     }
 }

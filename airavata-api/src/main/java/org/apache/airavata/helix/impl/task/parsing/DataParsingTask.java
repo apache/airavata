@@ -63,13 +63,13 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -345,12 +345,12 @@ public class DataParsingTask extends AbstractTask {
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport)
-            throws TaskOnFailException, TException, AgentException {
+            throws TaskOnFailException, AgentException, RegistryServiceException, ServiceFactoryException {
 
+        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
         StoragePreference gatewayStoragePreference =
-                getRegistryServiceClient().getGatewayStoragePreference(gatewayId, storageResourceId);
-        GatewayResourceProfile gatewayResourceProfile =
-                getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
+                registryService.getGatewayStoragePreference(gatewayId, storageResourceId);
+        GatewayResourceProfile gatewayResourceProfile = registryService.getGatewayResourceProfile(gatewayId);
 
         String token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
         if (token == null || token.isEmpty()) {
@@ -447,6 +447,14 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Data product is " + productUri + " for path " + remoteFilePath);
 
             setContextVariable(parsingTaskOutput.getContextVariableName(), productUri);
+        } catch (ServiceFactoryException e) {
+            throw new TaskOnFailException("Failed to get services from ServiceFactory", false, e);
+        } catch (TaskOnFailException e) {
+            throw e;
+        } catch (RegistryServiceException e) {
+            throw new TaskOnFailException("Failed to access registry service", false, e);
+        } catch (AgentException e) {
+            throw new TaskOnFailException("Agent error", false, e);
         } catch (Exception e) {
             logger.error(
                     "Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath
@@ -486,13 +494,13 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
-    private static RegistryService.Client getRegistryServiceClient() throws TaskOnFailException {
+    private static RegistryService getRegistryServiceClient() throws TaskOnFailException {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
-            throw new TaskOnFailException("Unable to create registry client...", false, e);
+            return ServiceFactory.getInstance().getRegistryService();
+        } catch (ServiceFactoryException e) {
+            throw new TaskOnFailException("Unable to create registry service...", false, e);
+        } catch (Exception e) {
+            throw new TaskOnFailException("Unable to create registry service...", false, e);
         }
     }
 

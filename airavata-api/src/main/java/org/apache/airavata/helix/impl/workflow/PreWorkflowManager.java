@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
@@ -55,11 +55,11 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
+import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.monitor.platform.MonitoringServer;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,26 +93,24 @@ public class PreWorkflowManager extends WorkflowManager {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
-            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            getRegistryClientPool().returnResource(registryClient);
-            ResourceType resourceType = registryClient
+            processModel = registryService.getProcess(processId);
+            experimentModel = registryService.getExperiment(processModel.getExperimentId());
+            ResourceType resourceType = registryService
                     .getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
             taskFactory = TaskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
-        } catch (Exception e) {
+        } catch (RegistryServiceException e) {
             logger.error(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
         }
@@ -205,20 +203,18 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService registryService = getRegistryService();
 
         ProcessModel processModel;
         GroupComputeResourcePreference gcrPref;
 
         try {
-            processModel = registryClient.getProcess(processId);
-            getRegistryClientPool().returnResource(registryClient);
-            gcrPref = registryClient.getGroupComputeResourcePreference(
+            processModel = registryService.getProcess(processId);
+            gcrPref = registryService.getGroupComputeResourcePreference(
                     processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
-        } catch (Exception e) {
+        } catch (RegistryServiceException e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to fetch process from registry associated with process id " + processId, e);
         }
 
@@ -311,12 +307,12 @@ public class PreWorkflowManager extends WorkflowManager {
 
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
                 ProcessSubmitEvent event = new ProcessSubmitEvent();
-                TBase messageEvent = messageContext.getEvent();
+                var messageEvent = messageContext.getEvent();
 
                 try {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                } catch (TException e) {
+                } catch (Exception e) {
                     logger.error("Failed to fetch process submit event", e);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 }
@@ -349,12 +345,12 @@ public class PreWorkflowManager extends WorkflowManager {
 
             } else if (messageContext.getType().equals(MessageType.TERMINATEPROCESS)) {
                 ProcessTerminateEvent event = new ProcessTerminateEvent();
-                TBase messageEvent = messageContext.getEvent();
+                var messageEvent = messageContext.getEvent();
 
                 try {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                } catch (TException e) {
+                } catch (Exception e) {
                     logger.error("Failed to fetch process cancellation event", e);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 }

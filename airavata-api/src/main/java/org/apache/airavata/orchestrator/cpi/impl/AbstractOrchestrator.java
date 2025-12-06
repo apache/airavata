@@ -27,7 +27,6 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +65,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         this.airavataUserName = airavataUserName;
     }
 
-    public AbstractOrchestrator() throws OrchestratorException, TException {
+    public AbstractOrchestrator() throws OrchestratorException {
         try {
             /* Initializing the OrchestratorConfiguration object */
             orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();

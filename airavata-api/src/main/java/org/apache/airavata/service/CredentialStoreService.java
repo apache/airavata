@@ -20,6 +20,7 @@
 package org.apache.airavata.service;
 
 import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -28,16 +29,16 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.CommunityUser;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.CredentialOwnerType;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
-import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
-import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
-import org.apache.airavata.credential.store.util.TokenGenerator;
-import org.apache.airavata.credential.store.util.Utility;
+import org.apache.airavata.credential.CommunityUser;
+import org.apache.airavata.credential.Credential;
+import org.apache.airavata.credential.CredentialOwnerType;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.impl.CertificateCredentialWriter;
+import org.apache.airavata.credential.store.impl.CredentialReaderImpl;
+import org.apache.airavata.credential.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.impl.util.CredentialStoreDBInitConfig;
+import org.apache.airavata.credential.util.TokenGenerator;
+import org.apache.airavata.credential.util.Utility;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -51,9 +52,7 @@ public class CredentialStoreService {
     private CertificateCredentialWriter certificateCredentialWriter;
     private CredentialReaderImpl credentialReader;
 
-    public CredentialStoreService()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
-                    InstantiationException {
+    public CredentialStoreService() throws ApplicationSettingsException {
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
         String password = ServerSettings.getCredentialStoreDBPassword();
@@ -71,8 +70,8 @@ public class CredentialStoreService {
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
         try {
-            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential =
-                    new org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential();
+            org.apache.airavata.credential.impl.ssh.SSHCredential credential =
+                    new org.apache.airavata.credential.impl.ssh.SSHCredential();
             credential.setGateway(sshCredential.getGatewayId());
             credential.setPortalUserName(sshCredential.getUsername());
             // only username and gateway id will be sent by client.
@@ -89,25 +88,39 @@ public class CredentialStoreService {
                 credential.setPublicKey(sshCredential.getPublicKey().getBytes());
             }
             if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
-                credential = Utility.generateKeyPair(credential);
+                try {
+                    credential = Utility.generateKeyPair(credential);
+                } catch (Exception ex) {
+                    String message = "Error occurred while generating key pair: " + ex.getMessage();
+                    logger.error(message, ex);
+                    CredentialStoreException exception = new CredentialStoreException();
+                    exception.setMessage(message);
+                    exception.initCause(ex);
+                    throw exception;
+                }
             }
             credential.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
-            sshCredentialWriter.writeCredentials(credential);
+            try {
+                sshCredentialWriter.writeCredentials(credential);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String message = "Error occurred while saving SSH Credentials: " + e.getMessage();
+                logger.error(message, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             return token;
-        } catch (Throwable e) {
-            logger.error("Error occurred while saving SSH Credentials.", e);
-            CredentialStoreException exception = new CredentialStoreException(
-                    "Error occurred while saving SSH Credentials.. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
     public String addCertificateCredential(CertificateCredential certificateCredential)
             throws CredentialStoreException {
         try {
-            org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential =
-                    new org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential();
+            org.apache.airavata.credential.impl.certificate.CertificateCredential credential =
+                    new org.apache.airavata.credential.impl.certificate.CertificateCredential();
             credential.setPortalUserName(
                     certificateCredential.getCommunityUser().getUsername());
             credential.setCommunityUser(new CommunityUser(
@@ -127,12 +140,24 @@ public class CredentialStoreService {
             X509Certificate[] certificates = new X509Certificate[1];
             certificates[0] = certificate;
             credential.setCertificates(certificates);
-            certificateCredentialWriter.writeCredentials(credential);
+            try {
+                certificateCredentialWriter.writeCredentials(credential);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String message = "Error occurred while saving Certificate Credentials: " + e.getMessage();
+                logger.error(message, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             return token;
-        } catch (Throwable e) {
-            logger.error("Error occurred while saving Certificate Credentials.", e);
-            CredentialStoreException exception = new CredentialStoreException(
-                    "Error occurred while saving Certificate Credentials.. More info : " + e.getMessage());
+        } catch (CredentialStoreException e) {
+            throw e;
+        } catch (CertificateException e) {
+            String message = "Error occurred while processing certificate: " + e.getMessage();
+            logger.error(message, e);
+            CredentialStoreException exception = new CredentialStoreException();
+            exception.setMessage(message);
             exception.initCause(e);
             throw exception;
         }
@@ -140,8 +165,8 @@ public class CredentialStoreService {
 
     public String addPasswordCredential(PasswordCredential passwordCredential) throws CredentialStoreException {
         try {
-            org.apache.airavata.credential.store.credential.impl.password.PasswordCredential credential =
-                    new org.apache.airavata.credential.store.credential.impl.password.PasswordCredential();
+            org.apache.airavata.credential.impl.password.PasswordCredential credential =
+                    new org.apache.airavata.credential.impl.password.PasswordCredential();
             credential.setGateway(passwordCredential.getGatewayId());
             credential.setPortalUserName(passwordCredential.getPortalUserName());
             credential.setUserName(passwordCredential.getLoginUserName());
@@ -149,26 +174,40 @@ public class CredentialStoreService {
             credential.setDescription(passwordCredential.getDescription());
             String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
             credential.setToken(token);
-            sshCredentialWriter.writeCredentials(credential);
+            try {
+                sshCredentialWriter.writeCredentials(credential);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String message = "Error occurred while saving PWD Credentials: " + e.getMessage();
+                logger.error(message, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             return token;
-        } catch (Throwable e) {
-            logger.error("Error occurred while saving PWD Credentials.", e);
-            CredentialStoreException exception = new CredentialStoreException(
-                    "Error occurred while saving PWD Credentials.. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
-            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                    && !(credential
-                            instanceof
-                            org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
-                org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 =
-                        (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+            Credential credential;
+            try {
+                credential = credentialReader.getCredential(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while retrieving SSH credential for token - " + tokenId
+                        + " and gateway id - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
+            if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
+                    && !(credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential)) {
+                org.apache.airavata.credential.impl.ssh.SSHCredential credential1 =
+                        (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
                 SSHCredential sshCredential = new SSHCredential();
                 sshCredential.setUsername(credential1.getPortalUserName());
                 sshCredential.setGatewayId(credential1.getGateway());
@@ -185,107 +224,100 @@ public class CredentialStoreService {
                         + gatewayId);
                 return null;
             }
-        } catch (Throwable e) {
-            String msg = "Error occurred while retrieving SSH credential for token - " + tokenId + " and gateway id - "
-                    + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
-            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            Credential credential;
+            try {
+                credential = credentialReader.getCredential(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while retrieving credential for token - " + tokenId + " and gateway id - "
+                        + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
             if (isSSHCredential(credential)) {
-                return convertToCredentialSummary(
-                        (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential);
+                return convertToCredentialSummary((org.apache.airavata.credential.impl.ssh.SSHCredential) credential);
             } else if (isCertificateCredential(credential)) {
                 return convertToCredentialSummary(
-                        (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential)
-                                credential);
+                        (org.apache.airavata.credential.impl.certificate.CertificateCredential) credential);
             } else if (isPasswordCredential(credential)) {
                 return convertToCredentialSummary(
-                        (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential);
+                        (org.apache.airavata.credential.impl.password.PasswordCredential) credential);
             }
             String msg = "Unrecognized type of credential for token: " + tokenId;
-            logger.error(msg, new RuntimeException(msg));
+            logger.error(msg);
             CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(new RuntimeException(msg));
             throw exception;
         } catch (CredentialStoreException e) {
             throw e;
-        } catch (Throwable e) {
-            final String msg = "Error occurred while retrieving credential summary for token - " + tokenId
-                    + " and gateway id - " + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         }
     }
 
     public List<CredentialSummary> getAllCredentialSummaries(
             SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
         try {
-            List<Credential> credentials =
-                    credentialReader.getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
+            List<Credential> credentials;
+            try {
+                credentials = credentialReader.getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while retrieving credentials for gateway - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
             if (type.equals(SummaryType.SSH)) {
                 return credentials.stream()
                         .filter(this::isSSHCredential)
-                        .map(cred -> (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) cred)
+                        .map(cred -> (org.apache.airavata.credential.impl.ssh.SSHCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else if (type.equals(SummaryType.CERT)) {
                 return credentials.stream()
                         .filter(this::isCertificateCredential)
-                        .map(cred ->
-                                (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential)
-                                        cred)
+                        .map(cred -> (org.apache.airavata.credential.impl.certificate.CertificateCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else if (type.equals(SummaryType.PASSWD)) {
                 return credentials.stream()
                         .filter(this::isPasswordCredential)
-                        .map(cred ->
-                                (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) cred)
+                        .map(cred -> (org.apache.airavata.credential.impl.password.PasswordCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else {
                 String msg = "Summary Type " + type + " is not supported.";
-                logger.error(msg, new RuntimeException(msg));
+                logger.error(msg);
                 CredentialStoreException exception = new CredentialStoreException(msg);
-                exception.initCause(new RuntimeException(msg));
                 throw exception;
             }
         } catch (CredentialStoreException e) {
             throw e;
-        } catch (Throwable e) {
-            final String msg = "Error occurred while retrieving " + type + " credential Summary for tokens - "
-                    + accessibleTokenIds + " and gateway id - " + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg + ". More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
         }
     }
 
     private boolean isSSHCredential(Credential cred) {
-        return cred instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                && !(cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential);
+        return cred instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
+                && !(cred instanceof org.apache.airavata.credential.impl.password.PasswordCredential);
     }
 
     private boolean isCertificateCredential(Credential cred) {
-        return cred instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+        return cred instanceof org.apache.airavata.credential.impl.certificate.CertificateCredential;
     }
 
     private boolean isPasswordCredential(Credential cred) {
-        return cred instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
+        return cred instanceof org.apache.airavata.credential.impl.password.PasswordCredential;
     }
 
-    private CredentialSummary convertToCredentialSummary(
-            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential cred) {
+    private CredentialSummary convertToCredentialSummary(org.apache.airavata.credential.impl.ssh.SSHCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.SSH);
         credentialSummary.setUsername(cred.getPortalUserName());
@@ -298,7 +330,7 @@ public class CredentialStoreService {
     }
 
     private CredentialSummary convertToCredentialSummary(
-            org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential cred) {
+            org.apache.airavata.credential.impl.certificate.CertificateCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.CERT);
         credentialSummary.setUsername(cred.getPortalUserName());
@@ -313,7 +345,7 @@ public class CredentialStoreService {
     }
 
     private CredentialSummary convertToCredentialSummary(
-            org.apache.airavata.credential.store.credential.impl.password.PasswordCredential cred) {
+            org.apache.airavata.credential.impl.password.PasswordCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.PASSWD);
         credentialSummary.setUsername(cred.getPortalUserName());
@@ -327,12 +359,21 @@ public class CredentialStoreService {
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
             throws CredentialStoreException {
         try {
-            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential
-                    instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) {
-                org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential1 =
-                        (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential)
-                                credential;
+            Credential credential;
+            try {
+                credential = credentialReader.getCredential(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while retrieving Certificate credential for token - " + tokenId
+                        + " and gateway id - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
+            if (credential instanceof org.apache.airavata.credential.impl.certificate.CertificateCredential) {
+                org.apache.airavata.credential.impl.certificate.CertificateCredential credential1 =
+                        (org.apache.airavata.credential.impl.certificate.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
                 org.apache.airavata.model.credential.store.CommunityUser communityUser =
                         new org.apache.airavata.model.credential.store.CommunityUser();
@@ -357,23 +398,28 @@ public class CredentialStoreService {
                         + gatewayId);
                 return null;
             }
-        } catch (Throwable e) {
-            String msg = "Error occurred while retrieving Certificate credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
-            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential
-                    instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) {
-                org.apache.airavata.credential.store.credential.impl.password.PasswordCredential credential1 =
-                        (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) credential;
+            Credential credential;
+            try {
+                credential = credentialReader.getCredential(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while retrieving PWD credential for token - " + tokenId
+                        + " and gateway id - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
+            if (credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential) {
+                org.apache.airavata.credential.impl.password.PasswordCredential credential1 =
+                        (org.apache.airavata.credential.impl.password.PasswordCredential) credential;
                 PasswordCredential pwdCredential = new PasswordCredential();
                 pwdCredential.setGatewayId(credential1.getGateway());
                 pwdCredential.setPortalUserName(credential1.getPortalUserName());
@@ -389,13 +435,8 @@ public class CredentialStoreService {
                         + gatewayId);
                 return null;
             }
-        } catch (Throwable e) {
-            String msg = "Error occurred while retrieving PWD credential for token - " + tokenId + " and gateway id - "
-                    + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
@@ -406,17 +447,25 @@ public class CredentialStoreService {
             Map<String, String> sshKeyMap = new HashMap<>();
             List<CredentialSummary> summaryList = new ArrayList<>();
             try {
-                List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+                List<Credential> allCredentials;
+                try {
+                    allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+                } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                    String message = "Error occurred while retrieving credential Summary: " + e.getMessage();
+                    logger.error(message, e);
+                    CredentialStoreException exception = new CredentialStoreException();
+                    exception.setMessage(message);
+                    exception.initCause(e);
+                    throw exception;
+                }
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                        if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
                                 && !(credential
-                                        instanceof
-                                        org.apache.airavata.credential.store.credential.impl.password
-                                                .PasswordCredential)
+                                        instanceof org.apache.airavata.credential.impl.password.PasswordCredential)
                                 && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
-                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential =
-                                    (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                            org.apache.airavata.credential.impl.ssh.SSHCredential sshCredential =
+                                    (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
                             CredentialSummary sshCredentialSummary = new CredentialSummary();
                             sshCredentialSummary.setType(SummaryType.SSH);
                             sshCredentialSummary.setToken(sshCredential.getToken());
@@ -428,12 +477,8 @@ public class CredentialStoreService {
                         }
                     }
                 }
-            } catch (Throwable e) {
-                logger.error("Error occurred while retrieving credential Summary", e);
-                CredentialStoreException exception = new CredentialStoreException(
-                        "Error occurred while retrieving credential Summary. More info : " + e.getMessage());
-                exception.initCause(e);
-                throw exception;
+            } catch (CredentialStoreException e) {
+                throw e;
             }
             return summaryList;
         } else {
@@ -449,27 +494,32 @@ public class CredentialStoreService {
             Map<String, String> sshKeyMap = new HashMap<>();
             List<CredentialSummary> summaryList = new ArrayList<>();
             try {
-                List<Credential> allCredentials = credentialReader.getAllCredentials();
+                List<Credential> allCredentials;
+                try {
+                    allCredentials = credentialReader.getAllCredentials();
+                } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                    String message = "Error occurred while retrieving credential Summary: " + e.getMessage();
+                    logger.error(message, e);
+                    CredentialStoreException exception = new CredentialStoreException();
+                    exception.setMessage(message);
+                    exception.initCause(e);
+                    throw exception;
+                }
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                        if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
                                 && !(credential
-                                        instanceof
-                                        org.apache.airavata.credential.store.credential.impl.password
-                                                .PasswordCredential)) {
-                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential =
-                                    (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                                        instanceof org.apache.airavata.credential.impl.password.PasswordCredential)) {
+                            org.apache.airavata.credential.impl.ssh.SSHCredential sshCredential =
+                                    (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
                             String portalUserName = sshCredential.getPortalUserName();
                             String gateway = sshCredential.getGateway();
                             if (portalUserName != null && gateway != null) {
                                 if (portalUserName.equals(userId)
                                         && gateway.equals(gatewayId)
                                         && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER) {
-                                    org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                                            sshCredentialKey =
-                                                    (org.apache.airavata.credential.store.credential.impl.ssh
-                                                                    .SSHCredential)
-                                                            credential;
+                                    org.apache.airavata.credential.impl.ssh.SSHCredential sshCredentialKey =
+                                            (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
                                     CredentialSummary sshCredentialSummary = new CredentialSummary();
                                     sshCredentialSummary.setType(SummaryType.SSH);
                                     sshCredentialSummary.setToken(sshCredentialKey.getToken());
@@ -483,12 +533,8 @@ public class CredentialStoreService {
                         }
                     }
                 }
-            } catch (Throwable e) {
-                logger.error("Error occurred while retrieving credential Summary", e);
-                CredentialStoreException exception = new CredentialStoreException(
-                        "Error occurred while retrieving credential Summary. More info : " + e.getMessage());
-                exception.initCause(e);
-                throw exception;
+            } catch (CredentialStoreException e) {
+                throw e;
             }
             return summaryList;
         } else {
@@ -502,56 +548,69 @@ public class CredentialStoreService {
     public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws CredentialStoreException {
         Map<String, String> pwdCredMap = new HashMap<>();
         try {
-            List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+            List<Credential> allCredentials;
+            try {
+                allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String message = "Error occurred while retrieving credentials: " + e.getMessage();
+                logger.error(message, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(message);
+                exception.initCause(e);
+                throw exception;
+            }
             if (allCredentials != null && !allCredentials.isEmpty()) {
                 for (Credential credential : allCredentials) {
-                    if (credential
-                            instanceof
-                            org.apache.airavata.credential.store.credential.impl.password.PasswordCredential) {
-                        org.apache.airavata.credential.store.credential.impl.password.PasswordCredential pwdCredential =
-                                (org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)
-                                        credential;
+                    if (credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential) {
+                        org.apache.airavata.credential.impl.password.PasswordCredential pwdCredential =
+                                (org.apache.airavata.credential.impl.password.PasswordCredential) credential;
                         pwdCredMap.put(
                                 pwdCredential.getToken(),
                                 pwdCredential.getDescription() == null ? "" : pwdCredential.getDescription());
                     }
                 }
             }
-        } catch (Throwable e) {
-            logger.error("Error occurred while retrieving credentials", e);
-            CredentialStoreException exception = new CredentialStoreException(
-                    "Error occurred while retrieving credentials. More info : " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
         return pwdCredMap;
     }
 
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
-            credentialReader.removeCredentials(gatewayId, tokenId);
+            try {
+                credentialReader.removeCredentials(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while deleting SSH credential for token - " + tokenId
+                        + " and gateway id - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
             return true;
-        } catch (Throwable e) {
-            String msg = "Error occurred while deleting SSH credential for token - " + tokenId + " and gateway id - "
-                    + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 
     public boolean deletePWDCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
-            credentialReader.removeCredentials(gatewayId, tokenId);
+            try {
+                credentialReader.removeCredentials(gatewayId, tokenId);
+            } catch (org.apache.airavata.credential.store.CredentialStoreException e) {
+                String msg = "Error occurred while deleting PWD credential for token - " + tokenId
+                        + " and gateway id - " + gatewayId;
+                logger.error(msg, e);
+                CredentialStoreException exception = new CredentialStoreException();
+                exception.setMessage(msg);
+                exception.initCause(e);
+                throw exception;
+            }
             return true;
-        } catch (Throwable e) {
-            String msg = "Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - "
-                    + gatewayId;
-            logger.error(msg, e);
-            CredentialStoreException exception = new CredentialStoreException(msg);
-            exception.initCause(e);
-            throw exception;
+        } catch (CredentialStoreException e) {
+            throw e;
         }
     }
 }

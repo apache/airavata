@@ -29,8 +29,12 @@ import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobEngineStarter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JobEngineStarter.class);
 
     public static void main(String args[]) throws Exception {
 
@@ -43,7 +47,7 @@ public class JobEngineStarter {
 
         zkHelixAdmin.addCluster(ServerSettings.getSetting("helix.cluster.name"), true);
 
-        System.out.println("Starting Helix Controller .......");
+        logger.info("Starting Helix Controller .......");
         // Starting helix controller
         HelixController controller = new HelixController();
         controller.startServer();
@@ -54,18 +58,18 @@ public class JobEngineStarter {
             taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
         }
 
-        System.out.println("Starting Helix Participant .......");
+        logger.info("Starting Helix Participant .......");
 
         // Starting helix participant
         GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
         participant.startServer();
 
-        System.out.println("Starting Pre Workflow Manager .......");
+        logger.info("Starting Pre Workflow Manager .......");
 
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
         preWorkflowManager.startServer();
 
-        System.out.println("Starting Post Workflow Manager .......");
+        logger.info("Starting Post Workflow Manager .......");
 
         PostWorkflowManager postWorkflowManager = new PostWorkflowManager();
         postWorkflowManager.startServer();

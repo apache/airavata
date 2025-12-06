@@ -173,7 +173,7 @@ credential.store.jdbc.password={{ db_password }}
 credential.store.jdbc.driver=com.mysql.jdbc.Driver
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
-credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
+credential.store.class=org.apache.airavata.credential.server.CredentialStoreServer
 credential.stroe.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
@@ -236,7 +236,7 @@ zookeeper.server.connection={{ zookeeper_connection_url }}
 ########################################################################
 ## API Security Configuration
 ########################################################################
-security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+security.manager.class=org.apache.airavata.security.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.client.timeout=10000
@@ -249,5 +249,5 @@ remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
 authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
-authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
+authz.cache.manager.class=org.apache.airavata.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000

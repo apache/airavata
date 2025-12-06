@@ -74,9 +74,4 @@ public class DBEventManagerConstants {
         }
         return null;
     }
-
-    //    public static void main(String[] args) {
-    //        System.out.println(DBEventManagerConstants.getDbEventServiceName(EntityType.USER_PROFILE));
-    //        System.out.println(DBEventService.REGISTRY);
-    //    }
 }

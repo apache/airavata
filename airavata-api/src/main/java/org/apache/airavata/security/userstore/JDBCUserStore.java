@@ -20,6 +20,7 @@
 package org.apache.airavata.security.userstore;
 
 import javax.sql.DataSource;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
@@ -146,8 +147,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     }
 
     protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException {
-
+            throws ApplicationSettingsException {
         DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
         DataSource dataSource = dbUtil.getDataSource();
         jdbcRealm.setDataSource(dataSource);

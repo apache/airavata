@@ -17,15 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.client.samples;
+package org.apache.airavata.profile.client.samples;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.*;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class UserProfileSample {
 
     private static final Logger logger = LoggerFactory.getLogger(UserProfileSample.class);
-    private static UserProfileService.Client userProfileClient;
+    private static UserProfileService userProfileService;
     private static String testUserId = null;
     private static String testGatewayId = "test-gateway-465";
     private static AuthzToken authzToken = new AuthzToken("empy_token");
@@ -54,50 +52,46 @@ public class UserProfileSample {
      */
     public static void main(String[] args) throws Exception {
         try {
-            String profileServiceServerHost = ProfileServiceClientUtil.getProfileServiceServerHost();
-            int profileServiceServerPort = ProfileServiceClientUtil.getProfileServiceServerPort();
-
-            userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(
-                    profileServiceServerHost, profileServiceServerPort);
+            userProfileService = new UserProfileService();
 
             // test add-user-profile
-            testUserId = userProfileClient.addUserProfile(authzToken, getUserProfile(null));
+            testUserId = userProfileService.addUserProfile(authzToken, getUserProfile(null));
             assert (testUserId != null) : "User creation failed. Null userId returned!";
-            System.out.println("User created with userId: " + testUserId);
+            logger.info("User created with userId: {}", testUserId);
 
             // test find-user-profile
-            UserProfile userProfile = userProfileClient.getUserProfileById(authzToken, testUserId, testGatewayId);
+            UserProfile userProfile = userProfileService.getUserProfileById(authzToken, testUserId, testGatewayId);
             assert (userProfile != null)
                     : "Could not find user with userId: " + testUserId + ", and gatewayID: " + testGatewayId;
-            System.out.println("UserProfile: " + userProfile);
+            logger.info("UserProfile: {}", userProfile);
 
             // test update-user-profile : update name
             userProfile = getUserProfile(testUserId);
             String newFName = userProfile.getFirstName().replaceAll("fname", "fname-updated");
             userProfile.setFirstName(newFName);
-            boolean updateSuccess = userProfileClient.updateUserProfile(authzToken, userProfile);
+            boolean updateSuccess = userProfileService.updateUserProfile(authzToken, userProfile);
             assert (updateSuccess) : "User update with new firstName: [" + newFName + "], Failed!";
-            System.out.println("User update with new firstName: [" + newFName + "], Successful!");
+            logger.info("User update with new firstName: [{}] Successful!", newFName);
 
             // test get-all-userprofiles
             List<UserProfile> userProfileList =
-                    userProfileClient.getAllUserProfilesInGateway(authzToken, testGatewayId, 0, 5);
+                    userProfileService.getAllUserProfilesInGateway(authzToken, testGatewayId, 0, 5);
             assert (userProfileList != null && !userProfileList.isEmpty()) : "Failed to retrieve users for gateway!";
-            System.out.println("Printing userList retrieved..");
+            logger.info("Printing userList retrieved..");
             for (UserProfile userProfile1 : userProfileList) {
-                System.out.println("\t [UserProfile] userId: " + userProfile1.getUserId());
+                logger.info("\t [UserProfile] userId: {}", userProfile1.getUserId());
             }
 
             // test delete-user-profile
-            boolean deleteSuccess = userProfileClient.deleteUserProfile(authzToken, testUserId, testGatewayId);
+            boolean deleteSuccess = userProfileService.deleteUserProfile(authzToken, testUserId, testGatewayId);
             assert (deleteSuccess) : "Delete user failed for userId: " + testUserId;
-            System.out.println("Successfully deleted user with userId: " + testUserId);
+            logger.info("Successfully deleted user with userId: {}", testUserId);
 
             // test-check-user-exist
-            boolean userExists = userProfileClient.doesUserExist(authzToken, testUserId, testGatewayId);
+            boolean userExists = userProfileService.doesUserExist(authzToken, testUserId, testGatewayId);
             assert (!userExists) : "User should not exist, but it does.";
-            System.out.println("User was deleted, hence does not exist!");
-            System.out.println("*** DONE ***");
+            logger.info("User was deleted, hence does not exist!");
+            logger.info("*** DONE ***");
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("UserProfile client-sample Exception: " + ex, ex);

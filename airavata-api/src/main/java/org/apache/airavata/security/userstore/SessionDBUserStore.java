@@ -20,6 +20,7 @@
 package org.apache.airavata.security.userstore;
 
 import java.sql.SQLException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
@@ -116,17 +117,14 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
         log.debug(stringBuilder.toString());
     }
 
-    private void initializeDatabaseLookup() throws RuntimeException {
+    private void initializeDatabaseLookup() throws UserStoreException {
 
         try {
             this.dbUtil =
                     new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error loading database driver. Driver class not found.", e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Error loading database driver. Error instantiating driver object.", e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error loading database driver. Illegal access to driver object.", e);
+        } catch (ApplicationSettingsException e) {
+            log.error("Error while initializing database lookup", e.getMessage());
+            throw new UserStoreException("Error while initializing database lookup", e);
         }
     }
 }

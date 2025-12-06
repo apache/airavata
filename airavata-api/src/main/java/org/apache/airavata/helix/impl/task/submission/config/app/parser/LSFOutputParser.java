@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.impl.task.submission.config.app.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -111,22 +110,5 @@ public class LSFOutputParser implements OutputParser {
             logger.error("Error: RawOutput shouldn't be null");
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        String test = "Job <2477982> is submitted to queue <short>.";
-        System.out.println(test.substring(test.indexOf("<") + 1, test.indexOf(">")));
-        String test1 = "JOBID   USER    STAT  QUEUE      FROM_HOST   EXEC_HOST   JOB_NAME   SUBMIT_TIME\n"
-                + "2636607 lg11w   RUN   long       ghpcc06     c11b02      *069656647 Mar  7 00:58\n"
-                + "2636582 lg11w   RUN   long       ghpcc06     c02b01      2134490944 Mar  7 00:48";
-        Map<String, JobStatus> statusMap = new HashMap<String, JobStatus>();
-        statusMap.put("2477983,2134490944", new JobStatus(JobState.UNKNOWN));
-        LSFOutputParser lsfOutputParser = new LSFOutputParser();
-        try {
-            lsfOutputParser.parseJobStatuses("cjh", statusMap, test1);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        System.out.println(statusMap.get("2477983,2134490944"));
     }
 }

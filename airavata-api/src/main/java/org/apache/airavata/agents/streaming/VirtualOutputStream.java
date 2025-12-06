@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VirtualOutputStream extends OutputStream {
-
+    private static final Logger logger = LoggerFactory.getLogger(VirtualOutputStream.class);
     private BlockingQueue<Integer> queue;
     private long byteCount;
     private long streamLength;
@@ -46,7 +48,7 @@ public class VirtualOutputStream extends OutputStream {
                 throw new IOException("Timed out writing into the queue");
             }
             byteCount++;
-            // System.out.println("Writing byte " + byteCount);
+            logger.debug("Writing byte {}", byteCount);
         } catch (InterruptedException e) {
             throw new IOException("Write was interrupted", e);
         }

@@ -37,7 +37,6 @@ import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class RegisterOGCEUS3Application {
     public static void main(String[] args) {
         try {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavataClient.getAPIVersion());
+            logger.info("API version is {}", airavataClient.getAPIVersion());
 
             // Register all compute hosts
             registerXSEDEHosts();
@@ -93,7 +92,7 @@ public class RegisterOGCEUS3Application {
 
     public static void registerXSEDEHosts() {
         try {
-            System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
+            logger.info("\n #### Registering XSEDE Computational Resources #### \n");
 
             // Register Stampede
             stampedeResourceId = registerComputeHost(
@@ -105,7 +104,7 @@ public class RegisterOGCEUS3Application {
                     SecurityProtocol.GSI,
                     2222,
                     "/usr/local/bin/ibrun");
-            System.out.println("Stampede Resource Id is " + stampedeResourceId);
+            logger.info("Stampede Resource Id is {}", stampedeResourceId);
 
             // Register Trestles
             trestlesResourceId = registerComputeHost(
@@ -117,29 +116,29 @@ public class RegisterOGCEUS3Application {
                     SecurityProtocol.GSI,
                     22,
                     "/opt/mvapich2/pgi/ib/bin/mpiexec -np");
-            System.out.println("Trestles Resource Id is " + trestlesResourceId);
+            logger.info("Trestles Resource Id is {}", trestlesResourceId);
 
             // Register Lonestar
             //            lonestarResourceId = registerComputeHost("lonestar.tacc.teragrid.org", "TACC Lonestar
             // Cluster",
             //                    ResourceJobManagerType.UGE, "push", "/opt/sge6.2/bin/lx24-amd64",
             // SecurityProtocol.GSI, 22, "/sge_common/default/pe_scripts/ibrun");
-            //            System.out.println("Lonestar Resource Id is " + lonestarResourceId);
+            //            logger.info("Lonestar Resource Id is {}", lonestarResourceId);
             //
             //            //Register Alamo
             //            alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "Alamo Cluster",
             //                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22,
             // "/share/apps/openmpi/bin/mpiexec - n" );
-            //            System.out.println("Alamo Cluster " + alamoResourceId);
+            //            logger.info("Alamo Cluster {}", alamoResourceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void updateXSEDEHosts() {
         try {
-            System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
+            logger.info("\n #### Registering XSEDE Computational Resources #### \n");
 
             // Register Stampede
             stampedeResourceId = updateComputeHost(
@@ -152,7 +151,7 @@ public class RegisterOGCEUS3Application {
                     SecurityProtocol.GSI,
                     2222,
                     "/usr/local/bin/ibrun");
-            System.out.println("Stampede Resource Id is " + stampedeResourceId);
+            logger.info("Stampede Resource Id is {}", stampedeResourceId);
 
             // Register Trestles
             trestlesResourceId = updateComputeHost(
@@ -165,29 +164,29 @@ public class RegisterOGCEUS3Application {
                     SecurityProtocol.GSI,
                     22,
                     "/opt/mvapich2/pgi/ib/bin/mpiexec -np");
-            System.out.println("Trestles Resource Id is " + trestlesResourceId);
+            logger.info("Trestles Resource Id is {}", trestlesResourceId);
 
             // Register Lonestar
             //            lonestarResourceId = updateComputeHost(lonestarResourceId,"lonestar.tacc.teragrid.org", "TACC
             // Lonestar Cluster",
             //                    ResourceJobManagerType.UGE, "push", "/opt/sge6.2/bin/lx24-amd64",
             // SecurityProtocol.GSI, 22, "/sge_common/default/pe_scripts/ibrun");
-            //            System.out.println("Lonestar Resource Id is " + lonestarResourceId);
+            //            logger.info("Lonestar Resource Id is {}", lonestarResourceId);
             //
             //            //Register Alamo
             //            alamoResourceId = updateComputeHost(alamoResourceId,"alamo.uthscsa.edu", "Alamo Cluster",
             //                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22,
             // "/share/apps/openmpi/bin/mpiexec -n");
-            //            System.out.println("Alamo Cluster " + alamoResourceId);
+            //            logger.info("Alamo Cluster {}", alamoResourceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void registerAppModules() {
         try {
-            System.out.println("\n #### Registering Application Modules #### \n");
+            logger.info("\n #### Registering Application Modules #### \n");
 
             // Register Echo
             ultrascanModuleId = airavataClient.registerApplicationModule(
@@ -195,7 +194,7 @@ public class RegisterOGCEUS3Application {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             "ultrascan_ogce", "1.0", "ultrascan application"));
-            System.out.println("Ultrascan Module Id " + ultrascanModuleId);
+            logger.info("Ultrascan Module Id {}", ultrascanModuleId);
         } catch (Exception e) {
             e.getLocalizedMessage();
         }
@@ -203,7 +202,7 @@ public class RegisterOGCEUS3Application {
 
     public static void registerUltrascanInterface() {
         try {
-            System.out.println("#### Registering Ultrascan Interface #### \n");
+            logger.info("#### Registering Ultrascan Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(ultrascanModuleId);
@@ -230,16 +229,16 @@ public class RegisterOGCEUS3Application {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "ultrascan", "ultrascan application", appModules, applicationInputs, applicationOutputs));
-            System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
+            logger.info("Ultrascan Application Interface Id {}", ultrascanAppId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void registerApplicationDeployment() {
         try {
-            System.out.println("#### Registering Application Deployments on Stampede #### \n");
+            logger.info("#### Registering Application Deployments on Stampede #### \n");
 
             // Register Stampede
             String ultascanStamplede = airavataClient.registerApplicationDeployment(
@@ -254,7 +253,7 @@ public class RegisterOGCEUS3Application {
                             null,
                             null,
                             null));
-            System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
+            logger.info("Ultrascan on stampede deployment Id {}", ultascanStamplede);
 
             String ultascanTrestles = airavataClient.registerApplicationDeployment(
                     new AuthzToken(""),
@@ -268,17 +267,17 @@ public class RegisterOGCEUS3Application {
                             null,
                             null,
                             null));
-            System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
+            logger.info("Ultrascan on trestles deployment Id {}", ultascanTrestles);
             //			String ultascanLonestar =
             // airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
             //					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
             // "ultrascan application"));
-            //			System.out.println("Ultrascan on lonestar deployment Id " + ultascanLonestar);
+            //			logger.info("Ultrascan on lonestar deployment Id {}", ultascanLonestar);
             //			String ultascanAlamo =
             // airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
             //					alamoResourceId, "/home/us3/bin/us_mpi_analysis.sh", ApplicationParallelismType.MPI, "ultrascan
             // application"));
-            //			System.out.println("Ultrascan on alamo deployment Id " + ultascanAlamo);
+            //			logger.info("Ultrascan on alamo deployment Id {}", ultascanAlamo);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,7 +286,7 @@ public class RegisterOGCEUS3Application {
     public static void registerGatewayResourceProfile() {
 
         try {
-            System.out.println("#### Registering Gateway proflie #### \n");
+            logger.info("#### Registering Gateway proflie #### \n");
 
             ComputeResourcePreference stampedeResourcePreferences =
                     RegisterSampleApplicationsUtils.createComputeResourcePreference(
@@ -327,9 +326,9 @@ public class RegisterOGCEUS3Application {
 
             String gatewayProfile =
                     airavataClient.registerGatewayResourceProfile(new AuthzToken(""), gatewayResourceProfile);
-            System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
+            logger.info("Gateway Profile is registered with Id {}", gatewayProfile);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -342,8 +341,7 @@ public class RegisterOGCEUS3Application {
             String jobMangerBinPath,
             SecurityProtocol securityProtocol,
             int portNumber,
-            String jobManagerCommand)
-            throws TException {
+            String jobManagerCommand) {
 
         ComputeResourceDescription computeResourceDescription =
                 RegisterSampleApplicationsUtils.createComputeResourceDescription(hostName, hostDesc, null, null);
@@ -385,8 +383,7 @@ public class RegisterOGCEUS3Application {
             String jobMangerBinPath,
             SecurityProtocol securityProtocol,
             int portNumber,
-            String jobManagerCommand)
-            throws TException {
+            String jobManagerCommand) {
 
         if (computeResourceId.isEmpty()) throw new AiravataClientException();
 

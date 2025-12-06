@@ -19,23 +19,23 @@
 */
 package org.apache.airavata.ide.integration;
 
-import org.apache.airavata.api.server.AiravataAPIServer;
-import org.apache.airavata.credential.store.server.CredentialStoreServer;
-import org.apache.airavata.db.event.manager.DBEventManagerRunner;
-import org.apache.airavata.orchestrator.server.OrchestratorServer;
-import org.apache.airavata.registry.api.service.RegistryAPIServer;
-import org.apache.airavata.service.profile.server.ProfileServiceServer;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
+import org.apache.airavata.api.thrift.server.AiravataServiceServer;
+import org.apache.airavata.api.thrift.server.CredentialServiceServer;
+import org.apache.airavata.api.thrift.server.OrchestratorServiceServer;
+import org.apache.airavata.api.thrift.server.ProfileServiceServer;
+import org.apache.airavata.api.thrift.server.RegistryServiceServer;
+import org.apache.airavata.api.thrift.server.SharingRegistryServer;
+import org.apache.airavata.manager.dbevent.DBEventManagerRunner;
 
 public class APIServerStarter {
 
     public static void main(String[] args) throws Exception {
         DBEventManagerRunner dbEventManagerRunner = new DBEventManagerRunner();
-        RegistryAPIServer registryAPIServer = new RegistryAPIServer();
-        CredentialStoreServer credentialStoreServer = new CredentialStoreServer();
+        RegistryServiceServer registryAPIServer = new RegistryServiceServer();
+        CredentialServiceServer credentialStoreServer = new CredentialServiceServer();
         SharingRegistryServer sharingRegistryServer = new SharingRegistryServer();
-        AiravataAPIServer airavataAPIServer = new AiravataAPIServer();
-        OrchestratorServer orchestratorServer = new OrchestratorServer();
+        AiravataServiceServer airavataAPIServer = new AiravataServiceServer();
+        OrchestratorServiceServer orchestratorServer = new OrchestratorServiceServer();
         ProfileServiceServer profileServiceServer = new ProfileServiceServer();
 
         dbEventManagerRunner.start();

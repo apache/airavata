@@ -41,7 +41,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.thrift.TException;
 
 public class SampleEchoExperiment {
 
@@ -57,12 +56,12 @@ public class SampleEchoExperiment {
     private String gatewayId = "default";
     private String userId = "default-user";
 
-    public static void main(String[] args) throws AiravataClientException, TException {
+    public static void main(String[] args) throws AiravataClientException {
         SampleEchoExperiment sampleEchoExperiment = new SampleEchoExperiment();
         sampleEchoExperiment.register();
     }
 
-    public void register() throws TException {
+    public void register() {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         gatewayId = registerGateway();
         registerLocalhost();
@@ -73,7 +72,7 @@ public class SampleEchoExperiment {
         createEchoExperiment();
     }
 
-    private String registerGateway() throws TException {
+    private String registerGateway() {
         Gateway gateway = new Gateway();
         gateway.setGatewayName(gatewayId);
         gateway.setGatewayId(gatewayId);
@@ -83,7 +82,7 @@ public class SampleEchoExperiment {
 
     private void registerLocalhost() {
         try {
-            System.out.println("\n #### Registering Localhost Computational Resource #### \n");
+            logger.info("\n #### Registering Localhost Computational Resource #### \n");
 
             ComputeResourceDescription computeResourceDescription =
                     RegisterSampleApplicationsUtils.createComputeResourceDescription(
@@ -102,14 +101,14 @@ public class SampleEchoExperiment {
             submission.setResourceJobManager(resourceJobManager);
             String localSubmission =
                     airavataClient.addLocalSubmissionDetails(new AuthzToken(""), localhostId, 1, submission);
-            System.out.println(localSubmission);
-            System.out.println("LocalHost Resource Id is " + localhostId);
-        } catch (TException e) {
+            logger.info("Local Submission: {}", localSubmission);
+            logger.info("LocalHost Resource Id is {}", localhostId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void registerGatewayProfile() throws TException {
+    private void registerGatewayProfile() {
         GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
         ComputeResourcePreference localhostResourcePreference =
                 RegisterSampleApplicationsUtils.createComputeResourcePreference(
@@ -119,7 +118,7 @@ public class SampleEchoExperiment {
         airavataClient.registerGatewayResourceProfile(new AuthzToken(""), gatewayResourceProfile);
     }
 
-    private void registerEchoModule() throws TException {
+    private void registerEchoModule() {
         // Register Echo
         echoModuleId = airavataClient.registerApplicationModule(
                 new AuthzToken(""),
@@ -127,8 +126,8 @@ public class SampleEchoExperiment {
                 RegisterSampleApplicationsUtils.createApplicationModule("Echo", "1.0", "Echo application description"));
     }
 
-    private void registerEchoDeployment() throws TException {
-        System.out.println("#### Registering Application Deployments on Localhost ####");
+    private void registerEchoDeployment() {
+        logger.info("#### Registering Application Deployments on Localhost ####");
         // Register Echo
         String echoAppDeployId = airavataClient.registerApplicationDeployment(
                 new AuthzToken(""),
@@ -142,13 +141,12 @@ public class SampleEchoExperiment {
                         null,
                         null,
                         null));
-        System.out.println(
-                "Successfully registered Echo application on localhost, application Id = " + echoAppDeployId);
+        logger.info("Successfully registered Echo application on localhost, application Id = {}", echoAppDeployId);
     }
 
     private void registerEchoInterface() {
         try {
-            System.out.println("#### Registering Echo Interface ####");
+            logger.info("#### Registering Echo Interface ####");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(echoModuleId);
@@ -179,14 +177,14 @@ public class SampleEchoExperiment {
                     gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "Echo", "Echo application description", appModules, applicationInputs, applicationOutputs));
-            System.out.println("Echo Application Interface Id " + echoInterfaceId);
+            logger.info("Echo Application Interface Id {}", echoInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createEchoExperiment() throws TException {
+    private void createEchoExperiment() {
         Project project = new Project();
         project.setName("default-project");
         project.setOwner(userId);

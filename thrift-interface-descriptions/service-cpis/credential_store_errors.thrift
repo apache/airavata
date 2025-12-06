@@ -24,7 +24,7 @@
 *  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
-namespace java org.apache.airavata.credential.store.exception
+namespace java org.apache.airavata.credential.exception
 namespace php Airavata.Credential.Store.Error
 namespace py airavata.api.credential.store.error
 

@@ -22,7 +22,6 @@ package org.apache.airavata.orchestrator.core.validator.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.ValidationResults;
@@ -31,20 +30,22 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.thrift.TException;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    private RegistryService.Client registryClient;
+    private RegistryService registryService;
 
-    public BatchQueueValidator() throws TException, ApplicationSettingsException {
-        this.registryClient = getRegistryServiceClient();
+    public BatchQueueValidator()
+            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
+                    ServiceFactoryException {
+        this.registryService = ServiceFactory.getInstance().getRegistryService();
     }
 
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
@@ -59,14 +60,14 @@ public class BatchQueueValidator implements JobMetadataValidator {
                 }
             }
             validationResults.setValidationResultList(validatorResultList);
-        } catch (TException e) {
+        } catch (RegistryServiceException e) {
             throw new RuntimeException("Error while validating", e);
         }
         return validationResults;
     }
 
     private List<ValidatorResult> validateUserConfiguration(ExperimentModel experiment, ProcessModel processModel)
-            throws TException {
+            throws RegistryServiceException {
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
         ComputationalResourceSchedulingModel computationalResourceScheduling =
@@ -79,12 +80,12 @@ public class BatchQueueValidator implements JobMetadataValidator {
         } else {
             ComputeResourceDescription computeResource;
             if (processModel == null) {
-                computeResource = registryClient.getComputeResource(experiment
+                computeResource = registryService.getComputeResource(experiment
                         .getUserConfigurationData()
                         .getComputationalResourceScheduling()
                         .getResourceHostId());
             } else {
-                computeResource = registryClient.getComputeResource(
+                computeResource = registryService.getComputeResource(
                         processModel.getProcessResourceSchedule().getResourceHostId());
             }
 
@@ -224,15 +225,5 @@ public class BatchQueueValidator implements JobMetadataValidator {
             }
         }
         return validatorResultList;
-    }
-
-    private RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
     }
 }

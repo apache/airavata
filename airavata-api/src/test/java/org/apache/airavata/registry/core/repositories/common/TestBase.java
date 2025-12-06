@@ -71,7 +71,7 @@ public class TestBase {
     @AfterEach
     public void tearDown() throws Exception {
         for (Database database : databases) {
-            System.out.println("Tearing down database " + database.name());
+            logger.info("Tearing down database {}", database.name());
             DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
         }
         DerbyUtil.stopDerbyServer();

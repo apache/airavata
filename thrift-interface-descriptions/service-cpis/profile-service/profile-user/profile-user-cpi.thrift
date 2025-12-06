@@ -29,7 +29,7 @@ include "../../../airavata-apis/security_model.thrift"
 include "../../../base-api/base_api.thrift"
 include "../../../data-models/user_profile_model.thrift"
 
-namespace java org.apache.airavata.service.profile.user.cpi
+namespace java org.apache.airavata.profile.user.cpi
 namespace php Airavata.Service.Profile.User.CPI
 namespace py airavata.service.profile.user.cpi
 

@@ -30,6 +30,8 @@ import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -38,6 +40,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("dev")
 public class DevDataInitializer implements CommandLineRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(DevDataInitializer.class);
 
     private final ProjectRepository projectRepository;
     private final ResourceRepository resourceRepository;
@@ -103,13 +107,13 @@ public class DevDataInitializer implements CommandLineRunner {
         project.setOwnerId(user);
         projectRepository.save(project);
 
-        System.out.println("Initialized Project with id: " + project.getId());
+        logger.info("Initialized Project with id: " + project.getId());
     }
 
     @Override
     public void run(String... args) {
         if (projectRepository.count() > 0) {
-            System.out.println("Dev data already initialized. Skipping initialization.");
+            logger.info("Dev data already initialized. Skipping initialization.");
             return;
         }
 

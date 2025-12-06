@@ -23,13 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
@@ -78,6 +78,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +105,7 @@ public class OrchestratorService {
             this.orchestrator.getOrchestratorContext().setPublisher(this.publisher);
             startCurator();
             this.experimentSubscriber = getExperimentSubscriber();
-        } catch (Exception e) {
+        } catch (AiravataException e) {
             throw new OrchestratorException("Error initializing OrchestratorService", e);
         }
     }
@@ -122,13 +123,15 @@ public class OrchestratorService {
 
     private boolean launchExperimentInternal(String experimentId, String gatewayId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException {
+                    LaunchValidationException, ServiceFactoryException {
         String experimentNodePath = getExperimentNodePath(experimentId);
         try {
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
             String experimentCancelNode =
                     ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
+        } catch (KeeperException | InterruptedException e) {
+            throw new OrchestratorException("Error creating ZooKeeper nodes for experiment: " + experimentId, e);
         } catch (Exception e) {
             throw new OrchestratorException("Error creating ZooKeeper nodes for experiment: " + experimentId, e);
         }
@@ -161,7 +164,7 @@ public class OrchestratorService {
 
     private boolean launchSingleAppExperiment(
             ExperimentModel experiment, String experimentId, String gatewayId, String token)
-            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException, ServiceFactoryException {
         List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
         for (ProcessModel processModel : processes) {
@@ -350,6 +353,10 @@ public class OrchestratorService {
                 Stat stat;
                 try {
                     stat = curatorClient.checkExists().forPath(expCancelNodePath);
+                } catch (KeeperException | InterruptedException e) {
+                    logger.error("Error checking existence of Zookeeper node: " + expCancelNodePath, e);
+                    throw new OrchestratorException(
+                            "Error checking existence of Zookeeper node: " + expCancelNodePath, e);
                 } catch (Exception e) {
                     logger.error("Error checking existence of Zookeeper node: " + expCancelNodePath, e);
                     throw new OrchestratorException(
@@ -361,6 +368,10 @@ public class OrchestratorService {
                                 .setData()
                                 .withVersion(-1)
                                 .forPath(expCancelNodePath, ZkConstants.ZOOKEEPER_CANCEL_REQEUST.getBytes());
+                    } catch (KeeperException | InterruptedException e) {
+                        logger.error("Error setting data for Zookeeper node: " + expCancelNodePath, e);
+                        throw new OrchestratorException(
+                                "Error setting data for Zookeeper node: " + expCancelNodePath, e);
                     } catch (Exception e) {
                         logger.error("Error setting data for Zookeeper node: " + expCancelNodePath, e);
                         throw new OrchestratorException(
@@ -522,7 +533,7 @@ public class OrchestratorService {
     }
 
     public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag)
-            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException, ServiceFactoryException {
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = orchestratorRegistryService.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {
@@ -580,7 +591,7 @@ public class OrchestratorService {
 
     public void launchQueuedExperiment(String experimentId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException {
+                    LaunchValidationException, ServiceFactoryException {
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
             throw new ExperimentNotFoundException(
@@ -605,7 +616,7 @@ public class OrchestratorService {
     public void handleProcessStatusChange(
             ProcessStatusChangeEvent processStatusChangeEvent, ProcessIdentifier processIdentity)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException {
+                    LaunchValidationException, ServiceFactoryException {
         ExperimentStatus status = new ExperimentStatus();
 
         // Check if this is an intermediate output fetching process
@@ -716,7 +727,7 @@ public class OrchestratorService {
 
     public void handleLaunchExperiment(ExperimentSubmitEvent expEvent)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException {
+                    LaunchValidationException, ServiceFactoryException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
         if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
             launchExperimentInternal(expEvent.getExperimentId(), expEvent.getGatewayId());
@@ -728,16 +739,34 @@ public class OrchestratorService {
      */
     public void handleLaunchExperimentFromMessage(MessageContext messageContext)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, TException {
+                    LaunchValidationException, ServiceFactoryException {
         ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
-        byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-        ThriftUtils.createThriftFromBytes(bytes, expEvent);
+        try {
+            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+            ThriftUtils.createThriftFromBytes(bytes, expEvent);
+        } catch (TException e) {
+            String msg = String.format(
+                    "Error while handling launch experiment from message: messageContext=%s, isRedeliver=%s. Reason: %s",
+                    messageContext != null ? messageContext.getGatewayId() : "null",
+                    messageContext != null ? messageContext.isRedeliver() : "null",
+                    e.getMessage());
+            logger.error(msg, e);
+            throw new OrchestratorException(msg, e);
+        }
 
         if (messageContext.isRedeliver()) {
-            ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
-            if (experimentModel != null
-                    && experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
-                handleLaunchExperiment(expEvent);
+            try {
+                ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
+                if (experimentModel != null
+                        && experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
+                    handleLaunchExperiment(expEvent);
+                }
+            } catch (RegistryServiceException e) {
+                String msg = String.format(
+                        "Error getting experiment for redelivery: experimentId=%s, gatewayId=%s, isRedeliver=true. Reason: %s",
+                        expEvent.getExperimentId(), expEvent.getGatewayId(), e.getMessage());
+                logger.error(msg, e);
+                throw e;
             }
         } else {
             handleLaunchExperiment(expEvent);
@@ -749,12 +778,23 @@ public class OrchestratorService {
         terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
     }
 
-    public void handleIntermediateOutputsEvent(ExperimentIntermediateOutputsEvent event) {
+    public void handleIntermediateOutputsEvent(ExperimentIntermediateOutputsEvent event) throws OrchestratorException {
         try {
             fetchIntermediateOutputs(event.getExperimentId(), event.getGatewayId(), event.getOutputNames());
-        } catch (Exception e) {
-            logger.error("Error handling intermediate outputs event", e);
-            throw new RuntimeException("Error handling intermediate outputs event", e);
+        } catch (RegistryServiceException e) {
+            String msg = String.format(
+                    "Error handling intermediate outputs event: experimentId=%s, gatewayId=%s, outputNames=%s. Reason: %s",
+                    event.getExperimentId(), event.getGatewayId(), event.getOutputNames(), e.getMessage());
+            logger.error(msg, e);
+            OrchestratorException exception = new OrchestratorException(msg);
+            exception.initCause(e);
+            throw exception;
+        } catch (OrchestratorException e) {
+            String msg = String.format(
+                    "Error handling intermediate outputs event: experimentId=%s, gatewayId=%s, outputNames=%s. Reason: %s",
+                    event.getExperimentId(), event.getGatewayId(), event.getOutputNames(), e.getMessage());
+            logger.error(msg, e);
+            throw e;
         }
     }
 
@@ -786,7 +826,7 @@ public class OrchestratorService {
     }
 
     public boolean launchExperiment(String experimentId, String gatewayId, ExecutorService executorService)
-            throws OrchestratorException {
+            throws OrchestratorException, ServiceFactoryException {
         try {
             boolean result = launchExperimentInternal(experimentId, gatewayId);
             if (result) {
@@ -803,7 +843,7 @@ public class OrchestratorService {
                     Runnable runner = () -> {
                         try {
                             launchSingleAppExperimentInternal(experimentId, token, gatewayId);
-                        } catch (Exception e) {
+                        } catch (RegistryServiceException | OrchestratorException e) {
                             logger.error("expId: " + experimentId + ", Error while launching single app experiment", e);
                         }
                     };
@@ -826,9 +866,15 @@ public class OrchestratorService {
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
-        } catch (Exception e) {
+        } catch (ExperimentNotFoundException | ServiceFactoryException e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Unexpected error occurred: " + e.getMessage());
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+            throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
+        } catch (RuntimeException e) {
+            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
+            status.setReason("Unexpected runtime error occurred: " + e.getMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
@@ -881,9 +927,33 @@ public class OrchestratorService {
                         expEvent.getExperimentId(),
                         expEvent.getGatewayId());
                 handleCancelExperiment(expEvent);
-            } catch (Throwable e) {
-                logger.error("Error while cancelling experiment", e);
-                throw new RuntimeException("Error while cancelling experiment", e);
+            } catch (RegistryServiceException | OrchestratorException e) {
+                String msg = String.format(
+                        "Error while cancelling experiment: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
+            } catch (TException e) {
+                String msg = String.format(
+                        "Error while cancelling experiment: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
+            } catch (RuntimeException e) {
+                String msg = String.format(
+                        "Error while cancelling experiment: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
             } finally {
                 experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             }
@@ -900,9 +970,33 @@ public class OrchestratorService {
                         event.getGatewayId(),
                         event.getOutputNames());
                 OrchestratorService.this.handleIntermediateOutputsEvent(event);
-            } catch (Throwable e) {
-                logger.error("Error while fetching intermediate outputs", e);
-                throw new RuntimeException("Error while fetching intermediate outputs", e);
+            } catch (OrchestratorException e) {
+                String msg = String.format(
+                        "Error while fetching intermediate outputs: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
+            } catch (TException e) {
+                String msg = String.format(
+                        "Error while fetching intermediate outputs: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
+            } catch (RuntimeException e) {
+                String msg = String.format(
+                        "Error while fetching intermediate outputs: messageContext gatewayId=%s, deliveryTag=%s, isRedeliver=%s. Reason: %s",
+                        messageContext.getGatewayId(),
+                        messageContext.getDeliveryTag(),
+                        messageContext.isRedeliver(),
+                        e.getMessage());
+                logger.error(msg, e);
+                // Log but don't throw - we need to ack the message
             } finally {
                 experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             }
@@ -911,12 +1005,12 @@ public class OrchestratorService {
         private void launchExperiment(MessageContext messageContext) {
             try {
                 handleLaunchExperimentFromMessage(messageContext);
-            } catch (RegistryServiceException e) {
-                logger.error("Experiment launch failed due to registry error", e);
-            } catch (TException e) {
-                logger.error("Experiment launch failed due to Thrift conversion error", e);
-            } catch (Throwable e) {
+            } catch (RegistryServiceException | OrchestratorException e) {
+                logger.error("Experiment launch failed due to registry or orchestrator error", e);
+            } catch (TException | ServiceFactoryException e) {
                 logger.error("An unknown issue while launching experiment", e);
+            } catch (RuntimeException e) {
+                logger.error("An unknown runtime issue while launching experiment", e);
             } finally {
                 experimentSubscriber.sendAck(messageContext.getDeliveryTag());
                 MDC.clear();

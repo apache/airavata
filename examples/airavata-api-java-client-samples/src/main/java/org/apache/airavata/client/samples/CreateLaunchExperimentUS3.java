@@ -37,7 +37,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,15 +53,15 @@ public class CreateLaunchExperimentUS3 {
         try {
             final Airavata.Client airavata =
                     AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.getAPIVersion());
+            logger.info("API version is {}", airavata.getAPIVersion());
             //            addDescriptors();
             //            final String expId = createUS3ExperimentForTrestles(airavata);
             final String expId = createUS3ExperimentForStampede(airavata);
             //            final String expId = createUS3ExperimentForLonestar(airavata);
             //            final String expId =  createUS3ExperimentForAlamo(airavata);
-            System.out.println("Experiment ID : " + expId);
+            logger.info("Experiment ID : {}", expId);
             launchExperiment(airavata, expId);
-            System.out.println("Launched successfully");
+            logger.info("Launched successfully");
             //            try {
             //                Thread.sleep(20000);
             //            } catch (InterruptedException e) {
@@ -82,12 +81,10 @@ public class CreateLaunchExperimentUS3 {
             //                                     return;
             //                                 }else {
             //                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-            //                                         System.out.println("Job completed Job ID: " +
-            // jobStatus.getJobState().toString());
+            //                                         logger.info("Job completed Job ID: {}", jobStatus.getJobState().toString());
             //                                         return;
             //                                     }else{
-            //                                        System.out.println("Job ID:" + key +
-            // jobStatuses.get(key).getJobState().toString());
+            //                                        logger.info("Job ID:{} State: {}", key, jobStatuses.get(key).getJobState().toString());
             //                                     }
             //                                 }
             //                             }
@@ -110,7 +107,7 @@ public class CreateLaunchExperimentUS3 {
             //            airavata.terminateExperiment(expId);
 
             //            Experiment experiment = airavata.getExperiment(expId);
-            //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
+            //            logger.info("retrieved exp id : {}", experiment.getExperimentID());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
@@ -149,7 +146,7 @@ public class CreateLaunchExperimentUS3 {
     //        return airavataAPI;
     //    }
 
-    public static String createExperimentForTrestles(Airavata.Client client) throws TException {
+    public static String createExperimentForTrestles(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -196,14 +193,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static String createUS3ExperimentForTrestles(Airavata.Client client)
-            throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    public static String createUS3ExperimentForTrestles(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -277,14 +273,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static String createUS3ExperimentForStampede(Airavata.Client client)
-            throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    public static String createUS3ExperimentForStampede(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -359,14 +354,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static String createUS3ExperimentForLonestar(Airavata.Client client)
-            throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    public static String createUS3ExperimentForLonestar(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -441,14 +435,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static String createUS3ExperimentForAlamo(Airavata.Client client)
-            throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException {
+    public static String createUS3ExperimentForAlamo(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -523,13 +516,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static String createExperimentForStampede(Airavata.Client client) throws TException {
+    public static String createExperimentForStampede(Airavata.Client client) {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
@@ -576,13 +569,13 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 
-    public static void launchExperiment(Airavata.Client client, String expId) throws TException {
+    public static void launchExperiment(Airavata.Client client, String expId) {
         try {
             client.launchExperiment(new AuthzToken(""), expId, DEFAULT_GATEWAY);
         } catch (ExperimentNotFoundException e) {
@@ -597,9 +590,9 @@ public class CreateLaunchExperimentUS3 {
         } catch (AiravataClientException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
-            throw new TException(e);
+            throw e;
         }
     }
 }

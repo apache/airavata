@@ -25,8 +25,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -39,7 +39,6 @@ import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +46,10 @@ public class StatusConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(StatusConsumer.class);
 
     private MessageHandler handler;
-    private Connection connection;
-    private Channel channel;
 
     public StatusConsumer(MessageHandler handler, Connection connection, Channel channel) {
         super(channel);
         this.handler = handler;
-        this.connection = connection;
-        this.channel = channel;
     }
 
     private StatusConsumer(Channel channel) {
@@ -132,7 +127,7 @@ public class StatusConsumer extends DefaultConsumer {
             messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
             messageContext.setIsRedeliver(envelope.isRedeliver());
             handler.onMessage(messageContext);
-        } catch (TException e) {
+        } catch (Exception e) {
             String msg = "Failed to de-serialize the thrift message, from routing keys: " + envelope.getRoutingKey();
             log.warn(msg, e);
         }

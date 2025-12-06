@@ -42,7 +42,6 @@ import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,7 +149,7 @@ public class RegisterSampleApplications {
         try {
             Airavata.Client airavataClient =
                     AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavataClient.getAPIVersion());
+            logger.info("API version is {}", airavataClient.getAPIVersion());
 
             RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
@@ -183,7 +182,7 @@ public class RegisterSampleApplications {
 
     public static void registerLocalHost() {
         try {
-            System.out.println("\n #### Registering Localhost Computational Resource #### \n");
+            logger.info("\n #### Registering Localhost Computational Resource #### \n");
 
             ComputeResourceDescription computeResourceDescription =
                     RegisterSampleApplicationsUtils.createComputeResourceDescription(
@@ -198,16 +197,16 @@ public class RegisterSampleApplications {
             LOCALSubmission submission = new LOCALSubmission();
             submission.setResourceJobManager(resourceJobManager);
             airavataClient.addLocalSubmissionDetails(new AuthzToken(""), localhostId, 1, submission);
-            System.out.println("LocalHost Resource Id is " + localhostId);
+            logger.info("LocalHost Resource Id is {}", localhostId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerXSEDEHosts() {
         try {
-            System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
+            logger.info("\n #### Registering XSEDE Computational Resources #### \n");
 
             // Register Stampede
             List<BatchQueue> stampedeQueues = new ArrayList<BatchQueue>();
@@ -226,7 +225,7 @@ public class RegisterSampleApplications {
                     "ibrun",
                     stampedeQueues);
 
-            System.out.println("Stampede Resource Id is " + stampedeResourceId);
+            logger.info("Stampede Resource Id is {}", stampedeResourceId);
 
             // Register Trestles
             //            List<BatchQueue> trestlesQueues = new ArrayList<BatchQueue>();
@@ -237,7 +236,7 @@ public class RegisterSampleApplications {
             //            trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
             //                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22,
             // "mpirun -np", trestlesQueues);
-            //            System.out.println("Trestles Resource Id is " + trestlesResourceId);
+            //            logger.info("Trestles Resource Id is {}", trestlesResourceId);
 
             // Register BigRedII
             List<BatchQueue> br2Queues = new ArrayList<BatchQueue>();
@@ -255,14 +254,14 @@ public class RegisterSampleApplications {
                     22,
                     "aprun -n",
                     br2Queues);
-            System.out.println("BigredII Resource Id is " + bigredResourceId);
+            logger.info("BigredII Resource Id is {}", bigredResourceId);
 
             fsdResourceId = registerUnicoreEndpoint(
                     "fsd-cloud15.zam.kfa-juelich.de",
                     "interop host",
                     JobSubmissionProtocol.UNICORE,
                     SecurityProtocol.GSI);
-            System.out.println("FSd Resource Id: " + fsdResourceId);
+            logger.info("FSd Resource Id: {}", fsdResourceId);
 
             // Register Alamo
             List<BatchQueue> alamoQueues = new ArrayList<BatchQueue>();
@@ -276,16 +275,16 @@ public class RegisterSampleApplications {
                     22,
                     "/usr/bin/mpiexec -np",
                     alamoQueues);
-            System.out.println("Alamo Cluster " + alamoResourceId);
+            logger.info("Alamo Cluster {}", alamoResourceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerNonXSEDEHosts() {
         try {
-            System.out.println("\n #### Registering Non-XSEDE Computational Resources #### \n");
+            logger.info("\n #### Registering Non-XSEDE Computational Resources #### \n");
 
             // Register LSF resource
             List<BatchQueue> lsfQueues = new ArrayList<BatchQueue>();
@@ -299,16 +298,14 @@ public class RegisterSampleApplications {
                     22,
                     "mpiexec",
                     lsfQueues);
-            System.out.println("LSF Resource Id is " + lsfResourceId);
+            logger.info("LSF Resource Id is {}", lsfResourceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static String registerUnicoreEndpoint(
-            String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol)
-            throws TException {
+    public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) {
 
         ComputeResourceDescription computeResourceDescription =
                 RegisterSampleApplicationsUtils.createComputeResourceDescription(hostName, hostDesc, null, null);
@@ -317,7 +314,7 @@ public class RegisterSampleApplications {
 
         if (fsdResourceId.isEmpty()) throw new AiravataClientException();
 
-        System.out.println("FSD Compute ResourceID: " + fsdResourceId);
+        logger.info("FSD Compute ResourceID: {}", fsdResourceId);
         JobSubmissionInterface jobSubmission =
                 RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
         UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
@@ -333,34 +330,34 @@ public class RegisterSampleApplications {
 
     public void registerAppModules() {
         try {
-            System.out.println("\n #### Registering Application Modules #### \n");
+            logger.info("\n #### Registering Application Modules #### \n");
 
             // Register Echo
             echoModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(echoName, "1.0", echoDescription));
-            System.out.println("Echo Module Id " + echoModuleId);
+            logger.info("Echo Module Id {}", echoModuleId);
 
             mpiModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(mpiName, "1.0", mpiDescription));
-            System.out.println("MPI Module Id " + mpiModuleId);
+            logger.info("MPI Module Id {}", mpiModuleId);
 
             // Register Amber
             amberModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(amberName, "12.0", amberDescription));
-            System.out.println("Amber Module Id " + amberModuleId);
+            logger.info("Amber Module Id {}", amberModuleId);
 
             // Register AutoDock
             autoDockModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(autoDockName, "4.2", autoDockDescription));
-            System.out.println("AutoDock Module Id " + autoDockModuleId);
+            logger.info("AutoDock Module Id {}", autoDockModuleId);
 
             // Register ESPRESSO
             espressoModuleId = airavataClient.registerApplicationModule(
@@ -368,14 +365,14 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             espressoName, "5.0.3", espressoDescription));
-            System.out.println("ESPRESSO Module Id " + espressoModuleId);
+            logger.info("ESPRESSO Module Id {}", espressoModuleId);
 
             // Register GROMACS
             gromacsModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(gromacsName, "4.6.5", gromacsDescription));
-            System.out.println("GROMACS Module Id " + gromacsModuleId);
+            logger.info("GROMACS Module Id {}", gromacsModuleId);
 
             // Register LAMMPS
             lammpsModuleId = airavataClient.registerApplicationModule(
@@ -389,16 +386,16 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             lammpsName, "28Jun14-base", lammpsDescription));
 
-            System.out.println("LAMMPS Module Id " + lammpsModuleId);
+            logger.info("LAMMPS Module Id {}", lammpsModuleId);
 
-            System.out.println("LAMMPS Module Id for LSF " + lammpsModuleId1);
+            logger.info("LAMMPS Module Id for LSF {}", lammpsModuleId1);
 
             // Register NWChem
             nwChemModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(nwChemName, "6.3", nwChemDescription));
-            System.out.println("NWChem Module Id " + nwChemModuleId);
+            logger.info("NWChem Module Id {}", nwChemModuleId);
 
             // Register Trinity
             trinityModuleId = airavataClient.registerApplicationModule(
@@ -406,27 +403,27 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             trinityName, "r20130225", trinityDescription));
-            System.out.println("Trinity Module Id " + trinityModuleId);
+            logger.info("Trinity Module Id {}", trinityModuleId);
 
             // Register WRF
             wrfModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(wrfName, "3.5.1", wrfDescription));
-            System.out.println("WRF Module Id " + wrfModuleId);
+            logger.info("WRF Module Id {}", wrfModuleId);
 
             // Register PHASTA
             phastaModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(phastaName, "1.0", phastaDescription));
-            System.out.println("phasta Module Id " + phastaModuleId);
+            logger.info("phasta Module Id {}", phastaModuleId);
 
             monteXModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(monteXName, "1.0", monteXDescription));
-            System.out.println("Tinker Monte Module Id " + monteXModuleId);
+            logger.info("Tinker Monte Module Id {}", monteXModuleId);
 
             gaussianModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
@@ -437,22 +434,22 @@ public class RegisterSampleApplications {
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(gamessName, "17May13", gamessDescription));
-            System.out.println("Gamess Module Id " + gamessModuleId);
+            logger.info("Gamess Module Id {}", gamessModuleId);
             // Register Ultrascan
             ultrascanModuleId = airavataClient.registerApplicationModule(
                     new AuthzToken(""),
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             ultrascanName, "1.0", ultrascanDescription));
-            System.out.println("Ultrascan Module Id " + ultrascanModuleId);
+            logger.info("Ultrascan Module Id {}", ultrascanModuleId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerAppDeployments() {
-        System.out.println("\n #### Registering Application Deployments #### \n");
+        logger.info("\n #### Registering Application Deployments #### \n");
 
         // Registering localhost echo App
         registerLocalApps();
@@ -475,7 +472,7 @@ public class RegisterSampleApplications {
     }
 
     public void registerAppInterfaces() {
-        System.out.println("\n #### Registering Application Interfaces #### \n");
+        logger.info("\n #### Registering Application Interfaces #### \n");
 
         // Registering local Echo
         registerLocalEchoInterface();
@@ -522,7 +519,7 @@ public class RegisterSampleApplications {
 
     public void registerGamessInterface() {
         try {
-            System.out.println("#### Registering Gamess Interface #### \n");
+            logger.info("#### Registering Gamess Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(gamessModuleId);
@@ -556,16 +553,16 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "gamess", "gamess", appModules, applicationInputs, applicationOutputs));
 
-            System.out.println("GAMESS Application Interface Id " + gamessModuleId);
+            logger.info("GAMESS Application Interface Id {}", gamessModuleId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerLocalEchoInterface() {
         try {
-            System.out.println("#### Registering Echo Interface #### \n");
+            logger.info("#### Registering Echo Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(echoModuleId);
@@ -599,16 +596,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             echoName, echoDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Local Echo Application Interface Id " + echoLocalInterfaceId);
+            logger.info("Local Echo Application Interface Id {}", echoLocalInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerEchoInterface() {
         try {
-            System.out.println("#### Registering Echo Interface #### \n");
+            logger.info("#### Registering Echo Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(echoModuleId);
@@ -643,16 +640,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             echoName, echoDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Echo Application Interface Id " + echoInterfaceId);
+            logger.info("Echo Application Interface Id {}", echoInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerMPIInterface() {
         try {
-            System.out.println("#### Registering MPI Interface #### \n");
+            logger.info("#### Registering MPI Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(mpiModuleId);
@@ -715,16 +712,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             mpiName, mpiDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("MPI Application Interface Id " + mpiInterfaceId);
+            logger.info("MPI Application Interface Id {}", mpiInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerAmberInterface() {
         try {
-            System.out.println("#### Registering Amber Interface #### \n");
+            logger.info("#### Registering Amber Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(amberModuleId);
@@ -795,16 +792,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             amberName, amberDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Amber Application Interface Id " + amberInterfaceId);
+            logger.info("Amber Application Interface Id {}", amberInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerAutoDockInterface() {
         try {
-            System.out.println("#### Registering AutoDock Interface #### \n");
+            logger.info("#### Registering AutoDock Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(autoDockModuleId);
@@ -864,16 +861,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             autoDockName, autoDockDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("AutoDock Application Interface Id " + autoDockInterfaceId);
+            logger.info("AutoDock Application Interface Id {}", autoDockInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerEspressoInterface() {
         try {
-            System.out.println("#### Registering Espresso Interface #### \n");
+            logger.info("#### Registering Espresso Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(espressoModuleId);
@@ -926,16 +923,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             espressoName, espressoDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Espresso Application Interface Id " + espressoInterfaceId);
+            logger.info("Espresso Application Interface Id {}", espressoInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerGromacsInterface() {
         try {
-            System.out.println("#### Registering Gromacs Interface #### \n");
+            logger.info("#### Registering Gromacs Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(gromacsModuleId);
@@ -991,16 +988,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             gromacsName, gromacsDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Gromacs Application Interface Id " + gromacsInterfaceId);
+            logger.info("Gromacs Application Interface Id {}", gromacsInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerLammpsInterface() {
         try {
-            System.out.println("#### Registering LAMMPS Interface #### \n");
+            logger.info("#### Registering LAMMPS Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(lammpsModuleId);
@@ -1038,16 +1035,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             lammpsName, lammpsDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("LAMMPS Application Interface Id " + lammpsInterfaceId);
+            logger.info("LAMMPS Application Interface Id {}", lammpsInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerNWChemInterface() {
         try {
-            System.out.println("#### Registering NWChem Interface #### \n");
+            logger.info("#### Registering NWChem Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(nwChemModuleId);
@@ -1084,16 +1081,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             nwChemName, nwChemDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("NWChem Application Interface Id " + nwChemInterfaceId);
+            logger.info("NWChem Application Interface Id {}", nwChemInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerTrinityInterface() {
         try {
-            System.out.println("#### Registering Trinity Interface #### \n");
+            logger.info("#### Registering Trinity Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(trinityModuleId);
@@ -1146,16 +1143,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             trinityName, trinityDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("Trinity Application Interface Id " + trinityInterfaceId);
+            logger.info("Trinity Application Interface Id {}", trinityInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerWRFInterface() {
         try {
-            System.out.println("#### Registering WRF Interface #### \n");
+            logger.info("#### Registering WRF Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(wrfModuleId);
@@ -1222,16 +1219,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             wrfName, wrfDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("WRF Application Interface Id " + wrfInterfaceId);
+            logger.info("WRF Application Interface Id {}", wrfInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerPhastaInterface() {
         try {
-            System.out.println("#### Registering PHASTA Interface #### \n");
+            logger.info("#### Registering PHASTA Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(phastaModuleId);
@@ -1297,16 +1294,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             phastaName, phastaDescription, appModules, applicationInputs, applicationOutputs));
-            System.out.println("phasta Application Interface Id " + phastaInterfaceId);
+            logger.info("phasta Application Interface Id {}", phastaInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerLocalApps() {
         try {
-            System.out.println("#### Registering Application Deployments on Localhost #### \n");
+            logger.info("#### Registering Application Deployments on Localhost #### \n");
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
                     new AuthzToken(""),
@@ -1321,15 +1318,15 @@ public class RegisterSampleApplications {
                             null,
                             null));
 
-            System.out.println("Echo on localhost Id " + echoAppDeployId);
-        } catch (TException e) {
+            logger.info("Echo on localhost Id {}", echoAppDeployId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void registerGaussianInterface() {
         try {
-            System.out.println("#### Registering Gaussian Application Interface ####");
+            logger.info("#### Registering Gaussian Application Interface ####");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(gaussianModuleId);
@@ -1357,16 +1354,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "Gaussian", "Gaussian application", appModules, applicationInputs, applicationOutputs));
-            System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
+            logger.info("Gaussian Application Interface Id {}", addApplicationInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void registerTinkerMonteInterface() {
         try {
-            System.out.println("#### Registering Tinker Monte Application Interface ####");
+            logger.info("#### Registering Tinker Monte Application Interface ####");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(monteXModuleId);
@@ -1412,16 +1409,16 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "Tinker_Monte", "Monte application", appModules, applicationInputs, applicationOutputs));
-            System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
+            logger.info("Monte Application Interface Id {}", addApplicationInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerStampedeApps() {
         try {
-            System.out.println("#### Registering Application Deployments on Stampede #### \n");
+            logger.info("#### Registering Application Deployments on Stampede #### \n");
 
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1436,7 +1433,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("Echo on stampede deployment Id " + echoAppDeployId);
+            logger.info("Echo on stampede deployment Id {}", echoAppDeployId);
 
             // Register Amber
             List<CommandObject> moduleLoadCMDs = new ArrayList<>();
@@ -1454,7 +1451,7 @@ public class RegisterSampleApplications {
                             null);
             String amberAppDeployId = airavataClient.registerApplicationDeployment(
                     new AuthzToken(""), DEFAULT_GATEWAY, amberStampedeDeployment);
-            System.out.println("Amber on stampede deployment Id " + amberAppDeployId);
+            logger.info("Amber on stampede deployment Id {}", amberAppDeployId);
 
             // Register ESPRESSO
             String espressoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1469,7 +1466,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("ESPRESSO on stampede deployment Id " + espressoAppDeployId);
+            logger.info("ESPRESSO on stampede deployment Id {}", espressoAppDeployId);
 
             // Register GROMACS
             String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1484,7 +1481,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("GROMACS on stampede deployment Id " + gromacsAppDeployId);
+            logger.info("GROMACS on stampede deployment Id {}", gromacsAppDeployId);
 
             // Register LAMMPS
             List<CommandObject> preJobCommands = new ArrayList();
@@ -1501,7 +1498,7 @@ public class RegisterSampleApplications {
                             null,
                             preJobCommands,
                             null));
-            System.out.println("LAMMPS on stampede deployment Id " + lammpsAppDeployId);
+            logger.info("LAMMPS on stampede deployment Id {}", lammpsAppDeployId);
 
             // Register NWChem
             List<CommandObject> nwChemModuleCmds = new ArrayList();
@@ -1518,7 +1515,7 @@ public class RegisterSampleApplications {
                             nwChemModuleCmds,
                             null,
                             null));
-            System.out.println("NWChem on stampede deployment Id " + nwChemAppDeployId);
+            logger.info("NWChem on stampede deployment Id {}", nwChemAppDeployId);
 
             // Register Trinity
             String trinityAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1533,7 +1530,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("Trinity on stampede deployment Id " + trinityAppDeployId);
+            logger.info("Trinity on stampede deployment Id {}", trinityAppDeployId);
 
             // Register WRF
             String wrfAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1548,7 +1545,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("WRF on stampede deployment Id " + wrfAppDeployId);
+            logger.info("WRF on stampede deployment Id {}", wrfAppDeployId);
 
             List<CommandObject> monteXModuleCmds = new ArrayList();
             //            monteXModuleCmds.add("module load globus");
@@ -1567,15 +1564,15 @@ public class RegisterSampleApplications {
                             monteXModuleCmds,
                             null,
                             null));
-            System.out.println("Tinker Monte on trestles deployment Id " + monteXAppDeployId);
-        } catch (TException e) {
+            logger.info("Tinker Monte on trestles deployment Id {}", monteXAppDeployId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerTrestlesApps() {
         try {
-            System.out.println("#### Registering Application Deployments on Trestles #### \n");
+            logger.info("#### Registering Application Deployments on Trestles #### \n");
 
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1590,7 +1587,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
+            logger.info("Echo on trestles deployment Id {}", echoAppDeployId);
 
             // Register Amber
             List<CommandObject> moduleLoadCMDs = new ArrayList();
@@ -1607,7 +1604,7 @@ public class RegisterSampleApplications {
                             moduleLoadCMDs,
                             null,
                             null));
-            System.out.println("Amber on trestles deployment Id " + amberAppDeployId);
+            logger.info("Amber on trestles deployment Id {}", amberAppDeployId);
 
             // Register GROMACS
             String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1622,7 +1619,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("GROMACS on trestles deployment Id " + gromacsAppDeployId);
+            logger.info("GROMACS on trestles deployment Id {}", gromacsAppDeployId);
 
             // Register LAMMPS
             String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1637,7 +1634,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("LAMMPS on trestles deployment Id " + lammpsAppDeployId);
+            logger.info("LAMMPS on trestles deployment Id {}", lammpsAppDeployId);
 
             // Register GAMESS
             List<CommandObject> moduleLoadCmd = new ArrayList();
@@ -1654,7 +1651,7 @@ public class RegisterSampleApplications {
                             moduleLoadCmd,
                             null,
                             null));
-            System.out.println("Gamess on trestles deployment Id " + gamessAppDeployId);
+            logger.info("Gamess on trestles deployment Id {}", gamessAppDeployId);
 
             List<CommandObject> gaussianMouldes = new ArrayList();
             gaussianMouldes.add(new CommandObject("module load gaussian"));
@@ -1670,16 +1667,16 @@ public class RegisterSampleApplications {
                             gaussianMouldes,
                             null,
                             null));
-            System.out.println("Gaussian on trestles deployment Id " + gaussianAppDeployId);
+            logger.info("Gaussian on trestles deployment Id {}", gaussianAppDeployId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerLSFApps() {
         try {
-            System.out.println("#### Registering Application Deployments on Trestles #### \n");
+            logger.info("#### Registering Application Deployments on Trestles #### \n");
 
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1711,16 +1708,16 @@ public class RegisterSampleApplications {
                             moduleLoadCmd,
                             null,
                             null));
-            System.out.println("Echo on LSF deployment Id " + echoAppDeployId);
-            System.out.println("LAMMPS on LSF deployment Id " + lammpsDeployId);
-        } catch (TException e) {
+            logger.info("Echo on LSF deployment Id {}", echoAppDeployId);
+            logger.info("LAMMPS on LSF deployment Id {}", lammpsDeployId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerBigRedApps() {
         try {
-            System.out.println("#### Registering Application Deployments on BigRed II #### \n");
+            logger.info("#### Registering Application Deployments on BigRed II #### \n");
 
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1735,7 +1732,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("Echo on bigredII deployment Id " + echoAppDeployId);
+            logger.info("Echo on bigredII deployment Id {}", echoAppDeployId);
 
             // Register Amber
             List<CommandObject> amberModuleLoadCMDsBr2 = new ArrayList();
@@ -1754,7 +1751,7 @@ public class RegisterSampleApplications {
                             null,
                             null));
 
-            System.out.println("Amber on bigredII deployment Id " + amberAppDeployId);
+            logger.info("Amber on bigredII deployment Id {}", amberAppDeployId);
 
             // Register AutoDock
             String autoDockDeployId = airavataClient.registerApplicationDeployment(
@@ -1769,7 +1766,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("AutoDock on bigredII deployment Id " + autoDockDeployId);
+            logger.info("AutoDock on bigredII deployment Id {}", autoDockDeployId);
 
             //            //Register GROMACS
             //            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1778,7 +1775,7 @@ public class RegisterSampleApplications {
             //                            "/N/u/cgateway/BigRed2/production/app_wrappers/gromacs_wrapper.sh",
             // ApplicationParallelismType.MPI,
             //                            gromacsDescription));
-            //            System.out.println("GROMACS on bigredII deployment Id " + gromacsAppDeployId);
+            //            logger.info("GROMACS on bigredII deployment Id {}", gromacsAppDeployId);
             //
             //            //Register LAMMPS
             //            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1787,16 +1784,16 @@ public class RegisterSampleApplications {
             //                            "/N/u/cgateway/BigRed2/production/app_wrappers/lammps_wrapper.sh",
             // ApplicationParallelismType.MPI,
             //                            lammpsDescription));
-            //            System.out.println("LAMMPS on bigredII deployment Id " + lammpsAppDeployId);
+            //            logger.info("LAMMPS on bigredII deployment Id {}", lammpsAppDeployId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void registerFSDApps() {
         try {
-            System.out.println("#### Registering Application Deployments on FSD #### \n");
+            logger.info("#### Registering Application Deployments on FSD #### \n");
 
             // Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
@@ -1811,7 +1808,7 @@ public class RegisterSampleApplications {
                             null,
                             null,
                             null));
-            System.out.println("Echo on FSD deployment Id: " + echoAppDeployId);
+            logger.info("Echo on FSD deployment Id: {}", echoAppDeployId);
 
             // Register MPI
             //            String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
@@ -1833,9 +1830,9 @@ public class RegisterSampleApplications {
                             null,
                             null));
 
-            System.out.println("MPI on FSD deployment Id: " + mpiAppDeployId);
+            logger.info("MPI on FSD deployment Id: {}", mpiAppDeployId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1868,8 +1865,7 @@ public class RegisterSampleApplications {
             SecurityProtocol securityProtocol,
             int portNumber,
             String jobManagerCommand,
-            List<BatchQueue> batchQueues)
-            throws TException {
+            List<BatchQueue> batchQueues) {
 
         ComputeResourceDescription computeResourceDescription =
                 RegisterSampleApplicationsUtils.createComputeResourceDescription(hostName, hostDesc, null, null);
@@ -1917,7 +1913,7 @@ public class RegisterSampleApplications {
     public void registerGatewayResourceProfile() {
 
         try {
-            System.out.println("#### Registering Application Deployments on BigRed II #### \n");
+            logger.info("#### Registering Application Deployments on BigRed II #### \n");
 
             ComputeResourcePreference stampedeResourcePreferences =
                     RegisterSampleApplicationsUtils.createComputeResourcePreference(
@@ -1983,9 +1979,9 @@ public class RegisterSampleApplications {
 
             String gatewayProfile =
                     airavataClient.registerGatewayResourceProfile(new AuthzToken(""), gatewayResourceProfile);
-            System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
+            logger.info("Gateway Profile is registered with Id {}", gatewayProfile);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -2022,7 +2018,7 @@ public class RegisterSampleApplications {
 
     public void registerAlamoApps() {
         try {
-            System.out.println("#### Registering Application Deployments on Alamo #### \n");
+            logger.info("#### Registering Application Deployments on Alamo #### \n");
 
             // Register Ultrascan on Alamo
             List<CommandObject> ultrascanMouldes = new ArrayList();
@@ -2043,16 +2039,16 @@ public class RegisterSampleApplications {
                             ultrascanMouldes,
                             null,
                             null));
-            System.out.println("Ultrascan on alamo deployment Id " + ultrascanAppDeployId);
+            logger.info("Ultrascan on alamo deployment Id {}", ultrascanAppDeployId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void registerUltrascanInterface() {
         try {
-            System.out.println("#### Registering Ultrascan Application Interface ####");
+            logger.info("#### Registering Ultrascan Application Interface ####");
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(ultrascanModuleId);
@@ -2082,9 +2078,9 @@ public class RegisterSampleApplications {
                     DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(
                             "Ultrascan", "Ultrascan application", appModules, applicationInputs, applicationOutputs));
-            System.out.println("Ultrascan Application Interface Id " + ultrascanInterfaceId);
+            logger.info("Ultrascan Application Interface Id {}", ultrascanInterfaceId);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

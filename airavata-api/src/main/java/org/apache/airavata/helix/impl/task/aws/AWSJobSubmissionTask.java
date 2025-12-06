@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
@@ -45,9 +44,10 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.ServiceFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -282,7 +282,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         }
     }
 
-    private TaskResult handleJobSubmissionFailure(GroovyMapData mapData, String reason) throws TException {
+    private TaskResult handleJobSubmissionFailure(GroovyMapData mapData, String reason)
+            throws RegistryServiceException {
         LOGGER.error(reason);
         JobModel jobModel = new JobModel();
         jobModel.setProcessId(getProcessId());
@@ -324,8 +325,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-        SSHCredential sshCredential =
-                AgentUtils.getCredentialClient().getSSHCredential(sshCredentialToken, getGatewayId());
+        SSHCredential sshCredential = ServiceFactory.getInstance()
+                .getCredentialStoreService()
+                .getSSHCredential(sshCredentialToken, getGatewayId());
         adaptor.init(
                 getTaskContext().getComputeResourceLoginUserName(),
                 publicIpAddress,

@@ -22,9 +22,12 @@ package org.apache.airavata.messaging.core.stats;
 import java.io.*;
 import java.util.Map;
 import java.util.TimerTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LatencyWriterTask extends TimerTask {
 
+    private static final Logger logger = LoggerFactory.getLogger(LatencyWriterTask.class);
     private File file;
     private FileOutputStream fos;
     private BufferedWriter bw;
@@ -36,7 +39,7 @@ public class LatencyWriterTask extends TimerTask {
     @Override
     public void run() {
         try {
-            System.out.println("########### Latency Write Task ############");
+            logger.info("########### Latency Write Task ############");
             StatCounter statCounter = StatCounter.getInstance();
             Map<String, Long> messageTimeStamp = statCounter.getMessageTimeStamp();
             fos = new FileOutputStream(file, false);

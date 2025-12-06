@@ -17,15 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.client.samples;
+package org.apache.airavata.profile.client.samples;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
-import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
+import org.apache.airavata.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.profile.client.util.ProfileServiceClientUtil;
+import org.apache.airavata.profile.groupmanager.cpi.GroupManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class GroupManagerSample {
             // NOTE: Only these two methods can be tested as other methods require us to create a group.
             // createGroup() needs createUser() to be executed. Currently ownerId is set from createUser()
             // method which requires a sharingServiceClient. Hence, verifying only this method for now.
-            System.out.println("hasAdminAccess() should return [false]: "
+            logger.info("hasAdminAccess() should return [false]: {}",
                     + groupMangerClient.hasAdminAccess(authzToken, "test-group-1", "test-user-1"));
         } catch (Exception ex) {
             ex.printStackTrace();

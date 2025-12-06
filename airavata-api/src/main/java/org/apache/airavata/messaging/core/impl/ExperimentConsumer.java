@@ -25,14 +25,12 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.*;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +57,6 @@ public class ExperimentConsumer extends DefaultConsumer {
         try {
             ThriftUtils.createThriftFromBytes(body, message);
             long deliveryTag = envelope.getDeliveryTag();
-
-            TBase event = null;
             String gatewayId = null;
             if (message.getMessageType() == MessageType.EXPERIMENT
                     || message.getMessageType() == MessageType.EXPERIMENT_CANCEL) {
@@ -70,7 +66,7 @@ public class ExperimentConsumer extends DefaultConsumer {
                 log.info(" Message Received with message id '" + message.getMessageId()
                         + "' and with message type '" + message.getMessageType() + "'  for experimentId:" + " "
                         + experimentEvent.getExperimentId());
-                event = experimentEvent;
+                var event = experimentEvent;
                 gatewayId = experimentEvent.getGatewayId();
                 MessageContext messageContext = new MessageContext(
                         event, message.getMessageType(), message.getMessageId(), gatewayId, deliveryTag);
@@ -85,7 +81,7 @@ public class ExperimentConsumer extends DefaultConsumer {
                 log.info(" Message Received with message id '" + message.getMessageId()
                         + "' and with message type '" + message.getMessageType() + "'  for experimentId:" + " "
                         + intermediateOutEvt.getExperimentId());
-                event = intermediateOutEvt;
+                var event = intermediateOutEvt;
                 gatewayId = intermediateOutEvt.getGatewayId();
                 MessageContext messageContext = new MessageContext(
                         event, message.getMessageType(), message.getMessageId(), gatewayId, deliveryTag);
@@ -101,9 +97,9 @@ public class ExperimentConsumer extends DefaultConsumer {
                         deliveryTag);
                 sendAck(deliveryTag);
             }
-        } catch (TException e) {
-            String msg = "Failed to de-serialize the thrift message, from routing keys:" + envelope.getRoutingKey();
-            log.warn(msg, e);
+        } catch (Exception e) {
+            String msg = "Failed to handle experiment message, reason: " + e.getMessage();
+            log.error(msg, e);
         }
     }
 

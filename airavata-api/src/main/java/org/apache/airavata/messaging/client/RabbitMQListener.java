@@ -20,19 +20,11 @@
 package org.apache.airavata.messaging.client;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -42,8 +34,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,24 +45,6 @@ public class RabbitMQListener {
     private static String experimentId = "*";
     private static String jobId = "*";
     private static LEVEL level = LEVEL.ALL;
-
-    public static void main(String[] args) {
-        File file = new File("/tmp/latency_client");
-        parseArguments(args);
-        try {
-            FileOutputStream fos = new FileOutputStream(file, false);
-            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-            String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            System.out.println("broker url " + brokerUrl);
-            final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            List<String> routingKeys = getRoutingKeys(level);
-            Subscriber subscriber = MessagingFactory.getSubscriber(message -> {}, routingKeys, Type.STATUS);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error reading airavata server properties", e);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
 
     private static MessageHandler getMessageHandler(final BufferedWriter bw) {
         return message -> {
@@ -88,15 +60,20 @@ public class RabbitMQListener {
             if (message.getType().equals(MessageType.EXPERIMENT)) {
                 try {
                     ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                    TBase messageEvent = message.getEvent();
+                    var messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType() + "' and with state : '"
-                            + event.getState().toString() + " for Gateway "
-                            + event.getGatewayId());
-                } catch (TException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.info(
+                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
+                            message.getMessageId(),
+                            message.getType(),
+                            event.getState().toString(),
+                            event.getGatewayId());
+                } catch (Exception e) {
+                    String msg = String.format(
+                            "Error while processing experiment status change event: messageId=%s, type=%s, error=%s",
+                            message.getMessageId(), message.getType(), e.getMessage());
+                    logger.error(msg, e);
                 }
             } else if (message.getType().equals(MessageType.PROCESS)) {
                 /*try {
@@ -104,37 +81,46 @@ public class RabbitMQListener {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString() +
-                            " for Gateway " + event.getWorkflowNodeIdentity().getGatewayId());
-                } catch (TException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.info(" Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}", message.getMessageId(), message.getType(), event.getState().toString(), event.getWorkflowNodeIdentity().getGatewayId());
+                } catch (Exception e) {
+                    String msg = String.format("Error while processing workflow node status change event: messageId=%s, type=%s, error=%s", message.getMessageId(), message.getType(), e.getMessage());
+                    logger.error(msg, e);
                 }*/
             } else if (message.getType().equals(MessageType.TASK)) {
                 try {
                     TaskStatusChangeEvent event = new TaskStatusChangeEvent();
-                    TBase messageEvent = message.getEvent();
+                    var messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType() + "' and with state : '"
-                            + event.getState().toString() + " for Gateway "
-                            + event.getTaskIdentity().getGatewayId());
-                } catch (TException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.info(
+                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
+                            message.getMessageId(),
+                            message.getType(),
+                            event.getState().toString(),
+                            event.getTaskIdentity().getGatewayId());
+                } catch (Exception e) {
+                    String msg = String.format(
+                            "Error while processing task status change event: messageId=%s, type=%s, error=%s",
+                            message.getMessageId(), message.getType(), e.getMessage());
+                    logger.error(msg, e);
                 }
             } else if (message.getType().equals(MessageType.JOB)) {
                 try {
                     JobStatusChangeEvent event = new JobStatusChangeEvent();
-                    TBase messageEvent = message.getEvent();
+                    var messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType() + "' and with state : '"
-                            + event.getState().toString() + " for Gateway "
-                            + event.getJobIdentity().getGatewayId());
-                } catch (TException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.info(
+                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
+                            message.getMessageId(),
+                            message.getType(),
+                            event.getState().toString(),
+                            event.getJobIdentity().getGatewayId());
+                } catch (Exception e) {
+                    String msg = String.format(
+                            "Error while processing job status change event: messageId=%s, type=%s, error=%s",
+                            message.getMessageId(), message.getType(), e.getMessage());
+                    logger.error(msg, e);
                 }
             }
         };

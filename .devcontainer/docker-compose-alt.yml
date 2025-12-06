@@ -113,7 +113,7 @@ services:
       - credential.store.jdbc.driver=org.mariadb.jdbc.Driver
       - credential.store.server.host=0.0.0.0
       - credential.store.server.port=8960
-      - credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
+      - credential.store.class=org.apache.airavata.credential.server.CredentialStoreServer
       - credential.store.jdbc.validationQuery=SELECT 1 from CONFIGURATION
       - rabbitmq.broker.url=amqp://guest:guest@rabbitmq:5672/develop
       - rabbitmq.status.exchange.name=status_exchange

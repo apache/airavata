@@ -29,7 +29,9 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +45,18 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService.Client registryClient = super.registryClientPool.getResource();
+        RegistryService registryService;
+        try {
+            registryService = ServiceFactory.getInstance().getRegistryService();
+        } catch (ServiceFactoryException e) {
+            LOGGER.error("Failed to get RegistryService from ServiceFactory", e);
+            return Optional.empty();
+        }
         try {
 
-            ProcessModel processModel = registryClient.getProcess(processId);
+            ProcessModel processModel = registryService.getProcess(processId);
 
-            ExperimentModel experiment = registryClient.getExperiment(processModel.getExperimentId());
+            ExperimentModel experiment = registryService.getExperiment(processModel.getExperimentId());
 
             UserConfigurationDataModel userConfigurationDataModel = experiment.getUserConfigurationData();
 
@@ -65,8 +73,8 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
                 String key = resourceSchedulingModel.getResourceHostId() + "_" + resourceSchedulingModel.getQueueName();
                 if (!retries.contains(key)) {
                     ComputeResourceDescription comResourceDes =
-                            registryClient.getComputeResource(resourceSchedulingModel.getResourceHostId());
-                    QueueStatusModel queueStatusModel = registryClient.getQueueStatus(
+                            registryService.getComputeResource(resourceSchedulingModel.getResourceHostId());
+                    QueueStatusModel queueStatusModel = registryService.getQueueStatus(
                             comResourceDes.getHostName(), resourceSchedulingModel.getQueueName());
                     if (queueStatusModel.isQueueUp()) {
                         return Optional.of(resourceSchedulingModel);
@@ -78,12 +86,6 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
-            this.registryClientPool.returnBrokenResource(registryClient);
-            registryClient = null;
-        } finally {
-            if (registryClient != null) {
-                this.registryClientPool.returnResource(registryClient);
-            }
         }
 
         return Optional.empty();

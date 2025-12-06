@@ -27,10 +27,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.api.thrift.client.AiravataServiceClientFactory;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.workspace.Project;
@@ -56,20 +59,54 @@ public class AiravataService {
 
     public Airavata.Client airavata() {
         try {
-            return AiravataClientFactory.createAiravataClient(serverUrl, port, secure);
+            return AiravataServiceClientFactory.createAiravataClient(serverUrl, port, secure);
         } catch (AiravataClientException e) {
             LOGGER.error("Error while creating Airavata client", e);
             throw new RuntimeException("Error while creating Airavata client", e);
         }
     }
 
-    public String getProjectId(Airavata.Client airavataClient, String projectName) throws TException {
+    public String getProjectId(Airavata.Client airavataClient, String projectName) {
         int limit = 10;
         int offset = 0;
 
         while (true) {
-            List<Project> userProjects = airavataClient.getUserProjects(
-                    UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+            List<Project> userProjects;
+            try {
+                userProjects = airavataClient.getUserProjects(
+                        UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+            } catch (InvalidRequestException e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            } catch (AuthorizationException e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            } catch (AiravataSystemException e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            } catch (AiravataClientException e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            } catch (TException e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }
+
             Optional<Project> defaultProject = userProjects.stream()
                     .filter(project -> projectName.equals(project.getName()))
                     .findFirst();
@@ -88,9 +125,42 @@ public class AiravataService {
     }
 
     public GroupComputeResourcePreference extractGroupComputeResourcePreference(
-            Airavata.Client airavataClient, String group, String remoteCluster) throws TException {
-        List<GroupResourceProfile> groupResourceList =
-                airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
+            Airavata.Client airavataClient, String group, String remoteCluster) {
+        List<GroupResourceProfile> groupResourceList;
+        try {
+            groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
+        } catch (InvalidRequestException e) {
+            String msg = String.format(
+                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
+                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (AuthorizationException e) {
+            String msg = String.format(
+                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
+                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (AiravataSystemException e) {
+            String msg = String.format(
+                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
+                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (AiravataClientException e) {
+            String msg = String.format(
+                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
+                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (TException e) {
+            String msg = String.format(
+                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
+                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+
         String groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
 
         return groupResourceList.stream()
@@ -102,7 +172,7 @@ public class AiravataService {
                         + groupProfileName + " group resource profile for the user: " + UserContext.username()));
     }
 
-    public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {
+    public List<String> getUserExperimentIDs(Airavata.Client airavataClient) {
         int limit = 100;
         Map<ExperimentSearchFields, String> filters =
                 Map.of(ExperimentSearchFields.PROJECT_ID, getProjectId(airavataClient, "Default Project"));
@@ -117,9 +187,61 @@ public class AiravataService {
                                 filters,
                                 limit,
                                 offset);
+                    } catch (InvalidRequestException e) {
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
+                    } catch (AuthorizationException e) {
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
+                    } catch (AiravataSystemException e) {
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
+                    } catch (AiravataClientException e) {
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
                     } catch (TException e) {
-                        // Handle exception gracefully
-                        throw new RuntimeException(e);
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
                     }
                 })
                 .takeWhile(list -> !list.isEmpty())

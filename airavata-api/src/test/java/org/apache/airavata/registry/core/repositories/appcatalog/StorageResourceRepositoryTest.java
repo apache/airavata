@@ -51,7 +51,7 @@ public class StorageResourceRepositoryTest extends TestBase {
     }
 
     @Test
-    public void StorageResourceRepositoryTest() throws AppCatalogException {
+    public void addStorageResource() throws AppCatalogException {
 
         StorageResourceDescription description = new StorageResourceDescription();
 
@@ -60,9 +60,9 @@ public class StorageResourceRepositoryTest extends TestBase {
         description.setStorageResourceDescription("testDescription");
 
         String scpDataMoveId = addSCPDataMovement();
-        System.out.println("**** SCP DataMoveId****** :" + scpDataMoveId);
+        logger.info("**** SCP DataMoveId****** :{}", scpDataMoveId);
         String gridFTPDataMoveId = addGridFTPDataMovement();
-        System.out.println("**** grid FTP DataMoveId****** :" + gridFTPDataMoveId);
+        logger.info("**** grid FTP DataMoveId****** :{}", gridFTPDataMoveId);
 
         List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
         DataMovementInterface scpInterface = new DataMovementInterface();
@@ -90,10 +90,11 @@ public class StorageResourceRepositoryTest extends TestBase {
             List<DataMovementInterface> movementInterfaces = storageResourceDescription.getDataMovementInterfaces();
             if (movementInterfaces != null && !movementInterfaces.isEmpty()) {
                 for (DataMovementInterface dataMovementInterface : movementInterfaces) {
-                    System.out.println(
-                            "Data Movement Interface Id :" + dataMovementInterface.getDataMovementInterfaceId());
-                    System.out.println("Data Movement Protocol :"
-                            + dataMovementInterface.getDataMovementProtocol().toString());
+                    logger.info("Data Movement Interface Id :{}", dataMovementInterface.getDataMovementInterfaceId());
+                    logger.info(
+                            "Data Movement Protocol :{}",
+                            dataMovementInterface.getDataMovementProtocol().toString());
+                    logger.info("Data Movement Priority Order: {}", dataMovementInterface.getPriorityOrder());
                 }
             }
         } else {
@@ -104,8 +105,7 @@ public class StorageResourceRepositoryTest extends TestBase {
         storageResourceRepository.updateStorageResource(resourceId, description);
         if (storageResourceRepository.isStorageResourceExists(resourceId)) {
             storageResourceDescription = storageResourceRepository.getStorageResource(resourceId);
-            System.out.println(
-                    "**********Updated Resource name ************* : " + storageResourceDescription.getHostName());
+            logger.info("**********Updated Resource name ************* : {}", storageResourceDescription.getHostName());
             assertTrue(storageResourceDescription.getHostName().equals("localhost2"));
         }
         assertTrue(storageResourceDescription != null, "Storage resource save successfully");

@@ -28,8 +28,8 @@ import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.thrift.TException;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +48,13 @@ public class AWSProcessContextManager {
     private static final String AWS_PUBLIC_IP = "AWS_PUBLIC_IP";
     private static final String AWS_JOB_ID = "AWS_JOB_ID";
 
-    private final RegistryService.Client registryClient;
+    private final RegistryService registryService;
     private final TaskContext taskContext;
     private final String processId;
 
     public AWSProcessContextManager(TaskContext taskContext) {
         try {
-            this.registryClient = AgentUtils.getRegistryServiceClient();
+            this.registryService = AgentUtils.getRegistryService();
             this.taskContext = taskContext;
             this.processId = taskContext.getProcessId();
             LOGGER.info("Initialized AWSProcessContextManager for process {}", processId);
@@ -69,7 +69,7 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_INSTANCE_ID_KEY);
     }
 
-    public void saveInstanceId(String instanceId) throws TException, IOException {
+    public void saveInstanceId(String instanceId) throws RegistryServiceException, IOException {
         updateContext(AWS_INSTANCE_ID_KEY, instanceId);
     }
 
@@ -77,7 +77,7 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_SECURITY_GROUP_ID_KEY);
     }
 
-    public void saveSecurityGroupId(String securityGroupId) throws TException, IOException {
+    public void saveSecurityGroupId(String securityGroupId) throws RegistryServiceException, IOException {
         updateContext(AWS_SECURITY_GROUP_ID_KEY, securityGroupId);
     }
 
@@ -85,7 +85,7 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_KEY_PAIR_NAME_KEY);
     }
 
-    public void saveKeyPairName(String keyPairName) throws TException, IOException {
+    public void saveKeyPairName(String keyPairName) throws RegistryServiceException, IOException {
         updateContext(AWS_KEY_PAIR_NAME_KEY, keyPairName);
     }
 
@@ -93,7 +93,7 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_SSH_CREDENTIAL_TOKEN);
     }
 
-    public void saveSSHCredentialToken(String credentialToken) throws TException, IOException {
+    public void saveSSHCredentialToken(String credentialToken) throws RegistryServiceException, IOException {
         updateContext(AWS_SSH_CREDENTIAL_TOKEN, credentialToken);
     }
 
@@ -101,7 +101,7 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_PUBLIC_IP);
     }
 
-    public void savePublicIp(String publicIp) throws TException, IOException {
+    public void savePublicIp(String publicIp) throws RegistryServiceException, IOException {
         updateContext(AWS_PUBLIC_IP, publicIp);
     }
 
@@ -109,11 +109,11 @@ public class AWSProcessContextManager {
         return getContextMap().get(AWS_JOB_ID);
     }
 
-    public void saveJobId(String jobId) throws TException, IOException {
+    public void saveJobId(String jobId) throws RegistryServiceException, IOException {
         updateContext(AWS_JOB_ID, jobId);
     }
 
-    public void cleanup() throws TException, IOException {
+    public void cleanup() throws RegistryServiceException, IOException {
         updateContext(AWS_INSTANCE_ID_KEY, null);
         updateContext(AWS_SECURITY_GROUP_ID_KEY, null);
         updateContext(AWS_KEY_PAIR_NAME_KEY, null);
@@ -127,12 +127,12 @@ public class AWSProcessContextManager {
         return MAPPER.readValue(jsonContext, new TypeReference<>() {});
     }
 
-    private void updateContext(String key, String value) throws TException, IOException {
+    private void updateContext(String key, String value) throws RegistryServiceException, IOException {
         Map<String, String> contextMap = getContextMap();
         contextMap.put(key, value);
         ProcessModel processModel = taskContext.getProcessModel();
         processModel.setProcessDetail(MAPPER.writeValueAsString(contextMap));
-        registryClient.updateProcess(processModel, processId);
+        registryService.updateProcess(processModel, processId);
         LOGGER.info("Updated process detail for process {} with key '{}'", processId, key);
     }
 }

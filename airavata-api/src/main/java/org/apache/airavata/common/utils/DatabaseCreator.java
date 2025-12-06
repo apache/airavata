@@ -373,9 +373,4 @@ public class DatabaseCreator {
         }
         return dbScriptFileName;
     }
-
-    //    public static void main(String[] args) throws Exception {
-    //        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.derby, "db/db/expcatalog-derby.sql"));
-    //        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.mysql, "/expcatalog-mysql.sql"));
-    //    }
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.metascheduler.core.utils.Utils;
@@ -36,9 +35,9 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.thrift.TException;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,16 +45,13 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
 
-    protected ThriftClientPool<RegistryService.Client> registryClientPool = Utils.getRegistryServiceClientPool();
-
     @Override
     public void reschedule(ProcessModel processModel, ProcessState processState) {
-        RegistryService.Client client = null;
         try {
-            client = this.registryClientPool.getResource();
+            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
             int maxReschedulingCount = ServerSettings.getMetaschedulerReschedulingThreshold();
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
-            ExperimentModel experimentModel = client.getExperiment(processModel.getExperimentId());
+            ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());
             LOGGER.info("Rescheduling process with Id " + processModel.getProcessId() + " experimentId "
                     + processModel.getExperimentId());
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
@@ -66,7 +62,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                         policy.selectComputeResource(processModel.getProcessId());
 
                 if (computationalResourceSchedulingModel.isPresent()) {
-                    updateResourceSchedulingModel(processModel, experimentModel, client);
+                    updateResourceSchedulingModel(processModel, experimentModel, registryService);
                     Utils.updateProcessStatusAndPublishStatus(
                             ProcessState.DEQUEUING,
                             processModel.getProcessId(),
@@ -83,10 +79,10 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                             experimentModel.getGatewayId());
                 } else {
 
-                    client.deleteJobs(processModel.getProcessId());
+                    registryService.deleteJobs(processModel.getProcessId());
                     LOGGER.debug("Cleaned up current  job stack for process " + processModel.getProcessId()
                             + " experimentId " + processModel.getExperimentId());
-                    ProcessStatus processStatus = client.getProcessStatus(processModel.getProcessId());
+                    ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());
                     long pastValue = processStatus.getTimeOfStateChange();
 
                     int value = fib(currentCount);
@@ -96,7 +92,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                     double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
 
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
-                        updateResourceSchedulingModel(processModel, experimentModel, client);
+                        updateResourceSchedulingModel(processModel, experimentModel, registryService);
                         Utils.saveAndPublishProcessStatus(
                                 ProcessState.DEQUEUING,
                                 processModel.getProcessId(),
@@ -105,16 +101,8 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
                     }
                 }
             }
-            return;
         } catch (Exception exception) {
-            if (client != null) {
-                registryClientPool.returnBrokenResource(client);
-                client = null;
-            }
-        } finally {
-            if (client != null) {
-                registryClientPool.returnResource(client);
-            }
+            LOGGER.error("Error rescheduling process " + processModel.getProcessId(), exception);
         }
     }
 
@@ -135,8 +123,8 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     }
 
     private void updateResourceSchedulingModel(
-            ProcessModel processModel, ExperimentModel experimentModel, RegistryService.Client registryClient)
-            throws TException, ExperimentNotFoundException, ApplicationSettingsException, ClassNotFoundException,
+            ProcessModel processModel, ExperimentModel experimentModel, RegistryService registryService)
+            throws ExperimentNotFoundException, ApplicationSettingsException, ClassNotFoundException,
                     IllegalAccessException, InstantiationException, RegistryServiceException {
         String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
         ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
@@ -175,11 +163,11 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             UserConfigurationDataModel userConfigurationDataModel = experimentModel.getUserConfigurationData();
             userConfigurationDataModel.setComputationalResourceScheduling(resourceSchedulingModel);
             experimentModel.setUserConfigurationData(userConfigurationDataModel);
-            registryClient.updateExperiment(processModel.getExperimentId(), experimentModel);
+            registryService.updateExperiment(processModel.getExperimentId(), experimentModel);
 
             processModel.setProcessResourceSchedule(resourceSchedulingModel);
             processModel.setComputeResourceId(resourceSchedulingModel.getResourceHostId());
-            registryClient.updateProcess(processModel, processModel.getProcessId());
+            registryService.updateProcess(processModel, processModel.getProcessId());
         }
     }
 }

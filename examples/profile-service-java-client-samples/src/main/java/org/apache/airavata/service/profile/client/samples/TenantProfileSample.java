@@ -17,15 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.client.samples;
+package org.apache.airavata.profile.client.samples;
 
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
-import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.profile.client.util.ProfileServiceClientUtil;
+import org.apache.airavata.profile.tenant.cpi.TenantProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class TenantProfileSample {
             // test addGateway
             testGatewayId = tenantProfileClient.addGateway(authzToken, getGateway("465"));
             assert (testGatewayId != null) : "Gateway creation failed!";
-            System.out.println("Gateway created with gatewayId: " + testGatewayId);
+            logger.info("Gateway created with gatewayId: {}", testGatewayId);
 
         } catch (Exception ex) {
             logger.error("TenantProfile client-sample Exception: " + ex, ex);

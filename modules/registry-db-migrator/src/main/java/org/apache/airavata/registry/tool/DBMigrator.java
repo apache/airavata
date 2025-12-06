@@ -214,7 +214,7 @@ public class DBMigrator {
                     sql.replace(0, sql.length(), "");
                 }
             }
-            System.out.println(sql.toString());
+            logger.info(sql.toString());
             // Catch any statements not followed by ;
             if (sql.length() > 0) {
                 executeSQL(sql.toString(), conn);
@@ -365,7 +365,7 @@ public class DBMigrator {
                 }
             }
         }
-        System.out.println(fileContentsBuilder.toString());
+        logger.info(fileContentsBuilder.toString());
         InputStream is = new ByteArrayInputStream(fileContentsBuilder.toString().getBytes());
 
         return is;

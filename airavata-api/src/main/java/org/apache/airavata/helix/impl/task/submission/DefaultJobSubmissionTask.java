@@ -33,7 +33,8 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
-import org.apache.airavata.patform.monitoring.CountMonitor;
+import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.service.ServiceFactory;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,8 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            List<JobModel> jobsOfTask = getTaskContext().getRegistryClient().getJobs("taskId", getTaskId());
+            List<JobModel> jobsOfTask =
+                    ServiceFactory.getInstance().getRegistryService().getJobs("taskId", getTaskId());
 
             if (jobsOfTask.size() > 0) {
                 logger.warn("A job is already available for task " + getTaskId());
@@ -202,11 +204,11 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 // usage reporting as the last step of job submission task
                 try {
                     mapData.setJobId(jobId);
-                    boolean reportingAvailable = getRegistryServiceClient()
+                    boolean reportingAvailable = getRegistryService()
                             .isGatewayUsageReportingAvailable(getGatewayId(), taskContext.getComputeResourceId());
 
                     if (reportingAvailable) {
-                        GatewayUsageReportingCommand reportingCommand = getRegistryServiceClient()
+                        GatewayUsageReportingCommand reportingCommand = getRegistryService()
                                 .getGatewayReportingCommand(getGatewayId(), taskContext.getComputeResourceId());
 
                         String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());

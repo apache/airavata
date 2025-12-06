@@ -39,7 +39,6 @@ import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
-import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -151,10 +150,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
                     + " for email monitoring -->  " + addressStr);
         }
-        RegistryService.Client regClient = getRegistryClientPool().getResource();
-
         try {
-            JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
+            JobStatusResult jobStatusResult = emailParser.parseEmail(message, getRegistryService());
             jobStatusResult.setPublisherName(publisherId);
             var jobId = jobStatusResult.getJobId();
             var jobName = jobStatusResult.getJobName();
@@ -162,10 +159,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
             return jobStatusResult;
         } catch (Exception e) {
-            getRegistryClientPool().returnBrokenResource(regClient);
             throw e;
-        } finally {
-            getRegistryClientPool().returnResource(regClient);
         }
     }
 

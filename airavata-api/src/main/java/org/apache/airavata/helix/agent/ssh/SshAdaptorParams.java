@@ -123,12 +123,4 @@ public class SshAdaptorParams extends AdaptorParams implements Serializable {
         this.strictHostKeyChecking = strictHostKeyChecking;
         return this;
     }
-
-    public static void main(String args[]) throws IOException {
-        SshAdaptorParams params = new SshAdaptorParams();
-        params.setUserName("dimuthu");
-        params.setPassword("upe");
-        params.setHostName("localhost");
-        params.writeToFile(new File("/tmp/ssh-param.json"));
-    }
 }

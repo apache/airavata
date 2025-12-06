@@ -21,15 +21,13 @@ package org.apache.airavata.messaging.core.impl;
 
 import com.rabbitmq.client.*;
 import java.io.IOException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.messaging.event.Message;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 
 public class MessageConsumer extends DefaultConsumer {
 
@@ -60,7 +58,7 @@ public class MessageConsumer extends DefaultConsumer {
             ThriftUtils.createThriftFromBytes(message.getEvent(), dBEventMessage);
 
             MessageContext messageContext = new MessageContext(
-                    (TBase) dBEventMessage,
+                    dBEventMessage,
                     message.getMessageType(),
                     message.getMessageId(),
                     "gatewayId",
@@ -68,7 +66,7 @@ public class MessageConsumer extends DefaultConsumer {
             handler.onMessage(messageContext);
             // sendAck(deliveryTag);
 
-        } catch (TException e) {
+        } catch (Exception e) {
             logger.error("handleDelivery() -> Error handling delivery. Consumer Tag : " + consumerTag, e);
         }
     }

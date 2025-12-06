@@ -40,7 +40,7 @@ public class ReplicaCatalogSample {
     public static void main(String[] args) {
         try {
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println(client.getAPIVersion());
+            logger.info("API version is {}", client.getAPIVersion());
 
             DataProductModel dataProductModel = new DataProductModel();
             dataProductModel.setGatewayId(DEFAULT_GATEWAY);
@@ -58,10 +58,10 @@ public class ReplicaCatalogSample {
             dataProductModel.addToReplicaLocations(replicaLocationModel);
 
             String productUri = client.registerDataProduct(authzToken, dataProductModel);
-            System.out.println(productUri);
+            logger.info("Product URI: {}", productUri);
 
             dataProductModel = client.getDataProduct(authzToken, "airavata-dp://Eroma2016@seagrid:/");
-            System.out.println(dataProductModel.getReplicaLocations().size());
+            logger.info("Replica Locations: {}", dataProductModel.getReplicaLocations().size());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();

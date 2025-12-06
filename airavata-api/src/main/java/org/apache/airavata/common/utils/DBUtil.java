@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.common.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.Properties;
 import javax.sql.DataSource;
@@ -41,18 +42,16 @@ public class DBUtil {
 
     private Properties properties;
 
-    public DBUtil(String jdbcUrl, String userName, String password, String driver)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public DBUtil(String jdbcUrl, String userName, String password, String driver) throws ApplicationSettingsException {
 
         this.jdbcUrl = jdbcUrl;
         this.databaseUserName = userName;
         this.databasePassword = password;
         this.driverName = driver;
-
         init();
     }
 
-    public DBUtil(JDBCConfig jdbcConfig) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public DBUtil(JDBCConfig jdbcConfig) throws ApplicationSettingsException {
         this(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
     }
 
@@ -66,7 +65,7 @@ public class DBUtil {
      * @throws IllegalAccessException
      *             If security does not allow users to instantiate driver object.
      */
-    private void init() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void init() throws ApplicationSettingsException {
         properties = new Properties();
 
         properties.put("user", databaseUserName);
@@ -186,8 +185,26 @@ public class DBUtil {
         }
     }
 
-    private void loadDriver() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Class.forName(driverName).newInstance();
+    private void loadDriver() throws ApplicationSettingsException {
+        try {
+            Class.forName(driverName).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new ApplicationSettingsException(
+                    "Error loading database driver. Error instantiating driver object.", e);
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new ApplicationSettingsException("Error loading database driver. No such method found.", e);
+        } catch (IllegalArgumentException e) {
+            throw new ApplicationSettingsException(
+                    "Error loading database driver. Illegal access to driver object.", e);
+        } catch (InvocationTargetException e) {
+            throw new ApplicationSettingsException("Error loading database driver. Error invoking constructor.", e);
+        } catch (InstantiationException e) {
+            throw new ApplicationSettingsException(
+                    "Error loading database driver. Error instantiating driver object.", e);
+        } catch (IllegalAccessException e) {
+            throw new ApplicationSettingsException(
+                    "Error loading database driver. Illegal access to driver object.", e);
+        }
     }
 
     /**

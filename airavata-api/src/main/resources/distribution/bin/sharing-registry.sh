@@ -20,7 +20,7 @@
 . $(dirname $0)/setenv.sh
 
 SERVICE_NAME="sharing-registry"
-MAIN_CLASS="org.apache.airavata.sharing.registry.server.ServerMain"
+MAIN_CLASS="org.apache.airavata.main.SharingRegistry"
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 
 run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"

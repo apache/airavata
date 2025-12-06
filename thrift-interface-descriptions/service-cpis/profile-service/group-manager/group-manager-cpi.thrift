@@ -29,7 +29,7 @@ include "../../../airavata-apis/security_model.thrift"
 include "../../../base-api/base_api.thrift"
 include "../../../data-models/group_manager_model.thrift"
 
-namespace java org.apache.airavata.service.profile.groupmanager.cpi
+namespace java org.apache.airavata.profile.groupmanager.cpi
 namespace php Airavata.Service.Profile.Groupmanager.CPI
 namespace py airavata.service.profile.groupmanager.cpi
 

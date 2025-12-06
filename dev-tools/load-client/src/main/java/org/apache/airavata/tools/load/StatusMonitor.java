@@ -33,7 +33,6 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.JobState;
-import org.apache.thrift.TException;
 
 public class StatusMonitor {
 
@@ -47,7 +46,7 @@ public class StatusMonitor {
         this.authzToken = authzToken;
     }
 
-    public void monitorExperiments(List<String> experiments) throws TException, ApplicationSettingsException {
+    public void monitorExperiments(List<String> experiments) {
 
         Map<String, JobModel> jobModelMap = new HashMap<>();
         Map<String, ExperimentModel> experimentModelMap = new HashMap<>();
@@ -55,7 +54,7 @@ public class StatusMonitor {
         Airavata.Client airavataClient;
         long monitoringStartTime = System.currentTimeMillis();
         while (experiments.size() > jobModelMap.size()) {
-            System.out.println("Running a monitoring round....");
+            logger.info("Running a monitoring round....");
             airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
 
             for (String experiment : experiments) {
@@ -70,11 +69,11 @@ public class StatusMonitor {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("Error while monitoring experiment " + experiment);
+                    logger.error("Error while monitoring experiment {}", experiment);
                 }
             }
 
-            System.out.println("Jobs " + jobModelMap.size() + "/" + experiments.size() + " submitted");
+            logger.info("Jobs {} / {} submitted", jobModelMap.size(), experiments.size());
             try {
                 Thread.sleep(20 * 1000);
             } catch (InterruptedException e) {
@@ -91,7 +90,7 @@ public class StatusMonitor {
         long totalTime = 0;
         long totalExperiments = 0;
 
-        System.out.println("EXP ID,CREATE_TIME,LAUNCHED_TIME,EXECUTING_TIME,JOB_SUBMIT_TIME");
+        logger.info("EXP ID,CREATE_TIME,LAUNCHED_TIME,EXECUTING_TIME,JOB_SUBMIT_TIME");
         List<String> lines = new ArrayList<>();
         for (String experiment : experiments) {
             try {
@@ -133,17 +132,17 @@ public class StatusMonitor {
                 totalTime += jobSubmittedTime - expExecutedTime;
                 totalExperiments++;
             } catch (Exception e) {
-                System.out.println("Error parsing " + experiment + ". Err " + e.getMessage());
+                logger.error("Error parsing {}. Err {}", experiment, e.getMessage());
                 e.printStackTrace();
             }
         }
         long monitoringStopTime = System.currentTimeMillis();
 
         for (String line : lines) {
-            System.out.println(line);
+            logger.info(line);
         }
-        System.out.println("All jobs completed");
-        System.out.println("Average time " + (totalTime * 1.0 / totalExperiments) / 1000 + " s");
-        System.out.println("Time for monitoring " + (monitoringStopTime - monitoringStartTime) / 1000 + "s");
+        logger.info("All jobs completed");
+        logger.info("Average time {} s", (totalTime * 1.0 / totalExperiments) / 1000);
+        logger.info("Time for monitoring {}s", (monitoringStopTime - monitoringStartTime) / 1000);
     }
 }

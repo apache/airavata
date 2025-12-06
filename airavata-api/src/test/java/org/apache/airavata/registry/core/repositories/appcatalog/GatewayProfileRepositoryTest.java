@@ -116,7 +116,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
         GatewayResourceProfile retrievedProfile = null;
         if (gwyResourceProfileRepository.isExists(gwId)) {
             retrievedProfile = gwyResourceProfileRepository.getGatewayProfile(gwId);
-            System.out.println("************ gateway id ************** :" + retrievedProfile.getGatewayID());
+            logger.info("************ gateway id ************** :{}", retrievedProfile.getGatewayID());
             assertTrue(retrievedProfile.getGatewayID().equals("testGateway"), "Retrieved gateway id matched");
             assertTrue(retrievedProfile.getCredentialStoreToken().equals("testCredential"));
             assertTrue(retrievedProfile.getIdentityServerPwdCredToken().equals("pwdCredential"));
@@ -129,7 +129,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
         List<ComputeResourcePreference> preferences =
                 gwyResourceProfileRepository.getAllComputeResourcePreferences(gwId);
-        System.out.println("compute preferences size : " + preferences.size());
+        logger.info("compute preferences size : {}", preferences.size());
         assertTrue(preferences.size() == 2);
         if (preferences != null && !preferences.isEmpty()) {
             ComputeResourcePreference pref1 = preferences.stream()
@@ -143,10 +143,10 @@ public class GatewayProfileRepositoryTest extends TestBase {
                     .get();
             assertFalse(pref2.isOverridebyAiravata());
             for (ComputeResourcePreference cm : preferences) {
-                System.out.println("******** host id ********* : " + cm.getComputeResourceId());
-                System.out.println(cm.getPreferredBatchQueue());
-                System.out.println(cm.getPreferredDataMovementProtocol());
-                System.out.println(cm.getPreferredJobSubmissionProtocol());
+                logger.info("******** host id ********* : {}", cm.getComputeResourceId());
+                logger.info("Preferred Batch Queue: {}", cm.getPreferredBatchQueue());
+                logger.info("Preferred Data Movement Protocol: {}", cm.getPreferredDataMovementProtocol());
+                logger.info("Preferred Job Submission Protocol: {}", cm.getPreferredJobSubmissionProtocol());
             }
         }
         computeResourceRepository.removeComputeResource(hostId1);
