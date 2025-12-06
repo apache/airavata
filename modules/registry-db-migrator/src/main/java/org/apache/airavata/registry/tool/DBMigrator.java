@@ -66,18 +66,26 @@ public class DBMigrator {
     public static void updateDB(String jdbcUrl, String jdbcUser, String jdbcPwd) {
         relativePath = "db-scripts/" + getIncrementedVersion(currentAiravataVersion) + "/";
         InputStream sqlStream = null;
-        Scanner in = new Scanner(System.in);
-        if (jdbcUrl == null || jdbcUrl.equals("")) {
-            System.out.println("Enter JDBC URL : ");
-            jdbcUrl = in.next();
-        }
-        if (jdbcUser == null || jdbcUser.equals("")) {
-            System.out.println("Enter JDBC Username : ");
-            jdbcUser = in.next();
-        }
-        if (jdbcPwd == null || jdbcPwd.equals("")) {
-            System.out.println("Enter JDBC password : ");
-            jdbcPwd = in.next();
+        Scanner in = null;
+        try {
+            in = new Scanner(System.in);
+            if (jdbcUrl == null || jdbcUrl.equals("")) {
+                System.out.println("Enter JDBC URL : ");
+                jdbcUrl = in.next();
+            }
+            if (jdbcUser == null || jdbcUser.equals("")) {
+                System.out.println("Enter JDBC Username : ");
+                jdbcUser = in.next();
+            }
+            if (jdbcPwd == null || jdbcPwd.equals("")) {
+                System.out.println("Enter JDBC password : ");
+                jdbcPwd = in.next();
+            }
+        } finally {
+            // Note: System.in should not be closed, but Scanner is closed to satisfy resource leak detection
+            if (in != null) {
+                in.close();
+            }
         }
 
         String dbType = getDBType(jdbcUrl);
@@ -85,7 +93,6 @@ public class DBMigrator {
 
         Connection connection;
         try {
-            File file = null;
             if (dbType.contains("derby")) {
                 jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
                 sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(relativePath + MIGRATE_SQL_DERBY);
@@ -93,7 +100,7 @@ public class DBMigrator {
                 jdbcDriver = "com.mysql.jdbc.Driver";
                 sqlStream = DBMigrator.class.getClassLoader().getResourceAsStream(relativePath + MIGRATE_SQL_MYSQL);
             }
-            Class.forName(jdbcDriver).newInstance();
+            Class.forName(jdbcDriver).getDeclaredConstructor().newInstance();
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
             if (canUpdated(connection)) {
                 executeSQLScript(connection, sqlStream);

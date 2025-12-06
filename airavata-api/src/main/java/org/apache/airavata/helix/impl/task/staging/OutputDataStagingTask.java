@@ -173,7 +173,9 @@ public class OutputDataStagingTask extends DataStagingTask {
                             + sourceFileName);
 
                     // Wildcard support is only enabled for output data staging
-                    assert processOutput != null;
+                    if (processOutput == null) {
+                        throw new TaskOnFailException("processOutput is null", false);
+                    }
                     logger.info("Transferring file " + sourceFileName);
                     boolean transferred = transferFileToStorage(
                             newSourceURI.getPath(),
@@ -240,7 +242,9 @@ public class OutputDataStagingTask extends DataStagingTask {
 
             } else {
                 // Uploading output file to the storage resource
-                assert processOutput != null;
+                if (processOutput == null) {
+                    throw new TaskOnFailException("processOutput is null", false);
+                }
                 boolean transferred = transferFileToStorage(
                         sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                 if (transferred) {

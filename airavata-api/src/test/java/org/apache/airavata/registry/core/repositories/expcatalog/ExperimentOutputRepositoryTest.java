@@ -54,7 +54,7 @@ public class ExperimentOutputRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ExperimentInputRepositoryTest() throws RegistryException {
+    public void testExperimentInputRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

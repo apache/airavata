@@ -71,23 +71,14 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                             + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
-                // Check driver from properties - this is a legacy check for Derby
-                // In practice, this should use the injected EntityManagerFactory from JpaConfig
-                if (false) { // Derby check removed - use JpaConfig EntityManagerFactory instead
-                    query += "E.FULL_TEXT LIKE '%" + searchCriteria.getValue() + "%' AND ";
-                } else {
-                    // FULL TEXT Search with Query Expansion
-                    String queryTerms = "";
-                    for (String word : searchCriteria
-                            .getValue()
-                            .trim()
-                            .replaceAll(" +", " ")
-                            .split(" ")) {
-                        queryTerms += queryTerms + " +" + word;
-                    }
-                    queryTerms = queryTerms.trim();
-                    query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
+                // FULL TEXT Search with Query Expansion
+                String queryTerms = "";
+                for (String word :
+                        searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
+                    queryTerms += queryTerms + " +" + word;
                 }
+                queryTerms = queryTerms.trim();
+                query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)) {
                 if (searchCriteria.getSearchCondition() != null
                         && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {

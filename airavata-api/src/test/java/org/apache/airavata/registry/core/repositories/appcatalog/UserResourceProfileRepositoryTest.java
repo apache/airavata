@@ -46,7 +46,7 @@ public class UserResourceProfileRepositoryTest extends TestBase {
     }
 
     @Test
-    public void UserResourceProfileRepositoryTest() throws AppCatalogException {
+    public void testUserResourceProfileRepository() throws AppCatalogException {
         UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();
         userComputeResourcePreference.setComputeResourceId("computeResource1");
         userComputeResourcePreference.setLoginUserName(userId);

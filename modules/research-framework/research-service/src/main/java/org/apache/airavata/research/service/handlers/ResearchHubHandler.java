@@ -52,7 +52,6 @@ public class ResearchHubHandler {
 
     private final ProjectHandler projectHandler;
     private final SessionHandler sessionHandler;
-    private final ProjectRepository projectRepository;
 
     @Value("${airavata.research-hub.url}")
     private String csHubUrl;
@@ -67,7 +66,6 @@ public class ResearchHubHandler {
             ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
-        this.projectRepository = projectRepository;
     }
 
     public boolean stopSession(String sessionId) {

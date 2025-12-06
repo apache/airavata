@@ -64,7 +64,7 @@ public class JobRepositoryTest extends TestBase {
     }
 
     @Test
-    public void JobRepositoryTest() throws RegistryException {
+    public void testJobRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

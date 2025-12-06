@@ -22,8 +22,6 @@ package generators;
 import java.util.ArrayList;
 import java.util.List;
 import model.SQLData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  *
@@ -47,7 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SQLGenerator extends AbstractGenerator {
-    private static final Logger log = LoggerFactory.getLogger(SQLGenerator.class);
 
     public static enum DataTypes {
         VARCHAR,

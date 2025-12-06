@@ -59,7 +59,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ProcessOutputRepositoryTest() throws RegistryException {
+    public void testProcessOutputRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

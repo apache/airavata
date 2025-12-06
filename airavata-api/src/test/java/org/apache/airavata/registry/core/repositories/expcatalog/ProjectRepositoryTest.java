@@ -49,7 +49,7 @@ public class ProjectRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ProjectRepositoryTest() throws RegistryException {
+    public void testProjectRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGateway);
         gateway.setDomain("SEAGRID");

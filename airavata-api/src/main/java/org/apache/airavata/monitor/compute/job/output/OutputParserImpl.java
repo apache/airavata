@@ -32,16 +32,17 @@ public class OutputParserImpl implements OutputParser {
     public boolean isComputeResourceAvailable(CommandOutput commandOutput, String type) {
         if (commandOutput.getStdOut() != null && !commandOutput.getStdOut().isEmpty()) {
             if (type.equals(Constants.JOB_SUBMISSION_PROTOCOL_SLURM)) {
-                Scanner scanner = new Scanner(commandOutput.getStdOut());
-                if (scanner.hasNextLine()) {
-                    String firstLine = scanner.nextLine();
-                }
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    String[] splittedString = line.split(" ");
-                    for (String splitted : splittedString) {
-                        if (splitted.trim().equals("up")) {
-                            return true;
+                try (Scanner scanner = new Scanner(commandOutput.getStdOut())) {
+                    if (scanner.hasNextLine()) {
+                        scanner.nextLine();
+                    }
+                    while (scanner.hasNextLine()) {
+                        String line = scanner.nextLine();
+                        String[] splittedString = line.split(" ");
+                        for (String splitted : splittedString) {
+                            if (splitted.trim().equals("up")) {
+                                return true;
+                            }
                         }
                     }
                 }

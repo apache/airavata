@@ -372,7 +372,7 @@ public abstract class DataStagingTask extends AiravataTask {
                 }
             }
 
-            if (failed > 0) {
+            if (failed > 0 && failedResult != null) {
                 logger.error(
                         "Transfer from " + sourceFile + " to " + destFile + " failed. " + failedResult.getMessage(),
                         failedResult.getError());

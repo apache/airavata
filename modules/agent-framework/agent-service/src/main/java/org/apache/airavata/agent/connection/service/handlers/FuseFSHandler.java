@@ -22,7 +22,6 @@ package org.apache.airavata.agent.connection.service.handlers;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
-import java.io.File;
 import java.nio.charset.Charset;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.fuse.*;
@@ -53,7 +52,6 @@ public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
     public void fileInfo(FileInfoReq request, StreamObserver<FileInfoRes> responseObserver) {
         LOGGER.info("Calling fileInfo {}", request.getName());
 
-        File f = new File(request.getName());
         responseObserver.onNext(FileInfoRes.newBuilder()
                 .setResult(FileInfo.newBuilder()
                         .setName(request.getName())

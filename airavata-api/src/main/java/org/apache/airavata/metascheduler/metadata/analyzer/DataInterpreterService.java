@@ -104,10 +104,10 @@ public class DataInterpreterService implements IServer {
 
     @Override
     public ServerStatus getStatus() throws Exception {
-        return status;
+        return DataInterpreterService.status;
     }
 
     public void setServerStatus(ServerStatus status) {
-        this.status = status;
+        DataInterpreterService.status = status;
     }
 }

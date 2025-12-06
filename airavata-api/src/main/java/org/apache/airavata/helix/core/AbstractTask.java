@@ -229,9 +229,9 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         if (curatorClient == null) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
             try {
-                this.curatorClient =
+                AbstractTask.curatorClient =
                         CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-                this.curatorClient.start();
+                AbstractTask.curatorClient.start();
             } catch (ApplicationSettingsException e) {
                 logger.error("Failed to create curator client ", e);
                 throw new RuntimeException(e);

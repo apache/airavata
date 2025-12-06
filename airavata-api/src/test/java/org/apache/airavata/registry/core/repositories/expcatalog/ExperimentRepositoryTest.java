@@ -74,7 +74,7 @@ public class ExperimentRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ExperimentRepositoryTest() throws RegistryException {
+    public void testExperimentRepository() throws RegistryException {
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);

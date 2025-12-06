@@ -659,6 +659,12 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                     case ASYNCCOMMANDTERMINATERESPONSE -> {
                         handleAsyncCommandTerminateResponse(request.getAsyncCommandTerminateResponse());
                     }
+                    case MESSAGE_NOT_SET:
+                    case CREATEAGENTRESPONSE:
+                    case TERMINATEAGENTRESPONSE:
+                    default:
+                        // Unhandled message types - log and ignore
+                        break;
                 }
             }
 

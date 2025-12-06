@@ -70,19 +70,4 @@ public class MessageConsumer extends DefaultConsumer {
             logger.error("handleDelivery() -> Error handling delivery. Consumer Tag : " + consumerTag, e);
         }
     }
-
-    private void sendAck(long deliveryTag) {
-        logger.info("sendAck() -> Sending ack. Delivery Tag : " + deliveryTag);
-        try {
-            if (channel.isOpen()) {
-                channel.basicAck(deliveryTag, false);
-            } else {
-                channel = connection.createChannel();
-                channel.basicQos(20);
-                channel.basicAck(deliveryTag, false);
-            }
-        } catch (IOException e) {
-            logger.error("sendAck() -> Error sending ack. Delivery Tag : " + deliveryTag, e);
-        }
-    }
 }

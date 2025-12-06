@@ -455,25 +455,34 @@ public class ParserWorkflowManager extends WorkflowManager {
 
         logger.info("Starting the kafka consumer..");
 
-        while (true) {
-            final ConsumerRecords<String, ProcessCompletionMessage> consumerRecords = consumer.poll(Long.MAX_VALUE);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down Kafka consumer...");
+            consumer.close();
+        }));
 
-            for (TopicPartition partition : consumerRecords.partitions()) {
-                List<ConsumerRecord<String, ProcessCompletionMessage>> partitionRecords =
-                        consumerRecords.records(partition);
-                for (ConsumerRecord<String, ProcessCompletionMessage> record : partitionRecords) {
-                    boolean success = process(record.value());
-                    logger.info("Status of processing parser for experiment : "
-                            + record.value().getExperimentId() + " : " + success);
-                    if (success) {
-                        consumer.commitSync(
-                                Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+        try {
+            while (true) {
+                final ConsumerRecords<String, ProcessCompletionMessage> consumerRecords = consumer.poll(Long.MAX_VALUE);
+
+                for (TopicPartition partition : consumerRecords.partitions()) {
+                    List<ConsumerRecord<String, ProcessCompletionMessage>> partitionRecords =
+                            consumerRecords.records(partition);
+                    for (ConsumerRecord<String, ProcessCompletionMessage> record : partitionRecords) {
+                        boolean success = process(record.value());
+                        logger.info("Status of processing parser for experiment : "
+                                + record.value().getExperimentId() + " : " + success);
+                        if (success) {
+                            consumer.commitSync(
+                                    Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                        }
                     }
                 }
-            }
 
-            consumerRecords.forEach(record -> process(record.value()));
-            consumer.commitAsync();
+                consumerRecords.forEach(record -> process(record.value()));
+                consumer.commitAsync();
+            }
+        } finally {
+            consumer.close();
         }
     }
 }

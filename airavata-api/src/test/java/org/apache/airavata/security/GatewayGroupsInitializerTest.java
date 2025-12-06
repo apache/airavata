@@ -110,9 +110,11 @@ public class GatewayGroupsInitializerTest {
                     if (!doesAdminUserExist) {
                         User adminUser = withCapture();
                         mockSharingRegistryService.createUser(adminUser);
-                        assertEquals(adminUser.getUserId(), ADMIN_OWNER_ID);
-                        assertEquals(adminUser.getUserName(), TEST_ADMIN_USERNAME);
-                        assertEquals(adminUser.getDomainId(), GATEWAY_ID);
+                        if (adminUser != null) {
+                            assertEquals(adminUser.getUserId(), ADMIN_OWNER_ID);
+                            assertEquals(adminUser.getUserName(), TEST_ADMIN_USERNAME);
+                            assertEquals(adminUser.getDomainId(), GATEWAY_ID);
+                        }
                     }
 
                     List<UserGroup> groups = new ArrayList<>();

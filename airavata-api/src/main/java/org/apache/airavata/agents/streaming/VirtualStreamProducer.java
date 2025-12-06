@@ -22,7 +22,6 @@ package org.apache.airavata.agents.streaming;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class VirtualStreamProducer {
@@ -31,7 +30,6 @@ public class VirtualStreamProducer {
     private OutputStream outputStream;
 
     public VirtualStreamProducer(int bufferSize, long streamLength) {
-        ConcurrentLinkedQueue q = new ConcurrentLinkedQueue();
         BlockingQueue<Integer> queue = new LinkedBlockingQueue<>(bufferSize);
         inputStream = new VirtualInputStream(queue, streamLength);
         outputStream = new VirtualOutputStream(queue, streamLength);

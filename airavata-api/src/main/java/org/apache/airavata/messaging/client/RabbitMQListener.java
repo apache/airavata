@@ -19,16 +19,6 @@
 */
 package org.apache.airavata.messaging.client;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -44,124 +34,6 @@ public class RabbitMQListener {
     private static String gatewayId = "*";
     private static String experimentId = "*";
     private static String jobId = "*";
-    private static LEVEL level = LEVEL.ALL;
-
-    private static MessageHandler getMessageHandler(final BufferedWriter bw) {
-        return message -> {
-            try {
-                long latency =
-                        System.currentTimeMillis() - message.getUpdatedTime().getTime();
-                bw.write(message.getMessageId() + " :" + latency);
-                bw.newLine();
-                bw.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (message.getType().equals(MessageType.EXPERIMENT)) {
-                try {
-                    ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                    var messageEvent = message.getEvent();
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
-                    logger.info(
-                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
-                            message.getMessageId(),
-                            message.getType(),
-                            event.getState().toString(),
-                            event.getGatewayId());
-                } catch (Exception e) {
-                    String msg = String.format(
-                            "Error while processing experiment status change event: messageId=%s, type=%s, error=%s",
-                            message.getMessageId(), message.getType(), e.getMessage());
-                    logger.error(msg, e);
-                }
-            } else if (message.getType().equals(MessageType.PROCESS)) {
-                /*try {
-                    WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent();
-                    TBase messageEvent = message.getEvent();
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
-                    logger.info(" Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}", message.getMessageId(), message.getType(), event.getState().toString(), event.getWorkflowNodeIdentity().getGatewayId());
-                } catch (Exception e) {
-                    String msg = String.format("Error while processing workflow node status change event: messageId=%s, type=%s, error=%s", message.getMessageId(), message.getType(), e.getMessage());
-                    logger.error(msg, e);
-                }*/
-            } else if (message.getType().equals(MessageType.TASK)) {
-                try {
-                    TaskStatusChangeEvent event = new TaskStatusChangeEvent();
-                    var messageEvent = message.getEvent();
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
-                    logger.info(
-                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
-                            message.getMessageId(),
-                            message.getType(),
-                            event.getState().toString(),
-                            event.getTaskIdentity().getGatewayId());
-                } catch (Exception e) {
-                    String msg = String.format(
-                            "Error while processing task status change event: messageId=%s, type=%s, error=%s",
-                            message.getMessageId(), message.getType(), e.getMessage());
-                    logger.error(msg, e);
-                }
-            } else if (message.getType().equals(MessageType.JOB)) {
-                try {
-                    JobStatusChangeEvent event = new JobStatusChangeEvent();
-                    var messageEvent = message.getEvent();
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
-                    logger.info(
-                            " Message Received with message id '{}' and with message type '{}' and with state : '{}' for Gateway {}",
-                            message.getMessageId(),
-                            message.getType(),
-                            event.getState().toString(),
-                            event.getJobIdentity().getGatewayId());
-                } catch (Exception e) {
-                    String msg = String.format(
-                            "Error while processing job status change event: messageId=%s, type=%s, error=%s",
-                            message.getMessageId(), message.getType(), e.getMessage());
-                    logger.error(msg, e);
-                }
-            }
-        };
-    }
-
-    private static List<String> getRoutingKeys(LEVEL level) {
-        List<String> routingKeys = new ArrayList<String>();
-        switch (level) {
-            case ALL:
-                routingKeys.add("*");
-                routingKeys.add("*.*");
-                routingKeys.add("*.*.*");
-                routingKeys.add("*.*.*.*");
-                routingKeys.add("*.*.*.*.*");
-                break;
-            case GATEWAY:
-                routingKeys.add(gatewayId);
-                routingKeys.add(gatewayId + ".*");
-                routingKeys.add(gatewayId + ".*.*");
-                routingKeys.add(gatewayId + ".*.*.*");
-                routingKeys.add(gatewayId + ".*.*.*.*");
-                break;
-            case EXPERIMENT:
-                routingKeys.add(gatewayId);
-                routingKeys.add(gatewayId + "." + experimentId);
-                routingKeys.add(gatewayId + "." + experimentId + ".*");
-                routingKeys.add(gatewayId + "." + experimentId + ".*.*");
-                routingKeys.add(gatewayId + "." + experimentId + ".*.*.*");
-                break;
-            case JOB:
-                routingKeys.add(gatewayId);
-                routingKeys.add(gatewayId + "." + experimentId);
-                routingKeys.add(gatewayId + "." + experimentId + ".*");
-                routingKeys.add(gatewayId + "." + experimentId + ".*.*");
-                routingKeys.add(gatewayId + "." + experimentId + ".*." + jobId);
-                break;
-            default:
-                break;
-        }
-        return routingKeys;
-    }
 
     public static void parseArguments(String[] args) {
         try {
@@ -176,12 +48,10 @@ public class RabbitMQListener {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.getOptions() == null || cmd.getOptions().length == 0) {
                 logger.info("You have not specified any options. We assume you need to listen to all the messages...");
-                level = LEVEL.ALL;
                 gatewayId = "*";
             }
             if (cmd.hasOption("a")) {
                 logger.info("Listening to all the messages...");
-                level = LEVEL.ALL;
                 gatewayId = "*";
             } else {
                 gatewayId = cmd.getOptionValue("gId");
@@ -189,8 +59,6 @@ public class RabbitMQListener {
                     gatewayId = "*";
                     logger.info(
                             "You have not specified a gateway id. We assume you need to listen to all the messages...");
-                } else {
-                    level = LEVEL.GATEWAY;
                 }
                 experimentId = cmd.getOptionValue("eId");
                 if (experimentId == null && !gatewayId.equals("*")) {
@@ -202,8 +70,6 @@ public class RabbitMQListener {
                     experimentId = "*";
                     logger.info(
                             "You have not specified a experiment id and a gateway id. We assume you need to listen to all the messages...");
-                } else {
-                    level = LEVEL.EXPERIMENT;
                 }
                 jobId = cmd.getOptionValue("jId");
                 if (jobId == null && !gatewayId.equals("*") && !experimentId.equals("*")) {
@@ -215,8 +81,6 @@ public class RabbitMQListener {
                     jobId = "*";
                     logger.info(
                             "You have not specified a job Id or experiment Id or a gateway Id. We assume you need to listen to all the messages...");
-                } else {
-                    level = LEVEL.JOB;
                 }
             }
         } catch (ParseException e) {

@@ -636,7 +636,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 return true;
             }
 
-            if (expected.size() != actual.size()) {
+            if (actual == null || expected.size() != actual.size()) {
                 return false;
             }
 

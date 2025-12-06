@@ -58,7 +58,7 @@ public class ProcessStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ProcessStatusRepositoryTest() throws RegistryException {
+    public void testProcessStatusRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

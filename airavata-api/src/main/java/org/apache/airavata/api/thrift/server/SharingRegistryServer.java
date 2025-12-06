@@ -85,7 +85,8 @@ public class SharingRegistryServer implements IServer {
             final String serverHost = properties.getSharing().getServerHost();
             // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a Spring bean
             SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
-            SharingRegistryService.Processor processor = new SharingRegistryService.Processor(handler);
+            SharingRegistryService.Processor<SharingRegistryServerHandler> processor =
+                    new SharingRegistryService.Processor<>(handler);
 
             TServerTransport serverTransport;
             TThreadPoolServer.Args options;

@@ -92,7 +92,6 @@ public class TaskContext {
     private String gatewayId;
     private String taskId;
 
-    private ExperimentModel experimentModel;
     private ProcessModel processModel;
     private JobModel jobModel;
     private Object subTaskModel = null;

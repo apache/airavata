@@ -35,8 +35,6 @@ import org.apache.airavata.research.service.model.entity.NotebookResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,8 +51,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/rf/resources")
 @Tag(name = "Resources", description = "Datasets, notebooks, repositories, models")
 public class ResourceController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceController.class);
 
     private final ResourceHandler resourceHandler;
     private final ProjectHandler projectHandler;

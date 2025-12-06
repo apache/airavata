@@ -68,7 +68,8 @@ public class CredentialServiceServer implements IServer {
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
             final String serverHost = ServerSettings.getCredentialStoreServerHost();
             CredentialServiceHandler handler = applicationContext.getBean(CredentialServiceHandler.class);
-            CredentialStoreService.Processor processor = new CredentialStoreService.Processor(handler);
+            CredentialStoreService.Processor<CredentialServiceHandler> processor =
+                    new CredentialStoreService.Processor<>(handler);
 
             TServerTransport serverTransport;
 

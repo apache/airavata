@@ -46,7 +46,7 @@ public class TaskErrorPK implements Serializable {
     }
 
     public void setTaskId(String processId) {
-        this.taskId = taskId;
+        this.taskId = processId;
     }
 
     public boolean equals(Object other) {

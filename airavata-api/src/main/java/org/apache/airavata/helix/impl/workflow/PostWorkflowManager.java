@@ -379,7 +379,7 @@ public class PostWorkflowManager extends WorkflowManager {
                             }
                         }
 
-                        for (var f : processingFutures) {
+                        for (var ignored : processingFutures) {
                             try {
                                 executorCompletionService.take().get();
                             } catch (Exception e) {

@@ -26,6 +26,7 @@ package org.apache.airavata.credential.notifier;
  */
 import java.text.ParseException;
 import java.util.*;
+import java.util.Calendar;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.CommunityUser;
@@ -105,7 +106,10 @@ public class NotifierBootstrap extends TimerTask {
                     CertificateCredential certificateCredential = (CertificateCredential) credential;
 
                     Date date = Utility.convertStringToDate(certificateCredential.getNotAfter());
-                    date.setDate(date.getDate() + 1); // gap is 1 days
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(date);
+                    cal.add(Calendar.DAY_OF_MONTH, 1); // gap is 1 days
+                    date = cal.getTime();
 
                     Date currentDate = new Date();
                     if (currentDate.after(date)) {

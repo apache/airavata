@@ -26,7 +26,7 @@ package org.apache.airavata.common.context;
  */
 public class WorkflowContext {
 
-    private static final ThreadLocal userThreadLocal = new InheritableThreadLocal();
+    private static final ThreadLocal<RequestContext> userThreadLocal = new InheritableThreadLocal<>();
 
     /**
      * Sets the context.
@@ -52,7 +52,7 @@ public class WorkflowContext {
      * @return The context associated with current thread.
      */
     public static RequestContext get() {
-        return (RequestContext) userThreadLocal.get();
+        return userThreadLocal.get();
     }
 
     /**
@@ -62,7 +62,7 @@ public class WorkflowContext {
      */
     public static synchronized String getRequestUser() {
 
-        RequestContext requestContext = (RequestContext) userThreadLocal.get();
+        RequestContext requestContext = userThreadLocal.get();
 
         if (requestContext != null) {
             return requestContext.getUserIdentity();
@@ -73,7 +73,7 @@ public class WorkflowContext {
 
     public static synchronized String getGatewayId() {
 
-        RequestContext requestContext = (RequestContext) userThreadLocal.get();
+        RequestContext requestContext = userThreadLocal.get();
 
         if (requestContext != null) {
             return requestContext.getGatewayId();

@@ -23,11 +23,11 @@ import org.apache.airavata.model.task.*;
 import org.apache.thrift.*;
 
 public class ThriftUtils {
-    public static byte[] serializeThriftObject(TBase object) throws TException {
+    public static byte[] serializeThriftObject(TBase<?, ?> object) throws TException {
         return new TSerializer().serialize(object);
     }
 
-    public static void createThriftFromBytes(byte[] bytes, TBase object) throws TException {
+    public static void createThriftFromBytes(byte[] bytes, TBase<?, ?> object) throws TException {
         new TDeserializer().deserialize(object, bytes);
     }
 

@@ -59,7 +59,6 @@ public class ResourceHandler {
     private final AiravataService airavataService;
     private final TagRepository tagRepository;
     private final ResourceRepository resourceRepository;
-    private final ProjectRepository projectRepository;
     private final ResourceStarRepository resourceStarRepository;
 
     public ResourceHandler(
@@ -71,7 +70,6 @@ public class ResourceHandler {
         this.airavataService = airavataService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
-        this.projectRepository = projectRepository;
         this.resourceStarRepository = resourceStarRepository;
     }
 

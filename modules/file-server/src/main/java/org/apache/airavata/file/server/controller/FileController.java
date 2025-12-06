@@ -74,7 +74,7 @@ public class FileController {
 
     @GetMapping("/download/{live}/{processId}/{*subPath}")
     @ResponseBody
-    public ResponseEntity downloadFile(
+    public ResponseEntity<?> downloadFile(
             @PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         String fileName = new File(relPath).getName();
@@ -93,7 +93,7 @@ public class FileController {
 
     @PostMapping("/upload/{live}/{processId}/{*subPath}")
     @ResponseBody
-    public ResponseEntity uploadFile(
+    public ResponseEntity<?> uploadFile(
             @PathVariable String live,
             @PathVariable String processId,
             @PathVariable String subPath,

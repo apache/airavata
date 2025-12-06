@@ -108,6 +108,14 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                 logger.warn("Job " + job.getJobId()
                                         + " already is in a saturated state according to monitoring");
                                 continue;
+                            case SUBMITTED:
+                            case ACTIVE:
+                            case UNKNOWN:
+                            case NON_CRITICAL_FAIL:
+                            case QUEUED:
+                            default:
+                                // Continue with cancellation attempt for these states
+                                break;
                         }
                     }
 
@@ -133,6 +141,14 @@ public class RemoteJobCancellationTask extends AiravataTask {
                                     logger.warn("Job " + job.getJobId()
                                             + " already is in a saturated state according to cluster");
                                     continue;
+                                case SUBMITTED:
+                                case ACTIVE:
+                                case UNKNOWN:
+                                case NON_CRITICAL_FAIL:
+                                case QUEUED:
+                                default:
+                                    // Continue with cancellation attempt for these states
+                                    break;
                             }
                         } else {
                             logger.warn("Job status for job " + job.getJobId() + " is null. Std out "

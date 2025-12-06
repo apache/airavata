@@ -42,7 +42,7 @@ public class QueueStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void QueueStatusRepositoryTest() throws RegistryException {
+    public void testQueueStatusRepository() throws RegistryException {
         QueueStatusModel queueStatusModel = new QueueStatusModel();
         queueStatusModel.setHostName("host");
         queueStatusModel.setQueueName("queue");

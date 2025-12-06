@@ -24,7 +24,7 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.thrift.TBase;
 
 public class MessageContext {
-    private final TBase event;
+    private final TBase<?, ?> event;
     private final MessageType type;
     private final String messageId;
     private final String gatewayId;
@@ -32,14 +32,14 @@ public class MessageContext {
     private long deliveryTag;
     private boolean isRedeliver;
 
-    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId) {
+    public MessageContext(TBase<?, ?> event, MessageType type, String messageId, String gatewayId) {
         this.event = event;
         this.type = type;
         this.messageId = messageId;
         this.gatewayId = gatewayId;
     }
 
-    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId, long deliveryTag) {
+    public MessageContext(TBase<?, ?> event, MessageType type, String messageId, String gatewayId, long deliveryTag) {
         this.event = event;
         this.type = type;
         this.messageId = messageId;
@@ -47,7 +47,7 @@ public class MessageContext {
         this.deliveryTag = deliveryTag;
     }
 
-    public TBase getEvent() {
+    public TBase<?, ?> getEvent() {
         return event;
     }
 

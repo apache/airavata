@@ -21,12 +21,8 @@ package org.apache.airavata.helix.core.util;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MonitoringUtil {
-
-    private static final Logger logger = LoggerFactory.getLogger(MonitoringUtil.class);
 
     private static final String PATH_PREFIX = "/airavata";
     private static final String TASK = "/task";

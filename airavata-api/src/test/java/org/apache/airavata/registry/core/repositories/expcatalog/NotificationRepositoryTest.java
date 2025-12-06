@@ -43,7 +43,7 @@ public class NotificationRepositoryTest extends TestBase {
     }
 
     @Test
-    public void NotificationRepositoryTest() throws RegistryException {
+    public void testNotificationRepository() throws RegistryException {
         Notification notification = new Notification();
         notification.setNotificationId("notificationId");
         notification.setGatewayId(testGateway);

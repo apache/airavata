@@ -60,7 +60,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
     }
 
     @Test
-    public void ExperimentSummaryRepositoryTest() throws RegistryException {
+    public void testExperimentSummaryRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

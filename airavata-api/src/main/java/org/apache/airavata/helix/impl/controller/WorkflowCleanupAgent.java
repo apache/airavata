@@ -79,13 +79,20 @@ public class WorkflowCleanupAgent implements Runnable {
 
                 switch (workflowContext.getWorkflowState()) {
                     case COMPLETED:
-                    // case FAILED:
+                    case FAILED:
                     case STOPPED:
                     case TIMED_OUT:
                     case ABORTED:
                         logger.info("Deleting workflow " + id + " with status "
                                 + workflowContext.getWorkflowState().name());
                         taskDriver.delete(id);
+                        break;
+                    case STOPPING:
+                    case FAILING:
+                    case NOT_STARTED:
+                    case IN_PROGRESS:
+                    default:
+                        // These states are not terminal, so don't delete
                         break;
                 }
             }

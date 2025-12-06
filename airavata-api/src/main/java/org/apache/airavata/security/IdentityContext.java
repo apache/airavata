@@ -25,7 +25,7 @@ import org.apache.airavata.model.security.AuthzToken;
  * This provides a thread local container for AuthzToken through out the execution of a particular thread.
  */
 public class IdentityContext {
-    private static ThreadLocal authzTokenContainer = new ThreadLocal();
+    private static ThreadLocal<AuthzToken> authzTokenContainer = new ThreadLocal<>();
 
     public static void set(AuthzToken authzToken) {
         authzTokenContainer.set(authzToken);
@@ -36,6 +36,6 @@ public class IdentityContext {
     }
 
     public static AuthzToken get() {
-        return (AuthzToken) authzTokenContainer.get();
+        return authzTokenContainer.get();
     }
 }

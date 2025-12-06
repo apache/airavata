@@ -120,7 +120,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     }
 
     @Test
-    public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
+    public void testGroupResourceProfileRepository() throws AppCatalogException {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);

@@ -60,7 +60,7 @@ public class TaskErrorRepositoryTest extends TestBase {
     }
 
     @Test
-    public void TaskErrorRepositoryTest() throws RegistryException {
+    public void testTaskErrorRepository() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

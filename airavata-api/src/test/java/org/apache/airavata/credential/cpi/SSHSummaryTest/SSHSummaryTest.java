@@ -143,8 +143,6 @@ public class SSHSummaryTest extends DatabaseTestCases {
             }
         }
 
-        fis.close();
-
         privateKey = (PrivateKey) ks.getKey("selfsigned", password);
         x509Certificates[0] = (X509Certificate) ks.getCertificate("selfsigned");
     }

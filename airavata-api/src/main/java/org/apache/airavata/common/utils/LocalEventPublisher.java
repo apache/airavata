@@ -20,11 +20,8 @@
 package org.apache.airavata.common.utils;
 
 import com.google.common.eventbus.EventBus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LocalEventPublisher {
-    private static final Logger logger = LoggerFactory.getLogger(LocalEventPublisher.class);
     private EventBus eventBus;
 
     public LocalEventPublisher(EventBus eventBus) {

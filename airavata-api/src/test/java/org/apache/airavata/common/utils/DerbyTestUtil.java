@@ -131,7 +131,9 @@ public class DerbyTestUtil {
             // drop were dropped, so nothing more to do.
             if (sqle == null) return;
         }
-        throw sqle;
+        if (sqle != null) {
+            throw sqle;
+        }
     }
 
     private static void removeRoles(Connection conn) throws SQLException {
