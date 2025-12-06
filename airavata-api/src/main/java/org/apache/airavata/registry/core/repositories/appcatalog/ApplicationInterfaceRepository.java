@@ -38,7 +38,9 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ApplicationInterfaceRepository
         extends AppCatAbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String>
         implements ApplicationInterface {

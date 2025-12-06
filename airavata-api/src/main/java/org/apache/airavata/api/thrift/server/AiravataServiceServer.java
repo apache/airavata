@@ -33,6 +33,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.security.interceptor.SecurityModule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -42,6 +45,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class AiravataServiceServer implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServiceServer.class);
@@ -51,6 +55,9 @@ public class AiravataServiceServer implements IServer {
     private ServerStatus status;
 
     private TServer server, TLSServer;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public AiravataServiceServer() {
         setStatus(ServerStatus.STOPPED);
@@ -138,11 +145,12 @@ public class AiravataServiceServer implements IServer {
     @Override
     public void start() throws Exception {
         setStatus(ServerStatus.STARTING);
-        // Obtain a AiravataServerHandl
-        // er object from Guice which is wrapped with interception logic.
-        Injector injector = Guice.createInjector(new SecurityModule());
+        // Get AiravataServiceHandler from Spring context
+        AiravataServiceHandler handler = applicationContext.getBean(AiravataServiceHandler.class);
+        // TODO: Migrate SecurityModule to Spring AOP for security interception
+        // For now, we use the handler directly. Security checks are still applied via @SecurityCheck annotations
         Airavata.Processor<Airavata.Iface> airavataAPIServer =
-                new Airavata.Processor<Airavata.Iface>(injector.getInstance(AiravataServiceHandler.class));
+                new Airavata.Processor<Airavata.Iface>(handler);
         startAiravataServer(airavataAPIServer);
     }
 

@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,7 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 /**
  * Created by skariyat on 2/8/18.
  */
+@Repository
 public class GroupResourceProfileRepository
         extends AppCatAbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
 

@@ -18,11 +18,13 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferencePK;
 
+@Repository
 public class StoragePrefRepository
         extends AppCatAbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
 

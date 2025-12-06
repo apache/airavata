@@ -40,7 +40,11 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RegistryServiceServer implements IServer {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceServer.class);
 
@@ -50,6 +54,9 @@ public class RegistryServiceServer implements IServer {
     private ServerStatus status;
 
     private TServer server;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private List<DBInitConfig> dbInitConfigs =
             Arrays.asList(new ExpCatalogDBInitConfig(), new AppCatalogDBInitConfig(), new ReplicaCatalogDBInitConfig());
@@ -138,8 +145,9 @@ public class RegistryServiceServer implements IServer {
     @Override
     public void start() throws Exception {
         setStatus(ServerStatus.STARTING);
+        RegistryServiceHandler handler = applicationContext.getBean(RegistryServiceHandler.class);
         RegistryService.Processor<RegistryServiceHandler> orchestratorService =
-                new RegistryService.Processor<RegistryServiceHandler>(new RegistryServiceHandler());
+                new RegistryService.Processor<RegistryServiceHandler>(handler);
         StartRegistryServer(orchestratorService);
     }
 

@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePolicyEntity;
@@ -25,6 +26,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePoli
 /**
  * Created by skariyat on 2/10/18.
  */
+@Repository
 public class ComputeResourcePolicyRepository
         extends AppCatAbstractRepository<ComputeResourcePolicy, ComputeResourcePolicyEntity, String> {
 

@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.Query;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
+@Repository
 public class ResourceJobManagerRepository
         extends AppCatAbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {
 

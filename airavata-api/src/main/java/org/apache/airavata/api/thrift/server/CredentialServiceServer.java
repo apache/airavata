@@ -31,7 +31,11 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CredentialServiceServer implements IServer {
     private static final Logger logger = LoggerFactory.getLogger(CredentialServiceServer.class);
     private static final String SERVER_NAME = "Credential Store Server";
@@ -39,6 +43,9 @@ public class CredentialServiceServer implements IServer {
 
     private IServer.ServerStatus status;
     private TServer server;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public CredentialServiceServer() {
         setStatus(IServer.ServerStatus.STOPPED);
@@ -60,8 +67,9 @@ public class CredentialServiceServer implements IServer {
             setStatus(ServerStatus.STARTING);
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
             final String serverHost = ServerSettings.getCredentialStoreServerHost();
+            CredentialServiceHandler handler = applicationContext.getBean(CredentialServiceHandler.class);
             CredentialStoreService.Processor processor =
-                    new CredentialStoreService.Processor(new CredentialServiceHandler());
+                    new CredentialStoreService.Processor(handler);
 
             TServerTransport serverTransport;
 

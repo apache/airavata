@@ -33,16 +33,21 @@ import org.apache.airavata.registry.cpi.DataProductInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String>
         implements DataProductInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
-    private static final DataReplicaLocationRepository dataReplicaLocationRepository =
-            new DataReplicaLocationRepository();
-
-    public DataProductRepository() {
+    
+    private final DataReplicaLocationRepository dataReplicaLocationRepository;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public DataProductRepository(DataReplicaLocationRepository dataReplicaLocationRepository) {
         super(DataProductModel.class, DataProductEntity.class);
+        this.dataReplicaLocationRepository = dataReplicaLocationRepository;
     }
+
 
     protected String saveDataProductModelData(DataProductModel dataProductModel) throws ReplicaCatalogException {
         DataProductEntity dataProductEntity = saveDataProduct(dataProductModel);

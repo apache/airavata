@@ -35,22 +35,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by goshenoy on 3/6/17.
  */
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
+    
+    @Autowired
     private org.apache.airavata.service.TenantProfileService tenantProfileService;
 
-    public TenantProfileServiceHandler() throws TenantProfileServiceException {
+    public TenantProfileServiceHandler() {
         logger.debug("Initializing TenantProfileServiceHandler");
-        try {
-            tenantProfileService = new org.apache.airavata.service.TenantProfileService();
-        } catch (Throwable e) {
-            String msg = "Error initializing TenantProfileServiceHandler, reason: " + e.getMessage();
-            logger.error(msg, e);
-            var exception = new TenantProfileServiceException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
     }
 
     @Override

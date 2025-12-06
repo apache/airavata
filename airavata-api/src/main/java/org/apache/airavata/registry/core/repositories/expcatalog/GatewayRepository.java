@@ -34,7 +34,9 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class GatewayRepository extends ExpCatAbstractRepository<Gateway, GatewayEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepository.class);
 

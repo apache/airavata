@@ -33,7 +33,9 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ExperimentStatusRepository
         extends ExpCatAbstractRepository<ExperimentStatus, ExperimentStatusEntity, ExperimentStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusRepository.class);

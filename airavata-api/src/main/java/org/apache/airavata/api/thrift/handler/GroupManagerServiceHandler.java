@@ -32,14 +32,19 @@ import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
-    private org.apache.airavata.service.GroupManagerService groupManagerService;
+    private final org.apache.airavata.service.GroupManagerService groupManagerService;
 
-    public GroupManagerServiceHandler() {
-        groupManagerService = new org.apache.airavata.service.GroupManagerService();
+    @Autowired
+    public GroupManagerServiceHandler(org.apache.airavata.service.GroupManagerService groupManagerService) {
+        this.groupManagerService = groupManagerService;
+        logger.info("GroupManagerServiceHandler initialized with Spring-injected GroupManagerService");
     }
 
     @Override
@@ -53,7 +58,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.createGroup(authzToken, groupModel);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error creating group: " + e.getMessage());
             ex.initCause(e);
@@ -67,7 +72,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.updateGroup(authzToken, groupModel);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error updating group: " + e.getMessage());
             ex.initCause(e);
@@ -81,7 +86,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.deleteGroup(authzToken, groupId, ownerId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error deleting group: " + e.getMessage());
             ex.initCause(e);
@@ -95,7 +100,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.getGroup(authzToken, groupId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error getting group: " + e.getMessage());
             ex.initCause(e);
@@ -109,7 +114,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.getGroups(authzToken);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error getting groups: " + e.getMessage());
             ex.initCause(e);
@@ -123,7 +128,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.getAllGroupsUserBelongs(authzToken, userName);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error getting user groups: " + e.getMessage());
             ex.initCause(e);
@@ -136,7 +141,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.addUsersToGroup(authzToken, userIds, groupId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error adding users to group: " + e.getMessage());
             ex.initCause(e);
@@ -149,7 +154,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.removeUsersFromGroup(authzToken, userIds, groupId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error removing users from group: " + e.getMessage());
             ex.initCause(e);
@@ -163,7 +168,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.transferGroupOwnership(authzToken, groupId, newOwnerId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error transferring group ownership: " + e.getMessage());
             ex.initCause(e);
@@ -177,7 +182,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.addGroupAdmins(authzToken, groupId, adminIds);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error adding group admins: " + e.getMessage());
             ex.initCause(e);
@@ -191,7 +196,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.removeGroupAdmins(authzToken, groupId, adminIds);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error removing group admins: " + e.getMessage());
             ex.initCause(e);
@@ -205,7 +210,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.hasAdminAccess(authzToken, groupId, adminId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error checking admin access: " + e.getMessage());
             ex.initCause(e);
@@ -219,7 +224,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throws GroupManagerServiceException, AuthorizationException {
         try {
             return groupManagerService.hasOwnerAccess(authzToken, groupId, ownerId);
-        } catch (SharingRegistryException | ServiceFactoryException e) {
+        } catch (SharingRegistryException e) {
             GroupManagerServiceException ex =
                     new GroupManagerServiceException("Error checking owner access: " + e.getMessage());
             ex.initCause(e);

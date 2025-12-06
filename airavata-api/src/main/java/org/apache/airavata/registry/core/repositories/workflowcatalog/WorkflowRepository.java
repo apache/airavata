@@ -32,7 +32,9 @@ import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String>
         implements WorkflowCatalog {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);

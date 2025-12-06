@@ -27,19 +27,19 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.service.CredentialStoreService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CredentialServiceHandler implements org.apache.airavata.credential.cpi.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
+    
+    @Autowired
     private CredentialStoreService credentialStoreService;
 
-    public CredentialServiceHandler()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    ServiceFactoryException {
-        credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
+    public CredentialServiceHandler() {
     }
 
     @Override

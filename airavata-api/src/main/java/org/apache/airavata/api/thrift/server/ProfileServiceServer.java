@@ -48,10 +48,14 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by goshenoy on 03/08/2017.
  */
+@Component
 public class ProfileServiceServer implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileServiceServer.class);
@@ -62,6 +66,9 @@ public class ProfileServiceServer implements IServer {
     private ServerStatus status;
     private TServer server;
     private List<DBInitConfig> dbInitConfigs = Arrays.asList(new UserProfileCatalogDBInitConfig());
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public ProfileServiceServer() {
         setStatus(ServerStatus.STOPPED);
@@ -94,11 +101,17 @@ public class ProfileServiceServer implements IServer {
 
             final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
 
+            // Get handlers from Spring context
+            UserProfileServiceHandler userProfileHandler = applicationContext.getBean(UserProfileServiceHandler.class);
+            TenantProfileServiceHandler tenantProfileHandler = applicationContext.getBean(TenantProfileServiceHandler.class);
+            IamAdminServiceHandler iamAdminHandler = applicationContext.getBean(IamAdminServiceHandler.class);
+            GroupManagerServiceHandler groupManagerHandler = applicationContext.getBean(GroupManagerServiceHandler.class);
+
             // create multiple processors for each profile-service
-            var userProfileProcessor = new UserProfileService.Processor<>(new UserProfileServiceHandler());
-            var teneantProfileProcessor = new TenantProfileService.Processor<>(new TenantProfileServiceHandler());
-            var iamAdminServicesProcessor = new IamAdminServices.Processor<>(new IamAdminServiceHandler());
-            var groupmanagerProcessor = new GroupManagerService.Processor<>(new GroupManagerServiceHandler());
+            var userProfileProcessor = new UserProfileService.Processor<>(userProfileHandler);
+            var teneantProfileProcessor = new TenantProfileService.Processor<>(tenantProfileHandler);
+            var iamAdminServicesProcessor = new IamAdminServices.Processor<>(iamAdminHandler);
+            var groupmanagerProcessor = new GroupManagerService.Processor<>(groupManagerHandler);
 
             // create a multiplexed processor
             TMultiplexedProcessor profileServiceProcessor = new TMultiplexedProcessor();

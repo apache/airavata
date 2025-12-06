@@ -67,7 +67,9 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ComputeResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ComputeResourceRepository
         extends AppCatAbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String>
         implements ComputeResource {

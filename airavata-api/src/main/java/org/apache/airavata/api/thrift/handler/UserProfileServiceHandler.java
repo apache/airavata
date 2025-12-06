@@ -29,12 +29,16 @@ import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceExceptio
 import org.apache.airavata.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserProfileServiceHandler implements org.apache.airavata.profile.user.cpi.UserProfileService.Iface {
 
+    @Autowired
     private org.apache.airavata.service.UserProfileService userProfileService;
 
     public UserProfileServiceHandler() {
-        userProfileService = new org.apache.airavata.service.UserProfileService();
     }
 
     @Override

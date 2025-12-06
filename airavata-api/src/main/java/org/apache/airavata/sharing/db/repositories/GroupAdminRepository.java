@@ -24,7 +24,9 @@ import org.apache.airavata.sharing.db.entities.GroupAdminPK;
 import org.apache.airavata.sharing.models.GroupAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class GroupAdminRepository extends AbstractRepository<GroupAdmin, GroupAdminEntity, GroupAdminPK> {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupAdminRepository.class);

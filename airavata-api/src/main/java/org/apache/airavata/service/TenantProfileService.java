@@ -39,26 +39,21 @@ import org.apache.airavata.profile.tenant.core.repositories.TenantProfileReposit
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
+    @Autowired
     private TenantProfileRepository tenantProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
+    @Autowired
     private CredentialStoreService credentialStoreService;
 
-    public TenantProfileService() throws TenantProfileServiceException {
+    public TenantProfileService() {
         logger.debug("Initializing TenantProfileService");
-        this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
-        try {
-            this.credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
-        } catch (ServiceFactoryException e) {
-            String msg = "Error initializing TenantProfileService, reason: " + e.getMessage();
-            logger.error(msg, e);
-            var exception = new TenantProfileServiceException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
     }
 
     public String addGateway(AuthzToken authzToken, Gateway gateway)

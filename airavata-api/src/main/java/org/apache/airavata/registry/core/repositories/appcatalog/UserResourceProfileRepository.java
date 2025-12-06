@@ -36,7 +36,9 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.UsrResourceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class UserResourceProfileRepository
         extends AppCatAbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK>
         implements UsrResourceProfile {

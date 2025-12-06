@@ -29,7 +29,9 @@ import org.apache.airavata.sharing.models.PermissionType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class PermissionTypeRepository
         extends AbstractRepository<PermissionType, PermissionTypeEntity, PermissionTypePK> {
     private static final Logger logger = LoggerFactory.getLogger(PermissionTypeRepository.class);

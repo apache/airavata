@@ -29,7 +29,9 @@ import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ProcessInputRepository
         extends ExpCatAbstractRepository<InputDataObjectType, ProcessInputEntity, ProcessInputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessInputRepository.class);

@@ -17,26 +17,31 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.appcatalog;
+package org.apache.airavata.config;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
+import org.apache.airavata.service.RegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
+/**
+ * Provider to make RegistryService available to components that can't use Spring injection
+ * (e.g., workflow managers started via main methods).
+ */
+@Component
+public class RegistryServiceProvider {
+
+    private static RegistryService instance;
 
     @Autowired
-    @Qualifier("appCatalogEntityManagerFactory")
-    private EntityManagerFactory entityManagerFactory;
-
-    public AppCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public void setRegistryService(RegistryService registryService) {
+        RegistryServiceProvider.instance = registryService;
     }
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return entityManagerFactory.createEntityManager();
+    public static RegistryService getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("RegistryService not initialized. Spring context may not be ready.");
+        }
+        return instance;
     }
 }
+

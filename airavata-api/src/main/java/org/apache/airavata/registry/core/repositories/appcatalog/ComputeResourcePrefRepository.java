@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePref
 import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK;
 import org.apache.airavata.registry.core.entities.appcatalog.SSHAccountProvisionerConfiguration;
 
+@Repository
 public class ComputeResourcePrefRepository
         extends AppCatAbstractRepository<
                 ComputeResourcePreference, ComputeResourcePreferenceEntity, ComputeResourcePreferencePK> {

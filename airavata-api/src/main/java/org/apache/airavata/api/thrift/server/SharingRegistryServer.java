@@ -38,7 +38,11 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SharingRegistryServer implements IServer {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServer.class);
 
@@ -51,6 +55,9 @@ public class SharingRegistryServer implements IServer {
     private IServer.ServerStatus status;
     private TServer server;
     private boolean testMode = false;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public SharingRegistryServer() {
         setStatus(IServer.ServerStatus.STOPPED);
@@ -73,8 +80,9 @@ public class SharingRegistryServer implements IServer {
 
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
             final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
-            SharingRegistryService.Processor processor = new SharingRegistryService.Processor(
-                    new SharingRegistryServerHandler(createSharingRegistryDBInitConfig()));
+            // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a Spring bean
+            SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
+            SharingRegistryService.Processor processor = new SharingRegistryService.Processor(handler);
 
             TServerTransport serverTransport;
             TThreadPoolServer.Args options;

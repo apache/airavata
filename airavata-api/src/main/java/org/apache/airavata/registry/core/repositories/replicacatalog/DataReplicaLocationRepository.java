@@ -31,7 +31,9 @@ import org.apache.airavata.registry.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class DataReplicaLocationRepository
         extends RepCatAbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String>
         implements DataReplicaLocationInterface {

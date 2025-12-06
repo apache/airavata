@@ -37,10 +37,12 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.StorageResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by skariyat on 3/12/18.
  */
+@Repository
 public class StorageResourceRepository
         extends AppCatAbstractRepository<StorageResourceDescription, StorageResourceEntity, String>
         implements StorageResource {

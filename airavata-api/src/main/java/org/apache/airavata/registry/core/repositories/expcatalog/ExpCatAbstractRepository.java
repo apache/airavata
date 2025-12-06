@@ -20,10 +20,16 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.apache.airavata.registry.core.utils.JPAUtil.ExpCatalogJPAUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
+
+    @Autowired
+    @Qualifier("expCatalogEntityManagerFactory")
+    private EntityManagerFactory entityManagerFactory;
 
     public ExpCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
@@ -31,6 +37,6 @@ public class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
 
     @Override
     protected EntityManager getEntityManager() {
-        return ExpCatalogJPAUtils.getEntityManager();
+        return entityManagerFactory.createEntityManager();
     }
 }

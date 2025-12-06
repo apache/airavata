@@ -35,6 +35,9 @@ import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
 import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.commons.cli.ParseException;
 import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.apache.airavata.AiravataApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,20 @@ public class ThriftAPI {
     private static final String serverStartedFileNamePrefix = "server_start";
     private static boolean systemShutDown = false;
     private static String STOP_COMMAND_STR = "stop";
+    private static ConfigurableApplicationContext springContext;
+
+    /**
+     * Set the Spring application context for server loading.
+     * Called by AiravataApplication after Spring context is initialized.
+     */
+    public static void setSpringContext(ConfigurableApplicationContext context) {
+        springContext = context;
+        logger.info("Spring context set in ThriftAPI");
+    }
+
+    public static ConfigurableApplicationContext getSpringContext() {
+        return springContext;
+    }
 
     private static final String ALL_IN_ONE = "all";
     private static final String API_ORCH = "api-orch";
@@ -78,12 +95,24 @@ public class ThriftAPI {
                     Class<?> classInstance;
                     try {
                         classInstance = ThriftAPI.class.getClassLoader().loadClass(serverClassName);
-                        servers.add((IServer) classInstance.newInstance());
+                        // Try to get from Spring context first, otherwise use reflection
+                        IServer server = null;
+                        if (springContext != null) {
+                            try {
+                                server = springContext.getBean(classInstance.asSubclass(IServer.class));
+                            } catch (Exception e) {
+                                // Not a Spring bean, use reflection
+                                logger.debug("Server {} not found in Spring context, using reflection", serverClassName);
+                            }
+                        }
+                        if (server == null) {
+                            server = (IServer) classInstance.getDeclaredConstructor().newInstance();
+                        }
+                        servers.add(server);
                     } catch (ClassNotFoundException e) {
                         logger.error("Error while locating server implementation \"" + serverString + "\"!!!", e);
-                    } catch (InstantiationException e) {
-                        logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
-                    } catch (IllegalAccessException e) {
+                    } catch (InstantiationException | IllegalAccessException | 
+                             java.lang.reflect.InvocationTargetException | NoSuchMethodException e) {
                         logger.error("Error while initiating server instance \"" + serverString + "\"!!!", e);
                     } catch (ClassCastException e) {
                         logger.error("Invalid server \"" + serverString + "\"!!!", e);
@@ -104,7 +133,7 @@ public class ThriftAPI {
         });
     }
 
-    private static List<String> handleServerDependencies(String serverNames) {
+    public static List<String> handleServerDependencies(String serverNames) {
         List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
         if (serverList.indexOf(ALL_IN_ONE) > -1) {
             serverList.clear();
@@ -168,9 +197,33 @@ public class ThriftAPI {
         }
     }
 
-    private static void performServerStart(String[] args) {
+    public static void performServerStart(String[] args) {
         setServerStarted();
         logger.info("Airavata server instance starting...");
+        
+        // Spring context should already be initialized by AiravataApplication
+        // Try to get it from Spring's ApplicationContextAware or use a static reference
+        if (springContext == null) {
+            logger.warn("Spring context not available, attempting to initialize...");
+            try {
+                springContext = new AnnotationConfigApplicationContext(AiravataApplication.class);
+                logger.info("Spring application context initialized successfully");
+                
+                // Register shutdown hook for Spring context
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (springContext != null) {
+                        logger.info("Closing Spring application context...");
+                        springContext.close();
+                    }
+                }));
+            } catch (Exception e) {
+                logger.error("Failed to initialize Spring application context", e);
+                throw new RuntimeException("Failed to initialize Spring context", e);
+            }
+        } else {
+            logger.info("Using existing Spring application context");
+        }
+        
         String serverNames = "all";
         for (String string : args) {
             logger.info("Server Arguments: " + string);
@@ -342,7 +395,7 @@ public class ThriftAPI {
 
     private static final int SERVER_STATUS_CHANGE_WAIT_INTERVAL = 500;
 
-    private static void waitForServerToStart(IServer server, Integer maxWait) throws Exception {
+    public static void waitForServerToStart(IServer server, Integer maxWait) throws Exception {
         int count = 0;
         //		if (server.getStatus()==ServerStatus.STARTING) {
         //			logger.info("Waiting for " + server.getName() + " to start...");

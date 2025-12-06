@@ -20,10 +20,16 @@
 package org.apache.airavata.registry.core.repositories.workflowcatalog;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.apache.airavata.registry.core.utils.JPAUtil.WorkflowCatalogJPAUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
+
+    @Autowired
+    @Qualifier("workflowCatalogEntityManagerFactory")
+    private EntityManagerFactory entityManagerFactory;
 
     public WorkflowCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
@@ -31,6 +37,6 @@ public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<
 
     @Override
     protected EntityManager getEntityManager() {
-        return WorkflowCatalogJPAUtils.getEntityManager();
+        return entityManagerFactory.createEntityManager();
     }
 }

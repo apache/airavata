@@ -34,7 +34,9 @@ import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ProjectRepository extends ExpCatAbstractRepository<Project, ProjectEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(ProjectRepository.class);
 

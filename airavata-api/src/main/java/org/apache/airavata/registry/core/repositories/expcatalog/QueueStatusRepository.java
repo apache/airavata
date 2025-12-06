@@ -32,7 +32,9 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepository.class);
 

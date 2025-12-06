@@ -67,11 +67,15 @@ import org.apache.airavata.registry.api.registry_apiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class RegistryServiceHandler implements RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceHandler.class);
 
-    private org.apache.airavata.service.RegistryService registryService =
-            new org.apache.airavata.service.RegistryService();
+    @Autowired
+    private org.apache.airavata.service.RegistryService registryService;
 
     // Helper method to convert domain exceptions to Thrift exceptions
     private RegistryServiceException convertToRegistryServiceException(Throwable e, String context) {

@@ -24,7 +24,9 @@ import org.apache.airavata.registry.core.entities.appcatalog.ParserOutputEntity;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ParserOutputRepository extends AppCatAbstractRepository<ParserOutput, ParserOutputEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserInputRepository.class);

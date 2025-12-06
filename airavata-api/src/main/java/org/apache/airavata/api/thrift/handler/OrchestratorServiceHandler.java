@@ -26,13 +26,15 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.service.OrchestratorService;
-import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrchestratorServiceHandler implements org.apache.airavata.orchestrator.cpi.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
-    private OrchestratorService orchestratorService;
+    private final OrchestratorService orchestratorService;
 
     /**
      * Query orchestrator server to fetch the CPI version
@@ -42,13 +44,10 @@ public class OrchestratorServiceHandler implements org.apache.airavata.orchestra
         return org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
-    public OrchestratorServiceHandler() {
-        try {
-            orchestratorService = ServiceFactory.getInstance().getOrchestratorService();
-        } catch (Exception e) {
-            log.error("Error while initializing orchestrator service", e);
-            throw new RuntimeException("Error while initializing orchestrator service", e);
-        }
+    @Autowired
+    public OrchestratorServiceHandler(OrchestratorService orchestratorService) {
+        this.orchestratorService = orchestratorService;
+        log.info("OrchestratorServiceHandler initialized with Spring-injected OrchestratorService");
     }
 
     /**

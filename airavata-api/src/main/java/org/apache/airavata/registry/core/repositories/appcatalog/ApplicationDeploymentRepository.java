@@ -33,7 +33,9 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationDeployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ApplicationDeploymentRepository
         extends AppCatAbstractRepository<ApplicationDeploymentDescription, ApplicationDeploymentEntity, String>
         implements ApplicationDeployment {

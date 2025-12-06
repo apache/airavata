@@ -34,22 +34,19 @@ import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IamAdminServiceHandler implements IamAdminServices.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(IamAdminServiceHandler.class);
-    private IamAdminService iamAdminService;
+    private final IamAdminService iamAdminService;
 
-    public IamAdminServiceHandler() throws IamAdminServicesException {
-        try {
-            iamAdminService = new org.apache.airavata.service.IamAdminService();
-        } catch (Throwable e) {
-            String msg = "Error initializing IamAdminServicesHandler, reason: " + e.getMessage();
-            logger.error(msg, e);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
+    @Autowired
+    public IamAdminServiceHandler(IamAdminService iamAdminService) {
+        this.iamAdminService = iamAdminService;
+        logger.info("IamAdminServiceHandler initialized with Spring-injected IamAdminService");
     }
 
     @Override

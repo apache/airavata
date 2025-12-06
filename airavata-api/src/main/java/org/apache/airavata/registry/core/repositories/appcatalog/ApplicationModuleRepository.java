@@ -18,10 +18,12 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity;
 
+@Repository
 public class ApplicationModuleRepository
         extends AppCatAbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
 

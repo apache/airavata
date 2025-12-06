@@ -114,10 +114,15 @@ public class PostWorkflowManager extends WorkflowManager {
 
         RegistryService registryService;
         try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            logger.error("Failed to get RegistryService from ServiceFactory", e);
-            return false;
+            registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();
+        } catch (Exception e) {
+            // Fallback to ServiceFactory for backward compatibility
+            try {
+                registryService = ServiceFactory.getInstance().getRegistryService();
+            } catch (ServiceFactoryException ex) {
+                logger.error("Failed to get RegistryService from ServiceFactory", ex);
+                return false;
+            }
         }
 
         var jobId = jobStatusResult.getJobId();

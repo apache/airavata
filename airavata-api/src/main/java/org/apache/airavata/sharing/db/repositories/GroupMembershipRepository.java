@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.sharing.db.repositories;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import org.apache.airavata.sharing.db.entities.GroupMembershipEntity;
@@ -27,6 +28,7 @@ import org.apache.airavata.sharing.db.entities.UserGroupEntity;
 import org.apache.airavata.sharing.db.utils.DBConstants;
 import org.apache.airavata.sharing.models.*;
 
+@Repository
 public class GroupMembershipRepository
         extends AbstractRepository<GroupMembership, GroupMembershipEntity, GroupMembershipPK> {
 

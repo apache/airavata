@@ -35,18 +35,16 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class OrchestratorRegistryService {
 
+    @Autowired
     private RegistryService registryService;
 
     private RegistryService getRegistryService() {
-        if (registryService == null) {
-            try {
-                registryService = ServiceFactory.getInstance().getRegistryService();
-            } catch (ServiceFactoryException e) {
-                throw new IllegalStateException("Failed to get RegistryService from ServiceFactory", e);
-            }
-        }
         return registryService;
     }
 

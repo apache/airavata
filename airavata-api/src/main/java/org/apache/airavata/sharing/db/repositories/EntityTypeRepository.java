@@ -24,7 +24,9 @@ import org.apache.airavata.sharing.db.entities.EntityTypePK;
 import org.apache.airavata.sharing.models.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class EntityTypeRepository extends AbstractRepository<EntityType, EntityTypeEntity, EntityTypePK> {
     private static final Logger logger = LoggerFactory.getLogger(EntityTypeRepository.class);
 

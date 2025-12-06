@@ -31,7 +31,9 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
     private static final Logger logger = LoggerFactory.getLogger(SharingRepository.class);
 

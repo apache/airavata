@@ -39,14 +39,18 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
 
-    private final TaskRepository taskRepository = new TaskRepository();
+    private final TaskRepository taskRepository;
 
-    public ProcessRepository() {
+    @org.springframework.beans.factory.annotation.Autowired
+    public ProcessRepository(TaskRepository taskRepository) {
         super(ProcessModel.class, ProcessEntity.class);
+        this.taskRepository = taskRepository;
     }
 
     protected String saveProcessModelData(ProcessModel processModel) throws RegistryException {

@@ -83,10 +83,14 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
+    @Autowired
     private OrchestratorRegistryService orchestratorRegistryService;
     private SimpleOrchestratorImpl orchestrator;
     private CuratorFramework curatorClient;
@@ -97,7 +101,6 @@ public class OrchestratorService {
 
     public OrchestratorService() throws OrchestratorException {
         try {
-            this.orchestratorRegistryService = new OrchestratorRegistryService();
             // setAiravataUserName(ServerSettings.getDefaultUser());
             this.orchestrator = new SimpleOrchestratorImpl();
             this.publisher = MessagingFactory.getPublisher(Type.STATUS);

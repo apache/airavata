@@ -33,7 +33,9 @@ import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class UserRepository extends AbstractRepository<User, UserEntity, UserPK> {
     private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 

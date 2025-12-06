@@ -27,20 +27,18 @@ import org.apache.airavata.sharing.models.*;
 import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.service.cpi.sharing_cpiConstants;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface {
+    @Autowired
     private org.apache.airavata.service.SharingRegistryService sharingRegistryService;
 
     public static String OWNER_PERMISSION_NAME =
             org.apache.airavata.service.SharingRegistryService.OWNER_PERMISSION_NAME;
 
-    public SharingRegistryServerHandler() throws ApplicationSettingsException {
-        this(new SharingRegistryDBInitConfig());
-    }
-
-    public SharingRegistryServerHandler(SharingRegistryDBInitConfig sharingRegistryDBInitConfig)
-            throws ApplicationSettingsException {
-        DBInitializer.initializeDB(sharingRegistryDBInitConfig);
-        sharingRegistryService = new org.apache.airavata.service.SharingRegistryService();
+    public SharingRegistryServerHandler() {
     }
 
     @Override

@@ -78,45 +78,81 @@ import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
-    private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
-    private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
-    private StorageResourceRepository storageResourceRepository = new StorageResourceRepository();
-    private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
-    private GatewayRepository gatewayRepository = new GatewayRepository();
-    private ProjectRepository projectRepository = new ProjectRepository();
-    private NotificationRepository notificationRepository = new NotificationRepository();
-    private ExperimentSummaryRepository experimentSummaryRepository = new ExperimentSummaryRepository();
-    private ExperimentRepository experimentRepository = new ExperimentRepository();
-    private ExperimentOutputRepository experimentOutputRepository = new ExperimentOutputRepository();
-    private ExperimentStatusRepository experimentStatusRepository = new ExperimentStatusRepository();
-    private ExperimentErrorRepository experimentErrorRepository = new ExperimentErrorRepository();
-    private ProcessRepository processRepository = new ProcessRepository();
-    private ProcessOutputRepository processOutputRepository = new ProcessOutputRepository();
-    private ProcessWorkflowRepository processWorkflowRepository = new ProcessWorkflowRepository();
-    private ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
-    private ProcessErrorRepository processErrorRepository = new ProcessErrorRepository();
-    private TaskRepository taskRepository = new TaskRepository();
-    private TaskStatusRepository taskStatusRepository = new TaskStatusRepository();
-    private TaskErrorRepository taskErrorRepository = new TaskErrorRepository();
-    private JobRepository jobRepository = new JobRepository();
-    private JobStatusRepository jobStatusRepository = new JobStatusRepository();
-    private QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
-    private DataProductRepository dataProductRepository = new DataProductRepository();
-    private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
-    private WorkflowRepository workflowRepository = new WorkflowRepository();
-    private GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
-    private ParserRepository parserRepository = new ParserRepository();
-    private ParserInputRepository parserInputRepository = new ParserInputRepository();
-    private ParserOutputRepository parserOutputRepository = new ParserOutputRepository();
-    private ParsingTemplateRepository parsingTemplateRepository = new ParsingTemplateRepository();
-    private UserRepository userRepository = new UserRepository();
-    private ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-    private GatewayUsageReportingCommandRepository usageReportingCommandRepository =
-            new GatewayUsageReportingCommandRepository();
+    @Autowired
+    private ApplicationDeploymentRepository applicationDeploymentRepository;
+    @Autowired
+    private ApplicationInterfaceRepository applicationInterfaceRepository;
+    @Autowired
+    private StorageResourceRepository storageResourceRepository;
+    @Autowired
+    private UserResourceProfileRepository userResourceProfileRepository;
+    @Autowired
+    private GatewayRepository gatewayRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
+    private ExperimentSummaryRepository experimentSummaryRepository;
+    @Autowired
+    private ExperimentRepository experimentRepository;
+    @Autowired
+    private ExperimentOutputRepository experimentOutputRepository;
+    @Autowired
+    private ExperimentStatusRepository experimentStatusRepository;
+    @Autowired
+    private ExperimentErrorRepository experimentErrorRepository;
+    @Autowired
+    private ProcessRepository processRepository;
+    @Autowired
+    private ProcessOutputRepository processOutputRepository;
+    @Autowired
+    private ProcessWorkflowRepository processWorkflowRepository;
+    @Autowired
+    private ProcessStatusRepository processStatusRepository;
+    @Autowired
+    private ProcessErrorRepository processErrorRepository;
+    @Autowired
+    private TaskRepository taskRepository;
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+    @Autowired
+    private TaskErrorRepository taskErrorRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private JobStatusRepository jobStatusRepository;
+    @Autowired
+    private QueueStatusRepository queueStatusRepository;
+    @Autowired
+    private DataProductRepository dataProductRepository;
+    @Autowired
+    private DataReplicaLocationRepository dataReplicaLocationRepository;
+    @Autowired
+    private WorkflowRepository workflowRepository;
+    @Autowired
+    private GatewayGroupsRepository gatewayGroupsRepository;
+    @Autowired
+    private ParserRepository parserRepository;
+    @Autowired
+    private ParserInputRepository parserInputRepository;
+    @Autowired
+    private ParserOutputRepository parserOutputRepository;
+    @Autowired
+    private ParsingTemplateRepository parsingTemplateRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ComputeResourceRepository computeResourceRepository;
+    @Autowired
+    private GatewayUsageReportingCommandRepository usageReportingCommandRepository;
 
     public String getAPIVersion() {
         return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;

@@ -31,7 +31,9 @@ import org.apache.airavata.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.profile.commons.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class UserProfileRepository extends AbstractRepository<UserProfile, UserProfileEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileRepository.class);
 

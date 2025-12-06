@@ -20,10 +20,16 @@
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.apache.airavata.registry.core.utils.JPAUtil.RepCatalogJPAUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
+
+    @Autowired
+    @Qualifier("replicaCatalogEntityManagerFactory")
+    private EntityManagerFactory entityManagerFactory;
 
     public RepCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
@@ -31,6 +37,6 @@ public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
 
     @Override
     protected EntityManager getEntityManager() {
-        return RepCatalogJPAUtils.getEntityManager();
+        return entityManagerFactory.createEntityManager();
     }
 }

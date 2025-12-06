@@ -39,15 +39,22 @@ import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.security.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 
+    @Autowired
     private UserProfileRepository userProfileRepository;
+    
+    @Autowired
+    private IamAdminService iamAdminService;
+    
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     public UserProfileService() {
-        userProfileRepository = new UserProfileRepository();
     }
 
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
@@ -293,17 +300,13 @@ public class UserProfileService {
         }
     }
 
-    private IamAdminService getIamAdminService() throws UserProfileServiceException, ServiceFactoryException {
-        try {
-            return ServiceFactory.getInstance().getIamAdminService();
-        } catch (ServiceFactoryException e) {
-            logger.error("Failed to create IAM Admin Service", e);
-            UserProfileServiceException ex = new UserProfileServiceException("Failed to create IAM Admin Service");
-            ex.initCause(e);
-            throw ex;
-        } catch (RuntimeException e) {
-            String message = "Failed to create IAM Admin Service: " + e.getMessage();
-            logger.error(message, e);
+    private IamAdminService getIamAdminService() throws UserProfileServiceException {
+        if (iamAdminService == null) {
+            String message = "IAM Admin Service not available";
+            logger.error(message);
+            throw new UserProfileServiceException(message);
+        }
+        return iamAdminService;
             UserProfileServiceException ex = new UserProfileServiceException();
             ex.setMessage(message);
             ex.initCause(e);

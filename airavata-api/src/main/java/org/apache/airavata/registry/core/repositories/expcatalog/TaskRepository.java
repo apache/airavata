@@ -35,14 +35,18 @@ import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(TaskRepository.class);
 
-    private final JobRepository jobRepository = new JobRepository();
+    private final JobRepository jobRepository;
 
-    public TaskRepository() {
+    @org.springframework.beans.factory.annotation.Autowired
+    public TaskRepository(JobRepository jobRepository) {
         super(TaskModel.class, TaskEntity.class);
+        this.jobRepository = jobRepository;
     }
 
     protected String saveTaskModelData(TaskModel taskModel) throws RegistryException {

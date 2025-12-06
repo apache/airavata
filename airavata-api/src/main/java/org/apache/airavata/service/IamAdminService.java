@@ -41,34 +41,23 @@ import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
-    private UserProfileRepository userProfileRepository = new UserProfileRepository();
+    @Autowired
+    private UserProfileRepository userProfileRepository;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
+    @Autowired
     private final CredentialStoreService credentialStoreService;
+    @Autowired
     private final RegistryService registryService;
 
-    public IamAdminService() throws ApplicationSettingsException, IamAdminServicesException, ServiceFactoryException {
-        try {
-            credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
-        } catch (ServiceFactoryException e) {
-            String msg = String.format("Unable to create credential store service: %s", e.getMessage());
-            logger.error(msg, e);
-            IamAdminServicesException exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
-
-        try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            String msg = String.format("Unable to create registry service. Reason: %s", e.getMessage());
-            logger.error(msg, e);
-            IamAdminServicesException exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
+    public IamAdminService(CredentialStoreService credentialStoreService, RegistryService registryService) {
+        this.credentialStoreService = credentialStoreService;
+        this.registryService = registryService;
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)

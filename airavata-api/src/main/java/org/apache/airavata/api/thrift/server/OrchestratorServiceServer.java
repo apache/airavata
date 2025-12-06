@@ -37,7 +37,11 @@ import org.apache.thrift.transport.TTransportException;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrchestratorServiceServer implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorServiceServer.class);
@@ -53,6 +57,9 @@ public class OrchestratorServiceServer implements IServer {
     private static ProcessReschedulingService metaschedulerService;
 
     private static DataInterpreterService dataInterpreterService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     //	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
@@ -179,8 +186,9 @@ public class OrchestratorServiceServer implements IServer {
         }
 
         setStatus(ServerStatus.STARTING);
+        OrchestratorServiceHandler handler = applicationContext.getBean(OrchestratorServiceHandler.class);
         OrchestratorService.Processor<OrchestratorServiceHandler> orchestratorService =
-                new OrchestratorService.Processor<OrchestratorServiceHandler>(new OrchestratorServiceHandler());
+                new OrchestratorService.Processor<OrchestratorServiceHandler>(handler);
         StartOrchestratorServer(orchestratorService);
     }
 

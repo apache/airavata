@@ -93,7 +93,7 @@ public class PreWorkflowManager extends WorkflowManager {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+        RegistryService registryService = getRegistryService();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;

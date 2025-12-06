@@ -28,7 +28,9 @@ import org.apache.airavata.sharing.db.utils.DBConstants;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
 

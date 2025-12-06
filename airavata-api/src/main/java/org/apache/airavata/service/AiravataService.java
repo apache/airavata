@@ -135,7 +135,9 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
@@ -172,31 +174,22 @@ public class AiravataService {
         return profile != null;
     }
 
-    private RegistryService registryService;
-    private SharingRegistryService sharingRegistryService;
-    private CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
+    private final SharingRegistryService sharingRegistryService;
+    private final CredentialStoreService credentialStoreService;
     private Publisher statusPublisher;
     private Publisher experimentPublisher;
 
-    public AiravataService() throws AiravataException, ServiceFactoryException {
-        ServiceFactory factory;
-        try {
-            factory = ServiceFactory.getInstance();
-        } catch (ServiceFactoryException e) {
-            String msg = "Error initializing AiravataService: failed to get ServiceFactory. Reason: " + e.getMessage();
-            logger.error(msg, e);
-            AiravataException exception = new AiravataException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
-
-        registryService = factory.getRegistryService();
+    public AiravataService(
+            RegistryService registryService,
+            SharingRegistryService sharingRegistryService,
+            CredentialStoreService credentialStoreService) throws AiravataException {
+        this.registryService = registryService;
+        this.sharingRegistryService = sharingRegistryService;
+        this.credentialStoreService = credentialStoreService;
+        
         logger.info("Initialized RegistryService");
-
-        sharingRegistryService = factory.getSharingRegistryService();
         logger.info("Initialized SharingRegistryService");
-
-        credentialStoreService = factory.getCredentialStoreService();
         logger.info("Initialized CredentialStoreService");
 
         try {

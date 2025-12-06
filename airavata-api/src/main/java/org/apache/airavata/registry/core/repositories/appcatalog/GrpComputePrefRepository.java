@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
+import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
@@ -32,6 +33,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeRe
 /**
  * Created by skariyat on 2/10/18.
  */
+@Repository
 public class GrpComputePrefRepository
         extends AppCatAbstractRepository<
                 GroupComputeResourcePreference, GroupComputeResourcePrefEntity, GroupComputeResourcePrefPK> {

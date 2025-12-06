@@ -30,10 +30,12 @@ import org.apache.airavata.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.profile.commons.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by goshenoy on 3/8/17.
  */
+@Repository
 public class TenantProfileRepository extends AbstractRepository<Gateway, GatewayEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileRepository.class);

@@ -23,7 +23,9 @@ import org.apache.airavata.sharing.db.entities.DomainEntity;
 import org.apache.airavata.sharing.models.Domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class DomainRepository extends AbstractRepository<Domain, DomainEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(DomainRepository.class);
 

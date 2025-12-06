@@ -18,6 +18,7 @@
 * under the License.
 */
 package org.apache.airavata.sharing.db.repositories;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import org.apache.airavata.sharing.db.entities.EntityEntity;
@@ -26,6 +27,7 @@ import org.apache.airavata.sharing.db.utils.DBConstants;
 import org.apache.airavata.sharing.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.sharing.models.*;
 
+@Repository
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
 
     public EntityRepository() {
