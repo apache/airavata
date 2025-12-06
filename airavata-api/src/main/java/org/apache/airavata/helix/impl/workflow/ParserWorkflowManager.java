@@ -37,7 +37,6 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.apache.kafka.clients.consumer.*;
@@ -64,20 +63,30 @@ public class ParserWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: starts consumer in background thread and returns immediately.
+     */
+    public void start() throws Exception {
+        init();
+        // Run consumer in background thread to keep it non-blocking
+        Thread consumerThread = new Thread(() -> {
+            try {
+                runConsumer();
+            } catch (Exception e) {
+                logger.error("Error in ParserWorkflowManager consumer thread", e);
+            }
+        });
+        consumerThread.setName("ParserWorkflowManager-Consumer");
+        consumerThread.setDaemon(true);
+        consumerThread.start();
+    }
+
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
         ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.init();
-        manager.runConsumer();
+        manager.start();
+        // Keep main thread alive
+        Thread.currentThread().join();
     }
 
     private void init() throws Exception {

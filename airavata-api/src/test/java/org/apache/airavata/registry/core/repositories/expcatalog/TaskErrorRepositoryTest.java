@@ -53,9 +53,10 @@ public class TaskErrorRepositoryTest extends TestBase {
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();
-        processRepository = new ProcessRepository();
-        taskRepository = new TaskRepository();
-        taskErrorRepository = new TaskErrorRepository();
+        JobRepository jobRepository = new JobRepository();
+        taskRepository = new TaskRepository(jobRepository);
+        processRepository = new ProcessRepository(taskRepository);
+        taskErrorRepository = new TaskErrorRepository(taskRepository);
     }
 
     @Test

@@ -43,7 +43,6 @@ public class DBUtil {
     private Properties properties;
 
     public DBUtil(String jdbcUrl, String userName, String password, String driver) throws ApplicationSettingsException {
-
         this.jdbcUrl = jdbcUrl;
         this.databaseUserName = userName;
         this.databasePassword = password;
@@ -51,6 +50,16 @@ public class DBUtil {
         init();
     }
 
+    public DBUtil(String jdbcUrl, String userName, String password, String driver, String validationQuery)
+            throws ApplicationSettingsException {
+        this.jdbcUrl = jdbcUrl;
+        this.databaseUserName = userName;
+        this.databasePassword = password;
+        this.driverName = driver;
+        init();
+    }
+
+    @Deprecated
     public DBUtil(JDBCConfig jdbcConfig) throws ApplicationSettingsException {
         this(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
     }

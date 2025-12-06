@@ -20,21 +20,46 @@
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
 import org.apache.airavata.registry.core.repositories.expcatalog.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ExpCatalogDBInitConfig implements DBInitConfig {
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     private String dbInitScriptPrefix = "database_scripts/expcatalog";
 
     @Override
-    public JDBCConfig getJDBCConfig() {
-        return new ExpCatalogJDBCConfig();
+    public String getDriver() {
+        return properties.getDatabase().getRegistry().getJdbcDriver();
+    }
+
+    @Override
+    public String getUrl() {
+        return properties.getDatabase().getRegistry().getJdbcUrl();
+    }
+
+    @Override
+    public String getUser() {
+        return properties.getDatabase().getRegistry().getJdbcUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return properties.getDatabase().getRegistry().getJdbcPassword();
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return properties.getDatabase().getValidationQuery();
     }
 
     @Override
@@ -58,18 +83,18 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
         try {
             // Create default gateway and default user if not already created
             GatewayRepository gatewayRepository = new GatewayRepository();
-            String defaultGatewayId = ServerSettings.getDefaultUserGateway();
+            String defaultGatewayId = properties.getDefaultRegistry().getGateway();
             if (!gatewayRepository.isGatewayExist(defaultGatewayId)) {
                 Gateway gateway = new Gateway();
                 gateway.setGatewayId(defaultGatewayId);
                 gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
-                gateway.setOauthClientId(ServerSettings.getSetting("default.registry.oauth.client.id"));
-                gateway.setOauthClientSecret(ServerSettings.getSetting("default.registry.oauth.client.secret"));
+                gateway.setOauthClientId(properties.getDefaultRegistry().getOauthClientId());
+                gateway.setOauthClientSecret(properties.getDefaultRegistry().getOauthClientSecret());
                 gatewayRepository.addGateway(gateway);
             }
 
             UserRepository userRepository = new UserRepository();
-            String defaultUsername = ServerSettings.getDefaultUser();
+            String defaultUsername = properties.getDefaultRegistry().getUser();
             if (!userRepository.isUserExists(defaultGatewayId, defaultUsername)) {
                 UserProfile defaultUser = new UserProfile();
                 defaultUser.setUserId(defaultUsername);

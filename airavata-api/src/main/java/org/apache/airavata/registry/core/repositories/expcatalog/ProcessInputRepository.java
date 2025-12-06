@@ -36,8 +36,12 @@ public class ProcessInputRepository
         extends ExpCatAbstractRepository<InputDataObjectType, ProcessInputEntity, ProcessInputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessInputRepository.class);
 
-    public ProcessInputRepository() {
+    private final ProcessRepository processRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ProcessInputRepository(ProcessRepository processRepository) {
         super(InputDataObjectType.class, ProcessInputEntity.class);
+        this.processRepository = processRepository;
     }
 
     protected void saveProcessInput(List<InputDataObjectType> processInputs, String processId)
@@ -67,7 +71,6 @@ public class ProcessInputRepository
     }
 
     public List<InputDataObjectType> getProcessInputs(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         return processModel.getProcessInputs();
     }

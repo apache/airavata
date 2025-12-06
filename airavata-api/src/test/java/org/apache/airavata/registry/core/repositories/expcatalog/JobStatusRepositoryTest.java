@@ -56,9 +56,9 @@ public class JobStatusRepositoryTest extends TestBase {
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();
-        processRepository = new ProcessRepository();
-        taskRepository = new TaskRepository();
         jobRepository = new JobRepository();
+        taskRepository = new TaskRepository(jobRepository);
+        processRepository = new ProcessRepository(taskRepository);
         jobStatusRepository = new JobStatusRepository();
     }
 

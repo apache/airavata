@@ -39,8 +39,12 @@ public class DataReplicaLocationRepository
         implements DataReplicaLocationInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataReplicaLocationRepository.class);
 
-    public DataReplicaLocationRepository() {
+    private final DataProductRepository dataProductRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public DataReplicaLocationRepository(DataProductRepository dataProductRepository) {
         super(DataReplicaLocationModel.class, DataReplicaLocationEntity.class);
+        this.dataProductRepository = dataProductRepository;
     }
 
     private String saveDataReplicaLocationModelData(DataReplicaLocationModel dataReplicaLocationModel)
@@ -92,7 +96,6 @@ public class DataReplicaLocationRepository
 
     @Override
     public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
-        DataProductRepository dataProductRepository = new DataProductRepository();
         DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
         List<DataReplicaLocationModel> dataReplicaLocationModelList = dataProductModel.getReplicaLocations();
         return dataReplicaLocationModelList;

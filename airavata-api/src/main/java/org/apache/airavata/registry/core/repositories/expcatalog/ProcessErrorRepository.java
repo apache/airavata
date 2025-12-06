@@ -36,8 +36,12 @@ import org.springframework.stereotype.Repository;
 public class ProcessErrorRepository extends ExpCatAbstractRepository<ErrorModel, ProcessErrorEntity, ProcessErrorPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessErrorRepository.class);
 
-    public ProcessErrorRepository() {
+    private final ProcessRepository processRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ProcessErrorRepository(ProcessRepository processRepository) {
         super(ErrorModel.class, ProcessErrorEntity.class);
+        this.processRepository = processRepository;
     }
 
     protected String saveProcessError(ErrorModel error, String processId) throws RegistryException {
@@ -68,7 +72,6 @@ public class ProcessErrorRepository extends ExpCatAbstractRepository<ErrorModel,
     }
 
     public List<ErrorModel> getProcessError(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         return processModel.getProcessErrors();
     }

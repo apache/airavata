@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.CommunityUser;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.CredentialOwnerType;
@@ -43,31 +43,53 @@ import org.apache.airavata.model.credential.store.*;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     private DBUtil dbUtil;
     private SSHCredentialWriter sshCredentialWriter;
     private CertificateCredentialWriter certificateCredentialWriter;
     private CredentialReaderImpl credentialReader;
 
-    public CredentialStoreService() throws ApplicationSettingsException {
-        String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-        String userName = ServerSettings.getCredentialStoreDBUser();
-        String password = ServerSettings.getCredentialStoreDBPassword();
-        String driverName = ServerSettings.getCredentialStoreDBDriver();
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        var db = properties.getDatabase().getCredentialStore();
+        String jdbcUrl = db.getJdbcUrl();
+        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
+            jdbcUrl = properties.getDatabase().getRegistry().getJdbcUrl();
+        }
+        String userName = db.getJdbcUser();
+        if (userName == null || userName.isEmpty()) {
+            userName = properties.getDatabase().getRegistry().getJdbcUser();
+        }
+        String password = db.getJdbcPassword();
+        if (password == null || password.isEmpty()) {
+            password = properties.getDatabase().getRegistry().getJdbcPassword();
+        }
+        String driverName = db.getJdbcDriver();
+        if (driverName == null || driverName.isEmpty()) {
+            driverName = properties.getDatabase().getRegistry().getJdbcDriver();
+        }
 
         logger.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName
                 + " driver name - " + driverName);
         DBInitializer.initializeDB(new CredentialStoreDBInitConfig());
 
-        dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
-        sshCredentialWriter = new SSHCredentialWriter(dbUtil);
-        certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
-        credentialReader = new CredentialReaderImpl(dbUtil);
+        try {
+            dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
+            sshCredentialWriter = new SSHCredentialWriter(dbUtil);
+            certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
+            credentialReader = new CredentialReaderImpl(dbUtil);
+        } catch (ApplicationSettingsException e) {
+            throw new RuntimeException("Failed to initialize CredentialStoreService", e);
+        }
     }
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {

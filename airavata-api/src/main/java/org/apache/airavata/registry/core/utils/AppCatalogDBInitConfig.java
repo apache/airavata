@@ -20,18 +20,43 @@
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AppCatalogDBInitConfig implements DBInitConfig {
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     private String dbInitScriptPrefix = "database_scripts/appcatalog";
 
     @Override
-    public JDBCConfig getJDBCConfig() {
-        return new AppCatalogJDBCConfig();
+    public String getDriver() {
+        return properties.getDatabase().getAppCatalog().getJdbcDriver();
+    }
+
+    @Override
+    public String getUrl() {
+        return properties.getDatabase().getAppCatalog().getJdbcUrl();
+    }
+
+    @Override
+    public String getUser() {
+        return properties.getDatabase().getAppCatalog().getJdbcUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return properties.getDatabase().getAppCatalog().getJdbcPassword();
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return properties.getDatabase().getAppCatalog().getValidationQuery();
     }
 
     @Override
@@ -55,7 +80,7 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
         GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayID(ServerSettings.getDefaultUserGateway());
+            gatewayResourceProfile.setGatewayID(properties.getDefaultRegistry().getGateway());
             if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
                 gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
             }

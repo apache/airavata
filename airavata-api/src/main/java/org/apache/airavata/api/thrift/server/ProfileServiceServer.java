@@ -103,9 +103,11 @@ public class ProfileServiceServer implements IServer {
 
             // Get handlers from Spring context
             UserProfileServiceHandler userProfileHandler = applicationContext.getBean(UserProfileServiceHandler.class);
-            TenantProfileServiceHandler tenantProfileHandler = applicationContext.getBean(TenantProfileServiceHandler.class);
+            TenantProfileServiceHandler tenantProfileHandler =
+                    applicationContext.getBean(TenantProfileServiceHandler.class);
             IamAdminServiceHandler iamAdminHandler = applicationContext.getBean(IamAdminServiceHandler.class);
-            GroupManagerServiceHandler groupManagerHandler = applicationContext.getBean(GroupManagerServiceHandler.class);
+            GroupManagerServiceHandler groupManagerHandler =
+                    applicationContext.getBean(GroupManagerServiceHandler.class);
 
             // create multiple processors for each profile-service
             var userProfileProcessor = new UserProfileService.Processor<>(userProfileHandler);

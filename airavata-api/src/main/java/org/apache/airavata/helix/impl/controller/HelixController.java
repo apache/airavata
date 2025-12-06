@@ -96,12 +96,17 @@ public class HelixController implements Runnable {
         try {
             startLatch.await();
             logger.info("Controller: " + controllerName + ", has connected to cluster: " + clusterName);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
-
         } catch (InterruptedException ex) {
             logger.error("Controller: " + controllerName + ", is interrupted! reason: " + ex, ex);
         }
+    }
+
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: starts internal thread and returns immediately.
+     */
+    public void start() throws Exception {
+        startServer();
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})

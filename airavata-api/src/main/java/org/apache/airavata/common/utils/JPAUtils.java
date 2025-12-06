@@ -99,4 +99,31 @@ public class JPAUtils {
         logger.debug("Connection properties={}", connectionProperties);
         return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
     }
+
+    /**
+     * Create connection properties directly from database configuration values.
+     */
+    public static Map<String, String> createConnectionProperties(
+            String driver, String url, String user, String password, String validationQuery) {
+        String connectionProperties = "DriverClassName=" + driver + "," + "Url=" + url
+                + "?autoReconnect=true&tinyInt1isBit=false," + "Username=" + user + "," + "Password="
+                + password + ",validationQuery=" + validationQuery;
+        logger.debug("Connection properties={}", connectionProperties);
+        return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
+    }
+
+    /**
+     * Create an EntityManagerFactory directly from database configuration values.
+     */
+    public static EntityManagerFactory getEntityManagerFactory(
+            String persistenceUnitName,
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery) {
+        Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
+        finalProperties.putAll(createConnectionProperties(driver, url, user, password, validationQuery));
+        return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
+    }
 }

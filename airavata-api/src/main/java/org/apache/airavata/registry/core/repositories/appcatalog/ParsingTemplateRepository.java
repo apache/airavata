@@ -18,7 +18,6 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.registry.core.entities.appcatalog.ParsingTemplateEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class ParsingTemplateRepository

@@ -301,8 +301,25 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         t.join();
     }
 
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: starts internal thread and returns immediately.
+     */
+    public void start() {
+        Thread t = new Thread(this);
+        t.setName("EmailBasedMonitor-Worker");
+        t.setDaemon(true);
+        t.start();
+    }
+
     public static void main(String[] args) throws Exception {
         EmailBasedMonitor monitor = new EmailBasedMonitor();
-        monitor.startServer();
+        monitor.start();
+        // Keep main thread alive
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            log.error("EmailBasedMonitor main thread interrupted", e);
+        }
     }
 }

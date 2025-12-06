@@ -18,7 +18,6 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.expcatalog;
-import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.airavata.registry.core.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository extends ExpCatAbstractRepository<UserProfile, UserEntity, UserPK> {

@@ -43,8 +43,12 @@ public class ProcessStatusRepository
         extends ExpCatAbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepository.class);
 
-    public ProcessStatusRepository() {
+    private final ProcessRepository processRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ProcessStatusRepository(ProcessRepository processRepository) {
         super(ProcessStatus.class, ProcessStatusEntity.class);
+        this.processRepository = processRepository;
     }
 
     protected String saveProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
@@ -86,7 +90,6 @@ public class ProcessStatusRepository
     }
 
     public ProcessStatus getProcessStatus(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
 
@@ -118,7 +121,6 @@ public class ProcessStatusRepository
     }
 
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         return processModel.getProcessStatuses();
     }
@@ -127,7 +129,6 @@ public class ProcessStatusRepository
             throws RegistryException {
         Map<String, Object> queryMap = new HashMap<>();
         queryMap.put(DBConstants.ProcessStatus.STATE, processState);
-        ProcessStatusRepository processStatusRepository = new ProcessStatusRepository();
-        return processStatusRepository.select(QueryConstants.FIND_PROCESS_WITH_STATUS, limit, offset, queryMap);
+        return select(QueryConstants.FIND_PROCESS_WITH_STATUS, limit, offset, queryMap);
     }
 }

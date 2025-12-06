@@ -39,15 +39,14 @@ import org.springframework.stereotype.Repository;
 public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String>
         implements DataProductInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
-    
+
     private final DataReplicaLocationRepository dataReplicaLocationRepository;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public DataProductRepository(DataReplicaLocationRepository dataReplicaLocationRepository) {
         super(DataProductModel.class, DataProductEntity.class);
         this.dataReplicaLocationRepository = dataReplicaLocationRepository;
     }
-
 
     protected String saveDataProductModelData(DataProductModel dataProductModel) throws ReplicaCatalogException {
         DataProductEntity dataProductEntity = saveDataProduct(dataProductModel);

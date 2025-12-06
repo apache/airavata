@@ -19,10 +19,7 @@
 */
 package org.apache.airavata.service;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +100,7 @@ public class ServiceFactory {
                 try {
                     credentialStoreService = new CredentialStoreService();
                     logger.info("Initialized CredentialStoreService");
-                } catch (ApplicationSettingsException e) {
+                } catch (Exception e) {
                     logger.error("Failed to initialize CredentialStoreService", e);
                     throw new ServiceFactoryException("Failed to initialize CredentialStoreService", e);
                 }
@@ -112,16 +109,16 @@ public class ServiceFactory {
                 try {
                     tenantProfileService = new TenantProfileService();
                     logger.info("Initialized TenantProfileService");
-                } catch (TenantProfileServiceException e) {
+                } catch (Exception e) {
                     logger.error("Failed to initialize TenantProfileService", e);
                     throw new ServiceFactoryException("Failed to initialize TenantProfileService", e);
                 }
 
                 // Initialize IamAdminService (depends on CredentialStoreService and RegistryService)
                 try {
-                    iamAdminService = new IamAdminService();
+                    iamAdminService = new IamAdminService(credentialStoreService, registryService);
                     logger.info("Initialized IamAdminService");
-                } catch (ApplicationSettingsException | IamAdminServicesException e) {
+                } catch (Exception e) {
                     logger.error("Failed to initialize IamAdminService", e);
                     throw new ServiceFactoryException("Failed to initialize IamAdminService", e);
                 }

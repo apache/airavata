@@ -126,20 +126,17 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
     }
 
     public TaskModel getTask(String taskId) throws RegistryException {
-        TaskRepository taskRepository = new TaskRepository();
-        return taskRepository.get(taskId);
+        return get(taskId);
     }
 
     public List<TaskModel> getTaskList(String fieldName, Object value) throws RegistryException {
-        TaskRepository taskRepository = new TaskRepository();
         List<TaskModel> taskModelList;
 
         if (fieldName.equals(DBConstants.Task.PARENT_PROCESS_ID)) {
             logger.debug("Search criteria is ParentProcessId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Task.PARENT_PROCESS_ID, value);
-            taskModelList =
-                    taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
+            taskModelList = select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
         } else {
             logger.error("Unsupported field name for Task module.");
             throw new IllegalArgumentException("Unsupported field name for Task module.");
@@ -166,11 +163,9 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
     }
 
     public void deleteTasks(String processId) throws RegistryException {
-        TaskRepository taskRepository = new TaskRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Task.PARENT_PROCESS_ID, processId);
-        List<TaskModel> taskModelList =
-                taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
+        List<TaskModel> taskModelList = select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0, queryParameters);
         for (TaskModel taskModel : taskModelList) {
             delete(taskModel.getTaskId());
         }

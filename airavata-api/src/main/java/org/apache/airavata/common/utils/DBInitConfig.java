@@ -20,7 +20,15 @@
 package org.apache.airavata.common.utils;
 
 public interface DBInitConfig {
-    JDBCConfig getJDBCConfig();
+    String getDriver();
+
+    String getUrl();
+
+    String getUser();
+
+    String getPassword();
+
+    String getValidationQuery();
 
     String getDBInitScriptPrefix();
 

@@ -20,8 +20,7 @@
 package org.apache.airavata.service;
 
 import java.util.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -86,71 +85,107 @@ public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
     @Autowired
+    private AiravataServerProperties properties;
+
+    @Autowired
     private ApplicationDeploymentRepository applicationDeploymentRepository;
+
     @Autowired
     private ApplicationInterfaceRepository applicationInterfaceRepository;
+
     @Autowired
     private StorageResourceRepository storageResourceRepository;
+
     @Autowired
     private UserResourceProfileRepository userResourceProfileRepository;
+
     @Autowired
     private GatewayRepository gatewayRepository;
+
     @Autowired
     private ProjectRepository projectRepository;
+
     @Autowired
     private NotificationRepository notificationRepository;
+
     @Autowired
     private ExperimentSummaryRepository experimentSummaryRepository;
+
     @Autowired
     private ExperimentRepository experimentRepository;
+
     @Autowired
     private ExperimentOutputRepository experimentOutputRepository;
+
     @Autowired
     private ExperimentStatusRepository experimentStatusRepository;
+
     @Autowired
     private ExperimentErrorRepository experimentErrorRepository;
+
     @Autowired
     private ProcessRepository processRepository;
+
     @Autowired
     private ProcessOutputRepository processOutputRepository;
+
     @Autowired
     private ProcessWorkflowRepository processWorkflowRepository;
+
     @Autowired
     private ProcessStatusRepository processStatusRepository;
+
     @Autowired
     private ProcessErrorRepository processErrorRepository;
+
     @Autowired
     private TaskRepository taskRepository;
+
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
     @Autowired
     private TaskErrorRepository taskErrorRepository;
+
     @Autowired
     private JobRepository jobRepository;
+
     @Autowired
     private JobStatusRepository jobStatusRepository;
+
     @Autowired
     private QueueStatusRepository queueStatusRepository;
+
     @Autowired
     private DataProductRepository dataProductRepository;
+
     @Autowired
     private DataReplicaLocationRepository dataReplicaLocationRepository;
+
     @Autowired
     private WorkflowRepository workflowRepository;
+
     @Autowired
     private GatewayGroupsRepository gatewayGroupsRepository;
+
     @Autowired
     private ParserRepository parserRepository;
+
     @Autowired
     private ParserInputRepository parserInputRepository;
+
     @Autowired
     private ParserOutputRepository parserOutputRepository;
+
     @Autowired
     private ParsingTemplateRepository parsingTemplateRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private ComputeResourceRepository computeResourceRepository;
+
     @Autowired
     private GatewayUsageReportingCommandRepository usageReportingCommandRepository;
 
@@ -2063,12 +2098,12 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleExpIds.size() == 0 && !ServerSettings.isEnableSharing()) {
+                if (accessibleExpIds.size() == 0 && !properties.getSharing().isEnabled()) {
                     if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
                         regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                     }
                 }
-            } catch (ApplicationSettingsException e) {
+            } catch (Exception e) {
                 logger.warn("Error checking sharing settings, continuing without filter", e);
             }
             summaries = experimentSummaryRepository.searchAllAccessibleExperiments(
@@ -2459,12 +2494,12 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleProjIds.size() == 0 && !ServerSettings.isEnableSharing()) {
+                if (accessibleProjIds.size() == 0 && !properties.getSharing().isEnabled()) {
                     if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
                         regFilters.put(DBConstants.Project.OWNER, userName);
                     }
                 }
-            } catch (ApplicationSettingsException e) {
+            } catch (Exception e) {
                 logger.warn("Error checking sharing settings, continuing without filter", e);
             }
 

@@ -19,17 +19,16 @@
 */
 package org.apache.airavata.config;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.airavata.helix.impl.workflow.ParserWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
-import org.apache.airavata.helix.impl.workflow.ParserWorkflowManager;
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
-import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,23 +36,39 @@ import org.springframework.core.annotation.Order;
 
 /**
  * Configuration class to launch all background services when Spring Boot starts.
- * Services are started in the correct order based on dependencies.
+ *
+ * <p>Services are started in the correct order based on dependencies using {@code @Order}:
+ * <ol>
+ *   <li>Helix Controller - Manages Helix cluster</li>
+ *   <li>Global Participant - Executes workflow tasks</li>
+ *   <li>Pre Workflow Manager - Handles process launch events</li>
+ *   <li>Parser Workflow Manager - Handles data parsing workflows</li>
+ *   <li>Post Workflow Manager - Handles job completion events</li>
+ *   <li>Realtime Monitor - Monitors job status in real-time</li>
+ *   <li>Email Monitor - Monitors job status via email</li>
+ * </ol>
+ *
+ * <p>All services are started in daemon threads and are non-blocking.
+ * Each service can be enabled/disabled via configuration properties.
  */
 @Configuration
 public class BackgroundServicesLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundServicesLauncher.class);
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     @Bean
     @Order(1)
     public CommandLineRunner startHelixController() {
         return args -> {
-            if (shouldStartService("helix.controller.enabled", true)) {
+            if (properties.getHelix().isControllerEnabled()) {
                 logger.info("Starting Helix Controller...");
                 Thread controllerThread = new Thread(() -> {
                     try {
                         HelixController controller = new HelixController();
-                        controller.startServer();
+                        controller.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Helix Controller", e);
                     }
@@ -70,11 +85,12 @@ public class BackgroundServicesLauncher {
     @Order(2)
     public CommandLineRunner startGlobalParticipant() {
         return args -> {
-            if (shouldStartService("helix.participant.enabled", true)) {
+            if (properties.getHelix().isParticipantEnabled()) {
                 logger.info("Starting Global Participant...");
                 Thread participantThread = new Thread(() -> {
                     try {
-                        GlobalParticipant.main(new String[0]);
+                        GlobalParticipant participant = GlobalParticipant.create();
+                        participant.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Global Participant", e);
                     }
@@ -91,14 +107,12 @@ public class BackgroundServicesLauncher {
     @Order(3)
     public CommandLineRunner startPreWorkflowManager() {
         return args -> {
-            if (shouldStartService("workflow.pre.enabled", true)) {
+            if (properties.getWorkflow().isPreEnabled()) {
                 logger.info("Starting Pre Workflow Manager...");
                 Thread preWmThread = new Thread(() -> {
                     try {
                         PreWorkflowManager manager = new PreWorkflowManager();
-                        manager.startServer();
-                        // Keep thread alive
-                        Thread.currentThread().join();
+                        manager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Pre Workflow Manager", e);
                     }
@@ -115,11 +129,12 @@ public class BackgroundServicesLauncher {
     @Order(4)
     public CommandLineRunner startParserWorkflowManager() {
         return args -> {
-            if (shouldStartService("workflow.parser.enabled", true)) {
+            if (properties.getWorkflow().isParserEnabled()) {
                 logger.info("Starting Parser Workflow Manager...");
                 Thread parserWmThread = new Thread(() -> {
                     try {
-                        ParserWorkflowManager.main(new String[0]);
+                        ParserWorkflowManager manager = new ParserWorkflowManager();
+                        manager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Parser Workflow Manager", e);
                     }
@@ -136,13 +151,12 @@ public class BackgroundServicesLauncher {
     @Order(5)
     public CommandLineRunner startPostWorkflowManager() {
         return args -> {
-            if (shouldStartService("workflow.post.enabled", true)) {
+            if (properties.getWorkflow().isPostEnabled()) {
                 logger.info("Starting Post Workflow Manager...");
                 Thread postWmThread = new Thread(() -> {
                     try {
                         PostWorkflowManager manager = new PostWorkflowManager();
-                        manager.startServer();
-                        Thread.currentThread().join();
+                        manager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Post Workflow Manager", e);
                     }
@@ -159,11 +173,12 @@ public class BackgroundServicesLauncher {
     @Order(6)
     public CommandLineRunner startRealtimeMonitor() {
         return args -> {
-            if (shouldStartService("monitor.realtime.enabled", true)) {
+            if (properties.getMonitoring().getRealtimeMonitor().isMonitorEnabled()) {
                 logger.info("Starting Realtime Monitor...");
                 Thread monitorThread = new Thread(() -> {
                     try {
-                        RealtimeMonitor.main(new String[0]);
+                        RealtimeMonitor monitor = new RealtimeMonitor();
+                        monitor.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Realtime Monitor", e);
                     }
@@ -180,12 +195,12 @@ public class BackgroundServicesLauncher {
     @Order(7)
     public CommandLineRunner startEmailMonitor() {
         return args -> {
-            if (shouldStartService("monitor.email.enabled", true)) {
+            if (properties.getMonitoring().getEmailBasedMonitor().isMonitorEnabled()) {
                 logger.info("Starting Email Monitor...");
                 Thread emailThread = new Thread(() -> {
                     try {
                         EmailBasedMonitor monitor = new EmailBasedMonitor();
-                        monitor.startServer();
+                        monitor.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Email Monitor", e);
                     }
@@ -197,38 +212,4 @@ public class BackgroundServicesLauncher {
             }
         };
     }
-
-    @Bean
-    @Order(8)
-    public CommandLineRunner startMonitoringServer() {
-        return args -> {
-            if (ServerSettings.getBooleanSetting("api.server.monitoring.enabled")) {
-                logger.info("Starting Monitoring Server...");
-                try {
-                    MonitoringServer monitoringServer = new MonitoringServer(
-                            ServerSettings.getSetting("api.server.monitoring.host"),
-                            ServerSettings.getIntSetting("api.server.monitoring.port"));
-                    monitoringServer.start();
-                    Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-                    logger.info("Monitoring Server started successfully");
-                } catch (Exception e) {
-                    logger.error("Failed to start Monitoring Server", e);
-                }
-            }
-        };
-    }
-
-    private boolean shouldStartService(String propertyKey, boolean defaultValue) {
-        try {
-            String value = ServerSettings.getSetting(propertyKey);
-            if (value != null) {
-                return Boolean.parseBoolean(value);
-            }
-            return defaultValue;
-        } catch (Exception e) {
-            logger.debug("Property {} not found, using default: {}", propertyKey, defaultValue);
-            return defaultValue;
-        }
-    }
 }
-

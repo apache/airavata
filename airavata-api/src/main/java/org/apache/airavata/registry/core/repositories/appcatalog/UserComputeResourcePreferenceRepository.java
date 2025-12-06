@@ -18,11 +18,11 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferencePK;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserComputeResourcePreferenceRepository

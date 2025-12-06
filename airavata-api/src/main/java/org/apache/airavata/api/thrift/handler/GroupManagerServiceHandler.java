@@ -28,7 +28,6 @@ import org.apache.airavata.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

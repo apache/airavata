@@ -56,10 +56,8 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +77,14 @@ public class PreWorkflowManager extends WorkflowManager {
     public void startServer() throws Exception {
         super.initComponents();
         initLaunchSubscriber();
+    }
+
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: initializes components and returns immediately.
+     */
+    public void start() throws Exception {
+        startServer();
     }
 
     public void stopServer() {}
@@ -284,18 +290,10 @@ public class PreWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
+        preWorkflowManager.start();
+        // Keep main thread alive
+        Thread.currentThread().join();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

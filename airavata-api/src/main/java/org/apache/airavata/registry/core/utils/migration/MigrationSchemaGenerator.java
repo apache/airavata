@@ -24,7 +24,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.JPAUtil.AppCatalogJPAUtils;
@@ -64,7 +63,7 @@ public class MigrationSchemaGenerator {
         try {
             for (Database database : Database.values()) {
 
-                waitForDatabaseServer(database.dbInitConfig.getJDBCConfig(), 60);
+                waitForDatabaseServer(database.dbInitConfig, 60);
                 try {
                     logger.info("initializing database " + database.name());
                     DBInitializer.initializeDB(database.dbInitConfig);
@@ -77,10 +76,7 @@ public class MigrationSchemaGenerator {
                             : database.name() + "-schema.sql";
                     logger.info("creating database script: " + outputFile);
                     MappingToolRunner.run(
-                            database.dbInitConfig.getJDBCConfig(),
-                            outputFile,
-                            database.persistenceUnitName,
-                            schemaAction);
+                            database.dbInitConfig, outputFile, database.persistenceUnitName, schemaAction);
                 }
             }
         } catch (Exception e) {
@@ -89,7 +85,7 @@ public class MigrationSchemaGenerator {
         }
     }
 
-    private static void waitForDatabaseServer(JDBCConfig jdbcConfig, int timeoutSeconds) {
+    private static void waitForDatabaseServer(DBInitConfig dbInitConfig, int timeoutSeconds) {
 
         long startTime = System.currentTimeMillis();
         boolean connected = false;
@@ -101,8 +97,9 @@ public class MigrationSchemaGenerator {
             }
             Connection conn = null;
             try {
-                Class.forName(jdbcConfig.getDriver());
-                conn = DriverManager.getConnection(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword());
+                Class.forName(dbInitConfig.getDriver());
+                conn = DriverManager.getConnection(
+                        dbInitConfig.getUrl(), dbInitConfig.getUser(), dbInitConfig.getPassword());
                 connected = conn.isValid(10);
             } catch (Exception e) {
                 logger.debug("Failed to connect to database: " + e.getMessage() + ", waiting 1 second before retrying");

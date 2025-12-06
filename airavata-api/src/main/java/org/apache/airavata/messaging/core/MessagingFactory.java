@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.messaging.core.impl.*;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
@@ -33,31 +33,47 @@ import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessagingFactory {
+
+    private static MessagingFactory instance;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        instance = this;
+    }
 
     public static Subscriber getSubscriber(final MessageHandler messageHandler, List<String> routingKeys, Type type)
             throws AiravataException {
+        if (instance == null) {
+            throw new IllegalStateException("MessagingFactory not initialized. Make sure it's a Spring bean.");
+        }
         Subscriber subscriber = null;
-        RabbitMQProperties rProperties = getProperties();
+        RabbitMQProperties rProperties = instance.getProperties();
 
         switch (type) {
             case EXPERIMENT_LAUNCH:
-                subscriber = getExperimentSubscriber(rProperties);
+                subscriber = instance.getExperimentSubscriber(rProperties);
                 subscriber.listen(
                         ((connection, channel) -> new ExperimentConsumer(messageHandler, connection, channel)),
                         rProperties.getQueueName(),
                         routingKeys);
                 break;
             case PROCESS_LAUNCH:
-                subscriber = getProcessSubscriber(rProperties);
+                subscriber = instance.getProcessSubscriber(rProperties);
                 subscriber.listen(
                         (connection, channel) -> new ProcessConsumer(messageHandler, connection, channel),
                         rProperties.getQueueName(),
                         routingKeys);
                 break;
             case STATUS:
-                subscriber = getStatusSubscriber(rProperties);
+                subscriber = instance.getStatusSubscriber(rProperties);
                 subscriber.listen(
                         (connection, channel) -> new StatusConsumer(messageHandler, connection, channel),
                         rProperties.getQueueName(),
@@ -72,7 +88,10 @@ public class MessagingFactory {
 
     public static Subscriber getDBEventSubscriber(final MessageHandler messageHandler, String serviceName)
             throws AiravataException {
-        RabbitMQProperties rProperties = getProperties();
+        if (instance == null) {
+            throw new IllegalStateException("MessagingFactory not initialized. Make sure it's a Spring bean.");
+        }
+        RabbitMQProperties rProperties = instance.getProperties();
 
         // FIXME: Set autoAck to false and handle possible situations
         rProperties
@@ -93,17 +112,20 @@ public class MessagingFactory {
     }
 
     public static Publisher getPublisher(Type type) throws AiravataException {
-        RabbitMQProperties rProperties = getProperties();
+        if (instance == null) {
+            throw new IllegalStateException("MessagingFactory not initialized. Make sure it's a Spring bean.");
+        }
+        RabbitMQProperties rProperties = instance.getProperties();
         Publisher publiser = null;
         switch (type) {
             case EXPERIMENT_LAUNCH:
-                publiser = getExperimentPublisher(rProperties);
+                publiser = instance.getExperimentPublisher(rProperties);
                 break;
             case PROCESS_LAUNCH:
-                publiser = gerProcessPublisher(rProperties);
+                publiser = instance.gerProcessPublisher(rProperties);
                 break;
             case STATUS:
-                publiser = getStatusPublisher(rProperties);
+                publiser = instance.getStatusPublisher(rProperties);
                 break;
             default:
                 throw new IllegalArgumentException("Publisher " + type + " is not handled");
@@ -113,50 +135,53 @@ public class MessagingFactory {
     }
 
     public static Publisher getDBEventPublisher() throws AiravataException {
-        RabbitMQProperties rProperties = getProperties();
+        if (instance == null) {
+            throw new IllegalStateException("MessagingFactory not initialized. Make sure it's a Spring bean.");
+        }
+        RabbitMQProperties rProperties = instance.getProperties();
         rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME);
         return new RabbitMQPublisher(rProperties);
     }
 
-    private static Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(ServerSettings.getRabbitmqExperimentExchangeName());
+    private Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
+        rProperties.setExchangeName(properties.getRabbitMQ().getExperimentExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
-    private static Publisher getStatusPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(ServerSettings.getRabbitmqStatusExchangeName());
+    private Publisher getStatusPublisher(RabbitMQProperties rProperties) throws AiravataException {
+        rProperties.setExchangeName(properties.getRabbitMQ().getStatusExchangeName());
         return new RabbitMQPublisher(rProperties, MessagingFactory::statusRoutingkey);
     }
 
-    private static Publisher gerProcessPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(ServerSettings.getRabbitmqProcessExchangeName());
+    private Publisher gerProcessPublisher(RabbitMQProperties rProperties) throws AiravataException {
+        rProperties.setExchangeName(properties.getRabbitMQ().getProcessExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
-    private static RabbitMQProperties getProperties() {
+    private RabbitMQProperties getProperties() {
         return new RabbitMQProperties()
-                .setBrokerUrl(ServerSettings.getRabbitmqBrokerUrl())
-                .setDurable(ServerSettings.getRabbitmqDurableQueue())
-                .setPrefetchCount(ServerSettings.getRabbitmqPrefetchCount())
+                .setBrokerUrl(properties.getRabbitMQ().getBrokerUrl())
+                .setDurable(properties.getRabbitMQ().isDurableQueue())
+                .setPrefetchCount(properties.getRabbitMQ().getPrefetchCount())
                 .setAutoRecoveryEnable(true)
                 .setConsumerTag("default")
                 .setExchangeType(RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
     }
 
-    private static RabbitMQSubscriber getStatusSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(ServerSettings.getRabbitmqStatusExchangeName()).setAutoAck(true);
+    private RabbitMQSubscriber getStatusSubscriber(RabbitMQProperties sp) throws AiravataException {
+        sp.setExchangeName(properties.getRabbitMQ().getStatusExchangeName()).setAutoAck(true);
         return new RabbitMQSubscriber(sp);
     }
 
-    private static RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(ServerSettings.getRabbitmqProcessExchangeName())
+    private RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
+        sp.setExchangeName(properties.getRabbitMQ().getProcessExchangeName())
                 .setQueueName("process_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);
     }
 
-    private static Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(ServerSettings.getRabbitmqExperimentExchangeName())
+    private Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
+        sp.setExchangeName(properties.getRabbitMQ().getExperimentExchangeName())
                 .setQueueName("experiment_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);

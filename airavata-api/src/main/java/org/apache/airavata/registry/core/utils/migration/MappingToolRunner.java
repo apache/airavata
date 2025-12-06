@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.core.utils.migration;
 
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -32,16 +32,22 @@ public class MappingToolRunner {
 
     private static Logger logger = LoggerFactory.getLogger(MappingToolRunner.class);
 
-    public static void run(JDBCConfig jdbcConfig, String outputFile, String persistenceUnitName) {
-        run(jdbcConfig, outputFile, persistenceUnitName, MappingTool.ACTION_ADD);
+    public static void run(DBInitConfig dbInitConfig, String outputFile, String persistenceUnitName) {
+        run(dbInitConfig, outputFile, persistenceUnitName, MappingTool.ACTION_ADD);
     }
 
     // schemaAction is one of MappingTool's supported actions:
     // http://openjpa.apache.org/builds/2.4.3/apache-openjpa/docs/ref_guide_mapping.html#ref_guide_mapping_mappingtool
-    public static void run(JDBCConfig jdbcConfig, String outputFile, String persistenceUnitName, String schemaAction) {
+    public static void run(
+            DBInitConfig dbInitConfig, String outputFile, String persistenceUnitName, String schemaAction) {
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfigurationImpl();
-        jdbcConfiguration.fromProperties(JPAUtils.createConnectionProperties(jdbcConfig));
+        jdbcConfiguration.fromProperties(JPAUtils.createConnectionProperties(
+                dbInitConfig.getDriver(),
+                dbInitConfig.getUrl(),
+                dbInitConfig.getUser(),
+                dbInitConfig.getPassword(),
+                dbInitConfig.getValidationQuery()));
         jdbcConfiguration.setConnectionDriverName("org.apache.commons.dbcp2.BasicDataSource");
 
         Options options = new Options();

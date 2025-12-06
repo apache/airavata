@@ -73,7 +73,6 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.AiravataService;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -368,7 +367,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException {
         try {
             return airavataService.searchProjects(authzToken, gatewayId, userName, filters, limit, offset);
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error searching projects: " + e.getMessage());
@@ -511,7 +510,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException {
         try {
             return airavataService.createExperiment(gatewayId, experiment);
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error creating experiment: " + e.getMessage());
@@ -637,7 +636,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
                     AiravataSystemException, AuthorizationException {
         try {
             airavataService.updateExperiment(authzToken, airavataExperimentId, experiment);
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error updating experiment: " + e.getMessage());
@@ -685,7 +684,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
                      logger.error(airavataExperimentId, "Experiment validation failed , experiment {} doesn't exist.", airavataExperimentId);
                      throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
                  }
-             } catch (RegistryServiceException | ApplicationSettingsException e1) {
+             } catch (RegistryServiceException e1) {
         	  logger.error(airavataExperimentId, "Error while retrieving projects", e1);
                    // Commented out code - not used
         }
@@ -1015,7 +1014,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException {
         try {
             return airavataService.registerApplicationDeployment(authzToken, gatewayId, applicationDeployment);
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error registering application deployment: " + e.getMessage());

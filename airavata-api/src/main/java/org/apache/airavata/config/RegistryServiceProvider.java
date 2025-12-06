@@ -44,4 +44,3 @@ public class RegistryServiceProvider {
         return instance;
     }
 }
-

@@ -21,14 +21,8 @@ package org.apache.airavata.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.airavata.profile.commons.utils.ProfileServiceJDBCConfig;
-import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
-import org.apache.airavata.registry.core.utils.ExpCatalogJDBCConfig;
-import org.apache.airavata.registry.core.utils.ReplicaCatalogJDBCConfig;
-import org.apache.airavata.registry.core.utils.WorkflowCatalogJDBCConfig;
-import org.apache.airavata.sharing.db.utils.SharingRegistryJDBCConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +41,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JpaConfig {
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     // Persistence unit names
     public static final String PROFILE_SERVICE_PU = "profile_service";
     public static final String APPCATALOG_PU = "appcatalog_data_new";
@@ -58,38 +55,74 @@ public class JpaConfig {
     @Bean(name = "profileServiceEntityManagerFactory")
     @Primary
     public EntityManagerFactory profileServiceEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new ProfileServiceJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(PROFILE_SERVICE_PU, jdbcConfig);
+        var db = properties.getDatabase().getProfileService();
+        return JPAUtils.getEntityManagerFactory(
+                PROFILE_SERVICE_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
     }
 
     @Bean(name = "appCatalogEntityManagerFactory")
     public EntityManagerFactory appCatalogEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new AppCatalogJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(APPCATALOG_PU, jdbcConfig);
+        var db = properties.getDatabase().getAppCatalog();
+        return JPAUtils.getEntityManagerFactory(
+                APPCATALOG_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
     }
 
     @Bean(name = "expCatalogEntityManagerFactory")
     public EntityManagerFactory expCatalogEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new ExpCatalogJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(EXPCATALOG_PU, jdbcConfig);
+        var db = properties.getDatabase().getRegistry();
+        return JPAUtils.getEntityManagerFactory(
+                EXPCATALOG_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                properties.getDatabase().getValidationQuery());
     }
 
     @Bean(name = "replicaCatalogEntityManagerFactory")
     public EntityManagerFactory replicaCatalogEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new ReplicaCatalogJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(REPLICACATALOG_PU, jdbcConfig);
+        var db = properties.getDatabase().getReplicaCatalog();
+        return JPAUtils.getEntityManagerFactory(
+                REPLICACATALOG_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
     }
 
     @Bean(name = "workflowCatalogEntityManagerFactory")
     public EntityManagerFactory workflowCatalogEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new WorkflowCatalogJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(WORKFLOWCATALOG_PU, jdbcConfig);
+        var db = properties.getDatabase().getWorkflowCatalog();
+        return JPAUtils.getEntityManagerFactory(
+                WORKFLOWCATALOG_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
     }
 
     @Bean(name = "sharingRegistryEntityManagerFactory")
     public EntityManagerFactory sharingRegistryEntityManagerFactory() {
-        JDBCConfig jdbcConfig = new SharingRegistryJDBCConfig();
-        return JPAUtils.getEntityManagerFactory(SHARING_REGISTRY_PU, jdbcConfig);
+        var db = properties.getDatabase().getSharingCatalog();
+        return JPAUtils.getEntityManagerFactory(
+                SHARING_REGISTRY_PU,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
     }
 
     // Transaction managers for each persistence unit
@@ -129,39 +162,44 @@ public class JpaConfig {
     // We use prototype scope to create new instances as needed
     @Bean(name = "appCatalogEntityManager")
     @Scope("prototype")
-    public EntityManager appCatalogEntityManager(@Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager appCatalogEntityManager(
+            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 
     @Bean(name = "expCatalogEntityManager")
     @Scope("prototype")
-    public EntityManager expCatalogEntityManager(@Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager expCatalogEntityManager(
+            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 
     @Bean(name = "replicaCatalogEntityManager")
     @Scope("prototype")
-    public EntityManager replicaCatalogEntityManager(@Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager replicaCatalogEntityManager(
+            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 
     @Bean(name = "workflowCatalogEntityManager")
     @Scope("prototype")
-    public EntityManager workflowCatalogEntityManager(@Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager workflowCatalogEntityManager(
+            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 
     @Bean(name = "profileServiceEntityManager")
     @Scope("prototype")
     @Primary
-    public EntityManager profileServiceEntityManager(@Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager profileServiceEntityManager(
+            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 
     @Bean(name = "sharingRegistryEntityManager")
     @Scope("prototype")
-    public EntityManager sharingRegistryEntityManager(@Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
+    public EntityManager sharingRegistryEntityManager(
+            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
         return emf.createEntityManager();
     }
 }
-

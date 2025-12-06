@@ -22,7 +22,6 @@ package org.apache.airavata.api.thrift.handler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.models.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,10 +33,7 @@ public class TestSharingRegistryHandler {
 
     @Test
     public void test() throws Exception {
-        SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
-        sharingRegistryDBInitConfig.setDBInitScriptPrefix("sharing-registry");
-        SharingRegistryServerHandler sharingRegistryServerHandler =
-                new SharingRegistryServerHandler(sharingRegistryDBInitConfig);
+        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
         // Creating domain
         Domain domain = new Domain();

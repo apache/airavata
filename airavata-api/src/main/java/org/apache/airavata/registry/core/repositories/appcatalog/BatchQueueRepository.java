@@ -18,11 +18,11 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.registry.core.entities.appcatalog.BatchQueueEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.BatchQueuePK;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class BatchQueueRepository extends AppCatAbstractRepository<BatchQueue, BatchQueueEntity, BatchQueuePK> {

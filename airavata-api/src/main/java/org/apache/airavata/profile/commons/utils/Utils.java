@@ -20,80 +20,96 @@
 package org.apache.airavata.profile.commons.utils;
 
 import java.net.URI;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Utils {
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static Utils instance;
 
-    public static String getJDBCURL() {
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        instance = this;
+    }
+
+    private String getJDBCURLImpl() {
+        return properties.getDatabase().getProfileService().getJdbcUrl();
+    }
+
+    private String getHostImpl() {
         try {
-            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_URL);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
+            String jdbcURL = getJDBCURLImpl();
+            if (jdbcURL != null && jdbcURL.length() > 5) {
+                String cleanURI = jdbcURL.substring(5);
+                URI uri = URI.create(cleanURI);
+                return uri.getHost();
+            }
+        } catch (Exception e) {
+            // ignore
         }
+        return null;
+    }
+
+    private int getPortImpl() {
+        try {
+            String jdbcURL = getJDBCURLImpl();
+            if (jdbcURL != null && jdbcURL.length() > 5) {
+                String cleanURI = jdbcURL.substring(5);
+                URI uri = URI.create(cleanURI);
+                return uri.getPort();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return -1;
+    }
+
+    private String getJDBCUserImpl() {
+        return properties.getDatabase().getProfileService().getJdbcUser();
+    }
+
+    private String getValidationQueryImpl() {
+        return properties.getDatabase().getProfileService().getValidationQuery();
+    }
+
+    private String getJDBCPasswordImpl() {
+        return properties.getDatabase().getProfileService().getJdbcPassword();
+    }
+
+    private String getJDBCDriverImpl() {
+        return properties.getDatabase().getProfileService().getJdbcDriver();
+    }
+
+    // Static methods for backward compatibility
+    public static String getJDBCURL() {
+        return instance != null ? instance.getJDBCURLImpl() : null;
     }
 
     public static String getHost() {
-        try {
-            String jdbcURL = getJDBCURL();
-            String cleanURI = jdbcURL.substring(5);
-            URI uri = URI.create(cleanURI);
-            return uri.getHost();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+        return instance != null ? instance.getHostImpl() : null;
     }
 
     public static int getPort() {
-        try {
-            String jdbcURL = getJDBCURL();
-            String cleanURI = jdbcURL.substring(5);
-            URI uri = URI.create(cleanURI);
-            return uri.getPort();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return -1;
-        }
+        return instance != null ? instance.getPortImpl() : -1;
     }
 
     public static String getJDBCUser() {
-        try {
-            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_USER);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+        return instance != null ? instance.getJDBCUserImpl() : null;
     }
 
     public static String getValidationQuery() {
-        try {
-            return ServerSettings.getSetting(JPAConstants.VALIDATION_QUERY);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+        return instance != null ? instance.getValidationQueryImpl() : null;
     }
 
     public static String getJDBCPassword() {
-        try {
-            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_PASSWORD);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+        return instance != null ? instance.getJDBCPasswordImpl() : null;
     }
 
     public static String getJDBCDriver() {
-        try {
-            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_DRIVER);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+        return instance != null ? instance.getJDBCDriverImpl() : null;
     }
 }

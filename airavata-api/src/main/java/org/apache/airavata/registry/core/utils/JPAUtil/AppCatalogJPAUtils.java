@@ -19,22 +19,44 @@
 */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.airavata.registry.core.utils.AppCatalogJDBCConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AppCatalogJPAUtils {
 
     // TODO: we can rename this back to appcatalog_data once we completely replace
     // the other appcatalog_data persistence context in airavata-registry-core
     public static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
-    private static final JDBCConfig JDBC_CONFIG = new AppCatalogJDBCConfig();
-    private static final EntityManagerFactory factory =
-            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+
+    private static AppCatalogJPAUtils instance;
+    private EntityManagerFactory factory;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @PostConstruct
+    public void init() {
+        instance = this;
+        var db = properties.getDatabase().getAppCatalog();
+        factory = JPAUtils.getEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        if (instance == null || instance.factory == null) {
+            throw new IllegalStateException("AppCatalogJPAUtils not initialized. Make sure it's a Spring bean.");
+        }
+        return instance.factory.createEntityManager();
     }
 }

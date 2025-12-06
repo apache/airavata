@@ -52,8 +52,10 @@ public class ProcessOutputRepositoryTest extends TestBase {
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();
-        processRepository = new ProcessRepository();
-        processOutputRepository = new ProcessOutputRepository();
+        JobRepository jobRepository = new JobRepository();
+        TaskRepository taskRepository = new TaskRepository(jobRepository);
+        processRepository = new ProcessRepository(taskRepository);
+        processOutputRepository = new ProcessOutputRepository(processRepository);
     }
 
     @Test

@@ -103,7 +103,8 @@ public class WorkflowManager {
     }
 
     private void initRegistryService()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
+                    InstantiationException {
         // Try to get from Spring context first, fallback to ServiceFactory for backward compatibility
         try {
             this.registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();

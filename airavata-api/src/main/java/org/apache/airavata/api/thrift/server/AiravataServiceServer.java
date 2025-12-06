@@ -19,23 +19,15 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.thrift.handler.AiravataServiceHandler;
-import org.apache.airavata.api.thrift.util.AiravataServiceConstants;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.security.interceptor.SecurityModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -44,6 +36,9 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AiravataServiceServer implements IServer {
@@ -59,6 +54,9 @@ public class AiravataServiceServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     public AiravataServiceServer() {
         setStatus(ServerStatus.STOPPED);
     }
@@ -66,21 +64,19 @@ public class AiravataServiceServer implements IServer {
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer)
             throws AiravataSystemException {
         try {
-            final String serverHost = ServerSettings.getSetting(AiravataServiceConstants.API_SERVER_HOST, null);
-            final int serverPort =
-                    Integer.parseInt(ServerSettings.getSetting(AiravataServiceConstants.API_SERVER_PORT, "8930"));
+            final String serverHost = properties.getApiServer().getHost();
+            final int serverPort = properties.getApiServer().getPort();
 
-            if (!ServerSettings.isTLSEnabled()) {
+            if (!properties.getSecurity().getTls().isEnabled()) {
                 TServerTransport serverTransport;
-                if (serverHost == null) {
+                if (serverHost == null || serverHost.isEmpty()) {
                     serverTransport = new TServerSocket(serverPort);
                 } else {
                     InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
                     serverTransport = new TServerSocket(inetSocketAddress);
                 }
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-                options.minWorkerThreads = Integer.parseInt(
-                        ServerSettings.getSetting(AiravataServiceConstants.API_SERVER_MIN_THREADS, "50"));
+                options.minWorkerThreads = properties.getApiServer().getMinThreads();
                 server = new TThreadPoolServer(options.processor(airavataAPIServer));
                 new Thread(() -> {
                             server.serve();
@@ -106,12 +102,19 @@ public class AiravataServiceServer implements IServer {
                 logger.info("Started API Server ....");
             } else {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
-                TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+                java.io.File configDir = new java.io.File(properties.getAiravataConfigDir());
+                java.io.File keystoreFile = new java.io.File(
+                        configDir, properties.getSecurity().getKeystore().getPath());
+                TLSParams.setKeyStore(
+                        keystoreFile.getAbsolutePath(),
+                        properties.getSecurity().getKeystore().getPassword());
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
+                        serverPort,
+                        properties.getSecurity().getTls().getClientTimeout(),
+                        InetAddress.getByName(serverHost),
+                        TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
-                settings.minWorkerThreads = Integer.parseInt(
-                        ServerSettings.getSetting(AiravataServiceConstants.API_SERVER_MIN_THREADS, "50"));
+                settings.minWorkerThreads = properties.getApiServer().getMinThreads();
                 TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
                 new Thread(() -> {
                             TLSServer.serve();
@@ -135,7 +138,7 @@ public class AiravataServiceServer implements IServer {
                 logger.info("API server started over TLS on Port: " + serverPort + " ...");
             }
 
-        } catch (TTransportException | ApplicationSettingsException | UnknownHostException e) {
+        } catch (TTransportException | UnknownHostException e) {
             logger.error("Failed to start API server ...", e);
             setStatus(ServerStatus.FAILED);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -149,19 +152,18 @@ public class AiravataServiceServer implements IServer {
         AiravataServiceHandler handler = applicationContext.getBean(AiravataServiceHandler.class);
         // TODO: Migrate SecurityModule to Spring AOP for security interception
         // For now, we use the handler directly. Security checks are still applied via @SecurityCheck annotations
-        Airavata.Processor<Airavata.Iface> airavataAPIServer =
-                new Airavata.Processor<Airavata.Iface>(handler);
+        Airavata.Processor<Airavata.Iface> airavataAPIServer = new Airavata.Processor<Airavata.Iface>(handler);
         startAiravataServer(airavataAPIServer);
     }
 
     @Override
     public void stop() throws Exception {
-        if ((!ServerSettings.isTLSEnabled()) && server.isServing()) {
+        if ((!properties.getSecurity().getTls().isEnabled()) && server != null && server.isServing()) {
             setStatus(ServerStatus.STOPING);
             server.stop();
         }
         // stop the Airavata API server hosted over TLS.
-        if ((ServerSettings.isTLSEnabled()) && TLSServer.isServing()) {
+        if ((properties.getSecurity().getTls().isEnabled()) && TLSServer != null && TLSServer.isServing()) {
             TLSServer.stop();
         }
     }

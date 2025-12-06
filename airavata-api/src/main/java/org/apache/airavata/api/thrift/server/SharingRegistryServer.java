@@ -25,7 +25,7 @@ import org.apache.airavata.api.thrift.handler.SharingRegistryServerHandler;
 import org.apache.airavata.api.thrift.util.SharingRegistryConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.models.SharingRegistryException;
@@ -59,6 +59,9 @@ public class SharingRegistryServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     public SharingRegistryServer() {
         setStatus(IServer.ServerStatus.STOPPED);
     }
@@ -78,8 +81,8 @@ public class SharingRegistryServer implements IServer {
         try {
             setStatus(IServer.ServerStatus.STARTING);
 
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
-            final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
+            final int serverPort = properties.getSharing().getServerPort();
+            final String serverHost = properties.getSharing().getServerHost();
             // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a Spring bean
             SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
             SharingRegistryService.Processor processor = new SharingRegistryService.Processor(handler);
@@ -87,7 +90,7 @@ public class SharingRegistryServer implements IServer {
             TServerTransport serverTransport;
             TThreadPoolServer.Args options;
 
-            if (!ServerSettings.isTLSEnabled()) {
+            if (!properties.getSecurity().getTls().isEnabled()) {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
                 serverTransport = new TServerSocket(inetSocketAddress);
                 options = new TThreadPoolServer.Args(serverTransport);
@@ -95,9 +98,17 @@ public class SharingRegistryServer implements IServer {
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.requireClientAuth(true);
-                TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+                java.io.File configDir = new java.io.File(properties.getAiravataConfigDir());
+                java.io.File keystoreFile = new java.io.File(
+                        configDir, properties.getSecurity().getKeystore().getPath());
+                TLSParams.setKeyStore(
+                        keystoreFile.getAbsolutePath(),
+                        properties.getSecurity().getKeystore().getPassword());
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort, ServerSettings.getTLSClientTimeout(), InetAddress.getByName(serverHost), TLSParams);
+                        serverPort,
+                        properties.getSecurity().getTls().getClientTimeout(),
+                        InetAddress.getByName(serverHost),
+                        TLSParams);
                 options = new TThreadPoolServer.Args(TLSServerTransport);
             }
             options.minWorkerThreads = 30;

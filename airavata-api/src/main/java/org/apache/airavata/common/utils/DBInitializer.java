@@ -26,21 +26,40 @@ import org.slf4j.LoggerFactory;
 public class DBInitializer {
     private static final Logger logger = LoggerFactory.getLogger(DBInitializer.class);
 
-    private JDBCConfig jdbcConfig;
+    private String driver;
+    private String url;
+    private String user;
+    private String password;
+    private String validationQuery;
     private String initScriptPrefix;
     private String checkTableName;
 
-    public DBInitializer(JDBCConfig jdbcConfig, String initScriptPrefix, String checkTableName) {
-        this.jdbcConfig = jdbcConfig;
+    public DBInitializer(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery,
+            String initScriptPrefix,
+            String checkTableName) {
+        this.driver = driver;
+        this.url = url;
+        this.user = user;
+        this.password = password;
+        this.validationQuery = validationQuery;
         this.initScriptPrefix = initScriptPrefix;
         this.checkTableName = checkTableName;
     }
 
     public static void initializeDB(DBInitConfig dbInitConfig) {
-
-        JDBCConfig jdbcConfig = dbInitConfig.getJDBCConfig();
-        DBInitializer dbInitializer =
-                new DBInitializer(jdbcConfig, dbInitConfig.getDBInitScriptPrefix(), dbInitConfig.getCheckTableName());
+        DBInitializer dbInitializer = new DBInitializer(
+                dbInitConfig.getDriver(),
+                dbInitConfig.getUrl(),
+                dbInitConfig.getUser(),
+                dbInitConfig.getPassword(),
+                dbInitConfig.getValidationQuery(),
+                dbInitConfig.getDBInitScriptPrefix(),
+                dbInitConfig.getCheckTableName());
         dbInitializer.initializeDB();
         dbInitConfig.postInit();
     }
@@ -49,7 +68,7 @@ public class DBInitializer {
         // Create connection
         Connection conn = null;
         try {
-            DBUtil dbUtil = new DBUtil(jdbcConfig);
+            DBUtil dbUtil = new DBUtil(driver, url, user, password, validationQuery);
             conn = dbUtil.getConnection();
             if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
                 DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);

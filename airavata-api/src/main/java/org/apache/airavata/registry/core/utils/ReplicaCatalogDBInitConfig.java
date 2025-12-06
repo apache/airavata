@@ -20,16 +20,42 @@
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReplicaCatalogDBInitConfig implements DBInitConfig {
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     public static final String CHECK_TABLE = "CONFIGURATION";
     private String dbInitScriptPrefix = "database_scripts/replicacatalog";
 
     @Override
-    public JDBCConfig getJDBCConfig() {
-        return new ReplicaCatalogJDBCConfig();
+    public String getDriver() {
+        return properties.getDatabase().getReplicaCatalog().getJdbcDriver();
+    }
+
+    @Override
+    public String getUrl() {
+        return properties.getDatabase().getReplicaCatalog().getJdbcUrl();
+    }
+
+    @Override
+    public String getUser() {
+        return properties.getDatabase().getReplicaCatalog().getJdbcUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return properties.getDatabase().getReplicaCatalog().getJdbcPassword();
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return properties.getDatabase().getReplicaCatalog().getValidationQuery();
     }
 
     @Override

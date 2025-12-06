@@ -48,14 +48,13 @@ public class UserProfileService {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
-    
+
     @Autowired
     private IamAdminService iamAdminService;
-    
+
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
-    public UserProfileService() {
-    }
+    public UserProfileService() {}
 
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -197,14 +196,6 @@ public class UserProfileService {
                 UserProfileServiceException exception = new UserProfileServiceException(msg);
                 exception.initCause(e);
                 throw new RuntimeException(exception);
-            } catch (ServiceFactoryException e) {
-                String msg = String.format(
-                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
-                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
-                logger.error(msg, e);
-                UserProfileServiceException exception = new UserProfileServiceException(msg);
-                exception.initCause(e);
-                throw new RuntimeException(exception);
             } catch (IamAdminServicesException e) {
                 String msg = String.format(
                         "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
@@ -307,10 +298,5 @@ public class UserProfileService {
             throw new UserProfileServiceException(message);
         }
         return iamAdminService;
-            UserProfileServiceException ex = new UserProfileServiceException();
-            ex.setMessage(message);
-            ex.initCause(e);
-            throw ex;
-        }
     }
 }

@@ -18,7 +18,6 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfil
 import org.apache.airavata.registry.core.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by skariyat on 2/8/18.

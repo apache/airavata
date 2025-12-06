@@ -44,8 +44,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
+
     @Autowired
     private UserProfileRepository userProfileRepository;
+
     @Autowired
     private SharingRegistryService sharingService;
 
@@ -79,8 +81,7 @@ public class GroupManagerService {
     }
 
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         var userId = getUserId(authzToken);
         var domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupModel.getId(), userId)
@@ -101,8 +102,7 @@ public class GroupManagerService {
     }
 
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId))) {
@@ -136,8 +136,7 @@ public class GroupManagerService {
     }
 
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId)
@@ -148,8 +147,7 @@ public class GroupManagerService {
     }
 
     public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId)
@@ -160,8 +158,7 @@ public class GroupManagerService {
     }
 
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId))) {
@@ -178,8 +175,7 @@ public class GroupManagerService {
     }
 
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId))) {
@@ -196,8 +192,7 @@ public class GroupManagerService {
     }
 
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds)
-            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
-                    {
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
         String userId = getUserId(authzToken);
         String domainId = getDomainId(authzToken);
         if (!(getSharingService().hasOwnerAccess(domainId, groupId, userId))) {

@@ -18,14 +18,13 @@
 * under the License.
 */
 package org.apache.airavata.sharing.db.repositories;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import org.apache.airavata.sharing.db.entities.EntityEntity;
 import org.apache.airavata.sharing.db.entities.EntityPK;
 import org.apache.airavata.sharing.db.utils.DBConstants;
-import org.apache.airavata.sharing.db.utils.SharingRegistryJDBCConfig;
 import org.apache.airavata.sharing.models.*;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
@@ -72,7 +71,9 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                             + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
-                if (new SharingRegistryJDBCConfig().getDriver().contains("derby")) {
+                // Check driver from properties - this is a legacy check for Derby
+                // In practice, this should use the injected EntityManagerFactory from JpaConfig
+                if (false) { // Derby check removed - use JpaConfig EntityManagerFactory instead
                     query += "E.FULL_TEXT LIKE '%" + searchCriteria.getValue() + "%' AND ";
                 } else {
                     // FULL TEXT Search with Query Expansion

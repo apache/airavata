@@ -34,7 +34,6 @@ import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.profile.tenant.core.repositories.TenantProfileRepository;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.slf4j.Logger;
@@ -48,7 +47,9 @@ public class TenantProfileService {
 
     @Autowired
     private TenantProfileRepository tenantProfileRepository;
+
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
+
     @Autowired
     private CredentialStoreService credentialStoreService;
 

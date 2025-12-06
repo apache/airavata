@@ -21,11 +21,10 @@ package org.apache.airavata.service;
 
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -47,11 +46,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
+
+    @Autowired
+    private AiravataServerProperties properties;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
+
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
+
     @Autowired
     private final CredentialStoreService credentialStoreService;
+
     @Autowired
     private final RegistryService registryService;
 
@@ -317,25 +323,8 @@ public class IamAdminService {
 
     private PasswordCredential getSuperAdminPasswordCredential() throws IamAdminServicesException {
         PasswordCredential isSuperAdminCredentials = new PasswordCredential();
-        try {
-            isSuperAdminCredentials.setLoginUserName(ServerSettings.getIamServerSuperAdminUsername());
-        } catch (ApplicationSettingsException e) {
-            String msg = String.format("Unable to get IAM super admin username from settings: %s", e.getMessage());
-            logger.error(msg, e);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
-
-        try {
-            isSuperAdminCredentials.setPassword(ServerSettings.getIamServerSuperAdminPassword());
-        } catch (ApplicationSettingsException e) {
-            String msg = String.format("Unable to get IAM super admin password from settings: %s", e.getMessage());
-            logger.error(msg, e);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(e);
-            throw exception;
-        }
+        isSuperAdminCredentials.setLoginUserName(properties.getIam().getSuperAdminUsername());
+        isSuperAdminCredentials.setPassword(properties.getIam().getSuperAdminPassword());
         return isSuperAdminCredentials;
     }
 

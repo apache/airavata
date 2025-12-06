@@ -18,10 +18,10 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyEntity;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by skariyat on 2/10/18.

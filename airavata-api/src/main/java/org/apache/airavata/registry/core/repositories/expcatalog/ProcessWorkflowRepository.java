@@ -36,10 +36,14 @@ import org.springframework.stereotype.Repository;
 public class ProcessWorkflowRepository
         extends ExpCatAbstractRepository<ProcessWorkflow, ProcessWorkflowEntity, ProcessWorkflowPK> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessInputRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessWorkflowRepository.class);
 
-    public ProcessWorkflowRepository() {
+    private final ProcessRepository processRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ProcessWorkflowRepository(ProcessRepository processRepository) {
         super(ProcessWorkflow.class, ProcessWorkflowEntity.class);
+        this.processRepository = processRepository;
     }
 
     protected void saveProcessWorkflow(List<ProcessWorkflow> processWorkflows, String processId)
@@ -67,7 +71,6 @@ public class ProcessWorkflowRepository
     }
 
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
         return processModel.getProcessWorkflows();
     }

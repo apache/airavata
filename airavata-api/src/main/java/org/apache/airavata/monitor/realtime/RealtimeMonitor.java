@@ -91,7 +91,31 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: starts consumer in background thread and returns immediately.
+     */
+    public void start() throws ApplicationSettingsException {
+        Thread consumerThread = new Thread(() -> {
+            try {
+                runConsumer();
+            } catch (Exception e) {
+                logger.error("Error in RealtimeMonitor consumer thread", e);
+            }
+        });
+        consumerThread.setName("RealtimeMonitor-Consumer");
+        consumerThread.setDaemon(true);
+        consumerThread.start();
+    }
+
     public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+        RealtimeMonitor monitor = new RealtimeMonitor();
+        monitor.start();
+        // Keep main thread alive
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            logger.error("RealtimeMonitor main thread interrupted", e);
+        }
     }
 }

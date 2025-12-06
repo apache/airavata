@@ -19,18 +19,41 @@
 */
 package org.apache.airavata.profile.commons.utils;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "profile_service";
-    private static final JDBCConfig JDBC_CONFIG = new ProfileServiceJDBCConfig();
-    private static final EntityManagerFactory factory =
-            org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+
+    private static JPAUtils instance;
+    private EntityManagerFactory factory;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @PostConstruct
+    public void init() {
+        instance = this;
+        var db = properties.getDatabase().getProfileService();
+        factory = org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                db.getValidationQuery());
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        if (instance == null || instance.factory == null) {
+            throw new IllegalStateException("ProfileService JPAUtils not initialized. Make sure it's a Spring bean.");
+        }
+        return instance.factory.createEntityManager();
     }
 
     public static <R> R execute(Committer<EntityManager, R> committer) {

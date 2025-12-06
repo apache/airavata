@@ -48,7 +48,6 @@ import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.monitor.platform.MonitoringServer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.ServiceFactory;
@@ -71,19 +70,19 @@ public class PostWorkflowManager extends WorkflowManager {
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
 
+    /**
+     * Standardized start method for Spring Boot integration.
+     * Non-blocking: starts server and returns immediately.
+     */
+    public void start() throws Exception {
+        startServer();
+    }
+
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
-            monitoringServer.start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
-
         PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.startServer();
+        postManager.start();
+        // Keep main thread alive
+        Thread.currentThread().join();
     }
 
     private void init() throws Exception {

@@ -38,8 +38,12 @@ import org.springframework.stereotype.Repository;
 public class TaskStatusRepository extends ExpCatAbstractRepository<TaskStatus, TaskStatusEntity, TaskStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(TaskStatusRepository.class);
 
-    public TaskStatusRepository() {
+    private final TaskRepository taskRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public TaskStatusRepository(TaskRepository taskRepository) {
         super(TaskStatus.class, TaskStatusEntity.class);
+        this.taskRepository = taskRepository;
     }
 
     protected String saveTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
@@ -70,7 +74,6 @@ public class TaskStatusRepository extends ExpCatAbstractRepository<TaskStatus, T
     }
 
     public TaskStatus getTaskStatus(String taskId) throws RegistryException {
-        TaskRepository taskRepository = new TaskRepository();
         TaskModel taskModel = taskRepository.getTask(taskId);
         List<TaskStatus> taskStatusList = taskModel.getTaskStatuses();
 

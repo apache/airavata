@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.api.thrift.server;
 
+import jakarta.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,7 @@ import org.apache.airavata.api.thrift.util.RegistryServiceConstants;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
@@ -58,11 +59,27 @@ public class RegistryServiceServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
-    private List<DBInitConfig> dbInitConfigs =
-            Arrays.asList(new ExpCatalogDBInitConfig(), new AppCatalogDBInitConfig(), new ReplicaCatalogDBInitConfig());
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @Autowired
+    private ExpCatalogDBInitConfig expCatalogDBInitConfig;
+
+    @Autowired
+    private AppCatalogDBInitConfig appCatalogDBInitConfig;
+
+    @Autowired
+    private ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig;
+
+    private List<DBInitConfig> dbInitConfigs;
 
     public RegistryServiceServer() {
         setStatus(ServerStatus.STOPPED);
+    }
+
+    @PostConstruct
+    public void init() {
+        dbInitConfigs = Arrays.asList(expCatalogDBInitConfig, appCatalogDBInitConfig, replicaCatalogDBInitConfig);
     }
 
     public void StartRegistryServer(
@@ -74,12 +91,11 @@ public class RegistryServiceServer implements IServer {
         }
         logger.info("Databases initialized successfully");
 
-        final int serverPort =
-                Integer.parseInt(ServerSettings.getSetting(RegistryServiceConstants.REGISTRY_SERVER_PORT, "8960"));
+        final int serverPort = properties.getOther().getRegistryServer().getPort();
         try {
-            final String serverHost = ServerSettings.getSetting(RegistryServiceConstants.REGISTRY_SERVER_HOST, null);
+            final String serverHost = properties.getOther().getRegistryServer().getHost();
             TServerTransport serverTransport;
-            if (serverHost == null) {
+            if (serverHost == null || serverHost.isEmpty()) {
                 serverTransport = new TServerSocket(serverPort);
             } else {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
@@ -88,8 +104,7 @@ public class RegistryServiceServer implements IServer {
 
             // thrift server start
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = Integer.parseInt(
-                    ServerSettings.getSetting(RegistryServiceConstants.REGISTRY_SERVER_MIN_THREADS, "30"));
+            options.minWorkerThreads = properties.getOther().getRegistryServer().getMinThreads();
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
             new Thread() {
                 public void run() {

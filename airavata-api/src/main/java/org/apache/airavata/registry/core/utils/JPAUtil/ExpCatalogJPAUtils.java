@@ -19,19 +19,41 @@
 */
 package org.apache.airavata.registry.core.utils.JPAUtil;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.airavata.registry.core.utils.ExpCatalogJDBCConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ExpCatalogJPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
-    private static final JDBCConfig JDBC_CONFIG = new ExpCatalogJDBCConfig();
-    private static final EntityManagerFactory factory =
-            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+
+    private static ExpCatalogJPAUtils instance;
+    private EntityManagerFactory factory;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @PostConstruct
+    public void init() {
+        instance = this;
+        var db = properties.getDatabase().getRegistry();
+        factory = JPAUtils.getEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME,
+                db.getJdbcDriver(),
+                db.getJdbcUrl(),
+                db.getJdbcUser(),
+                db.getJdbcPassword(),
+                properties.getDatabase().getValidationQuery());
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        if (instance == null || instance.factory == null) {
+            throw new IllegalStateException("ExpCatalogJPAUtils not initialized. Make sure it's a Spring bean.");
+        }
+        return instance.factory.createEntityManager();
     }
 }

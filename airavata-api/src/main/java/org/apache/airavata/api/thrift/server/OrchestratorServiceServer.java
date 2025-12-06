@@ -21,14 +21,12 @@ package org.apache.airavata.api.thrift.server;
 
 import java.net.InetSocketAddress;
 import org.apache.airavata.api.thrift.handler.OrchestratorServiceHandler;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.util.Constants;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -61,6 +59,9 @@ public class OrchestratorServiceServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     //	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
     public OrchestratorServiceServer() {
@@ -70,11 +71,11 @@ public class OrchestratorServiceServer implements IServer {
     public void StartOrchestratorServer(
             OrchestratorService.Processor<OrchestratorServiceHandler> orchestratorServerHandlerProcessor)
             throws Exception {
-        final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT, "8940"));
+        final int serverPort = properties.getOrchestrator().getServerPort();
         try {
-            final String serverHost = ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_HOST, null);
+            final String serverHost = properties.getOrchestrator().getServerHost();
             TServerTransport serverTransport;
-            if (serverHost == null) {
+            if (serverHost == null || serverHost.isEmpty()) {
                 serverTransport = new TServerSocket(serverPort);
             } else {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
@@ -83,8 +84,7 @@ public class OrchestratorServiceServer implements IServer {
             // server = new TSimpleServer(
             //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads =
-                    Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_MIN_THREADS, "30"));
+            options.minWorkerThreads = properties.getOrchestrator().getServerMinThreads();
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
             new Thread() {
                 public void run() {
@@ -115,7 +115,7 @@ public class OrchestratorServiceServer implements IServer {
         }
     }
 
-    public void startClusterStatusMonitoring() throws SchedulerException, ApplicationSettingsException {
+    public void startClusterStatusMonitoring() throws SchedulerException {
         //        clusterStatusMonitorJobScheduler = new ClusterStatusMonitorJobScheduler();
         //        clusterStatusMonitorJobScheduler.scheduleClusterStatusMonitoring();
 
@@ -134,7 +134,7 @@ public class OrchestratorServiceServer implements IServer {
         }
     }
 
-    public void startMetaschedulerJobScanning() throws SchedulerException, ApplicationSettingsException {
+    public void startMetaschedulerJobScanning() throws SchedulerException {
         try {
             if (metaschedulerService == null) {
                 metaschedulerService = new ProcessReschedulingService();
@@ -151,7 +151,7 @@ public class OrchestratorServiceServer implements IServer {
         }
     }
 
-    public void startMetadataDataAnalyzer() throws SchedulerException, ApplicationSettingsException {
+    public void startMetadataDataAnalyzer() throws SchedulerException {
         try {
             if (dataInterpreterService == null) {
                 dataInterpreterService = new DataInterpreterService();
@@ -170,17 +170,17 @@ public class OrchestratorServiceServer implements IServer {
 
     @Override
     public void start() throws Exception {
-        if (ServerSettings.enableClusterStatusMonitoring()) {
+        if (properties.getMonitoring().getClusterStatusMonitoring().isEnable()) {
             // starting cluster status monitoring
             startClusterStatusMonitoring();
         }
 
-        if (ServerSettings.enableMetaschedulerJobScanning()) {
+        if (properties.getMetascheduler().isJobScanningEnable()) {
             // starting cluster status monitoring
             startMetaschedulerJobScanning();
         }
 
-        if (ServerSettings.enableDataAnalyzerJobScanning()) {
+        if (properties.getDataAnalyzer().isJobScanningEnable()) {
             // starting metadata analyzer
             startMetadataDataAnalyzer();
         }

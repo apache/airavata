@@ -20,13 +20,39 @@
 package org.apache.airavata.profile.user.core.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProfileCatalogDBInitConfig implements DBInitConfig {
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     @Override
-    public JDBCConfig getJDBCConfig() {
-        return new UserProfileCatalogJDBCConfig();
+    public String getDriver() {
+        return properties.getDatabase().getProfileService().getJdbcDriver();
+    }
+
+    @Override
+    public String getUrl() {
+        return properties.getDatabase().getProfileService().getJdbcUrl();
+    }
+
+    @Override
+    public String getUser() {
+        return properties.getDatabase().getProfileService().getJdbcUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return properties.getDatabase().getProfileService().getJdbcPassword();
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return properties.getDatabase().getProfileService().getValidationQuery();
     }
 
     @Override

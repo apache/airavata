@@ -146,8 +146,7 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     }
 
     public ProcessModel getProcess(String processId) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.get(processId);
+        return get(processId);
     }
 
     public String addProcessResourceSchedule(
@@ -171,15 +170,13 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     }
 
     public List<ProcessModel> getProcessList(String fieldName, Object value) throws RegistryException {
-        ProcessRepository processRepository = new ProcessRepository();
         List<ProcessModel> processModelList;
 
         if (fieldName.equals(DBConstants.Process.EXPERIMENT_ID)) {
             logger.debug("Search criteria is ExperimentId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Process.EXPERIMENT_ID, value);
-            processModelList =
-                    processRepository.select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
+            processModelList = select(QueryConstants.GET_PROCESS_FOR_EXPERIMENT_ID, -1, 0, queryParameters);
         } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
@@ -206,18 +203,16 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     }
 
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
-        ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
+        return select(QueryConstants.GET_ALL_PROCESSES, limit, offset, new HashMap<>());
     }
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {
-        ProcessRepository processRepository = new ProcessRepository();
         Map<String, Double> timeDistributions = new HashMap<>();
-        List<Object> orchTimeList = processRepository.selectWithNativeQuery(
+        List<Object> orchTimeList = selectWithNativeQuery(
                 QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
-        List<Object> queueingTimeList = processRepository.selectWithNativeQuery(
+        List<Object> queueingTimeList = selectWithNativeQuery(
                 QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
-        List<Object> helixTimeList = processRepository.selectWithNativeQuery(
+        List<Object> helixTimeList = selectWithNativeQuery(
                 QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
         if (orchTimeList.size() > 0 && orchTimeList.get(0) != null) {
             timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal) orchTimeList.get(0)).doubleValue());

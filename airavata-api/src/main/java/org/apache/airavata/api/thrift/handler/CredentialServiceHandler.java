@@ -21,7 +21,6 @@ package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
@@ -35,12 +34,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CredentialServiceHandler implements org.apache.airavata.credential.cpi.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
 
-    public CredentialServiceHandler() {
-    }
+    public CredentialServiceHandler() {}
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {

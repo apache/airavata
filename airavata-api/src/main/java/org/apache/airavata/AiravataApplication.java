@@ -19,60 +19,66 @@
 */
 package org.apache.airavata;
 
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Spring Boot application entry point for Airavata API.
- * This class initializes the Spring application context and enables
+ *
+ * <p>This class initializes the Spring application context and enables
  * dependency injection for services, repositories, and entities.
- * All services (Thrift servers, workflow managers, helix controllers, etc.)
- * are started automatically via BackgroundServicesLauncher and ThriftAPI integration.
+ *
+ * <p>Startup sequence:
+ * <ol>
+ *   <li>Load and merge application settings from properties files and command line args</li>
+ *   <li>Initialize Spring Boot application context</li>
+ *   <li>Background services are started via {@link org.apache.airavata.config.BackgroundServicesLauncher}
+ *       (Order 1-7): Helix Controller, Global Participant, Workflow Managers, Monitors</li>
+ *   <li>Thrift servers are started via {@link org.apache.airavata.config.ThriftServerLauncher}
+ *       (Order 10): API Server, Registry Server, Credential Store, etc.</li>
+ * </ol>
+ *
+ * <p>All services run in daemon threads and the main thread is kept alive to prevent
+ * the application from exiting.
  */
 @SpringBootApplication
 @EnableTransactionManagement
-@ComponentScan(basePackages = {
-    "org.apache.airavata.service",
-    "org.apache.airavata.registry.core.repositories",
-    "org.apache.airavata.profile",
-    "org.apache.airavata.sharing.db.repositories",
-    "org.apache.airavata.config",
-    "org.apache.airavata.api.thrift"
-})
-@EntityScan(basePackages = {
-    "org.apache.airavata.registry.core.entities",
-    "org.apache.airavata.profile.commons",
-    "org.apache.airavata.sharing.db.entities"
-})
+@Import(AiravataPropertiesConfiguration.class)
+@ComponentScan(
+        basePackages = {
+            "org.apache.airavata.service",
+            "org.apache.airavata.registry.core.repositories",
+            "org.apache.airavata.profile",
+            "org.apache.airavata.sharing.db.repositories",
+            "org.apache.airavata.config",
+            "org.apache.airavata.api.thrift"
+        })
+@EntityScan(
+        basePackages = {
+            "org.apache.airavata.registry.core.entities",
+            "org.apache.airavata.profile.commons",
+            "org.apache.airavata.sharing.db.entities"
+        })
 public class AiravataApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataApplication.class);
 
     public static void main(String[] args) {
-        // Ensure properties are loaded before Spring context starts
-        try {
-            // Merge command line args into settings
-            ServerSettings.mergeSettingsCommandLineArgs(args);
-            // Trigger static initialization of ApplicationSettings
-            ApplicationSettings.getSetting("servers", "all");
-            logger.info("Airavata properties loaded successfully");
-        } catch (Exception e) {
-            logger.warn("Failed to pre-load properties, will rely on ApplicationSettings static initialization", e);
-        }
-        
+        logger.info("Starting Airavata Spring Boot application...");
+        // Spring Boot will automatically load properties via AiravataPropertiesConfiguration
+        // Command line arguments are automatically merged by Spring Boot
+
         // Start Spring Boot application - this will initialize all beans and run CommandLineRunners
         SpringApplication app = new SpringApplication(AiravataApplication.class);
         // Don't exit immediately - keep running for background services
         app.setRegisterShutdownHook(true);
         app.run(args);
     }
-
 }
-

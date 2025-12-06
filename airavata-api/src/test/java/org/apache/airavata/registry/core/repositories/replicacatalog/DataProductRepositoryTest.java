@@ -49,7 +49,12 @@ public class DataProductRepositoryTest extends TestBase {
 
     public void setUp() throws Exception {
         super.setUp();
-        dataProductRepository = new DataProductRepository();
+        // Handle circular dependency: create DataProductRepository with a temporary DataReplicaLocationRepository,
+        // then create a proper DataReplicaLocationRepository with the DataProductRepository
+        // Note: This creates a circular reference but both repositories will work for the test
+        DataProductRepository tempProductRepo = new DataProductRepository(null);
+        DataReplicaLocationRepository tempReplicaRepo = new DataReplicaLocationRepository(tempProductRepo);
+        dataProductRepository = new DataProductRepository(tempReplicaRepo);
     }
 
     @Test

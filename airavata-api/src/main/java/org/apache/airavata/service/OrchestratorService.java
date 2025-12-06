@@ -25,12 +25,11 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -92,6 +91,10 @@ public class OrchestratorService {
 
     @Autowired
     private OrchestratorRegistryService orchestratorRegistryService;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
     private SimpleOrchestratorImpl orchestrator;
     private CuratorFramework curatorClient;
     private Publisher publisher;
@@ -505,10 +508,9 @@ public class OrchestratorService {
         HostScheduler hostScheduler;
         try {
             var schedulerClass =
-                    Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+                    Class.forName(properties.getOther().getHostScheduler()).asSubclass(HostScheduler.class);
             hostScheduler = schedulerClass.getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException
-                | ApplicationSettingsException
                 | NoSuchMethodException
                 | InstantiationException
                 | IllegalAccessException
@@ -884,8 +886,8 @@ public class OrchestratorService {
         }
     }
 
-    private void startCurator() throws ApplicationSettingsException {
-        String connectionSting = ServerSettings.getZookeeperConnection();
+    private void startCurator() {
+        String connectionSting = properties.getZookeeper().getServerConnection();
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
         curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
         curatorClient.start();
@@ -893,7 +895,7 @@ public class OrchestratorService {
 
     private Subscriber getExperimentSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+        routingKeys.add(properties.getRabbitMQ().getExperimentLaunchQueueName());
         return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
     }
 

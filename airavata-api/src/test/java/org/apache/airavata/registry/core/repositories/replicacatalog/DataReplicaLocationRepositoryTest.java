@@ -43,8 +43,12 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
 
     public DataReplicaLocationRepositoryTest() {
         super(Database.REPLICA_CATALOG);
-        dataProductRepository = new DataProductRepository();
-        dataReplicaLocationRepository = new DataReplicaLocationRepository();
+        // Handle circular dependency: create DataProductRepository with a temporary DataReplicaLocationRepository,
+        // then create DataReplicaLocationRepository with the DataProductRepository
+        // Both will have proper references to each other
+        DataReplicaLocationRepository tempReplicaRepo = new DataReplicaLocationRepository(null);
+        dataProductRepository = new DataProductRepository(tempReplicaRepo);
+        dataReplicaLocationRepository = new DataReplicaLocationRepository(dataProductRepository);
     }
 
     @Test

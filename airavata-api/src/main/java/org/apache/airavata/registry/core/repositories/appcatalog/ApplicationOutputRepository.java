@@ -18,11 +18,11 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class ApplicationOutputRepository

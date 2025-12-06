@@ -36,8 +36,12 @@ import org.springframework.stereotype.Repository;
 public class TaskErrorRepository extends ExpCatAbstractRepository<ErrorModel, TaskErrorEntity, TaskErrorPK> {
     private static final Logger logger = LoggerFactory.getLogger(TaskErrorRepository.class);
 
-    public TaskErrorRepository() {
+    private final TaskRepository taskRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public TaskErrorRepository(TaskRepository taskRepository) {
         super(ErrorModel.class, TaskErrorEntity.class);
+        this.taskRepository = taskRepository;
     }
 
     protected String saveTaskError(ErrorModel error, String taskId) throws RegistryException {
@@ -68,7 +72,6 @@ public class TaskErrorRepository extends ExpCatAbstractRepository<ErrorModel, Ta
     }
 
     public List<ErrorModel> getTaskError(String taskId) throws RegistryException {
-        TaskRepository taskRepository = new TaskRepository();
         TaskModel taskModel = taskRepository.getTask(taskId);
         return taskModel.getTaskErrors();
     }

@@ -18,13 +18,13 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfaceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfacePK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class DataMovementRepository

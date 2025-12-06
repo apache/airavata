@@ -18,10 +18,10 @@
 * under the License.
 */
 package org.apache.airavata.registry.core.repositories.appcatalog;
-import org.springframework.stereotype.Repository;
 
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.registry.core.entities.appcatalog.GatewayGroupsEntity;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class GatewayGroupsRepository extends AppCatAbstractRepository<GatewayGroups, GatewayGroupsEntity, String> {

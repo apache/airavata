@@ -78,7 +78,33 @@ public class TestBase {
     }
 
     private JDBCConfig getDatabaseJDBCConfig(Database database) {
-        return getDBInitConfig(database).getJDBCConfig();
+        DBInitConfig dbInitConfig = getDBInitConfig(database);
+        return new JDBCConfig() {
+            @Override
+            public String getURL() {
+                return dbInitConfig.getUrl();
+            }
+
+            @Override
+            public String getDriver() {
+                return dbInitConfig.getDriver();
+            }
+
+            @Override
+            public String getUser() {
+                return dbInitConfig.getUser();
+            }
+
+            @Override
+            public String getPassword() {
+                return dbInitConfig.getPassword();
+            }
+
+            @Override
+            public String getValidationQuery() {
+                return dbInitConfig.getValidationQuery();
+            }
+        };
     }
 
     private DBInitConfig getDBInitConfig(Database database) {

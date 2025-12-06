@@ -11,16 +11,21 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations
-# under the License.
+# software distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+# OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and
+# limitations under the License.
+
+# This script starts the Airavata Spring Boot application which automatically
+# launches all services (Thrift servers, workflow managers, helix controllers,
+# monitors, etc.) internally. Individual service scripts are no longer needed.
+# The application starts in "api-orch" mode by default.
 
 . $(dirname $0)/setenv.sh
 
-SERVICE_NAME="participant"
-MAIN_CLASS="org.apache.airavata.helix.impl.participant.GlobalParticipant"
+SERVICE_NAME="airavata"
+MAIN_CLASS="org.apache.airavata.AiravataApplication"
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 
 run_service "$SERVICE_NAME" "$MAIN_CLASS" "$JAVA_OPTS" "$@"
+

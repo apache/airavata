@@ -20,13 +20,9 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.sharing.db.utils.SharingRegistryDBInitConfig;
 import org.apache.airavata.sharing.models.*;
 import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.service.cpi.sharing_cpiConstants;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +34,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public static String OWNER_PERMISSION_NAME =
             org.apache.airavata.service.SharingRegistryService.OWNER_PERMISSION_NAME;
 
-    public SharingRegistryServerHandler() {
-    }
+    public SharingRegistryServerHandler() {}
 
     @Override
     public String getAPIVersion() {

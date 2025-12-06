@@ -34,7 +34,6 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
