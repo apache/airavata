@@ -33,12 +33,12 @@ import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.commons.entities.user.UserProfileEntity;
-import org.apache.airavata.profile.commons.repositories.user.UserProfileRepository;
-import org.apache.airavata.profile.commons.utils.JPAUtils;
-import org.apache.airavata.profile.commons.utils.ObjectMapperSingleton;
+import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.profile.utils.JPAUtils;
+import org.apache.airavata.profile.utils.ObjectMapperSingleton;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.SecurityManagerFactory;
@@ -357,5 +357,14 @@ public class UserProfileService {
             return true;
         }
         return false;
+    }
+
+    public UserProfile getUserProfileByAiravataInternalUserId(String airavataInternalUserId) {
+        Optional<UserProfileEntity> entityOpt = userProfileRepository.findById(airavataInternalUserId);
+        if (entityOpt.isEmpty()) {
+            return null;
+        }
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entityOpt.get(), UserProfile.class);
     }
 }

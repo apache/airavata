@@ -69,10 +69,6 @@ import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
-import org.apache.airavata.registry.repositories.appcatalog.ParserInputRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ParserOutputRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ParserRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ParsingTemplateRepository;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.apache.airavata.registry.services.ComputeResourceService;
@@ -144,19 +140,7 @@ public class RegistryService {
     @Autowired
     private ComputeResourceService computeResourceService;
 
-    // Note: Most repository fields removed - all access now through service classes
-    // These repositories are still used directly and need service classes created:
-    @Autowired
-    private ParserRepository parserRepository;
-
-    @Autowired
-    private ParserInputRepository parserInputRepository;
-
-    @Autowired
-    private ParserOutputRepository parserOutputRepository;
-
-    @Autowired
-    private ParsingTemplateRepository parsingTemplateRepository;
+    // Note: All repository access now through service classes
 
     @Autowired
     private ExperimentService experimentService;
@@ -681,7 +665,7 @@ public class RegistryService {
 
     public void updateJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
         try {
-            var jobPK = new org.apache.airavata.registry.core.entities.expcatalog.JobPK();
+            var jobPK = new JobPK();
             jobPK.setTaskId(taskId);
             jobPK.setJobId(jobId);
             jobStatusService.updateJobStatus(jobStatus, jobPK);
@@ -3666,10 +3650,10 @@ public class RegistryService {
     public void removeParser(String parserId, String gatewayId) throws RegistryServiceException {
         try {
             boolean exists = parserService.isExists(parserId);
-            if (!exists || gatewayId.equals(parserService.get(parserId).getGatewayId())) {
+            if (!exists || !gatewayId.equals(parserService.get(parserId).getGatewayId())) {
                 throw new RegistryException("Parser " + parserId + " does not exist");
             }
-            parserRepository.deleteById(parserId);
+            parserService.delete(parserId);
         } catch (RegistryException e) {
             String message =
                     String.format("Error while removing parser: parserId=%s, gatewayId=%s", parserId, gatewayId);
@@ -3716,7 +3700,7 @@ public class RegistryService {
                 throw new RegistryException(
                         "ParserInput " + parserInputId + " does not belong to gateway " + gatewayId);
             }
-            parserInputRepository.deleteById(parserInputId);
+            parserInputService.delete(parserInputId);
         } catch (RegistryException e) {
             String message = String.format(
                     "Error in removeParserInput: parserInputId=%s, gatewayId=%s", parserInputId, gatewayId);
@@ -3763,7 +3747,7 @@ public class RegistryService {
                 throw new RegistryException(
                         "ParserOutput " + parserOutputId + " does not belong to gateway " + gatewayId);
             }
-            parserOutputRepository.deleteById(parserOutputId);
+            parserOutputService.delete(parserOutputId);
         } catch (RegistryException e) {
             String message = String.format(
                     "Error in removeParserOutput: parserOutputId=%s, gatewayId=%s", parserOutputId, gatewayId);
@@ -3802,10 +3786,10 @@ public class RegistryService {
         try {
             boolean exists = parsingTemplateService.isExists(templateId);
             if (!exists
-                    || gatewayId.equals(parsingTemplateService.get(templateId).getGatewayId())) {
+                    || !gatewayId.equals(parsingTemplateService.get(templateId).getGatewayId())) {
                 throw new RegistryException("Parsing template " + templateId + " does not exist");
             }
-            parsingTemplateRepository.deleteById(templateId);
+            parsingTemplateService.delete(templateId);
         } catch (RegistryException e) {
             String message =
                     String.format("Error in removeParsingTemplate: templateId=%s, gatewayId=%s", templateId, gatewayId);

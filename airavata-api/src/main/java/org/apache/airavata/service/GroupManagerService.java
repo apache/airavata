@@ -28,7 +28,6 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.commons.repositories.user.UserProfileRepository;
 import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.sharing.models.DuplicateEntryException;
 import org.apache.airavata.sharing.models.GroupCardinality;
@@ -46,7 +45,7 @@ public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 
     @Autowired
-    private UserProfileRepository userProfileRepository;
+    private UserProfileService userProfileService;
 
     @Autowired
     private SharingRegistryService sharingService;
@@ -260,7 +259,11 @@ public class GroupManagerService {
                 User user = new User();
                 user.setDomainId(domainId);
                 user.setUserId(userId);
-                UserProfile userProfile = userProfileRepository.get(userId);
+                // userId is airavataInternalUserId (format: "userId@gatewayId")
+                UserProfile userProfile = userProfileService.getUserProfileByAiravataInternalUserId(userId);
+                if (userProfile == null) {
+                    throw new SharingRegistryException("User profile not found for: " + userId);
+                }
                 user.setUserName(userProfile.getUserId());
                 user.setCreatedTime(userProfile.getCreationTime());
                 user.setEmail(

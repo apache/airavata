@@ -625,43 +625,48 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
             public void onNext(AgentMessage request) {
 
                 switch (request.getMessageCase()) {
-                    case AGENTPING -> {
+                    case AGENTPING:
                         handleAgentPing(request.getAgentPing(), streamId);
-                    }
-                    case COMMANDEXECUTIONRESPONSE -> {
+                        break;
+                    case COMMANDEXECUTIONRESPONSE:
                         handleCommandExecutionResponse(request.getCommandExecutionResponse());
-                    }
-                    case JUPYTEREXECUTIONRESPONSE -> {
+                        break;
+                    case JUPYTEREXECUTIONRESPONSE:
                         handleJupyterExecutionResponse(request.getJupyterExecutionResponse());
-                    }
-                    case KERNELRESTARTRESPONSE -> {
+                        break;
+                    case KERNELRESTARTRESPONSE:
                         handleKernelRestartResponse(request.getKernelRestartResponse());
-                    }
-                    case PYTHONEXECUTIONRESPONSE -> {
+                        break;
+                    case PYTHONEXECUTIONRESPONSE:
                         handlePythonExecutionResponse(request.getPythonExecutionResponse());
-                    }
-                    case ENVSETUPRESPONSE -> {
+                        break;
+                    case ENVSETUPRESPONSE:
                         handleEnvSetupResponse(request.getEnvSetupResponse());
-                    }
-                    case TUNNELCREATIONRESPONSE -> {
+                        break;
+                    case TUNNELCREATIONRESPONSE:
                         handleTunnelCreationResponse(request.getTunnelCreationResponse());
-                    }
-                    case TUNNELTERMINATIONRESPONSE -> {}
-
-                    case ASYNCCOMMANDEXECUTIONRESPONSE -> {
+                        break;
+                    case TUNNELTERMINATIONRESPONSE:
+                        // Unhandled or intentionally ignored
+                        break;
+                    case ASYNCCOMMANDEXECUTIONRESPONSE:
                         handleAsyncCommandExecutionResponse(request.getAsyncCommandExecutionResponse());
-                    }
-
-                    case ASYNCCOMMANDLISTRESPONSE -> {
+                        break;
+                    case ASYNCCOMMANDLISTRESPONSE:
                         handleAsyncCommandListResponse(request.getAsyncCommandListResponse());
-                    }
-
-                    case ASYNCCOMMANDTERMINATERESPONSE -> {
+                        break;
+                    case ASYNCCOMMANDTERMINATERESPONSE:
                         handleAsyncCommandTerminateResponse(request.getAsyncCommandTerminateResponse());
-                    }
+                        break;
                     case MESSAGE_NOT_SET:
+                        // Unhandled message types - log and ignore
+                        break;
                     case CREATEAGENTRESPONSE:
+                        // Unhandled message types - log and ignore
+                        break;
                     case TERMINATEAGENTRESPONSE:
+                        // Unhandled message types - log and ignore
+                        break;
                     default:
                         // Unhandled message types - log and ignore
                         break;

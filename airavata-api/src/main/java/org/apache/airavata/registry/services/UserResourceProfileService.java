@@ -26,9 +26,11 @@ import java.util.List;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferencePK;
 import org.apache.airavata.registry.entities.appcatalog.UserResourceProfileEntity;
 import org.apache.airavata.registry.entities.appcatalog.UserResourceProfilePK;
+import org.apache.airavata.registry.entities.appcatalog.UserStoragePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.UserStoragePreferencePK;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.UserComputeResourcePreferenceRepository;
@@ -153,7 +155,7 @@ public class UserResourceProfileService {
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayId)
             throws AppCatalogException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity> entities =
+        List<UserComputeResourcePreferenceEntity> entities =
                 userComputeResourcePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
         return entities.stream()
                 .map(entity -> mapper.map(entity, UserComputeResourcePreference.class))
@@ -163,7 +165,7 @@ public class UserResourceProfileService {
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId)
             throws AppCatalogException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity> entities =
+        List<UserStoragePreferenceEntity> entities =
                 userStoragePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
         return entities.stream()
                 .map(entity -> mapper.map(entity, UserStoragePreference.class))

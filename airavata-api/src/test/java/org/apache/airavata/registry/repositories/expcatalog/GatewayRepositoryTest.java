@@ -29,22 +29,29 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.GatewayService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class GatewayRepositoryTest extends TestBase {
 
     private String testGatewayId = "testGateway";
-    GatewayRepository gatewayRepository;
+
+    @Autowired
+    GatewayService gatewayService;
 
     public GatewayRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
     }
 
     @Test
     public void gatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
         // Verify that default Gateway is already created
-        List<Gateway> defaultGatewayList = gatewayRepository.getAllGateways();
+        List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
         assertEquals(
                 ServerSettings.getDefaultUserGateway(),
@@ -58,22 +65,21 @@ public class GatewayRepositoryTest extends TestBase {
         gateway.setOauthClientId("pga");
         gateway.setOauthClientSecret("9580cafa-7c1e-434f-bfe9-595f63907a43");
 
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
         assertEquals(testGatewayId, gatewayId);
 
         gateway.setGatewayAdminFirstName("ABC");
-        gatewayRepository.updateGateway(testGatewayId, gateway);
+        gatewayService.updateGateway(testGatewayId, gateway);
 
-        Gateway retrievedGateway = gatewayRepository.getGateway(gatewayId);
+        Gateway retrievedGateway = gatewayService.getGateway(gatewayId);
         assertEquals(gateway.getGatewayAdminFirstName(), retrievedGateway.getGatewayAdminFirstName());
         assertEquals(GatewayApprovalStatus.APPROVED, gateway.getGatewayApprovalStatus());
         assertEquals(gateway.getOauthClientId(), retrievedGateway.getOauthClientId());
         assertEquals(gateway.getOauthClientSecret(), retrievedGateway.getOauthClientSecret());
 
-        assertEquals(
-                2, gatewayRepository.getAllGateways().size(), "should be 2 gateways (1 default plus 1 just added)");
+        assertEquals(2, gatewayService.getAllGateways().size(), "should be 2 gateways (1 default plus 1 just added)");
 
-        gatewayRepository.removeGateway(gatewayId);
-        assertFalse(gatewayRepository.isGatewayExist(gatewayId));
+        gatewayService.removeGateway(gatewayId);
+        assertFalse(gatewayService.isGatewayExist(gatewayId));
     }
 }

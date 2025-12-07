@@ -33,7 +33,7 @@ import org.apache.airavata.registry.cpi.ApplicationDeployment;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
     private ApplicationDeploymentRepository applicationDeploymentRepository;
 
     @Autowired
-    private ComputeResourceRepository computeResourceRepository;
+    private ComputeResourceService computeResourceService;
 
     @Override
     public String addApplicationDeployment(
@@ -231,7 +231,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
             logger.debug(
                     "If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
             ComputeResourceDescription computeResourceDescription =
-                    computeResourceRepository.getComputeResource(applicationDeploymentDescription.getComputeHostId());
+                    computeResourceService.getComputeResource(applicationDeploymentDescription.getComputeHostId());
             applicationDeploymentDescription.setAppDeploymentId(
                     computeResourceDescription.getHostName() + "_" + applicationDeploymentDescription.getAppModuleId());
         }

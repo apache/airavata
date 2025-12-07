@@ -53,4 +53,8 @@ public class ParserOutputService {
         ParserOutputEntity saved = parserOutputRepository.save(entity);
         return mapper.map(saved, ParserOutput.class);
     }
+
+    public void delete(String parserOutputId) throws RegistryException {
+        parserOutputRepository.deleteById(parserOutputId);
+    }
 }

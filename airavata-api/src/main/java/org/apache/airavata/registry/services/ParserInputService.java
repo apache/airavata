@@ -52,4 +52,8 @@ public class ParserInputService {
         ParserInputEntity saved = parserInputRepository.save(entity);
         return mapper.map(saved, ParserInput.class);
     }
+
+    public void delete(String parserInputId) throws RegistryException {
+        parserInputRepository.deleteById(parserInputId);
+    }
 }

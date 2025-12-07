@@ -207,8 +207,7 @@ public class JpaConfig {
     // Spring Data JPA Repository Configuration for each persistence unit
     @Configuration
     @EnableJpaRepositories(
-            basePackages =
-                    "org.apache.airavata.profile.commons.repositories.user,org.apache.airavata.profile.commons.repositories.tenant",
+            basePackages = "org.apache.airavata.profile.repositories",
             entityManagerFactoryRef = "profileServiceEntityManagerFactory",
             transactionManagerRef = "profileServiceTransactionManager")
     static class ProfileServiceJpaRepositoriesConfig {}

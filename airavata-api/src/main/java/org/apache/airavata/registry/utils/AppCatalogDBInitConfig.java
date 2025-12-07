@@ -22,7 +22,7 @@ package org.apache.airavata.registry.utils;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.registry.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.services.GwyResourceProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +31,9 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Autowired
     private AiravataServerProperties properties;
+
+    @Autowired
+    private GwyResourceProfileService gwyResourceProfileService;
 
     private String dbInitScriptPrefix = "database_scripts/appcatalog";
 
@@ -76,13 +79,11 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public void postInit() {
-
-        GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(properties.getDefaultRegistry().getGateway());
-            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
-                gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
+            if (!gwyResourceProfileService.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
+                gwyResourceProfileService.addGatewayResourceProfile(gatewayResourceProfile);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to create default gateway for app catalog", e);

@@ -61,4 +61,8 @@ public class ParserService {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Parser.class)).collect(Collectors.toList());
     }
+
+    public void delete(String parserId) throws RegistryException {
+        parserRepository.deleteById(parserId);
+    }
 }

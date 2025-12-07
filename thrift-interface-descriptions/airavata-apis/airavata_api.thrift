@@ -3621,7 +3621,7 @@ service Airavata extends base_api.BaseAPI {
   */
  storage_resource_model.StorageVolumeInfo getResourceStorageInfo(1: required security_model.AuthzToken authzToken,
                                                                  2: required string resourceId,
-                                                                 3: optional string location)
+                                                                 3: required string location)
                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                          2: airavata_errors.AiravataClientException ace,
                                                                          3: airavata_errors.AiravataSystemException ase,
@@ -3637,7 +3637,7 @@ service Airavata extends base_api.BaseAPI {
   */
  storage_resource_model.StorageDirectoryInfo getStorageDirectoryInfo(1: required security_model.AuthzToken authzToken,
                                                                  2: required string resourceId,
-                                                                 3: optional string location)
+                                                                 3: required string location)
                                                                  throws (1: airavata_errors.InvalidRequestException ire,
                                                                          2: airavata_errors.AiravataClientException ace,
                                                                          3: airavata_errors.AiravataSystemException ase,

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.service;
 
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -69,4 +69,8 @@ public class ParsingTemplateService {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, ParsingTemplate.class)).collect(Collectors.toList());
     }
+
+    public void delete(String templateId) throws RegistryException {
+        parsingTemplateRepository.deleteById(templateId);
+    }
 }
