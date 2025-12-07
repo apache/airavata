@@ -1,0 +1,221 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.registry.services;
+
+import com.github.dozermapper.core.Mapper;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
+import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
+import org.apache.airavata.registry.utils.DBConstants;
+import org.apache.airavata.registry.utils.ObjectMapperSingleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class ExperimentService {
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
+
+    @Autowired
+    private ExperimentRepository experimentRepository;
+
+    @Autowired
+    private ProcessService processService;
+
+    public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
+        ExperimentStatus experimentStatus = new ExperimentStatus();
+        experimentStatus.setState(ExperimentState.CREATED);
+        experimentStatus.setTimeOfStateChange(
+                AiravataUtils.getCurrentTimestamp().getTime());
+        experimentModel.addToExperimentStatus(experimentStatus);
+        String expName = experimentModel.getExperimentName();
+        // This is to avoid overflow of experiment id size. Total experiment id length is <= 50 + UUID
+        experimentModel.setExperimentId(AiravataUtils.getId(expName.substring(0, Math.min(expName.length(), 50))));
+
+        return saveExperimentModelData(experimentModel);
+    }
+
+    public void updateExperiment(ExperimentModel updatedExperimentModel, String experimentId) throws RegistryException {
+        saveExperimentModelData(updatedExperimentModel);
+    }
+
+    public ExperimentModel getExperiment(String experimentId) throws RegistryException {
+        ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
+        if (entity == null) return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, ExperimentModel.class);
+    }
+
+    public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId)
+            throws RegistryException {
+        ExperimentModel experimentModel = getExperiment(experimentId);
+        experimentModel.setUserConfigurationData(userConfigurationDataModel);
+        updateExperiment(experimentModel, experimentId);
+        return experimentId;
+    }
+
+    public String updateUserConfigurationData(
+            UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId)
+            throws RegistryException {
+        return addUserConfigurationData(updatedUserConfigurationDataModel, experimentId);
+    }
+
+    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
+        ExperimentModel experimentModel = getExperiment(experimentId);
+        return experimentModel.getUserConfigurationData();
+    }
+
+    public List<ExperimentModel> getExperimentList(
+            String gatewayId,
+            String fieldName,
+            Object value,
+            int limit,
+            int offset,
+            Object orderByIdentifier,
+            ResultOrderType resultOrderType)
+            throws RegistryException {
+        List<ExperimentModel> experimentModelList;
+
+        if (fieldName.equals(DBConstants.Experiment.USER_NAME)) {
+            logger.debug("Search criteria is Username");
+            List<ExperimentEntity> entities =
+                    experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            experimentModelList = new ArrayList<>();
+            entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
+        } else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
+            logger.debug("Search criteria is ProjectId");
+            List<ExperimentEntity> entities =
+                    experimentRepository.findByGatewayIdAndProjectId(gatewayId, (String) value);
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            experimentModelList = new ArrayList<>();
+            entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
+        } else {
+            logger.error("Unsupported field name for Experiment module.");
+            throw new IllegalArgumentException("Unsupported field name for Experiment module.");
+        }
+
+        return experimentModelList;
+    }
+
+    public boolean isExperimentExist(String experimentId) throws RegistryException {
+        return experimentRepository.existsById(experimentId);
+    }
+
+    public void removeExperiment(String experimentId) throws RegistryException {
+        experimentRepository.deleteById(experimentId);
+    }
+
+    private String saveExperimentModelData(ExperimentModel experimentModel) throws RegistryException {
+        ExperimentEntity experimentEntity = saveExperiment(experimentModel);
+        return experimentEntity.getExperimentId();
+    }
+
+    private ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws RegistryException {
+        String experimentId = experimentModel.getExperimentId();
+
+        if (experimentModel.getExperimentStatus() != null) {
+            logger.debug("Populating the status id of ExperimentStatus objects for the Experiment");
+            experimentModel.getExperimentStatus().forEach(experimentStatusEntity -> {
+                if (experimentStatusEntity.getStatusId() == null) {
+                    experimentStatusEntity.setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"));
+                }
+            });
+        }
+
+        if (experimentModel.getProcesses() != null) {
+            logger.debug("Populating the Process objects' Experiment ID for the Experiment");
+            experimentModel.getProcesses().forEach(processModel -> processModel.setExperimentId(experimentId));
+        }
+
+        if (!isExperimentExist(experimentId)) {
+            logger.debug("Populating creation time if it doesn't already exist");
+            experimentModel.setCreationTime(System.currentTimeMillis());
+        }
+
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
+
+        if (experimentEntity.getUserConfigurationData() != null) {
+            logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");
+            experimentEntity.getUserConfigurationData().setExperimentId(experimentId);
+        }
+
+        if (experimentEntity.getUserConfigurationData() != null
+                && experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null) {
+            logger.debug(
+                    "Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
+            for (ComputationalResourceSchedulingEntity entity :
+                    experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
+                entity.setExperimentId(experimentId);
+            }
+        }
+
+        if (experimentEntity.getExperimentInputs() != null) {
+            logger.debug("Populating the Primary Key of ExperimentInput objects for the Experiment");
+            experimentEntity
+                    .getExperimentInputs()
+                    .forEach(experimentInputEntity -> experimentInputEntity.setExperimentId(experimentId));
+        }
+
+        if (experimentEntity.getExperimentOutputs() != null) {
+            logger.debug("Populating the Primary Key of ExperimentOutput objects for the Experiment");
+            experimentEntity
+                    .getExperimentOutputs()
+                    .forEach(experimentOutputEntity -> experimentOutputEntity.setExperimentId(experimentId));
+        }
+
+        if (experimentEntity.getExperimentStatus() != null) {
+            logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
+            experimentEntity
+                    .getExperimentStatus()
+                    .forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
+        }
+
+        if (experimentEntity.getErrors() != null) {
+            logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
+            experimentEntity
+                    .getErrors()
+                    .forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
+        }
+
+        if (experimentEntity.getProcesses() != null) {
+            logger.debug("Populating the Process objects for the Experiment");
+            experimentEntity.getProcesses().forEach(processEntity -> {
+                processEntity.setExperimentId(experimentId);
+                processService.populateParentIds(processEntity);
+            });
+        }
+
+        return experimentRepository.save(experimentEntity);
+    }
+}

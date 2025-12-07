@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.registry.exceptions.AppCatalogException;
 
 public interface ComputeResource {
     /**

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.cpi;
 
+import org.apache.airavata.registry.exceptions.RegistryException;
+
 public interface Registry {
     public ExperimentCatalog getExperimentCatalog() throws RegistryException;
 

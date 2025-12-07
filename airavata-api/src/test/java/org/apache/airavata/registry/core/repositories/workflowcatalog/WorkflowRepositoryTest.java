@@ -17,13 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+package org.apache.airavata.registry.repositories.workflowcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.airavata.model.workflow.*;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.WorkflowCatalogException;
+import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
+import org.apache.airavata.registry.repositories.common.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

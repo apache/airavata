@@ -21,6 +21,7 @@ package org.apache.airavata.registry.cpi;
 
 import java.util.List;
 import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 
 public interface DataProductInterface {
 

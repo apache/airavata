@@ -22,17 +22,54 @@ package org.apache.airavata.service;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import org.apache.airavata.sharing.db.entities.*;
-import org.apache.airavata.sharing.db.repositories.*;
-import org.apache.airavata.sharing.db.utils.DBConstants;
+import org.apache.airavata.sharing.entities.*;
 import org.apache.airavata.sharing.models.*;
+import org.apache.airavata.sharing.repositories.*;
+import org.apache.airavata.sharing.services.DomainService;
+import org.apache.airavata.sharing.services.EntityService;
+import org.apache.airavata.sharing.services.EntityTypeService;
+import org.apache.airavata.sharing.services.GroupAdminService;
+import org.apache.airavata.sharing.services.GroupMembershipService;
+import org.apache.airavata.sharing.services.PermissionTypeService;
+import org.apache.airavata.sharing.services.SharingService;
+import org.apache.airavata.sharing.services.UserGroupService;
+import org.apache.airavata.sharing.services.UserService;
+import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
+
+    @Autowired
+    private EntityService entityService;
+
+    @Autowired
+    private DomainService domainService;
+
+    @Autowired
+    private EntityTypeService entityTypeService;
+
+    @Autowired
+    private PermissionTypeService permissionTypeService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserGroupService userGroupService;
+
+    @Autowired
+    private GroupMembershipService groupMembershipService;
+
+    @Autowired
+    private SharingService sharingService;
+
+    @Autowired
+    private GroupAdminService groupAdminService;
 
     public static String OWNER_PERMISSION_NAME = "OWNER";
 
@@ -42,12 +79,12 @@ public class SharingRegistryService {
      */
     public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException {
         try {
-            if ((new DomainRepository()).get(domain.getDomainId()) != null)
+            if (domainService.get(domain.getDomainId()) != null)
                 throw new DuplicateEntryException("There exist domain with given domain id");
 
             domain.setCreatedTime(System.currentTimeMillis());
             domain.setUpdatedTime(System.currentTimeMillis());
-            (new DomainRepository()).create(domain);
+            domainService.create(domain);
 
             // create the global permission for the domain
             PermissionType permissionType = new PermissionType();
@@ -57,7 +94,7 @@ public class SharingRegistryService {
             permissionType.setDescription("GLOBAL permission to " + domain.getDomainId());
             permissionType.setCreatedTime(System.currentTimeMillis());
             permissionType.setUpdatedTime(System.currentTimeMillis());
-            (new PermissionTypeRepository()).create(permissionType);
+            permissionTypeService.create(permissionType);
 
             return domain.getDomainId();
         } catch (SharingRegistryException e) {
@@ -69,11 +106,11 @@ public class SharingRegistryService {
 
     public boolean updateDomain(Domain domain) throws SharingRegistryException {
         try {
-            Domain oldDomain = (new DomainRepository()).get(domain.getDomainId());
+            Domain oldDomain = domainService.get(domain.getDomainId());
             domain.setCreatedTime(oldDomain.getCreatedTime());
             domain.setUpdatedTime(System.currentTimeMillis());
             domain = getUpdatedObject(oldDomain, domain);
-            (new DomainRepository()).update(domain);
+            domainService.update(domain);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while updating domain: domainId=%s", domain.getDomainId());
@@ -84,7 +121,7 @@ public class SharingRegistryService {
 
     public boolean isDomainExists(String domainId) throws SharingRegistryException {
         try {
-            return (new DomainRepository()).isExists(domainId);
+            return domainService.isExists(domainId);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while checking if domain exists: domainId=%s", domainId);
             logger.error(message, e);
@@ -94,7 +131,7 @@ public class SharingRegistryService {
 
     public boolean deleteDomain(String domainId) throws SharingRegistryException {
         try {
-            (new DomainRepository()).delete(domainId);
+            domainService.delete(domainId);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while deleting domain: domainId=%s", domainId);
@@ -105,7 +142,7 @@ public class SharingRegistryService {
 
     public Domain getDomain(String domainId) throws SharingRegistryException {
         try {
-            return (new DomainRepository()).get(domainId);
+            return domainService.get(domainId);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while getting domain: domainId=%s", domainId);
             logger.error(message, e);
@@ -115,7 +152,7 @@ public class SharingRegistryService {
 
     public List<Domain> getDomains(int offset, int limit) throws SharingRegistryException {
         try {
-            return (new DomainRepository()).select(new HashMap<>(), offset, limit);
+            return domainService.getAll();
         } catch (SharingRegistryException e) {
             String message = String.format("Error while getting domains: offset=%d, limit=%d", offset, limit);
             logger.error(message, e);
@@ -132,12 +169,12 @@ public class SharingRegistryService {
             UserPK userPK = new UserPK();
             userPK.setUserId(user.getUserId());
             userPK.setDomainId(user.getDomainId());
-            if ((new UserRepository()).get(userPK) != null)
+            if (userService.get(userPK) != null)
                 throw new SharingRegistryException("There exist user with given user id");
 
             user.setCreatedTime(System.currentTimeMillis());
             user.setUpdatedTime(System.currentTimeMillis());
-            (new UserRepository()).create(user);
+            userService.create(user);
 
             UserGroup userGroup = new UserGroup();
             userGroup.setGroupId(user.getUserId());
@@ -147,9 +184,9 @@ public class SharingRegistryService {
             userGroup.setOwnerId(user.getUserId());
             userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
-            (new UserGroupRepository()).create(userGroup);
+            userGroupService.create(userGroup);
 
-            Domain domain = new DomainRepository().get(user.getDomainId());
+            Domain domain = domainService.get(user.getDomainId());
             if (domain.getInitialUserGroupId() != null) {
                 addUsersToGroup(
                         user.getDomainId(),
@@ -171,16 +208,16 @@ public class SharingRegistryService {
             UserPK userPK = new UserPK();
             userPK.setUserId(user.getUserId());
             userPK.setDomainId(user.getDomainId());
-            User oldUser = (new UserRepository()).get(userPK);
+            User oldUser = userService.get(userPK);
             user.setCreatedTime(oldUser.getCreatedTime());
             user.setUpdatedTime(System.currentTimeMillis());
             user = getUpdatedObject(oldUser, user);
-            (new UserRepository()).update(user);
+            userService.update(user);
 
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(user.getUserId());
             userGroupPK.setDomainId(user.getDomainId());
-            UserGroup userGroup = (new UserGroupRepository()).get(userGroupPK);
+            UserGroup userGroup = userGroupService.get(userGroupPK);
             userGroup.setName(user.getUserName());
             userGroup.setDescription("user " + user.getUserName() + " group");
             updateGroup(userGroup);
@@ -198,7 +235,7 @@ public class SharingRegistryService {
             UserPK userPK = new UserPK();
             userPK.setDomainId(domainId);
             userPK.setUserId(userId);
-            return (new UserRepository()).isExists(userPK);
+            return userService.isExists(userPK);
         } catch (SharingRegistryException e) {
             String message =
                     String.format("Error while checking if user exists: domainId=%s, userId=%s", domainId, userId);
@@ -212,12 +249,12 @@ public class SharingRegistryService {
             UserPK userPK = new UserPK();
             userPK.setUserId(userId);
             userPK.setDomainId(domainId);
-            (new UserRepository()).delete(userPK);
+            userService.delete(userPK);
 
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(userId);
             userGroupPK.setDomainId(domainId);
-            (new UserGroupRepository()).delete(userGroupPK);
+            userGroupService.delete(userGroupPK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while deleting user: domainId=%s, userId=%s", domainId, userId);
@@ -231,7 +268,7 @@ public class SharingRegistryService {
             UserPK userPK = new UserPK();
             userPK.setUserId(userId);
             userPK.setDomainId(domainId);
-            return (new UserRepository()).get(userPK);
+            return userService.get(userPK);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while getting user: domainId=%s, userId=%s", domainId, userId);
             logger.error(message, e);
@@ -243,7 +280,8 @@ public class SharingRegistryService {
         try {
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
-            return (new UserRepository()).select(filters, offset, limit);
+            // Use Criteria API for dynamic filtering - simplified for now
+            return userService.select(null, filters, offset, limit);
         } catch (SharingRegistryException e) {
             String message =
                     String.format("Error while getting users: domain=%s, offset=%d, limit=%d", domain, offset, limit);
@@ -261,7 +299,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(group.getGroupId());
             userGroupPK.setDomainId(group.getDomainId());
-            if ((new UserGroupRepository()).get(userGroupPK) != null)
+            if (userGroupService.get(userGroupPK) != null)
                 throw new SharingRegistryException("There exist group with given group id");
             // Client created groups are always of type MULTI_USER
             group.setGroupCardinality(GroupCardinality.MULTI_USER);
@@ -269,7 +307,7 @@ public class SharingRegistryService {
             group.setUpdatedTime(System.currentTimeMillis());
             // Add group admins once the group is created
             group.unsetGroupAdmins();
-            (new UserGroupRepository()).create(group);
+            userGroupService.create(group);
 
             addUsersToGroup(group.getDomainId(), Arrays.asList(group.getOwnerId()), group.getGroupId());
             return group.getGroupId();
@@ -287,7 +325,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(group.getGroupId());
             userGroupPK.setDomainId(group.getDomainId());
-            UserGroup oldGroup = (new UserGroupRepository()).get(userGroupPK);
+            UserGroup oldGroup = userGroupService.get(userGroupPK);
             group.setGroupCardinality(oldGroup.getGroupCardinality());
             group.setCreatedTime(oldGroup.getCreatedTime());
             group = getUpdatedObject(oldGroup, group);
@@ -295,7 +333,7 @@ public class SharingRegistryService {
             if (!group.getOwnerId().equals(oldGroup.getOwnerId()))
                 throw new SharingRegistryException("Group owner cannot be changed");
 
-            (new UserGroupRepository()).update(group);
+            userGroupService.update(group);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -310,7 +348,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setDomainId(domainId);
             userGroupPK.setGroupId(groupId);
-            return (new UserGroupRepository()).isExists(userGroupPK);
+            return userGroupService.isExists(userGroupPK);
         } catch (SharingRegistryException e) {
             String message =
                     String.format("Error while checking if group exists: domainId=%s, groupId=%s", domainId, groupId);
@@ -324,7 +362,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
-            (new UserGroupRepository()).delete(userGroupPK);
+            userGroupService.delete(userGroupPK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while deleting group: domainId=%s, groupId=%s", domainId, groupId);
@@ -338,7 +376,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
-            return (new UserGroupRepository()).get(userGroupPK);
+            return userGroupService.get(userGroupPK);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while getting group: domainId=%s, groupId=%s", domainId, groupId);
             logger.error(message, e);
@@ -353,7 +391,7 @@ public class SharingRegistryService {
             // Only return groups with MULTI_USER cardinality which is the only type of cardinality allowed for client
             // created groups
             filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
-            return (new UserGroupRepository()).select(filters, offset, limit);
+            return userGroupService.select(null, filters, offset, limit);
         } catch (SharingRegistryException e) {
             String message =
                     String.format("Error while getting groups: domain=%s, offset=%d, limit=%d", domain, offset, limit);
@@ -373,7 +411,7 @@ public class SharingRegistryService {
                 groupMembership.setDomainId(domainId);
                 groupMembership.setCreatedTime(System.currentTimeMillis());
                 groupMembership.setUpdatedTime(System.currentTimeMillis());
-                (new GroupMembershipRepository()).create(groupMembership);
+                groupMembershipService.create(groupMembership);
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -399,7 +437,7 @@ public class SharingRegistryService {
                 groupMembershipPK.setParentId(groupId);
                 groupMembershipPK.setChildId(userIds.get(i));
                 groupMembershipPK.setDomainId(domainId);
-                (new GroupMembershipRepository()).delete(groupMembershipPK);
+                groupMembershipService.delete(groupMembershipPK);
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -429,7 +467,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
-            UserGroup userGroup = (new UserGroupRepository()).get(userGroupPK);
+            UserGroup userGroup = userGroupService.get(userGroupPK);
             UserGroup newUserGroup = new UserGroup();
             newUserGroup.setUpdatedTime(System.currentTimeMillis());
             newUserGroup.setOwnerId(newOwnerId);
@@ -437,7 +475,7 @@ public class SharingRegistryService {
             newUserGroup.setCreatedTime(userGroup.getCreatedTime());
             newUserGroup = getUpdatedObject(userGroup, newUserGroup);
 
-            (new UserGroupRepository()).update(newUserGroup);
+            userGroupService.update(newUserGroup);
 
             return true;
         } catch (SharingRegistryException e) {
@@ -473,14 +511,14 @@ public class SharingRegistryService {
                 groupAdminPK.setAdminId(adminId);
                 groupAdminPK.setDomainId(domainId);
 
-                if ((new GroupAdminRepository()).get(groupAdminPK) != null)
+                if (groupAdminService.get(groupAdminPK) != null)
                     throw new DuplicateEntryException("User already an admin for the group");
 
                 GroupAdmin admin = new GroupAdmin();
                 admin.setAdminId(adminId);
                 admin.setDomainId(domainId);
                 admin.setGroupId(groupId);
-                (new GroupAdminRepository()).create(admin);
+                groupAdminService.create(admin);
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -499,7 +537,7 @@ public class SharingRegistryService {
                 groupAdminPK.setAdminId(adminId);
                 groupAdminPK.setDomainId(domainId);
                 groupAdminPK.setGroupId(groupId);
-                (new GroupAdminRepository()).delete(groupAdminPK);
+                groupAdminService.delete(groupAdminPK);
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -517,7 +555,7 @@ public class SharingRegistryService {
             groupAdminPK.setAdminId(adminId);
             groupAdminPK.setDomainId(domainId);
 
-            if ((new GroupAdminRepository()).get(groupAdminPK) != null) return true;
+            if (groupAdminService.get(groupAdminPK) != null) return true;
             return false;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -533,7 +571,7 @@ public class SharingRegistryService {
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
-            UserGroup getGroup = (new UserGroupRepository()).get(userGroupPK);
+            UserGroup getGroup = userGroupService.get(userGroupPK);
 
             if (getGroup.getOwnerId().equals(ownerId)) return true;
             return false;
@@ -550,7 +588,7 @@ public class SharingRegistryService {
             throws SharingRegistryException {
         try {
             // TODO limit offset
-            List<User> groupMemberUsers = (new GroupMembershipRepository()).getAllChildUsers(domainId, groupId);
+            List<User> groupMemberUsers = groupMembershipService.getAllChildUsers(domainId, groupId);
             return groupMemberUsers;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -564,7 +602,7 @@ public class SharingRegistryService {
             throws SharingRegistryException {
         try {
             // TODO limit offset
-            List<UserGroup> groupMemberGroups = (new GroupMembershipRepository()).getAllChildGroups(domainId, groupId);
+            List<UserGroup> groupMemberGroups = groupMembershipService.getAllChildGroups(domainId, groupId);
             return groupMemberGroups;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -586,7 +624,7 @@ public class SharingRegistryService {
                 groupMembership.setDomainId(domainId);
                 groupMembership.setCreatedTime(System.currentTimeMillis());
                 groupMembership.setUpdatedTime(System.currentTimeMillis());
-                (new GroupMembershipRepository()).create(groupMembership);
+                groupMembershipService.create(groupMembership);
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -604,7 +642,7 @@ public class SharingRegistryService {
             groupMembershipPK.setParentId(groupId);
             groupMembershipPK.setChildId(childId);
             groupMembershipPK.setDomainId(domainId);
-            (new GroupMembershipRepository()).delete(groupMembershipPK);
+            groupMembershipService.delete(groupMembershipPK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -617,8 +655,7 @@ public class SharingRegistryService {
 
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
         try {
-            GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
-            return groupMembershipRepository.getAllMemberGroupsForUser(domainId, userId);
+            return groupMembershipService.getAllMemberGroupsForUser(domainId, userId);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting all member groups for user: domainId=%s, userId=%s", domainId, userId);
@@ -636,12 +673,12 @@ public class SharingRegistryService {
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(entityType.getDomainId());
             entityTypePK.setEntityTypeId(entityType.getEntityTypeId());
-            if ((new EntityTypeRepository()).get(entityTypePK) != null)
+            if (entityTypeService.get(entityTypePK) != null)
                 throw new DuplicateEntryException("There exist EntityType with given EntityType id");
 
             entityType.setCreatedTime(System.currentTimeMillis());
             entityType.setUpdatedTime(System.currentTimeMillis());
-            (new EntityTypeRepository()).create(entityType);
+            entityTypeService.create(entityType);
             return entityType.getEntityTypeId();
         } catch (DuplicateEntryException e) {
             throw e;
@@ -660,10 +697,10 @@ public class SharingRegistryService {
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(entityType.getDomainId());
             entityTypePK.setEntityTypeId(entityType.getEntityTypeId());
-            EntityType oldEntityType = (new EntityTypeRepository()).get(entityTypePK);
+            EntityType oldEntityType = entityTypeService.get(entityTypePK);
             entityType.setCreatedTime(oldEntityType.getCreatedTime());
             entityType = getUpdatedObject(oldEntityType, entityType);
-            (new EntityTypeRepository()).update(entityType);
+            entityTypeService.update(entityType);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -679,7 +716,7 @@ public class SharingRegistryService {
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(domainId);
             entityTypePK.setEntityTypeId(entityTypeId);
-            return (new EntityTypeRepository()).isExists(entityTypePK);
+            return entityTypeService.isExists(entityTypePK);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while checking if entity type exists: domainId=%s, entityTypeId=%s", domainId, entityTypeId);
@@ -693,7 +730,7 @@ public class SharingRegistryService {
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(domainId);
             entityTypePK.setEntityTypeId(entityTypeId);
-            (new EntityTypeRepository()).delete(entityTypePK);
+            entityTypeService.delete(entityTypePK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -708,7 +745,7 @@ public class SharingRegistryService {
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(domainId);
             entityTypePK.setEntityTypeId(entityTypeId);
-            return (new EntityTypeRepository()).get(entityTypePK);
+            return entityTypeService.get(entityTypePK);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting entity type: domainId=%s, entityTypeId=%s", domainId, entityTypeId);
@@ -721,7 +758,7 @@ public class SharingRegistryService {
         try {
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.EntityTypeTable.DOMAIN_ID, domain);
-            return (new EntityTypeRepository()).select(filters, offset, limit);
+            return entityTypeService.select(filters, offset, limit);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting entity types: domain=%s, offset=%d, limit=%d", domain, offset, limit);
@@ -740,11 +777,11 @@ public class SharingRegistryService {
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(permissionType.getDomainId());
             permissionTypePK.setPermissionTypeId(permissionType.getPermissionTypeId());
-            if ((new PermissionTypeRepository()).get(permissionTypePK) != null)
+            if (permissionTypeService.get(permissionTypePK) != null)
                 throw new DuplicateEntryException("There exist PermissionType with given PermissionType id");
             permissionType.setCreatedTime(System.currentTimeMillis());
             permissionType.setUpdatedTime(System.currentTimeMillis());
-            (new PermissionTypeRepository()).create(permissionType);
+            permissionTypeService.create(permissionType);
             return permissionType.getPermissionTypeId();
         } catch (DuplicateEntryException e) {
             throw e;
@@ -763,9 +800,9 @@ public class SharingRegistryService {
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(permissionType.getDomainId());
             permissionTypePK.setPermissionTypeId(permissionType.getPermissionTypeId());
-            PermissionType oldPermissionType = (new PermissionTypeRepository()).get(permissionTypePK);
+            PermissionType oldPermissionType = permissionTypeService.get(permissionTypePK);
             permissionType = getUpdatedObject(oldPermissionType, permissionType);
-            (new PermissionTypeRepository()).update(permissionType);
+            permissionTypeService.update(permissionType);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -781,7 +818,7 @@ public class SharingRegistryService {
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(domainId);
             permissionTypePK.setPermissionTypeId(permissionId);
-            return (new PermissionTypeRepository()).isExists(permissionTypePK);
+            return permissionTypeService.isExists(permissionTypePK);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while checking if permission exists: domainId=%s, permissionId=%s", domainId, permissionId);
@@ -795,7 +832,7 @@ public class SharingRegistryService {
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(domainId);
             permissionTypePK.setPermissionTypeId(permissionTypeId);
-            (new PermissionTypeRepository()).delete(permissionTypePK);
+            permissionTypeService.delete(permissionTypePK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -811,7 +848,7 @@ public class SharingRegistryService {
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(domainId);
             permissionTypePK.setPermissionTypeId(permissionTypeId);
-            return (new PermissionTypeRepository()).get(permissionTypePK);
+            return permissionTypeService.get(permissionTypePK);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting permission type: domainId=%s, permissionTypeId=%s",
@@ -826,7 +863,7 @@ public class SharingRegistryService {
         try {
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domain);
-            return (new PermissionTypeRepository()).select(filters, offset, limit);
+            return permissionTypeService.select(filters, offset, limit);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting permission types: domain=%s, offset=%d, limit=%d", domain, offset, limit);
@@ -844,13 +881,13 @@ public class SharingRegistryService {
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.getDomainId());
             entityPK.setEntityId(entity.getEntityId());
-            if ((new EntityRepository()).get(entityPK) != null)
+            if (entityService.get(entityPK) != null)
                 throw new DuplicateEntryException("There exist Entity with given Entity id");
 
             UserPK userPK = new UserPK();
             userPK.setDomainId(entity.getDomainId());
             userPK.setUserId(entity.getOwnerId());
-            if (!(new UserRepository()).isExists(userPK)) {
+            if (!userService.isExists(userPK)) {
                 // Todo this is for Airavata easy integration. Proper thing is to throw an exception here
                 User user = new User();
                 user.setUserId(entity.getOwnerId());
@@ -865,12 +902,12 @@ public class SharingRegistryService {
             if (entity.getOriginalEntityCreationTime() == 0) {
                 entity.setOriginalEntityCreationTime(entity.getCreatedTime());
             }
-            (new EntityRepository()).create(entity);
+            entityService.create(entity);
 
             // Assigning global permission for the owner
             Sharing newSharing = new Sharing();
             newSharing.setPermissionTypeId(
-                    (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(entity.getDomainId()));
+                    permissionTypeService.getOwnerPermissionTypeIdForDomain(entity.getDomainId()));
             newSharing.setEntityId(entity.getEntityId());
             newSharing.setGroupId(entity.getOwnerId());
             newSharing.setSharingType(SharingType.DIRECT_CASCADING);
@@ -879,7 +916,7 @@ public class SharingRegistryService {
             newSharing.setCreatedTime(System.currentTimeMillis());
             newSharing.setUpdatedTime(System.currentTimeMillis());
 
-            (new SharingRepository()).create(newSharing);
+            sharingService.create(newSharing);
 
             // creating records for inherited permissions
             if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
@@ -901,8 +938,8 @@ public class SharingRegistryService {
     private void addCascadingPermissionsForEntity(Entity entity) throws SharingRegistryException {
         try {
             Sharing newSharing;
-            List<Sharing> sharings = (new SharingRepository())
-                    .getCascadingPermissionsForEntity(entity.getDomainId(), entity.getParentEntityId());
+            List<Sharing> sharings =
+                    sharingService.getCascadingPermissionsForEntity(entity.getDomainId(), entity.getParentEntityId());
             for (Sharing sharing : sharings) {
                 newSharing = new Sharing();
                 newSharing.setPermissionTypeId(sharing.getPermissionTypeId());
@@ -914,7 +951,7 @@ public class SharingRegistryService {
                 newSharing.setCreatedTime(System.currentTimeMillis());
                 newSharing.setUpdatedTime(System.currentTimeMillis());
 
-                (new SharingRepository()).create(newSharing);
+                sharingService.create(newSharing);
             }
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -932,7 +969,7 @@ public class SharingRegistryService {
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.getDomainId());
             entityPK.setEntityId(entity.getEntityId());
-            Entity oldEntity = (new EntityRepository()).get(entityPK);
+            Entity oldEntity = entityService.get(entityPK);
             entity.setCreatedTime(oldEntity.getCreatedTime());
             // check if parent entity changed and re-add inherited permissions
             if (!Objects.equals(oldEntity.getParentEntityId(), entity.getParentEntityId())) {
@@ -942,8 +979,8 @@ public class SharingRegistryService {
                             "Removing inherited permissions from {} that were inherited from parent {}",
                             entity.getEntityId(),
                             oldEntity.getParentEntityId());
-                    (new SharingRepository())
-                            .removeAllIndirectCascadingPermissionsForEntity(entity.getDomainId(), entity.getEntityId());
+                    sharingService.removeAllIndirectCascadingPermissionsForEntity(
+                            entity.getDomainId(), entity.getEntityId());
                 }
                 if (entity.getParentEntityId() != null && entity.getParentEntityId() != "") {
                     // re-add INDIRECT_CASCADING permissions
@@ -955,8 +992,8 @@ public class SharingRegistryService {
                 }
             }
             entity = getUpdatedObject(oldEntity, entity);
-            entity.setSharedCount((new SharingRepository()).getSharedCount(entity.getDomainId(), entity.getEntityId()));
-            (new EntityRepository()).update(entity);
+            entity.setSharedCount(sharingService.getSharedCount(entity.getDomainId(), entity.getEntityId()));
+            entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -972,7 +1009,7 @@ public class SharingRegistryService {
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
-            return (new EntityRepository()).isExists(entityPK);
+            return entityService.isExists(entityPK);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while checking if entity exists: domainId=%s, entityId=%s", domainId, entityId);
@@ -987,7 +1024,7 @@ public class SharingRegistryService {
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
-            (new EntityRepository()).delete(entityPK);
+            entityService.delete(entityPK);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while deleting entity: domainId=%s, entityId=%s", domainId, entityId);
@@ -1001,7 +1038,7 @@ public class SharingRegistryService {
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
-            return (new EntityRepository()).get(entityPK);
+            return entityService.get(entityPK);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while getting entity: domainId=%s, entityId=%s", domainId, entityId);
             logger.error(message, e);
@@ -1015,10 +1052,9 @@ public class SharingRegistryService {
         try {
             List<String> groupIds = new ArrayList<>();
             groupIds.add(userId);
-            (new GroupMembershipRepository())
-                    .getAllParentMembershipsForChild(domainId, userId).stream()
-                            .forEach(gm -> groupIds.add(gm.getParentId()));
-            return (new EntityRepository()).searchEntities(domainId, groupIds, filters, offset, limit);
+            groupMembershipService.getAllParentMembershipsForChild(domainId, userId).stream()
+                    .forEach(gm -> groupIds.add(gm.getParentId()));
+            return entityService.searchEntities(domainId, groupIds, filters, offset, limit);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while searching entities: domainId=%s, userId=%s", domainId, userId);
             logger.error(message, e);
@@ -1029,7 +1065,7 @@ public class SharingRegistryService {
     public List<User> getListOfSharedUsers(String domainId, String entityId, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            return (new UserRepository()).getAccessibleUsers(domainId, entityId, permissionTypeId);
+            return userService.getAccessibleUsers(domainId, entityId, permissionTypeId);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting list of shared users: domainId=%s, entityId=%s, permissionTypeId=%s",
@@ -1042,7 +1078,7 @@ public class SharingRegistryService {
     public List<User> getListOfDirectlySharedUsers(String domainId, String entityId, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            return (new UserRepository()).getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
+            return userService.getDirectlyAccessibleUsers(domainId, entityId, permissionTypeId);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting list of directly shared users: domainId=%s, entityId=%s, permissionTypeId=%s",
@@ -1055,7 +1091,7 @@ public class SharingRegistryService {
     public List<UserGroup> getListOfSharedGroups(String domainId, String entityId, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            return (new UserGroupRepository()).getAccessibleGroups(domainId, entityId, permissionTypeId);
+            return userGroupService.getAccessibleGroups(domainId, entityId, permissionTypeId);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting list of shared groups: domainId=%s, entityId=%s, permissionTypeId=%s",
@@ -1068,7 +1104,7 @@ public class SharingRegistryService {
     public List<UserGroup> getListOfDirectlySharedGroups(String domainId, String entityId, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            return (new UserGroupRepository()).getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
+            return userGroupService.getDirectlyAccessibleGroups(domainId, entityId, permissionTypeId);
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while getting list of directly shared groups: domainId=%s, entityId=%s, permissionTypeId=%s",
@@ -1118,7 +1154,7 @@ public class SharingRegistryService {
             boolean cascadePermission)
             throws SharingRegistryException {
         try {
-            if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
+            if (permissionTypeId.equals(permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId))) {
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
 
@@ -1146,8 +1182,7 @@ public class SharingRegistryService {
 
             if (cascadePermission) {
                 // Adding permission for the specified users/groups for all child entities
-                (new EntityRepository())
-                        .getChildEntities(domainId, entityId).stream().forEach(e -> temp.addLast(e));
+                entityService.getChildEntities(domainId, entityId).stream().forEach(e -> temp.addLast(e));
                 while (temp.size() > 0) {
                     Entity entity = temp.pop();
                     String childEntityId = entity.getEntityId();
@@ -1163,20 +1198,21 @@ public class SharingRegistryService {
                         sharing.setCreatedTime(System.currentTimeMillis());
                         sharing.setUpdatedTime(System.currentTimeMillis());
                         sharings.add(sharing);
-                        (new EntityRepository())
-                                .getChildEntities(domainId, childEntityId).stream()
-                                        .forEach(e -> temp.addLast(e));
+                        entityService.getChildEntities(domainId, childEntityId).stream()
+                                .forEach(e -> temp.addLast(e));
                     }
                 }
             }
-            (new SharingRepository()).create(sharings);
+            for (Sharing sharing : sharings) {
+                sharingService.create(sharing);
+            }
 
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
-            (new EntityRepository()).update(entity);
+            Entity entity = entityService.get(entityPK);
+            entity.setSharedCount(sharingService.getSharedCount(domainId, entityId));
+            entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -1191,7 +1227,7 @@ public class SharingRegistryService {
             String domainId, String entityId, List<String> userList, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
+            if (permissionTypeId.equals(permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId))) {
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
@@ -1208,7 +1244,7 @@ public class SharingRegistryService {
             String domainId, String entityId, List<String> groupList, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
+            if (permissionTypeId.equals(permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId))) {
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
@@ -1226,18 +1262,15 @@ public class SharingRegistryService {
         try {
             // check whether the user has permission directly or indirectly
             List<GroupMembership> parentMemberships =
-                    (new GroupMembershipRepository()).getAllParentMembershipsForChild(domainId, userId);
+                    groupMembershipService.getAllParentMembershipsForChild(domainId, userId);
             List<String> groupIds = new ArrayList<>();
             parentMemberships.stream().forEach(pm -> groupIds.add(pm.getParentId()));
             groupIds.add(userId);
-            return (new SharingRepository())
-                    .hasAccess(
-                            domainId,
-                            entityId,
-                            groupIds,
-                            Arrays.asList(
-                                    permissionTypeId,
-                                    (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId)));
+            return sharingService.hasAccess(
+                    domainId,
+                    entityId,
+                    groupIds,
+                    Arrays.asList(permissionTypeId, permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId)));
         } catch (SharingRegistryException e) {
             String message = String.format(
                     "Error while checking user access: domainId=%s, userId=%s, entityId=%s, permissionTypeId=%s",
@@ -1251,7 +1284,7 @@ public class SharingRegistryService {
             String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId)
             throws SharingRegistryException {
         try {
-            if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
+            if (permissionTypeId.equals(permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId))) {
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be removed");
             }
 
@@ -1264,14 +1297,13 @@ public class SharingRegistryService {
                 sharingPK.setInheritedParentId(entityId);
                 sharingPK.setDomainId(domainId);
 
-                (new SharingRepository()).delete(sharingPK);
+                sharingService.delete(sharingPK);
             }
 
             // revoking permission from inheritance
             List<Sharing> temp = new ArrayList<>();
-            (new SharingRepository())
-                    .getIndirectSharedChildren(domainId, entityId, permissionTypeId).stream()
-                            .forEach(s -> temp.add(s));
+            sharingService.getIndirectSharedChildren(domainId, entityId, permissionTypeId).stream()
+                    .forEach(s -> temp.add(s));
             for (Sharing sharing : temp) {
                 String childEntityId = sharing.getEntityId();
                 for (String groupId : groupOrUserList) {
@@ -1282,16 +1314,16 @@ public class SharingRegistryService {
                     sharingPK.setInheritedParentId(entityId);
                     sharingPK.setDomainId(domainId);
 
-                    (new SharingRepository()).delete(sharingPK);
+                    sharingService.delete(sharingPK);
                 }
             }
 
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
-            (new EntityRepository()).update(entity);
+            Entity entity = entityService.get(entityPK);
+            entity.setSharedCount(sharingService.getSharedCount(domainId, entityId));
+            entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(

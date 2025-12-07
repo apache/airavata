@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.appcatalog;
+package org.apache.airavata.registry.repositories.appcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,9 +29,9 @@ import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

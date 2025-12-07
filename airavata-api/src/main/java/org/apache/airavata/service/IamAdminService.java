@@ -34,9 +34,8 @@ import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class IamAdminService {
     private AiravataServerProperties properties;
 
     @Autowired
-    private UserProfileRepository userProfileRepository;
+    private UserProfileService userProfileService;
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
@@ -147,7 +146,7 @@ public class IamAdminService {
             if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
                 // Check if user profile exists, if not create it
                 boolean userProfileExists =
-                        userProfileRepository.getUserProfileByIdAndGateWay(username, gatewayId) != null;
+                        userProfileService.getUserProfileByIdAndGateWay(username, gatewayId) != null;
                 if (!userProfileExists) {
                     // Load basic user profile information from Keycloak and then save in UserProfileRepository
                     UserProfile userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
@@ -156,7 +155,7 @@ public class IamAdminService {
                     userProfile.setLastAccessTime(
                             AiravataUtils.getCurrentTimestamp().getTime());
                     userProfile.setValidUntil(-1);
-                    userProfileRepository.createUserProfile(userProfile);
+                    userProfileService.createUserProfile(userProfile);
                     // Dispatch IAM_ADMIN service event for a new USER_PROFILE
                     dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 }

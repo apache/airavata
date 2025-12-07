@@ -17,10 +17,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.appcatalog;
+package org.apache.airavata.registry.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
+import org.apache.airavata.registry.repositories.common.TestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

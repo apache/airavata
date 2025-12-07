@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.common;
+package org.apache.airavata.registry.repositories.common;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;

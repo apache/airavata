@@ -56,7 +56,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.service",
             "org.apache.airavata.registry.core.repositories",
             "org.apache.airavata.profile",
-            "org.apache.airavata.sharing.db.repositories",
+            "org.apache.airavata.sharing.repositories",
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift"
         })
@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         basePackages = {
             "org.apache.airavata.registry.core.entities",
             "org.apache.airavata.profile.commons",
-            "org.apache.airavata.sharing.db.entities"
+            "org.apache.airavata.sharing.entities"
         })
 public class AiravataApplication {
 

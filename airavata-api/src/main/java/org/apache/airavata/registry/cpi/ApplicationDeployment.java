@@ -22,6 +22,7 @@ package org.apache.airavata.registry.cpi;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.registry.exceptions.AppCatalogException;
 
 public interface ApplicationDeployment {
     /**

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.utils;
+package org.apache.airavata.registry.utils;
 
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.thrift.TFieldRequirementType;

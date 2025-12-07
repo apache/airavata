@@ -24,8 +24,8 @@ import java.util.List;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

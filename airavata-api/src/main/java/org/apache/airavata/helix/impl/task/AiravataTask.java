@@ -470,7 +470,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public abstract TaskResult onRun(TaskHelper helper, TaskContext taskContext);
+    public abstract TaskResult onRun(TaskHelper helper, TaskContext taskContext) throws TaskOnFailException;
 
     @Override
     public void onCancel() {

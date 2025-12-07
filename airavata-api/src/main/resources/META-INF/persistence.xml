@@ -184,15 +184,15 @@
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-    <class>org.apache.airavata.sharing.db.entities.DomainEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.EntityEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.EntityTypeEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.GroupMembershipEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.PermissionTypeEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.SharingEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.UserEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.GroupAdminEntity</class>
-    <class>org.apache.airavata.sharing.db.entities.UserGroupEntity</class>
+    <class>org.apache.airavata.sharing.entities.DomainEntity</class>
+    <class>org.apache.airavata.sharing.entities.EntityEntity</class>
+    <class>org.apache.airavata.sharing.entities.EntityTypeEntity</class>
+    <class>org.apache.airavata.sharing.entities.GroupMembershipEntity</class>
+    <class>org.apache.airavata.sharing.entities.PermissionTypeEntity</class>
+    <class>org.apache.airavata.sharing.entities.SharingEntity</class>
+    <class>org.apache.airavata.sharing.entities.UserEntity</class>
+    <class>org.apache.airavata.sharing.entities.GroupAdminEntity</class>
+    <class>org.apache.airavata.sharing.entities.UserGroupEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"

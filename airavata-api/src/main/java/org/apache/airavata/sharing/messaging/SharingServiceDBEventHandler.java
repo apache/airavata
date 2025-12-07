@@ -141,16 +141,15 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 .getCrudType()) {
                             case CREATE:
                             case UPDATE:
-
                                 // Only create the domain is it doesn't already exist
                                 if (sharingRegistryService.isDomainExists(gateway.getGatewayId())) {
                                     break;
                                 }
                             case READ:
                             case DELETE:
-                            default:
                                 // READ and DELETE operations don't require domain creation
                                 break;
+                            default:
                                 /*
                                 Following set of DB operations should happen in a transaction
                                 As these are thrift calls we cannot enforce this restriction

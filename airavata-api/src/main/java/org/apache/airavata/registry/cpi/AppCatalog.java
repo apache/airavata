@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.cpi;
 
+import org.apache.airavata.registry.exceptions.AppCatalogException;
+
 public interface AppCatalog {
     /**
      * Get ComputeResource interface

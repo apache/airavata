@@ -17,15 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.expcatalog;
+package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.NotificationPriority;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.repositories.common.TestBase;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

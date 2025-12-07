@@ -93,6 +93,7 @@ public class TaskContext {
     private String taskId;
 
     private ProcessModel processModel;
+    private ExperimentModel experimentModel;
     private JobModel jobModel;
     private Object subTaskModel = null;
 

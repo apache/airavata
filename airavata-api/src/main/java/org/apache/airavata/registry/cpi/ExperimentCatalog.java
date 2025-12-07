@@ -21,6 +21,7 @@ package org.apache.airavata.registry.cpi;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.registry.exceptions.RegistryException;
 
 /**
  * This is the interface for Registry CPI

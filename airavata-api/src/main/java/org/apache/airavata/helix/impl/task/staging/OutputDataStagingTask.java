@@ -52,7 +52,7 @@ public class OutputDataStagingTask extends DataStagingTask {
     private static final CountMonitor outputDSTaskCounter = new CountMonitor("output_ds_task_counter");
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) throws TaskOnFailException {
 
         logger.info("Starting output data staging task " + getTaskId() + " in experiment " + getExperimentId());
         outputDSTaskCounter.inc();
@@ -174,7 +174,7 @@ public class OutputDataStagingTask extends DataStagingTask {
 
                     // Wildcard support is only enabled for output data staging
                     if (processOutput == null) {
-                        throw new TaskOnFailException("processOutput is null", false);
+                        throw new TaskOnFailException("processOutput is null", false, null);
                     }
                     logger.info("Transferring file " + sourceFileName);
                     boolean transferred = transferFileToStorage(
@@ -243,7 +243,7 @@ public class OutputDataStagingTask extends DataStagingTask {
             } else {
                 // Uploading output file to the storage resource
                 if (processOutput == null) {
-                    throw new TaskOnFailException("processOutput is null", false);
+                    throw new TaskOnFailException("processOutput is null", false, null);
                 }
                 boolean transferred = transferFileToStorage(
                         sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
