@@ -45,7 +45,9 @@ import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.CredentialStoreService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -60,6 +62,15 @@ import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
+    private static ApplicationContext applicationContext;
+    
+    @Autowired
+    private CredentialStoreService credentialStoreService;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        AWSJobSubmissionTask.applicationContext = applicationContext;
+    }
 
     private static final int WAIT_MAX_RETRIES = 10;
     private static final long INITIAL_DELAY_SECONDS = 5;
@@ -325,9 +336,15 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-        SSHCredential sshCredential = ServiceFactory.getInstance()
-                .getCredentialStoreService()
-                .getSSHCredential(sshCredentialToken, getGatewayId());
+        // Use injected service, fallback to ApplicationContext if not injected
+        CredentialStoreService credentialStoreService = this.credentialStoreService;
+        if (credentialStoreService == null && applicationContext != null) {
+            credentialStoreService = applicationContext.getBean(CredentialStoreService.class);
+        }
+        if (credentialStoreService == null) {
+            throw new RuntimeException("CredentialStoreService not available.");
+        }
+        SSHCredential sshCredential = credentialStoreService.getSSHCredential(sshCredentialToken, getGatewayId());
         adaptor.init(
                 getTaskContext().getComputeResourceLoginUserName(),
                 publicIpAddress,

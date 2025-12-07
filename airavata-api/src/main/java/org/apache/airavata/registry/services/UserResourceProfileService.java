@@ -36,7 +36,6 @@ import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.UserComputeResourcePreferenceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.UserStoragePreferenceRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +56,9 @@ public class UserResourceProfileService {
     @Autowired
     private UserStoragePreferenceRepository userStoragePreferenceRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException {
         return saveUserResourceProfileData(userResourceProfile);
     }
@@ -75,7 +77,6 @@ public class UserResourceProfileService {
             throws AppCatalogException {
         String userId = userResourceProfile.getUserId();
         String gatewayId = userResourceProfile.getGatewayID();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserResourceProfileEntity userResourceProfileEntity =
                 mapper.map(userResourceProfile, UserResourceProfileEntity.class);
 
@@ -114,7 +115,6 @@ public class UserResourceProfileService {
         UserResourceProfileEntity entity =
                 userResourceProfileRepository.findById(userResourceProfilePK).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, UserResourceProfile.class);
     }
 
@@ -124,7 +124,6 @@ public class UserResourceProfileService {
         userComputeResourcePreferencePK.setUserId(userId);
         userComputeResourcePreferencePK.setGatewayId(gatewayId);
         userComputeResourcePreferencePK.setComputeResourceId(hostId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return userComputeResourcePreferenceRepository
                 .findById(userComputeResourcePreferencePK)
                 .map(entity -> mapper.map(entity, UserComputeResourcePreference.class))
@@ -137,7 +136,6 @@ public class UserResourceProfileService {
         userStoragePreferencePK.setUserId(userId);
         userStoragePreferencePK.setGatewayId(gatewayId);
         userStoragePreferencePK.setStorageResourceId(storageId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return userStoragePreferenceRepository
                 .findById(userStoragePreferencePK)
                 .map(entity -> mapper.map(entity, UserStoragePreference.class))
@@ -146,7 +144,6 @@ public class UserResourceProfileService {
 
     public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<UserResourceProfile> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, UserResourceProfile.class)));
         return result;
@@ -154,7 +151,6 @@ public class UserResourceProfileService {
 
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayId)
             throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<UserComputeResourcePreferenceEntity> entities =
                 userComputeResourcePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
         return entities.stream()
@@ -164,7 +160,6 @@ public class UserResourceProfileService {
 
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId)
             throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<UserStoragePreferenceEntity> entities =
                 userStoragePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
         return entities.stream()
@@ -176,7 +171,6 @@ public class UserResourceProfileService {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
         List<String> gatewayIdList = new ArrayList<>();
         for (UserResourceProfileEntity entity : entities) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             UserResourceProfile profile = mapper.map(entity, UserResourceProfile.class);
             if (gatewayName == null || profile.getGatewayID().equals(gatewayName)) {
                 gatewayIdList.add(profile.getGatewayID());

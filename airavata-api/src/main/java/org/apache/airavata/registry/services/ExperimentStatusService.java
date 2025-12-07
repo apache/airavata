@@ -27,7 +27,6 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +37,9 @@ public class ExperimentStatusService {
     @Autowired
     private ExperimentStatusRepository experimentStatusRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryException {
         if (experimentStatus.getStatusId() == null) {
             experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
@@ -46,7 +48,6 @@ public class ExperimentStatusService {
             experimentStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentStatusEntity entity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
         entity.setExperimentId(experimentId);
         ExperimentStatusEntity saved = experimentStatusRepository.save(entity);
@@ -57,7 +58,6 @@ public class ExperimentStatusService {
         List<ExperimentStatusEntity> entities =
                 experimentStatusRepository.findByExperimentIdOrderByTimeOfStateChangeDesc(experimentId);
         if (entities.isEmpty()) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entities.get(0), ExperimentStatus.class);
     }
 
@@ -70,7 +70,6 @@ public class ExperimentStatusService {
             experimentStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentStatusEntity entity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
         entity.setExperimentId(experimentId);
         ExperimentStatusEntity saved = experimentStatusRepository.save(entity);

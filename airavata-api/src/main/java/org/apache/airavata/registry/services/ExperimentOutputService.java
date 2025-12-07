@@ -26,7 +26,6 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentOutputRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,16 +36,17 @@ public class ExperimentOutputService {
     @Autowired
     private ExperimentOutputRepository experimentOutputRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public List<OutputDataObjectType> getExperimentOutputs(String experimentId) throws RegistryException {
         List<ExperimentOutputEntity> entities = experimentOutputRepository.findByExperimentId(experimentId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<OutputDataObjectType> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, OutputDataObjectType.class)));
         return result;
     }
 
     public void addExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (OutputDataObjectType output : outputs) {
             ExperimentOutputEntity entity = mapper.map(output, ExperimentOutputEntity.class);
             entity.setExperimentId(experimentId);

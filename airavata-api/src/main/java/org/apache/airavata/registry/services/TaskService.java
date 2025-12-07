@@ -30,7 +30,6 @@ import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,9 @@ public class TaskService {
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private Mapper mapper;
 
     public void populateParentIds(TaskEntity taskEntity) {
         String taskId = taskEntity.getTaskId();
@@ -88,7 +90,6 @@ public class TaskService {
     public TaskModel getTask(String taskId) throws RegistryException {
         TaskEntity entity = taskRepository.findById(taskId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, TaskModel.class);
     }
 
@@ -98,7 +99,6 @@ public class TaskService {
         if (fieldName.equals(DBConstants.Task.PARENT_PROCESS_ID)) {
             logger.debug("Search criteria is ParentProcessId");
             List<TaskEntity> entities = taskRepository.findByParentProcessId((String) value);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             taskModelList = new ArrayList<>();
             entities.forEach(e -> taskModelList.add(mapper.map(e, TaskModel.class)));
         } else {
@@ -162,7 +162,6 @@ public class TaskService {
 
         taskModel.setLastUpdateTime(System.currentTimeMillis());
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
 
         populateParentIds(taskEntity);

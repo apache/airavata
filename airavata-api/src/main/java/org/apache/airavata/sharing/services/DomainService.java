@@ -25,7 +25,6 @@ import org.apache.airavata.sharing.entities.DomainEntity;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.DomainRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,10 +35,12 @@ public class DomainService {
     @Autowired
     private DomainRepository domainRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public Domain get(String domainId) throws SharingRegistryException {
         DomainEntity entity = domainRepository.findById(domainId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Domain.class);
     }
 
@@ -48,7 +49,6 @@ public class DomainService {
     }
 
     public Domain update(Domain domain) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DomainEntity entity = mapper.map(domain, DomainEntity.class);
         DomainEntity saved = domainRepository.save(entity);
         return mapper.map(saved, Domain.class);
@@ -65,7 +65,6 @@ public class DomainService {
 
     public List<Domain> getAll() throws SharingRegistryException {
         List<DomainEntity> entities = domainRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Domain.class)).toList();
     }
 }

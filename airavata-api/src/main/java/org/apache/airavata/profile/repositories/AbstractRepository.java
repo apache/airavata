@@ -20,12 +20,14 @@
 package org.apache.airavata.profile.repositories;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.profile.utils.JPAUtils;
-import org.apache.airavata.profile.utils.ObjectMapperSingleton;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,90 +36,108 @@ public abstract class AbstractRepository<T, E, Id> {
 
     private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
+    private EntityManager entityManager;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
 
+    protected abstract Mapper getMapper();
+    
+    protected EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = SharedEntityManagerCreator.createSharedEntityManager(JPAUtils.getEntityManagerFactory());
+        }
+        return entityManager;
+    }
+
+    @Transactional
     public T create(T t) {
         return update(t);
     }
 
+    @Transactional
     public T update(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E entity = mapper.map(t, dbEntityGenericClass);
-        E persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        E entity = getMapper().map(t, dbEntityGenericClass);
+        EntityManager em = getEntityManager();
+        E persistedCopy = em.merge(entity);
+        return getMapper().map(persistedCopy, thriftGenericClass);
     }
 
+    @Transactional
     public boolean delete(Id id) {
-        JPAUtils.execute(entityManager -> {
-            E entity = entityManager.find(dbEntityGenericClass, id);
-            entityManager.remove(entity);
-            return entity;
-        });
+        EntityManager em = getEntityManager();
+        E entity = em.find(dbEntityGenericClass, id);
+        if (entity != null) {
+            em.remove(entity);
+        }
         return true;
     }
 
+    @Transactional(readOnly = true)
     public T get(Id id) {
-        E entity = JPAUtils.execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, thriftGenericClass);
+        EntityManager em = getEntityManager();
+        E entity = em.find(dbEntityGenericClass, id);
+        return getMapper().map(entity, thriftGenericClass);
     }
 
+    @Transactional(readOnly = true)
     public List<T> select(String query) {
-        List resultSet = (List) JPAUtils.execute(
-                entityManager -> entityManager.createQuery(query).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        EntityManager em = getEntityManager();
+        List<?> resultSet = em.createQuery(query).getResultList();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        for (Object rs : resultSet) {
+            resultList.add(getMapper().map(rs, thriftGenericClass));
+        }
         return resultList;
     }
 
+    @Transactional(readOnly = true)
     public List<T> select(String query, int limit, int offset) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> entityManager
-                .createQuery(query)
+        EntityManager em = getEntityManager();
+        List<?> resultSet = em.createQuery(query)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
-                .getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+                .getResultList();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        for (Object rs : resultSet) {
+            resultList.add(getMapper().map(rs, thriftGenericClass));
+        }
         return resultList;
     }
 
+    @Transactional(readOnly = true)
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(query);
+        EntityManager em = getEntityManager();
+        Query jpaQuery = em.createQuery(query);
 
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+            jpaQuery.setParameter(entry.getKey(), entry.getValue());
+        }
 
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
-            }
-
-            return jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
-        });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<?> resultSet = jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        for (Object rs : resultSet) {
+            resultList.add(getMapper().map(rs, thriftGenericClass));
+        }
         return resultList;
     }
 
+    @Transactional(readOnly = true)
     public List<T> select(String query, Map<String, Object> queryParams) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(query);
+        EntityManager em = getEntityManager();
+        Query jpaQuery = em.createQuery(query);
 
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+            jpaQuery.setParameter(entry.getKey(), entry.getValue());
+        }
 
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
-            }
-
-            return jpaQuery.getResultList();
-        });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<?> resultSet = jpaQuery.getResultList();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        for (Object rs : resultSet) {
+            resultList.add(getMapper().map(rs, thriftGenericClass));
+        }
         return resultList;
     }
 }

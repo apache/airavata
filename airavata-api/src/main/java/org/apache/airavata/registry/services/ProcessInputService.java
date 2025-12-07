@@ -26,7 +26,6 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessInputRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,10 @@ public class ProcessInputService {
     @Autowired
     private ProcessInputRepository processInputRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (InputDataObjectType input : inputs) {
             ProcessInputEntity entity = mapper.map(input, ProcessInputEntity.class);
             entity.setProcessId(processId);
@@ -56,7 +57,6 @@ public class ProcessInputService {
 
     public List<InputDataObjectType> getProcessInputs(String processId) throws RegistryException {
         List<ProcessInputEntity> entities = processInputRepository.findByProcessId(processId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<InputDataObjectType> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, InputDataObjectType.class)));
         return result;

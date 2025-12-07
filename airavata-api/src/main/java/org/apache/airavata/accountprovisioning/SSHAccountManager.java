@@ -36,10 +36,49 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SSHAccountManager {
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    @Autowired
+    private CredentialStoreService credentialStoreService;
+    
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        SSHAccountManager.applicationContext = applicationContext;
+    }
+    
+    // Instance methods for Spring DI
+    private RegistryService getRegistryServiceInstance() {
+        return registryService;
+    }
+    
+    private CredentialStoreService getCredentialStoreServiceInstance() {
+        return credentialStoreService;
+    }
+    
+    // Static methods for backward compatibility - delegate to Spring-managed instance
+    private static RegistryService getRegistryServiceStatic() {
+        if (applicationContext != null) {
+            return applicationContext.getBean(SSHAccountManager.class).getRegistryServiceInstance();
+        }
+        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
+    }
+    
+    private static CredentialStoreService getCredentialStoreServiceStatic() {
+        if (applicationContext != null) {
+            return applicationContext.getBean(SSHAccountManager.class).getCredentialStoreServiceInstance();
+        }
+        throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
+    }
 
     /**
      * Check if user has an SSH account on the compute resource.
@@ -66,12 +105,7 @@ public class SSHAccountManager {
     private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get registry service
-        RegistryService registryService;
-        try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            throw new InvalidSetupException("Failed to get RegistryService", e);
-        }
+        RegistryService registryService = getRegistryServiceStatic();
         // get compute resource preferences for the gateway and hostname
         ComputeResourcePreference computeResourcePreference = null;
         try {
@@ -114,12 +148,7 @@ public class SSHAccountManager {
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService registryService;
-        try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            throw new InvalidSetupException("Failed to get RegistryService", e);
-        }
+        RegistryService registryService = getRegistryServiceStatic();
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -248,12 +277,7 @@ public class SSHAccountManager {
     private static Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService credentialStoreService;
-        try {
-            credentialStoreService = ServiceFactory.getInstance().getCredentialStoreService();
-        } catch (ServiceFactoryException e) {
-            throw new InvalidSetupException("Failed to get CredentialStoreService", e);
-        }
+        CredentialStoreService credentialStoreService = getCredentialStoreServiceStatic();
         // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
         Map<ConfigParam, String> resolvedConfig = new HashMap<>();
         for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {

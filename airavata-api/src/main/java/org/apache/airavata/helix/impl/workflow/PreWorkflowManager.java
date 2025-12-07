@@ -58,9 +58,11 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class PreWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);

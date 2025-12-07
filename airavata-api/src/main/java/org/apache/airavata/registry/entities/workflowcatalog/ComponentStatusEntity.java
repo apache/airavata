@@ -28,7 +28,9 @@ import java.sql.Timestamp;
 
 /**
  * The persistent class for the component_status database table.
+ * @deprecated This entity is no longer actively used.
  */
+@Deprecated
 @Entity
 @Table(name = "COMPONENT_STATUS")
 public class ComponentStatusEntity implements Serializable {

@@ -26,7 +26,6 @@ import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessWorkflowRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,16 +36,17 @@ public class ProcessWorkflowService {
     @Autowired
     private ProcessWorkflowRepository processWorkflowRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException {
         List<ProcessWorkflowEntity> entities = processWorkflowRepository.findByProcessId(processId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ProcessWorkflow> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ProcessWorkflow.class)));
         return result;
     }
 
     public void addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessWorkflowEntity entity = mapper.map(processWorkflow, ProcessWorkflowEntity.class);
         entity.setProcessId(processId);
         processWorkflowRepository.save(entity);

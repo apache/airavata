@@ -24,7 +24,6 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.registry.entities.appcatalog.GatewayGroupsEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.GatewayGroupsRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,9 @@ public class GatewayGroupsService {
     @Autowired
     private GatewayGroupsRepository gatewayGroupsRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public boolean isExists(String gatewayId) throws RegistryException {
         return gatewayGroupsRepository.existsById(gatewayId);
     }
@@ -42,19 +44,16 @@ public class GatewayGroupsService {
     public GatewayGroups get(String gatewayId) throws RegistryException {
         GatewayGroupsEntity entity = gatewayGroupsRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, GatewayGroups.class);
     }
 
     public GatewayGroups create(GatewayGroups gatewayGroups) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayGroupsEntity entity = mapper.map(gatewayGroups, GatewayGroupsEntity.class);
         GatewayGroupsEntity saved = gatewayGroupsRepository.save(entity);
         return mapper.map(saved, GatewayGroups.class);
     }
 
     public GatewayGroups update(GatewayGroups gatewayGroups) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayGroupsEntity entity = mapper.map(gatewayGroups, GatewayGroupsEntity.class);
         GatewayGroupsEntity saved = gatewayGroupsRepository.save(entity);
         return mapper.map(saved, GatewayGroups.class);

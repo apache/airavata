@@ -37,18 +37,26 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        ExponentialBackOffReScheduler.applicationContext = applicationContext;
+    }
 
     @Override
     public void reschedule(ProcessModel processModel, ProcessState processState) {
         try {
-            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            RegistryService registryService = applicationContext.getBean(RegistryService.class);
             int maxReschedulingCount = ServerSettings.getMetaschedulerReschedulingThreshold();
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());

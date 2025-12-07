@@ -56,6 +56,14 @@ public class JPAUtils {
         return instance.factory.createEntityManager();
     }
 
+    public static EntityManagerFactory getEntityManagerFactory() {
+        if (instance == null || instance.factory == null) {
+            throw new IllegalStateException("ProfileService JPAUtils not initialized. Make sure it's a Spring bean.");
+        }
+        return instance.factory;
+    }
+    
+    @Deprecated
     public static <R> R execute(Committer<EntityManager, R> committer) {
         EntityManager entityManager = JPAUtils.getEntityManager();
         try {

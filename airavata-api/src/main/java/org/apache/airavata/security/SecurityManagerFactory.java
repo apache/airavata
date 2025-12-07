@@ -27,7 +27,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This initializes an instance of the appropriate security manager according to the
  * configuration.
+ * 
+ * @deprecated Use Spring's @Autowired AiravataSecurityManager instead.
+ * This factory is kept for backward compatibility with standalone utilities.
  */
+@Deprecated
 public class SecurityManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
 

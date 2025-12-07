@@ -37,25 +37,23 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by goshenoy on 3/30/17.
  */
+@Component
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
-    private final RegistryService registryService;
+    
+    @Autowired
+    private RegistryService registryService;
+    
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
-
-    public RegistryServiceDBEventHandler()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    ServiceFactoryException {
-        registryService = ServiceFactory.getInstance().getRegistryService();
-    }
 
     @Override
     public void onMessage(MessageContext messageContext) {

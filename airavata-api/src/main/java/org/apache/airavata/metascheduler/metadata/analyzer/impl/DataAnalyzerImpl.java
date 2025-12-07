@@ -25,21 +25,29 @@ import org.apache.airavata.metascheduler.core.engine.DataAnalyzer;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class DataAnalyzerImpl implements DataAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        DataAnalyzerImpl.applicationContext = applicationContext;
+    }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Data Analyzer ....... ");
-            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            RegistryService registryService = applicationContext.getBean(RegistryService.class);
 
             // TODO: handle multiple gateways
             String gateway = ServerSettings.getDataAnalyzingEnabledGateways();

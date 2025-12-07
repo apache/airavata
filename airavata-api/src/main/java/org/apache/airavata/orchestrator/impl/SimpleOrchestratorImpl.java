@@ -70,17 +70,21 @@ import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
     private ExecutorService executor;
 
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
+    
+    @Autowired
+    private RegistryService registryService;
 
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
@@ -138,14 +142,13 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                         logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId()
                                 + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
+                        ErrorModel details = new ErrorModel();
+                        details.setActualErrorMessage(errorMsg);
+                        details.setCreationTime(Calendar.getInstance().getTimeInMillis());
                         try {
-                            ErrorModel details = new ErrorModel();
-                            details.setActualErrorMessage(errorMsg);
-                            details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            final RegistryService registryService = getRegistryService();
                             registryService.addErrors(
                                     OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
-                        } catch (OrchestratorException | RegistryServiceException e) {
+                        } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
                             throw new OrchestratorException("Error while saving error details to registry", e);
                         }
@@ -206,14 +209,13 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                         logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId()
                                 + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
+                        ErrorModel details = new ErrorModel();
+                        details.setActualErrorMessage(errorMsg);
+                        details.setCreationTime(Calendar.getInstance().getTimeInMillis());
                         try {
-                            ErrorModel details = new ErrorModel();
-                            details.setActualErrorMessage(errorMsg);
-                            details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            final RegistryService registryService = getRegistryService();
                             registryService.addErrors(
                                     OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
-                        } catch (OrchestratorException | RegistryServiceException e) {
+                        } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
                             throw new OrchestratorException("Error while saving error details to registry", e);
                         }
@@ -239,7 +241,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
         logger.info("Terminating experiment " + experiment.getExperimentId());
-        RegistryService registryService = getRegistryService();
 
         try {
             List<String> processIds = registryService.getProcessIds(experiment.getExperimentId());
@@ -277,7 +278,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     public void initialize() throws OrchestratorException {}
 
     public List<ProcessModel> createProcesses(String experimentId, String gatewayId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         try {
             ExperimentModel experimentModel = registryService.getExperiment(experimentId);
             List<ProcessModel> processModels = registryService.getProcessList(experimentId);
@@ -296,8 +296,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = getRegistryService();
+            throws OrchestratorException {
         try {
             GroupComputeResourcePreference preference =
                     OrchestratorUtils.getGroupComputeResourcePreference(processModel);
@@ -341,7 +340,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public String createAndSaveIntermediateOutputFetchingTasks(
             String gatewayId, ProcessModel processModel, ProcessModel parentProcess) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         try {
             GroupComputeResourcePreference preference =
                     OrchestratorUtils.getGroupComputeResourcePreference(processModel);
@@ -371,7 +369,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     private List<String> createAndSaveEnvSetupTask(
             RegistryService registryService, String gatewayId, ProcessModel processModel, ResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
 
         TaskModel envSetupTask = new TaskModel();
@@ -431,7 +429,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             break;
                         }
                         try {
-                            final RegistryService registryService = getRegistryService();
                             TaskModel inputDataStagingTask = getInputDataStagingTask(
                                     registryService, processModel, processInput, gatewayId, resourceType);
                             String taskId = registryService.addTask(inputDataStagingTask, processModel.getProcessId());
@@ -453,9 +450,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public List<String> createAndSaveOutputDataStagingTasks(
             ProcessModel processModel, String gatewayId, ResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws AiravataException, RegistryServiceException, OrchestratorException {
 
-        final RegistryService registryService = getRegistryService();
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
             List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
@@ -522,9 +518,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public List<String> createAndSaveIntermediateOutputDataStagingTasks(
             ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws AiravataException, RegistryServiceException, OrchestratorException {
 
-        final RegistryService registryService = getRegistryService();
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
             List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
@@ -597,7 +592,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             List<String> dataStagingTaskIds,
             ResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws AiravataException, RegistryServiceException, OrchestratorException {
         TaskModel archiveTask;
         try {
             archiveTask = getOutputDataStagingTask(registryService, processModel, null, gatewayId, null, resourceType);
@@ -616,7 +611,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             List<String> dataStagingTaskIds,
             OutputDataObjectType processOutput,
             ResourceType resourceType)
-            throws AiravataException, OrchestratorException, ServiceFactoryException {
+            throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
                     registryService, processModel, processOutput, gatewayId, null, resourceType);
@@ -636,7 +631,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             List<String> dataStagingTaskIds,
             OutputDataObjectType processOutput,
             ResourceType resourceType)
-            throws AiravataException, OrchestratorException, ServiceFactoryException {
+            throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
                     registryService, processModel, processOutput, gatewayId, parentProcess, resourceType);
@@ -654,7 +649,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             JobSubmissionInterface jobSubmissionInterface,
             ProcessModel processModel,
             int wallTime)
-            throws RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, OrchestratorException {
 
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
         MonitorMode monitorMode;
@@ -755,7 +750,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             InputDataObjectType processInput,
             String gatewayId,
             ResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -822,7 +817,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             ProcessModel parentProcess,
             ResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, AiravataException, OrchestratorException {
         try {
             // create new task model for this task
             TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
@@ -893,14 +888,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         } catch (OrchestratorException e) {
             throw new OrchestratorException("Error occurred while retrieving data movement from app catalog", e);
-        }
-    }
-
-    private RegistryService getRegistryService() throws OrchestratorException {
-        try {
-            return ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            throw new OrchestratorException("Failed to get RegistryService", e);
         }
     }
 }

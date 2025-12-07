@@ -33,7 +33,6 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +49,9 @@ public class ExperimentService {
 
     @Autowired
     private ProcessService processService;
+
+    @Autowired
+    private Mapper mapper;
 
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
         ExperimentStatus experimentStatus = new ExperimentStatus();
@@ -71,7 +73,6 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ExperimentModel.class);
     }
 
@@ -109,14 +110,12 @@ public class ExperimentService {
             logger.debug("Search criteria is Username");
             List<ExperimentEntity> entities =
                     experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             experimentModelList = new ArrayList<>();
             entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
         } else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is ProjectId");
             List<ExperimentEntity> entities =
                     experimentRepository.findByGatewayIdAndProjectId(gatewayId, (String) value);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             experimentModelList = new ArrayList<>();
             entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
         } else {
@@ -162,7 +161,6 @@ public class ExperimentService {
             experimentModel.setCreationTime(System.currentTimeMillis());
         }
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
 
         if (experimentEntity.getUserConfigurationData() != null) {

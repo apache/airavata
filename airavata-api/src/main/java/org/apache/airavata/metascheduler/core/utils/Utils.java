@@ -32,23 +32,31 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * This class contains all utility methods across scheduler sub projects
  */
+@Component
 public class Utils {
 
-    private static RegistryService registryService;
+    @Autowired
+    private RegistryService registryService;
+    
     private static Publisher statusPublisher;
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        Utils.applicationContext = applicationContext;
+    }
 
     public static void saveAndPublishProcessStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
-            throws RegistryServiceException, AiravataException, ServiceFactoryException {
-        if (registryService == null) {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        }
+            throws RegistryServiceException, AiravataException {
+        RegistryService registryService = getRegistryService();
         ProcessStatus processStatus = new ProcessStatus(processState);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
@@ -66,10 +74,8 @@ public class Utils {
 
     public static void updateProcessStatusAndPublishStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
-            throws RegistryServiceException, AiravataException, ServiceFactoryException {
-        if (registryService == null) {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        }
+            throws RegistryServiceException, AiravataException {
+        RegistryService registryService = getRegistryService();
         ProcessStatus processStatus = new ProcessStatus(processState);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
@@ -90,5 +96,18 @@ public class Utils {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
         }
         return statusPublisher;
+    }
+    
+    // Instance method for Spring DI
+    protected RegistryService getRegistryServiceInstance() {
+        return registryService;
+    }
+    
+    // Static method for backward compatibility - delegates to Spring-managed instance
+    private static RegistryService getRegistryService() {
+        if (applicationContext != null) {
+            return applicationContext.getBean(Utils.class).getRegistryServiceInstance();
+        }
+        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
     }
 }

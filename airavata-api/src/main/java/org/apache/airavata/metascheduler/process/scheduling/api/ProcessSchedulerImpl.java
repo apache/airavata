@@ -33,20 +33,24 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class provides implementation of the ProcessSchedule Interface
  */
+@Component
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
+    
+    @Autowired
+    private RegistryService registryService;
 
     @Override
     public boolean canLaunch(String experimentId) {
         try {
-            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
             List<ProcessModel> processModels = registryService.getProcessList(experimentId);
 
             ExperimentModel experiment = registryService.getExperiment(experimentId);
@@ -55,7 +59,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
 
             ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
-                    Class.forName(selectionPolicyClass).newInstance();
+                    Class.forName(selectionPolicyClass).getDeclaredConstructor().newInstance();
 
             for (ProcessModel processModel : processModels) {
                 ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());

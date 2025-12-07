@@ -34,7 +34,6 @@ import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEnt
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +50,9 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
     @Autowired
     private ComputeResourceService computeResourceService;
+
+    @Autowired
+    private Mapper mapper;
 
     @Override
     public String addApplicationDeployment(
@@ -71,7 +73,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         ApplicationDeploymentEntity entity =
                 applicationDeploymentRepository.findById(deploymentId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ApplicationDeploymentDescription.class);
     }
 
@@ -92,7 +93,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
                         List<ApplicationDeploymentEntity> entities =
                                 applicationDeploymentRepository.findByAppModuleId(filters.get(fieldName));
-                        Mapper mapper = ObjectMapperSingleton.getInstance();
                         tmpDescriptions = entities.stream()
                                 .map(e -> mapper.map(e, ApplicationDeploymentDescription.class))
                                 .collect(Collectors.toList());
@@ -106,7 +106,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
                         List<ApplicationDeploymentEntity> entities =
                                 applicationDeploymentRepository.findByComputeHostId(filters.get(fieldName));
-                        Mapper mapper = ObjectMapperSingleton.getInstance();
                         tmpDescriptions = entities.stream()
                                 .map(e -> mapper.map(e, ApplicationDeploymentDescription.class))
                                 .collect(Collectors.toList());
@@ -148,7 +147,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
     public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId)
             throws AppCatalogException {
         List<ApplicationDeploymentEntity> entities = applicationDeploymentRepository.findByGatewayId(gatewayId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationDeploymentDescription.class))
                 .collect(Collectors.toList());
@@ -164,7 +162,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         List<ApplicationDeploymentEntity> entities =
                 applicationDeploymentRepository.findAccessibleApplicationDeployments(
                         gatewayId, accessibleAppIds, accessibleCompHostIds);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationDeploymentDescription.class))
                 .collect(Collectors.toList());
@@ -183,7 +180,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         List<ApplicationDeploymentEntity> entities =
                 applicationDeploymentRepository.findAccessibleApplicationDeploymentsForAppModule(
                         gatewayId, appModuleId, accessibleAppIds, accessibleComputeResourceIds);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationDeploymentDescription.class))
                 .collect(Collectors.toList());
@@ -236,7 +232,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         }
 
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationDeploymentEntity applicationDeploymentEntity =
                 mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
 

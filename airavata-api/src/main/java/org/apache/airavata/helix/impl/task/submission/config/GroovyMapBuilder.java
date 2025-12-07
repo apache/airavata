@@ -42,11 +42,30 @@ import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
-import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.RegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GroovyMapBuilder {
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        GroovyMapBuilder.applicationContext = applicationContext;
+    }
+    
+    // Instance method for Spring DI
+    protected RegistryService getRegistryServiceInstance() {
+        return registryService;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(GroovyMapBuilder.class);
 
@@ -502,7 +521,7 @@ public class GroovyMapBuilder {
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
             SSHJobSubmission sshJobSubmission =
-                    ServiceFactory.getInstance().getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
+                    getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
@@ -525,5 +544,13 @@ public class GroovyMapBuilder {
         }
 
         return sb.toString();
+    }
+    
+    // Static method for backward compatibility - delegates to Spring-managed instance
+    private static RegistryService getRegistryService() {
+        if (applicationContext != null) {
+            return applicationContext.getBean(GroovyMapBuilder.class).getRegistryServiceInstance();
+        }
+        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
     }
 }

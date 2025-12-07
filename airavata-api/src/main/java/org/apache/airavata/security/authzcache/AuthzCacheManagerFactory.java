@@ -24,31 +24,44 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * This initializes the AuthzCacheManager implementation to be used as defined by the configuration.
+ * Uses Spring ApplicationContext to get the configured bean with proper dependency injection.
  */
+@Component
 public class AuthzCacheManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(AuthzCacheManagerFactory.class);
+    private static ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        AuthzCacheManagerFactory.applicationContext = applicationContext;
+    }
 
     public static AuthzCacheManager getAuthzCacheManager() throws AiravataSecurityException {
+        if (applicationContext != null) {
+            try {
+                Class<?> authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
+                return (AuthzCacheManager) applicationContext.getBean(authzCacheManagerImpl);
+            } catch (ClassNotFoundException e) {
+                String error = "Authorization Cache Manager class could not be found.";
+                logger.error(e.getMessage(), e);
+                throw new AiravataSecurityException(error, e);
+            } catch (ApplicationSettingsException e) {
+                String error = "Error in reading the configuration related to Authorization Cache Manager class.";
+                logger.error(e.getMessage(), e);
+                throw new AiravataSecurityException(error, e);
+            }
+        }
+        // Fallback to old reflection-based instantiation if ApplicationContext not available
         try {
-            Class authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
-            AuthzCacheManager authzCacheManager = (AuthzCacheManager) authzCacheManagerImpl.newInstance();
-            return authzCacheManager;
-        } catch (ClassNotFoundException e) {
-            String error = "Authorization Cache Manager class could not be found.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error, e);
-        } catch (ApplicationSettingsException e) {
-            String error = "Error in reading the configuration related to Authorization Cache Manager class.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error, e);
-        } catch (InstantiationException e) {
-            String error = "Error in instantiating the Authorization Cache Manager class.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error, e);
-        } catch (IllegalAccessException e) {
+            Class<?> authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
+            return (AuthzCacheManager) authzCacheManagerImpl.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
             String error = "Error in instantiating the Authorization Cache Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error, e);

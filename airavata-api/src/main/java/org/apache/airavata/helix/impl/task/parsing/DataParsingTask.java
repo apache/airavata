@@ -51,12 +51,9 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.ParserOutput;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
@@ -66,8 +63,8 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -83,6 +80,15 @@ public class DataParsingTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
     private static final CountMonitor parsingTaskCounter = new CountMonitor("parsing_task_counter");
+    private static ApplicationContext applicationContext;
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        DataParsingTask.applicationContext = applicationContext;
+    }
 
     @TaskParam(name = "Parser Id")
     private String parserId;
@@ -345,51 +351,34 @@ public class DataParsingTask extends AbstractTask {
     }
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport)
-            throws TaskOnFailException, AgentException, RegistryServiceException, ServiceFactoryException {
-
-        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
-        StoragePreference gatewayStoragePreference =
-                registryService.getGatewayStoragePreference(gatewayId, storageResourceId);
-        GatewayResourceProfile gatewayResourceProfile = registryService.getGatewayResourceProfile(gatewayId);
-
-        String token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
+            throws TaskOnFailException, AgentException, RegistryServiceException {
+        // Use injected service, fallback to ApplicationContext if not injected
+        RegistryService registryService = this.registryService;
+        if (registryService == null && applicationContext != null) {
+            registryService = applicationContext.getBean(RegistryService.class);
+        }
+        if (registryService == null) {
+            throw new TaskOnFailException("RegistryService not available.", false, null);
+        }
+        var gatewayStoragePreference = registryService.getGatewayStoragePreference(gatewayId, storageResourceId);
+        var gatewayResourceProfile = registryService.getGatewayResourceProfile(gatewayId);
+        var token = gatewayStoragePreference.getResourceSpecificCredentialStoreToken();
         if (token == null || token.isEmpty()) {
             token = gatewayResourceProfile.getCredentialStoreToken();
         }
-        if (gatewayStoragePreference == null) {
-            logger.error("Could not find a gateway storage preference for storage " + storageResourceId + " gateway id "
-                    + gatewayId);
-            throw new TaskOnFailException(
-                    "Could not find a gateway storage preference for storage " + storageResourceId + " gateway id "
-                            + gatewayId,
-                    false,
-                    null);
-        }
-
-        logger.info("Fetching adaptor for storage resource " + storageResourceId + " with token " + token);
-        return adaptorSupport.fetchStorageAdaptor(
-                gatewayId,
-                storageResourceId,
-                DataMovementProtocol.SCP,
-                token,
-                gatewayStoragePreference.getLoginUserName());
+        logger.info("Fetching adaptor for storage resource {} with token {}", storageResourceId, token);
+        return adaptorSupport.fetchStorageAdaptor(gatewayId, storageResourceId, DataMovementProtocol.SCP, token, gatewayStoragePreference.getLoginUserName());
     }
 
-    private boolean downloadFileFromStorageResource(
-            String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
+    private boolean downloadFileFromStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
 
-        logger.info("Downloading from storage resource " + storageResourceId + " from path " + remoteFilePath
-                + " to local path " + localFilePath);
+        logger.info("Downloading from storage resource {} from path {} to local path {}", storageResourceId, remoteFilePath, localFilePath);
         try {
-            StorageResourceAdaptor storageResourceAdaptor =
-                    getStorageResourceAdaptor(storageResourceId, adaptorSupport);
+            var storageResourceAdaptor = getStorageResourceAdaptor(storageResourceId, adaptorSupport);
             storageResourceAdaptor.downloadFile(remoteFilePath, localFilePath);
             return true;
         } catch (Exception e) {
-            logger.error(
-                    "Failed to download file from storage " + storageResourceId + " in path " + remoteFilePath
-                            + " to local path " + localFilePath,
-                    e);
+            logger.error("Failed to download file from storage {} in path {} to local path {}", storageResourceId, remoteFilePath, localFilePath, e);
             return false;
         }
     }
@@ -400,37 +389,31 @@ public class DataParsingTask extends AbstractTask {
             String localFilePath,
             AdaptorSupport adaptorSupport)
             throws TaskOnFailException {
-        logger.info("Uploading from local path " + localFilePath + " to remote path " + remoteFilePath
-                + " of storage resource " + parsingTaskOutput.getStorageResourceId());
+        logger.info("Uploading from local path {} to remote path {} of storage resource {}", localFilePath, remoteFilePath, parsingTaskOutput.getStorageResourceId());
         try {
-            StoragePreference gatewayStoragePreference = getRegistryServiceClient()
-                    .getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
-            StorageResourceDescription storageResource =
-                    getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
-
-            String remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
-            remoteFilePath =
-                    remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
-            StorageResourceAdaptor storageResourceAdaptor =
-                    getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
+            var gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
+            var storageResource = getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
+            var remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
+            remoteFilePath = remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
+            var storageResourceAdaptor = getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
             storageResourceAdaptor.createDirectory(new File(remoteFilePath).getParent(), true);
             storageResourceAdaptor.uploadFile(localFilePath, remoteFilePath);
 
             logger.info("Uploading completed. Registering data product for path " + remoteFilePath);
 
-            DataProductModel dataProductModel = new DataProductModel();
+            var dataProductModel = new DataProductModel();
             dataProductModel.setGatewayId(getGatewayId());
             dataProductModel.setOwnerName("ParserTask");
             dataProductModel.setProductName(parsingTaskOutput.getId());
             dataProductModel.setDataProductType(DataProductType.FILE);
 
-            DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+            var replicaLocationModel = new DataReplicaLocationModel();
             replicaLocationModel.setStorageResourceId(parsingTaskOutput.getStorageResourceId());
             replicaLocationModel.setReplicaName("Parsing task output " + parsingTaskOutput.getId());
             replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
             replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
 
-            URI destinationURI = new URI(
+            var destinationURI = new URI(
                     "file",
                     gatewayStoragePreference.getLoginUserName(),
                     storageResource.getHostName(),
@@ -442,13 +425,11 @@ public class DataParsingTask extends AbstractTask {
             replicaLocationModel.setFilePath(destinationURI.toString());
             dataProductModel.addToReplicaLocations(replicaLocationModel);
 
-            String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
+            var productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
 
-            logger.info("Data product is " + productUri + " for path " + remoteFilePath);
+            logger.info("Data product is {} for path {}", productUri, remoteFilePath);
 
             setContextVariable(parsingTaskOutput.getContextVariableName(), productUri);
-        } catch (ServiceFactoryException e) {
-            throw new TaskOnFailException("Failed to get services from ServiceFactory", false, e);
         } catch (TaskOnFailException e) {
             throw e;
         } catch (RegistryServiceException e) {
@@ -456,15 +437,9 @@ public class DataParsingTask extends AbstractTask {
         } catch (AgentException e) {
             throw new TaskOnFailException("Agent error", false, e);
         } catch (Exception e) {
-            logger.error(
-                    "Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath
-                            + " of storage resource " + parsingTaskOutput.getStorageResourceId(),
-                    e);
-            throw new TaskOnFailException(
-                    "Failed to upload from local path " + localFilePath + " to remote path " + remoteFilePath
-                            + " of storage resource " + parsingTaskOutput.getStorageResourceId(),
-                    false,
-                    e);
+            String msg = String.format("Failed to upload from local path %s to remote path %s of storage resource %s", localFilePath, remoteFilePath, parsingTaskOutput.getStorageResourceId());
+            logger.error(msg, e);
+            throw new TaskOnFailException(msg, false, e);
         }
     }
 
@@ -494,14 +469,23 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
-    private static RegistryService getRegistryServiceClient() throws TaskOnFailException {
-        try {
-            return ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            throw new TaskOnFailException("Unable to create registry service...", false, e);
-        } catch (Exception e) {
-            throw new TaskOnFailException("Unable to create registry service...", false, e);
+    private RegistryService getRegistryServiceClient() throws TaskOnFailException {
+        // Use injected service, fallback to ApplicationContext if not injected
+        RegistryService registryService = this.registryService;
+        if (registryService == null && applicationContext != null) {
+            registryService = applicationContext.getBean(RegistryService.class);
         }
+        if (registryService == null) {
+            org.springframework.context.ApplicationContext airavataContext = 
+                    org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+            if (airavataContext != null) {
+                registryService = airavataContext.getBean(RegistryService.class);
+            }
+        }
+        if (registryService == null) {
+            throw new TaskOnFailException("ApplicationContext not available. RegistryService cannot be retrieved.", false, null);
+        }
+        return registryService;
     }
 
     public String getParserId() {

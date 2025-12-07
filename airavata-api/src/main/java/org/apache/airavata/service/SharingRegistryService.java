@@ -24,7 +24,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import org.apache.airavata.sharing.entities.*;
 import org.apache.airavata.sharing.models.*;
-import org.apache.airavata.sharing.repositories.*;
 import org.apache.airavata.sharing.services.DomainService;
 import org.apache.airavata.sharing.services.EntityService;
 import org.apache.airavata.sharing.services.EntityTypeService;

@@ -25,24 +25,22 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
     private final MessageProducer messageProducer;
+    
+    @Autowired
     private RegistryService registryService;
 
     public AbstractMonitor() throws ApplicationSettingsException {
-        try {
-            this.registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            throw new ApplicationSettingsException("Failed to get RegistryService from ServiceFactory", e);
-        }
         messageProducer = new MessageProducer();
     }
 

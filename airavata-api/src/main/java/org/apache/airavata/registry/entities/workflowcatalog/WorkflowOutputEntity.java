@@ -24,8 +24,9 @@ import java.io.Serializable;
 
 /**
  * The persistent class for the workflow_output database table.
- *
+ * @deprecated This entity is no longer actively used.
  */
+@Deprecated
 @Entity
 @Table(name = "WORKFLOW_OUTPUT")
 @IdClass(WorkflowOutputPK.class)

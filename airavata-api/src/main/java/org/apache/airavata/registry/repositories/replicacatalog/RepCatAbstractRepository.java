@@ -19,11 +19,13 @@
 */
 package org.apache.airavata.registry.repositories.replicacatalog;
 
+import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.repositories.AbstractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 
@@ -31,12 +33,25 @@ public class RepCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
     @Qualifier("replicaCatalogEntityManagerFactory")
     private EntityManagerFactory entityManagerFactory;
 
+    @Autowired
+    private Mapper mapper;
+    
+    private EntityManager entityManager;
+
     public RepCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
     }
 
     @Override
+    protected Mapper getMapper() {
+        return mapper;
+    }
+
+    @Override
     protected EntityManager getEntityManager() {
-        return entityManagerFactory.createEntityManager();
+        if (entityManager == null) {
+            entityManager = SharedEntityManagerCreator.createSharedEntityManager(entityManagerFactory);
+        }
+        return entityManager;
     }
 }

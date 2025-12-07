@@ -26,7 +26,6 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.replicacatalog.DataReplicaLocationRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +36,11 @@ public class DataReplicaLocationService {
     @Autowired
     private DataReplicaLocationRepository dataReplicaLocationRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
             throws ReplicaCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
         DataReplicaLocationEntity saved = dataReplicaLocationRepository.save(entity);
         return saved.getReplicaId();
@@ -49,20 +50,17 @@ public class DataReplicaLocationService {
         DataReplicaLocationEntity entity =
                 dataReplicaLocationRepository.findById(replicaId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, DataReplicaLocationModel.class);
     }
 
     public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
         List<DataReplicaLocationEntity> entities = dataReplicaLocationRepository.findByProductUri(productUri);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, DataReplicaLocationModel.class))
                 .collect(Collectors.toList());
     }
 
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
         dataReplicaLocationRepository.save(entity);
         return true;

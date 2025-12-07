@@ -35,7 +35,6 @@ import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +51,9 @@ public class ProcessService {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private Mapper mapper;
 
     public void populateParentIds(ProcessEntity processEntity) {
         String processId = processEntity.getProcessId();
@@ -111,7 +113,6 @@ public class ProcessService {
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ProcessModel.class);
     }
 
@@ -141,7 +142,6 @@ public class ProcessService {
         if (fieldName.equals(DBConstants.Process.EXPERIMENT_ID)) {
             logger.debug("Search criteria is ExperimentId");
             List<ProcessEntity> entities = processRepository.findByExperimentId((String) value);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             processModelList = new ArrayList<>();
             entities.forEach(e -> processModelList.add(mapper.map(e, ProcessModel.class)));
         } else {
@@ -171,7 +171,6 @@ public class ProcessService {
 
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         List<ProcessEntity> entities = processRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ProcessModel> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ProcessModel.class)));
         return result;
@@ -214,7 +213,6 @@ public class ProcessService {
         }
         processModel.setLastUpdateTime(System.currentTimeMillis());
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
 
         populateParentIds(processEntity);

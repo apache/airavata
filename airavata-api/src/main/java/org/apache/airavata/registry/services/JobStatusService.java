@@ -28,7 +28,6 @@ import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.JobStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +38,13 @@ public class JobStatusService {
     @Autowired
     private JobStatusRepository jobStatusRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public JobStatus getJobStatus(JobPK jobPK) throws RegistryException {
         List<JobStatusEntity> entities = jobStatusRepository.findByJobIdAndTaskIdOrderByTimeOfStateChangeDesc(
                 jobPK.getJobId(), jobPK.getTaskId());
         if (entities.isEmpty()) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entities.get(0), JobStatus.class);
     }
 
@@ -52,7 +53,6 @@ public class JobStatusService {
             jobStatus.setStatusId(ExpCatalogUtils.getID("JOB_STATE"));
         }
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobStatusEntity entity = mapper.map(jobStatus, JobStatusEntity.class);
         entity.setJobId(jobPK.getJobId());
         entity.setTaskId(jobPK.getTaskId());
@@ -66,7 +66,6 @@ public class JobStatusService {
         if (jobStatus.getTimeOfStateChange() == 0) {
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobStatusEntity entity = mapper.map(jobStatus, JobStatusEntity.class);
         entity.setJobId(jobPK.getJobId());
         entity.setTaskId(jobPK.getTaskId());

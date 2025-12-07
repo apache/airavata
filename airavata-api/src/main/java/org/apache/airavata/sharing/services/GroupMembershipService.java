@@ -40,7 +40,6 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.airavata.sharing.repositories.GroupMembershipRepository;
 import org.apache.airavata.sharing.utils.DBConstants;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,13 +56,15 @@ public class GroupMembershipService {
     @Autowired
     private UserGroupService userGroupService;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public GroupMembership get(GroupMembershipPK pk) throws SharingRegistryException {
         GroupMembershipEntity entity = groupMembershipRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, GroupMembership.class);
     }
 
@@ -72,7 +73,6 @@ public class GroupMembershipService {
     }
 
     public GroupMembership update(GroupMembership groupMembership) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GroupMembershipEntity entity = mapper.map(groupMembership, GroupMembershipEntity.class);
         GroupMembershipEntity saved = groupMembershipRepository.save(entity);
         return mapper.map(saved, GroupMembership.class);
@@ -113,7 +113,6 @@ public class GroupMembershipService {
         }
 
         List<GroupMembershipEntity> entities = typedQuery.getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, GroupMembership.class)).toList();
     }
 
@@ -134,7 +133,6 @@ public class GroupMembershipService {
         query.distinct(true);
 
         List<UserEntity> entities = entityManager.createQuery(query).getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, User.class)).toList();
     }
 
@@ -155,7 +153,6 @@ public class GroupMembershipService {
         query.distinct(true);
 
         List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 
@@ -177,7 +174,6 @@ public class GroupMembershipService {
         query.distinct(true);
 
         List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 

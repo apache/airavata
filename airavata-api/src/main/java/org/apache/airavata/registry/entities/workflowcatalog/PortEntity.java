@@ -26,7 +26,9 @@ import org.apache.airavata.model.ComponentStatus;
 
 /**
  * The persistent class for the port database table.
+ * @deprecated This entity is no longer actively used.
  */
+@Deprecated
 @Entity
 @Table(name = "PORT")
 @IdClass(PortPK.class)

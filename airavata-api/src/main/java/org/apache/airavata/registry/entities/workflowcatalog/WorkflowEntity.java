@@ -26,7 +26,9 @@ import java.util.List;
 
 /**
  * The persistent class for the workflow database table.
+ * @deprecated This entity is no longer actively used. Use AiravataWorkflowEntity instead.
  */
+@Deprecated
 @Entity
 @Table(name = "WORKFLOW")
 public class WorkflowEntity implements Serializable {

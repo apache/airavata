@@ -25,7 +25,9 @@ import java.sql.Timestamp;
 
 /**
  * The persistent class for the workflow_status database table.
+ * @deprecated This entity is no longer actively used.
  */
+@Deprecated
 @Entity
 @Table(name = "WORKFLOW_STATUS")
 @IdClass(WorkflowStatusPK.class)

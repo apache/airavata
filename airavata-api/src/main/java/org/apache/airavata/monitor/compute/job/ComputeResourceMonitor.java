@@ -25,10 +25,12 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ComputeResourceMonitor {
+
+    @Autowired
+    protected RegistryService registryService;
 
     private boolean isValid(String str) {
         return str != null && !str.trim().isEmpty();
@@ -36,13 +38,8 @@ public abstract class ComputeResourceMonitor {
 
     public UserResourceProfile getUserResourceProfile(String username, String gatewayId)
             throws RegistryServiceException {
-        RegistryService registryService;
-        try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            var exception = new RegistryServiceException("Failed to get RegistryService from ServiceFactory");
-            exception.initCause(e);
-            throw exception;
+        if (registryService == null) {
+            throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
         }
         if (registryService.isUserResourceProfileExists(username, gatewayId)) {
             return registryService.getUserResourceProfile(username, gatewayId);
@@ -52,8 +49,10 @@ public abstract class ComputeResourceMonitor {
 
     private UserComputeResourcePreference getUserComputeResourcePreference(
             String gatewayId, String username, String computeResourceId)
-            throws RegistryServiceException, ServiceFactoryException {
-        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws RegistryServiceException {
+        if (registryService == null) {
+            throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
+        }
         if (registryService.isUserComputeResourcePreferenceExists(username, gatewayId, computeResourceId)) {
             return registryService.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
         }
@@ -90,8 +89,10 @@ public abstract class ComputeResourceMonitor {
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourcId, String groupResourceProfileId)
-            throws RegistryServiceException, ServiceFactoryException {
-        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws RegistryServiceException {
+        if (registryService == null) {
+            throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
+        }
         if (registryService.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
             return registryService.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
         }
@@ -99,8 +100,10 @@ public abstract class ComputeResourceMonitor {
     }
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId)
-            throws RegistryServiceException, ServiceFactoryException {
-        RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws RegistryServiceException {
+        if (registryService == null) {
+            throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
+        }
         if (registryService.isGroupResourceProfileExists(groupResourceProfileId)) {
             return registryService.getGroupResourceProfile(groupResourceProfileId);
         }

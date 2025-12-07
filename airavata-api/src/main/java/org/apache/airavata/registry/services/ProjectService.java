@@ -28,7 +28,6 @@ import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProjectRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +38,14 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public boolean isProjectExist(String projectId) throws RegistryException {
         return projectRepository.existsById(projectId);
     }
 
     public String addProject(Project project, String gatewayId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProjectEntity entity = mapper.map(project, ProjectEntity.class);
         entity.setGatewayId(gatewayId);
         ProjectEntity saved = projectRepository.save(entity);
@@ -54,7 +55,6 @@ public class ProjectService {
     public Project getProject(String projectId) throws RegistryException {
         ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Project.class);
     }
 
@@ -63,7 +63,6 @@ public class ProjectService {
     }
 
     public void updateProject(Project project, String projectId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProjectEntity entity = mapper.map(project, ProjectEntity.class);
         entity.setProjectID(projectId);
         projectRepository.save(entity);
@@ -84,7 +83,6 @@ public class ProjectService {
         } else {
             entities = projectRepository.findAll();
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<Project> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, Project.class)));
         return result;
@@ -101,7 +99,6 @@ public class ProjectService {
         // TODO: Implement complex search using Criteria API with accessibleProjectIds filter
         // For now, return projects from accessibleProjectIds
         List<Project> result = new ArrayList<>();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (String projectId : accessibleProjectIds) {
             ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
             if (entity != null) {

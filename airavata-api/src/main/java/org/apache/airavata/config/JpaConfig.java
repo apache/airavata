@@ -21,7 +21,9 @@ package org.apache.airavata.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import org.apache.airavata.common.utils.JPAUtils;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -77,6 +79,19 @@ public class JpaConfig {
                 db.getJdbcUser(),
                 db.getJdbcPassword(),
                 db.getValidationQuery());
+    }
+
+    @Bean(name = "registryDataSource")
+    public DataSource registryDataSource() {
+        var db = properties.getDatabase().getRegistry();
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName(db.getJdbcDriver());
+        dataSource.setUrl(db.getJdbcUrl());
+        dataSource.setUsername(db.getJdbcUser());
+        dataSource.setPassword(db.getJdbcPassword());
+        dataSource.setValidationQuery(properties.getDatabase().getValidationQuery());
+        dataSource.setTestOnBorrow(true);
+        return dataSource;
     }
 
     @Bean(name = "expCatalogEntityManagerFactory")
@@ -255,28 +270,28 @@ public class JpaConfig {
 
     @Configuration
     @EnableJpaRepositories(
-            basePackages = "org.apache.airavata.registry.core.repositories.appcatalog",
+            basePackages = "org.apache.airavata.registry.repositories.appcatalog",
             entityManagerFactoryRef = "appCatalogEntityManagerFactory",
             transactionManagerRef = "appCatalogTransactionManager")
     static class AppCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
-            basePackages = "org.apache.airavata.registry.core.repositories.expcatalog",
+            basePackages = "org.apache.airavata.registry.repositories.expcatalog",
             entityManagerFactoryRef = "expCatalogEntityManagerFactory",
             transactionManagerRef = "expCatalogTransactionManager")
     static class ExpCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
-            basePackages = "org.apache.airavata.registry.core.repositories.replicacatalog",
+            basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
             entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
             transactionManagerRef = "replicaCatalogTransactionManager")
     static class ReplicaCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
-            basePackages = "org.apache.airavata.registry.core.repositories.workflowcatalog",
+            basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
             entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
             transactionManagerRef = "workflowCatalogTransactionManager")
     static class WorkflowCatalogJpaRepositoriesConfig {}

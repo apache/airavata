@@ -30,8 +30,8 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +39,20 @@ import org.slf4j.LoggerFactory;
  * This class implements selecting one compute resource out of enabled multiple compute resource polices.
  * //TODO: implemented for load testing, for proper usecases airavata should enable multiple compute resources in Experiment creation
  */
+@Component
 public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        MultipleComputeResourcePolicy.applicationContext = applicationContext;
+    }
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService registryService;
-        try {
-            registryService = ServiceFactory.getInstance().getRegistryService();
-        } catch (ServiceFactoryException e) {
-            LOGGER.error("Failed to get RegistryService from ServiceFactory", e);
-            return Optional.empty();
-        }
+        RegistryService registryService = applicationContext.getBean(RegistryService.class);
         try {
 
             ProcessModel processModel = registryService.getProcess(processId);

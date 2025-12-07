@@ -59,16 +59,18 @@ public class BackgroundServicesLauncher {
     @Autowired
     private AiravataServerProperties properties;
 
+    @Autowired
+    private HelixController helixController;
+
     @Bean
     @Order(1)
     public CommandLineRunner startHelixController() {
         return args -> {
-            if (properties.getHelix().isControllerEnabled()) {
+            if (properties.getHelix().isControllerEnabled() && helixController != null) {
                 logger.info("Starting Helix Controller...");
                 Thread controllerThread = new Thread(() -> {
                     try {
-                        HelixController controller = new HelixController();
-                        controller.start();
+                        helixController.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Helix Controller", e);
                     }
@@ -81,16 +83,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private GlobalParticipant globalParticipant;
+
     @Bean
     @Order(2)
     public CommandLineRunner startGlobalParticipant() {
         return args -> {
-            if (properties.getHelix().isParticipantEnabled()) {
+            if (properties.getHelix().isParticipantEnabled() && globalParticipant != null) {
                 logger.info("Starting Global Participant...");
                 Thread participantThread = new Thread(() -> {
                     try {
-                        GlobalParticipant participant = GlobalParticipant.create();
-                        participant.start();
+                        globalParticipant.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Global Participant", e);
                     }
@@ -103,16 +107,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private PreWorkflowManager preWorkflowManager;
+
     @Bean
     @Order(3)
     public CommandLineRunner startPreWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isPreEnabled()) {
+            if (properties.getWorkflow().isPreEnabled() && preWorkflowManager != null) {
                 logger.info("Starting Pre Workflow Manager...");
                 Thread preWmThread = new Thread(() -> {
                     try {
-                        PreWorkflowManager manager = new PreWorkflowManager();
-                        manager.start();
+                        preWorkflowManager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Pre Workflow Manager", e);
                     }
@@ -125,16 +131,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private ParserWorkflowManager parserWorkflowManager;
+
     @Bean
     @Order(4)
     public CommandLineRunner startParserWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isParserEnabled()) {
+            if (properties.getWorkflow().isParserEnabled() && parserWorkflowManager != null) {
                 logger.info("Starting Parser Workflow Manager...");
                 Thread parserWmThread = new Thread(() -> {
                     try {
-                        ParserWorkflowManager manager = new ParserWorkflowManager();
-                        manager.start();
+                        parserWorkflowManager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Parser Workflow Manager", e);
                     }
@@ -147,16 +155,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private PostWorkflowManager postWorkflowManager;
+
     @Bean
     @Order(5)
     public CommandLineRunner startPostWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isPostEnabled()) {
+            if (properties.getWorkflow().isPostEnabled() && postWorkflowManager != null) {
                 logger.info("Starting Post Workflow Manager...");
                 Thread postWmThread = new Thread(() -> {
                     try {
-                        PostWorkflowManager manager = new PostWorkflowManager();
-                        manager.start();
+                        postWorkflowManager.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Post Workflow Manager", e);
                     }
@@ -169,16 +179,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private RealtimeMonitor realtimeMonitor;
+
     @Bean
     @Order(6)
     public CommandLineRunner startRealtimeMonitor() {
         return args -> {
-            if (properties.getMonitoring().getRealtimeMonitor().isMonitorEnabled()) {
+            if (properties.getMonitoring().getRealtimeMonitor().isMonitorEnabled() && realtimeMonitor != null) {
                 logger.info("Starting Realtime Monitor...");
                 Thread monitorThread = new Thread(() -> {
                     try {
-                        RealtimeMonitor monitor = new RealtimeMonitor();
-                        monitor.start();
+                        realtimeMonitor.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Realtime Monitor", e);
                     }
@@ -191,16 +203,18 @@ public class BackgroundServicesLauncher {
         };
     }
 
+    @Autowired
+    private EmailBasedMonitor emailBasedMonitor;
+
     @Bean
     @Order(7)
     public CommandLineRunner startEmailMonitor() {
         return args -> {
-            if (properties.getMonitoring().getEmailBasedMonitor().isMonitorEnabled()) {
+            if (properties.getMonitoring().getEmailBasedMonitor().isMonitorEnabled() && emailBasedMonitor != null) {
                 logger.info("Starting Email Monitor...");
                 Thread emailThread = new Thread(() -> {
                     try {
-                        EmailBasedMonitor monitor = new EmailBasedMonitor();
-                        monitor.start();
+                        emailBasedMonitor.start();
                     } catch (Exception e) {
                         logger.error("Failed to start Email Monitor", e);
                     }

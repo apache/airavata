@@ -25,7 +25,6 @@ import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingCom
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayUsageReportingCommandRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class GatewayUsageReportingCommandService {
     @Autowired
     private GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository;
+
+    @Autowired
+    private Mapper mapper;
 
     public boolean isGatewayUsageReportingCommandExists(String gatewayId, String computeResourceId)
             throws RegistryException {
@@ -52,12 +54,10 @@ public class GatewayUsageReportingCommandService {
         GatewayUsageReportingCommandEntity entity =
                 gatewayUsageReportingCommandRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, GatewayUsageReportingCommand.class);
     }
 
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayUsageReportingCommandEntity entity = mapper.map(command, GatewayUsageReportingCommandEntity.class);
         gatewayUsageReportingCommandRepository.save(entity);
     }

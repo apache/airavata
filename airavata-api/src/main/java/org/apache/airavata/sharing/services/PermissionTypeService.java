@@ -36,7 +36,6 @@ import org.apache.airavata.sharing.entities.PermissionTypePK;
 import org.apache.airavata.sharing.models.PermissionType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,13 +46,15 @@ public class PermissionTypeService {
     @Autowired
     private PermissionTypeRepository permissionTypeRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public PermissionType get(PermissionTypePK pk) throws SharingRegistryException {
         PermissionTypeEntity entity = permissionTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, PermissionType.class);
     }
 
@@ -62,7 +63,6 @@ public class PermissionTypeService {
     }
 
     public PermissionType update(PermissionType permissionType) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         PermissionTypeEntity entity = mapper.map(permissionType, PermissionTypeEntity.class);
         PermissionTypeEntity saved = permissionTypeRepository.save(entity);
         return mapper.map(saved, PermissionType.class);
@@ -114,7 +114,6 @@ public class PermissionTypeService {
         }
 
         List<PermissionTypeEntity> entities = typedQuery.getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, PermissionType.class)).toList();
     }
 }

@@ -36,7 +36,6 @@ import org.apache.airavata.monitor.compute.job.output.OutputParser;
 import org.apache.airavata.monitor.compute.job.output.OutputParserImpl;
 import org.apache.airavata.monitor.compute.utils.Constants;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -55,7 +54,11 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         try {
             LOGGER.debug("Executing ComputeResources Monitoring Job....... ");
 
-            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            // Use injected registryService from ComputeResourceMonitor
+            if (this.registryService == null) {
+                throw new JobExecutionException("RegistryService not injected. This class must be managed by Spring.");
+            }
+            RegistryService registryService = this.registryService;
 
             JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
             String metaSchedulerGateway = jobDataMap.getString(Constants.METASCHEDULER_GATEWAY);

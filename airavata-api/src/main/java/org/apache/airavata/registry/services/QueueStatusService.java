@@ -26,7 +26,6 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.entities.expcatalog.QueueStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.QueueStatusRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +36,13 @@ public class QueueStatusService {
     @Autowired
     private QueueStatusRepository queueStatusRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
         // Get all queue statuses, then group by hostName and queueName to get latest
         // This is a simplified implementation - may need optimization
         List<QueueStatusEntity> allEntities = queueStatusRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<QueueStatusModel> result = new ArrayList<>();
         // Group by hostName+queueName and get latest for each
         // For now, return all - can be optimized later
@@ -50,7 +51,6 @@ public class QueueStatusService {
     }
 
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (QueueStatusModel status : queueStatuses) {
             QueueStatusEntity entity = mapper.map(status, QueueStatusEntity.class);
             queueStatusRepository.save(entity);
@@ -61,7 +61,6 @@ public class QueueStatusService {
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryException {
         var entity = queueStatusRepository.findFirstByHostNameAndQueueNameOrderByTimeDesc(hostName, queueName);
         if (entity.isEmpty()) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity.get(), QueueStatusModel.class);
     }
 }

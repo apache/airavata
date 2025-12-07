@@ -41,13 +41,13 @@ import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.repositories.TenantProfileRepository;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
-import org.apache.airavata.profile.utils.JPAUtils;
-import org.apache.airavata.profile.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class TenantProfileService {
@@ -60,6 +60,12 @@ public class TenantProfileService {
 
     @Autowired
     private CredentialStoreService credentialStoreService;
+
+    @Autowired
+    private Mapper mapper;
+    
+    @PersistenceContext(unitName = "profile_service")
+    private EntityManager entityManager;
 
     public TenantProfileService() {
         logger.debug("Initializing TenantProfileService");
@@ -345,7 +351,6 @@ public class TenantProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entityOpt.get(), Gateway.class);
     }
 
@@ -354,13 +359,11 @@ public class TenantProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entityOpt.get(), Gateway.class);
     }
 
     private List<Gateway> getAllGateways() throws Exception {
         List<GatewayEntity> entities = tenantProfileRepository.findAllGateways();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<Gateway> result = new ArrayList<>();
         entities.forEach(entity -> result.add(mapper.map(entity, Gateway.class)));
         return result;
@@ -368,7 +371,6 @@ public class TenantProfileService {
 
     private List<Gateway> getAllGatewaysForUser(String requesterUsername) throws Exception {
         List<GatewayEntity> entities = tenantProfileRepository.findByRequesterUsername(requesterUsername);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<Gateway> result = new ArrayList<>();
         entities.forEach(entity -> result.add(mapper.map(entity, Gateway.class)));
         return result;
@@ -384,23 +386,20 @@ public class TenantProfileService {
         if (entities.isEmpty()) {
             return null;
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entities.get(0), Gateway.class);
     }
 
     @Transactional
     private Gateway createGateway(Gateway gateway) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
-        GatewayEntity persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
+        GatewayEntity persistedCopy = entityManager.merge(entity);
         return mapper.map(persistedCopy, Gateway.class);
     }
 
     @Transactional
     private Gateway updateGateway(Gateway gateway) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
-        GatewayEntity persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
+        GatewayEntity persistedCopy = entityManager.merge(entity);
         return mapper.map(persistedCopy, Gateway.class);
     }
 

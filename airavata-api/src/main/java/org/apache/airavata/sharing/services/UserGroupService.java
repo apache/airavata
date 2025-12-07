@@ -37,7 +37,6 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.airavata.sharing.repositories.UserGroupRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,13 +50,15 @@ public class UserGroupService {
     @Autowired
     private PermissionTypeService permissionTypeService;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public UserGroup get(UserGroupPK pk) throws SharingRegistryException {
         UserGroupEntity entity = userGroupRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, UserGroup.class);
     }
 
@@ -66,7 +67,6 @@ public class UserGroupService {
     }
 
     public UserGroup update(UserGroup userGroup) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserGroupEntity entity = mapper.map(userGroup, UserGroupEntity.class);
         UserGroupEntity saved = userGroupRepository.save(entity);
         return mapper.map(saved, UserGroup.class);
@@ -108,7 +108,6 @@ public class UserGroupService {
         }
 
         List<UserGroupEntity> entities = typedQuery.getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 
@@ -150,7 +149,6 @@ public class UserGroupService {
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
         List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 

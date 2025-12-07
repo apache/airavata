@@ -29,7 +29,6 @@ import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +46,9 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
     @Autowired
     private JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
+    
+    @Autowired
+    private Mapper mapper;
 
     private String computeResourceId;
 
@@ -88,7 +90,6 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         JobSubmissionInterfaceEntity entity =
                 jobSubmissionInterfaceRepository.findById(pk).orElse(null);
         Assertions.assertNotNull(entity);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobSubmissionInterface retrievedJobSubmissionInterface = mapper.map(entity, JobSubmissionInterface.class);
         Assertions.assertEquals("test", retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
         Assertions.assertEquals(1, retrievedJobSubmissionInterface.getPriorityOrder());

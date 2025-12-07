@@ -27,9 +27,10 @@ import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.service.SharingRegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,36 +38,48 @@ import org.slf4j.LoggerFactory;
 /**
  * Create and save an initial set of user management groups for a gateway.
  */
+@Component
 public class GatewayGroupsInitializer {
 
-    private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(GatewayGroupsInitializer.class);
+    private static ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        GatewayGroupsInitializer.applicationContext = applicationContext;
+    }
+
+    @Autowired
+    private RegistryService registryService;
+    
+    @Autowired
+    private SharingRegistryService sharingRegistryService;
+    
+    @Autowired
+    private CredentialStoreService credentialStoreService;
 
     public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
         try {
-            ServiceFactory factory = ServiceFactory.getInstance();
-            SharingRegistryService sharingRegistryService = factory.getSharingRegistryService();
-            RegistryService registryService = factory.getRegistryService();
-            CredentialStoreService credentialStoreService = factory.getCredentialStoreService();
-            GatewayGroupsInitializer gatewayGroupsInitializer =
-                    new GatewayGroupsInitializer(registryService, sharingRegistryService, credentialStoreService);
+            if (applicationContext == null) {
+                throw new RuntimeException("ApplicationContext not available. GatewayGroupsInitializer cannot be retrieved.");
+            }
+            GatewayGroupsInitializer gatewayGroupsInitializer = applicationContext.getBean(GatewayGroupsInitializer.class);
             return gatewayGroupsInitializer.initialize(gatewayId);
         } catch (SharingRegistryException
                 | RegistryServiceException
-                | CredentialStoreException
-                | ServiceFactoryException e) {
+                | CredentialStoreException e) {
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
         }
     }
 
-    private RegistryService registryService;
-    private SharingRegistryService sharingRegistryService;
-    private CredentialStoreService credentialStoreService;
+    public GatewayGroupsInitializer() {
+        // Default constructor for Spring
+    }
 
     public GatewayGroupsInitializer(
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
             CredentialStoreService credentialStoreService) {
-
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.credentialStoreService = credentialStoreService;

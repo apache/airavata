@@ -24,7 +24,10 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.CredentialStoreService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -34,18 +37,44 @@ import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 
+@Component
 public final class AWSTaskUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSTaskUtil.class);
+    private static ApplicationContext applicationContext;
+    
+    @Autowired
+    private CredentialStoreService credentialStoreService;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        AWSTaskUtil.applicationContext = applicationContext;
+    }
 
     private AWSTaskUtil() {
         throw new IllegalStateException("Utility class");
     }
+    
+    // Instance method for Spring DI
+    private CredentialStoreService getCredentialStoreServiceInstance() {
+        return credentialStoreService;
+    }
+    
+    // Static method for backward compatibility - delegates to Spring-managed instance
+    private static CredentialStoreService getCredentialStoreServiceStatic() {
+        if (applicationContext != null) {
+            return applicationContext.getBean(AWSTaskUtil.class).getCredentialStoreServiceInstance();
+        }
+        throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
+    }
 
     public static Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
         LOGGER.info("Building EC2 client for token {} and gateway id {} in region {}", token, gatewayId, region);
-        PasswordCredential pwdCred =
-                ServiceFactory.getInstance().getCredentialStoreService().getPasswordCredential(token, gatewayId);
+        if (applicationContext == null) {
+            throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
+        }
+        CredentialStoreService credentialStoreService = applicationContext.getBean(CredentialStoreService.class);
+        PasswordCredential pwdCred = credentialStoreService.getPasswordCredential(token, gatewayId);
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
         return Ec2Client.builder()
@@ -115,9 +144,8 @@ public final class AWSTaskUtil {
                     ec2Client.deleteKeyPair(req -> req.keyName(keyName));
                 }
                 if (sshCredentialToken != null) {
-                    ServiceFactory.getInstance()
-                            .getCredentialStoreService()
-                            .deleteSSHCredential(sshCredentialToken, gatewayId);
+                    CredentialStoreService credentialStoreService = getCredentialStoreServiceStatic();
+                    credentialStoreService.deleteSSHCredential(sshCredentialToken, gatewayId);
                 }
             }
 

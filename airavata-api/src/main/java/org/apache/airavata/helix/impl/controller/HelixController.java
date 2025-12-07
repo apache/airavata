@@ -26,6 +26,7 @@ import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class HelixController implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);

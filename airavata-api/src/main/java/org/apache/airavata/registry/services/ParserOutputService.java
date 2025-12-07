@@ -24,7 +24,6 @@ import org.apache.airavata.model.appcatalog.parser.ParserOutput;
 import org.apache.airavata.registry.entities.appcatalog.ParserOutputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParserOutputRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,9 @@ public class ParserOutputService {
     @Autowired
     private ParserOutputRepository parserOutputRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public boolean isExists(String parserOutputId) throws RegistryException {
         return parserOutputRepository.existsById(parserOutputId);
     }
@@ -43,12 +45,10 @@ public class ParserOutputService {
         ParserOutputEntity entity =
                 parserOutputRepository.findById(parserOutputId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ParserOutput.class);
     }
 
     public ParserOutput create(ParserOutput parserOutput) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ParserOutputEntity entity = mapper.map(parserOutput, ParserOutputEntity.class);
         ParserOutputEntity saved = parserOutputRepository.save(entity);
         return mapper.map(saved, ParserOutput.class);

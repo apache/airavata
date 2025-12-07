@@ -35,7 +35,6 @@ import org.apache.airavata.sharing.models.SearchCondition;
 import org.apache.airavata.sharing.models.SearchCriteria;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,13 +49,15 @@ public class EntityService {
     @Autowired
     private EntityRepository entityRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public Entity get(EntityPK pk) throws SharingRegistryException {
         EntityEntity entity = entityRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Entity.class);
     }
 
@@ -65,7 +66,6 @@ public class EntityService {
     }
 
     public Entity update(Entity entity) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         EntityEntity entityEntity = mapper.map(entity, EntityEntity.class);
         EntityEntity saved = entityRepository.save(entityEntity);
         return mapper.map(saved, Entity.class);
@@ -84,7 +84,6 @@ public class EntityService {
         List<EntityEntity> entities =
                 entityRepository.findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
                         domainId, parentId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Entity.class)).toList();
     }
 
@@ -139,7 +138,6 @@ public class EntityService {
             }
 
             List<EntityEntity> entities = typedQuery.getResultList();
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             List<Entity> result = new ArrayList<>();
             for (EntityEntity entity : entities) {
                 result.add(mapper.map(entity, Entity.class));

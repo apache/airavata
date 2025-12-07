@@ -36,7 +36,6 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.repositories.UserRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,13 +49,15 @@ public class UserService {
     @Autowired
     private PermissionTypeService permissionTypeService;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public User get(UserPK pk) throws SharingRegistryException {
         UserEntity entity = userRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, User.class);
     }
 
@@ -65,7 +66,6 @@ public class UserService {
     }
 
     public User update(User user) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserEntity entity = mapper.map(user, UserEntity.class);
         UserEntity saved = userRepository.save(entity);
         return mapper.map(saved, User.class);
@@ -107,7 +107,6 @@ public class UserService {
         }
 
         List<UserEntity> entities = typedQuery.getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, User.class)).toList();
     }
 
@@ -157,7 +156,6 @@ public class UserService {
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
         List<UserEntity> entities = entityManager.createQuery(query).getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, User.class)).toList();
     }
 }

@@ -45,7 +45,6 @@ import org.apache.airavata.registry.repositories.appcatalog.ApplicationInterface
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationModuleRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationOutputRepository;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +71,9 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Autowired
     private AppModuleMappingRepository appModuleMappingRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     @Override
     public String addApplicationModule(ApplicationModule applicationModule, String gatewayId)
             throws AppCatalogException {
@@ -87,7 +89,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     @Override
     public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModule applicationModule = getApplicationModule(moduleId);
         ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
@@ -119,7 +120,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         ApplicationModuleEntity entity =
                 applicationModuleRepository.findById(moduleId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ApplicationModule.class);
     }
 
@@ -128,7 +128,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         ApplicationInterfaceEntity entity =
                 applicationInterfaceRepository.findById(interfaceId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, ApplicationInterfaceDescription.class);
     }
 
@@ -138,7 +137,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             logger.debug("Fetching Application Modules for given Application Module Name");
             String appModuleName = filters.get(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME);
             List<ApplicationModuleEntity> entities = applicationModuleRepository.findByAppModuleName(appModuleName);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             return entities.stream()
                     .map(e -> mapper.map(e, ApplicationModule.class))
                     .collect(Collectors.toList());
@@ -151,7 +149,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Override
     public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
         List<ApplicationModuleEntity> entities = applicationModuleRepository.findByGatewayId(gatewayId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationModule.class))
                 .collect(Collectors.toList());
@@ -166,7 +163,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         }
         List<ApplicationModuleEntity> entities = applicationModuleRepository.findAccessibleApplicationModules(
                 gatewayId, accessibleAppIds, accessibleCompHostIds);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationModule.class))
                 .collect(Collectors.toList());
@@ -180,7 +176,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             String applicationName = filters.get(DBConstants.ApplicationInterface.APPLICATION_NAME);
             List<ApplicationInterfaceEntity> entities =
                     applicationInterfaceRepository.findByApplicationName(applicationName);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             return entities.stream()
                     .map(e -> mapper.map(e, ApplicationInterfaceDescription.class))
                     .collect(Collectors.toList());
@@ -194,7 +189,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
             throws AppCatalogException {
         List<ApplicationInterfaceEntity> entities = applicationInterfaceRepository.findByGatewayId(gatewayId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, ApplicationInterfaceDescription.class))
                 .collect(Collectors.toList());
@@ -218,7 +212,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Override
     public List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException {
         List<ApplicationInputEntity> entities = applicationInputRepository.findByInterfaceId(interfaceId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, InputDataObjectType.class))
                 .collect(Collectors.toList());
@@ -227,7 +220,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException {
         List<ApplicationOutputEntity> entities = applicationOutputRepository.findByInterfaceId(interfaceId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> mapper.map(e, OutputDataObjectType.class))
                 .collect(Collectors.toList());
@@ -284,7 +276,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         }
 
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity =
                 mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
 
@@ -333,7 +324,6 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         }
 
         String applicationModuleId = applicationModule.getAppModuleId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
 
         if (gatewayId != null) {

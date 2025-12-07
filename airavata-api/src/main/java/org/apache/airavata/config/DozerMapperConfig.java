@@ -17,21 +17,25 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.profile.utils;
+package org.apache.airavata.config;
 
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
 import com.github.dozermapper.core.Mapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class ObjectMapperSingleton {
+/**
+ * Configuration for Dozer mapper bean.
+ * Replaces the three ObjectMapperSingleton classes with a single Spring-managed bean.
+ */
+@Configuration
+public class DozerMapperConfig {
 
-    private static Mapper mapper;
-
-    public static Mapper getInstance() {
-        if (mapper == null) {
-            mapper = DozerBeanMapperBuilder.create()
-                    .withMappingFiles("dozer_mapping.xml")
-                    .build();
-        }
-        return mapper;
+    @Bean
+    public Mapper dozerMapper() {
+        return DozerBeanMapperBuilder.create()
+                .withMappingFiles("dozer_mapping.xml")
+                .build();
     }
 }
+

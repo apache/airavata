@@ -37,11 +37,8 @@ import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.profile.utils.JPAUtils;
-import org.apache.airavata.profile.utils.ObjectMapperSingleton;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
-import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.security.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +48,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class UserProfileService {
@@ -62,6 +61,15 @@ public class UserProfileService {
     @Autowired
     private IamAdminService iamAdminService;
 
+    @Autowired
+    private Mapper mapper;
+    
+    @Autowired
+    private AiravataSecurityManager securityManager;
+    
+    @PersistenceContext(unitName = "profile_service")
+    private EntityManager entityManager;
+
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     public UserProfileService() {}
@@ -70,7 +78,7 @@ public class UserProfileService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             // Load UserInfo for the access token and create an initial UserProfile from it
-            UserInfo userInfo = SecurityManagerFactory.getSecurityManager().getUserInfoFromAuthzToken(authzToken);
+            UserInfo userInfo = securityManager.getUserInfoFromAuthzToken(authzToken);
             final UserProfile existingProfile = getUserProfileByIdAndGateWay(userInfo.getUsername(), gatewayId);
             // If a user profile already exists, just return the userId
             if (existingProfile != null) {
@@ -191,7 +199,6 @@ public class UserProfileService {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         return () -> {
             try {
-                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 AuthzToken serviceAccountAuthzToken =
                         securityManager.getUserManagementServiceAccountAuthzToken(gatewayId);
                 IamAdminService iamAdminService = getIamAdminService();
@@ -313,7 +320,6 @@ public class UserProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entityOpt.get(), UserProfile.class);
     }
 
@@ -324,20 +330,15 @@ public class UserProfileService {
 
     @Transactional
     private UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
-        UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
-            UserProfileEntity result = entityManager.merge(entity);
-            if (postUpdateAction != null) {
-                postUpdateAction.run();
-            }
-            return result;
-        });
+        UserProfileEntity persistedCopy = entityManager.merge(entity);
+        if (postUpdateAction != null) {
+            postUpdateAction.run();
+        }
         return mapper.map(persistedCopy, UserProfile.class);
     }
 
     private List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<UserProfile> result = new ArrayList<>();
         if (limit > 0) {
             Pageable pageable = PageRequest.of(offset / limit, limit);
@@ -364,7 +365,6 @@ public class UserProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entityOpt.get(), UserProfile.class);
     }
 }

@@ -31,9 +31,9 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.service.SharingRegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.Entity;
 import org.apache.airavata.sharing.models.EntityType;
@@ -46,18 +46,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Ajinkya on 3/28/17.
  */
+@Component
 public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
 
-    private final SharingRegistryService sharingRegistryService;
-
-    SharingServiceDBEventHandler()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    ServiceFactoryException {
-        log.info("Starting sharing registry service.....");
-        sharingRegistryService = ServiceFactory.getInstance().getSharingRegistryService();
-    }
+    @Autowired
+    private SharingRegistryService sharingRegistryService;
 
     @Override
     public void onMessage(MessageContext messageContext) {

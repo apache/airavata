@@ -50,8 +50,6 @@ import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -112,14 +110,15 @@ public class PostWorkflowManager extends WorkflowManager {
         }
 
         RegistryService registryService;
-        try {
-            registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();
-        } catch (Exception e) {
-            // Fallback to ServiceFactory for backward compatibility
+        // Use injected registryService from WorkflowManager
+        if (this.registryService != null) {
+            registryService = this.registryService;
+        } else {
+            // Try to get from Spring context via RegistryServiceProvider
             try {
-                registryService = ServiceFactory.getInstance().getRegistryService();
-            } catch (ServiceFactoryException ex) {
-                logger.error("Failed to get RegistryService from ServiceFactory", ex);
+                registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();
+            } catch (Exception e) {
+                logger.error("Failed to get RegistryService from RegistryServiceProvider", e);
                 return false;
             }
         }

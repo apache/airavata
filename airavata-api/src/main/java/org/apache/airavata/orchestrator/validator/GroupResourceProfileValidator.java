@@ -21,7 +21,6 @@ package org.apache.airavata.orchestrator.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.error.ValidationResults;
@@ -32,22 +31,18 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class GroupResourceProfileValidator implements JobMetadataValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileValidator.class);
 
+    @Autowired
     private RegistryService registryService;
-
-    public GroupResourceProfileValidator()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    ServiceFactoryException {
-        this.registryService = ServiceFactory.getInstance().getRegistryService();
-    }
 
     @Override
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {

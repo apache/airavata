@@ -84,7 +84,6 @@ import org.apache.airavata.registry.repositories.appcatalog.UnicoreDatamovementR
 import org.apache.airavata.registry.repositories.appcatalog.UnicoreSubmissionRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +146,9 @@ public class ComputeResourceService {
     @Autowired
     private BatchQueueRepository batchQueueRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "appcatalog_data_new")
     private EntityManager entityManager;
 
@@ -168,7 +170,6 @@ public class ComputeResourceService {
     private ComputeResourceEntity saveComputeResource(ComputeResourceDescription description)
             throws AppCatalogException {
         String computeResourceId = description.getComputeResourceId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ComputeResourceEntity computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
         if (computeResourceEntity.getBatchQueues() != null) {
             computeResourceEntity
@@ -224,7 +225,6 @@ public class ComputeResourceService {
         ComputeResourceEntity entity =
                 computeResourceRepository.findById(resourceId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ComputeResourceDescription computeResourceDescription = mapper.map(entity, ComputeResourceDescription.class);
         computeResourceDescription.setFileSystems(getFileSystems(resourceId));
         return computeResourceDescription;
@@ -235,7 +235,6 @@ public class ComputeResourceService {
         if (filters.containsKey(DBConstants.ComputeResource.HOST_NAME)) {
             String hostName = "%" + filters.get(DBConstants.ComputeResource.HOST_NAME) + "%";
             List<ComputeResourceEntity> entities = computeResourceRepository.findByHostName(hostName);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             List<ComputeResourceDescription> result = entities.stream()
                     .map(e -> {
                         ComputeResourceDescription desc = mapper.map(e, ComputeResourceDescription.class);
@@ -252,7 +251,6 @@ public class ComputeResourceService {
 
     public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
         List<ComputeResourceEntity> entities = computeResourceRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream()
                 .map(e -> {
                     ComputeResourceDescription desc = mapper.map(e, ComputeResourceDescription.class);
@@ -265,7 +263,6 @@ public class ComputeResourceService {
     public Map<String, String> getAllComputeResourceIdList() throws AppCatalogException {
         List<ComputeResourceEntity> entities = computeResourceRepository.findAll();
         Map<String, String> computeResourceMap = new HashMap<>();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (ComputeResourceEntity entity : entities) {
             ComputeResourceDescription desc = mapper.map(entity, ComputeResourceDescription.class);
             computeResourceMap.put(desc.getComputeResourceId(), desc.getHostName());
@@ -276,7 +273,6 @@ public class ComputeResourceService {
     public Map<String, String> getAvailableComputeResourceIdList() throws AppCatalogException {
         List<ComputeResourceEntity> entities = computeResourceRepository.findAll();
         Map<String, String> computeResourceMap = new HashMap<>();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (ComputeResourceEntity entity : entities) {
             ComputeResourceDescription desc = mapper.map(entity, ComputeResourceDescription.class);
             if (desc.isEnabled()) {
@@ -298,7 +294,6 @@ public class ComputeResourceService {
         String submissionId = AppCatalogUtils.getID("SSH");
         sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
         String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
         sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
@@ -320,7 +315,6 @@ public class ComputeResourceService {
     }
 
     public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
         sshJobSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         sshJobSubmissionRepository.save(sshJobSubmissionEntity);
@@ -328,7 +322,6 @@ public class ComputeResourceService {
 
     public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         CloudJobSubmissionEntity cloudJobSubmissionEntity =
                 mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
         cloudJobSubmissionRepository.save(cloudJobSubmissionEntity);
@@ -336,7 +329,6 @@ public class ComputeResourceService {
     }
 
     public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         CloudJobSubmissionEntity cloudJobSubmissionEntity =
                 mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
         cloudJobSubmissionRepository.save(cloudJobSubmissionEntity);
@@ -344,7 +336,6 @@ public class ComputeResourceService {
 
     public String addResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException {
         resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ResourceJobManagerEntity resourceJobManagerEntity =
                 mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
@@ -363,7 +354,6 @@ public class ComputeResourceService {
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws AppCatalogException {
         updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ResourceJobManagerEntity resourceJobManagerEntity =
                 mapper.map(updatedResourceJobManager, ResourceJobManagerEntity.class);
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
@@ -382,7 +372,6 @@ public class ComputeResourceService {
         ResourceJobManagerEntity entity =
                 resourceJobManagerRepository.findById(resourceJobManagerId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ResourceJobManager resourceJobManager = mapper.map(entity, ResourceJobManager.class);
         resourceJobManager.setJobManagerCommands(getJobManagerCommand(resourceJobManagerId));
         resourceJobManager.setParallelismPrefix(getParallelismPrefix(resourceJobManagerId));
@@ -401,7 +390,6 @@ public class ComputeResourceService {
     public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
         localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
         String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         localSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
@@ -422,7 +410,6 @@ public class ComputeResourceService {
     }
 
     public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         localSubmissionRepository.save(localSubmissionEntity);
@@ -434,7 +421,6 @@ public class ComputeResourceService {
 
     public String addUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
         unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreSubmissionEntity unicoreSubmissionEntity =
                 mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
         if (unicoreJobSubmission.getSecurityProtocol() != null) {
@@ -445,7 +431,6 @@ public class ComputeResourceService {
     }
 
     public void updateUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreSubmissionEntity unicoreSubmissionEntity =
                 mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
         if (unicoreJobSubmission.getSecurityProtocol() != null) {
@@ -456,28 +441,24 @@ public class ComputeResourceService {
 
     public String addLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
         localDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
         localDataMovementRepository.save(localDataMovementEntity);
         return localDataMovementEntity.getDataMovementInterfaceId();
     }
 
     public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
         localDataMovementRepository.save(localDataMovementEntity);
     }
 
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
         scpDataMovementRepository.save(scpDataMovementEntity);
         return scpDataMovementEntity.getDataMovementInterfaceId();
     }
 
     public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
         scpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         scpDataMovementRepository.save(scpDataMovementEntity);
@@ -485,7 +466,6 @@ public class ComputeResourceService {
 
     public String addUnicoreDataMovement(UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
         unicoreDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("UNICORE"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreDatamovementEntity unicoreDatamovementEntity =
                 mapper.map(unicoreDataMovement, UnicoreDatamovementEntity.class);
         unicoreDatamovementRepository.save(unicoreDatamovementEntity);
@@ -499,7 +479,6 @@ public class ComputeResourceService {
 
     public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GridftpDataMovementEntity gridftpDataMovementEntity =
                 mapper.map(gridFTPDataMovement, GridftpDataMovementEntity.class);
         gridftpDataMovementRepository.save(gridftpDataMovementEntity);
@@ -520,7 +499,6 @@ public class ComputeResourceService {
         SshJobSubmissionEntity entity =
                 sshJobSubmissionRepository.findById(submissionId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         SSHJobSubmission sshJobSubmission = mapper.map(entity, SSHJobSubmission.class);
         sshJobSubmission
                 .getResourceJobManager()
@@ -537,7 +515,6 @@ public class ComputeResourceService {
         UnicoreSubmissionEntity entity =
                 unicoreSubmissionRepository.findById(submissionId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, UnicoreJobSubmission.class);
     }
 
@@ -545,7 +522,6 @@ public class ComputeResourceService {
         UnicoreDatamovementEntity entity =
                 unicoreDatamovementRepository.findById(dataMovementId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, UnicoreDataMovement.class);
     }
 
@@ -553,7 +529,6 @@ public class ComputeResourceService {
         CloudJobSubmissionEntity entity =
                 cloudJobSubmissionRepository.findById(submissionId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, CloudJobSubmission.class);
     }
 
@@ -561,7 +536,6 @@ public class ComputeResourceService {
         ScpDataMovementEntity entity =
                 scpDataMovementRepository.findById(dataMoveId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, SCPDataMovement.class);
     }
 
@@ -575,7 +549,6 @@ public class ComputeResourceService {
         List<GridftpEndpointEntity> endpointEntities =
                 gridftpEndpointRepository.findByDataMovementInterfaceId(entity.getDataMovementInterfaceId());
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
 
         List<String> endpoints = endpointEntities.stream()
                 .map(GridftpEndpointEntity::getEndpoint)
@@ -613,7 +586,6 @@ public class ComputeResourceService {
         LocalSubmissionEntity entity =
                 localSubmissionRepository.findById(submissionId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         LOCALSubmission localSubmission = mapper.map(entity, LOCALSubmission.class);
         localSubmission
                 .getResourceJobManager()
@@ -630,7 +602,6 @@ public class ComputeResourceService {
         LocalDataMovementEntity entity =
                 localDataMovementRepository.findById(datamovementId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, LOCALDataMovement.class);
     }
 
@@ -690,7 +661,6 @@ public class ComputeResourceService {
 
     private String addJobSubmission(String computeResourceId, JobSubmissionInterface jobSubmissionInterface)
             throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobSubmissionInterfaceEntity entity = mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
         entity.setComputeResourceId(computeResourceId);
         JobSubmissionInterfaceEntity saved = jobSubmissionInterfaceRepository.save(entity);
@@ -699,7 +669,6 @@ public class ComputeResourceService {
 
     private String addDataMovementProtocol(String resourceId, DataMovementInterface dataMovementInterface)
             throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataMovementInterfaceEntity entity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
         entity.setComputeResourceId(resourceId);
         DataMovementInterfaceEntity saved = dataMovementRepository.save(entity);

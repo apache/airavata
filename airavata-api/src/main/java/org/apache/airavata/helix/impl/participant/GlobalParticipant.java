@@ -24,9 +24,11 @@ import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
@@ -57,6 +59,24 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName)
             throws ApplicationSettingsException {
         super(taskClasses, taskTypeName);
+    }
+    
+    // Default constructor for Spring - initializes with default task classes
+    public GlobalParticipant() throws ApplicationSettingsException {
+        this(createTaskClasses(), null);
+    }
+    
+    private static List<Class<? extends AbstractTask>> createTaskClasses() {
+        ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+        try {
+            for (String taskClassName : TASK_CLASS_NAMES) {
+                logger.debug("Adding task class: " + taskClassName + " to the global participant");
+                taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Failed to load task classes", e);
+        }
+        return taskClasses;
     }
 
     public void startServer() {

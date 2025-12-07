@@ -27,7 +27,6 @@ import org.apache.airavata.registry.entities.expcatalog.TaskStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,12 +37,14 @@ public class TaskStatusService {
     @Autowired
     private TaskStatusRepository taskStatusRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
         if (taskStatus.getStatusId() == null) {
             taskStatus.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
         }
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
         entity.setTaskId(taskId);
         taskStatusRepository.save(entity);
@@ -56,7 +57,6 @@ public class TaskStatusService {
         if (taskStatus.getTimeOfStateChange() == 0) {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
         entity.setTaskId(taskId);
         taskStatusRepository.save(entity);
@@ -65,7 +65,6 @@ public class TaskStatusService {
     public TaskStatus getTaskStatus(String taskId) throws RegistryException {
         List<TaskStatusEntity> entities = taskStatusRepository.findByTaskIdOrderByTimeOfStateChangeDesc(taskId);
         if (entities.isEmpty()) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entities.get(0), TaskStatus.class);
     }
 }

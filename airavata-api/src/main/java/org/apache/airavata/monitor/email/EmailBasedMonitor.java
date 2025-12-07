@@ -39,10 +39,12 @@ import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+@Component
 public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);

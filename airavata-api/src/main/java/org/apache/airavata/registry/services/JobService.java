@@ -30,7 +30,6 @@ import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,9 @@ public class JobService {
 
     @Autowired
     private JobRepository jobRepository;
+
+    @Autowired
+    private Mapper mapper;
 
     public void populateParentIds(JobEntity jobEntity) {
         String jobId = jobEntity.getJobId();
@@ -73,7 +75,6 @@ public class JobService {
     public JobModel getJob(JobPK jobPK) throws RegistryException {
         JobEntity entity = jobRepository.findById(jobPK).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, JobModel.class);
     }
 
@@ -89,7 +90,6 @@ public class JobService {
             logger.error("Unsupported field name for Job module.");
             throw new IllegalArgumentException("Unsupported field name for Job module.");
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<JobModel> jobModelList = new ArrayList<>();
         entities.forEach(e -> jobModelList.add(mapper.map(e, JobModel.class)));
         return jobModelList;
@@ -141,7 +141,6 @@ public class JobService {
             jobModel.setCreationTime(System.currentTimeMillis());
         }
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
 
         populateParentIds(jobEntity);

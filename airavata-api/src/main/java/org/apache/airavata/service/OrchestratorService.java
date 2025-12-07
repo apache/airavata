@@ -82,6 +82,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,18 +95,32 @@ public class OrchestratorService {
 
     @Autowired
     private AiravataServerProperties properties;
-
+    
+    @Autowired
     private SimpleOrchestratorImpl orchestrator;
+    
     private CuratorFramework curatorClient;
     private Publisher publisher;
     private Subscriber experimentSubscriber;
-    // private String airavataUserName;
-    // private String gatewayName;
 
     public OrchestratorService() throws OrchestratorException {
+        // Default constructor for Spring - initialization happens after injection
+        // Note: This constructor is called by Spring, but initialization is deferred
+        // to allow Spring to inject dependencies first
+    }
+    
+    @PostConstruct
+    public void postConstruct() {
         try {
-            // setAiravataUserName(ServerSettings.getDefaultUser());
-            this.orchestrator = new SimpleOrchestratorImpl();
+            initializeInternal();
+        } catch (OrchestratorException e) {
+            logger.error("Failed to initialize OrchestratorService", e);
+            throw new RuntimeException("Failed to initialize OrchestratorService", e);
+        }
+    }
+    
+    private void initializeInternal() throws OrchestratorException {
+        try {
             this.publisher = MessagingFactory.getPublisher(Type.STATUS);
             this.orchestrator.initialize();
             this.orchestrator.getOrchestratorContext().setPublisher(this.publisher);
@@ -129,7 +144,7 @@ public class OrchestratorService {
 
     private boolean launchExperimentInternal(String experimentId, String gatewayId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, ServiceFactoryException {
+                    LaunchValidationException {
         String experimentNodePath = getExperimentNodePath(experimentId);
         try {
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
@@ -170,7 +185,7 @@ public class OrchestratorService {
 
     private boolean launchSingleAppExperiment(
             ExperimentModel experiment, String experimentId, String gatewayId, String token)
-            throws OrchestratorException, RegistryServiceException, LaunchValidationException, ServiceFactoryException {
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
         List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
         for (ProcessModel processModel : processes) {
@@ -538,7 +553,7 @@ public class OrchestratorService {
     }
 
     public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag)
-            throws OrchestratorException, RegistryServiceException, LaunchValidationException, ServiceFactoryException {
+            throws OrchestratorException, RegistryServiceException, LaunchValidationException {
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = orchestratorRegistryService.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {
@@ -596,7 +611,7 @@ public class OrchestratorService {
 
     public void launchQueuedExperiment(String experimentId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, ServiceFactoryException {
+                    LaunchValidationException {
         ExperimentModel experiment = orchestratorRegistryService.getExperiment(experimentId);
         if (experiment == null) {
             throw new ExperimentNotFoundException(
@@ -621,7 +636,7 @@ public class OrchestratorService {
     public void handleProcessStatusChange(
             ProcessStatusChangeEvent processStatusChangeEvent, ProcessIdentifier processIdentity)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, ServiceFactoryException {
+                    LaunchValidationException {
         ExperimentStatus status = new ExperimentStatus();
 
         // Check if this is an intermediate output fetching process
@@ -732,7 +747,7 @@ public class OrchestratorService {
 
     public void handleLaunchExperiment(ExperimentSubmitEvent expEvent)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, ServiceFactoryException {
+                    LaunchValidationException {
         ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(expEvent.getExperimentId());
         if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
             launchExperimentInternal(expEvent.getExperimentId(), expEvent.getGatewayId());
@@ -744,7 +759,7 @@ public class OrchestratorService {
      */
     public void handleLaunchExperimentFromMessage(MessageContext messageContext)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
-                    LaunchValidationException, ServiceFactoryException {
+                    LaunchValidationException {
         ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
         try {
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
@@ -831,7 +846,7 @@ public class OrchestratorService {
     }
 
     public boolean launchExperiment(String experimentId, String gatewayId, ExecutorService executorService)
-            throws OrchestratorException, ServiceFactoryException {
+            throws OrchestratorException {
         try {
             boolean result = launchExperimentInternal(experimentId, gatewayId);
             if (result) {
@@ -871,7 +886,7 @@ public class OrchestratorService {
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new OrchestratorException("Experiment '" + experimentId + "' launch failed.", e);
-        } catch (ExperimentNotFoundException | ServiceFactoryException e) {
+        } catch (ExperimentNotFoundException e) {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Unexpected error occurred: " + e.getMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -1012,7 +1027,7 @@ public class OrchestratorService {
                 handleLaunchExperimentFromMessage(messageContext);
             } catch (RegistryServiceException | OrchestratorException e) {
                 logger.error("Experiment launch failed due to registry or orchestrator error", e);
-            } catch (TException | ServiceFactoryException e) {
+            } catch (TException e) {
                 logger.error("An unknown issue while launching experiment", e);
             } catch (RuntimeException e) {
                 logger.error("An unknown runtime issue while launching experiment", e);

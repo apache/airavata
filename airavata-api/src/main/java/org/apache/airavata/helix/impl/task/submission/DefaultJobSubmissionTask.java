@@ -34,7 +34,9 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.RegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,16 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
     private static final CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        DefaultJobSubmissionTask.applicationContext = applicationContext;
+    }
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 
@@ -70,8 +82,15 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            List<JobModel> jobsOfTask =
-                    ServiceFactory.getInstance().getRegistryService().getJobs("taskId", getTaskId());
+            // Use injected service, fallback to ApplicationContext if not injected
+            RegistryService regService = this.registryService;
+            if (regService == null && applicationContext != null) {
+                regService = applicationContext.getBean(RegistryService.class);
+            }
+            if (regService == null) {
+                return onFail("RegistryService not available", true, null);
+            }
+            var jobsOfTask = regService.getJobs("taskId", getTaskId());
 
             if (jobsOfTask.size() > 0) {
                 logger.warn("A job is already available for task " + getTaskId());

@@ -26,7 +26,6 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.NotificationRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,9 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public void deleteNotification(String notificationId) throws RegistryException {
         notificationRepository.deleteById(notificationId);
     }
@@ -45,25 +47,21 @@ public class NotificationService {
         NotificationEntity entity =
                 notificationRepository.findById(notificationId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Notification.class);
     }
 
     public List<Notification> getAllGatewayNotifications(String gatewayId) throws RegistryException {
         List<NotificationEntity> entities = notificationRepository.findByGatewayId(gatewayId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Notification.class)).collect(Collectors.toList());
     }
 
     public String createNotification(Notification notification) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         NotificationEntity entity = mapper.map(notification, NotificationEntity.class);
         NotificationEntity saved = notificationRepository.save(entity);
         return saved.getNotificationId();
     }
 
     public void updateNotification(Notification notification) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         NotificationEntity entity = mapper.map(notification, NotificationEntity.class);
         notificationRepository.save(entity);
     }

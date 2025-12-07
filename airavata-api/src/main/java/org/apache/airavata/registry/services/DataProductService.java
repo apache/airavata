@@ -26,7 +26,6 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +36,12 @@ public class DataProductService {
     @Autowired
     private DataProductRepository dataProductRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductEntity entity = dataProductRepository.findById(productUri).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, DataProductModel.class);
     }
 
@@ -50,13 +51,11 @@ public class DataProductService {
         DataProductEntity parentEntity =
                 dataProductRepository.findById(entity.getParentProductUri()).orElse(null);
         if (parentEntity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(parentEntity, DataProductModel.class);
     }
 
     public List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException {
         List<DataProductEntity> entities = dataProductRepository.findByParentProductUri(productUri);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, DataProductModel.class)).collect(Collectors.toList());
     }
 
@@ -65,12 +64,10 @@ public class DataProductService {
         String searchPattern = "%" + productName + "%";
         List<DataProductEntity> entities =
                 dataProductRepository.findByGatewayIdAndOwnerNameAndProductNameLike(gatewayId, userId, searchPattern);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, DataProductModel.class)).collect(Collectors.toList());
     }
 
     public String registerDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataProductEntity entity = mapper.map(dataProductModel, DataProductEntity.class);
         DataProductEntity saved = dataProductRepository.save(entity);
         return saved.getProductUri();
@@ -81,7 +78,6 @@ public class DataProductService {
     }
 
     public boolean updateDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataProductEntity entity = mapper.map(dataProductModel, DataProductEntity.class);
         dataProductRepository.save(entity);
         return true;

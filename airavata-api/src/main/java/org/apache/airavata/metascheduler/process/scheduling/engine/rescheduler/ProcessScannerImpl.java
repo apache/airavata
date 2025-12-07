@@ -26,20 +26,28 @@ import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
+    private static ApplicationContext applicationContext;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        ProcessScannerImpl.applicationContext = applicationContext;
+    }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Process scanner ....... ");
-            RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            RegistryService registryService = applicationContext.getBean(RegistryService.class);
             ProcessState state = ProcessState.QUEUED;
             List<ProcessModel> processModelList = registryService.getProcessListInState(state);
 

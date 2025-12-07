@@ -28,29 +28,18 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.service.CredentialStoreService;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResourceAdaptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
-
-    private RegistryService registryService;
-    private CredentialStoreService credentialService;
+    private static final Logger logger = LoggerFactory.getLogger(SSHJStorageAdaptor.class);
 
     public SSHJStorageAdaptor() throws AgentException {
         super();
-        try {
-            ServiceFactory factory = ServiceFactory.getInstance();
-            this.registryService = factory.getRegistryService();
-            this.credentialService = factory.getCredentialStoreService();
-        } catch (ServiceFactoryException e) {
-            throw new AgentException("Failed to get services from ServiceFactory", e);
-        }
+        // Services are inherited from SSHJAgentAdaptor or will be injected via Spring
     }
 
     @Override

@@ -42,6 +42,7 @@ import org.apache.airavata.service.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class ParserWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);

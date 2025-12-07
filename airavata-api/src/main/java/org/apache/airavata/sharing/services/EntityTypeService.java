@@ -35,7 +35,6 @@ import org.apache.airavata.sharing.entities.EntityTypePK;
 import org.apache.airavata.sharing.models.EntityType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityTypeRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,13 +45,15 @@ public class EntityTypeService {
     @Autowired
     private EntityTypeRepository entityTypeRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     @PersistenceContext(unitName = "airavata-sharing-registry")
     private EntityManager entityManager;
 
     public EntityType get(EntityTypePK pk) throws SharingRegistryException {
         EntityTypeEntity entity = entityTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, EntityType.class);
     }
 
@@ -61,7 +62,6 @@ public class EntityTypeService {
     }
 
     public EntityType update(EntityType entityType) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         EntityTypeEntity entity = mapper.map(entityType, EntityTypeEntity.class);
         EntityTypeEntity saved = entityTypeRepository.save(entity);
         return mapper.map(saved, EntityType.class);
@@ -103,7 +103,6 @@ public class EntityTypeService {
         }
 
         List<EntityTypeEntity> entities = typedQuery.getResultList();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, EntityType.class)).toList();
     }
 }

@@ -24,7 +24,9 @@ import java.io.Serializable;
 
 /**
  * The persistent class for the workflow_input database table.
+ * @deprecated This entity is no longer actively used.
  */
+@Deprecated
 @Entity
 @Table(name = "WORKFLOW_INPUT")
 @IdClass(WorkflowInputPK.class)

@@ -48,8 +48,10 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
 import org.apache.airavata.service.UserProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
@@ -60,9 +62,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+@Component
 public abstract class AiravataTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
+    private static ApplicationContext applicationContext;
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    @Autowired
+    private UserProfileService userProfileService;
+    
+    @Autowired
+    private CredentialStoreService credentialStoreService;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        AiravataTask.applicationContext = applicationContext;
+    }
+    
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+    
+    protected RegistryService getRegistryService() {
+        return registryService;
+    }
+    
+    protected UserProfileService getUserProfileService() {
+        return userProfileService;
+    }
+    
+    protected CredentialStoreService getCredentialStoreService() {
+        return credentialStoreService;
+    }
 
     private static Publisher statusPublisher;
 
@@ -524,8 +558,6 @@ public abstract class AiravataTask extends AbstractTask {
 
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(
                             getProcessId(), getGatewayId(), getTaskId())
-                    .setRegistryService(getRegistryService())
-                    .setProfileService(getUserProfileService())
                     .setExperimentModel(getExperimentModel())
                     .setProcessModel(getProcessModel());
 
@@ -647,27 +679,42 @@ public abstract class AiravataTask extends AbstractTask {
         this.autoSchedule = autoSchedule;
     }
 
-    public static RegistryService getRegistryService() {
-        try {
-            return ServiceFactory.getInstance().getRegistryService();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get registry service...", e);
+    // Static methods for backward compatibility - delegate to instance via ApplicationContext
+    public static RegistryService getRegistryServiceStatic() {
+        if (applicationContext != null) {
+            // Try to get from a bean instance first
+            try {
+                AiravataTask task = applicationContext.getBean(AiravataTask.class);
+                return task.getRegistryService();
+            } catch (Exception e) {
+                // Fallback to direct bean lookup
+                return applicationContext.getBean(RegistryService.class);
+            }
         }
+        throw new IllegalStateException("ApplicationContext not available");
     }
 
-    public static UserProfileService getUserProfileService() {
-        try {
-            return ServiceFactory.getInstance().getUserProfileService();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get profile service...", e);
+    public static UserProfileService getUserProfileServiceStatic() {
+        if (applicationContext != null) {
+            try {
+                AiravataTask task = applicationContext.getBean(AiravataTask.class);
+                return task.getUserProfileService();
+            } catch (Exception e) {
+                return applicationContext.getBean(UserProfileService.class);
+            }
         }
+        throw new IllegalStateException("ApplicationContext not available");
     }
 
-    public static CredentialStoreService getCredentialStoreService() {
-        try {
-            return ServiceFactory.getInstance().getCredentialStoreService();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get credential store service...", e);
+    public static CredentialStoreService getCredentialStoreServiceStatic() {
+        if (applicationContext != null) {
+            try {
+                AiravataTask task = applicationContext.getBean(AiravataTask.class);
+                return task.getCredentialStoreService();
+            } catch (Exception e) {
+                return applicationContext.getBean(CredentialStoreService.class);
+            }
         }
+        throw new IllegalStateException("ApplicationContext not available");
     }
 }

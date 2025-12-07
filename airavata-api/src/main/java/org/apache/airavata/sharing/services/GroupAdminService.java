@@ -25,7 +25,6 @@ import org.apache.airavata.sharing.entities.GroupAdminPK;
 import org.apache.airavata.sharing.models.GroupAdmin;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.GroupAdminRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,10 +35,12 @@ public class GroupAdminService {
     @Autowired
     private GroupAdminRepository groupAdminRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public GroupAdmin get(GroupAdminPK pk) throws SharingRegistryException {
         GroupAdminEntity entity = groupAdminRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, GroupAdmin.class);
     }
 
@@ -48,7 +49,6 @@ public class GroupAdminService {
     }
 
     public GroupAdmin update(GroupAdmin groupAdmin) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GroupAdminEntity entity = mapper.map(groupAdmin, GroupAdminEntity.class);
         GroupAdminEntity saved = groupAdminRepository.save(entity);
         return mapper.map(saved, GroupAdmin.class);

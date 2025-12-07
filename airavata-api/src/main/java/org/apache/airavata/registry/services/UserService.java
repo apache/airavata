@@ -27,7 +27,6 @@ import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.UserRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private Mapper mapper;
 
     public boolean isUserExists(String gatewayId, String userName) throws RegistryException {
         UserPK pk = new UserPK();
@@ -51,7 +53,6 @@ public class UserService {
     }
 
     public UserProfile addUser(UserProfile userProfile) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserEntity entity = mapper.map(userProfile, UserEntity.class);
         UserEntity saved = userRepository.save(entity);
         return mapper.map(saved, UserProfile.class);
@@ -60,7 +61,6 @@ public class UserService {
     public UserProfile get(UserPK userPK) throws RegistryException {
         UserEntity entity = userRepository.findById(userPK).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, UserProfile.class);
     }
 

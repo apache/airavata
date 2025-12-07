@@ -19,11 +19,13 @@
 */
 package org.apache.airavata.registry.repositories.appcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.repositories.AbstractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 
@@ -31,12 +33,27 @@ public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
     @Qualifier("appCatalogEntityManagerFactory")
     private EntityManagerFactory entityManagerFactory;
 
+    @Autowired
+    private Mapper mapper;
+    
+    // Use SharedEntityManagerCreator to create a Spring-managed EntityManager proxy
+    private EntityManager entityManager;
+
     public AppCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
     }
 
     @Override
+    protected Mapper getMapper() {
+        return mapper;
+    }
+
+    @Override
     protected EntityManager getEntityManager() {
-        return entityManagerFactory.createEntityManager();
+        // Create a shared EntityManager proxy that works with Spring transactions
+        if (entityManager == null) {
+            entityManager = SharedEntityManagerCreator.createSharedEntityManager(entityManagerFactory);
+        }
+        return entityManager;
     }
 }

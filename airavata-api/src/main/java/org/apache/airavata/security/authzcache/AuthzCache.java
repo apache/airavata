@@ -21,39 +21,29 @@ package org.apache.airavata.security.authzcache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> {
 
-    private static int MAX_SIZE;
+    private final int maxSize;
     private static final Logger logger = LoggerFactory.getLogger(AuthzCache.class);
 
-    private static AuthzCache authzCache = null;
-
-    public static AuthzCache getInstance() throws ApplicationSettingsException {
-        if (authzCache == null) {
-            synchronized (AuthzCache.class) {
-                if (authzCache == null) {
-                    authzCache = new AuthzCache(ServerSettings.getCacheSize());
-                }
-            }
-        }
-        return authzCache;
-    }
-
-    private AuthzCache(int initialCapacity) {
-        super(initialCapacity);
-        MAX_SIZE = initialCapacity;
+    @Autowired
+    public AuthzCache(AiravataServerProperties serverProperties) {
+        super(serverProperties.getOther().getInMemoryCacheSize());
+        this.maxSize = serverProperties.getOther().getInMemoryCacheSize();
     }
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<AuthzCacheIndex, AuthzCacheEntry> eldest) {
-        if (size() > MAX_SIZE) {
+        if (size() > maxSize) {
             logger.info("Authz cache max size exceeded. Removing the old entries.");
         }
-        return size() > MAX_SIZE;
+        return size() > maxSize;
     }
 }

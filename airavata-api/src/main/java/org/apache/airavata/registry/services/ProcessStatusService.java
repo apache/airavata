@@ -29,7 +29,6 @@ import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,18 +41,19 @@ public class ProcessStatusService {
     @Autowired
     private ProcessStatusRepository processStatusRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         List<ProcessStatusEntity> entities =
                 processStatusRepository.findByProcessIdOrderByTimeOfStateChangeDesc(processId);
         if (entities.isEmpty()) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entities.get(0), ProcessStatus.class);
     }
 
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
         List<ProcessStatusEntity> entities =
                 processStatusRepository.findByProcessIdOrderByTimeOfStateChangeDesc(processId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ProcessStatus> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ProcessStatus.class)));
         return result;
@@ -63,7 +63,6 @@ public class ProcessStatusService {
             throws RegistryException {
         Pageable pageable = PageRequest.of(Math.max(0, offset / Math.max(1, limit)), limit);
         List<ProcessStatusEntity> entities = processStatusRepository.findByState(processState, pageable);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ProcessStatus> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ProcessStatus.class)));
         return result;
@@ -74,7 +73,6 @@ public class ProcessStatusService {
             processStatus.setStatusId(ExpCatalogUtils.getID("PROCESS_STATE"));
         }
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessStatusEntity entity = mapper.map(processStatus, ProcessStatusEntity.class);
         entity.setProcessId(processId);
         processStatusRepository.save(entity);
@@ -88,7 +86,6 @@ public class ProcessStatusService {
             processStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessStatusEntity entity = mapper.map(processStatus, ProcessStatusEntity.class);
         entity.setProcessId(processId);
         processStatusRepository.save(entity);

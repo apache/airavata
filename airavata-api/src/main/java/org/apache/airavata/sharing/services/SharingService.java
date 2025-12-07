@@ -29,7 +29,6 @@ import org.apache.airavata.sharing.models.Sharing;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.repositories.SharingRepository;
-import org.apache.airavata.sharing.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +42,12 @@ public class SharingService {
     @Autowired
     private PermissionTypeService permissionTypeService;
 
+    @Autowired
+    private Mapper mapper;
+
     public Sharing get(SharingPK pk) throws SharingRegistryException {
         SharingEntity entity = sharingRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Sharing.class);
     }
 
@@ -55,7 +56,6 @@ public class SharingService {
     }
 
     public Sharing update(Sharing sharing) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         SharingEntity entity = mapper.map(sharing, SharingEntity.class);
         SharingEntity saved = sharingRepository.save(entity);
         return mapper.map(saved, Sharing.class);
@@ -74,7 +74,6 @@ public class SharingService {
         // For complex filters, use Criteria API in service if needed
         // For now, return all if no filters
         List<SharingEntity> entities = sharingRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
     }
 
@@ -82,7 +81,6 @@ public class SharingService {
             throws SharingRegistryException {
         List<SharingEntity> entities = sharingRepository.findIndirectSharedChildren(
                 domainId, parentId, SharingType.INDIRECT_CASCADING.toString(), permissionTypeId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
     }
 
@@ -92,7 +90,6 @@ public class SharingService {
                 Arrays.asList(SharingType.DIRECT_CASCADING.toString(), SharingType.INDIRECT_CASCADING.toString());
         List<SharingEntity> entities =
                 sharingRepository.findCascadingPermissionsForEntity(domainId, entityId, sharingTypes);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
     }
 

@@ -26,7 +26,6 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,16 +36,17 @@ public class ProcessOutputService {
     @Autowired
     private ProcessOutputRepository processOutputRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
         List<ProcessOutputEntity> entities = processOutputRepository.findByProcessId(processId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<OutputDataObjectType> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, OutputDataObjectType.class)));
         return result;
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         for (OutputDataObjectType output : outputs) {
             ProcessOutputEntity entity = mapper.map(output, ProcessOutputEntity.class);
             entity.setProcessId(processId);

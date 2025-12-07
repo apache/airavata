@@ -48,7 +48,6 @@ import org.apache.airavata.registry.repositories.appcatalog.BatchQueuePolicyRepo
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePolicyRepository;
 import org.apache.airavata.registry.repositories.appcatalog.GroupResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.GrpComputePrefRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +63,9 @@ public class GroupResourceProfileService {
 
     @Autowired
     private ComputeResourcePolicyRepository computeResourcePolicyRepository;
+
+    @Autowired
+    private Mapper mapper;
 
     @Autowired
     private BatchQueuePolicyRepository batchQueuePolicyRepository;
@@ -129,7 +131,6 @@ public class GroupResourceProfileService {
     public String updateGroupResourceProfile(GroupResourceProfile updatedGroupResourceProfile) {
         updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
         updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GroupResourceProfileEntity groupResourceProfileEntity =
                 mapper.map(updatedGroupResourceProfile, GroupResourceProfileEntity.class);
         patchComputePrefEntities(groupResourceProfileEntity, updatedGroupResourceProfile);
@@ -195,7 +196,6 @@ public class GroupResourceProfileService {
         GroupResourceProfileEntity entity =
                 groupResourceProfileRepository.findById(groupResourceProfileId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GroupResourceProfile groupResourceProfile = mapper.map(entity, GroupResourceProfile.class);
 
         List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
@@ -231,7 +231,6 @@ public class GroupResourceProfileService {
             List<GroupResourceProfileEntity> entities =
                     groupResourceProfileRepository.findAccessibleGroupResourceProfiles(
                             gatewayId, accessibleGroupResProfileIds);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             List<GroupResourceProfile> profiles = entities.stream()
                     .map(e -> mapper.map(e, GroupResourceProfile.class))
                     .collect(Collectors.toList());
@@ -285,7 +284,6 @@ public class GroupResourceProfileService {
         groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
         groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return grpComputePrefRepository
                 .findById(groupComputeResourcePrefPK)
                 .map(entity -> mapper.map(entity, GroupComputeResourcePreference.class))
@@ -301,7 +299,6 @@ public class GroupResourceProfileService {
     }
 
     public ComputeResourcePolicy getComputeResourcePolicy(String resourcePolicyId) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return computeResourcePolicyRepository
                 .findById(resourcePolicyId)
                 .map(entity -> mapper.map(entity, ComputeResourcePolicy.class))
@@ -309,7 +306,6 @@ public class GroupResourceProfileService {
     }
 
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return batchQueuePolicyRepository
                 .findById(resourcePolicyId)
                 .map(entity -> mapper.map(entity, BatchQueueResourcePolicy.class))
@@ -317,7 +313,6 @@ public class GroupResourceProfileService {
     }
 
     public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<GroupComputeResourcePrefEntity> entities =
                 grpComputePrefRepository.findByGroupResourceProfileId(groupResourceProfileId);
         List<GroupComputeResourcePreference> decorated = new ArrayList<>();
@@ -330,7 +325,6 @@ public class GroupResourceProfileService {
     }
 
     public List<BatchQueueResourcePolicy> getAllGroupBatchQueueResourcePolicies(String groupResourceProfileId) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<BatchQueueResourcePolicyEntity> entities =
                 batchQueuePolicyRepository.findByGroupResourceProfileId(groupResourceProfileId);
         return entities.stream()
@@ -339,7 +333,6 @@ public class GroupResourceProfileService {
     }
 
     public List<ComputeResourcePolicy> getAllGroupComputeResourcePolicies(String groupResourceProfileId) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ComputeResourcePolicyEntity> entities =
                 computeResourcePolicyRepository.findByGroupResourceProfileId(groupResourceProfileId);
         return entities.stream()

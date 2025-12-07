@@ -67,12 +67,13 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityManager;
-import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.UserProfileService;
+import org.springframework.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -831,18 +832,36 @@ public class TaskContext {
         }
     }
 
+    // Deprecated: Services are now obtained from Spring context when needed
+    @Deprecated
     public void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
     }
 
     public RegistryService getRegistryService() {
+        if (registryService == null) {
+            // Get from AiravataTask if available
+            ApplicationContext applicationContext = AiravataTask.getApplicationContext();
+            if (applicationContext != null) {
+                registryService = applicationContext.getBean(RegistryService.class);
+            }
+        }
         return registryService;
     }
 
     public UserProfileService getProfileService() {
+        if (profileService == null) {
+            // Get from AiravataTask if available
+            ApplicationContext applicationContext = AiravataTask.getApplicationContext();
+            if (applicationContext != null) {
+                profileService = applicationContext.getBean(UserProfileService.class);
+            }
+        }
         return profileService;
     }
 
+    // Deprecated: Services are now obtained from Spring context when needed
+    @Deprecated
     public void setProfileService(UserProfileService profileService) {
         this.profileService = profileService;
     }
@@ -851,7 +870,7 @@ public class TaskContext {
 
         if (this.userProfile == null) {
             try {
-                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+                AiravataSecurityManager securityManager = getSecurityManager();
                 AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(getGatewayId());
                 this.userProfile = getProfileService()
                         .getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
@@ -1012,8 +1031,6 @@ public class TaskContext {
         private final String processId;
         private final String gatewayId;
         private final String taskId;
-        private RegistryService registryService;
-        private UserProfileService profileService;
         private ProcessModel processModel;
         private ExperimentModel experimentModel;
 
@@ -1037,30 +1054,17 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setRegistryService(RegistryService registryService) {
-            this.registryService = registryService;
-            return this;
-        }
-
-        public TaskContextBuilder setProfileService(UserProfileService profileService) {
-            this.profileService = profileService;
-            return this;
-        }
 
         public TaskContext build() throws Exception {
 
             if (notValid(processModel)) {
                 throwError("Invalid Process Model");
             }
-            if (notValid(registryService)) {
-                throwError("Invalid Registry Service");
-            }
 
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
-            ctx.setRegistryService(registryService);
             ctx.setProcessModel(processModel);
             ctx.setExperimentModel(experimentModel);
-            ctx.setProfileService(profileService);
+            // Services will be obtained from AiravataTask when needed
             return ctx;
         }
 
@@ -1091,5 +1095,18 @@ public class TaskContext {
             }
         }
         return null;
+    }
+    
+    private AiravataSecurityManager getSecurityManager() {
+        ApplicationContext applicationContext = AiravataTask.getApplicationContext();
+        if (applicationContext != null) {
+            return applicationContext.getBean(AiravataSecurityManager.class);
+        }
+        // Fallback to SecurityManagerFactory if ApplicationContext not available
+        try {
+            return org.apache.airavata.security.SecurityManagerFactory.getSecurityManager();
+        } catch (org.apache.airavata.security.AiravataSecurityException e) {
+            throw new RuntimeException("Unable to get SecurityManager", e);
+        }
     }
 }

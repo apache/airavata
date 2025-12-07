@@ -25,7 +25,6 @@ import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +35,10 @@ public class WorkflowService {
     @Autowired
     private WorkflowRepository workflowRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public void registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         AiravataWorkflowEntity entity = mapper.map(workflow, AiravataWorkflowEntity.class);
         entity.setExperimentId(experimentId);
         workflowRepository.save(entity);
@@ -52,7 +53,6 @@ public class WorkflowService {
     public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException {
         AiravataWorkflowEntity entity = workflowRepository.findById(workflowId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, AiravataWorkflow.class);
     }
 }

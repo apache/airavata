@@ -35,7 +35,6 @@ import org.apache.airavata.registry.repositories.appcatalog.StorageInterfaceRepo
 import org.apache.airavata.registry.repositories.appcatalog.StorageResourceRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,9 @@ public class StorageResourceService {
     @Autowired
     private StorageInterfaceRepository storageInterfaceRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addStorageResource(StorageResourceDescription description) throws AppCatalogException {
         try {
             final String storageResourceId = AppCatalogUtils.getID(description.getHostName());
@@ -65,7 +67,6 @@ public class StorageResourceService {
                 description.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(description.getStorageResourceId()));
             }
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             StorageResourceEntity entity = mapper.map(description, StorageResourceEntity.class);
             StorageResourceEntity saved = storageResourceRepository.save(entity);
             return saved.getStorageResourceId();
@@ -89,7 +90,6 @@ public class StorageResourceService {
                 updatedStorageResource.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(updatedStorageResource.getStorageResourceId()));
             }
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             StorageResourceEntity entity = mapper.map(updatedStorageResource, StorageResourceEntity.class);
             storageResourceRepository.save(entity);
         } catch (Exception e) {
@@ -111,7 +111,6 @@ public class StorageResourceService {
             StorageResourceEntity entity =
                     storageResourceRepository.findById(resourceId).orElse(null);
             if (entity == null) return null;
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             return mapper.map(entity, StorageResourceDescription.class);
         } catch (Exception e) {
             logger.error("Error while retrieving storage resource. Resource Id: " + resourceId, e);
@@ -125,7 +124,6 @@ public class StorageResourceService {
             if (filters.containsKey(DBConstants.StorageResource.HOST_NAME)) {
                 String hostName = "%" + filters.get(DBConstants.StorageResource.HOST_NAME) + "%";
                 List<StorageResourceEntity> entities = storageResourceRepository.findByHostName(hostName);
-                Mapper mapper = ObjectMapperSingleton.getInstance();
                 return entities.stream()
                         .map(e -> mapper.map(e, StorageResourceDescription.class))
                         .collect(Collectors.toList());
@@ -144,7 +142,6 @@ public class StorageResourceService {
     public List<StorageResourceDescription> getAllStorageResourceList() throws AppCatalogException {
         try {
             List<StorageResourceEntity> entities = storageResourceRepository.findAll();
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             return entities.stream()
                     .map(e -> mapper.map(e, StorageResourceDescription.class))
                     .collect(Collectors.toList());
@@ -193,7 +190,6 @@ public class StorageResourceService {
     }
 
     public String addDataMovementInterface(DataMovementInterface dataMovementInterface) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         StorageInterfaceEntity storageInterfaceEntity = mapper.map(dataMovementInterface, StorageInterfaceEntity.class);
         StorageInterfaceEntity saved = storageInterfaceRepository.save(storageInterfaceEntity);
         return saved.getDataMovementInterfaceId();
@@ -222,7 +218,6 @@ public class StorageResourceService {
         Map<String, String> storageResourceMap = new HashMap<>();
         if (entities != null) {
             for (StorageResourceEntity entity : entities) {
-                Mapper mapper = ObjectMapperSingleton.getInstance();
                 StorageResourceDescription description = mapper.map(entity, StorageResourceDescription.class);
                 storageResourceMap.put(description.getStorageResourceId(), description.getHostName());
             }

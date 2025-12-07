@@ -26,7 +26,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,10 @@ public class ProcessErrorService {
     @Autowired
     private ProcessErrorRepository processErrorRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addProcessError(ErrorModel error, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
         entity.setProcessId(processId);
         ProcessErrorEntity saved = processErrorRepository.save(entity);
@@ -46,7 +47,6 @@ public class ProcessErrorService {
     }
 
     public void updateProcessError(ErrorModel error, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
         entity.setProcessId(processId);
         processErrorRepository.save(entity);
@@ -54,7 +54,6 @@ public class ProcessErrorService {
 
     public List<ErrorModel> getProcessError(String processId) throws RegistryException {
         List<ProcessErrorEntity> entities = processErrorRepository.findByProcessId(processId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ErrorModel> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
         return result;

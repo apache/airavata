@@ -55,4 +55,11 @@ public class JPAUtils {
         }
         return instance.factory.createEntityManager();
     }
+    
+    public static EntityManagerFactory getEntityManagerFactory() {
+        if (instance == null || instance.factory == null) {
+            throw new IllegalStateException("SharingRegistry JPAUtils not initialized. Make sure it's a Spring bean.");
+        }
+        return instance.factory;
+    }
 }

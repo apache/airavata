@@ -32,7 +32,6 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.OrchestratorService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -111,7 +110,7 @@ public class TestOrchestratorServiceServer {
 
                     try {
                         orchestratorService.launchExperiment(expId, DEFAULT_GATEWAY, null);
-                    } catch (OrchestratorException | ServiceFactoryException e) {
+                    } catch (OrchestratorException e) {
                         logger.error("Error while launching experiment", e);
                         Assertions.fail("Error while launching experiment");
                     }

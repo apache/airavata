@@ -32,7 +32,6 @@ import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePrefR
 import org.apache.airavata.registry.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.SSHAccountProvisionerConfigurationRepository;
 import org.apache.airavata.registry.repositories.appcatalog.StoragePrefRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +49,9 @@ public class GwyResourceProfileService {
     private StoragePrefRepository storagePrefRepository;
 
     @Autowired
+    private Mapper mapper;
+
+    @Autowired
     private SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository;
 
     public String addGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
@@ -63,7 +65,6 @@ public class GwyResourceProfileService {
 
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
         if (gwyResourceProfileRepository.findById(gatewayId).isPresent()) {
             gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
@@ -108,7 +109,6 @@ public class GwyResourceProfileService {
         GatewayProfileEntity entity =
                 gwyResourceProfileRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayResourceProfile gatewayResourceProfile = mapper.map(entity, GatewayResourceProfile.class);
         gatewayResourceProfile.setGatewayID(gatewayId);
         if (gatewayResourceProfile.getComputeResourcePreferences() != null
@@ -132,7 +132,6 @@ public class GwyResourceProfileService {
 
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
         List<GatewayProfileEntity> entities = gwyResourceProfileRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<>();
         for (GatewayProfileEntity entity : entities) {
             GatewayResourceProfile gatewayResourceProfile = mapper.map(entity, GatewayResourceProfile.class);
@@ -173,7 +172,6 @@ public class GwyResourceProfileService {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
         computeResourcePreferencePK.setComputeResourceId(hostId);
-        com.github.dozermapper.core.Mapper mapper = ObjectMapperSingleton.getInstance();
         ComputeResourcePreference computeResourcePreference = computeResourcePrefRepository
                 .findById(computeResourcePreferencePK)
                 .map(entity -> mapper.map(entity, ComputeResourcePreference.class))
@@ -189,7 +187,6 @@ public class GwyResourceProfileService {
         StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
         storagePreferencePK.setStorageResourceId(storageId);
         storagePreferencePK.setGatewayId(gatewayId);
-        com.github.dozermapper.core.Mapper mapper = ObjectMapperSingleton.getInstance();
         return storagePrefRepository
                 .findById(storagePreferencePK)
                 .map(entity -> mapper.map(entity, StoragePreference.class))
@@ -197,7 +194,6 @@ public class GwyResourceProfileService {
     }
 
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
-        com.github.dozermapper.core.Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ComputeResourcePreferenceEntity> entities = computeResourcePrefRepository.findByGatewayId(gatewayId);
         List<ComputeResourcePreference> preferences = entities.stream()
                 .map(entity -> mapper.map(entity, ComputeResourcePreference.class))
@@ -213,7 +209,6 @@ public class GwyResourceProfileService {
     }
 
     public List<StoragePreference> getAllStoragePreferences(String gatewayId) {
-        com.github.dozermapper.core.Mapper mapper = ObjectMapperSingleton.getInstance();
         List<StoragePreferenceEntity> entities = storagePrefRepository.findByGatewayId(gatewayId);
         return entities.stream()
                 .map(entity -> mapper.map(entity, StoragePreference.class))

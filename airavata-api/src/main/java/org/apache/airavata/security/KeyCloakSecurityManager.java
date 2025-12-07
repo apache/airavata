@@ -37,9 +37,9 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.authzcache.*;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.service.SharingRegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
@@ -55,6 +55,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
     // Methods that users user to manage their user resource profile
@@ -100,8 +101,12 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final String INTERMEDIATE_OUTPUTS_METHODS =
             "/airavata/fetchIntermediateOutputs|/airavata/getIntermediateOutputProcessStatus";
     private final HashMap<String, String> rolePermissionConfig = new HashMap<>();
-    private RegistryService registryService = null;
-    private SharingRegistryService sharingRegistryService = null;
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    @Autowired
+    private SharingRegistryService sharingRegistryService;
 
     public KeyCloakSecurityManager() throws AiravataSecurityException, ApplicationSettingsException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -367,18 +372,12 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         return matcher.matches();
     }
 
-    private void initServiceClients()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException,
-                    ServiceFactoryException {
-        ServiceFactory factory = ServiceFactory.getInstance();
-        registryService = factory.getRegistryService();
-        sharingRegistryService = factory.getSharingRegistryService();
+    private void initServiceClients() {
+        // Services are now injected via Spring, no initialization needed
     }
 
     private void closeServiceClients() {
-        // Direct services don't need to be closed
-        registryService = null;
-        sharingRegistryService = null;
+        // Services are managed by Spring, no cleanup needed
     }
 
     private static class GatewayGroupMembership {

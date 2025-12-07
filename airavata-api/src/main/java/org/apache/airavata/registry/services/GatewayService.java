@@ -26,7 +26,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,9 @@ public class GatewayService {
     @Autowired
     private GatewayRepository gatewayRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public boolean isGatewayExist(String gatewayId) throws RegistryException {
         return gatewayRepository.existsById(gatewayId);
     }
@@ -44,13 +46,11 @@ public class GatewayService {
     public Gateway getGateway(String gatewayId) throws RegistryException {
         GatewayEntity entity = gatewayRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, Gateway.class);
     }
 
     public List<Gateway> getAllGateways() throws RegistryException {
         List<GatewayEntity> entities = gatewayRepository.findAll();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         return entities.stream().map(e -> mapper.map(e, Gateway.class)).collect(Collectors.toList());
     }
 
@@ -59,14 +59,12 @@ public class GatewayService {
     }
 
     public String addGateway(Gateway gateway) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
         GatewayEntity saved = gatewayRepository.save(entity);
         return saved.getGatewayId();
     }
 
     public void updateGateway(String gatewayId, Gateway gateway) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
         entity.setGatewayId(gatewayId);
         gatewayRepository.save(entity);

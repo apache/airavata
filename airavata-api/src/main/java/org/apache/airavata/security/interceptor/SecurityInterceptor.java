@@ -32,16 +32,21 @@ import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.IdentityContext;
-import org.apache.airavata.security.SecurityManagerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Interceptor of Airavata API calls for the purpose of applying security.
  */
+@Component
 public class SecurityInterceptor implements MethodInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
     private static final CountMonitor apiRequestCounter = new CountMonitor("api_server_request_counter", "method");
+
+    @Autowired
+    private AiravataSecurityManager securityManager;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -49,7 +54,7 @@ public class SecurityInterceptor implements MethodInterceptor {
         // obtain the authz token from the input parameters
         AuthzToken authzToken = (AuthzToken) invocation.getArguments()[0];
         // authorize the API call
-        HashMap<String, String> metaDataMap = new HashMap();
+        HashMap<String, String> metaDataMap = new HashMap<>();
         metaDataMap.put(Constants.API_METHOD_NAME, invocation.getMethod().getName());
         apiRequestCounter.inc(invocation.getMethod().getName());
         authorize(authzToken, metaDataMap);
@@ -66,7 +71,6 @@ public class SecurityInterceptor implements MethodInterceptor {
         try {
             boolean isAPISecured = ServerSettings.isTLSEnabled();
             if (isAPISecured) {
-                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {
                     throw new AuthorizationException("User is not authenticated or authorized.");

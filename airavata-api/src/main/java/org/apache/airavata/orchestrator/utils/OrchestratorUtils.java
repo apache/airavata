@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.impl.store.CredentialReaderImpl;
 import org.apache.airavata.credential.utils.CredentialReader;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
@@ -50,16 +49,40 @@ import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This contains orchestrator specific utilities
  */
+@Component
 public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
+    private static ApplicationContext applicationContext;
+    
+    @Autowired
+    private RegistryService registryService;
+    
+    @Autowired
+    private CredentialReader credentialReader;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        OrchestratorUtils.applicationContext = applicationContext;
+    }
+    
+    // Instance method for Spring DI
+    protected RegistryService getRegistryServiceInstance() {
+        return registryService;
+    }
+    
+    // Instance method for Spring DI
+    protected CredentialReader getCredentialReaderInstance() {
+        return credentialReader;
+    }
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration()
             throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
@@ -76,33 +99,33 @@ public class OrchestratorUtils {
     }
 
     public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model, String gatewayId)
-            throws RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, OrchestratorException {
         return getPreferredJobSubmissionInterface(model, gatewayId).getJobSubmissionProtocol();
     }
 
     public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
-            throws RegistryServiceException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws RegistryServiceException {
+        final RegistryService registryService = getRegistryService();
         return registryService.getGroupComputeResourcePreference(
                 model.getComputeResourceId(), model.getGroupResourceProfileId());
     }
 
     public static String getApplicationInterfaceName(ProcessModel model)
-            throws RegistryServiceException, OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws RegistryServiceException, OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         ApplicationInterfaceDescription appInterface =
                 registryService.getApplicationInterface(model.getApplicationInterfaceId());
         return appInterface.getApplicationName();
     }
 
     public static DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model, String gatewayId)
-            throws RegistryServiceException, OrchestratorException, ServiceFactoryException {
+            throws RegistryServiceException, OrchestratorException {
         return getPreferredDataMovementInterface(model, gatewayId).getDataMovementProtocol();
     }
 
     public static StoragePreference getStoragePreference(ProcessModel processModel, String gatewayId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             return registryService.getGatewayStoragePreference(gatewayId, resourceHostId);
@@ -113,8 +136,8 @@ public class OrchestratorUtils {
     }
 
     public static String getLoginUserName(ProcessModel processModel, String gatewayId)
-            throws AiravataException, RegistryServiceException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws AiravataException, RegistryServiceException {
+        final RegistryService registryService = getRegistryService();
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         if (processModel.isUseUserCRPref()) {
@@ -150,8 +173,8 @@ public class OrchestratorUtils {
     }
 
     public static String getScratchLocation(ProcessModel processModel, String gatewayId)
-            throws AiravataException, RegistryServiceException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws AiravataException, RegistryServiceException {
+        final RegistryService registryService = getRegistryService();
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         String scratchLocation = computeResourcePreference.getScratchLocation();
@@ -190,8 +213,8 @@ public class OrchestratorUtils {
     }
 
     public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessModel processModel, String gatewayId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             ComputeResourceDescription resourceDescription = registryService.getComputeResource(resourceHostId);
@@ -210,8 +233,8 @@ public class OrchestratorUtils {
     }
 
     public static DataMovementInterface getPreferredDataMovementInterface(ProcessModel processModel, String gatewayId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             ComputeResourceDescription resourceDescription = registryService.getComputeResource(resourceHostId);
@@ -248,8 +271,7 @@ public class OrchestratorUtils {
     }
 
     public static SecurityProtocol getSecurityProtocol(ProcessModel processModel, String gatewayId)
-            throws RegistryServiceException, ApplicationSettingsException, OrchestratorException,
-                    ServiceFactoryException {
+            throws RegistryServiceException, ApplicationSettingsException, OrchestratorException {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processModel, gatewayId);
             JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processModel, gatewayId);
@@ -285,8 +307,8 @@ public class OrchestratorUtils {
     }
 
     public static LOCALSubmission getLocalJobSubmission(String submissionId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             return registryService.getLocalJobSubmission(submissionId);
         } catch (Exception e) {
@@ -297,8 +319,8 @@ public class OrchestratorUtils {
     }
 
     public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             return registryService.getUnicoreJobSubmission(submissionId);
         } catch (Exception e) {
@@ -309,8 +331,8 @@ public class OrchestratorUtils {
     }
 
     public static SSHJobSubmission getSSHJobSubmission(String submissionId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             return registryService.getSSHJobSubmission(submissionId);
         } catch (Exception e) {
@@ -321,8 +343,8 @@ public class OrchestratorUtils {
     }
 
     public static CloudJobSubmission getCloudJobSubmission(String submissionId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             return registryService.getCloudJobSubmission(submissionId);
         } catch (Exception e) {
@@ -333,8 +355,8 @@ public class OrchestratorUtils {
     }
 
     public static SCPDataMovement getSCPDataMovement(String dataMoveId)
-            throws OrchestratorException, ServiceFactoryException {
-        final RegistryService registryService = ServiceFactory.getInstance().getRegistryService();
+            throws OrchestratorException {
+        final RegistryService registryService = getRegistryService();
         try {
             return registryService.getSCPDataMovement(dataMoveId);
         } catch (Exception e) {
@@ -348,16 +370,19 @@ public class OrchestratorUtils {
         return (str != null && !str.trim().isEmpty());
     }
 
+    // Static method for backward compatibility - delegates to Spring-managed instance
     public static CredentialReader getCredentialReader() {
-        try {
-            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
-            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
-            String driver = ServerSettings.getCredentialStoreDBDriver();
-            return new CredentialReaderImpl();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error while getting credential reader", e);
-            return null;
+        if (applicationContext != null) {
+            return applicationContext.getBean(OrchestratorUtils.class).getCredentialReaderInstance();
         }
+        throw new IllegalStateException("ApplicationContext not available. CredentialReader cannot be retrieved.");
+    }
+    
+    private static RegistryService getRegistryService() {
+        if (applicationContext != null) {
+            OrchestratorUtils instance = applicationContext.getBean(OrchestratorUtils.class);
+            return instance.registryService;
+        }
+        throw new IllegalStateException("ApplicationContext not available");
     }
 }

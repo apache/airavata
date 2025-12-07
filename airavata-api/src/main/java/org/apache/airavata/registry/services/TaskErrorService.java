@@ -26,7 +26,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,10 @@ public class TaskErrorService {
     @Autowired
     private TaskErrorRepository taskErrorRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
         entity.setTaskId(taskId);
         TaskErrorEntity saved = taskErrorRepository.save(entity);
@@ -46,7 +47,6 @@ public class TaskErrorService {
     }
 
     public void updateTaskError(ErrorModel error, String taskId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
         entity.setTaskId(taskId);
         taskErrorRepository.save(entity);
@@ -54,7 +54,6 @@ public class TaskErrorService {
 
     public List<ErrorModel> getTaskError(String taskId) throws RegistryException {
         List<TaskErrorEntity> entities = taskErrorRepository.findByTaskId(taskId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ErrorModel> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
         return result;

@@ -54,17 +54,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
-            "org.apache.airavata.registry.core.repositories",
+            "org.apache.airavata.registry.repositories",
             "org.apache.airavata.profile",
             "org.apache.airavata.sharing.repositories",
+            "org.apache.airavata.credential.repositories",
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift"
         })
 @EntityScan(
         basePackages = {
-            "org.apache.airavata.registry.core.entities",
-            "org.apache.airavata.profile.commons",
-            "org.apache.airavata.sharing.entities"
+            "org.apache.airavata.registry.entities",
+            "org.apache.airavata.profile.entities",
+            "org.apache.airavata.sharing.entities",
+            "org.apache.airavata.credential.entities"
         })
 public class AiravataApplication {
 

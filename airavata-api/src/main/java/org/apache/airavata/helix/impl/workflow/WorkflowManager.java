@@ -39,8 +39,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
@@ -52,7 +51,10 @@ public class WorkflowManager {
 
     private Publisher statusPublisher;
     private List<WorkflowOperator> workflowOperators = new ArrayList<>();
-    private RegistryService registryService;
+    
+    @Autowired
+    protected RegistryService registryService;
+    
     private String workflowManagerName;
     private ZKHelixAdmin zkHelixAdmin;
     private boolean loadBalanceClusters;
@@ -65,7 +67,6 @@ public class WorkflowManager {
     }
 
     protected void initComponents() throws Exception {
-        initRegistryService();
         initHelixAdmin();
         initWorkflowOperators();
         initStatusPublisher();
@@ -100,22 +101,6 @@ public class WorkflowManager {
                 .setRealmMode(RealmMode.SINGLE_REALM)
                 .setZkAddress(ServerSettings.getZookeeperConnection())
                 .build();
-    }
-
-    private void initRegistryService()
-            throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
-                    InstantiationException {
-        // Try to get from Spring context first, fallback to ServiceFactory for backward compatibility
-        try {
-            this.registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();
-        } catch (Exception e) {
-            // Fallback to ServiceFactory if Spring context not available
-            try {
-                this.registryService = ServiceFactory.getInstance().getRegistryService();
-            } catch (ServiceFactoryException ex) {
-                throw new IllegalStateException("Failed to get RegistryService", ex);
-            }
-        }
     }
 
     public Publisher getStatusPublisher() {

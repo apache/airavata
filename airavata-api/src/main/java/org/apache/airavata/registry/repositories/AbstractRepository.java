@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.registry.utils.Committer;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,66 +42,73 @@ public abstract class AbstractRepository<T, E, Id> {
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
 
+    protected abstract Mapper getMapper();
+    
+    protected abstract EntityManager getEntityManager();
+
+    @Transactional
     public T create(T t) {
         return update(t);
     }
 
+    @Transactional
     public T update(T t) {
         return mergeEntity(mapToEntity(t));
     }
 
     protected E mapToEntity(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(t, dbEntityGenericClass);
+        return getMapper().map(t, dbEntityGenericClass);
     }
 
     protected T mergeEntity(E entity) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        EntityManager em = getEntityManager();
+        E persistedCopy = em.merge(entity);
+        return getMapper().map(persistedCopy, thriftGenericClass);
     }
 
+    @Transactional
     public boolean delete(Id id) {
-        execute(entityManager -> {
-            E entity = entityManager.find(dbEntityGenericClass, id);
-            entityManager.remove(entity);
-            return entity;
-        });
+        EntityManager em = getEntityManager();
+        E entity = em.find(dbEntityGenericClass, id);
+        if (entity != null) {
+            em.remove(entity);
+        }
         return true;
     }
 
+    @Transactional(readOnly = true)
     public T get(Id id) {
-        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
+        EntityManager em = getEntityManager();
+        E entity = em.find(dbEntityGenericClass, id);
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, thriftGenericClass);
+        return getMapper().map(entity, thriftGenericClass);
     }
 
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
     public List<T> select(String query, int offset) {
-        List resultSet = (List) execute(entityManager ->
-                entityManager.createQuery(query).setFirstResult(offset).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
+        EntityManager em = getEntityManager();
+        List<?> resultSet = em.createQuery(query).setFirstResult(offset).getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .collect(java.util.stream.Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
+        EntityManager em = getEntityManager();
+        Query jpaQuery = em.createQuery(query);
 
-        List resultSet = (List) execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(query);
+        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+            jpaQuery.setParameter(entry.getKey(), entry.getValue());
+        }
 
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
-            }
-
-            return jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-        });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<?> resultSet = jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        for (Object rs : resultSet) {
+            gatewayList.add(getMapper().map(rs, thriftGenericClass));
+        }
         return gatewayList;
     }
 
@@ -109,102 +116,42 @@ public abstract class AbstractRepository<T, E, Id> {
         return get(id) != null;
     }
 
+    @Transactional(readOnly = true)
     public int scalarInt(String query, Map<String, Object> queryParams) {
+        EntityManager em = getEntityManager();
+        Query jpaQuery = em.createQuery(query);
 
-        int scalarInt = execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(query);
+        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+            jpaQuery.setParameter(entry.getKey(), entry.getValue());
+        }
 
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
-            }
-
-            return ((Number) jpaQuery.getSingleResult()).intValue();
-        });
-        return scalarInt;
+        return ((Number) jpaQuery.getSingleResult()).intValue();
     }
 
+    @Transactional
     public <R> R execute(Committer<EntityManager, R> committer) {
-        EntityManager entityManager = null;
-        try {
-            entityManager = getEntityManager();
-        } catch (Exception e) {
-            logger.error("Failed to get EntityManager", e);
-            throw new RuntimeException("Failed to get EntityManager", e);
-        }
-        try {
-            entityManager.getTransaction().begin();
-            R r = committer.commit(entityManager);
-            entityManager.getTransaction().commit();
-            return r;
-        } catch (Exception e) {
-            logger.error("Failed to execute transaction", e);
-            throw e;
-        } finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-                entityManager.close();
-            }
-        }
+        EntityManager em = getEntityManager();
+        return committer.commit(em);
     }
 
+    @Transactional
     public void executeWithNativeQuery(String query, String... params) {
-        EntityManager entityManager = null;
-        try {
-            entityManager = getEntityManager();
-        } catch (Exception e) {
-            logger.error("Failed to get EntityManager", e);
-            throw new RuntimeException("Failed to get EntityManager", e);
+        EntityManager em = getEntityManager();
+        Query nativeQuery = em.createNativeQuery(query);
+        for (int i = 0; i < params.length; i++) {
+            nativeQuery.setParameter((i + 1), params[i]);
         }
-        try {
-            Query nativeQuery = entityManager.createNativeQuery(query);
-            for (int i = 0; i < params.length; i++) {
-                nativeQuery.setParameter((i + 1), params[i]);
-            }
-            entityManager.getTransaction().begin();
-            nativeQuery.executeUpdate();
-            entityManager.getTransaction().commit();
-        } catch (Exception e) {
-            logger.error("Failed to execute transaction", e);
-            throw e;
-        } finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-                entityManager.close();
-            }
-        }
+        nativeQuery.executeUpdate();
     }
 
-    public List selectWithNativeQuery(String query, String... params) {
-        EntityManager entityManager = null;
-        try {
-            entityManager = getEntityManager();
-        } catch (Exception e) {
-            logger.error("Failed to get EntityManager", e);
-            throw new RuntimeException("Failed to get EntityManager", e);
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+    public List<?> selectWithNativeQuery(String query, String... params) {
+        EntityManager em = getEntityManager();
+        Query nativeQuery = em.createNativeQuery(query);
+        for (int i = 0; i < params.length; i++) {
+            nativeQuery.setParameter((i + 1), params[i]);
         }
-        try {
-            Query nativeQuery = entityManager.createNativeQuery(query);
-            for (int i = 0; i < params.length; i++) {
-                nativeQuery.setParameter((i + 1), params[i]);
-            }
-            return nativeQuery.getResultList();
-        } catch (Exception e) {
-            logger.error("Failed to execute transaction", e);
-            throw e;
-        } finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-                entityManager.close();
-            }
-        }
+        return nativeQuery.getResultList();
     }
-
-    protected abstract EntityManager getEntityManager();
 }

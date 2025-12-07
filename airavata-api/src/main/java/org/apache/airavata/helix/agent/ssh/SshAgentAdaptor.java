@@ -31,8 +31,8 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,23 +42,18 @@ import org.slf4j.LoggerFactory;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class SshAgentAdaptor implements AgentAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
 
     private Session session = null;
+    
+    @Autowired
     protected RegistryService registryService;
+    
+    @Autowired
     protected CredentialStoreService credentialService;
-
-    public SshAgentAdaptor() throws AgentException {
-        try {
-            ServiceFactory factory = ServiceFactory.getInstance();
-            this.registryService = factory.getRegistryService();
-            this.credentialService = factory.getCredentialStoreService();
-        } catch (ServiceFactoryException e) {
-            throw new AgentException("Failed to get services from ServiceFactory", e);
-        }
-    }
 
     public void init(AdaptorParams adaptorParams) throws AgentException {
 

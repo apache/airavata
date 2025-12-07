@@ -70,11 +70,15 @@ import org.apache.airavata.sharing.models.SearchCondition;
 import org.apache.airavata.sharing.models.SearchCriteria;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AiravataDataMigrator {
     private static final Logger logger = LoggerFactory.getLogger(AiravataDataMigrator.class);
+    private static BasicDataSource registryDataSource;
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, Exception {
         String gatewayId = null;
@@ -89,7 +93,7 @@ public class AiravataDataMigrator {
             logger.info("Running sharing data migration for all gateways");
         }
 
-        Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
+        Connection expCatConnection = getRegistryConnection();
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         CredentialStoreService credentialStoreService = getCredentialStoreService();
@@ -937,6 +941,31 @@ public class AiravataDataMigrator {
             return authzToken;
         } catch (AiravataSecurityException e) {
             throw new Exception("Unable to fetch access token for management user for tenant: " + tenantId, e);
+        }
+    }
+
+    private static Connection getRegistryConnection() throws SQLException, ClassNotFoundException {
+        try {
+            // Create DataSource directly from properties (replacing ConnectionFactory singleton)
+            if (registryDataSource == null) {
+                String jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
+                String jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
+                String jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");
+                String jdbcDriver = ServerSettings.getSetting("registry.jdbc.driver");
+                
+                registryDataSource = new BasicDataSource();
+                registryDataSource.setDriverClassName(jdbcDriver);
+                registryDataSource.setUrl(jdbcUrl);
+                registryDataSource.setUsername(jdbcUser);
+                registryDataSource.setPassword(jdbcPassword);
+                registryDataSource.setValidationQuery("SELECT 1");
+                registryDataSource.setTestOnBorrow(true);
+            }
+            
+            return registryDataSource.getConnection();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Failed to load database settings", e);
+            throw new RuntimeException("Failed to load application settings", e);
         }
     }
 }

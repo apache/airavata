@@ -26,7 +26,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentErrorRepository;
-import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,10 @@ public class ExperimentErrorService {
     @Autowired
     private ExperimentErrorRepository experimentErrorRepository;
 
+    @Autowired
+    private Mapper mapper;
+
     public String addExperimentError(ErrorModel error, String experimentId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
         entity.setExperimentId(experimentId);
         ExperimentErrorEntity saved = experimentErrorRepository.save(entity);
@@ -46,7 +47,6 @@ public class ExperimentErrorService {
     }
 
     public void updateExperimentError(ErrorModel error, String experimentId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
         entity.setExperimentId(experimentId);
         experimentErrorRepository.save(entity);
@@ -54,7 +54,6 @@ public class ExperimentErrorService {
 
     public List<ErrorModel> getExperimentErrors(String experimentId) throws RegistryException {
         List<ExperimentErrorEntity> entities = experimentErrorRepository.findByExperimentId(experimentId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<ErrorModel> result = new ArrayList<>();
         entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
         return result;
