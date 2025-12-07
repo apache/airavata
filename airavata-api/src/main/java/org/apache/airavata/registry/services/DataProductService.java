@@ -75,4 +75,19 @@ public class DataProductService {
         DataProductEntity saved = dataProductRepository.save(entity);
         return saved.getProductUri();
     }
+
+    public boolean isDataProductExists(String productUri) throws ReplicaCatalogException {
+        return dataProductRepository.existsById(productUri);
+    }
+
+    public boolean updateDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        DataProductEntity entity = mapper.map(dataProductModel, DataProductEntity.class);
+        dataProductRepository.save(entity);
+        return true;
+    }
+
+    public void removeDataProduct(String productUri) throws ReplicaCatalogException {
+        dataProductRepository.deleteById(productUri);
+    }
 }

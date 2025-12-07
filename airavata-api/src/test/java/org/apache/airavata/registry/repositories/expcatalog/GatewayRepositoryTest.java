@@ -36,7 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class GatewayRepositoryTest extends TestBase {
 
     private String testGatewayId = "testGateway";

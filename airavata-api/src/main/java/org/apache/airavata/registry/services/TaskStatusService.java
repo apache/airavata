@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.List;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.registry.entities.expcatalog.TaskStatusEntity;
@@ -46,5 +47,25 @@ public class TaskStatusService {
         TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
         entity.setTaskId(taskId);
         taskStatusRepository.save(entity);
+    }
+
+    public void updateTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
+        if (taskStatus.getStatusId() == null) {
+            taskStatus.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
+        }
+        if (taskStatus.getTimeOfStateChange() == 0) {
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        }
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
+        entity.setTaskId(taskId);
+        taskStatusRepository.save(entity);
+    }
+
+    public TaskStatus getTaskStatus(String taskId) throws RegistryException {
+        List<TaskStatusEntity> entities = taskStatusRepository.findByTaskIdOrderByTimeOfStateChangeDesc(taskId);
+        if (entities.isEmpty()) return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entities.get(0), TaskStatus.class);
     }
 }

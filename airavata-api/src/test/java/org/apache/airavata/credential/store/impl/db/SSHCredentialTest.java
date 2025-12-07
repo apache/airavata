@@ -21,10 +21,9 @@ package org.apache.airavata.credential.store.impl.db;
 
 import java.io.File;
 import java.io.FileInputStream;
-import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.util.TokenGenerator;
+import org.apache.airavata.credential.impl.store.SSHCredentialWriter;
+import org.apache.airavata.credential.utils.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +32,14 @@ public class SSHCredentialTest {
     private static final Logger logger = LoggerFactory.getLogger(SSHCredentialTest.class);
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_gw119";
-        String jdbcDriver = "com.mysql.jdbc.Driver";
-        String userName = "gtaDevUser";
-        String password = "gtaDevPWD";
         String gatewayId = "phasta";
         String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa";
         String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
 
         try {
-            DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
-            SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
+            // Note: SSHCredentialWriter is now a Spring component and should be autowired
+            // This test needs to be updated to use Spring Boot test context
+            SSHCredentialWriter writer = new SSHCredentialWriter();
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);

@@ -36,7 +36,7 @@ log "REST proxy updated."
 # Update the config files
 # ================================
 mkdir -p ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/
-cp vault/airavata-server.properties ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata-server.properties
+cp vault/airavata.properties ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata.properties
 cp vault/airavata.sym.p12 ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/airavata.sym.p12
 cp vault/email-config.yml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/email-config.yml
 cp vault/log4j2.xml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/log4j2.xml

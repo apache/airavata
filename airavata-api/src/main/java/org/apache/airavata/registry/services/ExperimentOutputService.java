@@ -53,4 +53,12 @@ public class ExperimentOutputService {
             experimentOutputRepository.save(entity);
         }
     }
+
+    public void updateExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId)
+            throws RegistryException {
+        // Delete existing outputs and add new ones
+        List<ExperimentOutputEntity> existing = experimentOutputRepository.findByExperimentId(experimentId);
+        experimentOutputRepository.deleteAll(existing);
+        addExperimentOutputs(outputs, experimentId);
+    }
 }

@@ -33,43 +33,48 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaMetadataEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.DataProductService;
+import org.apache.airavata.registry.services.DataReplicaLocationService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class DataReplicaLocationRepositoryTest extends TestBase {
 
-    private DataProductRepository dataProductRepository;
-    private DataReplicaLocationRepository dataReplicaLocationRepository;
+    @Autowired
+    private DataProductService dataProductService;
+
+    @Autowired
+    private DataReplicaLocationService dataReplicaLocationService;
+
     private String gatewayId = "testGateway";
 
     public DataReplicaLocationRepositoryTest() {
         super(Database.REPLICA_CATALOG);
-        // Handle circular dependency: create DataProductRepository with a temporary DataReplicaLocationRepository,
-        // then create DataReplicaLocationRepository with the DataProductRepository
-        // Both will have proper references to each other
-        DataReplicaLocationRepository tempReplicaRepo = new DataReplicaLocationRepository(null);
-        dataProductRepository = new DataProductRepository(tempReplicaRepo);
-        dataReplicaLocationRepository = new DataReplicaLocationRepository(dataProductRepository);
     }
 
     @Test
-    public void dataReplicaLocationRepositoryTest() throws ReplicaCatalogException {
+    public void dataReplicaLocationServiceTest() throws ReplicaCatalogException {
         DataProductModel testDataProductModel = new DataProductModel();
         testDataProductModel.setGatewayId(gatewayId);
         testDataProductModel.setOwnerName("testUser");
         testDataProductModel.setDataProductType(DataProductType.COLLECTION);
         testDataProductModel.setProductName("productName");
-        String productUri = dataProductRepository.registerDataProduct(testDataProductModel);
-        assertTrue(dataProductRepository.isDataProductExists(productUri));
+        String productUri = dataProductService.registerDataProduct(testDataProductModel);
+        assertTrue(dataProductService.isDataProductExists(productUri));
 
         DataReplicaLocationModel testDataReplicaLocationModel1 = new DataReplicaLocationModel();
         testDataReplicaLocationModel1.setReplicaName("replicaName1");
         testDataReplicaLocationModel1.setProductUri(productUri);
-        String replicaId1 = dataReplicaLocationRepository.registerReplicaLocation(testDataReplicaLocationModel1);
+        String replicaId1 = dataReplicaLocationService.registerReplicaLocation(testDataReplicaLocationModel1);
 
         DataReplicaLocationModel testDataReplicaLocationModel2 = new DataReplicaLocationModel();
         testDataReplicaLocationModel2.setReplicaName("replicaName2");
         testDataReplicaLocationModel2.setProductUri(productUri);
-        String replicaId2 = dataReplicaLocationRepository.registerReplicaLocation(testDataReplicaLocationModel2);
+        String replicaId2 = dataReplicaLocationService.registerReplicaLocation(testDataReplicaLocationModel2);
 
         DataReplicaMetadataEntity dataReplicaMetadataEntity1 = new DataReplicaMetadataEntity();
         dataReplicaMetadataEntity1.setReplicaId(replicaId1);
@@ -88,10 +93,10 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
                 dataReplicaMetadataEntity2.getMetadataKey(), dataReplicaMetadataEntity2.getMetadataValue());
         testDataReplicaLocationModel1.setReplicaMetadata(dataReplicaMetadataEntityMap);
         testDataReplicaLocationModel1.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
-        assertTrue(dataReplicaLocationRepository.updateReplicaLocation(testDataReplicaLocationModel1));
+        assertTrue(dataReplicaLocationService.updateReplicaLocation(testDataReplicaLocationModel1));
 
         DataReplicaLocationModel retrievedDataReplicaLocationModel =
-                dataReplicaLocationRepository.getReplicaLocation(replicaId1);
+                dataReplicaLocationService.getReplicaLocation(replicaId1);
         assertTrue(retrievedDataReplicaLocationModel.getReplicaMetadata().size() == 2);
         assertEquals(
                 retrievedDataReplicaLocationModel.getReplicaPersistentType(),
@@ -101,19 +106,19 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
 
         testDataProductModel.setReplicaLocations(
                 Arrays.asList(testDataReplicaLocationModel1, testDataReplicaLocationModel2));
-        dataProductRepository.updateDataProduct(testDataProductModel);
-        assertTrue(dataProductRepository
+        dataProductService.updateDataProduct(testDataProductModel);
+        assertTrue(dataProductService
                         .getDataProduct(productUri)
                         .getReplicaLocations()
                         .size()
                 == 2);
 
         List<DataReplicaLocationModel> dataReplicaLocationModelList =
-                dataReplicaLocationRepository.getAllReplicaLocations(productUri);
+                dataReplicaLocationService.getAllReplicaLocations(productUri);
         assertTrue(dataReplicaLocationModelList.size() == 2);
 
-        dataReplicaLocationRepository.removeReplicaLocation(replicaId1);
-        dataReplicaLocationRepository.removeReplicaLocation(replicaId2);
-        dataProductRepository.removeDataProduct(productUri);
+        dataReplicaLocationService.removeReplicaLocation(replicaId1);
+        dataReplicaLocationService.removeReplicaLocation(replicaId2);
+        dataProductService.removeDataProduct(productUri);
     }
 }

@@ -249,48 +249,66 @@ public class ClusterStatusMonitorJob implements Job {
             return hostName;
         }
 
+        // Unused setter methods - commented out
+        /*
         public void setHostName(String hostName) {
             this.hostName = hostName;
         }
+        */
 
         public String getUserName() {
             return userName;
         }
 
+        // Unused setter method - commented out
+        /*
         public void setUserName(String userName) {
             this.userName = userName;
         }
+        */
 
         public int getPort() {
             return port;
         }
 
+        // Unused setter method - commented out
+        /*
         public void setPort(int port) {
             this.port = port;
         }
+        */
 
         public String getCredentialStoreToken() {
             return credentialStoreToken;
         }
 
+        // Unused setter method - commented out
+        /*
         public void setCredentialStoreToken(String credentialStoreToken) {
             this.credentialStoreToken = credentialStoreToken;
         }
+        */
 
         public List<String> getQueueNames() {
             return queueNames;
         }
 
+        // Unused setter method - commented out
+        /*
         public void setQueueNames(List<String> queueNames) {
             this.queueNames = queueNames;
         }
+        */
 
         public String getResourceManagerType() {
             return resourceManagerType;
         }
 
+        // Unused setter method - commented out
+        /*
         public void setResourceManagerType(String resourceManagerType) {
             this.resourceManagerType = resourceManagerType;
         }
+        */
     }
 }

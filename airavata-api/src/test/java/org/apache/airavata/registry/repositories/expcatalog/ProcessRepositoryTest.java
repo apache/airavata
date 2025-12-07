@@ -34,28 +34,34 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProcessService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ProcessRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ProcessService processService;
 
     public ProcessRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        JobRepository jobRepository = new JobRepository();
-        TaskRepository taskRepository = new TaskRepository(jobRepository);
-        processRepository = new ProcessRepository(taskRepository);
     }
 
     @Test
@@ -64,14 +70,14 @@ public class ProcessRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -80,7 +86,7 @@ public class ProcessRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
 
@@ -93,10 +99,9 @@ public class ProcessRepositoryTest extends TestBase {
         taskStatus.setStatusId("task-status-id");
         task.addToTaskStatuses(taskStatus);
 
-        String processId = processRepository.addProcess(processModel, experimentId);
+        String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
-        assertTrue(
-                experimentRepository.getExperiment(experimentId).getProcesses().size() == 1);
+        assertTrue(experimentService.getExperiment(experimentId).getProcesses().size() == 1);
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
@@ -115,9 +120,9 @@ public class ProcessRepositoryTest extends TestBase {
         job.addToJobStatuses(jobStatus);
         jobSubmissionTask.addToJobs(job);
         processModel.addToTasks(jobSubmissionTask);
-        processRepository.updateProcess(processModel, processId);
+        processService.updateProcess(processModel, processId);
 
-        ProcessModel retrievedProcess = processRepository.getProcess(processId);
+        ProcessModel retrievedProcess = processService.getProcess(processId);
         assertEquals(experimentId, retrievedProcess.getExperimentId());
         assertEquals("detail", retrievedProcess.getProcessDetail());
         assertTrue(retrievedProcess.isUseUserCRPref());
@@ -134,17 +139,16 @@ public class ProcessRepositoryTest extends TestBase {
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
                 new ComputationalResourceSchedulingModel();
         assertEquals(
-                processId,
-                processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
+                processId, processService.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
 
         computationalResourceSchedulingModel.setQueueName("queue");
         computationalResourceSchedulingModel.setStaticWorkingDir("staticWorkingDir");
         computationalResourceSchedulingModel.setOverrideAllocationProjectNumber("overrideAllocationProjectNumber");
         computationalResourceSchedulingModel.setOverrideLoginUserName("overrideLoginUserName");
         computationalResourceSchedulingModel.setOverrideScratchLocation("overrideScratchLocation");
-        processRepository.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
+        processService.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
         ComputationalResourceSchedulingModel updatedComputationalResourceSchedulingModel =
-                processRepository.getProcessResourceSchedule(processId);
+                processService.getProcessResourceSchedule(processId);
         assertEquals("queue", updatedComputationalResourceSchedulingModel.getQueueName());
         assertEquals("staticWorkingDir", updatedComputationalResourceSchedulingModel.getStaticWorkingDir());
         assertEquals(
@@ -154,15 +158,15 @@ public class ProcessRepositoryTest extends TestBase {
         assertEquals(
                 "overrideScratchLocation", updatedComputationalResourceSchedulingModel.getOverrideScratchLocation());
 
-        List<String> processIdList = processRepository.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
+        List<String> processIdList = processService.getProcessIds(DBConstants.Process.EXPERIMENT_ID, experimentId);
         assertTrue(processIdList.size() == 1);
         assertTrue(processIdList.get(0).equals(processId));
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        assertFalse(processRepository.isProcessExist(processId));
+        experimentService.removeExperiment(experimentId);
+        processService.removeProcess(processId);
+        assertFalse(processService.isProcessExist(processId));
 
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

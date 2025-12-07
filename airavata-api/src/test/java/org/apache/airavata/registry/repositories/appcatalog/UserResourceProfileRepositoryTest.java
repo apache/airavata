@@ -28,21 +28,24 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProf
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.UserResourceProfileService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class UserResourceProfileRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileRepositoryTest.class);
+    @Autowired
+    private UserResourceProfileService userResourceProfileService;
 
-    private UserResourceProfileRepository userResourceProfileRepository;
     private String userId = "testUser";
     private String gatewayId = "testGateway";
 
     public UserResourceProfileRepositoryTest() {
         super(Database.APP_CATALOG);
-        userResourceProfileRepository = new UserResourceProfileRepository();
     }
 
     @Test
@@ -67,48 +70,48 @@ public class UserResourceProfileRepositoryTest extends TestBase {
         userResourceProfile.setUserStoragePreferences(Arrays.asList(userStoragePreference));
         userResourceProfile.setIdentityServerTenant("tenant1");
         userResourceProfile.setIdentityServerPwdCredToken("password");
-        if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayId))
-            userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
+        if (!userResourceProfileService.isUserResourceProfileExists(userId, gatewayId))
+            userResourceProfileService.addUserResourceProfile(userResourceProfile);
         assertEquals(userId, userResourceProfile.getUserId());
 
         userResourceProfile.setIdentityServerTenant("tenant2");
-        userResourceProfileRepository.updateUserResourceProfile(userId, gatewayId, userResourceProfile);
+        userResourceProfileService.updateUserResourceProfile(userId, gatewayId, userResourceProfile);
 
         UserResourceProfile retrievedUserResourceProfile =
-                userResourceProfileRepository.getUserResourceProfile(userId, gatewayId);
+                userResourceProfileService.getUserResourceProfile(userId, gatewayId);
         assertTrue(retrievedUserResourceProfile.getUserStoragePreferences().size() == 1);
         assertEquals(
                 userResourceProfile.getIdentityServerTenant(), retrievedUserResourceProfile.getIdentityServerTenant());
 
         UserComputeResourcePreference retrievedUserComputeResourcePreference =
-                userResourceProfileRepository.getUserComputeResourcePreference(
+                userResourceProfileService.getUserComputeResourcePreference(
                         userId, gatewayId, userComputeResourcePreference.getComputeResourceId());
         assertEquals(
                 userComputeResourcePreference.getLoginUserName(),
                 retrievedUserComputeResourcePreference.getLoginUserName());
 
-        UserStoragePreference retrievedUserStoragePreference = userResourceProfileRepository.getUserStoragePreference(
+        UserStoragePreference retrievedUserStoragePreference = userResourceProfileService.getUserStoragePreference(
                 userId, gatewayId, userStoragePreference.getStorageResourceId());
         assertEquals(
                 userStoragePreference.getFileSystemRootLocation(),
                 retrievedUserStoragePreference.getFileSystemRootLocation());
 
-        assertTrue(userResourceProfileRepository.getAllUserResourceProfiles().size() == 1);
-        assertTrue(userResourceProfileRepository
+        assertTrue(userResourceProfileService.getAllUserResourceProfiles().size() == 1);
+        assertTrue(userResourceProfileService
                         .getAllUserComputeResourcePreferences(userId, gatewayId)
                         .size()
                 == 1);
-        assertTrue(userResourceProfileRepository
+        assertTrue(userResourceProfileService
                         .getAllUserStoragePreferences(userId, gatewayId)
                         .size()
                 == 1);
-        assertTrue(userResourceProfileRepository.getGatewayProfileIds(gatewayId).size() == 1);
-        assertEquals(userId, userResourceProfileRepository.getUserNamefromID(userId, gatewayId));
+        assertTrue(userResourceProfileService.getGatewayProfileIds(gatewayId).size() == 1);
+        assertEquals(userId, userResourceProfileService.getUserNamefromID(userId, gatewayId));
 
-        userResourceProfileRepository.removeUserComputeResourcePreferenceFromGateway(
+        userResourceProfileService.removeUserComputeResourcePreferenceFromGateway(
                 userId, gatewayId, userComputeResourcePreference.getComputeResourceId());
-        userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(
+        userResourceProfileService.removeUserDataStoragePreferenceFromGateway(
                 userId, gatewayId, userStoragePreference.getStorageResourceId());
-        userResourceProfileRepository.removeUserResourceProfile(userId, gatewayId);
+        userResourceProfileService.removeUserResourceProfile(userId, gatewayId);
     }
 }

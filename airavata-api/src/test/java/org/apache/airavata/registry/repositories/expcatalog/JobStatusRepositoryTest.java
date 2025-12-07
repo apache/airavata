@@ -35,31 +35,45 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.JobService;
+import org.apache.airavata.registry.services.JobStatusService;
+import org.apache.airavata.registry.services.ProcessService;
+import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.TaskService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class JobStatusRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobStatusRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    TaskRepository taskRepository;
-    JobRepository jobRepository;
-    JobStatusRepository jobStatusRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ProcessService processService;
+
+    @Autowired
+    TaskService taskService;
+
+    @Autowired
+    JobService jobService;
+
+    @Autowired
+    JobStatusService jobStatusService;
 
     public JobStatusRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        jobRepository = new JobRepository();
-        taskRepository = new TaskRepository(jobRepository);
-        processRepository = new ProcessRepository(taskRepository);
-        jobStatusRepository = new JobStatusRepository();
     }
 
     @Test
@@ -68,14 +82,14 @@ public class JobStatusRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -84,20 +98,20 @@ public class JobStatusRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
-        String processId = processRepository.addProcess(processModel, experimentId);
+        String processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskModel.setParentProcessId(processId);
 
-        String taskId = taskRepository.addTask(taskModel, processId);
+        String taskId = taskService.addTask(taskModel, processId);
         assertTrue(taskId != null);
 
         taskModel.setTaskType(TaskTypes.MONITORING);
-        taskRepository.updateTask(taskModel, taskId);
+        taskService.updateTask(taskModel, taskId);
 
         JobPK jobPK = new JobPK();
         jobPK.setJobId("job");
@@ -108,25 +122,24 @@ public class JobStatusRepositoryTest extends TestBase {
         jobModel.setTaskId(jobPK.getTaskId());
         jobModel.setJobDescription("jobDescription");
 
-        String jobId = jobRepository.addJob(jobModel, processId);
+        String jobId = jobService.addJob(jobModel, processId);
         assertTrue(jobId != null);
 
         JobStatus jobStatus = new JobStatus(JobState.QUEUED);
-        String jobStatusId = jobStatusRepository.addJobStatus(jobStatus, jobPK);
-        assertTrue(jobStatusId != null);
-        assertTrue(jobRepository.getJob(jobPK).getJobStatuses().size() == 1);
+        jobStatusService.addJobStatus(jobStatus, jobPK);
+        assertTrue(jobService.getJob(jobPK).getJobStatuses().size() == 1);
 
         jobStatus.setJobState(JobState.ACTIVE);
-        jobStatusRepository.updateJobStatus(jobStatus, jobPK);
+        jobStatusService.updateJobStatus(jobStatus, jobPK);
 
-        JobStatus retrievedJobStatus = jobStatusRepository.getJobStatus(jobPK);
+        JobStatus retrievedJobStatus = jobStatusService.getJobStatus(jobPK);
         assertEquals(JobState.ACTIVE, retrievedJobStatus.getJobState());
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        taskRepository.removeTask(taskId);
-        jobRepository.removeJob(jobPK);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        experimentService.removeExperiment(experimentId);
+        processService.removeProcess(processId);
+        taskService.removeTask(taskId);
+        jobService.removeJob(jobPK);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

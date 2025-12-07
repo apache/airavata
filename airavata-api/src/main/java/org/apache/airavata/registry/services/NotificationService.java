@@ -55,10 +55,11 @@ public class NotificationService {
         return entities.stream().map(e -> mapper.map(e, Notification.class)).collect(Collectors.toList());
     }
 
-    public void createNotification(Notification notification) throws RegistryException {
+    public String createNotification(Notification notification) throws RegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         NotificationEntity entity = mapper.map(notification, NotificationEntity.class);
-        notificationRepository.save(entity);
+        NotificationEntity saved = notificationRepository.save(entity);
+        return saved.getNotificationId();
     }
 
     public void updateNotification(Notification notification) throws RegistryException {

@@ -48,8 +48,8 @@
     registry_host: "{{ ansible_eth0.ipv4.address }}"
 
 - name: Copy Airavata server properties file
-  template: src=airavata-server.properties.j2
-            dest="{{ registry_dir }}/{{ airavata_dist }}/bin/airavata-server.properties"
+  template: src=airavata.properties.j2
+            dest="{{ registry_dir }}/{{ airavata_dist }}/bin/airavata.properties"
             owner={{ user }}
             group={{ group }}
             mode="u=rw,g=r,o=r"

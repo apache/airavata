@@ -27,13 +27,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TestSharingRegistryHandler {
     private static final Logger logger = LoggerFactory.getLogger(TestSharingRegistryHandler.class);
 
+    @Autowired
+    private SharingRegistryServerHandler sharingRegistryServerHandler;
+
     @Test
     public void test() throws Exception {
-        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
         // Creating domain
         Domain domain = new Domain();

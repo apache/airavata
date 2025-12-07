@@ -24,15 +24,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.airavata.model.workflow.*;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.WorkflowService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 // TODO: fix derby initialization script so that this test can be re-enabled
 @Disabled
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class WorkflowRepositoryTest extends TestBase {
 
-    private WorkflowRepository workflowRepository;
+    @Autowired
+    private WorkflowService workflowService;
 
     // Workflow related constants
     private String EXPERIMENT_ID = "sample_exp_id";
@@ -65,15 +72,14 @@ public class WorkflowRepositoryTest extends TestBase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        workflowRepository = new WorkflowRepository();
     }
 
     @Test
     public void SubmitWorkflowTest() throws WorkflowCatalogException {
 
-        workflowRepository.registerWorkflow(getSimpleWorkflow(), EXPERIMENT_ID);
+        workflowService.registerWorkflow(getSimpleWorkflow(), EXPERIMENT_ID);
 
-        AiravataWorkflow workflow = workflowRepository.getWorkflow(workflowRepository.getWorkflowId(EXPERIMENT_ID));
+        AiravataWorkflow workflow = workflowService.getWorkflow(workflowService.getWorkflowId(EXPERIMENT_ID));
 
         // Assert workflow
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());

@@ -123,9 +123,12 @@ public class StringUtil {
         return true;
     }
 
+    // Unused method - commented out
+    /*
     private static boolean isQuoted(String s) {
         return isQuoted(s, DELIMETER);
     }
+    */
 
     /**
      * Create a delimiter separated string out of a list

@@ -27,18 +27,21 @@ import java.util.List;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.QueueStatusService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class QueueStatusRepositoryTest extends TestBase {
 
-    QueueStatusRepository queueStatusRepository;
-    private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepositoryTest.class);
+    @Autowired
+    QueueStatusService queueStatusService;
 
     public QueueStatusRepositoryTest() {
         super(Database.EXP_CATALOG);
-        queueStatusRepository = new QueueStatusRepository();
     }
 
     @Test
@@ -51,10 +54,10 @@ public class QueueStatusRepositoryTest extends TestBase {
         queueStatusModel.setQueuedJobs(2);
         queueStatusModel.setTime(System.currentTimeMillis());
 
-        boolean returnValue = queueStatusRepository.createQueueStatuses(Arrays.asList(queueStatusModel));
+        boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queueStatusModel));
         assertTrue(returnValue);
 
-        List<QueueStatusModel> queueStatusModelList = queueStatusRepository.getLatestQueueStatuses();
+        List<QueueStatusModel> queueStatusModelList = queueStatusService.getLatestQueueStatuses();
         assertTrue(queueStatusModelList.size() == 1);
         assertEquals(queueStatusModel.getHostName(), queueStatusModelList.get(0).getHostName());
     }

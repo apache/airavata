@@ -22,30 +22,37 @@ package org.apache.airavata.api.thrift.server;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.sharing.models.*;
+import org.apache.airavata.sharing.models.Domain;
+import org.apache.airavata.sharing.models.DuplicateEntryException;
+import org.apache.airavata.sharing.models.Entity;
+import org.apache.airavata.sharing.models.EntitySearchField;
+import org.apache.airavata.sharing.models.EntityType;
+import org.apache.airavata.sharing.models.GroupCardinality;
+import org.apache.airavata.sharing.models.GroupType;
+import org.apache.airavata.sharing.models.PermissionType;
+import org.apache.airavata.sharing.models.SearchCondition;
+import org.apache.airavata.sharing.models.SearchCriteria;
+import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.sharing.models.User;
+import org.apache.airavata.sharing.models.UserGroup;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TestSharingRegistryServer {
 
-    @BeforeAll
-    public static void setUp() throws Exception {
-        SharingRegistryServer server = new SharingRegistryServer();
-        server.setTestMode(true);
-        server.start();
-        Thread.sleep(1000 * 2);
-    }
+    @Autowired
+    private SharingRegistryService sharingService;
 
     @Test
     public void test()
             throws InterruptedException, ApplicationSettingsException, SharingRegistryException,
-                    DuplicateEntryException, ServiceFactoryException {
-        SharingRegistryService sharingService = ServiceFactory.getInstance().getSharingRegistryService();
-
+                    DuplicateEntryException {
         Domain domain = new Domain();
         // has to be one word
         domain.setName("test-domain" + Math.random());

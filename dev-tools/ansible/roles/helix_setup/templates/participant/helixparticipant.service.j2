@@ -7,7 +7,7 @@ After=network.target
 
 [Service]
 LOG_DIR={{ helix_participant_log_dir }}
-ExecStart={{ helix_dir }}/{{ helix_participant_version }}/bin/participant-daemon.sh {{ helix_dir }}/{{ helix_participant_version }}/conf/airavata-server.properties
+ExecStart={{ helix_dir }}/{{ helix_participant_version }}/bin/participant-daemon.sh {{ helix_dir }}/{{ helix_participant_version }}/conf/airavata.properties
 Restart=on-abort
 
 [Install]

@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.credential.notifier.impl;
 
+import org.apache.airavata.credential.impl.notifier.EmailNotificationMessage;
+import org.apache.airavata.credential.impl.notifier.EmailNotifier;
+import org.apache.airavata.credential.impl.notifier.EmailNotifierConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

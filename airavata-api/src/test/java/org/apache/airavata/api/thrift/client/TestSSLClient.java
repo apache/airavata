@@ -27,28 +27,30 @@ import org.apache.airavata.model.credential.store.CertificateCredential;
 import org.apache.airavata.model.credential.store.CommunityUser;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.service.CredentialStoreService;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TestSSLClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSSLClient.class);
 
-    private void invoke() {
-        try {
-            CredentialStoreService credentialService =
-                    ServiceFactory.getInstance().getCredentialStoreService();
-            testSSHCredential(credentialService);
-            testCertificateCredential(credentialService);
-        } catch (ServiceFactoryException e) {
-            logger.error("Error getting credential store service", e);
-        }
+    @Autowired
+    private CredentialStoreService credentialService;
+
+    @Test
+    public void invoke() {
+        testSSHCredential(credentialService);
+        testCertificateCredential(credentialService);
     }
 
-    public static void testSSHCredential(CredentialStoreService credentialService) {
+    public void testSSHCredential(CredentialStoreService credentialService) {
         try {
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername("test");
@@ -64,7 +66,7 @@ public class TestSSLClient {
         }
     }
 
-    public static void testCertificateCredential(CredentialStoreService credentialService) {
+    public void testCertificateCredential(CredentialStoreService credentialService) {
         try {
             CertificateCredential certificateCredential = new CertificateCredential();
             CommunityUser communityUser = new CommunityUser("testGateway", "test", "test@ddsd");
@@ -92,10 +94,5 @@ public class TestSSLClient {
         } catch (Exception e) {
             logger.error("Error adding certificate credential", e);
         }
-    }
-
-    public static void main(String[] args) {
-        TestSSLClient c = new TestSSLClient();
-        c.invoke();
     }
 }

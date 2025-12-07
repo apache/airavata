@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Spring Boot configuration properties for Airavata server.
- * Maps all properties from airavata-server.properties to strongly-typed Java objects.
+ * Maps all properties from airavata.properties to strongly-typed Java objects.
  */
 @Component
 @ConfigurationProperties(prefix = "")
@@ -378,6 +378,7 @@ public class AiravataServerProperties {
             private String jdbcUrl;
             private String jdbcUser;
             private String jdbcPassword;
+            private String validationQuery = "SELECT 1 from CONFIGURATION";
 
             public String getJdbcDriver() {
                 return jdbcDriver;
@@ -409,6 +410,14 @@ public class AiravataServerProperties {
 
             public void setJdbcPassword(String jdbcPassword) {
                 this.jdbcPassword = jdbcPassword;
+            }
+
+            public String getValidationQuery() {
+                return validationQuery;
+            }
+
+            public void setValidationQuery(String validationQuery) {
+                this.validationQuery = validationQuery;
             }
         }
 

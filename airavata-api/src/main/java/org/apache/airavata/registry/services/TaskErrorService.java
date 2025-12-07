@@ -20,6 +20,8 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
@@ -35,10 +37,26 @@ public class TaskErrorService {
     @Autowired
     private TaskErrorRepository taskErrorRepository;
 
-    public void addTaskError(ErrorModel error, String taskId) throws RegistryException {
+    public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
+        entity.setTaskId(taskId);
+        TaskErrorEntity saved = taskErrorRepository.save(entity);
+        return saved.getErrorId();
+    }
+
+    public void updateTaskError(ErrorModel error, String taskId) throws RegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
         entity.setTaskId(taskId);
         taskErrorRepository.save(entity);
+    }
+
+    public List<ErrorModel> getTaskError(String taskId) throws RegistryException {
+        List<TaskErrorEntity> entities = taskErrorRepository.findByTaskId(taskId);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<ErrorModel> result = new ArrayList<>();
+        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
+        return result;
     }
 }

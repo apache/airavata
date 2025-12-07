@@ -30,25 +30,30 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class UserRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    UserRepository userRepository;
+    @Autowired
+    UserService userService;
+
     private String gatewayId;
     private String gatewayId2;
 
     public UserRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        userRepository = new UserRepository();
     }
 
     @BeforeEach
@@ -56,18 +61,18 @@ public class UserRepositoryTest extends TestBase {
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
-        gatewayId = gatewayRepository.addGateway(gateway);
+        gatewayId = gatewayService.addGateway(gateway);
 
         Gateway gateway2 = new Gateway();
         gateway2.setGatewayId("gateway2");
-        gatewayId2 = gatewayRepository.addGateway(gateway2);
+        gatewayId2 = gatewayService.addGateway(gateway2);
     }
 
     @AfterEach
     public void deleteTestData() throws RegistryException {
 
-        gatewayRepository.removeGateway(gatewayId);
-        gatewayRepository.removeGateway(gatewayId2);
+        gatewayService.removeGateway(gatewayId);
+        gatewayService.removeGateway(gatewayId2);
     }
 
     @Test
@@ -78,13 +83,13 @@ public class UserRepositoryTest extends TestBase {
         userProfile.setAiravataInternalUserId("username@" + gatewayId);
         userProfile.setGatewayId(gatewayId);
 
-        userRepository.addUser(userProfile);
-        UserProfile retrievedUserProfile = userRepository.get(new UserPK(gatewayId, "username"));
+        userService.addUser(userProfile);
+        UserProfile retrievedUserProfile = userService.get(new UserPK(gatewayId, "username"));
         assertEquals("username", retrievedUserProfile.getUserId());
         assertEquals("username@" + gatewayId, retrievedUserProfile.getAiravataInternalUserId());
         assertEquals(gatewayId, retrievedUserProfile.getGatewayId());
 
-        userRepository.delete(new UserPK(gatewayId, "username"));
+        userService.delete(new UserPK(gatewayId, "username"));
     }
 
     @Test
@@ -96,32 +101,32 @@ public class UserRepositoryTest extends TestBase {
         userProfile.setUserId(username1);
         userProfile.setAiravataInternalUserId(username1 + "@" + gatewayId);
         userProfile.setGatewayId(gatewayId);
-        userRepository.addUser(userProfile);
+        userService.addUser(userProfile);
 
         String username2 = "username2";
         UserProfile userProfile2 = new UserProfile();
         userProfile2.setUserId(username2);
         userProfile2.setAiravataInternalUserId(username2 + "@" + gatewayId);
         userProfile2.setGatewayId(gatewayId);
-        userRepository.addUser(userProfile2);
+        userService.addUser(userProfile2);
 
         String username3 = "username3";
         UserProfile userProfile3 = new UserProfile();
         userProfile3.setUserId(username3);
         userProfile3.setAiravataInternalUserId(username3 + "@" + gatewayId2);
         userProfile3.setGatewayId(gatewayId2);
-        userRepository.addUser(userProfile3);
+        userService.addUser(userProfile3);
 
-        List<String> gateway1Usernames = userRepository.getAllUsernamesInGateway(gatewayId);
+        List<String> gateway1Usernames = userService.getAllUsernamesInGateway(gatewayId);
         assertEquals(2, gateway1Usernames.size());
         assertEquals(new HashSet<>(Arrays.asList(username1, username2)), new HashSet<>(gateway1Usernames));
 
-        List<String> gateway2Usernames = userRepository.getAllUsernamesInGateway(gatewayId2);
+        List<String> gateway2Usernames = userService.getAllUsernamesInGateway(gatewayId2);
         assertEquals(1, gateway2Usernames.size());
         assertEquals(Collections.singleton(username3), new HashSet<>(gateway2Usernames));
 
-        userRepository.delete(new UserPK(gatewayId, username1));
-        userRepository.delete(new UserPK(gatewayId, username2));
-        userRepository.delete(new UserPK(gatewayId2, username3));
+        userService.delete(new UserPK(gatewayId, username1));
+        userService.delete(new UserPK(gatewayId, username2));
+        userService.delete(new UserPK(gatewayId2, username3));
     }
 }

@@ -53,4 +53,11 @@ public class ProcessOutputService {
             processOutputRepository.save(entity);
         }
     }
+
+    public void updateProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
+        // Delete existing outputs and add new ones
+        List<ProcessOutputEntity> existing = processOutputRepository.findByProcessId(processId);
+        processOutputRepository.deleteAll(existing);
+        addProcessOutputs(outputs, processId);
+    }
 }

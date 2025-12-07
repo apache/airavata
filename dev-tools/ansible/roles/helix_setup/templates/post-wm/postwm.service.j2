@@ -7,7 +7,7 @@ After=network.target
 
 [Service]
 LOG_DIR={{ helix_post_wm_dist_log_dir }}
-ExecStart={{ helix_dir }}/{{ helix_post_wm_version }}/bin/post-wm-daemon.sh {{ helix_dir }}/{{ helix_post_wm_version }}/conf/airavata-server.properties
+ExecStart={{ helix_dir }}/{{ helix_post_wm_version }}/bin/post-wm-daemon.sh {{ helix_dir }}/{{ helix_post_wm_version }}/conf/airavata.properties
 Restart=on-abort
 
 [Install]

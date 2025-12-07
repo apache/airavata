@@ -20,7 +20,7 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;

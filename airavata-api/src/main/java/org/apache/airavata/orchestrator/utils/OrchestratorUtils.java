@@ -26,10 +26,9 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.CredentialReader;
-import org.apache.airavata.credential.store.impl.CredentialReaderImpl;
+import org.apache.airavata.credential.impl.store.CredentialReaderImpl;
+import org.apache.airavata.credential.utils.CredentialReader;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -355,7 +354,7 @@ public class OrchestratorUtils {
             String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
             String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
             String driver = ServerSettings.getCredentialStoreDBDriver();
-            return new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
+            return new CredentialReaderImpl();
         } catch (ApplicationSettingsException e) {
             logger.error("Error while getting credential reader", e);
             return null;

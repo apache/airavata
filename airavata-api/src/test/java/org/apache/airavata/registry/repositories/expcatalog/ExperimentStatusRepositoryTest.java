@@ -30,25 +30,33 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.ExperimentStatusService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentStatusRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ExperimentStatusRepository experimentStatusRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ExperimentStatusService experimentStatusService;
 
     public ExperimentStatusRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        experimentStatusRepository = new ExperimentStatusRepository();
     }
 
     @Test
@@ -57,14 +65,14 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -73,41 +81,40 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
         // addExperiment adds the CREATED experiment status
         assertEquals(
                 1,
-                experimentRepository
+                experimentService
                         .getExperiment(experimentId)
                         .getExperimentStatus()
                         .size());
 
         ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.VALIDATED);
-        String experimentStatusId = experimentStatusRepository.addExperimentStatus(experimentStatus, experimentId);
+        String experimentStatusId = experimentStatusService.addExperimentStatus(experimentStatus, experimentId);
         assertTrue(experimentStatusId != null);
         assertEquals(
                 2,
-                experimentRepository
+                experimentService
                         .getExperiment(experimentId)
                         .getExperimentStatus()
                         .size());
 
         experimentStatus.setState(ExperimentState.EXECUTING);
-        experimentStatusRepository.updateExperimentStatus(experimentStatus, experimentId);
+        experimentStatusService.updateExperimentStatus(experimentStatus, experimentId);
 
         ExperimentStatus updatedExecutingStatus = new ExperimentStatus(ExperimentState.EXECUTING);
         updatedExecutingStatus.setReason("updated reason");
         updatedExecutingStatus.setTimeOfStateChange(experimentStatus.getTimeOfStateChange());
-        String updatedExperimentStatusId =
-                experimentStatusRepository.updateExperimentStatus(updatedExecutingStatus, experimentId);
+        experimentStatusService.updateExperimentStatus(updatedExecutingStatus, experimentId);
 
-        ExperimentStatus retrievedExpStatus = experimentStatusRepository.getExperimentStatus(experimentId);
+        ExperimentStatus retrievedExpStatus = experimentStatusService.getExperimentStatus(experimentId);
         assertEquals(ExperimentState.EXECUTING, retrievedExpStatus.getState());
         assertEquals("updated reason", updatedExecutingStatus.getReason());
 
-        experimentRepository.removeExperiment(experimentId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        experimentService.removeExperiment(experimentId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

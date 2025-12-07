@@ -31,29 +31,37 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProcessErrorService;
+import org.apache.airavata.registry.services.ProcessService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ProcessErrorRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessErrorRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    ProcessErrorRepository processErrorRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ProcessService processService;
+
+    @Autowired
+    ProcessErrorService processErrorService;
 
     public ProcessErrorRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        JobRepository jobRepository = new JobRepository();
-        TaskRepository taskRepository = new TaskRepository(jobRepository);
-        processRepository = new ProcessRepository(taskRepository);
-        processErrorRepository = new ProcessErrorRepository(processRepository);
     }
 
     @Test
@@ -62,14 +70,14 @@ public class ProcessErrorRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -78,29 +86,29 @@ public class ProcessErrorRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
-        String processId = processRepository.addProcess(processModel, experimentId);
+        String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");
 
-        String processErrorId = processErrorRepository.addProcessError(errorModel, processId);
+        String processErrorId = processErrorService.addProcessError(errorModel, processId);
         assertTrue(processErrorId != null);
-        assertTrue(processRepository.getProcess(processId).getProcessErrors().size() == 1);
+        assertTrue(processService.getProcess(processId).getProcessErrors().size() == 1);
 
         errorModel.setActualErrorMessage("message");
-        processErrorRepository.updateProcessError(errorModel, processId);
+        processErrorService.updateProcessError(errorModel, processId);
 
-        List<ErrorModel> retrievedErrorList = processErrorRepository.getProcessError(processId);
+        List<ErrorModel> retrievedErrorList = processErrorService.getProcessError(processId);
         assertTrue(retrievedErrorList.size() == 1);
         assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        experimentService.removeExperiment(experimentId);
+        processService.removeProcess(processId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

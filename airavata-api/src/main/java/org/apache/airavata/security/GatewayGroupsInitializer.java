@@ -20,7 +20,7 @@
 package org.apache.airavata.security;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;

@@ -120,7 +120,7 @@ cat ./database_scripts/init/*-migrations.sql | docker exec -i containers-db-1 my
    - A 16 character password will appear **copy and save it immediately**, as it will not be shown again.
 
 5. **Update Configuration:**
-   Edit `src/main/resources/airavata-server.properties`:
+   Edit `src/main/resources/airavata.properties`:
    ```properties
    email.based.monitor.address=your-email@gmail.com
    email.based.monitor.password=your-app-password

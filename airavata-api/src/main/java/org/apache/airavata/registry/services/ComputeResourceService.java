@@ -205,7 +205,7 @@ public class ComputeResourceService {
         }
     }
 
-    private Map<FileSystems, String> getFileSystems(String computeResourceId) {
+    public Map<FileSystems, String> getFileSystems(String computeResourceId) {
         List<ComputeResourceFileSystemEntity> computeResourceFileSystemEntityList =
                 computeResourceFileSystemRepository.findByComputeResourceId(computeResourceId);
         Map<FileSystems, String> fileSystemsMap = new HashMap<>();

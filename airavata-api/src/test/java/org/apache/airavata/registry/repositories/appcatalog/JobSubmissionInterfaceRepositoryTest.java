@@ -19,31 +19,39 @@
 */
 package org.apache.airavata.registry.repositories.appcatalog;
 
+import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ComputeResourceService;
+import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class JobSubmissionInterfaceRepositoryTest extends TestBase {
-    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepositoryTest.class);
 
+    @Autowired
+    private ComputeResourceService computeResourceService;
+
+    @Autowired
     private JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
-    private ComputeResourceRepository computeResourceRepository;
+
     private String computeResourceId;
 
     public JobSubmissionInterfaceRepositoryTest() {
         super(Database.APP_CATALOG);
-        jobSubmissionInterfaceRepository = new JobSubmissionInterfaceRepository();
-        computeResourceRepository = new ComputeResourceRepository();
     }
 
     @BeforeEach
@@ -53,13 +61,13 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         description.setHostName("localhost");
         description.addToBatchQueues(new BatchQueue("queue1"));
         description.addToBatchQueues(new BatchQueue("queue2"));
-        computeResourceId = computeResourceRepository.addComputeResource(description);
+        computeResourceId = computeResourceService.addComputeResource(description);
     }
 
     @AfterEach
     public void removeTestComputeResource() throws AppCatalogException {
 
-        computeResourceRepository.removeComputeResource(computeResourceId);
+        computeResourceService.removeComputeResource(computeResourceId);
     }
 
     @Test
@@ -71,17 +79,21 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         jobSubmissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
 
         String jobSubmissionInterfaceId =
-                jobSubmissionInterfaceRepository.addJobSubmission(computeResourceId, jobSubmissionInterface);
+                computeResourceService.addJobSubmissionProtocol(computeResourceId, jobSubmissionInterface);
 
         JobSubmissionInterfacePK pk = new JobSubmissionInterfacePK();
         pk.setComputeResourceId(computeResourceId);
         pk.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
 
-        JobSubmissionInterface retrievedJobSubmissionInterface = jobSubmissionInterfaceRepository.get(pk);
+        JobSubmissionInterfaceEntity entity =
+                jobSubmissionInterfaceRepository.findById(pk).orElse(null);
+        Assertions.assertNotNull(entity);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        JobSubmissionInterface retrievedJobSubmissionInterface = mapper.map(entity, JobSubmissionInterface.class);
         Assertions.assertEquals("test", retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
         Assertions.assertEquals(1, retrievedJobSubmissionInterface.getPriorityOrder());
         Assertions.assertEquals(JobSubmissionProtocol.SSH, retrievedJobSubmissionInterface.getJobSubmissionProtocol());
 
-        jobSubmissionInterfaceRepository.delete(pk);
+        computeResourceService.removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
     }
 }

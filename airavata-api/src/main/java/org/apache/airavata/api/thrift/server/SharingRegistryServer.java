@@ -29,7 +29,8 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.sharing.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.utils.SharingRegistryDBInitConfig;
+// Unused import - commented out
+// import org.apache.airavata.sharing.utils.SharingRegistryDBInitConfig;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -54,7 +55,8 @@ public class SharingRegistryServer implements IServer {
 
     private IServer.ServerStatus status;
     private TServer server;
-    private boolean testMode = false;
+    // Unused field - commented out
+    // private boolean testMode = false;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -190,10 +192,15 @@ public class SharingRegistryServer implements IServer {
         this.server = server;
     }
 
+    // Unused method - commented out (testMode field also unused)
+    /*
     public void setTestMode(boolean testMode) {
         this.testMode = testMode;
     }
+    */
 
+    // Unused method - commented out
+    /*
     private SharingRegistryDBInitConfig createSharingRegistryDBInitConfig() {
         SharingRegistryDBInitConfig sharingRegistryDBInitConfig = new SharingRegistryDBInitConfig();
         if (this.testMode) {
@@ -201,4 +208,5 @@ public class SharingRegistryServer implements IServer {
         }
         return sharingRegistryDBInitConfig;
     }
+    */
 }

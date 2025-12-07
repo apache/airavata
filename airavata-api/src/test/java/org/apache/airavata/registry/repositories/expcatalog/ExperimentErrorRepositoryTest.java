@@ -30,25 +30,33 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentErrorService;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentErrorRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentErrorRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ExperimentErrorRepository experimentErrorRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ExperimentErrorService experimentErrorService;
 
     public ExperimentErrorRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        experimentErrorRepository = new ExperimentErrorRepository();
     }
 
     @Test
@@ -57,14 +65,14 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -73,25 +81,25 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error");
 
-        String experimentErrorId = experimentErrorRepository.addExperimentError(errorModel, experimentId);
+        String experimentErrorId = experimentErrorService.addExperimentError(errorModel, experimentId);
         assertTrue(experimentErrorId != null);
-        assertTrue(experimentRepository.getExperiment(experimentId).getErrors().size() == 1);
+        assertTrue(experimentService.getExperiment(experimentId).getErrors().size() == 1);
 
         errorModel.setActualErrorMessage("message");
-        experimentErrorRepository.updateExperimentError(errorModel, experimentId);
+        experimentErrorService.updateExperimentError(errorModel, experimentId);
 
-        List<ErrorModel> retrievedErrorList = experimentErrorRepository.getExperimentErrors(experimentId);
+        List<ErrorModel> retrievedErrorList = experimentErrorService.getExperimentErrors(experimentId);
         assertTrue(retrievedErrorList.size() == 1);
         assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
 
-        experimentRepository.removeExperiment(experimentId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        experimentService.removeExperiment(experimentId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

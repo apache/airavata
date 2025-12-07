@@ -33,7 +33,6 @@ import org.apache.airavata.registry.cpi.ApplicationDeployment;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;

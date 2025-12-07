@@ -29,16 +29,17 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.utils.Constants;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ProjectRepositoryTest extends TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProjectRepositoryTest.class);
-
-    private String testGateway = "testGateway";
 
     @Autowired
     GatewayService gatewayService;
@@ -52,6 +53,7 @@ public class ProjectRepositoryTest extends TestBase {
 
     @Test
     public void testProjectRepository() throws RegistryException {
+        String testGateway = "testGateway";
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGateway);
         gateway.setDomain("SEAGRID");

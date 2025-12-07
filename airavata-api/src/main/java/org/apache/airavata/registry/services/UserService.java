@@ -56,4 +56,15 @@ public class UserService {
         UserEntity saved = userRepository.save(entity);
         return mapper.map(saved, UserProfile.class);
     }
+
+    public UserProfile get(UserPK userPK) throws RegistryException {
+        UserEntity entity = userRepository.findById(userPK).orElse(null);
+        if (entity == null) return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, UserProfile.class);
+    }
+
+    public void delete(UserPK userPK) throws RegistryException {
+        userRepository.deleteById(userPK);
+    }
 }

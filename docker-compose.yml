@@ -82,8 +82,8 @@ services:
       start_period: 60s
       retries: 3
     volumes:
-      - ./dev-tools/deployment-scripts/airavata-server.properties:/opt/airavata/vault/airavata-server.properties:ro
-      - ./dev-tools/deployment-scripts/airavata-server.properties:/opt/airavata/apache-airavata-api-server/conf/airavata-server.properties:ro
+      - ./dev-tools/deployment-scripts/airavata.properties:/opt/airavata/vault/airavata.properties:ro
+      - ./dev-tools/deployment-scripts/airavata.properties:/opt/airavata/apache-airavata-api-server/conf/airavata.properties:ro
       - airavata-logs:/opt/airavata/logs
     environment:
       - JAVA_OPTS=-Xmx2g -Xms1g -Dthrift.server.max.message.size=1048576000 -Dthrift.server.max.frame.size=1048576000 -Dthrift.server.transport.max.message.size=1048576000 -Dthrift.maxMessageSize=1048576000 -Dthrift.maxFrameSize=1048576000

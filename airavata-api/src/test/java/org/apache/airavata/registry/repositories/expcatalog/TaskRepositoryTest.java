@@ -35,29 +35,38 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProcessService;
+import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TaskRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ProcessRepository processRepository;
-    TaskRepository taskRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ProcessService processService;
+
+    @Autowired
+    TaskService taskService;
 
     public TaskRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        JobRepository jobRepository = new JobRepository();
-        taskRepository = new TaskRepository(jobRepository);
-        processRepository = new ProcessRepository(taskRepository);
     }
 
     @Test
@@ -66,14 +75,14 @@ public class TaskRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -82,10 +91,10 @@ public class TaskRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel(null, experimentId);
-        String processId = processRepository.addProcess(processModel, experimentId);
+        String processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
@@ -96,28 +105,28 @@ public class TaskRepositoryTest extends TestBase {
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskModel.addToTaskStatuses(taskStatus);
 
-        String taskId = taskRepository.addTask(taskModel, processId);
+        String taskId = taskService.addTask(taskModel, processId);
         assertTrue(taskId != null);
-        assertTrue(processRepository.getProcess(processId).getTasks().size() == 1);
+        assertTrue(processService.getProcess(processId).getTasks().size() == 1);
 
         taskModel.setTaskType(TaskTypes.MONITORING);
-        taskRepository.updateTask(taskModel, taskId);
-        TaskModel retrievedTask = taskRepository.getTask(taskId);
+        taskService.updateTask(taskModel, taskId);
+        TaskModel retrievedTask = taskService.getTask(taskId);
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
         assertArrayEquals("subtask model".getBytes(StandardCharsets.UTF_8), retrievedTask.getSubTaskModel());
         assertEquals(1, retrievedTask.getTaskStatusesSize());
         assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
 
-        List<String> taskIdList = taskRepository.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
+        List<String> taskIdList = taskService.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
         assertTrue(taskIdList.size() == 1);
         assertTrue(taskIdList.get(0).equals(taskId));
 
-        experimentRepository.removeExperiment(experimentId);
-        processRepository.removeProcess(processId);
-        taskRepository.removeTask(taskId);
-        assertFalse(taskRepository.isTaskExist(taskId));
+        experimentService.removeExperiment(experimentId);
+        processService.removeProcess(processId);
+        taskService.removeTask(taskId);
+        assertFalse(taskService.isTaskExist(taskId));
 
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

@@ -34,11 +34,19 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductMetadataEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.DataProductService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class DataProductRepositoryTest extends TestBase {
 
-    private DataProductRepository dataProductRepository;
+    @Autowired
+    private DataProductService dataProductService;
+
     private String gatewayId = "testGateway";
     private String userId = "testUser";
     private String productName = "testProduct";
@@ -47,28 +55,18 @@ public class DataProductRepositoryTest extends TestBase {
         super(Database.REPLICA_CATALOG);
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-        // Handle circular dependency: create DataProductRepository with a temporary DataReplicaLocationRepository,
-        // then create a proper DataReplicaLocationRepository with the DataProductRepository
-        // Note: This creates a circular reference but both repositories will work for the test
-        DataProductRepository tempProductRepo = new DataProductRepository(null);
-        DataReplicaLocationRepository tempReplicaRepo = new DataReplicaLocationRepository(tempProductRepo);
-        dataProductRepository = new DataProductRepository(tempReplicaRepo);
-    }
-
     @Test
-    public void dataProductRepositoryTest() throws ReplicaCatalogException {
+    public void dataProductServiceTest() throws ReplicaCatalogException {
         DataProductModel testDataProductModel1 = new DataProductModel();
         testDataProductModel1.setGatewayId(gatewayId);
         testDataProductModel1.setOwnerName(userId);
         testDataProductModel1.setDataProductType(DataProductType.COLLECTION);
         testDataProductModel1.setProductName(productName);
 
-        String productUri1 = dataProductRepository.registerDataProduct(testDataProductModel1);
-        assertTrue(dataProductRepository.isDataProductExists(productUri1));
+        String productUri1 = dataProductService.registerDataProduct(testDataProductModel1);
+        assertTrue(dataProductService.isDataProductExists(productUri1));
 
-        DataProductModel retrievedDataProductModel1 = dataProductRepository.getDataProduct(productUri1);
+        DataProductModel retrievedDataProductModel1 = dataProductService.getDataProduct(productUri1);
         assertEquals(retrievedDataProductModel1.getProductUri(), productUri1);
 
         DataProductModel testDataProductModel2 = new DataProductModel();
@@ -77,8 +75,8 @@ public class DataProductRepositoryTest extends TestBase {
         testDataProductModel2.setDataProductType(DataProductType.FILE);
         testDataProductModel2.setProductName(productName);
 
-        String productUri2 = dataProductRepository.registerDataProduct(testDataProductModel2);
-        assertTrue(dataProductRepository.isDataProductExists(productUri2));
+        String productUri2 = dataProductService.registerDataProduct(testDataProductModel2);
+        assertTrue(dataProductService.isDataProductExists(productUri2));
 
         DataProductMetadataEntity dataProductMetadataEntity = new DataProductMetadataEntity();
         dataProductMetadataEntity.setProductUri(productUri2);
@@ -90,25 +88,25 @@ public class DataProductRepositoryTest extends TestBase {
                 dataProductMetadataEntity.getMetadataKey(), dataProductMetadataEntity.getMetadataValue());
         testDataProductModel2.setProductMetadata(dataProductMetadataEntityMap);
         testDataProductModel2.setParentProductUri(productUri1);
-        assertTrue(dataProductRepository.updateDataProduct(testDataProductModel2));
+        assertTrue(dataProductService.updateDataProduct(testDataProductModel2));
 
-        DataProductModel retrievedDataProductModel2 = dataProductRepository.getDataProduct(productUri2);
+        DataProductModel retrievedDataProductModel2 = dataProductService.getDataProduct(productUri2);
         assertTrue(retrievedDataProductModel2.getProductMetadata().size() == 1);
 
-        DataProductModel retrievedParentDataProductModel = dataProductRepository.getParentDataProduct(productUri2);
+        DataProductModel retrievedParentDataProductModel = dataProductService.getParentDataProduct(productUri2);
         assertEquals(retrievedParentDataProductModel.getProductUri(), productUri1);
 
-        List<DataProductModel> childDataProductList = dataProductRepository.getChildDataProducts(productUri1);
+        List<DataProductModel> childDataProductList = dataProductService.getChildDataProducts(productUri1);
         assertTrue(childDataProductList.size() == 1);
 
         List<DataProductModel> dataProductModelList =
-                dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, -1, 0);
+                dataProductService.searchDataProductsByName(gatewayId, userId, productName, -1, 0);
         assertTrue(dataProductModelList.size() == 2);
 
-        dataProductRepository.removeDataProduct(productUri1);
-        assertFalse(dataProductRepository.isDataProductExists(productUri1));
+        dataProductService.removeDataProduct(productUri1);
+        assertFalse(dataProductService.isDataProductExists(productUri1));
 
-        dataProductRepository.removeDataProduct(productUri2);
+        dataProductService.removeDataProduct(productUri2);
     }
 
     @Test
@@ -129,10 +127,10 @@ public class DataProductRepositoryTest extends TestBase {
 
         testDataProductModel1.addToReplicaLocations(replicaLocationModel1);
 
-        String productUri1 = dataProductRepository.registerDataProduct(testDataProductModel1);
-        assertTrue(dataProductRepository.isDataProductExists(productUri1));
+        String productUri1 = dataProductService.registerDataProduct(testDataProductModel1);
+        assertTrue(dataProductService.isDataProductExists(productUri1));
 
-        DataProductModel retrievedDataProductModel1 = dataProductRepository.getDataProduct(productUri1);
+        DataProductModel retrievedDataProductModel1 = dataProductService.getDataProduct(productUri1);
         assertEquals(productUri1, retrievedDataProductModel1.getProductUri());
 
         assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
@@ -142,7 +140,7 @@ public class DataProductRepositoryTest extends TestBase {
         // validUntilTime has a default value
         assertEquals(0, retrievedReplicaLocationModel1.getValidUntilTime());
 
-        dataProductRepository.removeDataProduct(productUri1);
-        assertFalse(dataProductRepository.isDataProductExists(productUri1));
+        dataProductService.removeDataProduct(productUri1);
+        assertFalse(dataProductService.isDataProductExists(productUri1));
     }
 }

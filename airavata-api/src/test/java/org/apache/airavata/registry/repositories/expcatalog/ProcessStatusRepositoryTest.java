@@ -38,17 +38,13 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ProcessStatusRepositoryTest extends TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepositoryTest.class);
 
     @Autowired
     GatewayService gatewayService;

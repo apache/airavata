@@ -45,76 +45,134 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
         return credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
+    private CredentialStoreException wrapException(org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        CredentialStoreException thriftException = new CredentialStoreException();
+        thriftException.setMessage(e.getMessage());
+        return thriftException;
+    }
+
     @Override
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
-        return credentialStoreService.addSSHCredential(sshCredential);
+        try {
+            return credentialStoreService.addSSHCredential(sshCredential);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public String addCertificateCredential(CertificateCredential certificateCredential)
             throws CredentialStoreException {
-        return credentialStoreService.addCertificateCredential(certificateCredential);
+        try {
+            return credentialStoreService.addCertificateCredential(certificateCredential);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public String addPasswordCredential(PasswordCredential passwordCredential) throws CredentialStoreException {
-        return credentialStoreService.addPasswordCredential(passwordCredential);
+        try {
+            return credentialStoreService.addPasswordCredential(passwordCredential);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.getSSHCredential(tokenId, gatewayId);
+        try {
+            return credentialStoreService.getSSHCredential(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.getCredentialSummary(tokenId, gatewayId);
+        try {
+            return credentialStoreService.getCredentialSummary(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public List<CredentialSummary> getAllCredentialSummaries(
             SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
+        try {
+            return credentialStoreService.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
             throws CredentialStoreException {
-        return credentialStoreService.getCertificateCredential(tokenId, gatewayId);
+        try {
+            return credentialStoreService.getCertificateCredential(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.getPasswordCredential(tokenId, gatewayId);
+        try {
+            return credentialStoreService.getPasswordCredential(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     @Deprecated
     public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
             throws CredentialStoreException {
-        return credentialStoreService.getAllCredentialSummaryForGateway(type, gatewayId);
+        try {
+            return credentialStoreService.getAllCredentialSummaryForGateway(type, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     @Deprecated
     public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
             SummaryType type, String gatewayId, String userId) throws CredentialStoreException {
-        return credentialStoreService.getAllCredentialSummaryForUserInGateway(type, gatewayId, userId);
+        try {
+            return credentialStoreService.getAllCredentialSummaryForUserInGateway(type, gatewayId, userId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     @Deprecated
     public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.getAllPWDCredentialsForGateway(gatewayId);
+        try {
+            return credentialStoreService.getAllPWDCredentialsForGateway(gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.deleteSSHCredential(tokenId, gatewayId);
+        try {
+            return credentialStoreService.deleteSSHCredential(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 
     @Override
     public boolean deletePWDCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        return credentialStoreService.deletePWDCredential(tokenId, gatewayId);
+        try {
+            return credentialStoreService.deletePWDCredential(tokenId, gatewayId);
+        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            throw wrapException(e);
+        }
     }
 }

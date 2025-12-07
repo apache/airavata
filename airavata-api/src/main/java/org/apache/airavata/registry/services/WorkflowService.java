@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.List;
 import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
@@ -40,5 +41,18 @@ public class WorkflowService {
         AiravataWorkflowEntity entity = mapper.map(workflow, AiravataWorkflowEntity.class);
         entity.setExperimentId(experimentId);
         workflowRepository.save(entity);
+    }
+
+    public String getWorkflowId(String experimentId) throws WorkflowCatalogException {
+        List<AiravataWorkflowEntity> entities = workflowRepository.findByExperimentId(experimentId);
+        if (entities.isEmpty()) return null;
+        return entities.get(0).getId();
+    }
+
+    public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException {
+        AiravataWorkflowEntity entity = workflowRepository.findById(workflowId).orElse(null);
+        if (entity == null) return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, AiravataWorkflow.class);
     }
 }

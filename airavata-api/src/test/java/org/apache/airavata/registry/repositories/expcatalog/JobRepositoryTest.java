@@ -45,17 +45,13 @@ import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class JobRepositoryTest extends TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(JobRepositoryTest.class);
 
     @Autowired
     GatewayService gatewayService;

@@ -34,22 +34,22 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
 
 /**
- * Configuration class that loads airavata-server.properties from the correct location.
+ * Configuration class that loads airavata.properties from the correct location.
  * Respects the airavata.config.dir system property, checking file system first, then classpath.
  */
 @Configuration
 @PropertySource(
-        value = "classpath:airavata-server.properties",
+        value = "classpath:airavata.properties",
         factory = AiravataPropertiesConfiguration.AiravataPropertySourceFactory.class,
         ignoreResourceNotFound = true)
 public class AiravataPropertiesConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataPropertiesConfiguration.class);
-    private static final String SERVER_PROPERTIES = "airavata-server.properties";
+    private static final String SERVER_PROPERTIES = "airavata.properties";
     private static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
 
     /**
-     * Custom PropertySourceFactory that loads airavata-server.properties
+     * Custom PropertySourceFactory that loads airavata.properties
      * from airavata.config.dir if set, otherwise from classpath.
      */
     public static class AiravataPropertySourceFactory implements PropertySourceFactory {
@@ -68,13 +68,12 @@ public class AiravataPropertiesConfiguration {
                     File configFile = new File(filePath);
 
                     if (configFile.exists() && configFile.isFile()) {
-                        logger.info("Loading airavata-server.properties from: {}", configFile.getAbsolutePath());
+                        logger.info("Loading airavata.properties from: {}", configFile.getAbsolutePath());
                         Properties props = new Properties();
                         try (InputStream is = new FileInputStream(configFile)) {
                             props.load(is);
                         }
-                        return new org.springframework.core.env.PropertiesPropertySource(
-                                "airavata-server-properties", props);
+                        return new org.springframework.core.env.PropertiesPropertySource("airavata-properties", props);
                     } else {
                         logger.debug("Properties file not found at {}, falling back to classpath", filePath);
                     }
@@ -87,14 +86,13 @@ public class AiravataPropertiesConfiguration {
             URL classpathUrl =
                     AiravataPropertiesConfiguration.class.getClassLoader().getResource(SERVER_PROPERTIES);
             if (classpathUrl != null) {
-                logger.info("Loading airavata-server.properties from classpath: {}", classpathUrl);
+                logger.info("Loading airavata.properties from classpath: {}", classpathUrl);
                 return defaultFactory.createPropertySource(name, resource);
             }
 
-            logger.warn("airavata-server.properties not found in airavata.config.dir or classpath");
+            logger.warn("airavata.properties not found in airavata.config.dir or classpath");
             // Return empty property source if not found
-            return new org.springframework.core.env.PropertiesPropertySource(
-                    "airavata-server-properties", new Properties());
+            return new org.springframework.core.env.PropertiesPropertySource("airavata-properties", new Properties());
         }
     }
 }

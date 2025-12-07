@@ -52,6 +52,7 @@ public class JpaConfig {
     public static final String REPLICACATALOG_PU = "replicacatalog_data_new";
     public static final String WORKFLOWCATALOG_PU = "workflowcatalog_data_new";
     public static final String SHARING_REGISTRY_PU = "airavata-sharing-registry";
+    public static final String CREDENTIAL_STORE_PU = "credential_store";
 
     @Bean(name = "profileServiceEntityManagerFactory")
     @Primary
@@ -126,6 +127,34 @@ public class JpaConfig {
                 db.getValidationQuery());
     }
 
+    @Bean(name = "credentialStoreEntityManagerFactory")
+    public EntityManagerFactory credentialStoreEntityManagerFactory() {
+        var db = properties.getDatabase().getCredentialStore();
+        // Fallback to registry database if credential store DB not configured
+        String jdbcUrl = db.getJdbcUrl();
+        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
+            jdbcUrl = properties.getDatabase().getRegistry().getJdbcUrl();
+        }
+        String jdbcUser = db.getJdbcUser();
+        if (jdbcUser == null || jdbcUser.isEmpty()) {
+            jdbcUser = properties.getDatabase().getRegistry().getJdbcUser();
+        }
+        String jdbcPassword = db.getJdbcPassword();
+        if (jdbcPassword == null || jdbcPassword.isEmpty()) {
+            jdbcPassword = properties.getDatabase().getRegistry().getJdbcPassword();
+        }
+        String jdbcDriver = db.getJdbcDriver();
+        if (jdbcDriver == null || jdbcDriver.isEmpty()) {
+            jdbcDriver = properties.getDatabase().getRegistry().getJdbcDriver();
+        }
+        String validationQuery = db.getJdbcValidationQuery();
+        if (validationQuery == null || validationQuery.isEmpty()) {
+            validationQuery = properties.getDatabase().getRegistry().getValidationQuery();
+        }
+        return JPAUtils.getEntityManagerFactory(
+                CREDENTIAL_STORE_PU, jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword, validationQuery);
+    }
+
     // Transaction managers for each persistence unit
     @Bean(name = "profileServiceTransactionManager")
     @Primary
@@ -156,6 +185,11 @@ public class JpaConfig {
     @Bean(name = "sharingRegistryTransactionManager")
     public PlatformTransactionManager sharingRegistryTransactionManager() {
         return new JpaTransactionManager(sharingRegistryEntityManagerFactory());
+    }
+
+    @Bean(name = "credentialStoreTransactionManager")
+    public PlatformTransactionManager credentialStoreTransactionManager() {
+        return new JpaTransactionManager(credentialStoreEntityManagerFactory());
     }
 
     // EntityManager beans for injection into repositories
@@ -204,6 +238,13 @@ public class JpaConfig {
         return emf.createEntityManager();
     }
 
+    @Bean(name = "credentialStoreEntityManager")
+    @Scope("prototype")
+    public EntityManager credentialStoreEntityManager(
+            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
+        return emf.createEntityManager();
+    }
+
     // Spring Data JPA Repository Configuration for each persistence unit
     @Configuration
     @EnableJpaRepositories(
@@ -246,4 +287,11 @@ public class JpaConfig {
             entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
             transactionManagerRef = "sharingRegistryTransactionManager")
     static class SharingRegistryJpaRepositoriesConfig {}
+
+    @Configuration
+    @EnableJpaRepositories(
+            basePackages = "org.apache.airavata.credential.repositories",
+            entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
+            transactionManagerRef = "credentialStoreTransactionManager")
+    static class CredentialStoreJpaRepositoriesConfig {}
 }

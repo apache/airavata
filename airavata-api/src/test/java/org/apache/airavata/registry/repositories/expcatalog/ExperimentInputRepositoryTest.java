@@ -32,25 +32,33 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentInputService;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentInputRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentInputRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
-    ExperimentInputRepository experimentInputRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
+
+    @Autowired
+    ExperimentInputService experimentInputService;
 
     public ExperimentInputRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
-        experimentInputRepository = new ExperimentInputRepository();
     }
 
     @Test
@@ -59,14 +67,14 @@ public class ExperimentInputRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayRepository.addGateway(gateway);
+        String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        String projectId = projectRepository.addProject(project, gatewayId);
+        String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
@@ -75,7 +83,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
         InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
@@ -86,23 +94,23 @@ public class ExperimentInputRepositoryTest extends TestBase {
         inputDataObjectTypeExpList.add(inputDataObjectTypeExp);
 
         assertEquals(
-                experimentId, experimentInputRepository.addExperimentInputs(inputDataObjectTypeExpList, experimentId));
-        assertTrue(experimentRepository
+                experimentId, experimentInputService.addExperimentInputs(inputDataObjectTypeExpList, experimentId));
+        assertTrue(experimentService
                         .getExperiment(experimentId)
                         .getExperimentInputs()
                         .size()
                 == 1);
 
         inputDataObjectTypeExp.setValue("iValueE");
-        experimentInputRepository.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
+        experimentInputService.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
 
-        List<InputDataObjectType> retrievedExpInputsList = experimentInputRepository.getExperimentInputs(experimentId);
+        List<InputDataObjectType> retrievedExpInputsList = experimentInputService.getExperimentInputs(experimentId);
         assertTrue(retrievedExpInputsList.size() == 1);
         assertEquals("iValueE", retrievedExpInputsList.get(0).getValue());
         assertEquals(DataType.STRING, retrievedExpInputsList.get(0).getType());
 
-        experimentRepository.removeExperiment(experimentId);
-        gatewayRepository.removeGateway(gatewayId);
-        projectRepository.removeProject(projectId);
+        experimentService.removeExperiment(experimentId);
+        gatewayService.removeGateway(gatewayId);
+        projectService.removeProject(projectId);
     }
 }

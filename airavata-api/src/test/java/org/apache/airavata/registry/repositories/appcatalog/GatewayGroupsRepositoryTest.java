@@ -21,11 +21,15 @@ package org.apache.airavata.registry.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.GatewayGroupsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class GatewayGroupsRepositoryTest extends TestBase {
 
     private static final String GATEWAY_ID = "gateway-id";
@@ -33,12 +37,11 @@ public class GatewayGroupsRepositoryTest extends TestBase {
     private static final String READ_ONLY_ADMINS_GROUP_ID = "read-only-admins-group-id";
     private static final String DEFAULT_GATEWAY_USERS_GROUP_ID = "default-gateway-users-group-id";
 
-    private GatewayGroupsRepository gatewayGroupsRepository;
-    private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
+    @Autowired
+    private GatewayGroupsService gatewayGroupsService;
 
     public GatewayGroupsRepositoryTest() {
         super(Database.APP_CATALOG);
-        gatewayGroupsRepository = new GatewayGroupsRepository();
     }
 
     @Test
@@ -50,16 +53,16 @@ public class GatewayGroupsRepositoryTest extends TestBase {
         gatewayGroups.setReadOnlyAdminsGroupId(READ_ONLY_ADMINS_GROUP_ID);
         gatewayGroups.setDefaultGatewayUsersGroupId(DEFAULT_GATEWAY_USERS_GROUP_ID);
 
-        gatewayGroupsRepository.create(gatewayGroups);
+        gatewayGroupsService.create(gatewayGroups);
 
-        GatewayGroups retrievedGatewayGroups = gatewayGroupsRepository.get(GATEWAY_ID);
+        GatewayGroups retrievedGatewayGroups = gatewayGroupsService.get(GATEWAY_ID);
 
         Assertions.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
         Assertions.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
         Assertions.assertEquals(DEFAULT_GATEWAY_USERS_GROUP_ID, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
         Assertions.assertEquals(gatewayGroups, retrievedGatewayGroups);
 
-        gatewayGroupsRepository.delete(GATEWAY_ID);
+        gatewayGroupsService.delete(GATEWAY_ID);
     }
 
     @Test
@@ -71,20 +74,20 @@ public class GatewayGroupsRepositoryTest extends TestBase {
         gatewayGroups.setReadOnlyAdminsGroupId(READ_ONLY_ADMINS_GROUP_ID);
         gatewayGroups.setDefaultGatewayUsersGroupId(DEFAULT_GATEWAY_USERS_GROUP_ID);
 
-        gatewayGroupsRepository.create(gatewayGroups);
+        gatewayGroupsService.create(gatewayGroups);
 
         final String defaultGatewayUsersGroupId = "some-other-group-id";
         gatewayGroups.setDefaultGatewayUsersGroupId(defaultGatewayUsersGroupId);
 
-        gatewayGroupsRepository.update(gatewayGroups);
+        gatewayGroupsService.update(gatewayGroups);
 
-        GatewayGroups retrievedGatewayGroups = gatewayGroupsRepository.get(GATEWAY_ID);
+        GatewayGroups retrievedGatewayGroups = gatewayGroupsService.get(GATEWAY_ID);
 
         Assertions.assertEquals(ADMIN_GROUPS_ID, retrievedGatewayGroups.getAdminsGroupId());
         Assertions.assertEquals(READ_ONLY_ADMINS_GROUP_ID, retrievedGatewayGroups.getReadOnlyAdminsGroupId());
         Assertions.assertEquals(defaultGatewayUsersGroupId, retrievedGatewayGroups.getDefaultGatewayUsersGroupId());
         Assertions.assertEquals(gatewayGroups, retrievedGatewayGroups);
 
-        gatewayGroupsRepository.delete(GATEWAY_ID);
+        gatewayGroupsService.delete(GATEWAY_ID);
     }
 }

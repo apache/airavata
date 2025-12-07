@@ -7,7 +7,7 @@ export AIRAVATA_CONFIG_DIR=/opt/airavata/vault
 
 echo "🚀 Starting Apache Airavata Monolithic Server..."
 echo "📋 All services included: API Server, Agent Service, Research Service, File Server"
-echo "📁 Properties file location: /opt/airavata/vault/airavata-server.properties"
+echo "📁 Properties file location: /opt/airavata/vault/airavata.properties"
 echo "📁 Configuration directory: $AIRAVATA_CONFIG_DIR"
 echo "📊 All logs will be captured and visible via 'docker logs'"
 

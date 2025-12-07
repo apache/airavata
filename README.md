@@ -201,7 +201,7 @@ distribution
 ├── services_down.sh
 ├── services_up.sh
 └── vault
-    ├── airavata-server.properties
+    ├── airavata.properties
     ├── airavata.sym.p12
     ├── application-agent-service.yml
     ├── application-research-service.yml
@@ -214,7 +214,7 @@ distribution
 **What's in the vault?**
 
 * `airavata.sym.p12` - contains the symmetric key used to secure stored credentials.
-* `airavata-server.properties` - config file for the airavata api server.
+* `airavata.properties` - config file for the airavata api server.
 * `application-agent-service.yml` - config file for the airavata agent service.
 * `application-file-server.yml` - config file for the airavata file server.
 * `application-research-service.yml` - config file for the airavata research service.

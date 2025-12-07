@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApplicationSettings {
-    public static final String SERVER_PROPERTIES = "airavata-server.properties";
+    public static final String SERVER_PROPERTIES = "airavata.properties";
     public static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
 
     public static String ADDITIONAL_SETTINGS_FILES = "external.settings";

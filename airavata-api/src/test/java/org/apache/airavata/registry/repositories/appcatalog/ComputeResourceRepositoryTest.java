@@ -25,50 +25,52 @@ import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ComputeResourceRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepositoryTest.class);
-
-    private ComputeResourceRepository computeResourceRepository;
+    @Autowired
+    private ComputeResourceService computeResourceService;
 
     public ComputeResourceRepositoryTest() {
         super(Database.APP_CATALOG);
-        computeResourceRepository = new ComputeResourceRepository();
     }
 
     @Test
     public void removeBatchQueueTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
 
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
-        String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+        String savedComputeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
 
         List<BatchQueue> batchQueues = computeResourceDescription.getBatchQueues();
         Assertions.assertTrue(batchQueues.size() > 0);
 
-        computeResourceRepository.removeBatchQueue(
+        computeResourceService.removeBatchQueue(
                 savedComputeResourceId, batchQueues.get(0).getQueueName());
 
         ComputeResourceDescription updatedComputeResource =
-                computeResourceRepository.getComputeResource(savedComputeResourceId);
+                computeResourceService.getComputeResource(savedComputeResourceId);
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
 
@@ -83,29 +85,29 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void removeDataMovementInterfaceTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
 
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
-        String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+        String savedComputeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
 
         List<DataMovementInterface> dataMovementInterfaces = computeResourceDescription.getDataMovementInterfaces();
         Assertions.assertTrue(dataMovementInterfaces.size() > 0);
 
-        computeResourceRepository.removeDataMovementInterface(
+        computeResourceService.removeDataMovementInterface(
                 savedComputeResourceId, dataMovementInterfaces.get(0).getDataMovementInterfaceId());
 
         ComputeResourceDescription updatedComputeResource =
-                computeResourceRepository.getComputeResource(savedComputeResourceId);
+                computeResourceService.getComputeResource(savedComputeResourceId);
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
 
@@ -121,29 +123,29 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void removeJobSubmissionInterfaceTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
 
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
-        String savedComputeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+        String savedComputeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
 
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResourceDescription.getJobSubmissionInterfaces();
         Assertions.assertTrue(jobSubmissionInterfaces.size() > 0);
 
-        computeResourceRepository.removeJobSubmissionInterface(
+        computeResourceService.removeJobSubmissionInterface(
                 savedComputeResourceId, jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId());
 
         ComputeResourceDescription updatedComputeResource =
-                computeResourceRepository.getComputeResource(savedComputeResourceId);
+                computeResourceService.getComputeResource(savedComputeResourceId);
 
         List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
                 updatedComputeResource.getJobSubmissionInterfaces();
@@ -160,15 +162,15 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void listComputeResourcesTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
 
         List<String> allIds = new ArrayList<>();
         List<ComputeResourceDescription> allComputeResources = new ArrayList<>();
@@ -178,14 +180,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
                     prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
             computeResourceDescription.setHostName("Host" + i);
             computeResourceDescription.setEnabled((i % 2 == 0));
-            String savedId = computeResourceRepository.addComputeResource(computeResourceDescription);
+            String savedId = computeResourceService.addComputeResource(computeResourceDescription);
             allIds.add(savedId);
             allComputeResources.add(computeResourceDescription);
             allComputeResourceMap.put(savedId, computeResourceDescription.getHostName());
         }
 
-        List<ComputeResourceDescription> allSavedComputeResources =
-                computeResourceRepository.getAllComputeResourceList();
+        List<ComputeResourceDescription> allSavedComputeResources = computeResourceService.getAllComputeResourceList();
 
         Assertions.assertEquals(5, allSavedComputeResources.size());
         for (int i = 0; i < 5; i++) {
@@ -193,7 +194,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                     deepCompareComputeResourceDescription(allComputeResources.get(i), allSavedComputeResources.get(i)));
         }
 
-        Map<String, String> allSavedComputeResourceIds = computeResourceRepository.getAllComputeResourceIdList();
+        Map<String, String> allSavedComputeResourceIds = computeResourceService.getAllComputeResourceIdList();
 
         Assertions.assertEquals(5, allSavedComputeResourceIds.size());
 
@@ -203,7 +204,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
             Assertions.assertEquals(allComputeResourceMap.get(id), host);
         }
 
-        Map<String, String> allAvailableIds = computeResourceRepository.getAvailableComputeResourceIdList();
+        Map<String, String> allAvailableIds = computeResourceService.getAvailableComputeResourceIdList();
 
         Assertions.assertEquals(3, allAvailableIds.size());
         Assertions.assertNotNull(allAvailableIds.get(allIds.get(0)));
@@ -215,27 +216,26 @@ public class ComputeResourceRepositoryTest extends TestBase {
     public void filterComputeResourcesTest() throws AppCatalogException {
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         Map<String, String> cfilters = new HashMap<String, String>();
         cfilters.put(DBConstants.ComputeResource.HOST_NAME, "localhost");
-        List<ComputeResourceDescription> computeResourceList =
-                computeResourceRepository.getComputeResourceList(cfilters);
+        List<ComputeResourceDescription> computeResourceList = computeResourceService.getComputeResourceList(cfilters);
 
         Assertions.assertEquals(0, computeResourceList.size());
 
-        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
-        computeResourceList = computeResourceRepository.getComputeResourceList(cfilters);
+        String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
+        computeResourceList = computeResourceService.getComputeResourceList(cfilters);
 
         Assertions.assertEquals(1, computeResourceList.size());
 
@@ -244,7 +244,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         try {
             cfilters = new HashMap<String, String>();
             cfilters.put("Invalid_filter", "localhost");
-            computeResourceRepository.getComputeResourceList(cfilters);
+            computeResourceService.getComputeResourceList(cfilters);
             Assertions.fail();
         } catch (Exception e) {
             // ignore
@@ -254,22 +254,21 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void updateComputeResourceTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
-        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+        String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
 
-        ComputeResourceDescription savedComputeResource =
-                computeResourceRepository.getComputeResource(computeResourceId);
+        ComputeResourceDescription savedComputeResource = computeResourceService.getComputeResource(computeResourceId);
         savedComputeResource.getHostAliases().add("New Alias");
 
         BatchQueue batchQueue = new BatchQueue();
@@ -291,10 +290,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
         savedComputeResource.setCpusPerNode(43);
         savedComputeResource.setDefaultWalltime(4343);
 
-        computeResourceRepository.updateComputeResource(computeResourceId, savedComputeResource);
+        computeResourceService.updateComputeResource(computeResourceId, savedComputeResource);
 
         ComputeResourceDescription updatedComputeResource =
-                computeResourceRepository.getComputeResource(computeResourceId);
+                computeResourceService.getComputeResource(computeResourceId);
         Assertions.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
     }
 
@@ -302,26 +301,26 @@ public class ComputeResourceRepositoryTest extends TestBase {
     public void addComputeResourceTest() throws AppCatalogException {
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(resourceJobManager);
+        computeResourceService.addResourceJobManager(resourceJobManager);
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(resourceJobManager);
-        String sshSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
+        String sshSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String scpDataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String scpDataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
-        String gridFTPDataMovementId = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement);
+        String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
         computeResourceDescription.setComputeResourceId("manually-entered-id");
 
-        Assertions.assertNull(computeResourceRepository.getComputeResource("manually-entered-id"));
-        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+        Assertions.assertNull(computeResourceService.getComputeResource("manually-entered-id"));
+        String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
         Assertions.assertEquals("manually-entered-id", computeResourceId);
-        Assertions.assertTrue(computeResourceRepository.isComputeResourceExists(computeResourceId));
+        Assertions.assertTrue(computeResourceService.isComputeResourceExists(computeResourceId));
         ComputeResourceDescription savedComputeResource =
-                computeResourceRepository.getComputeResource("manually-entered-id");
+                computeResourceService.getComputeResource("manually-entered-id");
         Assertions.assertNotNull(savedComputeResource);
 
         Assertions.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
@@ -330,34 +329,34 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
-        ResourceJobManager savedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
+        String jobManagerId = computeResourceService.addResourceJobManager(resourceJobManager);
+        ResourceJobManager savedJobManager = computeResourceService.getResourceJobManager(jobManagerId);
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
     }
 
     @Test
     public void deleteResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
+        String jobManagerId = computeResourceService.addResourceJobManager(resourceJobManager);
 
-        Assertions.assertNotNull(computeResourceRepository.getResourceJobManager(jobManagerId));
-        computeResourceRepository.deleteResourceJobManager(jobManagerId);
-        Assertions.assertNull(computeResourceRepository.getResourceJobManager(jobManagerId));
+        Assertions.assertNotNull(computeResourceService.getResourceJobManager(jobManagerId));
+        computeResourceService.deleteResourceJobManager(jobManagerId);
+        Assertions.assertNull(computeResourceService.getResourceJobManager(jobManagerId));
     }
 
     @Test
     public void updateResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
-        String jobManagerId = computeResourceRepository.addResourceJobManager(resourceJobManager);
-        ResourceJobManager savedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
+        String jobManagerId = computeResourceService.addResourceJobManager(resourceJobManager);
+        ResourceJobManager savedJobManager = computeResourceService.getResourceJobManager(jobManagerId);
 
         savedJobManager.setJobManagerBinPath("/new bin");
         savedJobManager.getJobManagerCommands().put(JobManagerCommand.SHOW_START, "New Command Value");
         savedJobManager.getParallelismPrefix().put(ApplicationParallelismType.MPI, "MPI Type");
 
-        computeResourceRepository.updateResourceJobManager(jobManagerId, savedJobManager);
+        computeResourceService.updateResourceJobManager(jobManagerId, savedJobManager);
 
-        ResourceJobManager updatedJobManager = computeResourceRepository.getResourceJobManager(jobManagerId);
+        ResourceJobManager updatedJobManager = computeResourceService.getResourceJobManager(jobManagerId);
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(savedJobManager, updatedJobManager, "__isset_bitfield"));
     }
@@ -365,8 +364,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addUnicoreJobSubmissionTest() throws AppCatalogException {
         UnicoreJobSubmission unicoreJobSubmission = prepareUnicoreJobSubmission();
-        String savedSubmissionId = computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission);
-        UnicoreJobSubmission savedSubmission = computeResourceRepository.getUNICOREJobSubmission(savedSubmissionId);
+        String savedSubmissionId = computeResourceService.addUNICOREJobSubmission(unicoreJobSubmission);
+        UnicoreJobSubmission savedSubmission = computeResourceService.getUNICOREJobSubmission(savedSubmissionId);
 
         Assertions.assertTrue(
                 EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
@@ -375,8 +374,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addCloudJobSubmissionTest() throws AppCatalogException {
         CloudJobSubmission cloudJobSubmission = prepareCloudJobSubmission();
-        String savedSubmissionId = computeResourceRepository.addCloudJobSubmission(cloudJobSubmission);
-        CloudJobSubmission savedSubmission = computeResourceRepository.getCloudJobSubmission(savedSubmissionId);
+        String savedSubmissionId = computeResourceService.addCloudJobSubmission(cloudJobSubmission);
+        CloudJobSubmission savedSubmission = computeResourceService.getCloudJobSubmission(savedSubmissionId);
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
     }
@@ -384,11 +383,11 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addLocalJobSubmissionTest() throws AppCatalogException {
         ResourceJobManager jobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(jobManager);
+        computeResourceService.addResourceJobManager(jobManager);
 
         LOCALSubmission localSubmission = prepareLocalJobSubmission(jobManager);
-        String savedSubmissionId = computeResourceRepository.addLocalJobSubmission(localSubmission);
-        LOCALSubmission savedSubmission = computeResourceRepository.getLocalJobSubmission(savedSubmissionId);
+        String savedSubmissionId = computeResourceService.addLocalJobSubmission(localSubmission);
+        LOCALSubmission savedSubmission = computeResourceService.getLocalJobSubmission(savedSubmissionId);
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(localSubmission, savedSubmission, "__isset_bitfield"));
     }
@@ -396,11 +395,11 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addSSHJobSubmissionTest() throws AppCatalogException {
         ResourceJobManager jobManager = prepareResourceJobManager();
-        computeResourceRepository.addResourceJobManager(jobManager);
+        computeResourceService.addResourceJobManager(jobManager);
 
         SSHJobSubmission sshJobSubmission = prepareSSHJobSubmission(jobManager);
-        String jobSubmissionId = computeResourceRepository.addSSHJobSubmission(sshJobSubmission);
-        SSHJobSubmission savedJobSubmission = computeResourceRepository.getSSHJobSubmission(jobSubmissionId);
+        String jobSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
+        SSHJobSubmission savedJobSubmission = computeResourceService.getSSHJobSubmission(jobSubmissionId);
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(sshJobSubmission, savedJobSubmission, "__isset_bitfield"));
     }
@@ -408,27 +407,27 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addSCPDataMovementTest() throws AppCatalogException {
         SCPDataMovement scpDataMovement = prepareScpDataMovement();
-        String dataMovementId = computeResourceRepository.addScpDataMovement(scpDataMovement);
+        String dataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
-        SCPDataMovement savedDataMovement = computeResourceRepository.getSCPDataMovement(dataMovementId);
+        SCPDataMovement savedDataMovement = computeResourceService.getSCPDataMovement(dataMovementId);
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
     public void addLocalDataMovementTest() throws AppCatalogException {
         LOCALDataMovement localDataMovement = prepareLocalDataMovement();
-        String dataMovementId = computeResourceRepository.addLocalDataMovement(localDataMovement);
+        String dataMovementId = computeResourceService.addLocalDataMovement(localDataMovement);
 
-        LOCALDataMovement savedDataMovement = computeResourceRepository.getLocalDataMovement(dataMovementId);
+        LOCALDataMovement savedDataMovement = computeResourceService.getLocalDataMovement(dataMovementId);
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
     public void addUnicoreDataMovementTest() throws AppCatalogException {
         UnicoreDataMovement unicoreDataMovement = prepareUnicoreDataMovement();
-        String dataMovementId = computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement);
+        String dataMovementId = computeResourceService.addUnicoreDataMovement(unicoreDataMovement);
 
-        UnicoreDataMovement savedDataMovement = computeResourceRepository.getUNICOREDataMovement(dataMovementId);
+        UnicoreDataMovement savedDataMovement = computeResourceService.getUNICOREDataMovement(dataMovementId);
         Assertions.assertTrue(
                 EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
     }
@@ -436,30 +435,30 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addGridFTPDataMovementTest() throws AppCatalogException {
         GridFTPDataMovement gridFTPDataMovement1 = prepareGridFTPDataMovement("222.33.43.444", "23.344.44.454");
-        String dataMovementId1 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement1);
-        GridFTPDataMovement savedDataMovement1 = computeResourceRepository.getGridFTPDataMovement(dataMovementId1);
+        String dataMovementId1 = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement1);
+        GridFTPDataMovement savedDataMovement1 = computeResourceService.getGridFTPDataMovement(dataMovementId1);
         Assertions.assertTrue(
                 EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
 
         GridFTPDataMovement gridFTPDataMovement2 = prepareGridFTPDataMovement("222.33.43.445", "23.344.44.400");
-        String dataMovementId2 = computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement2);
-        GridFTPDataMovement savedDataMovement2 = computeResourceRepository.getGridFTPDataMovement(dataMovementId2);
+        String dataMovementId2 = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement2);
+        GridFTPDataMovement savedDataMovement2 = computeResourceService.getGridFTPDataMovement(dataMovementId2);
         Assertions.assertTrue(
                 EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
     }
 
     @Test
     public void fetchNotAvailableResourceTest() throws AppCatalogException {
-        Assertions.assertNull(computeResourceRepository.getResourceJobManager("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getComputeResource("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getCloudJobSubmission("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getResourceJobManager("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getComputeResource("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getCloudJobSubmission("INVALID ID"));
         Assertions.assertEquals(
-                0, computeResourceRepository.getFileSystems("INVALID ID").size());
-        Assertions.assertNull(computeResourceRepository.getGridFTPDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getLocalDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getLocalJobSubmission("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getSCPDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceRepository.getUNICOREDataMovement("INVALID ID"));
+                0, computeResourceService.getFileSystems("INVALID ID").size());
+        Assertions.assertNull(computeResourceService.getGridFTPDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getLocalDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getLocalJobSubmission("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getSCPDataMovement("INVALID ID"));
+        Assertions.assertNull(computeResourceService.getUNICOREDataMovement("INVALID ID"));
     }
 
     private ComputeResourceDescription prepareComputeResource(
@@ -630,7 +629,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         return equals;
     }
 
-    private boolean deepCompareArrayList(List expected, List actual, boolean preferOrder) {
+    private boolean deepCompareArrayList(List<?> expected, List<?> actual, boolean preferOrder) {
         if ((expected == null) == (actual == null)) {
             if (expected == null) {
                 return true;

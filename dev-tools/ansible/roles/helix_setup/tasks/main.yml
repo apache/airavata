@@ -87,8 +87,8 @@
 # Copy properties files & log4j2.xml files
 
 - name: Copy Airavata server properties files
-  template: "src={{ item.name }}/airavata-server.properties.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/airavata-server.properties
+  template: "src={{ item.name }}/airavata.properties.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/airavata.properties
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""

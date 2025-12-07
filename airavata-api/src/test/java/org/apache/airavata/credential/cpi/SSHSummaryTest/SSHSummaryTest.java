@@ -32,9 +32,8 @@ import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.impl.SSHCredentialWriter;
-import org.apache.airavata.credential.store.impl.db.CredentialsDAO;
-import org.apache.airavata.credential.util.TokenGenerator;
+import org.apache.airavata.credential.impl.store.SSHCredentialWriter;
+import org.apache.airavata.credential.utils.TokenGenerator;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SSHSummaryTest extends DatabaseTestCases {
     private static final Logger logger = LoggerFactory.getLogger(SSHSummaryTest.class);
-
-    private CredentialsDAO credentialsDAO;
 
     private X509Certificate[] x509Certificates;
     private PrivateKey privateKey;
@@ -95,9 +92,6 @@ public class SSHSummaryTest extends DatabaseTestCases {
 
     @BeforeEach
     public void setUp() throws Exception {
-
-        credentialsDAO = new CredentialsDAO();
-
         x509Certificates = new X509Certificate[1];
 
         // Cleanup tables;
@@ -157,8 +151,9 @@ public class SSHSummaryTest extends DatabaseTestCases {
             String gatewayId = "phasta";
             String privateKeyPath = "/home/abhandar/Documents/Airavata/keys/id_rsa_airavata";
             String pubKeyPath = "/home/abhandar/Documents/Airavata/keys/id_rsa_airavata.pub";
-            DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
-            SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
+            // Note: SSHCredentialWriter is now a Spring component and should be autowired
+            // This test needs to be updated to use Spring Boot test context
+            SSHCredentialWriter writer = new SSHCredentialWriter();
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);

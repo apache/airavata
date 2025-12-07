@@ -84,9 +84,9 @@
       file_type: directory
   register: new_dist_dir
 
-# Assume that the deployment directory has the airavata-server.properties file to use
-- name: copy airavata-server.properties
-  copy: remote_src=True src="{{ server_deployment_dir }}/airavata-server.properties" dest={{ new_dist_dir.files.0.path }}/bin/
+# Assume that the deployment directory has the airavata.properties file to use
+- name: copy airavata.properties
+  copy: remote_src=True src="{{ server_deployment_dir }}/airavata.properties" dest={{ new_dist_dir.files.0.path }}/bin/
   notify: "restart airavata"
 
 # Assume that the mysql jar is in the deployment directory

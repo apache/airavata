@@ -26,20 +26,23 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.NotificationService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class NotificationRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationRepositoryTest.class);
-
     private String testGateway = "testGateway";
-    NotificationRepository notificationRepository;
+
+    @Autowired
+    NotificationService notificationService;
 
     public NotificationRepositoryTest() {
         super(Database.EXP_CATALOG);
-        notificationRepository = new NotificationRepository();
     }
 
     @Test
@@ -50,18 +53,17 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setTitle("notificationTitle");
         notification.setNotificationMessage("notificationMessage");
 
-        String notificationId = notificationRepository.createNotification(notification);
+        String notificationId = notificationService.createNotification(notification);
         assertEquals(notification.getNotificationId(), notificationId);
 
         notification.setPriority(NotificationPriority.NORMAL);
-        notificationRepository.updateNotification(notification);
+        notificationService.updateNotification(notification);
 
-        Notification retrievedNotification = notificationRepository.getNotification(notificationId);
+        Notification retrievedNotification = notificationService.getNotification(notificationId);
         assertEquals(NotificationPriority.NORMAL, retrievedNotification.getPriority());
 
-        assertTrue(
-                notificationRepository.getAllGatewayNotifications(testGateway).size() == 1);
+        assertTrue(notificationService.getAllGatewayNotifications(testGateway).size() == 1);
 
-        notificationRepository.deleteNotification(notificationId);
+        notificationService.deleteNotification(notificationId);
     }
 }

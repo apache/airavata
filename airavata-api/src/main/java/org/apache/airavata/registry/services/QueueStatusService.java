@@ -49,12 +49,13 @@ public class QueueStatusService {
         return result;
     }
 
-    public void createQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
+    public boolean createQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         for (QueueStatusModel status : queueStatuses) {
             QueueStatusEntity entity = mapper.map(status, QueueStatusEntity.class);
             queueStatusRepository.save(entity);
         }
+        return true;
     }
 
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryException {

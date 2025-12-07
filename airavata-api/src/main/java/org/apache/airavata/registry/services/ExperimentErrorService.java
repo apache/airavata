@@ -20,6 +20,8 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
@@ -35,10 +37,26 @@ public class ExperimentErrorService {
     @Autowired
     private ExperimentErrorRepository experimentErrorRepository;
 
-    public void addExperimentError(ErrorModel error, String experimentId) throws RegistryException {
+    public String addExperimentError(ErrorModel error, String experimentId) throws RegistryException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
+        entity.setExperimentId(experimentId);
+        ExperimentErrorEntity saved = experimentErrorRepository.save(entity);
+        return saved.getErrorId();
+    }
+
+    public void updateExperimentError(ErrorModel error, String experimentId) throws RegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
         entity.setExperimentId(experimentId);
         experimentErrorRepository.save(entity);
+    }
+
+    public List<ErrorModel> getExperimentErrors(String experimentId) throws RegistryException {
+        List<ExperimentErrorEntity> entities = experimentErrorRepository.findByExperimentId(experimentId);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<ErrorModel> result = new ArrayList<>();
+        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
+        return result;
     }
 }

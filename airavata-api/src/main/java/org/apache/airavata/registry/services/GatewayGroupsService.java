@@ -59,4 +59,8 @@ public class GatewayGroupsService {
         GatewayGroupsEntity saved = gatewayGroupsRepository.save(entity);
         return mapper.map(saved, GatewayGroups.class);
     }
+
+    public void delete(String gatewayId) throws RegistryException {
+        gatewayGroupsRepository.deleteById(gatewayId);
+    }
 }

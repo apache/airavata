@@ -38,17 +38,13 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ApplicationDeploymentRepositoryTest extends TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepositoryTest.class);
 
     @Autowired
     private ComputeResourceService computeResourceService;
@@ -192,7 +188,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String computeResource = addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
-        String deploymentId = applicationDeploymentService.addApplicationDeployment(deployment, gatewayId);
+        applicationDeploymentService.addApplicationDeployment(deployment, gatewayId);
         ApplicationDeploymentDescription savedDeployment =
                 applicationDeploymentService.getApplicationDeployement("appDep1");
         Assertions.assertNotNull(savedDeployment);

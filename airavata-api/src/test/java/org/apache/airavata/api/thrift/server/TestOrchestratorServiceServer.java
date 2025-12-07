@@ -19,11 +19,6 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-// import org.apache.airavata.client.AiravataAPIFactory;
-// import org.apache.airavata.client.api.AiravataAPI;
-// import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-// import org.apache.airavata.client.tools.DocumentCreator;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.model.application.io.DataType;
@@ -33,53 +28,32 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.exception.OrchestratorException;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.OrchestratorService;
-import org.apache.airavata.service.ServiceFactory;
+import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.ServiceFactoryException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TestOrchestratorServiceServer {
-    //    private static DocumentCreator documentCreator;
-    private static OrchestratorService orchestratorService;
-    //    private static Registry registry;
+
+    @Autowired
+    private OrchestratorService orchestratorService;
+
+    @Autowired
+    private RegistryService registryService;
+
     private static int NUM_CONCURRENT_REQUESTS = 1;
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static final Logger logger = LoggerFactory.getLogger(TestOrchestratorServiceServer.class);
-    /*
-
-        public static void main(String[] args) {
-            try {
-                AiravataUtils.setExecutionAsClient();
-                sysUser = ClientSettings.getSetting(DEFAULT_USER);
-                sysUserPwd = ClientSettings.getSetting(DEFAULT_USER_PASSWORD);
-                gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-                orchestratorClient = OrchestratorClientFactory.createOrchestratorClient("localhost", 8940);
-                registry = RegistryFactory.getRegistry(gateway, sysUser, sysUserPwd);
-                documentCreator = new DocumentCreator(getAiravataAPI());
-                documentCreator.createLocalHostDocs();
-                documentCreator.createGramDocs();
-                documentCreator.createPBSDocsForOGCE();
-                storeExperimentDetail();
-            } catch (ApplicationSettingsException e) {
-                e.printStackTrace();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        private static AiravataAPI getAiravataAPI() {
-            AiravataAPI airavataAPI = null;
-                try {
-                    airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
-                } catch (AiravataAPIInvocationException e) {
-                    e.printStackTrace();
-                }
-            return airavataAPI;
-        }
-    */
 
     public static void main(String[] args) {
         try {
@@ -89,7 +63,8 @@ public class TestOrchestratorServiceServer {
         }
     }
 
-    public static void storeExperimentDetail() {
+    @Test
+    public void testStoreExperimentDetail() {
         for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
             Thread thread = new Thread() {
                 public void run() {
@@ -124,22 +99,21 @@ public class TestOrchestratorServiceServer {
                     UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
                     userConfigurationDataModel.setComputationalResourceScheduling(scheduling);
                     simpleExperiment.setUserConfigurationData(userConfigurationDataModel);
+
                     String expId = null;
                     try {
-                        //                        expId = (String) registry.add(ParentDataType.EXPERIMENT,
-                        // simpleExperiment);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        expId = registryService.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                    } catch (RegistryServiceException e) {
+                        logger.error("Error while creating experiment", e);
+                        Assertions.fail("Error while creating experiment");
                     }
+                    Assertions.assertNotNull(expId, "Experiment ID should not be null");
 
                     try {
-                        if (orchestratorService == null) {
-                            orchestratorService = ServiceFactory.getInstance().getOrchestratorService();
-                        }
                         orchestratorService.launchExperiment(expId, DEFAULT_GATEWAY, null);
                     } catch (OrchestratorException | ServiceFactoryException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException("Error while launching experiment", e);
+                        logger.error("Error while launching experiment", e);
+                        Assertions.fail("Error while launching experiment");
                     }
                 }
             };
@@ -147,7 +121,8 @@ public class TestOrchestratorServiceServer {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Error while joining thread", e);
+                Assertions.fail("Error while joining thread");
             }
         }
     }

@@ -20,6 +20,8 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
@@ -35,10 +37,26 @@ public class ProcessErrorService {
     @Autowired
     private ProcessErrorRepository processErrorRepository;
 
-    public void addProcessError(ErrorModel error, String processId) throws RegistryException {
+    public String addProcessError(ErrorModel error, String processId) throws RegistryException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
+        entity.setProcessId(processId);
+        ProcessErrorEntity saved = processErrorRepository.save(entity);
+        return saved.getErrorId();
+    }
+
+    public void updateProcessError(ErrorModel error, String processId) throws RegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
         entity.setProcessId(processId);
         processErrorRepository.save(entity);
+    }
+
+    public List<ErrorModel> getProcessError(String processId) throws RegistryException {
+        List<ProcessErrorEntity> entities = processErrorRepository.findByProcessId(processId);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<ErrorModel> result = new ArrayList<>();
+        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
+        return result;
     }
 }

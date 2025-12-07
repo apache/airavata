@@ -32,17 +32,26 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ExperimentService;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentRepositoryTest extends TestBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryTest.class);
+    @Autowired
+    GatewayService gatewayService;
 
-    GatewayRepository gatewayRepository;
-    ProjectRepository projectRepository;
-    ExperimentRepository experimentRepository;
+    @Autowired
+    ProjectService projectService;
+
+    @Autowired
+    ExperimentService experimentService;
 
     private String gatewayId;
 
@@ -50,9 +59,6 @@ public class ExperimentRepositoryTest extends TestBase {
 
     public ExperimentRepositoryTest() {
         super(Database.EXP_CATALOG);
-        gatewayRepository = new GatewayRepository();
-        projectRepository = new ProjectRepository();
-        experimentRepository = new ExperimentRepository();
     }
 
     @Override
@@ -63,14 +69,14 @@ public class ExperimentRepositoryTest extends TestBase {
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
-        gatewayId = gatewayRepository.addGateway(gateway);
+        gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
 
-        projectId = projectRepository.addProject(project, gatewayId);
+        projectId = projectService.addProject(project, gatewayId);
     }
 
     @Test
@@ -84,16 +90,16 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setExperimentName("name");
         experimentModel.setGatewayInstanceId("gateway-instance-id");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
-        assertEquals(0, experimentRepository.getExperiment(experimentId).getEmailAddressesSize());
+        assertEquals(0, experimentService.getExperiment(experimentId).getEmailAddressesSize());
 
         experimentModel.setDescription("description");
         experimentModel.addToEmailAddresses("notify@example.com");
         experimentModel.addToEmailAddresses("notify2@example.com");
-        experimentRepository.updateExperiment(experimentModel, experimentId);
+        experimentService.updateExperiment(experimentModel, experimentId);
 
-        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        ExperimentModel retrievedExperimentModel = experimentService.getExperiment(experimentId);
         assertEquals("description", retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
@@ -127,14 +133,14 @@ public class ExperimentRepositoryTest extends TestBase {
         computationalResourceSchedulingModel.setWallTimeLimit(77);
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
         assertEquals(
-                experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
+                experimentId, experimentService.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
         userConfigurationDataModel.setInputStorageResourceId("storage2");
         userConfigurationDataModel.setOutputStorageResourceId("storage2");
-        experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
+        experimentService.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
         final UserConfigurationDataModel retrievedUserConfigurationDataModel =
-                experimentRepository.getUserConfigurationData(experimentId);
+                experimentService.getUserConfigurationData(experimentId);
         assertEquals("storage2", retrievedUserConfigurationDataModel.getInputStorageResourceId());
         assertEquals("storage2", retrievedUserConfigurationDataModel.getOutputStorageResourceId());
         final ComputationalResourceSchedulingModel retrievedComputationalResourceScheduling =
@@ -154,8 +160,8 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals(1333, retrievedComputationalResourceScheduling.getTotalPhysicalMemory());
         assertEquals(77, retrievedComputationalResourceScheduling.getWallTimeLimit());
 
-        experimentRepository.removeExperiment(experimentId);
-        assertFalse(experimentRepository.isExperimentExist(experimentId));
+        experimentService.removeExperiment(experimentId);
+        assertFalse(experimentService.isExperimentExist(experimentId));
     }
 
     @Test
@@ -186,10 +192,10 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setOverrideFilename("gaussian.com");
         experimentModel.addToExperimentInputs(input1);
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
-        ExperimentModel retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        ExperimentModel retrievedExperimentModel = experimentService.getExperiment(experimentId);
         assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
         InputDataObjectType retrievedInput1 =
                 retrievedExperimentModel.getExperimentInputs().get(0);
@@ -223,9 +229,9 @@ public class ExperimentRepositoryTest extends TestBase {
         retrievedInput1.setValue("value1a");
         retrievedInput1.setOverrideFilename("gaussian.com-updated");
 
-        experimentRepository.updateExperiment(retrievedExperimentModel, experimentId);
+        experimentService.updateExperiment(retrievedExperimentModel, experimentId);
 
-        retrievedExperimentModel = experimentRepository.getExperiment(experimentId);
+        retrievedExperimentModel = experimentService.getExperiment(experimentId);
         assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
         retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
         assertFalse(retrievedInput1.isIsRequired());
@@ -242,8 +248,8 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("value1a", retrievedInput1.getValue());
         assertEquals("gaussian.com-updated", retrievedInput1.getOverrideFilename());
 
-        experimentRepository.removeExperiment(experimentId);
-        assertFalse(experimentRepository.isExperimentExist(experimentId));
+        experimentService.removeExperiment(experimentId);
+        assertFalse(experimentService.isExperimentExist(experimentId));
     }
 
     /**
@@ -260,7 +266,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name/forward-slash//a");
 
-        String experimentId = experimentRepository.addExperiment(experimentModel);
+        String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId.startsWith("name_forward-slash__a"));
 
         // Backward slashes
@@ -271,7 +277,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name\\backward-slash\\\\a");
 
-        experimentId = experimentRepository.addExperiment(experimentModel);
+        experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId.startsWith("name_backward-slash__a"));
     }
 }

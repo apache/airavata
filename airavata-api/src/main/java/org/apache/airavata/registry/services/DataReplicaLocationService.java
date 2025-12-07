@@ -20,6 +20,8 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
@@ -41,5 +43,32 @@ public class DataReplicaLocationService {
         DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
         DataReplicaLocationEntity saved = dataReplicaLocationRepository.save(entity);
         return saved.getReplicaId();
+    }
+
+    public DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException {
+        DataReplicaLocationEntity entity =
+                dataReplicaLocationRepository.findById(replicaId).orElse(null);
+        if (entity == null) return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, DataReplicaLocationModel.class);
+    }
+
+    public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
+        List<DataReplicaLocationEntity> entities = dataReplicaLocationRepository.findByProductUri(productUri);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return entities.stream()
+                .map(e -> mapper.map(e, DataReplicaLocationModel.class))
+                .collect(Collectors.toList());
+    }
+
+    public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
+        dataReplicaLocationRepository.save(entity);
+        return true;
+    }
+
+    public void removeReplicaLocation(String replicaId) throws ReplicaCatalogException {
+        dataReplicaLocationRepository.deleteById(replicaId);
     }
 }

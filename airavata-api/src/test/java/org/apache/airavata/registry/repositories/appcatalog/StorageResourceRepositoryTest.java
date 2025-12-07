@@ -32,22 +32,32 @@ import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.registry.services.ComputeResourceService;
+import org.apache.airavata.registry.services.StorageResourceService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * Created by skariyat on 3/13/18.
  */
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class StorageResourceRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceRepository.class);
 
-    private StorageResourceRepository storageResourceRepository;
+    @Autowired
+    private StorageResourceService storageResourceService;
+
+    @Autowired
+    private ComputeResourceService computeResourceService;
 
     public StorageResourceRepositoryTest() {
         super(Database.APP_CATALOG);
-        storageResourceRepository = new StorageResourceRepository();
     }
 
     @Test
@@ -79,11 +89,11 @@ public class StorageResourceRepositoryTest extends TestBase {
         dataMovementInterfaces.add(gridFTPMv);
         description.setDataMovementInterfaces(dataMovementInterfaces);
 
-        String resourceId = storageResourceRepository.addStorageResource(description);
+        String resourceId = storageResourceService.addStorageResource(description);
         StorageResourceDescription storageResourceDescription = null;
 
-        if (storageResourceRepository.isExists(resourceId)) {
-            storageResourceDescription = storageResourceRepository.getStorageResource(resourceId);
+        if (storageResourceService.isStorageResourceExists(resourceId)) {
+            storageResourceDescription = storageResourceService.getStorageResource(resourceId);
             assertTrue(storageResourceDescription.getHostName().equals("localhost"));
             assertTrue(
                     storageResourceDescription.getStorageResourceDescription().equals("testDescription"));
@@ -102,9 +112,9 @@ public class StorageResourceRepositoryTest extends TestBase {
         }
 
         description.setHostName("localhost2");
-        storageResourceRepository.updateStorageResource(resourceId, description);
-        if (storageResourceRepository.isStorageResourceExists(resourceId)) {
-            storageResourceDescription = storageResourceRepository.getStorageResource(resourceId);
+        storageResourceService.updateStorageResource(resourceId, description);
+        if (storageResourceService.isStorageResourceExists(resourceId)) {
+            storageResourceDescription = storageResourceService.getStorageResource(resourceId);
             logger.info("**********Updated Resource name ************* : {}", storageResourceDescription.getHostName());
             assertTrue(storageResourceDescription.getHostName().equals("localhost2"));
         }
@@ -116,7 +126,7 @@ public class StorageResourceRepositoryTest extends TestBase {
             SCPDataMovement dataMovement = new SCPDataMovement();
             dataMovement.setSshPort(22);
             dataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
-            return new ComputeResourceRepository().addScpDataMovement(dataMovement);
+            return computeResourceService.addScpDataMovement(dataMovement);
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }
@@ -131,7 +141,7 @@ public class StorageResourceRepositoryTest extends TestBase {
             endPoints.add("222.33.43.444");
             endPoints.add("23.344.44.454");
             dataMovement.setGridFTPEndPoints(endPoints);
-            return new ComputeResourceRepository().addGridFTPDataMovement(dataMovement);
+            return computeResourceService.addGridFTPDataMovement(dataMovement);
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }
