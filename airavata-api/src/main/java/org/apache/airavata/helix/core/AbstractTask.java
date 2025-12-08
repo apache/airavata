@@ -19,8 +19,7 @@
 */
 package org.apache.airavata.helix.core;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.core.util.TaskUtil;
@@ -225,14 +224,24 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     }
 
     protected synchronized CuratorFramework getCuratorClient() {
-
         if (curatorClient == null) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
             try {
-                AbstractTask.curatorClient =
-                        CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+                // Try to get properties from ApplicationContext via AiravataTask
+                String zkConnection = "localhost:2181"; // default
+                try {
+                    var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+                    if (ctx != null) {
+                        var props = ctx.getBean(AiravataServerProperties.class);
+                        zkConnection = props.zookeeper.serverConnection;
+                    }
+                } catch (Exception e) {
+                    logger.warn(
+                            "Could not get properties from ApplicationContext, using default zookeeper connection", e);
+                }
+                AbstractTask.curatorClient = CuratorFrameworkFactory.newClient(zkConnection, retryPolicy);
                 AbstractTask.curatorClient.start();
-            } catch (ApplicationSettingsException e) {
+            } catch (Exception e) {
                 logger.error("Failed to create curator client ", e);
                 throw new RuntimeException(e);
             }

@@ -35,7 +35,7 @@ public class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
 
     @Autowired
     private Mapper mapper;
-    
+
     private EntityManager entityManager;
 
     public ExpCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {

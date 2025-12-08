@@ -28,9 +28,9 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResourceAdaptor {

@@ -41,14 +41,9 @@ public class WorkflowCatalogJPAUtils {
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.getDatabase().getWorkflowCatalog();
+        var db = properties.database.workflow;
         factory = JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {

@@ -19,15 +19,14 @@
 */
 package org.apache.airavata.security;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This initializes an instance of the appropriate security manager according to the
  * configuration.
- * 
+ *
  * @deprecated Use Spring's @Autowired AiravataSecurityManager instead.
  * This factory is kept for backward compatibility with standalone utilities.
  */
@@ -35,19 +34,18 @@ import org.slf4j.LoggerFactory;
 public class SecurityManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
 
-    public static AiravataSecurityManager getSecurityManager() throws AiravataSecurityException {
+    public static AiravataSecurityManager getSecurityManager(AiravataServerProperties properties)
+            throws AiravataSecurityException {
         try {
-            Class<?> secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
-            return (AiravataSecurityManager) secManagerImpl.newInstance();
+            String className = properties.security.iam.classpath;
+            Class<?> secManagerImpl = Class.forName(className);
+            return (AiravataSecurityManager)
+                    secManagerImpl.getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error, e);
-        } catch (ApplicationSettingsException e) {
-            String error = "Error in reading the configuration related to Security Manager class.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error, e);
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             String error = "Error in instantiating the Security Manager class.";
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException(error, e);

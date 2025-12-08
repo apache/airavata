@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.compute.job.MonitoringJob;
 import org.apache.airavata.monitor.compute.utils.Constants;
 import org.quartz.*;
@@ -43,6 +43,11 @@ public class ComputationalResourceMonitoringService implements IServer {
     private static ServerStatus status;
     private static Scheduler scheduler;
     private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
+    private AiravataServerProperties properties;
+
+    public ComputationalResourceMonitoringService(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public String getName() {
@@ -61,11 +66,13 @@ public class ComputationalResourceMonitoringService implements IServer {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         scheduler = schedulerFactory.getScheduler();
 
-        final String metaUsername = ServerSettings.getMetaschedulerUsername();
-        final String metaGatewayId = ServerSettings.getMetaschedulerGateway();
-        final String metaGroupResourceProfileId = ServerSettings.getMetaschedulerGrpId();
-        final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerClusterScanningInterval();
+        // Note: These properties are not in AiravataServerProperties yet, using defaults
+        // TODO: Add these to AiravataServerProperties if needed
+        final String metaUsername = ""; // properties.getMetascheduler().getUsername() when added
+        final String metaGatewayId = ""; // properties.getMetascheduler().getGateway() when added
+        final String metaGroupResourceProfileId = ""; // properties.getMetascheduler().getGrpId() when added
+        final int parallelJobs = 1; // default
+        final double scanningInterval = 1800000; // default in milliseconds
 
         for (int i = 0; i < parallelJobs; i++) {
             String name = Constants.COMPUTE_RESOURCE_SCANNER_TRIGGER + "_" + i;

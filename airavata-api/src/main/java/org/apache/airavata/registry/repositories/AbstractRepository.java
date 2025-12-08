@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.registry.utils.Committer;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
@@ -43,7 +43,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected abstract Mapper getMapper();
-    
+
     protected abstract EntityManager getEntityManager();
 
     @Transactional
@@ -104,7 +104,8 @@ public abstract class AbstractRepository<T, E, Id> {
             jpaQuery.setParameter(entry.getKey(), entry.getValue());
         }
 
-        List<?> resultSet = jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        List<?> resultSet =
+                jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         List<T> gatewayList = new ArrayList<>();
         for (Object rs : resultSet) {
             gatewayList.add(getMapper().map(rs, thriftGenericClass));

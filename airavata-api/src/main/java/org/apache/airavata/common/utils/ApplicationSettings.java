@@ -51,9 +51,9 @@ public class ApplicationSettings {
 
     // ThriftClientPool Constants
     private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED =
-            "thrift.client.pool.abandoned.removal.enabled";
+            "airavata.thrift-client-pool-abandoned-removal-enabled";
     private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED =
-            "thrift.client.pool.abandoned.removal.logged";
+            "airavata.thrift-client-pool-abandoned-removal-logged";
 
     protected static ApplicationSettings INSTANCE;
 
@@ -280,52 +280,52 @@ public class ApplicationSettings {
 
     public static String getCredentialStoreKeyStorePath() throws ApplicationSettingsException {
         String airavataConfigDir = getSetting(AIRAVATA_CONFIG_DIR);
-        String credentialStoreKeyStorePath = getSetting("credential.store.keystore.url");
+        String credentialStoreKeyStorePath = getSetting("services.vault.keystore.url");
         return new File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
     }
 
     public static String getCredentialStoreKeyAlias() throws ApplicationSettingsException {
-        return getSetting("credential.store.keystore.alias");
+        return getSetting("services.vault.keystore.alias");
     }
 
     public static String getCredentialStoreKeyStorePassword() throws ApplicationSettingsException {
-        return getSetting("credential.store.keystore.password");
+        return getSetting("services.vault.keystore.password");
     }
 
     public static String getCredentialStoreServerHost() throws ApplicationSettingsException {
-        return getSetting("credential.store.server.host");
+        return getSetting("services.vault.server.host");
     }
 
     public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
-        return getSetting("credential.store.server.port");
+        return getSetting("services.vault.server.port");
     }
 
     public static String getRegistryServerPort() throws ApplicationSettingsException {
-        return getSetting("regserver.server.port");
+        return getSetting("services.registry.server.port");
     }
 
     public static String getRegistryServerHost() throws ApplicationSettingsException {
-        return getSetting("regserver.server.host");
+        return getSetting("services.registry.server.host");
     }
 
     public static String getSuperTenantGatewayId() throws ApplicationSettingsException {
-        return getSetting("super.tenant.gatewayId");
+        return getSetting("airavata.super-tenant-gateway-id");
     }
 
     public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
-        return getSetting("cluster.status.monitoring.repeat.time");
+        return getSetting("services.monitor.cluster.repeat-time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
-        return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+        return getSetting("services.monitor.cluster.enable").equalsIgnoreCase("true");
     }
 
     public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
-        return getSetting("metaschedluer.job.scanning.enable").equalsIgnoreCase("true");
+        return getSetting("services.scheduler.job-scanning-enable", "false").equalsIgnoreCase("true");
     }
 
     public static Boolean enableDataAnalyzerJobScanning() throws ApplicationSettingsException {
-        return getSetting("data.analyzer.job.scanning.enable").equalsIgnoreCase("true");
+        return getSetting("data.analyzer.job.scanning.enable", "false").equalsIgnoreCase("true");
     }
 
     public static String getProfileServiceServerHost() throws ApplicationSettingsException {

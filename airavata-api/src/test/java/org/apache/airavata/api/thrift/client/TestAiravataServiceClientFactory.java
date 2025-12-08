@@ -27,11 +27,20 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.security.AuthzToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TestAiravataServiceClientFactory {
+
+    @Autowired
+    private static AiravataServerProperties properties;
 
     public static void main(String[] a) throws ApplicationSettingsException, AiravataClientException {
         AuthzToken token = new AuthzToken();
@@ -42,7 +51,7 @@ public class TestAiravataServiceClientFactory {
         claimsMap.put(Constants.USER_NAME, "2021test1");
         token.setClaimsMap(claimsMap);
         Airavata.Client apiClient = AiravataServiceClientFactory.createAiravataClient(
-                "apidev.scigap.org", 8930, ServerSettings.isTLSEnabled());
+                "apidev.scigap.org", 8930, ServerSettings.isTLSEnabled(), properties);
 
         List<String> outputNames = new ArrayList<>();
         outputNames.add("Gaussian-Application-Output");

@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.security.AuthzToken;
@@ -38,8 +38,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.authzcache.*;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
@@ -54,6 +52,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
@@ -101,14 +101,17 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final String INTERMEDIATE_OUTPUTS_METHODS =
             "/airavata/fetchIntermediateOutputs|/airavata/getIntermediateOutputProcessStatus";
     private final HashMap<String, String> rolePermissionConfig = new HashMap<>();
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private SharingRegistryService sharingRegistryService;
 
-    public KeyCloakSecurityManager() throws AiravataSecurityException, ApplicationSettingsException {
+    @Autowired
+    private AiravataServerProperties properties;
+
+    public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
         rolePermissionConfig.put("gateway-provider", "/airavata/.*");
         rolePermissionConfig.put(
@@ -182,13 +185,13 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
         try {
-            if (!ServerSettings.isTLSEnabled()) {
+            if (!properties.security.tls.enabled) {
                 return true;
             }
             initServiceClients();
 
             boolean decision;
-            if (ServerSettings.isAuthzCacheEnabled()) {
+            if (properties.security.authzCache.enabled) {
                 var authzCacheManager = AuthzCacheManagerFactory.getAuthzCacheManager();
                 var cacheIndex = new AuthzCacheIndex(subject, gatewayId, accessToken, action);
                 var authzCachedStatus = authzCacheManager.getAuthzCachedStatus(cacheIndex);
@@ -303,8 +306,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
     }
 
-    private String getOpenIDConfigurationUrl(String realm) throws ApplicationSettingsException {
-        return ServerSettings.getRemoteIDPServiceUrl() + "/realms/" + realm + "/.well-known/openid-configuration";
+    private String getOpenIDConfigurationUrl(String realm) {
+        return properties.security.iam.serverUrl + "/realms/" + realm + "/.well-known/openid-configuration";
     }
 
     public String getFromUrl(String urlToRead, String token) throws Exception {

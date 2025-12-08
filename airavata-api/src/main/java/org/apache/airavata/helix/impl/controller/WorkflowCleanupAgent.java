@@ -20,8 +20,7 @@
 package org.apache.airavata.helix.impl.controller;
 
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;
@@ -36,20 +35,20 @@ public class WorkflowCleanupAgent implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowCleanupAgent.class);
 
     private TaskDriver taskDriver;
+    private AiravataServerProperties properties;
+
+    public WorkflowCleanupAgent(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     public void init() throws Exception {
         logger.info("Initializing cleanup agent");
         final HelixManager helixManager;
-        try {
-            helixManager = HelixManagerFactory.getZKHelixManager(
-                    ServerSettings.getSetting("helix.cluster.name"),
-                    ServerSettings.getSetting("helix.controller.name") + "-Cleanup-Agent",
-                    InstanceType.SPECTATOR,
-                    ServerSettings.getZookeeperConnection());
-        } catch (ApplicationSettingsException e) {
-            logger.error("Failed to fetch settings to initialize cleanup agent", e);
-            throw new Exception("Failed to fetch settings to initialize cleanup agent", e);
-        }
+        helixManager = HelixManagerFactory.getZKHelixManager(
+                properties.helix.clusterName,
+                properties.helix.controllerName + "-Cleanup-Agent",
+                InstanceType.SPECTATOR,
+                properties.zookeeper.serverConnection);
 
         try {
             helixManager.connect();

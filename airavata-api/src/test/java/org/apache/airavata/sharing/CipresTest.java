@@ -21,24 +21,34 @@ package org.apache.airavata.sharing;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.service.ServiceFactory;
-import org.apache.airavata.service.ServiceFactoryException;
+import org.apache.airavata.config.JpaConfig;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
-public class CipresTest {
+@SpringBootTest(classes = {JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
+public class CipresTest implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(CipresTest.class);
 
-    public static void main(String[] args)
-            throws InterruptedException, ApplicationSettingsException, DuplicateEntryException,
-                    ServiceFactoryException {
+    @Autowired
+    private SharingRegistryService sharingService;
+
+    public static void main(String[] args) {
+        SpringApplication.run(CipresTest.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
         logger.info("Hello World!");
 
         try {
-            SharingRegistryService sharingService = ServiceFactory.getInstance().getSharingRegistryService();
 
             try {
                 sharingService.deleteDomain("test-domain");

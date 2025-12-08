@@ -24,70 +24,73 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 public class ServerSettings extends ApplicationSettings {
 
-    private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
-    private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
-    private static final String ENABLE_SHARING = "enable.sharing";
+    private static final String DEFAULT_USER = "services.default.user";
+    private static final String DEFAULT_USER_PASSWORD = "services.default.password";
+    private static final String DEFAULT_USER_GATEWAY = "services.default.gateway";
+    private static final String ENABLE_SHARING = "services.sharing.enabled";
 
     // Zookeeper + curator constants
-    public static final String EMBEDDED_ZK = "embedded.zk";
-    public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
-    private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
-    private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
-    private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
-    private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
-    private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
-    private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
+    public static final String EMBEDDED_ZK = "zookeeper.embedded";
+    public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server-connection";
+    private static final String CREDENTIAL_STORE_DB_URL = "database.vault.url";
+    private static final String CREDENTIAL_STORE_DB_USER = "database.vault.user";
+    private static final String CREDENTIAL_STORE_DB_PASSWORD = "database.vault.password";
+    private static final String CREDENTIAL_STORE_DB_DRIVER = "database.vault.driver";
+    private static final java.lang.String SHARING_REGISTRY_PORT = "services.sharing.server-port";
+    private static final java.lang.String SHARING_REGISTRY_HOST = "services.sharing.server-host";
 
-    private static final String REGISTRY_DB_URL = "registry.jdbc.url";
-    private static final String REGISTRY_DB_USER = "registry.jdbc.user";
-    private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
-    private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
-    private static final String HOST_SCHEDULER = "host.scheduler";
-    public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
-    public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
+    private static final String REGISTRY_DB_URL = "database.registry.url";
+    private static final String REGISTRY_DB_USER = "database.registry.user";
+    private static final String REGISTRY_DB_PASSWORD = "database.registry.password";
+    private static final String REGISTRY_DB_DRIVER = "database.registry.driver";
+    private static final String HOST_SCHEDULER = "services.scheduler.classpath";
+    public static final String JOB_NOTIFICATION_ENABLE = "services.monitor.job.notification.enable";
+    public static final String JOB_NOTIFICATION_EMAILIDS = "services.monitor.job.notification.emailids";
 
-    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
-    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
-    public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process.exchange.name";
-    public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
-    public static final String RABBITMQ_DURABLE_QUEUE = "durable.queue";
-    public static final String RABBITMQ_PREFETCH_COUNT = "prefetch.count";
+    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker-url";
+    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status-exchange-name";
+    public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process-exchange-name";
+    public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment-exchange-name";
+    public static final String RABBITMQ_DURABLE_QUEUE = "rabbitmq.durable-queue";
+    public static final String RABBITMQ_PREFETCH_COUNT = "rabbitmq.prefetch-count";
 
     // email-based monitoring configurations
-    private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
-    private static final String EMAIL_BASED_MONITOR_HOST = "email.based.monitor.host";
-    private static final String EMAIL_BASED_MONITOR_ADDRESS = "email.based.monitor.address";
-    private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
-    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
-    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
+    private static final String EMAIL_BASED_MONITORING_PERIOD = "services.monitor.email.period";
+    private static final String EMAIL_BASED_MONITOR_HOST = "services.monitor.email.host";
+    private static final String EMAIL_BASED_MONITOR_ADDRESS = "services.monitor.email.address";
+    private static final String EMAIL_BASED_MONITOR_PASSWORD = "services.monitor.email.password";
+    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "services.monitor.email.folder-name";
+    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "services.monitor.email.store-protocol";
 
     // Profile Service Constants
-    public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
-    public static final String PROFILE_SERVICE_SERVER_PORT = "profile.service.server.port";
+    public static final String PROFILE_SERVICE_SERVER_HOST = "services.api.profile.server.host";
+    public static final String PROFILE_SERVICE_SERVER_PORT = "services.api.profile.server.port";
 
     // Iam Server Constants
-    public static final String IAM_SERVER_URL = "iam.server.url";
-    public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
-    public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
+    public static final String IAM_SERVER_URL = "security.iam.server-url";
+    public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "security.iam.super-admin-username";
+    public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "security.iam.super-admin-password";
 
     private static boolean stopAllThreads = false;
 
     // Airavata Metascheduler
-    public static final String COMPUTE_RESOURCE_SELECTION_POLICY_CLASS = "compute.resource.selection.policy.class";
-    public static final String METASCHEDULER_GATEWAY = "metascheduler.gateway";
-    public static final String METASCHEDULER_GRP_ID = "metascheduler.group.resource.profile";
-    public static final String METASCHEDULER_USERNAME = "metascheduler.username";
-    public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "cluster.scanning.interval";
-    public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "job.scanning.interval";
-    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
-    public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
+    public static final String COMPUTE_RESOURCE_SELECTION_POLICY_CLASS =
+            "services.scheduler.compute-resource-selection-policy-class";
+    public static final String METASCHEDULER_GATEWAY = "services.scheduler.gateway";
+    public static final String METASCHEDULER_GRP_ID = "services.scheduler.group-resource-profile";
+    public static final String METASCHEDULER_USERNAME = "services.scheduler.username";
+    public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "services.scheduler.cluster-scanning-interval";
+    public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "services.scheduler.job-scanning-interval";
+    public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS =
+            "services.scheduler.cluster-scanning-parallel-jobs";
+    public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS =
+            "services.scheduler.compute-resource-rescheduler-policy-class";
     public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
-            "metascheduler.maximum.rescheduler.threshold";
-    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
-    public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
-    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
-    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
+            "services.scheduler.maximum-rescheduler-threshold";
+    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "services.parser.scanning-interval";
+    public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "services.parser.scanning-parallel-jobs";
+    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "services.parser.enabled-gateways";
+    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "services.parser.time-step-seconds";
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);

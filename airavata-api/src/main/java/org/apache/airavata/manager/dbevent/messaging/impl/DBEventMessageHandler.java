@@ -22,9 +22,9 @@ package org.apache.airavata.manager.dbevent.messaging.impl;
 import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerException;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
 import org.apache.airavata.manager.dbevent.utils.DbEventManagerZkUtils;
@@ -44,13 +44,29 @@ public class DBEventMessageHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DBEventMessageHandler.class);
     private CuratorFramework curatorClient;
+    private AiravataServerProperties properties;
 
-    public DBEventMessageHandler() throws ApplicationSettingsException {
+    public DBEventMessageHandler() {
+        // Properties should be set via setter
+    }
+
+    public DBEventMessageHandler(AiravataServerProperties properties) {
+        this.properties = properties;
         startCuratorClient();
     }
 
-    private void startCuratorClient() throws ApplicationSettingsException {
-        curatorClient = DbEventManagerZkUtils.getCuratorClient();
+    public void setProperties(AiravataServerProperties properties) {
+        this.properties = properties;
+        if (curatorClient == null) {
+            startCuratorClient();
+        }
+    }
+
+    private void startCuratorClient() {
+        if (properties == null) {
+            throw new IllegalStateException("Properties must be set before starting curator client");
+        }
+        curatorClient = DbEventManagerZkUtils.getCuratorClient(properties);
         curatorClient.start();
     }
 
@@ -94,7 +110,10 @@ public class DBEventMessageHandler implements MessageHandler {
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
-            DBEventManagerMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+            if (properties != null) {
+                DBEventManagerMessagingFactory.getDBEventSubscriber(properties)
+                        .sendAck(messageContext.getDeliveryTag());
+            }
 
         } catch (Exception e) {
             log.error("Error processing message.", e);

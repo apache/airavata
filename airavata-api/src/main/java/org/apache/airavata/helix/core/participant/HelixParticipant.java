@@ -20,8 +20,7 @@
 package org.apache.airavata.helix.core.participant;
 
 import java.util.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
@@ -61,14 +60,15 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     private List<Class<? extends T>> taskClasses;
     private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
+    private AiravataServerProperties properties;
 
-    public HelixParticipant(List<Class<? extends T>> taskClasses, String taskTypeName)
-            throws ApplicationSettingsException {
-
+    public HelixParticipant(
+            List<Class<? extends T>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
         logger.info("Initializing Participant Node");
 
-        this.zkAddress = ServerSettings.getZookeeperConnection();
-        this.clusterName = ServerSettings.getSetting("helix.cluster.name");
+        this.properties = properties;
+        this.zkAddress = properties.zookeeper.serverConnection;
+        this.clusterName = properties.helix.clusterName;
         this.participantName = getParticipantName();
 
         this.taskTypeName = taskTypeName;
@@ -86,8 +86,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         }
     }
 
-    public HelixParticipant(Class<T> taskClass, String taskTypeName) throws ApplicationSettingsException {
-        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName);
+    public HelixParticipant(Class<T> taskClass, String taskTypeName, AiravataServerProperties properties) {
+        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName, properties);
     }
 
     public void setShutdownGracePeriod(int shutdownGracePeriod) {
@@ -232,7 +232,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         }
     }
 
-    public String getParticipantName() throws ApplicationSettingsException {
-        return ServerSettings.getSetting("helix.participant.name");
+    public String getParticipantName() {
+        return properties.helix.participantName;
     }
 }

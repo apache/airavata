@@ -26,7 +26,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("sharingJPAUtils")
 public class JPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
 
@@ -39,14 +39,9 @@ public class JPAUtils {
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.getDatabase().getSharingCatalog();
+        var db = properties.database.sharing;
         factory = org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {
@@ -55,7 +50,7 @@ public class JPAUtils {
         }
         return instance.factory.createEntityManager();
     }
-    
+
     public static EntityManagerFactory getEntityManagerFactory() {
         if (instance == null || instance.factory == null) {
             throw new IllegalStateException("SharingRegistry JPAUtils not initialized. Make sure it's a Spring bean.");

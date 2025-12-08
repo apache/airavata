@@ -46,8 +46,9 @@ public interface SharingRepository extends JpaRepository<SharingEntity, SharingP
             @Param("entityId") String entityId,
             @Param("sharingTypes") List<String> sharingTypes);
 
-    @Query("SELECT COUNT(s) > 0 FROM SharingEntity s WHERE s.domainId = :domainId AND s.entityId = :entityId "
-            + "AND s.permissionTypeId IN :permissionTypeIds AND s.groupId IN :groupIds")
+    @Query(
+            "SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM SharingEntity s WHERE s.domainId = :domainId AND s.entityId = :entityId "
+                    + "AND s.permissionTypeId IN :permissionTypeIds AND s.groupId IN :groupIds")
     boolean hasAccess(
             @Param("domainId") String domainId,
             @Param("entityId") String entityId,

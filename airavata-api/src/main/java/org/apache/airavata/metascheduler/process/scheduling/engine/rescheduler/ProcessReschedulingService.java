@@ -23,16 +23,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.process.scheduling.utils.Constants;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Process rescheduling service to scann the Queue or Requeued services and relaunch them.
  */
+@Component
 public class ProcessReschedulingService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessReschedulingService.class);
@@ -42,6 +45,9 @@ public class ProcessReschedulingService implements IServer {
     private static ServerStatus status;
     private static Scheduler scheduler;
     private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     @Override
     public String getName() {
@@ -60,8 +66,8 @@ public class ProcessReschedulingService implements IServer {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         scheduler = schedulerFactory.getScheduler();
 
-        final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
+        final int parallelJobs = properties.services.scheduler.clusterScanningParallelJobs;
+        final double scanningInterval = properties.services.scheduler.jobScanningInterval;
 
         for (int i = 0; i < parallelJobs; i++) {
             String name = Constants.PROCESS_SCANNER_TRIGGER + "_" + i;

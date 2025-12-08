@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.helix.impl.task.cancel;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
@@ -53,11 +52,20 @@ public class WorkflowCancellationTask extends AbstractTask {
         super.init(manager, workflowName, jobName, taskName);
 
         try {
-            helixManager = HelixManagerFactory.getZKHelixManager(
-                    ServerSettings.getSetting("helix.cluster.name"),
-                    taskName,
-                    InstanceType.SPECTATOR,
-                    ServerSettings.getZookeeperConnection());
+            String clusterName = "airavata"; // default
+            String zkConnection = "localhost:2181"; // default
+            try {
+                var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+                if (ctx != null) {
+                    var props = ctx.getBean(org.apache.airavata.config.AiravataServerProperties.class);
+                    clusterName = props.helix.clusterName;
+                    zkConnection = props.zookeeper.serverConnection;
+                }
+            } catch (Exception e) {
+                logger.warn("Could not get properties from ApplicationContext, using defaults", e);
+            }
+            helixManager =
+                    HelixManagerFactory.getZKHelixManager(clusterName, taskName, InstanceType.SPECTATOR, zkConnection);
             helixManager.connect();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (helixManager.isConnected()) {

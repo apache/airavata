@@ -28,6 +28,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@org.springframework.context.annotation.Primary
 public interface UserRepository extends JpaRepository<UserEntity, UserPK> {
 
     @Query("SELECT u FROM UserEntity u WHERE u.gatewayId = :gatewayId")

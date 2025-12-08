@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.metascheduler.core.utils.Utils;
@@ -37,17 +37,20 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
     private static ApplicationContext applicationContext;
-    
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         ExponentialBackOffReScheduler.applicationContext = applicationContext;
@@ -57,12 +60,12 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     public void reschedule(ProcessModel processModel, ProcessState processState) {
         try {
             RegistryService registryService = applicationContext.getBean(RegistryService.class);
-            int maxReschedulingCount = ServerSettings.getMetaschedulerReschedulingThreshold();
+            int maxReschedulingCount = properties.services.scheduler.maximumReschedulerThreshold;
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());
             LOGGER.info("Rescheduling process with Id " + processModel.getProcessId() + " experimentId "
                     + processModel.getExperimentId());
-            String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+            String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
             ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
                     Class.forName(selectionPolicyClass).newInstance();
             if (processState.equals(ProcessState.QUEUED)) {
@@ -97,7 +100,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
                     long currentTime = System.currentTimeMillis();
 
-                    double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
+                    double scanningInterval = properties.services.scheduler.jobScanningInterval;
 
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
                         updateResourceSchedulingModel(processModel, experimentModel, registryService);
@@ -134,7 +137,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
             ProcessModel processModel, ExperimentModel experimentModel, RegistryService registryService)
             throws ExperimentNotFoundException, ApplicationSettingsException, ClassNotFoundException,
                     IllegalAccessException, InstantiationException, RegistryServiceException {
-        String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+        String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
         ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
                 Class.forName(selectionPolicyClass).newInstance();
 

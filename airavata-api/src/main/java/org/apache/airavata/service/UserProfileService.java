@@ -20,6 +20,7 @@
 package org.apache.airavata.service;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,13 +44,13 @@ import org.apache.airavata.security.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 public class UserProfileService {
@@ -59,15 +60,17 @@ public class UserProfileService {
     private UserProfileRepository userProfileRepository;
 
     @Autowired
+    @Lazy
     private IamAdminService iamAdminService;
 
     @Autowired
     private Mapper mapper;
-    
+
     @Autowired
     private AiravataSecurityManager securityManager;
-    
-    @PersistenceContext(unitName = "profile_service")
+
+    @Autowired
+    @Qualifier("profileServiceEntityManager")
     private EntityManager entityManager;
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);

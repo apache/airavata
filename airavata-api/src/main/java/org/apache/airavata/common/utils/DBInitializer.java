@@ -68,11 +68,31 @@ public class DBInitializer {
         // Create connection
         Connection conn = null;
         try {
-            DBUtil dbUtil = new DBUtil(driver, url, user, password, validationQuery);
+            // DBUtil constructor expects: (jdbcUrl, userName, password, driver, validationQuery)
+            DBUtil dbUtil = new DBUtil(url, user, password, driver, validationQuery);
             conn = dbUtil.getConnection();
+
+            // Skip database initialization for H2 in-memory databases (JPA handles table creation)
+            if (url != null && url.contains("jdbc:h2:mem:")) {
+                logger.info("H2 in-memory database detected. Skipping database init script " + initScriptPrefix
+                        + " (JPA will create tables automatically)");
+                return;
+            }
+
             if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
-                DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
-                logger.info("New Database created from " + initScriptPrefix + " !!!");
+                try {
+                    DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
+                    logger.info("New Database created from " + initScriptPrefix + " !!!");
+                } catch (Exception e) {
+                    // If database type is unsupported (e.g., H2), log warning and continue
+                    // JPA will handle table creation automatically
+                    if (e.getMessage() != null && e.getMessage().contains("Unsupported database")) {
+                        logger.warn("Database initialization skipped for unsupported database type. "
+                                + "JPA will create tables automatically if configured. Error: " + e.getMessage());
+                        return;
+                    }
+                    throw e;
+                }
             } else {
                 logger.info("Table " + checkTableName + " already exists. Skipping database init script "
                         + initScriptPrefix);

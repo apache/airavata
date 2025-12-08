@@ -35,7 +35,7 @@ public class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<
 
     @Autowired
     private Mapper mapper;
-    
+
     private EntityManager entityManager;
 
     public WorkflowCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {

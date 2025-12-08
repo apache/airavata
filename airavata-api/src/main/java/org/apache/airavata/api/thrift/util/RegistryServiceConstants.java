@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.airavata.common.utils.DBEventService;
 
 public class RegistryServiceConstants {
-    public static final String REGISTRY_SERVER_PORT = "regserver.server.port";
-    public static final String REGISTRY_SERVER_HOST = "regserver.server.host";
-    public static final String REGISTRY_SERVER_MIN_THREADS = "regserver.server.min.threads";
+    public static final String REGISTRY_SERVER_PORT = "services.registry.server.port";
+    public static final String REGISTRY_SERVER_HOST = "services.registry.server.host";
+    public static final String REGISTRY_SERVER_MIN_THREADS = "services.registry.server.min-threads";
 
     public static final List<String> DB_EVENT_SUBSCRIBERS = new ArrayList<String>() {
         {

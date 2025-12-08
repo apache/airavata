@@ -29,7 +29,7 @@ import java.util.Map;
  * This can be run to check if all entity classes are correctly referenced.
  */
 public class ValidatePersistenceXml {
-    
+
     private static final String[] PERSISTENCE_UNITS = {
         "profile_service",
         "appcatalog_data_new",
@@ -43,7 +43,7 @@ public class ValidatePersistenceXml {
     public static void main(String[] args) {
         System.out.println("Validating persistence.xml configuration...");
         int errors = 0;
-        
+
         for (String puName : PERSISTENCE_UNITS) {
             System.out.print("Checking persistence unit: " + puName + " ... ");
             try {
@@ -55,7 +55,7 @@ public class ValidatePersistenceXml {
                 properties.put("openjpa.jdbc.Password", "");
                 properties.put("openjpa.jdbc.DBDictionary", "h2");
                 properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-                
+
                 EntityManagerFactory emf = Persistence.createEntityManagerFactory(puName, properties);
                 if (emf != null) {
                     System.out.println("OK");
@@ -72,7 +72,7 @@ public class ValidatePersistenceXml {
                 errors++;
             }
         }
-        
+
         if (errors == 0) {
             System.out.println("\nAll persistence units validated successfully!");
             System.exit(0);
@@ -82,4 +82,3 @@ public class ValidatePersistenceXml {
         }
     }
 }
-

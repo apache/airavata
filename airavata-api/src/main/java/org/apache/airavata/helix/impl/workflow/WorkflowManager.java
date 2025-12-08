@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.workflow.WorkflowOperator;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -39,11 +38,11 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class WorkflowManager {
 
@@ -51,13 +50,16 @@ public class WorkflowManager {
 
     private Publisher statusPublisher;
     private List<WorkflowOperator> workflowOperators = new ArrayList<>();
-    
+
     @Autowired
     protected RegistryService registryService;
-    
-    private String workflowManagerName;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    protected String workflowManagerName;
     private ZKHelixAdmin zkHelixAdmin;
-    private boolean loadBalanceClusters;
+    protected boolean loadBalanceClusters;
 
     private int currentOperator = 0;
 
@@ -75,19 +77,17 @@ public class WorkflowManager {
     private void initWorkflowOperators() throws Exception {
 
         if (!loadBalanceClusters) {
-            logger.info("Using default cluster " + ServerSettings.getSetting("helix.cluster.name")
-                    + " to submit workflows");
-            workflowOperators.add(new WorkflowOperator(
-                    ServerSettings.getSetting("helix.cluster.name"),
-                    workflowManagerName,
-                    ServerSettings.getZookeeperConnection()));
+            String clusterName = properties.helix.clusterName;
+            logger.info("Using default cluster " + clusterName + " to submit workflows");
+            workflowOperators.add(
+                    new WorkflowOperator(clusterName, workflowManagerName, properties.zookeeper.serverConnection));
         } else {
             logger.info("Load balancing workflows among existing clusters");
             List<String> clusters = zkHelixAdmin.getClusters();
             logger.info("Total available clusters " + clusters.size());
             for (String cluster : clusters) {
                 workflowOperators.add(
-                        new WorkflowOperator(cluster, workflowManagerName, ServerSettings.getZookeeperConnection()));
+                        new WorkflowOperator(cluster, workflowManagerName, properties.zookeeper.serverConnection));
             }
         }
     }
@@ -96,10 +96,10 @@ public class WorkflowManager {
         this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
     }
 
-    private void initHelixAdmin() throws ApplicationSettingsException {
+    private void initHelixAdmin() {
         this.zkHelixAdmin = new ZKHelixAdmin.Builder()
                 .setRealmMode(RealmMode.SINGLE_REALM)
-                .setZkAddress(ServerSettings.getZookeeperConnection())
+                .setZkAddress(properties.zookeeper.serverConnection)
                 .build();
     }
 

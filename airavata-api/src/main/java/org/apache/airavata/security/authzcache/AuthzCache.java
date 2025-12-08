@@ -35,8 +35,8 @@ public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> 
 
     @Autowired
     public AuthzCache(AiravataServerProperties serverProperties) {
-        super(serverProperties.getOther().getInMemoryCacheSize());
-        this.maxSize = serverProperties.getOther().getInMemoryCacheSize();
+        super(serverProperties.airavata.inMemoryCacheSize);
+        this.maxSize = serverProperties.airavata.inMemoryCacheSize;
     }
 
     @Override

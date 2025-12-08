@@ -48,8 +48,7 @@ public abstract class ComputeResourceMonitor {
     }
 
     private UserComputeResourcePreference getUserComputeResourcePreference(
-            String gatewayId, String username, String computeResourceId)
-            throws RegistryServiceException {
+            String gatewayId, String username, String computeResourceId) throws RegistryServiceException {
         if (registryService == null) {
             throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
         }
@@ -88,8 +87,7 @@ public abstract class ComputeResourceMonitor {
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourcId, String groupResourceProfileId)
-            throws RegistryServiceException {
+            String computeResourcId, String groupResourceProfileId) throws RegistryServiceException {
         if (registryService == null) {
             throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
         }
@@ -99,8 +97,7 @@ public abstract class ComputeResourceMonitor {
         return null;
     }
 
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId)
-            throws RegistryServiceException {
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
         if (registryService == null) {
             throw new RegistryServiceException("RegistryService not injected. This class must be managed by Spring.");
         }

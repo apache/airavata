@@ -46,12 +46,12 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
@@ -63,10 +63,10 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         AWSJobSubmissionTask.applicationContext = applicationContext;

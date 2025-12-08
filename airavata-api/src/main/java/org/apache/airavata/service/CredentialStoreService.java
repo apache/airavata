@@ -68,29 +68,32 @@ public class CredentialStoreService {
     @Autowired
     private CredentialReaderImpl credentialReader;
 
+    @Autowired
+    private CredentialStoreDBInitConfig dbInitConfig;
+
     @jakarta.annotation.PostConstruct
     public void init() {
-        var db = properties.getDatabase().getCredentialStore();
-        String jdbcUrl = db.getJdbcUrl();
+        var db = properties.database.vault;
+        String jdbcUrl = db.url;
         if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-            jdbcUrl = properties.getDatabase().getRegistry().getJdbcUrl();
+            jdbcUrl = properties.database.registry.url;
         }
-        String userName = db.getJdbcUser();
+        String userName = db.user;
         if (userName == null || userName.isEmpty()) {
-            userName = properties.getDatabase().getRegistry().getJdbcUser();
+            userName = properties.database.registry.user;
         }
-        String password = db.getJdbcPassword();
+        String password = db.password;
         if (password == null || password.isEmpty()) {
-            password = properties.getDatabase().getRegistry().getJdbcPassword();
+            password = properties.database.registry.password;
         }
-        String driverName = db.getJdbcDriver();
+        String driverName = db.driver;
         if (driverName == null || driverName.isEmpty()) {
-            driverName = properties.getDatabase().getRegistry().getJdbcDriver();
+            driverName = properties.database.registry.driver;
         }
 
         logger.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName
                 + " driver name - " + driverName);
-        DBInitializer.initializeDB(new CredentialStoreDBInitConfig());
+        DBInitializer.initializeDB(dbInitConfig);
     }
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {

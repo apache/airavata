@@ -35,7 +35,7 @@ public class AppCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E,
 
     @Autowired
     private Mapper mapper;
-    
+
     // Use SharedEntityManagerCreator to create a Spring-managed EntityManager proxy
     private EntityManager entityManager;
 

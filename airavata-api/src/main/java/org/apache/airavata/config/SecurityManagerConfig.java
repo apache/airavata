@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.config;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
@@ -37,19 +35,22 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 public class SecurityManagerConfig {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerConfig.class);
-    
+
     @Autowired
     private ApplicationContext applicationContext;
-    
+
+    @Autowired
+    private AiravataServerProperties properties;
+
     @Bean
     @Primary
     public AiravataSecurityManager airavataSecurityManager() throws AiravataSecurityException {
         try {
-            String securityManagerClassName = ServerSettings.getSecurityManagerClassName();
+            String securityManagerClassName = properties.security.iam.classpath;
             logger.info("Creating SecurityManager instance: {}", securityManagerClassName);
-            
+
             // Try to get from Spring context first (if it's a Spring bean)
             try {
                 Class<?> secManagerClass = Class.forName(securityManagerClassName);
@@ -59,16 +60,13 @@ public class SecurityManagerConfig {
             } catch (Exception e) {
                 logger.debug("SecurityManager not found in Spring context, creating new instance", e);
             }
-            
+
             // Fallback to reflection-based instantiation
             Class<?> secManagerImpl = Class.forName(securityManagerClassName);
-            return (AiravataSecurityManager) secManagerImpl.getDeclaredConstructor().newInstance();
+            return (AiravataSecurityManager)
+                    secManagerImpl.getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
-            logger.error(error, e);
-            throw new AiravataSecurityException(error, e);
-        } catch (ApplicationSettingsException e) {
-            String error = "Error in reading the configuration related to Security Manager class.";
             logger.error(error, e);
             throw new AiravataSecurityException(error, e);
         } catch (Exception e) {
@@ -78,4 +76,3 @@ public class SecurityManagerConfig {
         }
     }
 }
-

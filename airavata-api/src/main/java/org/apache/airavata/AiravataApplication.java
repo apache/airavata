@@ -20,11 +20,13 @@
 package org.apache.airavata;
 
 import org.apache.airavata.config.AiravataPropertiesConfiguration;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -48,16 +50,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * <p>All services run in daemon threads and the main thread is kept alive to prevent
  * the application from exiting.
  */
-@SpringBootApplication
+@SpringBootApplication(
+        exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableTransactionManagement
+@EnableConfigurationProperties(AiravataServerProperties.class)
 @Import(AiravataPropertiesConfiguration.class)
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
-            "org.apache.airavata.registry.repositories",
+            "org.apache.airavata.registry",
             "org.apache.airavata.profile",
-            "org.apache.airavata.sharing.repositories",
-            "org.apache.airavata.credential.repositories",
+            "org.apache.airavata.sharing",
+            "org.apache.airavata.credential",
+            "org.apache.airavata.messaging",
+            "org.apache.airavata.monitor",
+            "org.apache.airavata.orchestrator",
+            "org.apache.airavata.helix",
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift"
         })
@@ -79,6 +87,8 @@ public class AiravataApplication {
 
         // Start Spring Boot application - this will initialize all beans and run CommandLineRunners
         SpringApplication app = new SpringApplication(AiravataApplication.class);
+        // Enable bean overriding to handle repository name conflicts
+        app.setDefaultProperties(java.util.Map.of("spring.main.allow-bean-definition-overriding", "true"));
         // Don't exit immediately - keep running for background services
         app.setRegisterShutdownHook(true);
         app.run(args);

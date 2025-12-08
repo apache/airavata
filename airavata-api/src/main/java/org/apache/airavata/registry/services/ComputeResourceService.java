@@ -21,7 +21,6 @@ package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +86,7 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,7 +149,8 @@ public class ComputeResourceService {
     @Autowired
     private Mapper mapper;
 
-    @PersistenceContext(unitName = "appcatalog_data_new")
+    @Autowired
+    @Qualifier("appCatalogEntityManager")
     private EntityManager entityManager;
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
@@ -548,7 +549,6 @@ public class ComputeResourceService {
 
         List<GridftpEndpointEntity> endpointEntities =
                 gridftpEndpointRepository.findByDataMovementInterfaceId(entity.getDataMovementInterfaceId());
-
 
         List<String> endpoints = endpointEntities.stream()
                 .map(GridftpEndpointEntity::getEndpoint)

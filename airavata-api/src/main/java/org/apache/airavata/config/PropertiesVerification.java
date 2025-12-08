@@ -44,36 +44,33 @@ public class PropertiesVerification implements CommandLineRunner {
         logger.info("=== Verifying AiravataServerProperties ===");
 
         // Verify API Server
-        logger.info(
-                "API Server - Host: {}, Port: {}",
-                properties.getApiServer().getHost(),
-                properties.getApiServer().getPort());
+        logger.info("API Server - Port: {}", properties.services.api.port);
         // Verify Database configurations
         logger.info(
                 "AppCatalog DB - URL: {}, Driver: {}",
-                properties.getDatabase().getAppCatalog().getJdbcUrl(),
-                properties.getDatabase().getAppCatalog().getJdbcDriver());
+                properties.database.catalog.url,
+                properties.database.catalog.driver);
         logger.info(
                 "Registry DB - URL: {}, Driver: {}",
-                properties.getDatabase().getRegistry().getJdbcUrl(),
-                properties.getDatabase().getRegistry().getJdbcDriver());
+                properties.database.registry.url,
+                properties.database.registry.driver);
         // Verify Default Registry
         logger.info(
                 "Default Registry - Gateway: {}, User: {}",
-                properties.getDefaultRegistry().getGateway(),
-                properties.getDefaultRegistry().getUser());
+                properties.services.default_.gateway,
+                properties.services.default_.user);
         // Verify Sharing
-        logger.info("Sharing - Enabled: {}", properties.getSharing().isEnabled());
+        logger.info("Sharing - Enabled: {}", properties.services.sharing.enabled);
         // Verify Zookeeper
         logger.info(
                 "Zookeeper - Embedded: {}, Connection: {}",
-                properties.getZookeeper().isEmbedded(),
-                properties.getZookeeper().getServerConnection());
+                properties.zookeeper.embedded,
+                properties.zookeeper.serverConnection);
         // Verify RabbitMQ
         logger.info(
                 "RabbitMQ - Broker URL: {}, Experiment Queue: {}",
-                properties.getRabbitMQ().getBrokerUrl(),
-                properties.getRabbitMQ().getExperimentLaunchQueueName());
+                properties.rabbitmq.brokerUrl,
+                properties.rabbitmq.experimentLaunchQueueName);
         logger.info("=== Properties verification complete ===");
     }
 }

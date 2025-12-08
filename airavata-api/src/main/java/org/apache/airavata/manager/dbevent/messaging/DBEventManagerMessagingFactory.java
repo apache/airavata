@@ -21,6 +21,7 @@ package org.apache.airavata.manager.dbevent.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -44,13 +45,13 @@ public class DBEventManagerMessagingFactory {
      * @return
      * @throws AiravataException
      */
-    public static Subscriber getDBEventSubscriber() throws AiravataException {
+    public static Subscriber getDBEventSubscriber(AiravataServerProperties properties) throws AiravataException {
         if (null == dbEventSubscriber) {
             synchronized (DBEventManagerMessagingFactory.class) {
                 if (null == dbEventSubscriber) {
                     log.info("Creating DB Event subscriber.....");
                     dbEventSubscriber = MessagingFactory.getDBEventSubscriber(
-                            new DBEventMessageHandler(), DBEventService.DB_EVENT.toString());
+                            new DBEventMessageHandler(properties), DBEventService.DB_EVENT.toString());
                     log.info("DB Event subscriber created");
                 }
             }

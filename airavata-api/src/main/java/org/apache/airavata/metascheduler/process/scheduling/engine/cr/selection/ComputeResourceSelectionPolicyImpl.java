@@ -28,17 +28,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
-    
+
     private static ApplicationContext applicationContext;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         ComputeResourceSelectionPolicyImpl.applicationContext = applicationContext;
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourcId, String groupResourceProfileId)
-            throws RegistryServiceException {
+            String computeResourcId, String groupResourceProfileId) throws RegistryServiceException {
         RegistryService registryService = applicationContext.getBean(RegistryService.class);
         if (registryService.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
             return registryService.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);

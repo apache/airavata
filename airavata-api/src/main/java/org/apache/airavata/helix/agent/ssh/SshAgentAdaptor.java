@@ -31,10 +31,10 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * TODO: Class level comments please
@@ -48,10 +48,10 @@ public class SshAgentAdaptor implements AgentAdaptor {
     private static final Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
 
     private Session session = null;
-    
+
     @Autowired
     protected RegistryService registryService;
-    
+
     @Autowired
     protected CredentialStoreService credentialService;
 

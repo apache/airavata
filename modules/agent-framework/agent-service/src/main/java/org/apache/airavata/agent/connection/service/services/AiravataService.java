@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.thrift.client.AiravataServiceClientFactory;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -40,6 +41,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -57,9 +59,12 @@ public class AiravataService {
     @Value("${airavata.server.secure:false}")
     private boolean secure;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     public Airavata.Client airavata() {
         try {
-            return AiravataServiceClientFactory.createAiravataClient(serverUrl, port, secure);
+            return AiravataServiceClientFactory.createAiravataClient(serverUrl, port, secure, properties);
         } catch (AiravataClientException e) {
             LOGGER.error("Error while creating Airavata client", e);
             throw new RuntimeException("Error while creating Airavata client", e);

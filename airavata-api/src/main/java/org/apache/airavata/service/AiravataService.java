@@ -136,9 +136,11 @@ import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
+@DependsOn("messagingFactory")
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
@@ -187,8 +189,7 @@ public class AiravataService {
     public AiravataService(
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
-            CredentialStoreService credentialStoreService)
-            throws AiravataException {
+            CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.credentialStoreService = credentialStoreService;
@@ -196,30 +197,32 @@ public class AiravataService {
         logger.info("Initialized RegistryService");
         logger.info("Initialized SharingRegistryService");
         logger.info("Initialized CredentialStoreService");
+    }
 
+    @jakarta.annotation.PostConstruct
+    public void initializePublishers() throws AiravataException {
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
             logger.info("Initialized StatusPublisher");
         } catch (AiravataException e) {
-            String msg = String.format("Error while getting StatusPublisher: %s", e.getMessage());
-            logger.error(msg, e);
-            var exception = new AiravataException(msg);
-            exception.initCause(e);
-            throw exception;
+            String msg = String.format(
+                    "Error while getting StatusPublisher: %s. Publisher will be unavailable.", e.getMessage());
+            logger.warn(msg, e);
+            // Don't throw - allow server to start without RabbitMQ
         }
 
         try {
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
             logger.info("Initialized ExperimentPublisher");
         } catch (AiravataException e) {
-            String msg = String.format("Error while getting ExperimentPublisher: %s", e.getMessage());
-            logger.error(msg, e);
-            var exception = new AiravataException(msg);
-            exception.initCause(e);
-            throw exception;
+            String msg = String.format(
+                    "Error while getting ExperimentPublisher: %s. Publisher will be unavailable.", e.getMessage());
+            logger.warn(msg, e);
+            // Don't throw - allow server to start without RabbitMQ
         }
     }
 
+    @jakarta.annotation.PostConstruct
     public void init() throws AiravataException {
         try {
             initSharingRegistry();
@@ -234,26 +237,36 @@ public class AiravataService {
         try {
             postInitDefaultGateway();
         } catch (RegistryServiceException | CredentialStoreException | AiravataSystemException e) {
-            String msg = String.format("Error while post-initializing default gateway: %s", e.getMessage());
-            logger.error(msg, e);
-            var exception = new AiravataException(msg);
-            exception.initCause(e);
-            throw exception;
+            String msg = String.format(
+                    "Error while post-initializing default gateway: %s. Gateway initialization will be skipped.",
+                    e.getMessage());
+            logger.warn(msg, e);
+            // Don't throw - allow server to start without default gateway initialization
         }
     }
 
     private void postInitDefaultGateway()
             throws RegistryServiceException, CredentialStoreException, AiravataSystemException {
-        String defaultGateway = properties.getDefaultRegistry().getGateway();
+        String defaultGateway = properties.services.default_.gateway;
+        if (defaultGateway == null || defaultGateway.isEmpty()) {
+            logger.debug("No default gateway configured. Skipping gateway initialization.");
+            return;
+        }
         var gatewayResourceProfile = getGatewayResourceProfile(defaultGateway);
+        if (gatewayResourceProfile == null) {
+            logger.debug(
+                    "Default gateway '{}' does not exist in database. Skipping gateway initialization.",
+                    defaultGateway);
+            return;
+        }
         if (gatewayResourceProfile != null && gatewayResourceProfile.getIdentityServerPwdCredToken() == null) {
 
             logger.debug("Starting to add password credential to default gateway={}", defaultGateway);
             var passwordCredential = new PasswordCredential();
-            passwordCredential.setPortalUserName(properties.getDefaultRegistry().getUser());
+            passwordCredential.setPortalUserName(properties.services.default_.user);
             passwordCredential.setGatewayId(defaultGateway);
-            passwordCredential.setLoginUserName(properties.getDefaultRegistry().getUser());
-            passwordCredential.setPassword(properties.getDefaultRegistry().getPassword());
+            passwordCredential.setLoginUserName(properties.services.default_.user);
+            passwordCredential.setPassword(properties.services.default_.password);
             passwordCredential.setDescription("Credentials for default gateway=" + defaultGateway);
             String token = null;
             try {
@@ -278,7 +291,7 @@ public class AiravataService {
     }
 
     private void initSharingRegistry() throws SharingRegistryException, DuplicateEntryException {
-        String defaultGateway = properties.getDefaultRegistry().getGateway();
+        String defaultGateway = properties.services.default_.gateway;
         if (!isDomainExists(defaultGateway)) {
             var domain = new Domain();
             domain.setDomainId(defaultGateway);
@@ -288,8 +301,8 @@ public class AiravataService {
 
             var user = new User();
             user.setDomainId(domain.getDomainId());
-            user.setUserId(properties.getDefaultRegistry().getUser() + "@" + defaultGateway);
-            user.setUserName(properties.getDefaultRegistry().getUser());
+            user.setUserId(properties.services.default_.user + "@" + defaultGateway);
+            user.setUserName(properties.services.default_.user);
             createUser(user);
 
             // Creating Entity Types for each domain
@@ -580,7 +593,7 @@ public class AiravataService {
         try {
             var accessibleProjIds = new ArrayList<String>();
             List<Project> result;
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var sharingFilters = new ArrayList<SearchCriteria>();
                 var searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -651,7 +664,7 @@ public class AiravataService {
         try {
             var project = getProject(projectId);
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (properties.getSharing().isEnabled()
+            if (properties.services.sharing.enabled
                     && (!authzToken.getClaimsMap().get(Constants.USER_NAME).equals(project.getOwner())
                             || !authzToken
                                     .getClaimsMap()
@@ -737,7 +750,7 @@ public class AiravataService {
             if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingExperiment.getUserName())
                     && authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(existingExperiment.getGatewayId())) {
                 return existingExperiment;
-            } else if (properties.getSharing().isEnabled()) {
+            } else if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, airavataExperimentId, gatewayId + ":READ")) {
@@ -776,7 +789,7 @@ public class AiravataService {
         try {
             var existingExperiment = getExperiment(airavataExperimentId);
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            boolean sharingEnabled = properties.getSharing().isEnabled();
+            boolean sharingEnabled = properties.services.sharing.enabled;
             if (sharingEnabled
                     && (!authzToken.getClaimsMap().get(Constants.USER_NAME).equals(existingExperiment.getUserName())
                             || !authzToken
@@ -913,7 +926,7 @@ public class AiravataService {
             existingExperiment.setUserName(userId);
 
             var expId = createExperimentInternal(gatewayId, existingExperiment);
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 try {
                     var entity = new Entity();
                     entity.setEntityId(expId);
@@ -1421,7 +1434,7 @@ public class AiravataService {
                     ApplicationSettingsException {
         try {
             String result = registerApplicationDeployment(gatewayId, applicationDeployment);
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var entity = new Entity();
                 entity.setEntityId(result);
                 final String domainId = gatewayId;
@@ -1458,7 +1471,7 @@ public class AiravataService {
     public ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.READ);
                 if (!hasAccess) {
                     throw new AuthorizationException(
@@ -1491,7 +1504,7 @@ public class AiravataService {
             AuthzToken authzToken, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
                 if (!hasAccess) {
                     throw new AuthorizationException(
@@ -1521,7 +1534,7 @@ public class AiravataService {
     public boolean deleteApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 final boolean hasAccess = userHasAccess(authzToken, appDeploymentId, ResourcePermissionType.WRITE);
                 if (!hasAccess) {
                     throw new AuthorizationException(
@@ -1712,7 +1725,7 @@ public class AiravataService {
         try {
             var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
             var accessibleAppDeploymentIds = new ArrayList<String>();
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 var entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -2059,7 +2072,7 @@ public class AiravataService {
             AuthzToken authzToken, String gatewayId, String userName, int limit, int offset)
             throws AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 // user projects + user accessible projects
                 var accessibleProjectIds = new ArrayList<String>();
                 var filters = new ArrayList<SearchCriteria>();
@@ -2110,7 +2123,7 @@ public class AiravataService {
         try {
             String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
             List<String> accessibleAppDeploymentIds = new ArrayList<>();
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 var entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -3115,7 +3128,7 @@ public class AiravataService {
         try {
             var projectId = registryService.createProject(gatewayId, project);
             // TODO: verify that gatewayId and project.gatewayId match authzToken
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 try {
                     var entity = new Entity();
                     entity.setEntityId(projectId);
@@ -3156,7 +3169,7 @@ public class AiravataService {
             throws InvalidRequestException, AiravataSystemException, ProjectNotFoundException, AuthorizationException {
         try {
             var existingProject = getProject(projectId);
-            if (properties.getSharing().isEnabled()
+            if (properties.services.sharing.enabled
                             && !authzToken
                                     .getClaimsMap()
                                     .get(Constants.USER_NAME)
@@ -3194,7 +3207,7 @@ public class AiravataService {
             throws AiravataSystemException, ProjectNotFoundException, AuthorizationException {
         try {
             var existingProject = getProject(projectId);
-            if (properties.getSharing().isEnabled()
+            if (properties.services.sharing.enabled
                             && !authzToken
                                     .getClaimsMap()
                                     .get(Constants.USER_NAME)
@@ -3226,7 +3239,7 @@ public class AiravataService {
             if (authzToken.getClaimsMap().get(Constants.USER_NAME).equals(project.getOwner())
                     && authzToken.getClaimsMap().get(Constants.GATEWAY_ID).equals(project.getGatewayId())) {
                 return project;
-            } else if (properties.getSharing().isEnabled()) {
+            } else if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!sharingRegistryService.userHasAccess(
@@ -3250,7 +3263,7 @@ public class AiravataService {
     public String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException {
         try {
             var experimentId = createExperimentInternal(gatewayId, experiment);
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 try {
                     var entity = new Entity();
                     entity.setEntityId(experimentId);
@@ -3374,7 +3387,7 @@ public class AiravataService {
         try {
             var experimentModel = getExperiment(experimentId);
 
-            if (properties.getSharing().isEnabled()
+            if (properties.services.sharing.enabled
                             && !authzToken
                                     .getClaimsMap()
                                     .get(Constants.USER_NAME)
@@ -3856,7 +3869,7 @@ public class AiravataService {
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         validateGroupResourceProfile(authzToken, groupResourceProfile);
         String groupResourceProfileId = createGroupResourceProfile(groupResourceProfile);
-        if (properties.getSharing().isEnabled()) {
+        if (properties.services.sharing.enabled) {
             try {
                 var entity = new Entity();
                 entity.setEntityId(groupResourceProfileId);
@@ -3967,7 +3980,7 @@ public class AiravataService {
         try {
             String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
             var accessibleGroupResProfileIds = new ArrayList<String>();
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var filters = new ArrayList<SearchCriteria>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -4727,7 +4740,7 @@ public class AiravataService {
     public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
@@ -4749,7 +4762,7 @@ public class AiravataService {
             throws AuthorizationException, AiravataSystemException {
         try {
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
                     throw new AuthorizationException("User does not have permission to remove group resource profile");
@@ -4773,7 +4786,7 @@ public class AiravataService {
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
@@ -4795,7 +4808,7 @@ public class AiravataService {
     public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 ComputeResourcePolicy computeResourcePolicy = getGroupComputeResourcePolicy(resourcePolicyId);
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -4822,7 +4835,7 @@ public class AiravataService {
     public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 BatchQueueResourcePolicy batchQueueResourcePolicy = getBatchQueueResourcePolicy(resourcePolicyId);
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -4850,7 +4863,7 @@ public class AiravataService {
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException, InvalidRequestException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
@@ -4871,7 +4884,7 @@ public class AiravataService {
     public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 ComputeResourcePolicy computeResourcePolicy = getGroupComputeResourcePolicy(resourcePolicyId);
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -4897,7 +4910,7 @@ public class AiravataService {
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 BatchQueueResourcePolicy batchQueueResourcePolicy = getBatchQueueResourcePolicy(resourcePolicyId);
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -4941,7 +4954,7 @@ public class AiravataService {
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
@@ -4963,7 +4976,7 @@ public class AiravataService {
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
@@ -4985,7 +4998,7 @@ public class AiravataService {
             AuthzToken authzToken, String groupResourceProfileId)
             throws AuthorizationException, AiravataSystemException {
         try {
-            if (properties.getSharing().isEnabled()) {
+            if (properties.services.sharing.enabled) {
                 var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 var userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 if (!userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {

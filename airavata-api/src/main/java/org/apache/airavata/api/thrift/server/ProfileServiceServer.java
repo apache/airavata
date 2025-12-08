@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,7 @@ import org.apache.airavata.api.thrift.handler.UserProfileServiceHandler;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.profile.iam.admin.services.cpi.IamAdminServices;
@@ -70,6 +69,9 @@ public class ProfileServiceServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     public ProfileServiceServer() {
         setStatus(ServerStatus.STOPPED);
     }
@@ -99,7 +101,7 @@ public class ProfileServiceServer implements IServer {
             }
             logger.info("Profile service databases initialized successfully");
 
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+            final int serverPort = properties.services.api.profile.server.port;
 
             // Get handlers from Spring context
             UserProfileServiceHandler userProfileHandler = applicationContext.getBean(UserProfileServiceHandler.class);
@@ -126,9 +128,7 @@ public class ProfileServiceServer implements IServer {
             profileServiceProcessor.registerProcessor(
                     group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME, groupmanagerProcessor);
 
-            TServerTransport serverTransport;
-            InetSocketAddress inetSocketAddress = new InetSocketAddress("0.0.0.0", serverPort);
-            serverTransport = new TServerSocket(inetSocketAddress);
+            TServerTransport serverTransport = new TServerSocket(serverPort);
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = 30;
             server = new TThreadPoolServer(options.processor(profileServiceProcessor));

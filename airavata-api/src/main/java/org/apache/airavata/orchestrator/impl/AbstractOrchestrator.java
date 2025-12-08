@@ -20,8 +20,7 @@
 package org.apache.airavata.orchestrator.impl;
 
 import java.io.IOException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.orchestrator.Orchestrator;
 import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.context.OrchestratorContext;
@@ -34,6 +33,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
     private static final Logger logger = LoggerFactory.getLogger(AbstractOrchestrator.class);
     protected OrchestratorContext orchestratorContext;
     protected OrchestratorConfiguration orchestratorConfiguration;
+    protected AiravataServerProperties properties;
 
     private String registryURL;
 
@@ -66,28 +66,35 @@ public abstract class AbstractOrchestrator implements Orchestrator {
     }
 
     public AbstractOrchestrator() throws OrchestratorException {
+        // Properties will be injected by Spring for subclasses that are components
+    }
+
+    public void initialize(AiravataServerProperties props) throws OrchestratorException {
+        this.properties = props;
         try {
             /* Initializing the OrchestratorConfiguration object */
-            orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
-            setGatewayProperties();
+            if (properties != null) {
+                orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration(properties);
+                setGatewayProperties();
+            } else {
+                // Fallback for non-Spring usage
+                orchestratorConfiguration = new OrchestratorConfiguration();
+                orchestratorConfiguration.setEnableValidation(true);
+            }
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
         } catch (IOException e) {
             logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
-        } catch (ApplicationSettingsException e) {
-            throw new OrchestratorException(e);
         }
     }
 
     protected void setGatewayProperties() {
-        try {
-            setAiravataUserName(ServerSettings.getDefaultUser());
-            setGatewayName(ServerSettings.getDefaultUserGateway());
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new RuntimeException("Error while setting gateway properties.", e);
+        if (properties != null) {
+            var defaultRegistry = properties.services.default_;
+            setAiravataUserName(defaultRegistry.user);
+            setGatewayName(defaultRegistry.gateway);
         }
     }
 

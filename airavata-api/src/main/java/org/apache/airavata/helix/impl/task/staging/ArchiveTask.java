@@ -23,7 +23,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.airavata.agents.api.*;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -108,8 +108,16 @@ public class ArchiveTask extends DataStagingTask {
 
             try {
                 FileMetadata fileMetadata = adaptor.getFileMetadata(tarCreationAbsPath);
-                long maxArchiveSize =
-                        Long.parseLong(ServerSettings.getSetting("max.archive.size", MAX_ARCHIVE_SIZE + ""));
+                long maxArchiveSize = MAX_ARCHIVE_SIZE; // default
+                try {
+                    var ctx = getApplicationContext();
+                    if (ctx != null) {
+                        var props = ctx.getBean(AiravataServerProperties.class);
+                        maxArchiveSize = props.airavata.maxArchiveSize;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not get properties from ApplicationContext, using default max archive size", e);
+                }
 
                 if (fileMetadata.getSize() < maxArchiveSize) {
                     boolean fileTransferred = transferFileToStorage(

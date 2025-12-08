@@ -34,27 +34,27 @@ public class SharingRegistryDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getSharingCatalog().getJdbcDriver();
+        return properties.database.sharing.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getSharingCatalog().getJdbcUrl();
+        return properties.database.sharing.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getSharingCatalog().getJdbcUser();
+        return properties.database.sharing.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getSharingCatalog().getJdbcPassword();
+        return properties.database.sharing.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getSharingCatalog().getValidationQuery();
+        return properties.database.sharing.validationQuery;
     }
 
     @Override

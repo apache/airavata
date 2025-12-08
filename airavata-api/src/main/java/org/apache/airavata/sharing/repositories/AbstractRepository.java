@@ -21,6 +21,7 @@ package org.apache.airavata.sharing.repositories;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +30,15 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.utils.Committer;
 import org.apache.airavata.sharing.utils.DBConstants;
 import org.apache.airavata.sharing.utils.JPAUtils;
-import org.springframework.orm.jpa.SharedEntityManagerCreator;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jakarta.persistence.EntityManagerFactory;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractRepository<T, E, Id> {
-    
+
     private EntityManager entityManager;
-    
+
     protected EntityManager getEntityManager() {
         if (entityManager == null) {
             EntityManagerFactory factory = JPAUtils.getEntityManagerFactory();
@@ -46,7 +46,7 @@ public abstract class AbstractRepository<T, E, Id> {
         }
         return entityManager;
     }
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
     private Class<T> thriftGenericClass;

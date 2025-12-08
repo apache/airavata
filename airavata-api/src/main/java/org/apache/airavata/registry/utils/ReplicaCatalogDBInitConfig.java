@@ -35,27 +35,27 @@ public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getReplicaCatalog().getJdbcDriver();
+        return properties.database.replica.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getReplicaCatalog().getJdbcUrl();
+        return properties.database.replica.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getReplicaCatalog().getJdbcUser();
+        return properties.database.replica.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getReplicaCatalog().getJdbcPassword();
+        return properties.database.replica.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getReplicaCatalog().getValidationQuery();
+        return properties.database.replica.validationQuery;
     }
 
     @Override

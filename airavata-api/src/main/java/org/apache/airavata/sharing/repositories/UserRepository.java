@@ -24,7 +24,7 @@ import org.apache.airavata.sharing.entities.UserPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("sharingUserRepository")
 public interface UserRepository extends JpaRepository<UserEntity, UserPK> {
 
     // Note: Complex query methods (getAccessibleUsers, getDirectlyAccessibleUsers) with joins

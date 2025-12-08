@@ -46,27 +46,27 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getRegistry().getJdbcDriver();
+        return properties.database.registry.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getRegistry().getJdbcUrl();
+        return properties.database.registry.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getRegistry().getJdbcUser();
+        return properties.database.registry.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getRegistry().getJdbcPassword();
+        return properties.database.registry.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getValidationQuery();
+        return properties.database.registry.validationQuery;
     }
 
     @Override
@@ -89,17 +89,17 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
         try {
             // Create default gateway and default user if not already created
-            String defaultGatewayId = properties.getDefaultRegistry().getGateway();
+            String defaultGatewayId = properties.services.default_.gateway;
             if (!gatewayService.isGatewayExist(defaultGatewayId)) {
                 Gateway gateway = new Gateway();
                 gateway.setGatewayId(defaultGatewayId);
                 gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
-                gateway.setOauthClientId(properties.getDefaultRegistry().getOauthClientId());
-                gateway.setOauthClientSecret(properties.getDefaultRegistry().getOauthClientSecret());
+                gateway.setOauthClientId(properties.security.iam.oauthClientId);
+                gateway.setOauthClientSecret(properties.security.iam.oauthClientSecret);
                 gatewayService.addGateway(gateway);
             }
 
-            String defaultUsername = properties.getDefaultRegistry().getUser();
+            String defaultUsername = properties.services.default_.user;
             if (!userService.isUserExists(defaultGatewayId, defaultUsername)) {
                 UserProfile defaultUser = new UserProfile();
                 defaultUser.setUserId(defaultUsername);

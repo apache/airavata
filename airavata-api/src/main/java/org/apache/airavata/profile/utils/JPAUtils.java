@@ -26,7 +26,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("profileJPAUtils")
 public class JPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "profile_service";
 
@@ -39,14 +39,9 @@ public class JPAUtils {
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.getDatabase().getProfileService();
+        var db = properties.database.profile;
         factory = org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {
@@ -62,7 +57,7 @@ public class JPAUtils {
         }
         return instance.factory;
     }
-    
+
     @Deprecated
     public static <R> R execute(Committer<EntityManager, R> committer) {
         EntityManager entityManager = JPAUtils.getEntityManager();

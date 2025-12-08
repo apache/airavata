@@ -19,10 +19,9 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import java.net.InetSocketAddress;
 import org.apache.airavata.api.thrift.handler.CredentialServiceHandler;
 import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.cpi.CredentialStoreService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -47,6 +46,9 @@ public class CredentialServiceServer implements IServer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     public CredentialServiceServer() {
         setStatus(IServer.ServerStatus.STOPPED);
     }
@@ -65,20 +67,12 @@ public class CredentialServiceServer implements IServer {
     public void start() throws Exception {
         try {
             setStatus(ServerStatus.STARTING);
-            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-            final String serverHost = ServerSettings.getCredentialStoreServerHost();
+            final int serverPort = properties.services.vault.server.port;
             CredentialServiceHandler handler = applicationContext.getBean(CredentialServiceHandler.class);
             CredentialStoreService.Processor<CredentialServiceHandler> processor =
                     new CredentialStoreService.Processor<>(handler);
 
-            TServerTransport serverTransport;
-
-            if (serverHost == null) {
-                serverTransport = new TServerSocket(serverPort);
-            } else {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                serverTransport = new TServerSocket(inetSocketAddress);
-            }
+            TServerTransport serverTransport = new TServerSocket(serverPort);
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = 30;
             server = new TThreadPoolServer(options.processor(processor));

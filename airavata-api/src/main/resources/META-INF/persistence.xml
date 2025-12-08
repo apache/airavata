@@ -31,6 +31,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
@@ -100,6 +102,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
@@ -114,6 +118,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="workflowcatalog_data_new">
@@ -142,6 +148,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="experiment_data_new">
@@ -180,6 +188,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="airavata-sharing-registry">
@@ -198,6 +208,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
   <persistence-unit name="credential_store">
@@ -209,6 +221,8 @@
       <property name="openjpa.jdbc.MappingDefaults"
         value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
       <property name="openjpa.jdbc.DBDictionary" value="mysql" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.DynamicEnhancementAgent" value="true" />
     </properties>
   </persistence-unit>
 </persistence>

@@ -20,6 +20,7 @@
 package org.apache.airavata.service;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,10 +45,9 @@ import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceExce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 public class TenantProfileService {
@@ -63,8 +63,9 @@ public class TenantProfileService {
 
     @Autowired
     private Mapper mapper;
-    
-    @PersistenceContext(unitName = "profile_service")
+
+    @Autowired
+    @Qualifier("profileServiceEntityManager")
     private EntityManager entityManager;
 
     public TenantProfileService() {

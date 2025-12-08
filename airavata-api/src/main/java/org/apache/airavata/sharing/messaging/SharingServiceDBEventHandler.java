@@ -32,8 +32,6 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.service.SharingRegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.Entity;
 import org.apache.airavata.sharing.models.EntityType;
@@ -42,6 +40,8 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/28/17.

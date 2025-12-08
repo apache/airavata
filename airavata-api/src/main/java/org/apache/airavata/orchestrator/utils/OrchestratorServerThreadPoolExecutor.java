@@ -21,14 +21,9 @@ package org.apache.airavata.orchestrator.utils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.config.AiravataServerProperties;
 
 public class OrchestratorServerThreadPoolExecutor {
-    private static final Logger logger = LoggerFactory.getLogger(OrchestratorServerThreadPoolExecutor.class);
-    public static final String AIRAVATA_SERVER_THREAD_POOL_SIZE = "airavata.server.thread.pool.size";
 
     private static ExecutorService threadPool;
 
@@ -39,14 +34,10 @@ public class OrchestratorServerThreadPoolExecutor {
         return threadPool;
     }
 
-    public static ExecutorService getFixedThreadPool() {
+    public static ExecutorService getFixedThreadPool(AiravataServerProperties properties) {
         if (threadPool == null) {
-            try {
-                threadPool = Executors.newFixedThreadPool(
-                        Integer.parseInt(ServerSettings.getSetting(AIRAVATA_SERVER_THREAD_POOL_SIZE)));
-            } catch (ApplicationSettingsException e) {
-                logger.error("Error reading " + AIRAVATA_SERVER_THREAD_POOL_SIZE + " property");
-            }
+            var poolSize = 10;
+            threadPool = Executors.newFixedThreadPool(poolSize);
         }
         return threadPool;
     }

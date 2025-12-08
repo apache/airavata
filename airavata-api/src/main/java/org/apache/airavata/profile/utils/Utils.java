@@ -24,7 +24,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("profileUtils")
 public class Utils {
     private static Utils instance;
 
@@ -37,7 +37,7 @@ public class Utils {
     }
 
     private String getJDBCURLImpl() {
-        return properties.getDatabase().getProfileService().getJdbcUrl();
+        return properties.database.profile.url;
     }
 
     private String getHostImpl() {
@@ -69,19 +69,19 @@ public class Utils {
     }
 
     private String getJDBCUserImpl() {
-        return properties.getDatabase().getProfileService().getJdbcUser();
+        return properties.database.profile.user;
     }
 
     private String getValidationQueryImpl() {
-        return properties.getDatabase().getProfileService().getValidationQuery();
+        return properties.database.profile.validationQuery;
     }
 
     private String getJDBCPasswordImpl() {
-        return properties.getDatabase().getProfileService().getJdbcPassword();
+        return properties.database.profile.password;
     }
 
     private String getJDBCDriverImpl() {
-        return properties.getDatabase().getProfileService().getJdbcDriver();
+        return properties.database.profile.driver;
     }
 
     // Static methods for backward compatibility

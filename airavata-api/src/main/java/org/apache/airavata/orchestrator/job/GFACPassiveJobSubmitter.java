@@ -22,7 +22,7 @@ package org.apache.airavata.orchestrator.job;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.utils.CredentialReader;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -46,6 +46,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     private static final Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
     private static final Object mutex = new Object();
     private Publisher publisher;
+    private AiravataServerProperties properties;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         if (orchestratorContext.getPublisher() != null) {
@@ -59,6 +60,11 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
                         + " need to start Rabbitmq server to use " + GFACPassiveJobSubmitter.class);
             }
         }
+        // Properties will be set via setter or from ApplicationContext
+    }
+
+    public void setProperties(AiravataServerProperties properties) {
+        this.properties = properties;
     }
 
     /**
@@ -82,7 +88,11 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
                 }
             }
             if (gatewayId == null || gatewayId.isEmpty()) {
-                gatewayId = ServerSettings.getDefaultUserGateway();
+                if (properties != null) {
+                    gatewayId = properties.services.default_.gateway;
+                } else {
+                    gatewayId = "default";
+                }
             }
             ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, experimentId, tokenId);
             MessageContext messageContext = new MessageContext(
@@ -118,8 +128,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
                 }
             }
             if (gatewayId == null || gatewayId.isEmpty()) {
-
-                gatewayId = ServerSettings.getDefaultUserGateway();
+                gatewayId = properties.services.default_.gateway;
             }
             ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent(processId, gatewayId, tokenId);
             MessageContext messageContext = new MessageContext(

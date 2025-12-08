@@ -22,7 +22,7 @@ package org.apache.airavata.metascheduler.process.scheduling.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -33,10 +33,10 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * This class provides implementation of the ProcessSchedule Interface
@@ -44,9 +44,12 @@ import org.slf4j.LoggerFactory;
 @Component
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
-    
+
     @Autowired
     private RegistryService registryService;
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     @Override
     public boolean canLaunch(String experimentId) {
@@ -56,7 +59,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             ExperimentModel experiment = registryService.getExperiment(experimentId);
             boolean allProcessesScheduled = true;
 
-            String selectionPolicyClass = ServerSettings.getComputeResourceSelectionPolicyClass();
+            String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
 
             ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
                     Class.forName(selectionPolicyClass).getDeclaredConstructor().newInstance();

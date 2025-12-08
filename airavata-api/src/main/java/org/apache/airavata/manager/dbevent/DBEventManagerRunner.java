@@ -21,9 +21,11 @@ package org.apache.airavata.manager.dbevent;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Created by Ajinkya on 3/29/17.
@@ -40,7 +42,7 @@ public class DBEventManagerRunner implements IServer {
     /**
      * Start required messaging utilities
      */
-    private void startDBEventManagerRunner() {
+    private void startDBEventManagerRunner(AiravataServerProperties properties) {
         try {
             log.info("Starting DB Event manager publisher");
 
@@ -49,7 +51,7 @@ public class DBEventManagerRunner implements IServer {
 
             log.info("Starting DB Event manager subscriber");
 
-            DBEventManagerMessagingFactory.getDBEventSubscriber();
+            DBEventManagerMessagingFactory.getDBEventSubscriber(properties);
             log.debug("DB Event manager subscriber is listening");
         } catch (AiravataException e) {
             log.error("Error starting DB Event Manager.", e);
@@ -70,11 +72,23 @@ public class DBEventManagerRunner implements IServer {
     public void start() throws Exception {
 
         try {
+            // Get properties from ApplicationContext if available
+            AiravataServerProperties props = null;
+            try {
+                ApplicationContext ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+                if (ctx != null) {
+                    props = ctx.getBean(AiravataServerProperties.class);
+                }
+            } catch (Exception e) {
+                log.warn("Could not get properties from ApplicationContext", e);
+            }
+
+            final AiravataServerProperties finalProps = props;
             Runnable runner = new Runnable() {
                 @Override
                 public void run() {
                     DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner();
+                    dBEventManagerRunner.startDBEventManagerRunner(finalProps);
                 }
             };
 

@@ -25,11 +25,11 @@ import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.service.CredentialStoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -42,24 +42,23 @@ public final class AWSTaskUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSTaskUtil.class);
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         AWSTaskUtil.applicationContext = applicationContext;
     }
 
-    private AWSTaskUtil() {
-        throw new IllegalStateException("Utility class");
-    }
-    
+    // Default constructor for Spring - allows Spring to instantiate this component
+    public AWSTaskUtil() {}
+
     // Instance method for Spring DI
     private CredentialStoreService getCredentialStoreServiceInstance() {
         return credentialStoreService;
     }
-    
+
     // Static method for backward compatibility - delegates to Spring-managed instance
     private static CredentialStoreService getCredentialStoreServiceStatic() {
         if (applicationContext != null) {

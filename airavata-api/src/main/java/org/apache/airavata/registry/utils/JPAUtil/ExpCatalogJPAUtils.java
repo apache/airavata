@@ -40,14 +40,9 @@ public class ExpCatalogJPAUtils {
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.getDatabase().getRegistry();
+        var db = properties.database.registry;
         factory = JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                properties.getDatabase().getValidationQuery());
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {

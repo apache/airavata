@@ -39,27 +39,27 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getAppCatalog().getJdbcDriver();
+        return properties.database.catalog.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getAppCatalog().getJdbcUrl();
+        return properties.database.catalog.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getAppCatalog().getJdbcUser();
+        return properties.database.catalog.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getAppCatalog().getJdbcPassword();
+        return properties.database.catalog.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getAppCatalog().getValidationQuery();
+        return properties.database.catalog.validationQuery;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
     public void postInit() {
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayID(properties.getDefaultRegistry().getGateway());
+            gatewayResourceProfile.setGatewayID(properties.services.default_.gateway);
             if (!gwyResourceProfileService.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
                 gwyResourceProfileService.addGatewayResourceProfile(gatewayResourceProfile);
             }

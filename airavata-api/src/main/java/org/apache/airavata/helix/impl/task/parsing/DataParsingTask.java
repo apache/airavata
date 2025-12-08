@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
@@ -63,12 +62,12 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Implementation of the data parsing task.
@@ -81,10 +80,10 @@ public class DataParsingTask extends AbstractTask {
     private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
     private static final CountMonitor parsingTaskCounter = new CountMonitor("parsing_task_counter");
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         DataParsingTask.applicationContext = applicationContext;
@@ -343,8 +342,17 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Container logs " + dockerLogs.toString());
         }
 
-        if (ServerSettings.isSettingDefined("data.parser.delete.container")
-                && Boolean.parseBoolean(ServerSettings.getSetting("data.parser.delete.container"))) {
+        boolean deleteContainer = false;
+        try {
+            var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(org.apache.airavata.config.AiravataServerProperties.class);
+                deleteContainer = props.services.parser.deleteContainer;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext", e);
+        }
+        if (deleteContainer) {
             dockerClient.removeContainerCmd(containerResponse.getId()).exec();
             logger.info("Successfully removed container with id " + containerResponse.getId());
         }
@@ -367,18 +375,33 @@ public class DataParsingTask extends AbstractTask {
             token = gatewayResourceProfile.getCredentialStoreToken();
         }
         logger.info("Fetching adaptor for storage resource {} with token {}", storageResourceId, token);
-        return adaptorSupport.fetchStorageAdaptor(gatewayId, storageResourceId, DataMovementProtocol.SCP, token, gatewayStoragePreference.getLoginUserName());
+        return adaptorSupport.fetchStorageAdaptor(
+                gatewayId,
+                storageResourceId,
+                DataMovementProtocol.SCP,
+                token,
+                gatewayStoragePreference.getLoginUserName());
     }
 
-    private boolean downloadFileFromStorageResource(String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
+    private boolean downloadFileFromStorageResource(
+            String storageResourceId, String remoteFilePath, String localFilePath, AdaptorSupport adaptorSupport) {
 
-        logger.info("Downloading from storage resource {} from path {} to local path {}", storageResourceId, remoteFilePath, localFilePath);
+        logger.info(
+                "Downloading from storage resource {} from path {} to local path {}",
+                storageResourceId,
+                remoteFilePath,
+                localFilePath);
         try {
             var storageResourceAdaptor = getStorageResourceAdaptor(storageResourceId, adaptorSupport);
             storageResourceAdaptor.downloadFile(remoteFilePath, localFilePath);
             return true;
         } catch (Exception e) {
-            logger.error("Failed to download file from storage {} in path {} to local path {}", storageResourceId, remoteFilePath, localFilePath, e);
+            logger.error(
+                    "Failed to download file from storage {} in path {} to local path {}",
+                    storageResourceId,
+                    remoteFilePath,
+                    localFilePath,
+                    e);
             return false;
         }
     }
@@ -389,13 +412,21 @@ public class DataParsingTask extends AbstractTask {
             String localFilePath,
             AdaptorSupport adaptorSupport)
             throws TaskOnFailException {
-        logger.info("Uploading from local path {} to remote path {} of storage resource {}", localFilePath, remoteFilePath, parsingTaskOutput.getStorageResourceId());
+        logger.info(
+                "Uploading from local path {} to remote path {} of storage resource {}",
+                localFilePath,
+                remoteFilePath,
+                parsingTaskOutput.getStorageResourceId());
         try {
-            var gatewayStoragePreference = getRegistryServiceClient().getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
-            var storageResource = getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
+            var gatewayStoragePreference = getRegistryServiceClient()
+                    .getGatewayStoragePreference(gatewayId, parsingTaskOutput.getStorageResourceId());
+            var storageResource =
+                    getRegistryServiceClient().getStorageResource(parsingTaskOutput.getStorageResourceId());
             var remoteFileRoot = gatewayStoragePreference.getFileSystemRootLocation();
-            remoteFilePath = remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
-            var storageResourceAdaptor = getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
+            remoteFilePath =
+                    remoteFileRoot + (remoteFileRoot.endsWith(File.separator) ? "" : File.separator) + remoteFilePath;
+            var storageResourceAdaptor =
+                    getStorageResourceAdaptor(parsingTaskOutput.getStorageResourceId(), adaptorSupport);
             storageResourceAdaptor.createDirectory(new File(remoteFilePath).getParent(), true);
             storageResourceAdaptor.uploadFile(localFilePath, remoteFilePath);
 
@@ -437,7 +468,9 @@ public class DataParsingTask extends AbstractTask {
         } catch (AgentException e) {
             throw new TaskOnFailException("Agent error", false, e);
         } catch (Exception e) {
-            String msg = String.format("Failed to upload from local path %s to remote path %s of storage resource %s", localFilePath, remoteFilePath, parsingTaskOutput.getStorageResourceId());
+            String msg = String.format(
+                    "Failed to upload from local path %s to remote path %s of storage resource %s",
+                    localFilePath, remoteFilePath, parsingTaskOutput.getStorageResourceId());
             logger.error(msg, e);
             throw new TaskOnFailException(msg, false, e);
         }
@@ -476,14 +509,15 @@ public class DataParsingTask extends AbstractTask {
             registryService = applicationContext.getBean(RegistryService.class);
         }
         if (registryService == null) {
-            org.springframework.context.ApplicationContext airavataContext = 
+            org.springframework.context.ApplicationContext airavataContext =
                     org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
             if (airavataContext != null) {
                 registryService = airavataContext.getBean(RegistryService.class);
             }
         }
         if (registryService == null) {
-            throw new TaskOnFailException("ApplicationContext not available. RegistryService cannot be retrieved.", false, null);
+            throw new TaskOnFailException(
+                    "ApplicationContext not available. RegistryService cannot be retrieved.", false, null);
         }
         return registryService;
     }

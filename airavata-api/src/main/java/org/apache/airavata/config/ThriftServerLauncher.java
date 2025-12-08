@@ -89,17 +89,13 @@ public class ThriftServerLauncher implements CommandLineRunner {
 
         // api-orch mode server list in dependency order with their class names from properties
         List<ServerConfig> serverConfigs = Arrays.asList(
-                new ServerConfig(DB_EVENT_MANAGER, properties.getOther().getDbEventManagerClass()),
-                new ServerConfig(REGISTRY_SERVER, properties.getOther().getRegserver()),
-                new ServerConfig(
-                        CREDENTIAL_STORE,
-                        properties.getDatabase().getCredentialStore().getClazz()),
-                new ServerConfig(SHARING_SERVER, properties.getSharing().getClazz()),
-                new ServerConfig(API_SERVER, properties.getApiServer().getClazz()),
-                new ServerConfig(ORCHESTRATOR, properties.getOrchestrator().getClazz()),
-                new ServerConfig(
-                        PROFILE_SERVICE,
-                        properties.getDatabase().getProfileService().getClazz()));
+                new ServerConfig(DB_EVENT_MANAGER, properties.services.dbevent.classpath),
+                new ServerConfig(REGISTRY_SERVER, properties.services.registry.classpath),
+                new ServerConfig(CREDENTIAL_STORE, properties.services.vault.classpath),
+                new ServerConfig(SHARING_SERVER, properties.services.sharing.classpath),
+                new ServerConfig(API_SERVER, properties.services.api.classpath),
+                new ServerConfig(ORCHESTRATOR, properties.services.orchestrator.classpath),
+                new ServerConfig(PROFILE_SERVICE, properties.services.api.profile.classpath));
 
         for (ServerConfig config : serverConfigs) {
             String serverClassName = config.className;

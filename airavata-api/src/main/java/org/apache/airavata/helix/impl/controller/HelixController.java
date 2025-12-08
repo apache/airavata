@@ -20,15 +20,14 @@
 package org.apache.airavata.helix.impl.controller;
 
 import java.util.concurrent.CountDownLatch;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * TODO: Class level comments please
@@ -41,6 +40,9 @@ public class HelixController implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     private String clusterName;
     private String controllerName;
     private String zkAddress;
@@ -50,16 +52,21 @@ public class HelixController implements Runnable {
     private CountDownLatch stopLatch = new CountDownLatch(1);
 
     @SuppressWarnings("WeakerAccess")
-    public HelixController() throws ApplicationSettingsException {
-        this.clusterName = ServerSettings.getSetting("helix.cluster.name");
-        this.controllerName = ServerSettings.getSetting("helix.controller.name");
-        this.zkAddress = ServerSettings.getZookeeperConnection();
+    public HelixController() {
+        // Properties will be injected by Spring
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        this.clusterName = properties.helix.clusterName;
+        this.controllerName = properties.helix.controllerName;
+        this.zkAddress = properties.zookeeper.serverConnection;
     }
 
     public void run() {
         try {
             ZkClient zkClient = new ZkClient(
-                    ServerSettings.getZookeeperConnection(),
+                    zkAddress,
                     ZkClient.DEFAULT_SESSION_TIMEOUT,
                     ZkClient.DEFAULT_CONNECTION_TIMEOUT,
                     new ZNRecordSerializer());

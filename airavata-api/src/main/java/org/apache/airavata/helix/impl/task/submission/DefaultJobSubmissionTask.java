@@ -35,23 +35,23 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
     private static final CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     private static ApplicationContext applicationContext;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         DefaultJobSubmissionTask.applicationContext = applicationContext;

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -49,9 +49,6 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.UserProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
@@ -61,39 +58,42 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public abstract class AiravataTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private UserProfileService userProfileService;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         AiravataTask.applicationContext = applicationContext;
     }
-    
+
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }
-    
+
     protected RegistryService getRegistryService() {
         return registryService;
     }
-    
+
     protected UserProfileService getUserProfileService() {
         return userProfileService;
     }
-    
+
     protected CredentialStoreService getCredentialStoreService() {
         return credentialStoreService;
     }
@@ -233,7 +233,16 @@ public abstract class AiravataTask extends AbstractTask {
 
         try {
             // cleaning up local data directory
-            String localDataPath = ServerSettings.getLocalDataLocation();
+            String localDataPath = "/tmp"; // default
+            try {
+                var ctx = getApplicationContext();
+                if (ctx != null) {
+                    var props = ctx.getBean(AiravataServerProperties.class);
+                    localDataPath = props.airavata.localDataLocation;
+                }
+            } catch (Exception e) {
+                logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
+            }
             localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
             localDataPath = localDataPath + getProcessId();
 

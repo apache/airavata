@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.MonitoringException;
@@ -33,30 +33,37 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class RealtimeMonitor extends AbstractMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
-    private final RealtimeJobStatusParser parser;
-    private final String publisherId;
-    private final String brokerTopic;
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
 
-    public RealtimeMonitor() throws ApplicationSettingsException {
+    private final RealtimeJobStatusParser parser;
+    private String publisherId;
+    private String brokerTopic;
+
+    public RealtimeMonitor() {
         super();
         parser = new RealtimeJobStatusParser();
-        publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
-        brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
     }
 
-    private Consumer<String, String> createConsumer() throws ApplicationSettingsException {
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        publisherId = properties.services.monitor.job.realtimePublisherId;
+        brokerTopic = properties.services.monitor.realtime.brokerTopic;
+    }
+
+    private Consumer<String, String> createConsumer() {
         final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("realtime.monitor.broker.consumer.group"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.monitor.realtime.brokerConsumerGroup);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.
@@ -66,7 +73,7 @@ public class RealtimeMonitor extends AbstractMonitor {
         return consumer;
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
+    private void runConsumer() {
         final Consumer<String, String> consumer = createConsumer();
 
         while (true) {
@@ -97,7 +104,7 @@ public class RealtimeMonitor extends AbstractMonitor {
      * Standardized start method for Spring Boot integration.
      * Non-blocking: starts consumer in background thread and returns immediately.
      */
-    public void start() throws ApplicationSettingsException {
+    public void start() {
         Thread consumerThread = new Thread(() -> {
             try {
                 runConsumer();

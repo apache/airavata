@@ -19,8 +19,7 @@
 */
 package org.apache.airavata.security.authzcache;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,34 +36,43 @@ public class AuthzCacheManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(AuthzCacheManagerFactory.class);
     private static ApplicationContext applicationContext;
 
+    private static AiravataServerProperties properties;
+
     @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         AuthzCacheManagerFactory.applicationContext = applicationContext;
     }
 
+    @Autowired
+    public void setProperties(AiravataServerProperties properties) {
+        AuthzCacheManagerFactory.properties = properties;
+    }
+
     public static AuthzCacheManager getAuthzCacheManager() throws AiravataSecurityException {
-        if (applicationContext != null) {
+        if (applicationContext != null && properties != null) {
             try {
-                Class<?> authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
+                String className = properties.security.authzCache.classpath;
+                Class<?> authzCacheManagerImpl = Class.forName(className);
                 return (AuthzCacheManager) applicationContext.getBean(authzCacheManagerImpl);
             } catch (ClassNotFoundException e) {
                 String error = "Authorization Cache Manager class could not be found.";
                 logger.error(e.getMessage(), e);
                 throw new AiravataSecurityException(error, e);
-            } catch (ApplicationSettingsException e) {
-                String error = "Error in reading the configuration related to Authorization Cache Manager class.";
+            }
+        }
+        // Fallback to old reflection-based instantiation if ApplicationContext not available
+        if (properties != null) {
+            try {
+                String className = properties.security.authzCache.classpath;
+                Class<?> authzCacheManagerImpl = Class.forName(className);
+                return (AuthzCacheManager)
+                        authzCacheManagerImpl.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                String error = "Error in instantiating the Authorization Cache Manager class.";
                 logger.error(e.getMessage(), e);
                 throw new AiravataSecurityException(error, e);
             }
         }
-        // Fallback to old reflection-based instantiation if ApplicationContext not available
-        try {
-            Class<?> authzCacheManagerImpl = Class.forName(ServerSettings.getAuthzCacheManagerClassName());
-            return (AuthzCacheManager) authzCacheManagerImpl.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            String error = "Error in instantiating the Authorization Cache Manager class.";
-            logger.error(e.getMessage(), e);
-            throw new AiravataSecurityException(error, e);
-        }
+        throw new AiravataSecurityException("Properties not initialized");
     }
 }

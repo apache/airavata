@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.utils.CredentialReader;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
@@ -49,11 +49,11 @@ import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This contains orchestrator specific utilities
@@ -62,38 +62,55 @@ import org.slf4j.LoggerFactory;
 public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private CredentialReader credentialReader;
-    
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         OrchestratorUtils.applicationContext = applicationContext;
     }
-    
+
     // Instance method for Spring DI
     protected RegistryService getRegistryServiceInstance() {
         return registryService;
     }
-    
+
     // Instance method for Spring DI
     protected CredentialReader getCredentialReaderInstance() {
         return credentialReader;
     }
 
-    public static OrchestratorConfiguration loadOrchestratorConfiguration()
-            throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
+    public OrchestratorConfiguration loadOrchestratorConfiguration()
+            throws OrchestratorException, IOException, NumberFormatException {
 
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setEnableValidation(
-                Boolean.parseBoolean(ServerSettings.getSetting(OrchestratorConstants.ENABLE_VALIDATION)));
+        orchestratorConfiguration.setEnableValidation(properties.airavata.enableValidation);
         if (orchestratorConfiguration.isEnableValidation()) {
-            orchestratorConfiguration.setValidatorClasses(
-                    Arrays.asList(ServerSettings.getSetting(OrchestratorConstants.JOB_VALIDATOR)
-                            .split(",")));
+            String validators = properties.services.monitor.job.validators;
+            if (validators != null && !validators.isEmpty()) {
+                orchestratorConfiguration.setValidatorClasses(Arrays.asList(validators.split(",")));
+            }
+        }
+        return orchestratorConfiguration;
+    }
+
+    public static OrchestratorConfiguration loadOrchestratorConfiguration(AiravataServerProperties properties)
+            throws OrchestratorException, IOException, NumberFormatException {
+
+        OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
+        orchestratorConfiguration.setEnableValidation(properties.airavata.enableValidation);
+        if (orchestratorConfiguration.isEnableValidation()) {
+            String validators = properties.services.monitor.job.validators;
+            if (validators != null && !validators.isEmpty()) {
+                orchestratorConfiguration.setValidatorClasses(Arrays.asList(validators.split(",")));
+            }
         }
         return orchestratorConfiguration;
     }
@@ -306,8 +323,7 @@ public class OrchestratorUtils {
         return null;
     }
 
-    public static LOCALSubmission getLocalJobSubmission(String submissionId)
-            throws OrchestratorException {
+    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws OrchestratorException {
         final RegistryService registryService = getRegistryService();
         try {
             return registryService.getLocalJobSubmission(submissionId);
@@ -318,8 +334,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId)
-            throws OrchestratorException {
+    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws OrchestratorException {
         final RegistryService registryService = getRegistryService();
         try {
             return registryService.getUnicoreJobSubmission(submissionId);
@@ -330,8 +345,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(String submissionId)
-            throws OrchestratorException {
+    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws OrchestratorException {
         final RegistryService registryService = getRegistryService();
         try {
             return registryService.getSSHJobSubmission(submissionId);
@@ -342,8 +356,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static CloudJobSubmission getCloudJobSubmission(String submissionId)
-            throws OrchestratorException {
+    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws OrchestratorException {
         final RegistryService registryService = getRegistryService();
         try {
             return registryService.getCloudJobSubmission(submissionId);
@@ -354,8 +367,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static SCPDataMovement getSCPDataMovement(String dataMoveId)
-            throws OrchestratorException {
+    public static SCPDataMovement getSCPDataMovement(String dataMoveId) throws OrchestratorException {
         final RegistryService registryService = getRegistryService();
         try {
             return registryService.getSCPDataMovement(dataMoveId);
@@ -377,7 +389,7 @@ public class OrchestratorUtils {
         }
         throw new IllegalStateException("ApplicationContext not available. CredentialReader cannot be retrieved.");
     }
-    
+
     private static RegistryService getRegistryService() {
         if (applicationContext != null) {
             OrchestratorUtils instance = applicationContext.getBean(OrchestratorUtils.class);

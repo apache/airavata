@@ -106,6 +106,10 @@ under the License.
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
 
     <!-- CLI & mapping -->
     <dependency>
@@ -469,6 +473,7 @@ under the License.
       <plugin>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-maven-plugin</artifactId>
+        <version>4.1.1</version>
         <configuration>
           <includes>**/entities/**/*.class</includes>
           <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
@@ -586,6 +591,22 @@ under the License.
               </build>
             </image>
           </images>
+        </configuration>
+      </plugin>
+
+      <!-- Exec plugin for running the application -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <mainClass>org.apache.airavata.AiravataApplication</mainClass>
+          <systemProperties>
+            <systemProperty>
+              <key>airavata.config.dir</key>
+              <value>${project.basedir}/src/main/resources</value>
+            </systemProperty>
+          </systemProperties>
         </configuration>
       </plugin>
 

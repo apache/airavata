@@ -19,8 +19,7 @@
 */
 package org.apache.airavata.security.userstore;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.UserStore;
 import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
@@ -35,6 +34,7 @@ import org.w3c.dom.NodeList;
 public abstract class AbstractJDBCUserStore implements UserStore {
 
     protected static Logger log = LoggerFactory.getLogger(JDBCUserStore.class);
+    protected AiravataServerProperties properties;
 
     private String databaseURL = null;
     private String databaseDriver = null;
@@ -108,15 +108,26 @@ public abstract class AbstractJDBCUserStore implements UserStore {
         if (databaseURL == null || databaseUserName == null || databasePassword == null) {
             // If database configurations are not specified in authenticators.xml we will read them from
             // server.properties file.
-            try {
-                databaseDriver = ServerSettings.getCredentialStoreDBDriver();
-                databaseURL = ServerSettings.getCredentialStoreDBURL();
-                databaseUserName = ServerSettings.getCredentialStoreDBUser();
-                databasePassword = ServerSettings.getCredentialStoreDBPassword();
-
-            } catch (ApplicationSettingsException e) {
-                log.error("Error reading default user store DB configurations.");
-                throw new UserStoreException(e);
+            if (properties != null) {
+                var db = properties.database.vault;
+                databaseDriver = db.driver;
+                if (databaseDriver == null || databaseDriver.isEmpty()) {
+                    databaseDriver = properties.database.registry.driver;
+                }
+                databaseURL = db.url;
+                if (databaseURL == null || databaseURL.isEmpty()) {
+                    databaseURL = properties.database.registry.url;
+                }
+                databaseUserName = db.user;
+                if (databaseUserName == null || databaseUserName.isEmpty()) {
+                    databaseUserName = properties.database.registry.user;
+                }
+                databasePassword = db.password;
+                if (databasePassword == null || databasePassword.isEmpty()) {
+                    databasePassword = properties.database.registry.password;
+                }
+            } else {
+                log.warn("Database configurations not specified in XML and properties not available.");
             }
 
             StringBuilder stringBuilder = new StringBuilder("User store configurations - dbDriver - ");

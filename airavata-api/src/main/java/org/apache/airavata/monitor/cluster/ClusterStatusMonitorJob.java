@@ -26,7 +26,7 @@ import com.jcraft.jsch.Session;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -36,26 +36,29 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ClusterStatusMonitorJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
+    @Autowired
+    private AiravataServerProperties properties;
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         ClusterStatusMonitorJob.applicationContext = applicationContext;
@@ -64,11 +67,11 @@ public class ClusterStatusMonitorJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            String superTenantGatewayId = ServerSettings.getSuperTenantGatewayId();
+            String superTenantGatewayId = properties.airavata.superTenantGatewayId;
             // Use injected service, fallback to ApplicationContext if not injected (for Quartz instantiation)
-            final RegistryService registryService = (this.registryService != null) 
-                ? this.registryService 
-                : (applicationContext != null ? applicationContext.getBean(RegistryService.class) : null);
+            final RegistryService registryService = (this.registryService != null)
+                    ? this.registryService
+                    : (applicationContext != null ? applicationContext.getBean(RegistryService.class) : null);
             if (registryService == null) {
                 throw new JobExecutionException("RegistryService not available.");
             }

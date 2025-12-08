@@ -32,6 +32,10 @@ public class NSFDemographicsEntity {
     private List<String> disabilities;
     private UserProfileEntity userProfile;
 
+    public NSFDemographicsEntity() {
+        // Default constructor required by OpenJPA
+    }
+
     @Id
     @Column(name = "AIRAVATA_INTERNAL_USER_ID")
     public String getAiravataInternalUserId() {

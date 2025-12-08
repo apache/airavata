@@ -66,7 +66,7 @@ public class BackgroundServicesLauncher {
     @Order(1)
     public CommandLineRunner startHelixController() {
         return args -> {
-            if (properties.getHelix().isControllerEnabled() && helixController != null) {
+            if (properties.helix.controller.enabled && helixController != null) {
                 logger.info("Starting Helix Controller...");
                 Thread controllerThread = new Thread(() -> {
                     try {
@@ -90,7 +90,7 @@ public class BackgroundServicesLauncher {
     @Order(2)
     public CommandLineRunner startGlobalParticipant() {
         return args -> {
-            if (properties.getHelix().isParticipantEnabled() && globalParticipant != null) {
+            if (properties.helix.participant.enabled && globalParticipant != null) {
                 logger.info("Starting Global Participant...");
                 Thread participantThread = new Thread(() -> {
                     try {
@@ -114,7 +114,7 @@ public class BackgroundServicesLauncher {
     @Order(3)
     public CommandLineRunner startPreWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isPreEnabled() && preWorkflowManager != null) {
+            if (properties.services.prewm.enabled && preWorkflowManager != null) {
                 logger.info("Starting Pre Workflow Manager...");
                 Thread preWmThread = new Thread(() -> {
                     try {
@@ -138,7 +138,7 @@ public class BackgroundServicesLauncher {
     @Order(4)
     public CommandLineRunner startParserWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isParserEnabled() && parserWorkflowManager != null) {
+            if (properties.services.parser.enabled && parserWorkflowManager != null) {
                 logger.info("Starting Parser Workflow Manager...");
                 Thread parserWmThread = new Thread(() -> {
                     try {
@@ -162,7 +162,7 @@ public class BackgroundServicesLauncher {
     @Order(5)
     public CommandLineRunner startPostWorkflowManager() {
         return args -> {
-            if (properties.getWorkflow().isPostEnabled() && postWorkflowManager != null) {
+            if (properties.services.postwm.enabled && postWorkflowManager != null) {
                 logger.info("Starting Post Workflow Manager...");
                 Thread postWmThread = new Thread(() -> {
                     try {
@@ -186,7 +186,7 @@ public class BackgroundServicesLauncher {
     @Order(6)
     public CommandLineRunner startRealtimeMonitor() {
         return args -> {
-            if (properties.getMonitoring().getRealtimeMonitor().isMonitorEnabled() && realtimeMonitor != null) {
+            if (properties.services.monitor.realtime.monitorEnabled && realtimeMonitor != null) {
                 logger.info("Starting Realtime Monitor...");
                 Thread monitorThread = new Thread(() -> {
                     try {
@@ -210,7 +210,7 @@ public class BackgroundServicesLauncher {
     @Order(7)
     public CommandLineRunner startEmailMonitor() {
         return args -> {
-            if (properties.getMonitoring().getEmailBasedMonitor().isMonitorEnabled() && emailBasedMonitor != null) {
+            if (properties.services.monitor.email.monitorEnabled && emailBasedMonitor != null) {
                 logger.info("Starting Email Monitor...");
                 Thread emailThread = new Thread(() -> {
                     try {

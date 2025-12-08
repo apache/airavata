@@ -2110,7 +2110,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleExpIds.size() == 0 && !properties.getSharing().isEnabled()) {
+                if (accessibleExpIds.size() == 0 && !properties.services.sharing.enabled) {
                     if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
                         regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                     }
@@ -2506,7 +2506,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleProjIds.size() == 0 && !properties.getSharing().isEnabled()) {
+                if (accessibleProjIds.size() == 0 && !properties.services.sharing.enabled) {
                     if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
                         regFilters.put(DBConstants.Project.OWNER, userName);
                     }

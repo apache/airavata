@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import java.net.InetSocketAddress;
 import org.apache.airavata.api.thrift.handler.OrchestratorServiceHandler;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -71,20 +70,13 @@ public class OrchestratorServiceServer implements IServer {
     public void StartOrchestratorServer(
             OrchestratorService.Processor<OrchestratorServiceHandler> orchestratorServerHandlerProcessor)
             throws Exception {
-        final int serverPort = properties.getOrchestrator().getServerPort();
+        final int serverPort = properties.services.orchestrator.serverPort;
         try {
-            final String serverHost = properties.getOrchestrator().getServerHost();
-            TServerTransport serverTransport;
-            if (serverHost == null || serverHost.isEmpty()) {
-                serverTransport = new TServerSocket(serverPort);
-            } else {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                serverTransport = new TServerSocket(inetSocketAddress);
-            }
+            TServerTransport serverTransport = new TServerSocket(serverPort);
             // server = new TSimpleServer(
             //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = properties.getOrchestrator().getServerMinThreads();
+            options.minWorkerThreads = properties.services.orchestrator.serverMinThreads;
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
             new Thread() {
                 public void run() {
@@ -121,7 +113,7 @@ public class OrchestratorServiceServer implements IServer {
 
         try {
             if (monitoringService == null) {
-                monitoringService = new ComputationalResourceMonitoringService();
+                monitoringService = new ComputationalResourceMonitoringService(properties);
                 monitoringService.setServerStatus(ServerStatus.STARTING);
             }
             if (monitoringService != null && !monitoringService.getStatus().equals(ServerStatus.STARTED)) {
@@ -170,17 +162,17 @@ public class OrchestratorServiceServer implements IServer {
 
     @Override
     public void start() throws Exception {
-        if (properties.getMonitoring().getClusterStatusMonitoring().isEnable()) {
+        if (properties.services.monitor.cluster.enable) {
             // starting cluster status monitoring
             startClusterStatusMonitoring();
         }
 
-        if (properties.getMetascheduler().isJobScanningEnable()) {
+        if (properties.services.scheduler.enabled) {
             // starting cluster status monitoring
             startMetaschedulerJobScanning();
         }
 
-        if (properties.getDataAnalyzer().isJobScanningEnable()) {
+        if (properties.services.parser.enabled) {
             // starting metadata analyzer
             startMetadataDataAnalyzer();
         }

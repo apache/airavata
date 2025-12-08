@@ -20,24 +20,27 @@
 package org.apache.airavata.metascheduler.metadata.analyzer.impl;
 
 import java.util.Map;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.DataAnalyzer;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DataAnalyzerImpl implements DataAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
     private static ApplicationContext applicationContext;
-    
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         DataAnalyzerImpl.applicationContext = applicationContext;
@@ -50,12 +53,12 @@ public class DataAnalyzerImpl implements DataAnalyzer {
             RegistryService registryService = applicationContext.getBean(RegistryService.class);
 
             // TODO: handle multiple gateways
-            String gateway = ServerSettings.getDataAnalyzingEnabledGateways();
+            String gateway = properties.services.parser.enabledGateways;
 
             JobState state = JobState.SUBMITTED;
             JobStatus jobStatus = new JobStatus();
             jobStatus.setJobState(state);
-            double time = ServerSettings.getDataAnalyzerTimeStep();
+            double time = properties.services.parser.timeStepSeconds;
 
             int fiveMinuteCount = registryService.getJobCount(jobStatus, gateway, 5);
 

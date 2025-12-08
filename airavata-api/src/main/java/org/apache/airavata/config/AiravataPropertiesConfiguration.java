@@ -73,7 +73,11 @@ public class AiravataPropertiesConfiguration {
                         try (InputStream is = new FileInputStream(configFile)) {
                             props.load(is);
                         }
-                        return new org.springframework.core.env.PropertiesPropertySource("airavata-properties", props);
+                        // Log a sample property to verify loading
+                        String registryUrl = props.getProperty("database.registry.url");
+                        logger.debug("Loaded database.registry.url: {}", registryUrl != null ? "found" : "not found");
+                        return new org.springframework.core.env.PropertiesPropertySource(
+                                "classpath:airavata.properties", props);
                     } else {
                         logger.debug("Properties file not found at {}, falling back to classpath", filePath);
                     }
@@ -87,12 +91,22 @@ public class AiravataPropertiesConfiguration {
                     AiravataPropertiesConfiguration.class.getClassLoader().getResource(SERVER_PROPERTIES);
             if (classpathUrl != null) {
                 logger.info("Loading airavata.properties from classpath: {}", classpathUrl);
-                return defaultFactory.createPropertySource(name, resource);
+                org.springframework.core.env.PropertySource<?> propertySource =
+                        defaultFactory.createPropertySource(name, resource);
+                // Log a sample property to verify loading
+                if (propertySource != null && propertySource.getSource() instanceof Properties) {
+                    Properties props = (Properties) propertySource.getSource();
+                    String registryUrl = props.getProperty("database.registry.url");
+                    logger.debug(
+                            "Loaded database.registry.url from classpath: {}",
+                            registryUrl != null ? "found" : "not found");
+                }
+                return propertySource;
             }
 
             logger.warn("airavata.properties not found in airavata.config.dir or classpath");
             // Return empty property source if not found
-            return new org.springframework.core.env.PropertiesPropertySource("airavata-properties", new Properties());
+            return new org.springframework.core.env.PropertiesPropertySource("airavataProperties", new Properties());
         }
     }
 }

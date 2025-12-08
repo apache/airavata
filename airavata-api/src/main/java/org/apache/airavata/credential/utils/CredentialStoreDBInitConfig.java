@@ -32,43 +32,55 @@ public class CredentialStoreDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        String driver = properties.getDatabase().getCredentialStore().getJdbcDriver();
+        String driver = properties.database.vault.driver;
         if (driver == null || driver.isEmpty()) {
-            driver = properties.getDatabase().getRegistry().getJdbcDriver();
+            driver = properties.database.registry.driver;
         }
         return driver;
     }
 
     @Override
     public String getUrl() {
-        String url = properties.getDatabase().getCredentialStore().getJdbcUrl();
+        String url = properties.database.vault.url;
+        String driver = properties.database.vault.driver;
+        org.slf4j.LoggerFactory.getLogger(CredentialStoreDBInitConfig.class)
+                .debug("CredentialStore - URL: {}, Driver: {}", url, driver);
         if (url == null || url.isEmpty()) {
-            url = properties.getDatabase().getRegistry().getJdbcUrl();
+            url = properties.database.registry.url;
+            org.slf4j.LoggerFactory.getLogger(CredentialStoreDBInitConfig.class)
+                    .debug("Using registry URL as fallback: {}", url);
+        }
+        if (url == null || url.isEmpty()) {
+            throw new IllegalStateException("JDBC URL is not configured for credential store or registry database");
+        }
+        if (!url.startsWith("jdbc:")) {
+            throw new IllegalStateException("Invalid JDBC URL format. Expected URL starting with 'jdbc:', got: " + url
+                    + ". Driver is: " + driver);
         }
         return url;
     }
 
     @Override
     public String getUser() {
-        String user = properties.getDatabase().getCredentialStore().getJdbcUser();
+        String user = properties.database.vault.user;
         if (user == null || user.isEmpty()) {
-            user = properties.getDatabase().getRegistry().getJdbcUser();
+            user = properties.database.registry.user;
         }
         return user;
     }
 
     @Override
     public String getPassword() {
-        String password = properties.getDatabase().getCredentialStore().getJdbcPassword();
+        String password = properties.database.vault.password;
         if (password == null || password.isEmpty()) {
-            password = properties.getDatabase().getRegistry().getJdbcPassword();
+            password = properties.database.registry.password;
         }
         return password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getCredentialStore().getJdbcValidationQuery();
+        return properties.database.vault.validationQuery;
     }
 
     @Override

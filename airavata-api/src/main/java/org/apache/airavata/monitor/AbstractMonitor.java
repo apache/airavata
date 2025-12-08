@@ -20,28 +20,36 @@
 package org.apache.airavata.monitor;
 
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
-    private final MessageProducer messageProducer;
-    
+    private MessageProducer messageProducer;
+
     @Autowired
     private RegistryService registryService;
 
-    public AbstractMonitor() throws ApplicationSettingsException {
-        messageProducer = new MessageProducer();
+    @Autowired
+    private AiravataServerProperties properties;
+
+    public AbstractMonitor() {
+        // MessageProducer will be initialized in @PostConstruct
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        messageProducer = new MessageProducer(properties);
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {

@@ -34,20 +34,24 @@ import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 @Component
 public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties airavataProperties;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -64,35 +68,52 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private String publisherId;
 
     public EmailBasedMonitor() throws Exception {
-        init();
-        populateAddressAndParserMap(resourceConfigs);
+        // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 
-    private void init() throws Exception {
-        loadContext();
-        host = ServerSettings.getEmailBasedMonitorHost();
-        emailAddress = ServerSettings.getEmailBasedMonitorAddress();
-        password = ServerSettings.getEmailBasedMonitorPassword();
-        storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
-        folderName = ServerSettings.getEmailBasedMonitorFolderName();
-        emailExpirationTimeMinutes = Long.parseLong(ServerSettings.getSetting("email.expiration.minutes"));
-        publisherId = ServerSettings.getSetting("job.monitor.email.publisher.id");
+    @jakarta.annotation.PostConstruct
+    @Override
+    public void init() {
+        try {
+            loadContext();
+        } catch (Exception e) {
+            log.error("Error loading email context", e);
+            throw new RuntimeException("Failed to initialize EmailBasedMonitor", e);
+        }
+        host = airavataProperties.services.monitor.email.host;
+        emailAddress = airavataProperties.services.monitor.email.address;
+        password = airavataProperties.services.monitor.email.password;
+        storeProtocol = airavataProperties.services.monitor.email.storeProtocol;
+        folderName = airavataProperties.services.monitor.email.folderName;
+        emailExpirationTimeMinutes = airavataProperties.services.monitor.email.expiryMins;
+        publisherId = airavataProperties.services.monitor.job.emailPublisherId;
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
-            throw new AiravataException(
+            throw new RuntimeException(
                     "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
         }
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
+        try {
+            populateAddressAndParserMap(resourceConfigs);
+        } catch (Exception e) {
+            log.error("Error populating address and parser map", e);
+            throw new RuntimeException("Failed to initialize EmailBasedMonitor", e);
+        }
     }
 
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
-        InputStream emailConfigStream =
-                ApplicationSettings.loadFile("email-config.yml").openStream();
+        java.net.URL emailConfigUrl = ApplicationSettings.loadFile("email-config.yml");
+        if (emailConfigUrl == null) {
+            log.warn("email-config.yml not found. Email monitoring will use default configuration.");
+            return; // Use default configuration
+        }
+        InputStream emailConfigStream = emailConfigUrl.openStream();
         Object load = yaml.load(emailConfigStream);
 
         if (load == null) {
-            throw new Exception("Could not load the configuration");
+            log.warn("Could not load email-config.yml. Email monitoring will use default configuration.");
+            return; // Use default configuration
         }
 
         if (load instanceof Map) {
@@ -114,7 +135,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 });
             }
         }
-        populateAddressAndParserMap(resourceConfigs);
+        // populateAddressAndParserMap will be called from init() after properties are loaded
     }
 
     private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs)
@@ -186,7 +207,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 // first we search for all unread messages.
                 SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
                 while (!ServerSettings.isStopAllThreads()) {
-                    Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep for long enough
+                    Thread.sleep(airavataProperties.services.monitor.email.period); // sleep for long enough
                     if (!store.isConnected()) {
                         store.connect();
                         emailFolder = store.getFolder(folderName);
@@ -224,8 +245,6 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 log.error("[EJM]: Couldn't connect to the store ", e);
             } catch (InterruptedException e) {
                 log.error("[EJM]: Interrupt exception while sleep ", e);
-            } catch (AiravataException e) {
-                log.error("[EJM]: UnHandled arguments ", e);
             } catch (Throwable e) {
                 log.error("[EJM]: Caught a throwable ", e);
             } finally {

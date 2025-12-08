@@ -28,15 +28,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AgentUtils implements ApplicationContextAware {
-    
+
     private static ApplicationContext applicationContext;
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         AgentUtils.applicationContext = applicationContext;
@@ -50,7 +50,7 @@ public class AgentUtils implements ApplicationContextAware {
     public CredentialStoreService getCredentialServiceInstance() {
         return credentialStoreService;
     }
-    
+
     // Static methods for backward compatibility - delegate to instance
     public static RegistryService getRegistryService() throws AgentException {
         if (applicationContext != null) {

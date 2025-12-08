@@ -21,7 +21,6 @@ package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import java.sql.Timestamp;
@@ -41,6 +40,7 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +53,8 @@ public class ExperimentSummaryService {
     @Autowired
     private Mapper mapper;
 
-    @PersistenceContext(unitName = "experiment_data_new")
+    @Autowired
+    @Qualifier("expCatalogEntityManager")
     private EntityManager entityManager;
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(

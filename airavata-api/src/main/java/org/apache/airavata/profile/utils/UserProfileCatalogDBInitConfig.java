@@ -32,27 +32,27 @@ public class UserProfileCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getProfileService().getJdbcDriver();
+        return properties.database.profile.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getProfileService().getJdbcUrl();
+        return properties.database.profile.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getProfileService().getJdbcUser();
+        return properties.database.profile.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getProfileService().getJdbcPassword();
+        return properties.database.profile.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getProfileService().getValidationQuery();
+        return properties.database.profile.validationQuery;
     }
 
     @Override

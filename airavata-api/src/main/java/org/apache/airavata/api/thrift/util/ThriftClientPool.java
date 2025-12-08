@@ -22,7 +22,7 @@ package org.apache.airavata.api.thrift.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.apache.airavata.base.api.BaseAPI;
-import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -42,6 +42,7 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
     private static final Logger logger = LoggerFactory.getLogger(ThriftClientPool.class);
 
     private final GenericObjectPool<T> internalPool;
+    private final AiravataServerProperties properties;
 
     /**
      * StringWriter that flushes to SLF4J logger.
@@ -58,26 +59,20 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     public ThriftClientPool(
             ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host, int port) {
-        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig);
+        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig, null, null);
     }
 
     public ThriftClientPool(
             ClientFactory<T> clientFactory, ProtocolFactory protocolFactory, GenericObjectPoolConfig<T> poolConfig) {
+        this(clientFactory, protocolFactory, poolConfig, null, null);
+    }
 
-        AbandonedConfig abandonedConfig = null;
-        if (ApplicationSettings.isThriftClientPoolAbandonedRemovalEnabled()) {
-            abandonedConfig = new AbandonedConfig();
-            abandonedConfig.setRemoveAbandonedOnBorrow(true);
-            abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-            if (ApplicationSettings.isThriftClientPoolAbandonedRemovalLogged()) {
-                abandonedConfig.setLogAbandoned(true);
-                abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
-            } else {
-                abandonedConfig.setLogAbandoned(false);
-            }
-        }
-        this.internalPool = new GenericObjectPool<T>(
-                new ThriftClientFactory(clientFactory, protocolFactory), poolConfig, abandonedConfig);
+    public ThriftClientPool(
+            ClientFactory<T> clientFactory,
+            ProtocolFactory protocolFactory,
+            GenericObjectPoolConfig<T> poolConfig,
+            AiravataServerProperties properties) {
+        this(clientFactory, protocolFactory, poolConfig, null, properties);
     }
 
     public ThriftClientPool(
@@ -85,6 +80,31 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
             ProtocolFactory protocolFactory,
             GenericObjectPoolConfig<T> poolConfig,
             AbandonedConfig abandonedConfig) {
+        this(clientFactory, protocolFactory, poolConfig, abandonedConfig, null);
+    }
+
+    private ThriftClientPool(
+            ClientFactory<T> clientFactory,
+            ProtocolFactory protocolFactory,
+            GenericObjectPoolConfig<T> poolConfig,
+            AbandonedConfig abandonedConfig,
+            AiravataServerProperties properties) {
+        this.properties = properties;
+
+        // If abandonedConfig not provided but properties are, create from properties
+        if (abandonedConfig == null && properties != null) {
+            if (properties.airavata.thriftClientPoolAbandonedRemovalEnabled) {
+                abandonedConfig = new AbandonedConfig();
+                abandonedConfig.setRemoveAbandonedOnBorrow(true);
+                abandonedConfig.setRemoveAbandonedOnMaintenance(true);
+                if (properties.airavata.thriftClientPoolAbandonedRemovalLogged) {
+                    abandonedConfig.setLogAbandoned(true);
+                    abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
+                } else {
+                    abandonedConfig.setLogAbandoned(false);
+                }
+            }
+        }
 
         if (abandonedConfig != null
                 && abandonedConfig.getRemoveAbandonedOnMaintenance()

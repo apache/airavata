@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import org.apache.airavata.api.thrift.handler.SharingRegistryServerHandler;
 import org.apache.airavata.api.thrift.util.SharingRegistryConstants;
 import org.apache.airavata.common.exception.AiravataException;
@@ -83,8 +81,7 @@ public class SharingRegistryServer implements IServer {
         try {
             setStatus(IServer.ServerStatus.STARTING);
 
-            final int serverPort = properties.getSharing().getServerPort();
-            final String serverHost = properties.getSharing().getServerHost();
+            final int serverPort = properties.services.sharing.serverPort;
             // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a Spring bean
             SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
             SharingRegistryService.Processor<SharingRegistryServerHandler> processor =
@@ -93,25 +90,18 @@ public class SharingRegistryServer implements IServer {
             TServerTransport serverTransport;
             TThreadPoolServer.Args options;
 
-            if (!properties.getSecurity().getTls().isEnabled()) {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                serverTransport = new TServerSocket(inetSocketAddress);
+            if (!properties.security.tls.enabled) {
+                serverTransport = new TServerSocket(serverPort);
                 options = new TThreadPoolServer.Args(serverTransport);
             } else {
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
                 TLSParams.requireClientAuth(true);
-                java.io.File configDir = new java.io.File(properties.getAiravataConfigDir());
-                java.io.File keystoreFile = new java.io.File(
-                        configDir, properties.getSecurity().getKeystore().getPath());
-                TLSParams.setKeyStore(
-                        keystoreFile.getAbsolutePath(),
-                        properties.getSecurity().getKeystore().getPassword());
+                java.io.File configDir = new java.io.File(properties.airavataConfigDir);
+                java.io.File keystoreFile = new java.io.File(configDir, properties.security.keystore.path);
+                TLSParams.setKeyStore(keystoreFile.getAbsolutePath(), properties.security.keystore.password);
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort,
-                        properties.getSecurity().getTls().getClientTimeout(),
-                        InetAddress.getByName(serverHost),
-                        TLSParams);
+                        serverPort, properties.security.tls.clientTimeout, null, TLSParams);
                 options = new TThreadPoolServer.Args(TLSServerTransport);
             }
             options.minWorkerThreads = 30;

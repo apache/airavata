@@ -67,15 +67,14 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.UserProfileService;
-import org.springframework.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -1054,7 +1053,6 @@ public class TaskContext {
             return this;
         }
 
-
         public TaskContext build() throws Exception {
 
             if (notValid(processModel)) {
@@ -1096,7 +1094,7 @@ public class TaskContext {
         }
         return null;
     }
-    
+
     private AiravataSecurityManager getSecurityManager() {
         ApplicationContext applicationContext = AiravataTask.getApplicationContext();
         if (applicationContext != null) {
@@ -1104,9 +1102,14 @@ public class TaskContext {
         }
         // Fallback to SecurityManagerFactory if ApplicationContext not available
         try {
-            return org.apache.airavata.security.SecurityManagerFactory.getSecurityManager();
-        } catch (org.apache.airavata.security.AiravataSecurityException e) {
-            throw new RuntimeException("Unable to get SecurityManager", e);
+            ApplicationContext ctx = AiravataTask.getApplicationContext();
+            if (ctx != null) {
+                var properties = ctx.getBean(org.apache.airavata.config.AiravataServerProperties.class);
+                return org.apache.airavata.security.SecurityManagerFactory.getSecurityManager(properties);
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to get SecurityManager from factory", e);
         }
+        throw new RuntimeException("Unable to get SecurityManager - ApplicationContext not available");
     }
 }

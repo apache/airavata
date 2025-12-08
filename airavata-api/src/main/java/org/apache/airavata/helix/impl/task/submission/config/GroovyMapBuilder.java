@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -43,25 +43,25 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GroovyMapBuilder {
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     private static ApplicationContext applicationContext;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         GroovyMapBuilder.applicationContext = applicationContext;
     }
-    
+
     // Instance method for Spring DI
     protected RegistryService getRegistryServiceInstance() {
         return registryService;
@@ -73,7 +73,14 @@ public class GroovyMapBuilder {
 
     private TaskContext taskContext;
 
+    // Default constructor for Spring
+    public GroovyMapBuilder() {}
+
     public GroovyMapBuilder(TaskContext taskContext) {
+        this.taskContext = taskContext;
+    }
+
+    public void setTaskContext(TaskContext taskContext) {
         this.taskContext = taskContext;
     }
 
@@ -476,14 +483,24 @@ public class GroovyMapBuilder {
     }
 
     private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
-
         ProcessModel processModel = taskContext.getProcessModel();
         String emailIds = null;
-        if (isEmailBasedJobMonitor(taskContext)) {
-            emailIds = ServerSettings.getEmailBasedMonitorAddress();
+
+        AiravataServerProperties props = null;
+        try {
+            var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
+            if (ctx != null) {
+                props = ctx.getBean(AiravataServerProperties.class);
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext", e);
         }
-        if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
-            String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+
+        if (isEmailBasedJobMonitor(taskContext) && props != null) {
+            emailIds = props.services.monitor.email.address;
+        }
+        if (props != null && props.services.monitor.job.notification.enable) {
+            String userJobNotifEmailIds = props.services.monitor.job.notification.emailIds;
             if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
                 if (emailIds != null && !emailIds.isEmpty()) {
                     emailIds += ("," + userJobNotifEmailIds);
@@ -520,8 +537,7 @@ public class GroovyMapBuilder {
         JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission =
-                    getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
+            SSHJobSubmission sshJobSubmission = getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
@@ -545,7 +561,7 @@ public class GroovyMapBuilder {
 
         return sb.toString();
     }
-    
+
     // Static method for backward compatibility - delegates to Spring-managed instance
     private static RegistryService getRegistryService() {
         if (applicationContext != null) {

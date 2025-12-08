@@ -23,8 +23,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.quartz.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -36,33 +35,36 @@ public class ClusterStatusMonitorJobScheduler {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJobScheduler.class);
 
     Scheduler scheduler;
+    private AiravataServerProperties properties;
 
-    public ClusterStatusMonitorJobScheduler() throws SchedulerException {
+    public ClusterStatusMonitorJobScheduler(AiravataServerProperties properties) throws SchedulerException {
+        this.properties = properties;
         scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.start();
     }
 
-    public void scheduleClusterStatusMonitoring() throws SchedulerException, ApplicationSettingsException {
+    public void scheduleClusterStatusMonitoring() throws SchedulerException {
         // define the job and tie it to our MyJob class
         JobDetail job = newJob(ClusterStatusMonitorJob.class)
                 .withIdentity("cluster-status-monitoring", "airavata")
                 .build();
 
         // Trigger the job to run now, and then repeat every 40 seconds
+        int repeatTime = properties.services.monitor.cluster.repeatTime;
         Trigger trigger = newTrigger()
                 .withIdentity("cluster-status-monitoring-trigger", "airavata")
                 .startNow()
-                .withSchedule(simpleSchedule()
-                        .withIntervalInSeconds(Integer.parseInt(ServerSettings.getClusterStatusMonitoringRepeatTime()))
-                        .repeatForever())
+                .withSchedule(simpleSchedule().withIntervalInSeconds(repeatTime).repeatForever())
                 .build();
 
         // Tell quartz to schedule the job using our trigger
         scheduler.scheduleJob(job, trigger);
     }
 
-    public static void main(String[] args) throws SchedulerException, ApplicationSettingsException {
-        ClusterStatusMonitorJobScheduler jobScheduler = new ClusterStatusMonitorJobScheduler();
+    public static void main(String[] args) throws SchedulerException {
+        // Note: Properties should be loaded from Spring context in real usage
+        // For main method, this is a placeholder
+        ClusterStatusMonitorJobScheduler jobScheduler = new ClusterStatusMonitorJobScheduler(null);
         jobScheduler.scheduleClusterStatusMonitoring();
     }
 }

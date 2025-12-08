@@ -19,9 +19,6 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.thrift.handler.AiravataServiceHandler;
 import org.apache.airavata.common.utils.IServer;
@@ -64,19 +61,12 @@ public class AiravataServiceServer implements IServer {
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer)
             throws AiravataSystemException {
         try {
-            final String serverHost = properties.getApiServer().getHost();
-            final int serverPort = properties.getApiServer().getPort();
+            final int serverPort = properties.services.api.port;
 
-            if (!properties.getSecurity().getTls().isEnabled()) {
-                TServerTransport serverTransport;
-                if (serverHost == null || serverHost.isEmpty()) {
-                    serverTransport = new TServerSocket(serverPort);
-                } else {
-                    InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                    serverTransport = new TServerSocket(inetSocketAddress);
-                }
+            if (!properties.security.tls.enabled) {
+                TServerTransport serverTransport = new TServerSocket(serverPort);
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-                options.minWorkerThreads = properties.getApiServer().getMinThreads();
+                options.minWorkerThreads = properties.services.api.minThreads;
                 server = new TThreadPoolServer(options.processor(airavataAPIServer));
                 new Thread(() -> {
                             server.serve();
@@ -102,19 +92,13 @@ public class AiravataServiceServer implements IServer {
                 logger.info("Started API Server ....");
             } else {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
-                java.io.File configDir = new java.io.File(properties.getAiravataConfigDir());
-                java.io.File keystoreFile = new java.io.File(
-                        configDir, properties.getSecurity().getKeystore().getPath());
-                TLSParams.setKeyStore(
-                        keystoreFile.getAbsolutePath(),
-                        properties.getSecurity().getKeystore().getPassword());
+                java.io.File configDir = new java.io.File(properties.airavataConfigDir);
+                java.io.File keystoreFile = new java.io.File(configDir, properties.security.keystore.path);
+                TLSParams.setKeyStore(keystoreFile.getAbsolutePath(), properties.security.keystore.password);
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort,
-                        properties.getSecurity().getTls().getClientTimeout(),
-                        InetAddress.getByName(serverHost),
-                        TLSParams);
+                        serverPort, properties.security.tls.clientTimeout, null, TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
-                settings.minWorkerThreads = properties.getApiServer().getMinThreads();
+                settings.minWorkerThreads = properties.services.api.minThreads;
                 TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
                 new Thread(() -> {
                             TLSServer.serve();
@@ -138,7 +122,7 @@ public class AiravataServiceServer implements IServer {
                 logger.info("API server started over TLS on Port: " + serverPort + " ...");
             }
 
-        } catch (TTransportException | UnknownHostException e) {
+        } catch (TTransportException e) {
             logger.error("Failed to start API server ...", e);
             setStatus(ServerStatus.FAILED);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -158,12 +142,12 @@ public class AiravataServiceServer implements IServer {
 
     @Override
     public void stop() throws Exception {
-        if ((!properties.getSecurity().getTls().isEnabled()) && server != null && server.isServing()) {
+        if ((!properties.security.tls.enabled) && server != null && server.isServing()) {
             setStatus(ServerStatus.STOPING);
             server.stop();
         }
         // stop the Airavata API server hosted over TLS.
-        if ((properties.getSecurity().getTls().isEnabled()) && TLSServer != null && TLSServer.isServing()) {
+        if ((properties.security.tls.enabled) && TLSServer != null && TLSServer.isServing()) {
             TLSServer.stop();
         }
     }

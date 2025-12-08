@@ -47,6 +47,14 @@ public class JpaConfig {
     @Autowired
     private AiravataServerProperties properties;
 
+    @Bean
+    public static OpenJpaEntityManagerFactoryPostProcessor openJpaEntityManagerFactoryPostProcessor() {
+        return new OpenJpaEntityManagerFactoryPostProcessor();
+    }
+
+    // Note: JpaMetamodelMappingContext is automatically created by Spring Data JPA
+    // via @EnableJpaRepositories. We don't need to create it manually.
+
     // Persistence unit names
     public static final String PROFILE_SERVICE_PU = "profile_service";
     public static final String APPCATALOG_PU = "appcatalog_data_new";
@@ -59,115 +67,109 @@ public class JpaConfig {
     @Bean(name = "profileServiceEntityManagerFactory")
     @Primary
     public EntityManagerFactory profileServiceEntityManagerFactory() {
-        var db = properties.getDatabase().getProfileService();
+        var db = properties.database.profile;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for profile service is missing or invalid. Check airavata.properties for database.profile.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                PROFILE_SERVICE_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                PROFILE_SERVICE_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "appCatalogEntityManagerFactory")
     public EntityManagerFactory appCatalogEntityManagerFactory() {
-        var db = properties.getDatabase().getAppCatalog();
+        var db = properties.database.catalog;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for app catalog is missing or invalid. Check airavata.properties for database.catalog.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                APPCATALOG_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                APPCATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "registryDataSource")
     public DataSource registryDataSource() {
-        var db = properties.getDatabase().getRegistry();
+        var db = properties.database.registry;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for registry is missing or invalid. Check airavata.properties for database.registry.url");
+        }
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(db.getJdbcDriver());
-        dataSource.setUrl(db.getJdbcUrl());
-        dataSource.setUsername(db.getJdbcUser());
-        dataSource.setPassword(db.getJdbcPassword());
-        dataSource.setValidationQuery(properties.getDatabase().getValidationQuery());
+        dataSource.setDriverClassName(db.driver);
+        dataSource.setUrl(db.url);
+        dataSource.setUsername(db.user);
+        dataSource.setPassword(db.password);
+        dataSource.setValidationQuery(properties.database.validationQuery);
         dataSource.setTestOnBorrow(true);
         return dataSource;
     }
 
     @Bean(name = "expCatalogEntityManagerFactory")
     public EntityManagerFactory expCatalogEntityManagerFactory() {
-        var db = properties.getDatabase().getRegistry();
+        var db = properties.database.registry;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for experiment catalog is missing or invalid. Check airavata.properties for database.registry.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                EXPCATALOG_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                properties.getDatabase().getValidationQuery());
+                EXPCATALOG_PU, db.driver, db.url, db.user, db.password, properties.database.validationQuery);
     }
 
     @Bean(name = "replicaCatalogEntityManagerFactory")
     public EntityManagerFactory replicaCatalogEntityManagerFactory() {
-        var db = properties.getDatabase().getReplicaCatalog();
+        var db = properties.database.replica;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for replica catalog is missing or invalid. Check airavata.properties for database.replica.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                REPLICACATALOG_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                REPLICACATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "workflowCatalogEntityManagerFactory")
     public EntityManagerFactory workflowCatalogEntityManagerFactory() {
-        var db = properties.getDatabase().getWorkflowCatalog();
+        var db = properties.database.workflow;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for workflow catalog is missing or invalid. Check airavata.properties for database.workflow.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                WORKFLOWCATALOG_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                WORKFLOWCATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "sharingRegistryEntityManagerFactory")
     public EntityManagerFactory sharingRegistryEntityManagerFactory() {
-        var db = properties.getDatabase().getSharingCatalog();
+        var db = properties.database.sharing;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for sharing registry is missing or invalid. Check airavata.properties for database.sharing.url");
+        }
         return JPAUtils.getEntityManagerFactory(
-                SHARING_REGISTRY_PU,
-                db.getJdbcDriver(),
-                db.getJdbcUrl(),
-                db.getJdbcUser(),
-                db.getJdbcPassword(),
-                db.getValidationQuery());
+                SHARING_REGISTRY_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "credentialStoreEntityManagerFactory")
     public EntityManagerFactory credentialStoreEntityManagerFactory() {
-        var db = properties.getDatabase().getCredentialStore();
-        // Fallback to registry database if credential store DB not configured
-        String jdbcUrl = db.getJdbcUrl();
-        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-            jdbcUrl = properties.getDatabase().getRegistry().getJdbcUrl();
+        var db = properties.database.vault;
+        // Fallback to registry database if vault DB not configured
+        String url = (db != null && db.url != null && !db.url.isEmpty()) ? db.url : properties.database.registry.url;
+        String user =
+                (db != null && db.user != null && !db.user.isEmpty()) ? db.user : properties.database.registry.user;
+        String password = (db != null && db.password != null && !db.password.isEmpty())
+                ? db.password
+                : properties.database.registry.password;
+        String driver = (db != null && db.driver != null && !db.driver.isEmpty())
+                ? db.driver
+                : properties.database.registry.driver;
+        String validationQuery = (db != null && db.validationQuery != null && !db.validationQuery.isEmpty())
+                ? db.validationQuery
+                : properties.database.registry.validationQuery;
+
+        if (url == null || url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for credential store is missing or invalid. Check airavata.properties for database.vault.url or database.registry.url");
         }
-        String jdbcUser = db.getJdbcUser();
-        if (jdbcUser == null || jdbcUser.isEmpty()) {
-            jdbcUser = properties.getDatabase().getRegistry().getJdbcUser();
-        }
-        String jdbcPassword = db.getJdbcPassword();
-        if (jdbcPassword == null || jdbcPassword.isEmpty()) {
-            jdbcPassword = properties.getDatabase().getRegistry().getJdbcPassword();
-        }
-        String jdbcDriver = db.getJdbcDriver();
-        if (jdbcDriver == null || jdbcDriver.isEmpty()) {
-            jdbcDriver = properties.getDatabase().getRegistry().getJdbcDriver();
-        }
-        String validationQuery = db.getJdbcValidationQuery();
-        if (validationQuery == null || validationQuery.isEmpty()) {
-            validationQuery = properties.getDatabase().getRegistry().getValidationQuery();
-        }
-        return JPAUtils.getEntityManagerFactory(
-                CREDENTIAL_STORE_PU, jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword, validationQuery);
+        return JPAUtils.getEntityManagerFactory(CREDENTIAL_STORE_PU, driver, url, user, password, validationQuery);
     }
 
     // Transaction managers for each persistence unit
@@ -261,11 +263,14 @@ public class JpaConfig {
     }
 
     // Spring Data JPA Repository Configuration for each persistence unit
+    // Note: Order matters - repositories registered later will override earlier ones with the same name
+    // We register expcatalog last so it's not overridden by sharing's UserRepository
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.profile.repositories",
             entityManagerFactoryRef = "profileServiceEntityManagerFactory",
-            transactionManagerRef = "profileServiceTransactionManager")
+            transactionManagerRef = "profileServiceTransactionManager",
+            enableDefaultTransactions = true)
     static class ProfileServiceJpaRepositoriesConfig {}
 
     @Configuration
@@ -274,13 +279,6 @@ public class JpaConfig {
             entityManagerFactoryRef = "appCatalogEntityManagerFactory",
             transactionManagerRef = "appCatalogTransactionManager")
     static class AppCatalogJpaRepositoriesConfig {}
-
-    @Configuration
-    @EnableJpaRepositories(
-            basePackages = "org.apache.airavata.registry.repositories.expcatalog",
-            entityManagerFactoryRef = "expCatalogEntityManagerFactory",
-            transactionManagerRef = "expCatalogTransactionManager")
-    static class ExpCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
@@ -309,4 +307,13 @@ public class JpaConfig {
             entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
             transactionManagerRef = "credentialStoreTransactionManager")
     static class CredentialStoreJpaRepositoriesConfig {}
+
+    // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
+    // This must be the last @Configuration class to ensure expcatalog repository is the final bean
+    @Configuration
+    @EnableJpaRepositories(
+            basePackages = "org.apache.airavata.registry.repositories.expcatalog",
+            entityManagerFactoryRef = "expCatalogEntityManagerFactory",
+            transactionManagerRef = "expCatalogTransactionManager")
+    static class ExpCatalogJpaRepositoriesConfig {}
 }

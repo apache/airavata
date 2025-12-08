@@ -23,19 +23,18 @@ import java.util.HashMap;
 import java.util.Map;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.IdentityContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Interceptor of Airavata API calls for the purpose of applying security.
@@ -47,6 +46,9 @@ public class SecurityInterceptor implements MethodInterceptor {
 
     @Autowired
     private AiravataSecurityManager securityManager;
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -69,7 +71,7 @@ public class SecurityInterceptor implements MethodInterceptor {
 
     private void authorize(AuthzToken authzToken, Map<String, String> metaData) throws AuthorizationException {
         try {
-            boolean isAPISecured = ServerSettings.isTLSEnabled();
+            boolean isAPISecured = properties.security.tls.enabled;
             if (isAPISecured) {
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {
@@ -80,12 +82,6 @@ public class SecurityInterceptor implements MethodInterceptor {
             logger.error(e.getMessage(), e);
             AuthorizationException exception =
                     new AuthorizationException("Error in authenticating or authorizing user.");
-            exception.initCause(e);
-            throw exception;
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            AuthorizationException exception =
-                    new AuthorizationException("Internal error in authenticating or authorizing user.");
             exception.initCause(e);
             throw exception;
         }

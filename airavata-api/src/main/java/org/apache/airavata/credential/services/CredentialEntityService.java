@@ -26,11 +26,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.CredentialOwnerType;
 import org.apache.airavata.credential.entities.CredentialEntity;
@@ -54,6 +53,9 @@ public class CredentialEntityService {
     @Autowired
     private CredentialRepository credentialRepository;
 
+    @Autowired
+    private AiravataServerProperties properties;
+
     private String keyStorePath;
     private String secretKeyAlias;
     private KeyStorePasswordCallback keyStorePasswordCallback;
@@ -61,10 +63,12 @@ public class CredentialEntityService {
     @jakarta.annotation.PostConstruct
     public void init() {
         try {
-            this.keyStorePath = ApplicationSettings.getCredentialStoreKeyStorePath();
-            this.secretKeyAlias = ApplicationSettings.getCredentialStoreKeyAlias();
+            String airavataConfigDir = properties.airavataConfigDir;
+            String credentialStoreKeyStorePath = properties.services.vault.keystore.url;
+            this.keyStorePath = new java.io.File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
+            this.secretKeyAlias = properties.services.vault.keystore.alias;
             this.keyStorePasswordCallback = new DefaultKeyStorePasswordCallback();
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             logger.warn("Failed to initialize keystore settings, encryption will be disabled", e);
             this.keyStorePath = null;
         }

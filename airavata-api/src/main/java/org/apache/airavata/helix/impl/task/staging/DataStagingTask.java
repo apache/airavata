@@ -32,7 +32,7 @@ import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.agents.streaming.TransferResult;
 import org.apache.airavata.agents.streaming.VirtualStreamProducer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
@@ -184,7 +184,16 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected String getLocalDataPath(String fileName) throws TaskOnFailException {
-        String localDataPath = ServerSettings.getLocalDataLocation();
+        String localDataPath = "/tmp"; // default
+        try {
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                localDataPath = props.airavata.localDataLocation;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
+        }
         localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
         localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator)
                 + getProcessId() + File.separator + "temp_inputs" + File.separator;
@@ -416,7 +425,17 @@ public abstract class DataStagingTask extends AiravataTask {
             throw new TaskOnFailException("Failed to fetch metadata for file " + sourcePath, false, e);
         }
 
-        if (ServerSettings.isSteamingEnabled()) {
+        boolean streamingEnabled = false;
+        try {
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                streamingEnabled = props.airavata.enableStreamingTransfer;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext, using default streaming setting", e);
+        }
+        if (streamingEnabled) {
             passThroughTransfer(storageAdaptor, sourcePath, computeAdaptor, destPath);
         } else {
             String sourceFileName =
@@ -475,7 +494,17 @@ public abstract class DataStagingTask extends AiravataTask {
                     "Failed in validating the parent directory " + parentDir + " in storage side", false, e);
         }
 
-        if (ServerSettings.isSteamingEnabled()) {
+        boolean streamingEnabled = false;
+        try {
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                streamingEnabled = props.airavata.enableStreamingTransfer;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext, using default streaming setting", e);
+        }
+        if (streamingEnabled) {
             passThroughTransfer(adaptor, sourcePath, storageResourceAdaptor, destPath);
         } else {
             String tempPath = getLocalDataPath(fileName);

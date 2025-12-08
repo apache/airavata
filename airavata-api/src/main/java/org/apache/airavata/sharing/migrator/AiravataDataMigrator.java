@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.api.thrift.handler.SharingRegistryServerHandler;
 import org.apache.airavata.api.thrift.util.ThriftDataModelConversion;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
@@ -58,7 +59,6 @@ import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.IamAdminService;
 import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.ServiceFactory;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.Entity;
 import org.apache.airavata.sharing.models.EntitySearchField;
@@ -70,17 +70,37 @@ import org.apache.airavata.sharing.models.SearchCondition;
 import org.apache.airavata.sharing.models.SearchCriteria;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class AiravataDataMigrator {
+@SpringBootApplication(scanBasePackages = "org.apache.airavata")
+public class AiravataDataMigrator implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(AiravataDataMigrator.class);
-    private static BasicDataSource registryDataSource;
+    private BasicDataSource registryDataSource;
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, Exception {
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @Autowired
+    private CredentialStoreService credentialStoreService;
+
+    @Autowired
+    private RegistryService registryService;
+
+    @Autowired
+    private IamAdminService iamAdminService;
+
+    public static void main(String[] args) {
+        SpringApplication.run(AiravataDataMigrator.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
         String gatewayId = null;
         if (args.length > 0) {
             gatewayId = args[0];
@@ -93,11 +113,9 @@ public class AiravataDataMigrator {
             logger.info("Running sharing data migration for all gateways");
         }
 
-        Connection expCatConnection = getRegistryConnection();
+        Connection expCatConnection = getRegistryConnection(properties);
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
-        CredentialStoreService credentialStoreService = getCredentialStoreService();
-        IamAdminService iamAdminService = getIamAdminService();
 
         String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();
@@ -376,10 +394,10 @@ public class AiravataDataMigrator {
         for (String domainID : domainOwnerMap.keySet()) {
             GatewayGroups gatewayGroups = gatewayGroupsMap.get(domainID);
             if (needsGroupResourceProfileMigration(
-                    domainID, domainOwnerMap.get(domainID), registryServiceClient, sharingRegistryServerHandler)) {
+                    domainID, domainOwnerMap.get(domainID), sharingRegistryServerHandler)) {
 
                 GroupResourceProfile groupResourceProfile =
-                        migrateGatewayResourceProfileToGroupResourceProfile(domainID, registryServiceClient);
+                        migrateGatewayResourceProfileToGroupResourceProfile(domainID);
 
                 // create GroupResourceProfile entity in sharing registry
                 Entity entity = new Entity();
@@ -470,7 +488,7 @@ public class AiravataDataMigrator {
         logger.info("Completed sharing data migration");
     }
 
-    private static void shareEntityWithGatewayGroups(
+    private void shareEntityWithGatewayGroups(
             SharingRegistryServerHandler sharingRegistryServerHandler,
             Entity entity,
             GatewayGroups gatewayGroups,
@@ -486,7 +504,7 @@ public class AiravataDataMigrator {
         shareEntityWithAdminGatewayGroups(sharingRegistryServerHandler, entity, gatewayGroups, cascadePermission);
     }
 
-    private static void shareEntityWithAdminGatewayGroups(
+    private void shareEntityWithAdminGatewayGroups(
             SharingRegistryServerHandler sharingRegistryServerHandler,
             Entity entity,
             GatewayGroups gatewayGroups,
@@ -508,7 +526,7 @@ public class AiravataDataMigrator {
                 cascadePermission);
     }
 
-    private static List<UserProfile> getUsersToMigrate(
+    private List<UserProfile> getUsersToMigrate(
             SharingRegistryServerHandler sharingRegistryServerHandler,
             IamAdminService adminService,
             AuthzToken authzToken,
@@ -528,7 +546,7 @@ public class AiravataDataMigrator {
         return missingUsers;
     }
 
-    private static boolean migrateKeycloakUsersToGateway(
+    private boolean migrateKeycloakUsersToGateway(
             IamAdminService adminService, AuthzToken authzToken, List<UserProfile> missingUsers) throws Exception {
 
         boolean allUsersUpdated = true;
@@ -538,7 +556,7 @@ public class AiravataDataMigrator {
         return allUsersUpdated;
     }
 
-    private static void checkUsersInSharingRegistryService(
+    private void checkUsersInSharingRegistryService(
             SharingRegistryServerHandler sharingRegistryServerHandler, List<UserProfile> missingUsers, String domainId)
             throws Exception {
         logger.info("Waiting for {} missing users to be propogated to sharing db", missingUsers.size());
@@ -574,7 +592,7 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static boolean addUsersToGroups(
+    private boolean addUsersToGroups(
             SharingRegistryServerHandler sharingRegistryServerHandler,
             List<UserProfile> missingUsers,
             GatewayGroups gatewayGroups,
@@ -615,7 +633,7 @@ public class AiravataDataMigrator {
         return updatedAllUsers;
     }
 
-    private static GatewayGroups migrateRolesToGatewayGroups(
+    private GatewayGroups migrateRolesToGatewayGroups(
             Domain domain,
             String ownerId,
             SharingRegistryServerHandler sharingRegistryServerHandler,
@@ -663,7 +681,7 @@ public class AiravataDataMigrator {
         return gatewayGroups;
     }
 
-    private static String getAdminOwnerUser(
+    private String getAdminOwnerUser(
             Domain domain,
             SharingRegistryServerHandler sharingRegistryServerHandler,
             CredentialStoreService credentialStoreService,
@@ -706,8 +724,7 @@ public class AiravataDataMigrator {
         return ownerId;
     }
 
-    private static Map<String, List<String>> loadRolesForUsers(String gatewayId, List<String> usernames)
-            throws Exception {
+    private Map<String, List<String>> loadRolesForUsers(String gatewayId, List<String> usernames) throws Exception {
 
         TenantManagementKeycloakImpl tenantManagementKeycloak = new TenantManagementKeycloakImpl();
         PasswordCredential tenantAdminPasswordCredential = getTenantAdminPasswordCredential(gatewayId);
@@ -733,7 +750,7 @@ public class AiravataDataMigrator {
         return roleMap;
     }
 
-    private static PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws Exception {
+    private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws Exception {
 
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
 
@@ -741,7 +758,7 @@ public class AiravataDataMigrator {
         return csService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 
-    private static UserGroup createGroup(
+    private UserGroup createGroup(
             SharingRegistryServerHandler sharingRegistryServerHandler,
             Domain domain,
             String ownerId,
@@ -770,12 +787,10 @@ public class AiravataDataMigrator {
         return userGroup;
     }
 
-    private static boolean needsGroupResourceProfileMigration(
-            String gatewayId,
-            String domainOwnerId,
-            RegistryService registryServiceClient,
-            SharingRegistryServerHandler sharingRegistryServerHandler)
+    private boolean needsGroupResourceProfileMigration(
+            String gatewayId, String domainOwnerId, SharingRegistryServerHandler sharingRegistryServerHandler)
             throws Exception {
+        RegistryService registryServiceClient = getRegistryServiceClient();
         // Return true if GatewayResourceProfile has at least one
         // ComputeResourcePreference and there is no
         // GroupResourceProfile
@@ -796,8 +811,9 @@ public class AiravataDataMigrator {
         return !computeResourcePreferences.isEmpty() && groupResourceProfiles.isEmpty();
     }
 
-    private static GroupResourceProfile migrateGatewayResourceProfileToGroupResourceProfile(
-            String gatewayId, RegistryService registryServiceClient) throws Exception {
+    private GroupResourceProfile migrateGatewayResourceProfileToGroupResourceProfile(String gatewayId)
+            throws Exception {
+        RegistryService registryServiceClient = getRegistryServiceClient();
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
@@ -823,9 +839,7 @@ public class AiravataDataMigrator {
                     convertComputeResourcePreferenceToGroupComputeResourcePreference(
                             groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference);
             ComputeResourcePolicy computeResourcePolicy = createDefaultComputeResourcePolicy(
-                    groupResourceProfile.getGroupResourceProfileId(),
-                    computeResourcePreference.getComputeResourceId(),
-                    registryServiceClient);
+                    groupResourceProfile.getGroupResourceProfileId(), computeResourcePreference.getComputeResourceId());
             groupComputeResourcePreferences.add(groupComputeResourcePreference);
             computeResourcePolicies.add(computeResourcePolicy);
         }
@@ -836,7 +850,7 @@ public class AiravataDataMigrator {
         return groupResourceProfile;
     }
 
-    private static GroupComputeResourcePreference convertComputeResourcePreferenceToGroupComputeResourcePreference(
+    private GroupComputeResourcePreference convertComputeResourcePreferenceToGroupComputeResourcePreference(
             String groupResourceProfileId, ComputeResourcePreference computeResourcePreference) {
         GroupComputeResourcePreference groupComputeResourcePreference = new GroupComputeResourcePreference();
         groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
@@ -882,9 +896,9 @@ public class AiravataDataMigrator {
         return groupComputeResourcePreference;
     }
 
-    private static ComputeResourcePolicy createDefaultComputeResourcePolicy(
-            String groupResourceProfileId, String computeResourceId, RegistryService registryServiceClient)
-            throws Exception {
+    private ComputeResourcePolicy createDefaultComputeResourcePolicy(
+            String groupResourceProfileId, String computeResourceId) throws Exception {
+        RegistryService registryServiceClient = getRegistryServiceClient();
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(computeResourceId);
         computeResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
@@ -897,11 +911,11 @@ public class AiravataDataMigrator {
         return computeResourcePolicy;
     }
 
-    private static boolean isValid(String s) {
+    private boolean isValid(String s) {
         return s != null && !"".equals(s.trim());
     }
 
-    private static String maxLengthString(String s, int maxLength) {
+    private String maxLengthString(String s, int maxLength) {
 
         if (s != null) {
             return s.substring(0, Math.min(maxLength, s.length()));
@@ -910,33 +924,21 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static CredentialStoreService getCredentialStoreService() throws Exception {
-        try {
-            return ServiceFactory.getInstance().getCredentialStoreService();
-        } catch (Exception e) {
-            throw new Exception("Unable to create credential store service...", e);
-        }
+    private CredentialStoreService getCredentialStoreService() {
+        return credentialStoreService;
     }
 
-    private static RegistryService getRegistryServiceClient() throws Exception {
-        try {
-            return ServiceFactory.getInstance().getRegistryService();
-        } catch (Exception e) {
-            throw new Exception("Unable to create registry service...", e);
-        }
+    private RegistryService getRegistryServiceClient() {
+        return registryService;
     }
 
-    private static IamAdminService getIamAdminService() throws Exception {
-        try {
-            return ServiceFactory.getInstance().getIamAdminService();
-        } catch (Exception e) {
-            throw new Exception("Unable to create IAM admin service...", e);
-        }
+    private IamAdminService getIamAdminService() {
+        return iamAdminService;
     }
 
-    private static AuthzToken getManagementUsersAccessToken(String tenantId) throws Exception {
+    private AuthzToken getManagementUsersAccessToken(String tenantId) throws Exception {
         try {
-            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager(properties);
             AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
             return authzToken;
         } catch (AiravataSecurityException e) {
@@ -944,28 +946,25 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static Connection getRegistryConnection() throws SQLException, ClassNotFoundException {
-        try {
-            // Create DataSource directly from properties (replacing ConnectionFactory singleton)
-            if (registryDataSource == null) {
-                String jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
-                String jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
-                String jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");
-                String jdbcDriver = ServerSettings.getSetting("registry.jdbc.driver");
-                
-                registryDataSource = new BasicDataSource();
-                registryDataSource.setDriverClassName(jdbcDriver);
-                registryDataSource.setUrl(jdbcUrl);
-                registryDataSource.setUsername(jdbcUser);
-                registryDataSource.setPassword(jdbcPassword);
-                registryDataSource.setValidationQuery("SELECT 1");
-                registryDataSource.setTestOnBorrow(true);
-            }
-            
-            return registryDataSource.getConnection();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Failed to load database settings", e);
-            throw new RuntimeException("Failed to load application settings", e);
+    private Connection getRegistryConnection(AiravataServerProperties properties)
+            throws SQLException, ClassNotFoundException {
+        // Create DataSource directly from properties
+        if (registryDataSource == null) {
+            var db = properties.database.registry;
+            String jdbcUrl = db.url;
+            String jdbcUser = db.user;
+            String jdbcPassword = db.password;
+            String jdbcDriver = db.driver;
+
+            registryDataSource = new BasicDataSource();
+            registryDataSource.setDriverClassName(jdbcDriver);
+            registryDataSource.setUrl(jdbcUrl);
+            registryDataSource.setUsername(jdbcUser);
+            registryDataSource.setPassword(jdbcPassword);
+            registryDataSource.setValidationQuery(db.validationQuery);
+            registryDataSource.setTestOnBorrow(true);
         }
+
+        return registryDataSource.getConnection();
     }
 }

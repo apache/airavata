@@ -20,7 +20,6 @@
 package org.apache.airavata.api.thrift.server;
 
 import jakarta.annotation.PostConstruct;
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.api.thrift.handler.RegistryServiceHandler;
@@ -91,20 +90,13 @@ public class RegistryServiceServer implements IServer {
         }
         logger.info("Databases initialized successfully");
 
-        final int serverPort = properties.getOther().getRegistryServer().getPort();
+        final int serverPort = properties.services.registry.server.port;
         try {
-            final String serverHost = properties.getOther().getRegistryServer().getHost();
-            TServerTransport serverTransport;
-            if (serverHost == null || serverHost.isEmpty()) {
-                serverTransport = new TServerSocket(serverPort);
-            } else {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-                serverTransport = new TServerSocket(inetSocketAddress);
-            }
+            TServerTransport serverTransport = new TServerSocket(serverPort);
 
             // thrift server start
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = properties.getOther().getRegistryServer().getMinThreads();
+            options.minWorkerThreads = properties.services.registry.server.minThreads;
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
             new Thread() {
                 public void run() {

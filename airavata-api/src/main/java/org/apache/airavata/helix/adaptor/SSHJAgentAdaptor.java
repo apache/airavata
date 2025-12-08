@@ -56,10 +56,10 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SSHJAgentAdaptor implements AgentAdaptor {
@@ -68,7 +68,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Autowired
     protected RegistryService registryService;
-    
+
     @Autowired
     protected CredentialStoreService credentialService;
 

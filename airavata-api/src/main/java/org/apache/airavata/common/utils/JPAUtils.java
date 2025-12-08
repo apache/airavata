@@ -38,11 +38,16 @@ public class JPAUtils {
     static {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
-        properties.put(
-                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "false"));
+        // Allow unenhanced classes at runtime - this is needed for Spring Data JPA integration
+        // where metamodel is accessed before EntityManagerFactory is fully initialized
+        // "supported" allows unenhanced classes but may have performance implications
+        // "warn" allows unenhanced classes and logs warnings
         properties.put(
                 "openjpa.RuntimeUnenhancedClasses",
-                System.getProperty("openjpa.RuntimeUnenhancedClasses", "unsupported"));
+                System.getProperty("openjpa.RuntimeUnenhancedClasses", "supported"));
+        // Enable dynamic enhancement agent to enhance classes at runtime if needed
+        properties.put(
+                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "true"));
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
         // use the following to enable logging of all SQL statements
@@ -56,6 +61,7 @@ public class JPAUtils {
                 "PrettyPrint=true, PrettyPrintLineLength=72,"
                         + " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
         // MariaDB/MySQL dialect configuration to handle boolean to tinyint mapping
+        // Note: This will be overridden per-persistence-unit if H2 is detected
         properties.put("openjpa.jdbc.DBDictionary", "mysql");
         properties.put(
                 "openjpa.jdbc.MappingDefaults", "ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade");
@@ -93,8 +99,15 @@ public class JPAUtils {
     }
 
     public static Map<String, String> createConnectionProperties(JDBCConfig jdbcConfig) {
-        String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + jdbcConfig.getURL()
-                + "?autoReconnect=true&tinyInt1isBit=false," + "Username=" + jdbcConfig.getUser() + "," + "Password="
+        String url = jdbcConfig.getURL();
+        // H2 URLs use ; as parameter separator and don't need MySQL-specific parameters
+        String urlSuffix = "";
+        if (url != null && !url.startsWith("jdbc:h2:")) {
+            // MySQL/MariaDB specific parameters
+            urlSuffix = "?autoReconnect=true&tinyInt1isBit=false";
+        }
+        String connectionProperties = "DriverClassName=" + jdbcConfig.getDriver() + "," + "Url=" + url
+                + urlSuffix + "," + "Username=" + jdbcConfig.getUser() + "," + "Password="
                 + jdbcConfig.getPassword() + ",validationQuery=" + jdbcConfig.getValidationQuery();
         logger.debug("Connection properties={}", connectionProperties);
         return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
@@ -105,8 +118,14 @@ public class JPAUtils {
      */
     public static Map<String, String> createConnectionProperties(
             String driver, String url, String user, String password, String validationQuery) {
+        // H2 URLs use ; as parameter separator and don't need MySQL-specific parameters
+        String urlSuffix = "";
+        if (url != null && !url.startsWith("jdbc:h2:")) {
+            // MySQL/MariaDB specific parameters
+            urlSuffix = "?autoReconnect=true&tinyInt1isBit=false";
+        }
         String connectionProperties = "DriverClassName=" + driver + "," + "Url=" + url
-                + "?autoReconnect=true&tinyInt1isBit=false," + "Username=" + user + "," + "Password="
+                + urlSuffix + "," + "Username=" + user + "," + "Password="
                 + password + ",validationQuery=" + validationQuery;
         logger.debug("Connection properties={}", connectionProperties);
         return Collections.singletonMap("openjpa.ConnectionProperties", connectionProperties);
@@ -124,6 +143,16 @@ public class JPAUtils {
             String validationQuery) {
         Map<String, String> finalProperties = new HashMap<>(DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES);
         finalProperties.putAll(createConnectionProperties(driver, url, user, password, validationQuery));
+        // Use H2 dictionary and enable schema creation for H2 databases
+        if (url != null && url.startsWith("jdbc:h2:")) {
+            finalProperties.put("openjpa.jdbc.DBDictionary", "h2");
+            // Enable automatic schema creation for H2 in-memory databases
+            // buildSchema mode creates missing tables and adds missing columns
+            // SchemaAction=add creates tables/columns if they don't exist, without altering existing ones
+            finalProperties.put(
+                    "openjpa.jdbc.SynchronizeMappings",
+                    "buildSchema(ForeignKeys=true,SchemaAction=add,IgnoreErrors=true)");
+        }
         return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
     }
 }

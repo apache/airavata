@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.common.utils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,23 +196,23 @@ public class DBUtil {
 
     private void loadDriver() throws ApplicationSettingsException {
         try {
-            Class.forName(driverName).getDeclaredConstructor().newInstance();
+            // Try with current classloader first
+            Class.forName(driverName);
         } catch (ClassNotFoundException e) {
-            throw new ApplicationSettingsException(
-                    "Error loading database driver. Error instantiating driver object.", e);
-        } catch (NoSuchMethodException | SecurityException e) {
-            throw new ApplicationSettingsException("Error loading database driver. No such method found.", e);
-        } catch (IllegalArgumentException e) {
-            throw new ApplicationSettingsException(
-                    "Error loading database driver. Illegal access to driver object.", e);
-        } catch (InvocationTargetException e) {
-            throw new ApplicationSettingsException("Error loading database driver. Error invoking constructor.", e);
-        } catch (InstantiationException e) {
-            throw new ApplicationSettingsException(
-                    "Error loading database driver. Error instantiating driver object.", e);
-        } catch (IllegalAccessException e) {
-            throw new ApplicationSettingsException(
-                    "Error loading database driver. Illegal access to driver object.", e);
+            try {
+                // Try with thread context classloader
+                Thread.currentThread().getContextClassLoader().loadClass(driverName);
+            } catch (ClassNotFoundException e2) {
+                // In JDBC 4.0+, drivers are auto-loaded via ServiceLoader, so we can continue
+                log.warn("Could not manually load database driver class: " + driverName
+                        + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e.getMessage());
+            } catch (Exception e2) {
+                log.warn("Could not manually load database driver class: " + driverName
+                        + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e2.getMessage());
+            }
+        } catch (Exception e) {
+            log.warn("Could not manually load database driver class: " + driverName
+                    + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e.getMessage());
         }
     }
 
@@ -239,6 +239,24 @@ public class DBUtil {
      *             If an error occurred while creating the connection.
      */
     public Connection getConnection() throws SQLException {
+        // Ensure driver is loaded before getting connection
+        try {
+            Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            try {
+                Thread.currentThread().getContextClassLoader().loadClass(driverName);
+            } catch (ClassNotFoundException e2) {
+                // Driver will be auto-loaded by JDBC 4.0+ if available
+                log.debug("Driver class not found, relying on JDBC 4.0+ auto-loading: " + driverName);
+            }
+        }
+        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
+            throw new SQLException("JDBC URL is null or empty. Driver: " + driverName);
+        }
+        if (!jdbcUrl.startsWith("jdbc:")) {
+            throw new SQLException("Invalid JDBC URL format. Expected URL starting with 'jdbc:', got: " + jdbcUrl);
+        }
+        log.debug("Connecting to database with URL: " + jdbcUrl + ", driver: " + driverName);
         Connection connection = DriverManager.getConnection(jdbcUrl, properties);
         connection.setAutoCommit(false);
         return connection;
@@ -342,13 +360,26 @@ public class DBUtil {
      * @throws Exception
      * If an error occurred while reading configurations or while creating database object.
      */
-    public static DBUtil getCredentialStoreDBUtil()
+    public static DBUtil getCredentialStoreDBUtil(AiravataServerProperties properties)
             throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
                     InstantiationException {
-        String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-        String userName = ServerSettings.getCredentialStoreDBUser();
-        String password = ServerSettings.getCredentialStoreDBPassword();
-        String driverName = ServerSettings.getCredentialStoreDBDriver();
+        var db = properties.database.vault;
+        String jdbcUrl = db.url;
+        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
+            jdbcUrl = properties.database.registry.url;
+        }
+        String userName = db.user;
+        if (userName == null || userName.isEmpty()) {
+            userName = properties.database.registry.user;
+        }
+        String password = db.password;
+        if (password == null || password.isEmpty()) {
+            password = properties.database.registry.password;
+        }
+        String driverName = db.driver;
+        if (driverName == null || driverName.isEmpty()) {
+            driverName = properties.database.registry.driver;
+        }
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
         stringBuilder

@@ -42,29 +42,29 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SSHAccountManager {
-    
+
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
-    
+
     private static ApplicationContext applicationContext;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         SSHAccountManager.applicationContext = applicationContext;
     }
-    
+
     // Instance methods for Spring DI
     private RegistryService getRegistryServiceInstance() {
         return registryService;
     }
-    
+
     private CredentialStoreService getCredentialStoreServiceInstance() {
         return credentialStoreService;
     }
-    
+
     // Static methods for backward compatibility - delegate to Spring-managed instance
     private static RegistryService getRegistryServiceStatic() {
         if (applicationContext != null) {
@@ -72,7 +72,7 @@ public class SSHAccountManager {
         }
         throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
     }
-    
+
     private static CredentialStoreService getCredentialStoreServiceStatic() {
         if (applicationContext != null) {
             return applicationContext.getBean(SSHAccountManager.class).getCredentialStoreServiceInstance();

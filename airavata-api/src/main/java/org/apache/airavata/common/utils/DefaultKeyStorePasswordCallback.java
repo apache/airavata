@@ -19,32 +19,30 @@
 */
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/29/13
  * Time: 12:10 PM
  */
+@Component
 public class DefaultKeyStorePasswordCallback implements KeyStorePasswordCallback {
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     public DefaultKeyStorePasswordCallback() {}
 
     @Override
     public char[] getStorePassword() {
-        try {
-            return ApplicationSettings.getCredentialStoreKeyStorePassword().toCharArray();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return properties.services.vault.keystore.password.toCharArray();
     }
 
     @Override
     public char[] getSecretKeyPassPhrase(String keyAlias) {
-        try {
-            return ApplicationSettings.getCredentialStoreKeyStorePassword().toCharArray();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
-        }
+        return properties.services.vault.keystore.password.toCharArray();
     }
 }

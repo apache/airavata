@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.config;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.credential.repositories.CommunityUserRepository;
 import org.apache.airavata.credential.repositories.CredentialRepository;
@@ -27,8 +29,8 @@ import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
-import org.apache.airavata.sharing.repositories.DomainRepository;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
+import org.apache.airavata.sharing.repositories.DomainRepository;
 import org.apache.airavata.sharing.repositories.EntityRepository;
 import org.apache.airavata.sharing.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -37,8 +39,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestPropertySource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test to validate that Spring application context loads correctly
@@ -136,9 +136,12 @@ public class SpringContextLoadTest {
         assertTrue(appCatalogEntityManagerFactory.isOpen(), "App catalog EntityManagerFactory should be open");
         assertTrue(expCatalogEntityManagerFactory.isOpen(), "Exp catalog EntityManagerFactory should be open");
         assertTrue(replicaCatalogEntityManagerFactory.isOpen(), "Replica catalog EntityManagerFactory should be open");
-        assertTrue(workflowCatalogEntityManagerFactory.isOpen(), "Workflow catalog EntityManagerFactory should be open");
-        assertTrue(sharingRegistryEntityManagerFactory.isOpen(), "Sharing registry EntityManagerFactory should be open");
-        assertTrue(credentialStoreEntityManagerFactory.isOpen(), "Credential store EntityManagerFactory should be open");
+        assertTrue(
+                workflowCatalogEntityManagerFactory.isOpen(), "Workflow catalog EntityManagerFactory should be open");
+        assertTrue(
+                sharingRegistryEntityManagerFactory.isOpen(), "Sharing registry EntityManagerFactory should be open");
+        assertTrue(
+                credentialStoreEntityManagerFactory.isOpen(), "Credential store EntityManagerFactory should be open");
     }
 
     @Test
@@ -190,12 +193,14 @@ public class SpringContextLoadTest {
     @Test
     public void testAllRepositoriesAreAccessible() {
         // Test that repositories can be accessed (they should be Spring beans)
-        assertTrue(applicationContext.getBeansOfType(UserProfileRepository.class).size() > 0,
+        assertTrue(
+                applicationContext.getBeansOfType(UserProfileRepository.class).size() > 0,
                 "UserProfileRepository should be registered as a bean");
-        assertTrue(applicationContext.getBeansOfType(CredentialRepository.class).size() > 0,
+        assertTrue(
+                applicationContext.getBeansOfType(CredentialRepository.class).size() > 0,
                 "CredentialRepository should be registered as a bean");
-        assertTrue(applicationContext.getBeansOfType(CommunityUserRepository.class).size() > 0,
+        assertTrue(
+                applicationContext.getBeansOfType(CommunityUserRepository.class).size() > 0,
                 "CommunityUserRepository should be registered as a bean");
     }
 }
-

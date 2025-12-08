@@ -28,12 +28,12 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Create and save an initial set of user management groups for a gateway.
@@ -51,23 +51,23 @@ public class GatewayGroupsInitializer {
 
     @Autowired
     private RegistryService registryService;
-    
+
     @Autowired
     private SharingRegistryService sharingRegistryService;
-    
+
     @Autowired
     private CredentialStoreService credentialStoreService;
 
     public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
         try {
             if (applicationContext == null) {
-                throw new RuntimeException("ApplicationContext not available. GatewayGroupsInitializer cannot be retrieved.");
+                throw new RuntimeException(
+                        "ApplicationContext not available. GatewayGroupsInitializer cannot be retrieved.");
             }
-            GatewayGroupsInitializer gatewayGroupsInitializer = applicationContext.getBean(GatewayGroupsInitializer.class);
+            GatewayGroupsInitializer gatewayGroupsInitializer =
+                    applicationContext.getBean(GatewayGroupsInitializer.class);
             return gatewayGroupsInitializer.initialize(gatewayId);
-        } catch (SharingRegistryException
-                | RegistryServiceException
-                | CredentialStoreException e) {
+        } catch (SharingRegistryException | RegistryServiceException | CredentialStoreException e) {
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
         }
     }

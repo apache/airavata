@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DozerMapperConfig {
-
     @Bean
     public Mapper dozerMapper() {
         return DozerBeanMapperBuilder.create()
@@ -38,4 +37,3 @@ public class DozerMapperConfig {
                 .build();
     }
 }
-

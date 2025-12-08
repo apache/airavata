@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.config;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test to verify that persistence configuration loads correctly
@@ -68,52 +68,45 @@ public class PersistenceConfigurationTest {
     public void testPersistenceUnitsCanBeCreated() {
         // This test verifies that all persistence units can be initialized
         // without class loading or persistence.xml errors
-        assertNotNull(profileServiceEntityManagerFactory, 
-                "Profile service EntityManagerFactory should be created");
-        assertNotNull(appCatalogEntityManagerFactory, 
-                "App catalog EntityManagerFactory should be created");
-        assertNotNull(expCatalogEntityManagerFactory, 
-                "Exp catalog EntityManagerFactory should be created");
-        assertNotNull(replicaCatalogEntityManagerFactory, 
-                "Replica catalog EntityManagerFactory should be created");
-        assertNotNull(workflowCatalogEntityManagerFactory, 
-                "Workflow catalog EntityManagerFactory should be created");
-        assertNotNull(sharingRegistryEntityManagerFactory, 
-                "Sharing registry EntityManagerFactory should be created");
-        assertNotNull(credentialStoreEntityManagerFactory, 
-                "Credential store EntityManagerFactory should be created");
+        assertNotNull(profileServiceEntityManagerFactory, "Profile service EntityManagerFactory should be created");
+        assertNotNull(appCatalogEntityManagerFactory, "App catalog EntityManagerFactory should be created");
+        assertNotNull(expCatalogEntityManagerFactory, "Exp catalog EntityManagerFactory should be created");
+        assertNotNull(replicaCatalogEntityManagerFactory, "Replica catalog EntityManagerFactory should be created");
+        assertNotNull(workflowCatalogEntityManagerFactory, "Workflow catalog EntityManagerFactory should be created");
+        assertNotNull(sharingRegistryEntityManagerFactory, "Sharing registry EntityManagerFactory should be created");
+        assertNotNull(credentialStoreEntityManagerFactory, "Credential store EntityManagerFactory should be created");
     }
 
     @Test
     public void testPersistenceUnitsAreOpen() {
         if (profileServiceEntityManagerFactory != null) {
-            assertTrue(profileServiceEntityManagerFactory.isOpen(), 
-                    "Profile service EntityManagerFactory should be open");
+            assertTrue(
+                    profileServiceEntityManagerFactory.isOpen(), "Profile service EntityManagerFactory should be open");
         }
         if (appCatalogEntityManagerFactory != null) {
-            assertTrue(appCatalogEntityManagerFactory.isOpen(), 
-                    "App catalog EntityManagerFactory should be open");
+            assertTrue(appCatalogEntityManagerFactory.isOpen(), "App catalog EntityManagerFactory should be open");
         }
         if (expCatalogEntityManagerFactory != null) {
-            assertTrue(expCatalogEntityManagerFactory.isOpen(), 
-                    "Exp catalog EntityManagerFactory should be open");
+            assertTrue(expCatalogEntityManagerFactory.isOpen(), "Exp catalog EntityManagerFactory should be open");
         }
         if (replicaCatalogEntityManagerFactory != null) {
-            assertTrue(replicaCatalogEntityManagerFactory.isOpen(), 
-                    "Replica catalog EntityManagerFactory should be open");
+            assertTrue(
+                    replicaCatalogEntityManagerFactory.isOpen(), "Replica catalog EntityManagerFactory should be open");
         }
         if (workflowCatalogEntityManagerFactory != null) {
-            assertTrue(workflowCatalogEntityManagerFactory.isOpen(), 
+            assertTrue(
+                    workflowCatalogEntityManagerFactory.isOpen(),
                     "Workflow catalog EntityManagerFactory should be open");
         }
         if (sharingRegistryEntityManagerFactory != null) {
-            assertTrue(sharingRegistryEntityManagerFactory.isOpen(), 
+            assertTrue(
+                    sharingRegistryEntityManagerFactory.isOpen(),
                     "Sharing registry EntityManagerFactory should be open");
         }
         if (credentialStoreEntityManagerFactory != null) {
-            assertTrue(credentialStoreEntityManagerFactory.isOpen(), 
+            assertTrue(
+                    credentialStoreEntityManagerFactory.isOpen(),
                     "Credential store EntityManagerFactory should be open");
         }
     }
 }
-

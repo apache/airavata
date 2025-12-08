@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.service;
 
+import jakarta.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -82,7 +83,6 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,10 +95,10 @@ public class OrchestratorService {
 
     @Autowired
     private AiravataServerProperties properties;
-    
+
     @Autowired
     private SimpleOrchestratorImpl orchestrator;
-    
+
     private CuratorFramework curatorClient;
     private Publisher publisher;
     private Subscriber experimentSubscriber;
@@ -108,7 +108,7 @@ public class OrchestratorService {
         // Note: This constructor is called by Spring, but initialization is deferred
         // to allow Spring to inject dependencies first
     }
-    
+
     @PostConstruct
     public void postConstruct() {
         try {
@@ -118,16 +118,35 @@ public class OrchestratorService {
             throw new RuntimeException("Failed to initialize OrchestratorService", e);
         }
     }
-    
+
     private void initializeInternal() throws OrchestratorException {
         try {
             this.publisher = MessagingFactory.getPublisher(Type.STATUS);
+        } catch (AiravataException e) {
+            logger.warn(
+                    "Failed to initialize StatusPublisher for OrchestratorService: {}. Publisher will be unavailable.",
+                    e.getMessage());
+            // Continue without publisher - allow server to start without RabbitMQ
+        }
+        try {
             this.orchestrator.initialize();
-            this.orchestrator.getOrchestratorContext().setPublisher(this.publisher);
+            if (this.publisher != null) {
+                this.orchestrator.getOrchestratorContext().setPublisher(this.publisher);
+            }
             startCurator();
+        } catch (Exception e) {
+            logger.warn(
+                    "Failed to initialize orchestrator or curator: {}. Some features may be unavailable.",
+                    e.getMessage());
+            // Continue without curator - allow server to start
+        }
+        try {
             this.experimentSubscriber = getExperimentSubscriber();
         } catch (AiravataException e) {
-            throw new OrchestratorException("Error initializing OrchestratorService", e);
+            logger.warn(
+                    "Failed to initialize ExperimentSubscriber for OrchestratorService: {}. Subscriber will be unavailable.",
+                    e.getMessage());
+            // Continue without subscriber - allow server to start without RabbitMQ
         }
     }
 
@@ -523,7 +542,7 @@ public class OrchestratorService {
         HostScheduler hostScheduler;
         try {
             var schedulerClass =
-                    Class.forName(properties.getOther().getHostScheduler()).asSubclass(HostScheduler.class);
+                    Class.forName(properties.services.scheduler.classpath).asSubclass(HostScheduler.class);
             hostScheduler = schedulerClass.getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException
                 | NoSuchMethodException
@@ -902,7 +921,7 @@ public class OrchestratorService {
     }
 
     private void startCurator() {
-        String connectionSting = properties.getZookeeper().getServerConnection();
+        String connectionSting = properties.zookeeper.serverConnection;
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
         curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
         curatorClient.start();
@@ -910,7 +929,7 @@ public class OrchestratorService {
 
     private Subscriber getExperimentSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(properties.getRabbitMQ().getExperimentLaunchQueueName());
+        routingKeys.add(properties.rabbitmq.experimentLaunchQueueName);
         return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
     }
 

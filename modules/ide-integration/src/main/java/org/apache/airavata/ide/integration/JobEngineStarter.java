@@ -31,8 +31,12 @@ import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class JobEngineStarter {
+
+    @Autowired
+    private static GlobalParticipant globalParticipant;
 
     private static final Logger logger = LoggerFactory.getLogger(JobEngineStarter.class);
 
@@ -45,7 +49,7 @@ public class JobEngineStarter {
                 new ZNRecordSerializer());
         ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
 
-        zkHelixAdmin.addCluster(ServerSettings.getSetting("helix.cluster.name"), true);
+        zkHelixAdmin.addCluster(ServerSettings.getSetting("helix.cluster-name"), true);
 
         logger.info("Starting Helix Controller .......");
         // Starting helix controller
@@ -61,8 +65,7 @@ public class JobEngineStarter {
         logger.info("Starting Helix Participant .......");
 
         // Starting helix participant
-        GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
-        participant.startServer();
+        globalParticipant.startServer();
 
         logger.info("Starting Pre Workflow Manager .......");
 

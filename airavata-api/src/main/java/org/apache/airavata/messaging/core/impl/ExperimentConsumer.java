@@ -27,7 +27,6 @@ import com.rabbitmq.client.Envelope;
 import java.io.IOException;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.*;
@@ -109,7 +108,7 @@ public class ExperimentConsumer extends DefaultConsumer {
                 channel.basicAck(deliveryTag, false);
             } else {
                 channel = connection.createChannel();
-                channel.basicQos(ServerSettings.getRabbitmqPrefetchCount());
+                // Prefetch count will be set by the caller with properties
                 channel.basicAck(deliveryTag, false);
             }
         } catch (IOException e) {

@@ -27,9 +27,8 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -166,7 +165,16 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     public File getLocalDataDir() {
-        String outputPath = ServerSettings.getLocalDataLocation();
+        String outputPath = "/tmp"; // default
+        try {
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                outputPath = props.airavata.localDataLocation;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
+        }
         outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
         return new File(outputPath + getProcessId());
     }
@@ -267,33 +275,42 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
     }
 
-    protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
+    protected void addMonitoringCommands(GroovyMapData mapData) {
+        try {
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                if (props.services.monitor.realtime.enabled) {
+                    if (mapData.getPreJobCommands() == null) {
+                        mapData.setPreJobCommands(new ArrayList<>());
+                    }
+                    String endpoint = props.services.monitor.job.statusPublishEndpoint;
+                    mapData.getPreJobCommands()
+                            .add(
+                                    0,
+                                    "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
+                                            + "-H \"Accept: application/vnd.kafka.v2+json\" "
+                                            + "--data '{\"records\":[{\"value\":{\"jobName\":\""
+                                            + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\""
+                                            + mapData.getTaskId() + "\"}}]}' \""
+                                            + endpoint
+                                            + "\" > /dev/null || true");
 
-        if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
-            if (mapData.getPreJobCommands() == null) {
-                mapData.setPreJobCommands(new ArrayList<>());
-            }
-            mapData.getPreJobCommands()
-                    .add(
-                            0,
-                            "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
+                    if (mapData.getPostJobCommands() == null) {
+                        mapData.setPostJobCommands(new ArrayList<>());
+                    }
+                    mapData.getPostJobCommands()
+                            .add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
                                     + "-H \"Accept: application/vnd.kafka.v2+json\" "
                                     + "--data '{\"records\":[{\"value\":{\"jobName\":\""
-                                    + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\""
-                                    + mapData.getTaskId() + "\"}}]}' \""
-                                    + ServerSettings.getSetting("job.status.publish.endpoint")
+                                    + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\""
+                                    + mapData.getTaskId()
+                                    + "\"}}]}' \"" + endpoint
                                     + "\" > /dev/null || true");
-
-            if (mapData.getPostJobCommands() == null) {
-                mapData.setPostJobCommands(new ArrayList<>());
+                }
             }
-            mapData.getPostJobCommands()
-                    .add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
-                            + "-H \"Accept: application/vnd.kafka.v2+json\" "
-                            + "--data '{\"records\":[{\"value\":{\"jobName\":\""
-                            + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId()
-                            + "\"}}]}' \"" + ServerSettings.getSetting("job.status.publish.endpoint")
-                            + "\" > /dev/null || true");
+        } catch (Exception e) {
+            logger.warn("Could not get properties for monitoring commands", e);
         }
     }
 }

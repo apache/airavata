@@ -26,26 +26,26 @@ public final class Constants {
     public static final String JOB = "job";
 
     // API security relates property names
-    public static final String SECURITY_MANAGER_CLASS = "security.manager.class";
-    public static final String IS_TLS_ENABLED = "TLS.enabled";
-    public static final String KEYSTORE_PATH = "keystore.path";
-    public static final String KEYSTORE_PASSWORD = "keystore.password";
-    public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
+    public static final String SECURITY_MANAGER_CLASS = "security.iam.classpath";
+    public static final String IS_TLS_ENABLED = "security.tls.enabled";
+    public static final String KEYSTORE_PATH = "security.keystore.path";
+    public static final String KEYSTORE_PASSWORD = "security.keystore.password";
+    public static final String TLS_CLIENT_TIMEOUT = "security.tls.client-timeout";
 
     public static final String API_METHOD_NAME = "api.method.name";
 
     // constants in XACML authorization response.
 
-    public static final String AUTHZ_CACHE_MANAGER_CLASS = "authz.cache.manager.class";
-    public static final String AUTHZ_CACHE_ENABLED = "authz.cache.enabled";
+    public static final String AUTHZ_CACHE_MANAGER_CLASS = "security.authzCache.classpath";
+    public static final String AUTHZ_CACHE_ENABLED = "security.authzCache.enabled";
 
-    public static final String IN_MEMORY_CACHE_SIZE = "in.memory.cache.size";
-    public static final String LOCAL_DATA_LOCATION = "local.data.location";
+    public static final String IN_MEMORY_CACHE_SIZE = "airavata.in-memory-cache-size";
+    public static final String LOCAL_DATA_LOCATION = "airavata.local-data-location";
 
     // Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
     public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
 
-    public static final String ENABLE_STREAMING_TRANSFER = "enable.streaming.transfer";
+    public static final String ENABLE_STREAMING_TRANSFER = "airavata.enable-streaming-transfer";
 }

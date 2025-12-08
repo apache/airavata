@@ -45,7 +45,8 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
         return credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
-    private CredentialStoreException wrapException(org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+    private CredentialStoreException wrapException(
+            org.apache.airavata.credential.exceptions.CredentialStoreException e) {
         CredentialStoreException thriftException = new CredentialStoreException();
         thriftException.setMessage(e.getMessage());
         return thriftException;

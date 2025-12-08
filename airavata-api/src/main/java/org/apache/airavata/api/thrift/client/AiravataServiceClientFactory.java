@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.api.thrift.client;
 
+import java.io.File;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -31,7 +31,8 @@ import org.apache.thrift.transport.TTransportException;
 
 public class AiravataServiceClientFactory {
 
-    public static Airavata.Client createAiravataClient(String serverHost, int serverPort, boolean secure)
+    public static Airavata.Client createAiravataClient(
+            String serverHost, int serverPort, boolean secure, AiravataServerProperties properties)
             throws AiravataClientException {
         try {
             TTransport transport;
@@ -41,14 +42,17 @@ public class AiravataServiceClientFactory {
             } else {
                 // TLS enabled client
                 var params = new TSSLTransportFactory.TSSLTransportParameters();
-                params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+                String airavataConfigDir = properties.airavataConfigDir;
+                String keystorePath = properties.security.keystore.path;
+                String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
+                params.setKeyStore(keystoreFullPath, properties.security.keystore.password);
                 transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             }
 
             var protocol = new TBinaryProtocol(transport);
             //            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "APIServer");
             return new Airavata.Client(protocol);
-        } catch (TTransportException | ApplicationSettingsException e) {
+        } catch (TTransportException e) {
             AiravataClientException exception = new AiravataClientException();
             exception.setParameter("Unable to connect to the server at " + serverHost + ":" + serverPort);
             throw exception;

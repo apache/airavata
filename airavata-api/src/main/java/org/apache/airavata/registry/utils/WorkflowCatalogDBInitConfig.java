@@ -34,27 +34,27 @@ public class WorkflowCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public String getDriver() {
-        return properties.getDatabase().getWorkflowCatalog().getJdbcDriver();
+        return properties.database.workflow.driver;
     }
 
     @Override
     public String getUrl() {
-        return properties.getDatabase().getWorkflowCatalog().getJdbcUrl();
+        return properties.database.workflow.url;
     }
 
     @Override
     public String getUser() {
-        return properties.getDatabase().getWorkflowCatalog().getJdbcUser();
+        return properties.database.workflow.user;
     }
 
     @Override
     public String getPassword() {
-        return properties.getDatabase().getWorkflowCatalog().getJdbcPassword();
+        return properties.database.workflow.password;
     }
 
     @Override
     public String getValidationQuery() {
-        return properties.getDatabase().getWorkflowCatalog().getValidationQuery();
+        return properties.database.workflow.validationQuery;
     }
 
     @Override

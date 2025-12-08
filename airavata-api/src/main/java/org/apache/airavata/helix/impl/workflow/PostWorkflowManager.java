@@ -22,9 +22,8 @@ package org.apache.airavata.helix.impl.workflow;
 import java.util.*;
 import java.util.concurrent.*;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
@@ -54,18 +53,30 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PostWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
     private static final CountMonitor postwfCounter = new CountMonitor("post_wf_counter");
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     private final ExecutorService processingPool = Executors.newFixedThreadPool(10);
 
-    public PostWorkflowManager() throws ApplicationSettingsException {
-        super(
-                ServerSettings.getSetting("post.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
+    public PostWorkflowManager() {
+        // Default values, will be updated in @PostConstruct
+        super("post-workflow-manager", false);
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void initWorkflowManager() {
+        if (properties != null) {
+            this.workflowManagerName = properties.services.postwm.name;
+            this.loadBalanceClusters = properties.services.postwm.loadBalanceClusters;
+        }
     }
 
     /**
@@ -87,10 +98,10 @@ public class PostWorkflowManager extends WorkflowManager {
         super.initComponents();
     }
 
-    private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
+    private Consumer<String, JobStatusResult> createConsumer() {
         final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.consumer.group"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.monitor.job.brokerConsumerGroup);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -98,7 +109,7 @@ public class PostWorkflowManager extends WorkflowManager {
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("job.monitor.broker.topic")));
+        consumer.subscribe(Collections.singletonList(properties.services.monitor.job.brokerTopic));
         return consumer;
     }
 

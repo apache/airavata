@@ -21,8 +21,7 @@ package org.apache.airavata.monitor.kafka;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -35,15 +34,15 @@ public class MessageProducer {
     final Producer<String, JobStatusResult> producer;
     final String topic;
 
-    public MessageProducer() throws ApplicationSettingsException {
-        producer = createProducer();
-        topic = ServerSettings.getSetting("job.monitor.broker.topic");
+    public MessageProducer(AiravataServerProperties properties) {
+        producer = createProducer(properties);
+        topic = properties.services.monitor.job.brokerTopic;
     }
 
-    private Producer<String, JobStatusResult> createProducer() throws ApplicationSettingsException {
+    private Producer<String, JobStatusResult> createProducer(AiravataServerProperties properties) {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, properties.services.monitor.job.brokerPublisherId);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JobStatusResultSerializer.class.getName());
         return new KafkaProducer<>(props);

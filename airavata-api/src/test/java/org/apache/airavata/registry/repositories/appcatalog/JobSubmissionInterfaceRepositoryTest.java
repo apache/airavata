@@ -46,7 +46,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
     @Autowired
     private JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
-    
+
     @Autowired
     private Mapper mapper;
 

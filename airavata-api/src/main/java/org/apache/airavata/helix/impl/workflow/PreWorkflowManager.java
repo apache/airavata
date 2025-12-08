@@ -27,8 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
@@ -58,9 +57,9 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PreWorkflowManager extends WorkflowManager {
@@ -68,12 +67,24 @@ public class PreWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
     private static final CountMonitor prewfCounter = new CountMonitor("pre_wf_counter");
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
+
     private Subscriber subscriber;
 
-    public PreWorkflowManager() throws ApplicationSettingsException {
-        super(
-                ServerSettings.getSetting("pre.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
+    public PreWorkflowManager() {
+        // Default values, will be updated in @PostConstruct
+        super("pre-workflow-manager", false);
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void initWorkflowManager() {
+        if (properties != null) {
+            String managerName = properties.services.prewm.name;
+            boolean loadBalance = properties.services.prewm.loadBalanceClusters;
+            this.workflowManagerName = managerName;
+            this.loadBalanceClusters = loadBalance;
+        }
     }
 
     public void startServer() throws Exception {
@@ -93,7 +104,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
+        routingKeys.add(properties.rabbitmq.processExchangeName);
         this.subscriber =
                 MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }

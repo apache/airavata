@@ -39,15 +39,15 @@ import org.springframework.stereotype.Component;
 /**
  * This class contains all utility methods across scheduler sub projects
  */
-@Component
+@Component("metaschedulerUtils")
 public class Utils {
 
     @Autowired
     private RegistryService registryService;
-    
+
     private static Publisher statusPublisher;
     private static ApplicationContext applicationContext;
-    
+
     @org.springframework.beans.factory.annotation.Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         Utils.applicationContext = applicationContext;
@@ -97,12 +97,12 @@ public class Utils {
         }
         return statusPublisher;
     }
-    
+
     // Instance method for Spring DI
     protected RegistryService getRegistryServiceInstance() {
         return registryService;
     }
-    
+
     // Static method for backward compatibility - delegates to Spring-managed instance
     private static RegistryService getRegistryService() {
         if (applicationContext != null) {

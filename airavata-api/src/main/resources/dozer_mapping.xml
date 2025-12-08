@@ -26,23 +26,23 @@
           https://dozermapper.github.io/schema/bean-mapping.xsd">
 
     <configuration>
-        <bean-factory>org.apache.airavata.registry.core.utils.CustomBeanFactory</bean-factory>
+        <bean-factory>org.apache.airavata.registry.utils.CustomBeanFactory</bean-factory>
     </configuration>
 
     <mapping>
         <class-a>org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription</class-a>
-        <class-b>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfaceEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.StorageDateConverter">
+        <class-b>org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity</class-b>
+        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.StorageDateConverter">
             <a>creationTime</a>
             <b>creationTime</b>
         </field>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.StorageDateConverter">
+        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.StorageDateConverter">
             <a>updateTime</a>
             <b>updateTime</b>
         </field>
     </mapping>
     <mapping>
-        <class-a>org.apache.airavata.registry.core.entities.expcatalog.UserConfigurationDataEntity</class-a>
+        <class-a>org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity</class-a>
         <class-b>org.apache.airavata.model.experiment.UserConfigurationDataModel</class-b>
         <field>
             <a>this</a>
@@ -51,16 +51,16 @@
     </mapping>
     <mapping>
         <class-a>org.apache.airavata.model.experiment.ExperimentModel</class-a>
-        <class-b>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.CsvStringConverter">
+        <class-b>org.apache.airavata.registry.entities.expcatalog.ExperimentEntity</class-b>
+        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.CsvStringConverter">
             <a>emailAddresses</a>
             <b>emailAddresses</b>
         </field>
     </mapping>
     <mapping>
         <class-a>org.apache.airavata.model.process.ProcessModel</class-a>
-        <class-b>org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.CsvStringConverter">
+        <class-b>org.apache.airavata.registry.entities.expcatalog.ProcessEntity</class-b>
+        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.CsvStringConverter">
             <a>emailAddresses</a>
             <b>emailAddresses</b>
         </field>

@@ -21,8 +21,7 @@ package org.apache.airavata.helix.impl.task.parsing;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageSerializer;
@@ -40,25 +39,45 @@ public class ParsingTriggeringTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);
 
     private static Producer<String, ProcessCompletionMessage> producer;
-    private final String topic;
+    private String topic;
 
     public ParsingTriggeringTask() {
+        // Topic will be initialized in @PostConstruct or from ApplicationContext
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
         try {
-            topic = ServerSettings.getSetting("data.parser.topic");
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException(e);
+            var ctx = getApplicationContext();
+            if (ctx != null) {
+                var props = ctx.getBean(AiravataServerProperties.class);
+                topic = props.services.parser.topic;
+            }
+        } catch (Exception e) {
+            logger.warn("Could not get properties from ApplicationContext", e);
         }
     }
 
-    private void createProducer() throws ApplicationSettingsException {
-
+    private void createProducer() {
         if (producer == null) {
-            Properties props = new Properties();
-            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-            props.put(ProducerConfig.CLIENT_ID_CONFIG, ServerSettings.getSetting("data.parser.broker.publisher.id"));
-            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ProcessCompletionMessageSerializer.class.getName());
-            producer = new KafkaProducer<>(props);
+            try {
+                var ctx = getApplicationContext();
+                if (ctx == null) {
+                    throw new IllegalStateException("ApplicationContext not available");
+                }
+                var props = ctx.getBean(AiravataServerProperties.class);
+                Properties kafkaProps = new Properties();
+                kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, props.kafka.brokerUrl);
+                kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, props.services.parser.brokerConsumerGroup);
+                kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+                kafkaProps.put(
+                        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                        ProcessCompletionMessageSerializer.class.getName());
+                producer = new KafkaProducer<>(kafkaProps);
+            } catch (Exception e) {
+                logger.error("Failed to create Kafka producer", e);
+                throw new RuntimeException("Failed to create Kafka producer", e);
+            }
         }
     }
 

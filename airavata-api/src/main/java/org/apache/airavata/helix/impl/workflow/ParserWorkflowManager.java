@@ -20,8 +20,7 @@
 package org.apache.airavata.helix.impl.workflow;
 
 import java.util.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.parsing.*;
@@ -42,9 +41,9 @@ import org.apache.airavata.service.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Workflow Manager which will create and launch Data Parsing DAGs
@@ -57,12 +56,23 @@ public class ParserWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
-    private String parserStorageResourceId = ServerSettings.getSetting("data.parser.storage.resource.id");
+    @org.springframework.beans.factory.annotation.Autowired
+    private AiravataServerProperties properties;
 
-    public ParserWorkflowManager() throws ApplicationSettingsException {
-        super(
-                ServerSettings.getSetting("parser.workflow.manager.name"),
-                Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
+    private String parserStorageResourceId;
+
+    public ParserWorkflowManager() {
+        // Default values, will be updated in @PostConstruct
+        super("parser-workflow-manager", false);
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void initWorkflowManager() {
+        if (properties != null) {
+            this.workflowManagerName = properties.services.parser.name;
+            this.loadBalanceClusters = properties.services.parser.loadBalanceClusters;
+            this.parserStorageResourceId = properties.services.parser.storageResourceId;
+        }
     }
 
     /**
@@ -442,18 +452,17 @@ public class ParserWorkflowManager extends WorkflowManager {
         }
     }
 
-    private void runConsumer() throws ApplicationSettingsException {
-
+    private void runConsumer() {
         final Properties props = new Properties();
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("data.parser.broker.consumer.group"));
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.parser.brokerConsumerGroup);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
-        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("data.parser.topic")));
+        consumer.subscribe(Collections.singletonList(properties.services.parser.topic));
 
         logger.info("Starting the kafka consumer..");
 

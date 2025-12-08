@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -70,10 +71,10 @@ import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
@@ -82,16 +83,26 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
-    
+
     @Autowired
     private RegistryService registryService;
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @jakarta.annotation.PostConstruct
+    public void init() throws OrchestratorException {
+        initialize(properties);
+    }
 
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
             try {
                 // We are only going to use GFacPassiveJobSubmitter
                 jobSubmitter = new GFACPassiveJobSubmitter();
-                jobSubmitter.initialize(this.orchestratorContext);
+                if (this.orchestratorContext != null) {
+                    jobSubmitter.initialize(this.orchestratorContext);
+                }
 
             } catch (Exception e) {
                 String error = "Error creating JobSubmitter in non threaded mode ";
@@ -295,8 +306,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    public String createAndSaveTasks(String gatewayId, ProcessModel processModel)
-            throws OrchestratorException {
+    public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
         try {
             GroupComputeResourcePreference preference =
                     OrchestratorUtils.getGroupComputeResourcePreference(processModel);

@@ -21,7 +21,6 @@ package org.apache.airavata.sharing.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -37,6 +36,7 @@ import org.apache.airavata.sharing.models.PermissionType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +49,8 @@ public class PermissionTypeService {
     @Autowired
     private Mapper mapper;
 
-    @PersistenceContext(unitName = "airavata-sharing-registry")
+    @Autowired
+    @Qualifier("sharingRegistryEntityManager")
     private EntityManager entityManager;
 
     public PermissionType get(PermissionTypePK pk) throws SharingRegistryException {

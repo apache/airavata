@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.profile.utils.JPAUtils;
-import org.springframework.orm.jpa.SharedEntityManagerCreator;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
@@ -44,7 +44,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected abstract Mapper getMapper();
-    
+
     protected EntityManager getEntityManager() {
         if (entityManager == null) {
             entityManager = SharedEntityManagerCreator.createSharedEntityManager(JPAUtils.getEntityManagerFactory());

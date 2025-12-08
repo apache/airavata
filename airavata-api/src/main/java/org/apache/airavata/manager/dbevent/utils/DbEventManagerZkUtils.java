@@ -20,8 +20,7 @@
 package org.apache.airavata.manager.dbevent.utils;
 
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -41,15 +40,14 @@ public class DbEventManagerZkUtils {
     /**
      *  Get curatorFramework instance
      * @return
-     * @throws ApplicationSettingsException
      */
-    public static CuratorFramework getCuratorClient() throws ApplicationSettingsException {
+    public static CuratorFramework getCuratorClient(AiravataServerProperties properties) {
         if (curatorClient == null) {
             synchronized (DbEventManagerZkUtils.class) {
                 if (curatorClient == null) {
-                    String connectionSting = ServerSettings.getZookeeperConnection();
+                    String connectionString = properties.zookeeper.serverConnection;
                     RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
-                    curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
+                    curatorClient = CuratorFrameworkFactory.newClient(connectionString, retryPolicy);
                 }
             }
         }

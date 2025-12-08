@@ -29,7 +29,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParsingTemplateRepository extends JpaRepository<ParsingTemplateEntity, String> {
 
-    @Query("SELECT pt FROM ParsingTemplateEntity pt WHERE pt.applicationInterfaceId = :applicationInterfaceId")
+    @Query("SELECT pt FROM ParsingTemplateEntity pt WHERE pt.applicationInterface = :applicationInterfaceId")
     List<ParsingTemplateEntity> findByApplicationInterfaceId(
             @Param("applicationInterfaceId") String applicationInterfaceId);
 

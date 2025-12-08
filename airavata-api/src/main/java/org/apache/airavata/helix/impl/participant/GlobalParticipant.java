@@ -22,11 +22,13 @@ package org.apache.airavata.helix.impl.participant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GlobalParticipant extends HelixParticipant<AbstractTask> {
@@ -56,16 +58,18 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     };
 
     @SuppressWarnings("WeakerAccess")
-    public GlobalParticipant(List<Class<? extends AbstractTask>> taskClasses, String taskTypeName)
+    public GlobalParticipant(
+            List<Class<? extends AbstractTask>> taskClasses, String taskTypeName, AiravataServerProperties properties)
             throws ApplicationSettingsException {
-        super(taskClasses, taskTypeName);
+        super(taskClasses, taskTypeName, properties);
     }
-    
-    // Default constructor for Spring - initializes with default task classes
-    public GlobalParticipant() throws ApplicationSettingsException {
-        this(createTaskClasses(), null);
+
+    // Constructor for Spring - uses constructor injection for properties
+    @Autowired
+    public GlobalParticipant(AiravataServerProperties properties) throws ApplicationSettingsException {
+        super(createTaskClasses(), null, properties);
     }
-    
+
     private static List<Class<? extends AbstractTask>> createTaskClasses() {
         ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
         try {
@@ -90,35 +94,5 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
      */
     public void start() {
         startServer();
-    }
-
-    /**
-     * Factory method to create and initialize GlobalParticipant.
-     * Extracts initialization logic for reuse.
-     */
-    public static GlobalParticipant create() throws Exception {
-        ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
-
-        for (String taskClassName : TASK_CLASS_NAMES) {
-            logger.debug("Adding task class: " + taskClassName + " to the global participant");
-            taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
-        }
-
-        return new GlobalParticipant(taskClasses, null);
-    }
-
-    public void stopServer() {}
-
-    public static void main(String args[]) {
-        logger.info("Starting global participant");
-
-        try {
-            GlobalParticipant participant = create();
-            participant.start();
-            // Keep main thread alive
-            Thread.currentThread().join();
-        } catch (Exception e) {
-            logger.error("Failed to start global participant", e);
-        }
     }
 }
