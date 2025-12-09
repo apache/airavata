@@ -3,7 +3,7 @@
 
 # Airavata version and build settings
 airavata_version: "0.21-SNAPSHOT"
-git_branch: "airavata-deployment"
+git_branch: "master"
 airavata_git_repo: "https://github.com/apache/airavata.git"
 airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
 deployment_dir: "/home/{{ deploy_user }}/airavata-deployment"
