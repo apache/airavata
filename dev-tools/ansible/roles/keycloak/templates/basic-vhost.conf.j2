@@ -1,5 +1,5 @@
 <VirtualHost *:80>
-    ServerName {{ groups['keycloak'][0] }}
+    ServerName {{ keycloak_vhost_servername }}
     DocumentRoot "/var/www/html"
 
     <Directory /var/www/html>

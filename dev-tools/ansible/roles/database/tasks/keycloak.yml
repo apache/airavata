@@ -22,20 +22,47 @@
 
 # Setup keycloak user and database
 - name: create keycloak database
-  mysql_db: name="keycloak" state=present encoding=utf8
+  mysql_db:
+    name: "keycloak"
+    state: present
+    encoding: utf8
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
   when: "'keycloak' in groups"
 
 - name: give access to {{ keycloak_db_username }} from remote
   # Creating the access record with the IP address works better for MySQL so it
   # doesn't have to do a DNS lookup (and it has DNS caching issues if the domain
   # name changes)
-  mysql_user: name="{{ keycloak_db_username }}" password="{{ keycloak_db_password }}" host="{{ hostvars[item].public_ipv4 | default(item) }}"
+  mysql_user:
+    name: "{{ keycloak_db_username }}"
+    password: "{{ keycloak_db_password }}"
+    host: "{{ hostvars[item].public_ipv4 | default(hostvars[item].ansible_host | default(item)) }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
   with_items:
     - "{{ groups['keycloak'] }}"
+  when: "'keycloak' in groups and (hostvars[item].public_ipv4 is defined or hostvars[item].ansible_host is defined)"
+
+- name: give access to {{ keycloak_db_username }} from localhost
+  mysql_user:
+    name: "{{ keycloak_db_username }}"
+    password: "{{ keycloak_db_password }}"
+    host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
 
 - name: create new user {{ keycloak_db_username }} with all privilege
-  mysql_user: name="{{ keycloak_db_username }}"
-              password="{{ keycloak_db_password }}"
-              append_privs=yes
-              host_all=yes
-              priv=keycloak.*:ALL,GRANT state=present
+  mysql_user:
+    name: "{{ keycloak_db_username }}"
+    password: "{{ keycloak_db_password }}"
+    append_privs: yes
+    host_all: yes
+    priv: keycloak.*:ALL,GRANT
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"

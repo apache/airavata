@@ -1,0 +1,152 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+- name: Start API Server orchestrator
+  shell: '{{ api_server_dir }}/bin/orchestrator.sh -d start api-orch'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Wait for API Server orchestrator to be ready
+  wait_for:
+    port: '{{ orchestrator_server_port }}'
+    host: localhost
+    delay: 5
+    timeout: 60
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server controller
+  shell: '{{ api_server_dir }}/bin/controller.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server participant
+  shell: '{{ api_server_dir }}/bin/participant.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server email-monitor
+  shell: '{{ api_server_dir }}/bin/email-monitor.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server realtime-monitor
+  shell: '{{ api_server_dir }}/bin/realtime-monitor.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server pre-wm
+  shell: '{{ api_server_dir }}/bin/pre-wm.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Start API Server post-wm
+  shell: '{{ api_server_dir }}/bin/post-wm.sh -d start'
+  args:
+    chdir: '{{ api_server_dir }}'
+  tags:
+    - start
+    - api-server
+
+- name: Wait for API Server to start
+  wait_for:
+    timeout: 30
+  tags:
+    - start
+    - api-server
+
+- name: Start Agent Service
+  shell: '{{ agent_service_dir }}/bin/agent-service.sh -d start'
+  args:
+    chdir: '{{ agent_service_dir }}'
+  tags:
+    - start
+    - agent-service
+
+- name: Wait for Agent Service to start
+  wait_for:
+    timeout: 30
+  tags:
+    - start
+    - agent-service
+
+- name: Start Research Service
+  shell: '{{ research_service_dir }}/bin/research-service.sh -d start'
+  args:
+    chdir: '{{ research_service_dir }}'
+  tags:
+    - start
+    - research-service
+
+- name: Wait for Research Service to start
+  wait_for:
+    timeout: 30
+  tags:
+    - start
+    - research-service
+
+- name: Start File Server
+  shell: '{{ file_server_dir }}/bin/file-service.sh -d start'
+  args:
+    chdir: '{{ file_server_dir }}'
+  tags:
+    - start
+    - file-server
+
+- name: Wait for File Server to start
+  wait_for:
+    timeout: 30
+  tags:
+    - start
+    - file-server
+
+- name: Start REST Proxy
+  shell: '{{ restproxy_dir }}/bin/restproxy.sh -d start'
+  args:
+    chdir: '{{ restproxy_dir }}'
+  tags:
+    - start
+    - restproxy
+
+- name: Wait for REST Proxy to start
+  wait_for:
+    timeout: 30
+  tags:
+    - start
+    - restproxy

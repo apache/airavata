@@ -21,9 +21,10 @@
 ---
 
 #Variables associated with this role
-kafka_package_name: "confluent-5.3.1"
-kafka_tgz_url: "https://packages.confluent.io/archive/7.9/confluent-7.9.0.zip"
+kafka_package_name: "confluent-7.9.2"
+kafka_tgz_url: "https://packages.confluent.io/archive/7.9/confluent-7.9.2.zip"
 kafka_dir: "{{ deployment_dir }}/{{ kafka_package_name }}"
+kafka_symlink_name: "confluent"
 
 # Kafka related variables
 broker_id: "0"
@@ -43,5 +44,6 @@ log_retention_check_interval: "300000"
 grp_initial_rebalance_delay: "0"
 kafka_listener_port: 9092
 kafka_rest_proxy_listener_port: 8082
+zookeeper_connection_url: "{{ zookeeper_connection | default('localhost:2181') }}"
 
 ...

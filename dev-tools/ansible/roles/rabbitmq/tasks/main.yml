@@ -21,25 +21,54 @@
 ---
 ################################################################################
 # Setup and run rabbitmq
-- name: Install erlang latest version (CentOS)
-  yum: name=https://www.rabbitmq.com/releases/erlang/erlang-18.3-1.el7.centos.x86_64.rpm state=present
-  become: yes
-  when: ansible_distribution == "CentOS"
 
-- name: Install erlang latest version (Rocky)
-  dnf: name=https://github.com/rabbitmq/erlang-rpm/releases/download/v24.1.4/erlang-24.1.4-1.el8.x86_64.rpm
+# Ubuntu/Debian – install RabbitMQ and Erlang from distro repositories
+- name: Install RabbitMQ prerequisites (Ubuntu/Debian)
+  apt:
+    name:
+      - erlang
+      - rabbitmq-server
+    state: present
+    update_cache: yes
   become: yes
-  when: ansible_distribution == "Rocky"
+  when: ansible_os_family == "Debian"
 
-- name: Install Rabbitmq rpm (CentOS)
-  yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
+# Rocky/CentOS: Add RabbitMQ RPM repository
+- name: Install erlang from RabbitMQ repository (Rocky/CentOS)
+  yum:
+    name: "https://github.com/rabbitmq/erlang-rpm/releases/download/v{{ rabbitmq_erlang_version }}/erlang-{{ rabbitmq_erlang_version }}-1.el{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
   become: yes
-  when: ansible_distribution == "CentOS"
+  when: ansible_os_family == "RedHat"
+  ignore_errors: yes
 
-- name: Install Rabbitmq rpm (Rocky)
-  dnf: name=https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.6/rabbitmq-server-3.10.6-1.el8.noarch.rpm
+- name: Add RabbitMQ YUM repository (Rocky/CentOS)
+  yum_repository:
+    name: rabbitmq_server
+    description: RabbitMQ Server
+    baseurl: "https://packagecloud.io/rabbitmq/rabbitmq-server/el/{{ ansible_distribution_major_version }}/$basearch"
+    gpgcheck: yes
+    gpgkey: "https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey"
+    state: present
   become: yes
-  when: ansible_distribution == "Rocky"
+  when: ansible_os_family == "RedHat"
+
+# Install RabbitMQ server
+- name: Install RabbitMQ server (Ubuntu)
+  apt:
+    name: rabbitmq-server
+    state: present
+    update_cache: yes
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install RabbitMQ server (Rocky/CentOS)
+  yum:
+    name: rabbitmq-server
+    state: present
+    update_cache: yes
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: allow only selected networks to access Airavata RabbitMQ
   firewalld:

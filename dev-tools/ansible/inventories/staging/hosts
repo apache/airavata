@@ -1,0 +1,17 @@
+[database]
+db-server
+
+[keycloak]
+keycloak-server
+
+[airavata_servers]
+api-server
+
+[zookeeper]
+api-server
+
+[rabbitmq]
+api-server
+
+[api-orch]
+api-server

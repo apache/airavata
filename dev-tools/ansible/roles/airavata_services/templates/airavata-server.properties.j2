@@ -1,0 +1,276 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+###########################################################################
+#
+#  This properties file provides configuration for all Airavata Services:
+#
+###########################################################################
+
+###########################################################################
+#  API Server Registry DB Configuration
+###########################################################################
+registry.jdbc.driver={{ registry_jdbc_driver }}
+registry.jdbc.url={{ registry_jdbc_url }}
+registry.jdbc.user={{ registry_jdbc_user }}
+registry.jdbc.password={{ registry_jdbc_password }}
+validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Application Catalog DB Configuration
+###########################################################################
+appcatalog.jdbc.driver={{ appcatalog_jdbc_driver }}
+appcatalog.jdbc.url={{ appcatalog_jdbc_url }}
+appcatalog.jdbc.user={{ appcatalog_jdbc_user }}
+appcatalog.jdbc.password={{ appcatalog_jdbc_password }}
+appcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+##########################################################################
+#  Replica Catalog DB Configuration
+###########################################################################
+replicacatalog.jdbc.driver={{ replicacatalog_jdbc_driver }}
+replicacatalog.jdbc.url={{ replicacatalog_jdbc_url }}
+replicacatalog.jdbc.user={{ replicacatalog_jdbc_user }}
+replicacatalog.jdbc.password={{ replicacatalog_jdbc_password }}
+replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Workflow Catalog DB Configuration
+###########################################################################
+workflowcatalog.jdbc.driver={{ workflowcatalog_jdbc_driver }}
+workflowcatalog.jdbc.url={{ workflowcatalog_jdbc_url }}
+workflowcatalog.jdbc.user={{ workflowcatalog_jdbc_user }}
+workflowcatalog.jdbc.password={{ workflowcatalog_jdbc_password }}
+workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Sharing Catalog DB Configuration
+###########################################################################
+sharingcatalog.jdbc.driver={{ sharingcatalog_jdbc_driver }}
+sharingcatalog.jdbc.url={{ sharingcatalog_jdbc_url }}
+sharingcatalog.jdbc.user={{ sharingcatalog_jdbc_user }}
+sharingcatalog.jdbc.password={{ sharingcatalog_jdbc_password }}
+sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Generic Server Configurations
+###########################################################################
+enable.sharing={{ enable_sharing }}
+
+###########################################################################
+#  Sharing Registry Server Configuration
+###########################################################################
+sharing_server={{ sharing_server_class }}
+sharing.registry.server.host={{ sharing_registry_bind_host | default(sharing_registry_server_host) }}
+sharing.registry.server.port={{ sharing_registry_port }}
+
+###########################################################################
+#  Registry Server Configurations
+###########################################################################
+regserver={{ regserver_class }}
+regserver.server.host={{ registry_bind_host | default(regserver_server_host) }}
+regserver.server.port={{ registry_server_port }}
+regserver.server.min.threads={{ orchestrator_server_min_threads }}
+
+default.registry.user={{ default_registry_user }}
+default.registry.password={{ default_registry_password }}
+default.registry.gateway={{ default_registry_gateway }}
+default.registry.oauth.client.id={{ default_registry_oauth_client_id }}
+default.registry.oauth.client.secret={{ default_registry_oauth_client_secret }}
+super.tenant.gatewayId={{ super_tenant_gatewayId }}
+
+###########################################################################
+#  API Server Configurations
+###########################################################################
+apiserver.class={{ apiserver_class }}
+apiserver.host={{ api_server_bind_host | default(api_server_host) }}
+apiserver.port={{ api_server_port }}
+api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
+api.server.monitoring.host={{ api_server_monitoring_host }}
+api.server.monitoring.port={{ api_server_monitoring_port }}
+
+###########################################################################
+#  Orchestrator Server Configurations
+###########################################################################
+orchestrator={{ orchestrator_class }}
+orchestrator.server.host={{ orchestrator_bind_host | default(orchestrator_server_host) }}
+orchestrator.server.port={{ orchestrator_server_port }}
+orchestrator.server.min.threads={{ orchestrator_server_min_threads }}
+
+job.validators={{ job_validators }}
+enable.validation={{ enable_validation }}
+host.scheduler={{ host_scheduler }}
+
+###########################################################################
+# Job Monitor Configurations
+###########################################################################
+job.notification.enable={{ job_notification_enable }}
+#Provide comma separated email ids as a string if more than one
+job.notification.emailids={{ job_notification_emailids }}
+job.status.publish.endpoint={{ job_status_publish_endpoint }}
+
+###########################################################################
+# Credential Store module Configuration
+###########################################################################
+credential.store.keystore.url={{ credential_store_keystore_url }}
+credential.store.keystore.alias={{ credential_store_keystore_alias }}
+credential.store.keystore.password={{ credential_store_keystore_password }}
+credential.store.jdbc.url={{ credential_store_jdbc_url }}
+credential.store.jdbc.user={{ credential_store_jdbc_user }}
+credential.store.jdbc.password={{ credential_store_jdbc_password }}
+credential.store.jdbc.driver={{ credential_store_jdbc_driver }}
+credential.store.server.host={{ cred_store_server_bind_host | default(cred_store_server_host) }}
+credential.store.server.port={{ cred_store_port }}
+credential.store.class={{ credential_store_class }}
+credential.store.jdbc.validationQuery={{ credential_store_validation_query }}
+
+###########################################################################
+# AMQP Notification Configuration
+###########################################################################
+rabbitmq.broker.url={{ rabbitmq_broker_url }}
+experiment.launch.queue={{ experiment_launch_queue }}
+rabbitmq.status.exchange.name={{ rabbitmq_status_exchange_name }}
+rabbitmq.process.exchange.name={{ rabbitmq_process_exchange_name }}
+rabbitmq.experiment.exchange.name={{ rabbitmq_experiment_exchange_name }}
+durable.queue={{ durable_queue }}
+prefetch.count={{ prefetch_count }}
+
+###########################################################################
+# Zookeeper Server Configuration
+###########################################################################
+embedded.zk={{ embedded_zk }}
+zookeeper.server.connection={{ zookeeper_connection }}
+
+########################################################################
+## API Security Configuration
+########################################################################
+security.manager.class={{ security_manager_class }}
+TLS.enabled={{ TLS_enabled }}
+TLS.client.timeout={{ TLS_client_timeout }}
+keystore.path={{ keystore_path }}
+keystore.password={{ keystore_password }}
+authz.cache.enabled={{ authz_cache_enabled }}
+authz.cache.manager.class={{ authz_cache_manager_class }}
+in.memory.cache.size={{ in_memory_cache_size }}
+
+###########################################################################
+# Profile Service Configuration
+###########################################################################
+profile.service.server.host={{ profile_service_bind_host }}
+profile.service.server.port={{ profile_service_port }}
+profile_service.class={{ profile_service_class }}
+# MariaDB properties
+profile.service.jdbc.url={{ profile_service_jdbc_url }}
+profile.service.jdbc.user={{ profile_service_jdbc_user }}
+profile.service.jdbc.password={{ profile_service_jdbc_password }}
+profile.service.jdbc.driver={{ profile_service_jdbc_driver }}
+profile.service.validationQuery={{ profile_service_validation_query }}
+
+###########################################################################
+# Iam Admin services Configuration
+###########################################################################
+iam.server.url={{ iam_server_url }}
+iam.server.super.admin.username={{ iam_admin_username }}
+iam.server.super.admin.password={{ iam_admin_password }}
+
+###########################################################################
+# DB Event Manager Runner
+###########################################################################
+db_event_manager.class={{ db_event_manager_class }}
+
+###########################################################################
+# Job Execution Engine properties
+###########################################################################
+helix.cluster.name={{ helix_cluster_name }}
+helix.controller.name={{ helix_controller_name }}
+helix.participant.name={{ helix_participant_name }}
+participant.monitoring.enabled={{ participant_monitoring_enabled }}
+participant.monitoring.host={{ participant_monitoring_host }}
+participant.monitoring.port={{ participant_monitoring_port }}
+
+###########################################################################
+# Job Monitor related properties
+###########################################################################
+enable.realtime.monitor={{ enable_realtime_monitor }}
+realtime.monitor.broker.consumer.group={{ realtime_monitor_broker_consumer_group }}
+realtime.monitor.broker.topic={{ realtime_monitor_broker_topic }}
+
+job.monitor.broker.consumer.group={{ job_monitor_broker_consumer_group }}
+job.monitor.broker.topic={{ job_monitor_broker_topic }}
+job.monitor.broker.publisher.id={{ job_monitor_broker_publisher_id }}
+job.monitor.email.publisher.id={{ job_monitor_email_publisher_id }}
+job.monitor.realtime.publisher.id={{ job_monitor_realtime_publisher_id }}
+
+email.based.monitor.host={{ email_based_monitor_host }}
+email.based.monitor.store.protocol={{ email_based_monitor_store_protocol }}
+email.based.monitor.folder.name={{ email_based_monitor_folder_name }}
+email.expiration.minutes={{ email_expiration_minutes }}
+email.based.monitoring.period={{ email_based_monitoring_period }}
+email.based.monitor.address={{ email_based_monitor_address }}
+email.based.monitor.password={{ email_based_monitor_password }}
+
+kafka.broker.url={{ kafka_broker_url }}
+local.data.location={{ local_data_location }}
+
+###########################################################################
+# ThriftClientPool Configuration
+###########################################################################
+thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
+thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_removal_logged }}
+
+###########################################################################
+# Pre-workflow Configuration
+###########################################################################
+pre.workflow.manager.loadbalance.clusters={{ pre_workflow_manager_loadbalance_clusters }}
+pre.workflow.manager.monitoring.enabled={{ pre_workflow_manager_monitoring_enabled }}
+pre.workflow.manager.monitoring.host={{ pre_workflow_manager_monitoring_host }}
+pre.workflow.manager.monitoring.port={{ pre_wm_monitoring_port }}
+pre.workflow.manager.name={{ pre_workflow_manager_name }}
+
+###########################################################################
+# Post-workflow Configuration
+###########################################################################
+post.workflow.manager.loadbalance.clusters={{ post_workflow_manager_loadbalance_clusters }}
+post.workflow.manager.monitoring.enabled={{ post_workflow_manager_monitoring_enabled }}
+post.workflow.manager.monitoring.host={{ post_workflow_manager_monitoring_host }}
+post.workflow.manager.monitoring.port={{ post_wm_monitoring_port }}
+post.workflow.manager.name={{ post_workflow_manager_name }}
+
+###########################################################################
+# Parser-workflow Configuration
+###########################################################################
+data.parser.delete.container={{ data_parser_delete_container }}
+data.parser.broker.consumer.group={{ data_parser_broker_consumer_group }}
+data.parser.topic={{ data_parser_topic }}
+data.parser.storage.resource.id={{ data_parser_storage_resource_id }}
+
+###########################################################################
+# Metascheduler And Compute Resource Monitoring Configuration
+###########################################################################
+cluster.status.monitoring.enable={{ cluster_status_monitoring_enable }}
+# cluster.status.monitoring.repeat.time=18000
+metaschedluer.job.scanning.enable={{ metaschedluer_job_scanning_enable }}
+data.analyzer.job.scanning.enable={{ data_analyzer_job_scanning_enable }}
+
+###########################################################################
+# Data Staging Task Level Configurations
+###########################################################################
+enable.streaming.transfer={{ enable_streaming_transfer }}
+

@@ -20,7 +20,18 @@
 
 ---
 
-# Gracefully reload httpd
+# Gracefully reload httpd (RedHat)
 - name: restart httpd
   service: name=httpd state=reloaded enabled=yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+# Gracefully reload apache2 (Ubuntu/Debian)
+- name: restart apache2
+  service: name=apache2 state=reloaded enabled=yes
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: reload systemd daemon
+  command: systemctl daemon-reload
   become: yes

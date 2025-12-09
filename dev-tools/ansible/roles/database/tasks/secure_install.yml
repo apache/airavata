@@ -20,24 +20,195 @@
 
 ---
 # This is ansible equivalent for mysql_secure_installation
-- name: Sets the root password
-  mysql_user: user=root
-              password="{{ mysql_root_password }}"
-              host=localhost
-              login_user=root
-              # login_password="{{ mysql_root_password }}"
+- name: Skip root password setting for Ubuntu - handled by debconf or already configured
+  debug:
+    msg: "Root password is set via debconf during installation (fresh installs) or already configured. Skipping password setting step."
+  when: ansible_os_family == 'Debian'
+
+- name: Mark root password as set (Ubuntu/Debian)
+  file:
+    path: /tmp/.root_password_set
+    state: touch
+  become: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Reset and set root password via recovery mode (CentOS/Rocky)
+  block:
+    - name: Stop MariaDB before recovery (CentOS/Rocky)
+      systemd:
+        name: mariadb
+        state: stopped
+      become: yes
+      become_user: root
+
+    - name: Create systemd override directory for MariaDB recovery (CentOS/Rocky)
+      file:
+        path: /etc/systemd/system/mariadb.service.d
+        state: directory
+      become: yes
+      become_user: root
+
+    - name: Configure MariaDB to start with skip-grant-tables (CentOS/Rocky)
+      copy:
+        dest: /etc/systemd/system/mariadb.service.d/override.conf
+        content: |
+          [Service]
+          ExecStart=
+          ExecStart=/usr/libexec/mariadbd --basedir=/usr $MYSQLD_OPTS $_WSREP_NEW_CLUSTER --skip-grant-tables --skip-networking --pid-file=/run/mariadb/mariadb.pid --socket=/var/lib/mysql/mysql.sock
+      become: yes
+      become_user: root
+
+    - name: Start MariaDB in recovery mode (CentOS/Rocky)
+      systemd:
+        name: mariadb
+        daemon_reload: yes
+        state: started
+      become: yes
+      become_user: root
+
+    - name: Wait for MariaDB socket in recovery mode (CentOS/Rocky)
+      wait_for:
+        path: /var/lib/mysql/mysql.sock
+        state: present
+        timeout: 60
+      become: yes
+      become_user: root
+
+    - name: Reset root password in recovery mode (CentOS/Rocky)
+      shell: |
+        mysql --protocol=socket --socket=/var/lib/mysql/mysql.sock -uroot <<'EOF'
+        FLUSH PRIVILEGES;
+        ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';
+        UPDATE mysql.user SET plugin='mysql_native_password' WHERE user='root' AND host='localhost';
+        FLUSH PRIVILEGES;
+        EOF
+      become: yes
+      become_user: root
+      no_log: true
+      failed_when: false
+  rescue:
+    - debug:
+        msg: "Recovery mode password reset failed; attempting cleanup and restart."
+  always:
+    - name: Stop MariaDB recovery instance (CentOS/Rocky)
+      systemd:
+        name: mariadb
+        state: stopped
+      become: yes
+      become_user: root
+      ignore_errors: yes
+
+    - name: Remove recovery override for MariaDB (CentOS/Rocky)
+      file:
+        path: /etc/systemd/system/mariadb.service.d/override.conf
+        state: absent
+      become: yes
+      become_user: root
+      ignore_errors: yes
+
+    - name: Remove recovery override directory if empty (CentOS/Rocky)
+      file:
+        path: /etc/systemd/system/mariadb.service.d
+        state: absent
+      become: yes
+      become_user: root
+      ignore_errors: yes
+
+    - name: Reload systemd and start MariaDB normally after recovery (CentOS/Rocky)
+      systemd:
+        name: mariadb
+        daemon_reload: yes
+        state: started
+      become: yes
+      become_user: root
+
+    - name: Verify root login with provided password (CentOS/Rocky)
+      command: "mysql --protocol=socket --socket=/var/lib/mysql/mysql.sock -uroot -p{{ mysql_root_password }} -e 'SELECT 1'"
+      register: root_login_check_recovered
+      changed_when: false
+      failed_when: root_login_check_recovered.rc != 0
+      no_log: true
+      become: yes
+      become_user: root
+    - name: Wait for MariaDB to be ready after recovery (CentOS/Rocky)
+      wait_for:
+        port: 3306
+        host: localhost
+        delay: 2
+        timeout: 60
+      become: yes
+      become_user: root
+  when: ansible_os_family == 'RedHat'
 
 - name: Copy .my.cnf file
   template: src=my.cnf.j2 dest="{{ user_home }}/.my.cnf"
   # become: yes
 
-- name: Removes all anonymous user accounts
-  mysql_user: name='' host_all=yes state=absent
+- name: Removes all anonymous user accounts (Ubuntu/Debian)
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
+  when: ansible_os_family == 'Debian'
+  ignore_errors: yes
 
-- name: Secures the MySQL root user for all hosts
-  mysql_user: user=root password="{{ mysql_root_password }}" host_all=yes
+- name: Removes all anonymous user accounts (CentOS/Rocky)
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/lib/mysql/mysql.sock
+  when: ansible_os_family == 'RedHat'
+  become: yes
+  become_user: root
 
-- name: Removes the MySQL test database
-  mysql_db: db=test state=absent
+- name: Secures the MySQL root user for all hosts (Ubuntu/Debian)
+  mysql_user:
+    user: root
+    password: "{{ mysql_root_password }}"
+    host_all: yes
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
+  when: ansible_os_family == 'Debian'
+  ignore_errors: yes
+
+- name: Secures the MySQL root user for all hosts (CentOS/Rocky)
+  mysql_user:
+    user: root
+    password: "{{ mysql_root_password }}"
+    host_all: yes
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/lib/mysql/mysql.sock
+  when: ansible_os_family == 'RedHat'
+  become: yes
+  become_user: root
+
+- name: Removes the MySQL test database (Ubuntu/Debian)
+  mysql_db:
+    db: test
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "/var/run/mysqld/mysqld.sock"
+  when: ansible_os_family == 'Debian'
+  ignore_errors: yes
+
+- name: Removes the MySQL test database (CentOS/Rocky)
+  mysql_db:
+    db: test
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/lib/mysql/mysql.sock
+  when: ansible_os_family == 'RedHat'
+  become: yes
+  become_user: root
 
 ...

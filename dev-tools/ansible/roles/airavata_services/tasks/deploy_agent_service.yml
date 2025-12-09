@@ -1,0 +1,78 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Remove old Agent Service deployment if exists
+  file:
+    path: "{{ agent_service_dir }}"
+    state: absent
+  tags:
+    - deploy
+    - agent-service
+
+- name: Extract Agent Service distribution
+  unarchive:
+    src: "{{ airavata_source_dir }}/distribution/apache-airavata-agent-service-{{ airavata_version }}.tar.gz"
+    dest: "{{ deployment_dir }}"
+    remote_src: yes
+  tags:
+    - deploy
+    - agent-service
+
+- name: Create configuration directory for Agent Service
+  file:
+    path: "{{ agent_service_dir }}/conf"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+  tags:
+    - deploy
+    - agent-service
+
+- name: Deploy application.yml for Agent Service
+  template:
+    src: application-agent-service.yml.j2
+    dest: "{{ agent_service_dir }}/conf/application.yml"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: "0644"
+  tags:
+    - deploy
+    - agent-service
+
+- name: Deploy log4j2.xml for Agent Service
+  template:
+    src: log4j2.xml.j2
+    dest: "{{ agent_service_dir }}/conf/log4j2.xml"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: "0644"
+  tags:
+    - deploy
+    - agent-service
+
+- name: Set executable permissions on Agent Service script
+  file:
+    path: "{{ agent_service_dir }}/bin/agent-service.sh"
+    mode: "0755"
+  tags:
+    - deploy
+    - agent-service
+
