@@ -414,6 +414,7 @@ public class AiravataServerProperties {
                 public String password;
                 public String storeProtocol = "imaps";
                 public int period = 10000;
+                public int connectionRetryInterval = 30000; // 30 seconds
                 public boolean monitorEnabled = true;
                 public int expiryMins = 60;
             }

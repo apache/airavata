@@ -52,8 +52,25 @@ public class JpaConfig {
         return new OpenJpaEntityManagerFactoryPostProcessor();
     }
 
-    // Note: JpaMetamodelMappingContext is automatically created by Spring Data JPA
-    // via @EnableJpaRepositories. We don't need to create it manually.
+    /**
+     * Custom JpaMetamodelMappingContext factory that handles OpenJPA enhancement errors gracefully.
+     * This overrides the default Spring Data JPA factory which doesn't handle OpenJPA enhancement issues.
+     */
+    @Bean(name = "jpaMappingContext")
+    public OpenJpaMetamodelMappingContextFactoryBean jpaMappingContext(
+            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory profileServiceEmf,
+            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory appCatalogEmf,
+            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory expCatalogEmf,
+            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory replicaCatalogEmf,
+            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory workflowCatalogEmf,
+            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory sharingRegistryEmf,
+            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory credentialStoreEmf) {
+        OpenJpaMetamodelMappingContextFactoryBean factory = new OpenJpaMetamodelMappingContextFactoryBean();
+        factory.setEntityManagerFactories(java.util.Arrays.asList(
+                profileServiceEmf, appCatalogEmf, expCatalogEmf, replicaCatalogEmf,
+                workflowCatalogEmf, sharingRegistryEmf, credentialStoreEmf));
+        return factory;
+    }
 
     // Persistence unit names
     public static final String PROFILE_SERVICE_PU = "profile_service";

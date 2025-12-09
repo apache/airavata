@@ -72,7 +72,7 @@ public class DerbyTestUtil {
 
         Connection conn = null;
         try {
-            DBUtil dbUtil = new DBUtil(jdbcConfig);
+            DBUtil dbUtil = new DBUtil(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
             conn = dbUtil.getConnection();
             clearProperties(conn);
             removeObjects(conn);

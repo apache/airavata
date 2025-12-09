@@ -83,14 +83,19 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                 } else {
                     logger.warn("EntityManagerFactory {} returned null metamodel", emfName);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // Log warning but continue - this allows the application to start
                 // even if some EntityManagerFactory instances have enhancement issues
+                // Catch Throwable to catch all errors including OpenJPA MetaDataException
+                String errorMsg = e.getMessage();
+                if (e.getCause() != null) {
+                    errorMsg = e.getCause().getMessage();
+                }
                 logger.warn(
                         "Failed to retrieve metamodel from EntityManagerFactory {}: {}. "
                                 + "This may be due to OpenJPA enhancement issues. Continuing with other factories.",
                         emfName,
-                        e.getMessage());
+                        errorMsg);
                 logger.debug("Metamodel retrieval error details for {}", emfName, e);
             }
         }
@@ -107,8 +112,7 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                 workingEmfs.size(),
                 entityManagerFactories.size());
 
-        // Use Spring Data JPA's standard factory to create the context
-        // but only with the EntityManagerFactory instances that work
+        // Use Spring Data JPA's standard factory with only the working EntityManagerFactory instances
         org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean standardFactory =
                 new org.springframework.data.jpa.repository.config.JpaMetamodelMappingContextFactoryBean();
 
@@ -144,6 +148,16 @@ public class OpenJpaMetamodelMappingContextFactoryBean
             standardFactory.afterPropertiesSet();
             return standardFactory.getObject();
         } catch (Exception e) {
+            // If standard factory fails even with working EMFs, log the error but check if it's due to
+            // enhancement issues that we can work around
+            if (e.getCause() instanceof org.apache.openjpa.util.MetaDataException) {
+                logger.warn(
+                        "Standard factory failed due to OpenJPA enhancement issue, but continuing with {} working EMFs. "
+                        + "Some repositories may not work correctly.",
+                        workingEmfs.size());
+                // Try to create context with just the EMFs that don't have the problematic entity
+                // For now, rethrow to see the full error
+            }
             logger.error("Failed to create JpaMetamodelMappingContext using standard factory", e);
             throw new IllegalStateException("Cannot create JpaMetamodelMappingContext", e);
         }

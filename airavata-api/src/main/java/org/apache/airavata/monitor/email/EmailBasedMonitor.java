@@ -243,6 +243,12 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 }
             } catch (MessagingException e) {
                 log.error("[EJM]: Couldn't connect to the store ", e);
+                try {
+                    Thread.sleep(airavataProperties.services.monitor.email.connectionRetryInterval);
+                } catch (InterruptedException ie) {
+                    log.error("[EJM]: Interrupted while waiting before retry", ie);
+                    Thread.currentThread().interrupt();
+                }
             } catch (InterruptedException e) {
                 log.error("[EJM]: Interrupt exception while sleep ", e);
             } catch (Throwable e) {

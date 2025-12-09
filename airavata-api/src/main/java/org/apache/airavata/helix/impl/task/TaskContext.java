@@ -109,7 +109,6 @@ public class TaskContext {
     private GroupResourceProfile groupResourceProfile;
     private UserProfile userProfile;
 
-    private StoragePreference gatewayStorageResourcePreference;
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
     private GroupComputeResourcePreference groupComputeResourcePreference;
@@ -335,54 +334,6 @@ public class TaskContext {
         this.userStoragePreference = userStoragePreference;
     }
 
-    /**
-     * Returns the default storage preference for the gateway.
-     * Prefers gateway-specific storage (ID starting with gatewayId), otherwise uses the first available preference.
-     *
-     * @deprecated Use {@link #getInputGatewayStorageResourcePreference()} for input staging operations
-     *             or {@link #getOutputGatewayStorageResourcePreference()} for output staging operations.
-     */
-    @Deprecated
-    public StoragePreference getGatewayStorageResourcePreference() throws Exception {
-        if (this.gatewayStorageResourcePreference == null) {
-            try {
-                GatewayResourceProfile gatewayProfile = getGatewayResourceProfile();
-                List<StoragePreference> storagePreferences = gatewayProfile.getStoragePreferences();
-
-                if (storagePreferences == null || storagePreferences.isEmpty()) {
-                    throw new Exception("No storage preferences found for gateway " + gatewayId);
-                }
-
-                String gatewayPrefix = gatewayId + "_";
-                this.gatewayStorageResourcePreference = storagePreferences.stream()
-                        .filter(pref -> {
-                            String id = pref.getStorageResourceId();
-                            return id != null && id.startsWith(gatewayPrefix);
-                        })
-                        .findFirst()
-                        .orElseGet(() -> {
-                            logger.debug(
-                                    "No gateway-specific storage found, using first available: {}",
-                                    storagePreferences.get(0).getStorageResourceId());
-                            return storagePreferences.get(0);
-                        });
-
-                if (this.gatewayStorageResourcePreference.getStorageResourceId().startsWith(gatewayPrefix)) {
-                    logger.debug(
-                            "Using gateway-specific storage preference: {}",
-                            this.gatewayStorageResourcePreference.getStorageResourceId());
-                }
-            } catch (RegistryServiceException e) {
-                logger.error("Failed to fetch gateway storage preference for gateway {}", gatewayId, e);
-                throw e;
-            }
-        }
-        return gatewayStorageResourcePreference;
-    }
-
-    public void setGatewayStorageResourcePreference(StoragePreference gatewayStorageResourcePreference) {
-        this.gatewayStorageResourcePreference = gatewayStorageResourcePreference;
-    }
 
     public ComputeResourceDescription getComputeResourceDescription() throws Exception {
         if (this.computeResourceDescription == null) {
@@ -666,8 +617,9 @@ public class TaskContext {
     }
 
     public String getStorageResourceCredentialToken() throws Exception {
-        if (isValid(getGatewayStorageResourcePreference().getResourceSpecificCredentialStoreToken())) {
-            return getGatewayStorageResourcePreference().getResourceSpecificCredentialStoreToken();
+        StoragePreference storagePref = getInputGatewayStorageResourcePreference();
+        if (isValid(storagePref.getResourceSpecificCredentialStoreToken())) {
+            return storagePref.getResourceSpecificCredentialStoreToken();
         } else {
             return getGatewayResourceProfile().getCredentialStoreToken();
         }
@@ -764,15 +716,15 @@ public class TaskContext {
     }
 
     public String getStorageResourceLoginUserName() throws Exception {
-        return getGatewayStorageResourcePreference().getLoginUserName();
+        return getInputGatewayStorageResourcePreference().getLoginUserName();
     }
 
     public String getStorageFileSystemRootLocation() throws Exception {
-        return getGatewayStorageResourcePreference().getFileSystemRootLocation();
+        return getInputGatewayStorageResourcePreference().getFileSystemRootLocation();
     }
 
     public String getStorageResourceId() throws Exception {
-        return getGatewayStorageResourcePreference().getStorageResourceId();
+        return getInputGatewayStorageResourcePreference().getStorageResourceId();
     }
 
     public String getInputStorageResourceId() throws Exception {
@@ -831,11 +783,6 @@ public class TaskContext {
         }
     }
 
-    // Deprecated: Services are now obtained from Spring context when needed
-    @Deprecated
-    public void setRegistryService(RegistryService registryService) {
-        this.registryService = registryService;
-    }
 
     public RegistryService getRegistryService() {
         if (registryService == null) {
@@ -859,11 +806,6 @@ public class TaskContext {
         return profileService;
     }
 
-    // Deprecated: Services are now obtained from Spring context when needed
-    @Deprecated
-    public void setProfileService(UserProfileService profileService) {
-        this.profileService = profileService;
-    }
 
     public UserProfile getUserProfile() throws TaskOnFailException {
 
@@ -1099,16 +1041,6 @@ public class TaskContext {
         ApplicationContext applicationContext = AiravataTask.getApplicationContext();
         if (applicationContext != null) {
             return applicationContext.getBean(AiravataSecurityManager.class);
-        }
-        // Fallback to SecurityManagerFactory if ApplicationContext not available
-        try {
-            ApplicationContext ctx = AiravataTask.getApplicationContext();
-            if (ctx != null) {
-                var properties = ctx.getBean(org.apache.airavata.config.AiravataServerProperties.class);
-                return org.apache.airavata.security.SecurityManagerFactory.getSecurityManager(properties);
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to get SecurityManager from factory", e);
         }
         throw new RuntimeException("Unable to get SecurityManager - ApplicationContext not available");
     }

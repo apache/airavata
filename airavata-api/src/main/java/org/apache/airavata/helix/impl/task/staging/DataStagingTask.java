@@ -86,7 +86,7 @@ public abstract class DataStagingTask extends AiravataTask {
         String storageId = null;
         try {
             storageId = getTaskContext().getStorageResourceId();
-            StoragePreference gatewayStoragePref = getTaskContext().getGatewayStorageResourcePreference();
+            StoragePreference gatewayStoragePref = getTaskContext().getInputGatewayStorageResourcePreference();
             return createStorageAdaptorFromPreference(adaptorSupport, storageId, gatewayStoragePref, "Default");
 
         } catch (Exception e) {

@@ -59,10 +59,6 @@ public class DBUtil {
         init();
     }
 
-    @Deprecated
-    public DBUtil(JDBCConfig jdbcConfig) throws ApplicationSettingsException {
-        this(jdbcConfig.getURL(), jdbcConfig.getUser(), jdbcConfig.getPassword(), jdbcConfig.getDriver());
-    }
 
     /**
      * Initializes and load driver. Must be called this before calling anyother method.

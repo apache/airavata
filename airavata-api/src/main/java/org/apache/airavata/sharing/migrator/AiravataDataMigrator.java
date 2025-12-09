@@ -55,7 +55,6 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
-import org.apache.airavata.security.SecurityManagerFactory;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.IamAdminService;
 import org.apache.airavata.service.RegistryService;
@@ -94,6 +93,9 @@ public class AiravataDataMigrator implements CommandLineRunner {
 
     @Autowired
     private IamAdminService iamAdminService;
+
+    @Autowired
+    private AiravataSecurityManager airavataSecurityManager;
 
     public static void main(String[] args) {
         SpringApplication.run(AiravataDataMigrator.class, args);
@@ -938,8 +940,7 @@ public class AiravataDataMigrator implements CommandLineRunner {
 
     private AuthzToken getManagementUsersAccessToken(String tenantId) throws Exception {
         try {
-            AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager(properties);
-            AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(tenantId);
+            AuthzToken authzToken = airavataSecurityManager.getUserManagementServiceAccountAuthzToken(tenantId);
             return authzToken;
         } catch (AiravataSecurityException e) {
             throw new Exception("Unable to fetch access token for management user for tenant: " + tenantId, e);

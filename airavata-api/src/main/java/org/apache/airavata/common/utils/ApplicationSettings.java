@@ -132,37 +132,6 @@ public class ApplicationSettings {
         }
     }
 
-    /**
-     * Returns the configuration value relevant for the given key.
-     * If configuration value contains references to other configuration values they will also
-     * be replaced. E.g :- If configuration key reads http://${ip}:${port}/axis2/services/RegistryService?wsdl,
-     * the variables ip and port will get replaced by their appropriated values in the configuration.
-     * @param key The configuration key to read value of
-     * @return The configuration value. For above example caller will get a value like
-     * http://192.2.33.12:8080/axis2/services/RegistryService?wsdl
-     * @throws ApplicationSettingsException If an error occurred while reading configurations.
-     * @deprecated use #getSetting(String) instead
-     */
-    @Deprecated
-    public String getAbsoluteSetting(String key) throws ApplicationSettingsException {
-
-        String configurationValueWithVariables = ApplicationSettings.getSetting(key);
-
-        List<String> variableList = getAllMatches(configurationValueWithVariables, REGULAR_EXPRESSION);
-
-        if (variableList == null || variableList.isEmpty()) {
-            return configurationValueWithVariables;
-        }
-
-        for (String variableIdentifier : variableList) {
-            String variableName = getVariableNameOnly(variableIdentifier);
-            String value = getAbsoluteSetting(variableName);
-
-            configurationValueWithVariables = configurationValueWithVariables.replace(variableIdentifier, value);
-        }
-
-        return configurationValueWithVariables;
-    }
 
     private static String getVariableNameOnly(String variableWithIdentifiers) {
         return variableWithIdentifiers.substring(2, (variableWithIdentifiers.length() - 1));
