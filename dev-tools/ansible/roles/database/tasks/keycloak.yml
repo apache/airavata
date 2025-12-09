@@ -28,7 +28,7 @@
     encoding: utf8
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else omit }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
   when: "'keycloak' in groups"
 
 - name: give access to {{ keycloak_db_username }} from remote
@@ -38,12 +38,13 @@
   mysql_user:
     name: "{{ keycloak_db_username }}"
     password: "{{ keycloak_db_password }}"
-    host: "{{ hostvars[item].public_ipv4 | default(item) }}"
+    host: "{{ hostvars[item].public_ipv4 | default(hostvars[item].ansible_host | default(item)) }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else omit }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
   with_items:
     - "{{ groups['keycloak'] }}"
+  when: "'keycloak' in groups and (hostvars[item].public_ipv4 is defined or hostvars[item].ansible_host is defined)"
 
 - name: give access to {{ keycloak_db_username }} from localhost
   mysql_user:
@@ -52,7 +53,7 @@
     host: localhost
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else omit }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"
 
 - name: create new user {{ keycloak_db_username }} with all privilege
   mysql_user:
@@ -64,4 +65,4 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}"
-    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else omit }}"
+    login_unix_socket: "{{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian' else '/var/lib/mysql/mysql.sock' }}"

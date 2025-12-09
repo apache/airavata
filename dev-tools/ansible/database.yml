@@ -19,9 +19,9 @@
 #
 
 ---
-# Gather facts on the following
+# Gather facts on the following (needed for database role to grant MySQL access from remote IPs)
 - hosts: api-orch
-- hosts: helix
+- hosts: keycloak
 
 - hosts: database
   tags: mysql , airavata
