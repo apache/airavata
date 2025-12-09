@@ -26,18 +26,19 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentInputRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ExperimentInputService {
-    @Autowired
-    private ExperimentInputRepository experimentInputRepository;
+    private final ExperimentInputRepository experimentInputRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ExperimentInputService(ExperimentInputRepository experimentInputRepository, Mapper mapper) {
+        this.experimentInputRepository = experimentInputRepository;
+        this.mapper = mapper;
+    }
 
     public String addExperimentInputs(List<InputDataObjectType> inputs, String experimentId) throws RegistryException {
         for (InputDataObjectType input : inputs) {

@@ -26,18 +26,19 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentOutputRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ExperimentOutputService {
-    @Autowired
-    private ExperimentOutputRepository experimentOutputRepository;
+    private final ExperimentOutputRepository experimentOutputRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ExperimentOutputService(ExperimentOutputRepository experimentOutputRepository, Mapper mapper) {
+        this.experimentOutputRepository = experimentOutputRepository;
+        this.mapper = mapper;
+    }
 
     public List<OutputDataObjectType> getExperimentOutputs(String experimentId) throws RegistryException {
         List<ExperimentOutputEntity> entities = experimentOutputRepository.findByExperimentId(experimentId);

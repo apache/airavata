@@ -35,7 +35,6 @@ import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +43,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExperimentService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
 
-    @Autowired
-    private ExperimentRepository experimentRepository;
+    private final ExperimentRepository experimentRepository;
+    private final ProcessService processService;
+    private final Mapper mapper;
 
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private Mapper mapper;
+    public ExperimentService(ExperimentRepository experimentRepository, ProcessService processService, Mapper mapper) {
+        this.experimentRepository = experimentRepository;
+        this.processService = processService;
+        this.mapper = mapper;
+    }
 
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
         ExperimentStatus experimentStatus = new ExperimentStatus();

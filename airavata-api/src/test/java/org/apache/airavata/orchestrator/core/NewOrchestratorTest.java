@@ -19,6 +19,20 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
+
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, NewOrchestratorTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
+@Transactional
 public class NewOrchestratorTest extends BaseOrchestratorTest {
     //    private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
     //
@@ -96,4 +110,25 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
     //        return airavataAPI;
     //    }
 
+    public NewOrchestratorTest() {
+        super();
+    }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.orchestrator",
+                "org.apache.airavata.service",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

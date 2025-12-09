@@ -24,18 +24,19 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.registry.entities.appcatalog.GatewayGroupsEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.GatewayGroupsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GatewayGroupsService {
-    @Autowired
-    private GatewayGroupsRepository gatewayGroupsRepository;
+    private final GatewayGroupsRepository gatewayGroupsRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public GatewayGroupsService(GatewayGroupsRepository gatewayGroupsRepository, Mapper mapper) {
+        this.gatewayGroupsRepository = gatewayGroupsRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isExists(String gatewayId) throws RegistryException {
         return gatewayGroupsRepository.existsById(gatewayId);

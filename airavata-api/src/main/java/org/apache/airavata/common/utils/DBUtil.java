@@ -59,7 +59,6 @@ public class DBUtil {
         init();
     }
 
-
     /**
      * Initializes and load driver. Must be called this before calling anyother method.
      *

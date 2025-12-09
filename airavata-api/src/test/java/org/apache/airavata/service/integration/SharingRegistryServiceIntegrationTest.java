@@ -21,20 +21,17 @@ package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.DuplicateEntryException;
 import org.apache.airavata.sharing.models.Entity;
-import org.apache.airavata.sharing.models.EntityType;
 import org.apache.airavata.sharing.models.PermissionType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
-import org.apache.airavata.service.SharingRegistryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for SharingRegistryService.
@@ -42,8 +39,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("SharingRegistryService Integration Tests")
 public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private SharingRegistryService sharingRegistryService;
+    private final SharingRegistryService sharingRegistryService;
+
+    public SharingRegistryServiceIntegrationTest(SharingRegistryService sharingRegistryService) {
+        this.sharingRegistryService = sharingRegistryService;
+    }
 
     @Nested
     @DisplayName("Domain Operations")
@@ -194,4 +194,3 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         }
     }
 }
-

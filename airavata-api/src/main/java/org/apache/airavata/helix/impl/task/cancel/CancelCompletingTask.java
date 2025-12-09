@@ -32,6 +32,14 @@ import org.slf4j.LoggerFactory;
 public class CancelCompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(CancelCompletingTask.class);
 
+    public CancelCompletingTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         logger.info("Starting cancel completing task for task " + getTaskId() + ", experiment id " + getExperimentId());

@@ -28,13 +28,18 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements StorageResourceAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceAdaptorImpl.class);
 
-    public StorageResourceAdaptorImpl() throws AgentException {
-        super();
+    public StorageResourceAdaptorImpl(
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.CredentialStoreService credentialService)
+            throws AgentException {
+        super(registryService, credentialService);
     }
 
     @Override

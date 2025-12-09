@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.airavata.research.service.dto.CreateProjectRequest;
 import org.apache.airavata.research.service.handlers.ProjectHandler;
 import org.apache.airavata.research.service.model.entity.Project;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Projects", description = "Projects are comprised of dataset and repository resources")
 public class ProjectController {
 
-    @Autowired
-    private ProjectHandler projectHandler;
+    private final ProjectHandler projectHandler;
+
+    public ProjectController(ProjectHandler projectHandler) {
+        this.projectHandler = projectHandler;
+    }
 
     @GetMapping("/")
     @Operation(summary = "Get all projects")

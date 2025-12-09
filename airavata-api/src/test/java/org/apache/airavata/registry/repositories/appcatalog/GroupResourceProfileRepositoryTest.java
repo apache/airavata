@@ -36,7 +36,6 @@ import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 // FIXME - update the codes changed by GroupComputeResourcePreference -> abstract GroupComputeResourcePreference +
@@ -46,11 +45,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class GroupResourceProfileRepositoryTest extends TestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    @Autowired
-    private GroupResourceProfileService groupResourceProfileService;
+    private final ComputeResourceService computeResourceService;
+    private final GroupResourceProfileService groupResourceProfileService;
 
     private String gatewayId = "TEST_GATEWAY";
     private String groupResourceProfileId = null;
@@ -60,8 +56,11 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     private final String QUEUE1_NAME = "queue1";
     private final String QUEUE2_NAME = "queue2";
 
-    public GroupResourceProfileRepositoryTest() {
+    public GroupResourceProfileRepositoryTest(
+            ComputeResourceService computeResourceService, GroupResourceProfileService groupResourceProfileService) {
         super(Database.APP_CATALOG);
+        this.computeResourceService = computeResourceService;
+        this.groupResourceProfileService = groupResourceProfileService;
     }
 
     @org.junit.jupiter.api.BeforeEach

@@ -48,6 +48,14 @@ import org.slf4j.LoggerFactory;
 @TaskDef(name = "Output Data Staging Task")
 public class OutputDataStagingTask extends DataStagingTask {
 
+    public OutputDataStagingTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(OutputDataStagingTask.class);
     private static final CountMonitor outputDSTaskCounter = new CountMonitor("output_ds_task_counter");
 

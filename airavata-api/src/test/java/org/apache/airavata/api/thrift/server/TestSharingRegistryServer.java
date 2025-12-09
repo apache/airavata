@@ -38,7 +38,6 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -46,8 +45,11 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class TestSharingRegistryServer {
 
-    @Autowired
-    private SharingRegistryService sharingService;
+    private final SharingRegistryService sharingService;
+
+    public TestSharingRegistryServer(SharingRegistryService sharingService) {
+        this.sharingService = sharingService;
+    }
 
     @Test
     public void test()

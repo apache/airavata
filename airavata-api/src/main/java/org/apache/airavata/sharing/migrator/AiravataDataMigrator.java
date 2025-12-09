@@ -72,7 +72,6 @@ import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -82,20 +81,27 @@ public class AiravataDataMigrator implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(AiravataDataMigrator.class);
     private BasicDataSource registryDataSource;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
+    private final IamAdminService iamAdminService;
+    private final AiravataSecurityManager airavataSecurityManager;
+    private final org.apache.airavata.service.SharingRegistryService sharingRegistryService;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @Autowired
-    private RegistryService registryService;
-
-    @Autowired
-    private IamAdminService iamAdminService;
-
-    @Autowired
-    private AiravataSecurityManager airavataSecurityManager;
+    public AiravataDataMigrator(
+            AiravataServerProperties properties,
+            CredentialStoreService credentialStoreService,
+            RegistryService registryService,
+            IamAdminService iamAdminService,
+            AiravataSecurityManager airavataSecurityManager,
+            org.apache.airavata.service.SharingRegistryService sharingRegistryService) {
+        this.properties = properties;
+        this.credentialStoreService = credentialStoreService;
+        this.registryService = registryService;
+        this.iamAdminService = iamAdminService;
+        this.airavataSecurityManager = airavataSecurityManager;
+        this.sharingRegistryService = sharingRegistryService;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(AiravataDataMigrator.class, args);
@@ -117,7 +123,8 @@ public class AiravataDataMigrator implements CommandLineRunner {
 
         Connection expCatConnection = getRegistryConnection(properties);
 
-        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
+        SharingRegistryServerHandler sharingRegistryServerHandler =
+                new SharingRegistryServerHandler(sharingRegistryService);
 
         String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();

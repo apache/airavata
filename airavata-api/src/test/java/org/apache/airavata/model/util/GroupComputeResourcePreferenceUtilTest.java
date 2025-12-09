@@ -26,11 +26,26 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResource
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * GroupComputeResourcePreferenceUtilTest
  */
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, GroupComputeResourcePreferenceUtilTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class GroupComputeResourcePreferenceUtilTest {
+
+    public GroupComputeResourcePreferenceUtilTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @Test
     public void testGetActiveReservationForQueue() {
@@ -138,4 +153,21 @@ public class GroupComputeResourcePreferenceUtilTest {
 
         Assertions.assertSame(res1, result);
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.model",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

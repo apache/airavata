@@ -24,7 +24,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,17 +32,17 @@ public class WorkflowCatalogJPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "workflowcatalog_data_new";
 
     private static WorkflowCatalogJPAUtils instance;
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public WorkflowCatalogJPAUtils(AiravataServerProperties properties) {
+        var db = properties.database.workflow;
+        this.factory = JPAUtils.getEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
+    }
 
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.database.workflow;
-        factory = JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {

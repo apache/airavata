@@ -28,16 +28,16 @@ import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServ
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserProfileServiceHandler implements org.apache.airavata.profile.user.cpi.UserProfileService.Iface {
 
-    @Autowired
-    private org.apache.airavata.service.UserProfileService userProfileService;
+    private final org.apache.airavata.service.UserProfileService userProfileService;
 
-    public UserProfileServiceHandler() {}
+    public UserProfileServiceHandler(org.apache.airavata.service.UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {

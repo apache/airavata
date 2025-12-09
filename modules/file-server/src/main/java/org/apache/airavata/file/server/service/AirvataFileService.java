@@ -32,7 +32,6 @@ import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,11 +40,13 @@ public class AirvataFileService {
 
     private static final Logger logger = LoggerFactory.getLogger(AirvataFileService.class);
 
-    @Autowired
-    private AdaptorSupport adaptorSupport;
+    private final AdaptorSupport adaptorSupport;
+    private final RegistryService registryService;
 
-    @Autowired
-    RegistryService registryService;
+    public AirvataFileService(AdaptorSupport adaptorSupport, RegistryService registryService) {
+        this.adaptorSupport = adaptorSupport;
+        this.registryService = registryService;
+    }
 
     private AgentAdaptor getAgentAdaptor(ProcessDataManager dataManager, String processId) throws Exception {
         AgentAdaptor agentAdaptor;

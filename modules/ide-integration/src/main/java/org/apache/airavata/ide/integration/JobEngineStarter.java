@@ -20,7 +20,7 @@
 package org.apache.airavata.ide.integration;
 
 import java.util.ArrayList;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
@@ -31,11 +31,12 @@ import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class JobEngineStarter {
 
-    @Autowired
+    // Note: This static field cannot be injected by Spring.
+    // This class needs to be refactored to use Spring ApplicationContext
+    // or convert to a Spring component with instance-based injection.
     private static GlobalParticipant globalParticipant;
 
     private static final Logger logger = LoggerFactory.getLogger(JobEngineStarter.class);
@@ -43,13 +44,13 @@ public class JobEngineStarter {
     public static void main(String args[]) throws Exception {
 
         ZkClient zkClient = new ZkClient(
-                ServerSettings.getZookeeperConnection(),
+                ApplicationSettings.getSetting("zookeeper.server-connection", "localhost:2181"),
                 ZkClient.DEFAULT_SESSION_TIMEOUT,
                 ZkClient.DEFAULT_CONNECTION_TIMEOUT,
                 new ZNRecordSerializer());
         ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
 
-        zkHelixAdmin.addCluster(ServerSettings.getSetting("helix.cluster-name"), true);
+        zkHelixAdmin.addCluster(ApplicationSettings.getSetting("helix.cluster-name"), true);
 
         logger.info("Starting Helix Controller .......");
         // Starting helix controller

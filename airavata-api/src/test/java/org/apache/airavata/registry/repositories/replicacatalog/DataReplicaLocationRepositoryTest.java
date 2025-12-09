@@ -36,7 +36,6 @@ import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,16 +43,16 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class DataReplicaLocationRepositoryTest extends TestBase {
 
-    @Autowired
-    private DataProductService dataProductService;
-
-    @Autowired
-    private DataReplicaLocationService dataReplicaLocationService;
+    private final DataProductService dataProductService;
+    private final DataReplicaLocationService dataReplicaLocationService;
 
     private String gatewayId = "testGateway";
 
-    public DataReplicaLocationRepositoryTest() {
+    public DataReplicaLocationRepositoryTest(
+            DataProductService dataProductService, DataReplicaLocationService dataReplicaLocationService) {
         super(Database.REPLICA_CATALOG);
+        this.dataProductService = dataProductService;
+        this.dataReplicaLocationService = dataReplicaLocationService;
     }
 
     @Test

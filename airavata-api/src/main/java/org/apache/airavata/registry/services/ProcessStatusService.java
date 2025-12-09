@@ -29,7 +29,6 @@ import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class ProcessStatusService {
-    @Autowired
-    private ProcessStatusRepository processStatusRepository;
+    private final ProcessStatusRepository processStatusRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ProcessStatusService(ProcessStatusRepository processStatusRepository, Mapper mapper) {
+        this.processStatusRepository = processStatusRepository;
+        this.mapper = mapper;
+    }
 
     public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         List<ProcessStatusEntity> entities =

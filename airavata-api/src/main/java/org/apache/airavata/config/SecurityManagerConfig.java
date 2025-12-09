@@ -23,7 +23,6 @@ import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +37,13 @@ public class SecurityManagerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerConfig.class);
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public SecurityManagerConfig(ApplicationContext applicationContext, AiravataServerProperties properties) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
+    }
 
     @Bean
     @Primary

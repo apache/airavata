@@ -33,7 +33,6 @@ import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.IdentityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,11 +43,13 @@ public class SecurityInterceptor implements MethodInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
     private static final CountMonitor apiRequestCounter = new CountMonitor("api_server_request_counter", "method");
 
-    @Autowired
-    private AiravataSecurityManager securityManager;
+    private final AiravataSecurityManager securityManager;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public SecurityInterceptor(AiravataSecurityManager securityManager, AiravataServerProperties properties) {
+        this.securityManager = securityManager;
+        this.properties = properties;
+    }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {

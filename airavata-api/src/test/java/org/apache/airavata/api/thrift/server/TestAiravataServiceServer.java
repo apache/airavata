@@ -27,11 +27,8 @@ public class TestAiravataServiceServer {
     private static final Logger logger = LoggerFactory.getLogger(TestAiravataServiceServer.class);
 
     public static void main(String[] args) {
-        try {
-            AiravataServiceServer server = new AiravataServiceServer();
-            server.start();
-        } catch (Exception e) {
-            logger.error("Error while initializing Airavata API server", e);
-        }
+        throw new UnsupportedOperationException(
+                "AiravataServiceServer must be used within a Spring application context. " +
+                "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

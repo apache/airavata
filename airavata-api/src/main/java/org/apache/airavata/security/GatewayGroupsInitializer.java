@@ -31,7 +31,6 @@ import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -44,19 +43,20 @@ public class GatewayGroupsInitializer {
     private static final Logger logger = LoggerFactory.getLogger(GatewayGroupsInitializer.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    private final RegistryService registryService;
+    private final SharingRegistryService sharingRegistryService;
+    private final CredentialStoreService credentialStoreService;
+
+    public GatewayGroupsInitializer(
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            SharingRegistryService sharingRegistryService,
+            CredentialStoreService credentialStoreService) {
         GatewayGroupsInitializer.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.sharingRegistryService = sharingRegistryService;
+        this.credentialStoreService = credentialStoreService;
     }
-
-    @Autowired
-    private RegistryService registryService;
-
-    @Autowired
-    private SharingRegistryService sharingRegistryService;
-
-    @Autowired
-    private CredentialStoreService credentialStoreService;
 
     public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
         try {
@@ -70,10 +70,6 @@ public class GatewayGroupsInitializer {
         } catch (SharingRegistryException | RegistryServiceException | CredentialStoreException e) {
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
         }
-    }
-
-    public GatewayGroupsInitializer() {
-        // Default constructor for Spring
     }
 
     public GatewayGroupsInitializer(

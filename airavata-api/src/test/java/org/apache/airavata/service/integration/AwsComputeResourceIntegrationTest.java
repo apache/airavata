@@ -31,7 +31,6 @@ import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for AWS compute resources.
@@ -39,11 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("AWS Compute Resource Integration Tests")
 public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
+    private final ComputeResourceService computeResourceService;
+    private final GroupResourceProfileService groupResourceProfileService;
 
-    @Autowired
-    private GroupResourceProfileService groupResourceProfileService;
+    public AwsComputeResourceIntegrationTest(
+            ComputeResourceService computeResourceService, GroupResourceProfileService groupResourceProfileService) {
+        this.computeResourceService = computeResourceService;
+        this.groupResourceProfileService = groupResourceProfileService;
+    }
 
     @Nested
     @DisplayName("AWS Compute Resource Registration")
@@ -95,8 +97,8 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
             String computeResourceId = computeResourceService.addComputeResource(computeResource);
 
             GroupResourceProfile groupProfile = TestDataFactory.createGroupResourceProfile(TEST_GATEWAY_ID);
-            GroupComputeResourcePreference preference =
-                    TestDataFactory.createAwsGroupComputeResourcePreference(computeResourceId, groupProfile.getGroupResourceProfileId());
+            GroupComputeResourcePreference preference = TestDataFactory.createAwsGroupComputeResourcePreference(
+                    computeResourceId, groupProfile.getGroupResourceProfileId());
             groupProfile.addToComputePreferences(preference);
 
             // Act
@@ -111,4 +113,3 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
         }
     }
 }
-

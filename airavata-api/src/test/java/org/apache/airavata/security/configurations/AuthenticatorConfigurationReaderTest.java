@@ -30,15 +30,30 @@ import org.apache.airavata.security.userstore.LDAPUserStore;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
  */
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, AuthenticatorConfigurationReaderTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class AuthenticatorConfigurationReaderTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatorConfigurationReaderTest.class);
     private String configurationFile = URLDecoder.decode(
             this.getClass().getClassLoader().getResource("authenticators.xml").getFile());
+
+    public AuthenticatorConfigurationReaderTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @Test
     public void testInit() throws Exception {
@@ -104,4 +119,21 @@ public class AuthenticatorConfigurationReaderTest {
         authenticatorConfigurationReader.init(disabledConfiguration);
         assertFalse(AuthenticatorConfigurationReader.isAuthenticationEnabled());
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

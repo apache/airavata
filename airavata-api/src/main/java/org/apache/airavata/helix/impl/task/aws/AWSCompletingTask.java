@@ -34,6 +34,14 @@ public class AWSCompletingTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AWSCompletingTask.class);
 
+    public AWSCompletingTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         logger.info("Starting completing task for task {}, experiment id {}", getTaskId(), getExperimentId());

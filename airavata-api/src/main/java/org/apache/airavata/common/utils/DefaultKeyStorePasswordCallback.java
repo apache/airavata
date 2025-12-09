@@ -20,7 +20,6 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,10 +30,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultKeyStorePasswordCallback implements KeyStorePasswordCallback {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
 
-    public DefaultKeyStorePasswordCallback() {}
+    public DefaultKeyStorePasswordCallback(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public char[] getStorePassword() {

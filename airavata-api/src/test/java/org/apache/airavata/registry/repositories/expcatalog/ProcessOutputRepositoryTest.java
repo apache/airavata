@@ -39,7 +39,6 @@ import org.apache.airavata.registry.services.ProcessOutputService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -47,23 +46,24 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ProcessOutputRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final ExperimentService experimentService;
+    private final ProcessService processService;
+    private final ProcessOutputService processOutputService;
 
-    @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    ExperimentService experimentService;
-
-    @Autowired
-    ProcessService processService;
-
-    @Autowired
-    ProcessOutputService processOutputService;
-
-    public ProcessOutputRepositoryTest() {
+    public ProcessOutputRepositoryTest(
+            GatewayService gatewayService,
+            ProjectService projectService,
+            ExperimentService experimentService,
+            ProcessService processService,
+            ProcessOutputService processOutputService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.experimentService = experimentService;
+        this.processService = processService;
+        this.processOutputService = processOutputService;
     }
 
     @Test

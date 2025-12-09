@@ -28,11 +28,9 @@ import org.apache.airavata.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 /**
  * Configuration class to launch all background services when Spring Boot starts.
@@ -56,14 +54,35 @@ public class BackgroundServicesLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundServicesLauncher.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final HelixController helixController;
+    private final GlobalParticipant globalParticipant;
+    private final PreWorkflowManager preWorkflowManager;
+    private final ParserWorkflowManager parserWorkflowManager;
+    private final PostWorkflowManager postWorkflowManager;
+    private final RealtimeMonitor realtimeMonitor;
+    private final EmailBasedMonitor emailBasedMonitor;
 
-    @Autowired
-    private HelixController helixController;
+    public BackgroundServicesLauncher(
+            AiravataServerProperties properties,
+            HelixController helixController,
+            GlobalParticipant globalParticipant,
+            PreWorkflowManager preWorkflowManager,
+            ParserWorkflowManager parserWorkflowManager,
+            PostWorkflowManager postWorkflowManager,
+            RealtimeMonitor realtimeMonitor,
+            EmailBasedMonitor emailBasedMonitor) {
+        this.properties = properties;
+        this.helixController = helixController;
+        this.globalParticipant = globalParticipant;
+        this.preWorkflowManager = preWorkflowManager;
+        this.parserWorkflowManager = parserWorkflowManager;
+        this.postWorkflowManager = postWorkflowManager;
+        this.realtimeMonitor = realtimeMonitor;
+        this.emailBasedMonitor = emailBasedMonitor;
+    }
 
     @Bean
-    @Order(1)
     public CommandLineRunner startHelixController() {
         return args -> {
             if (properties.helix.controller.enabled && helixController != null) {
@@ -83,11 +102,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private GlobalParticipant globalParticipant;
-
     @Bean
-    @Order(2)
     public CommandLineRunner startGlobalParticipant() {
         return args -> {
             if (properties.helix.participant.enabled && globalParticipant != null) {
@@ -107,11 +122,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private PreWorkflowManager preWorkflowManager;
-
     @Bean
-    @Order(3)
     public CommandLineRunner startPreWorkflowManager() {
         return args -> {
             if (properties.services.prewm.enabled && preWorkflowManager != null) {
@@ -131,11 +142,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private ParserWorkflowManager parserWorkflowManager;
-
     @Bean
-    @Order(4)
     public CommandLineRunner startParserWorkflowManager() {
         return args -> {
             if (properties.services.parser.enabled && parserWorkflowManager != null) {
@@ -155,11 +162,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private PostWorkflowManager postWorkflowManager;
-
     @Bean
-    @Order(5)
     public CommandLineRunner startPostWorkflowManager() {
         return args -> {
             if (properties.services.postwm.enabled && postWorkflowManager != null) {
@@ -179,11 +182,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private RealtimeMonitor realtimeMonitor;
-
     @Bean
-    @Order(6)
     public CommandLineRunner startRealtimeMonitor() {
         return args -> {
             if (properties.services.monitor.realtime.monitorEnabled && realtimeMonitor != null) {
@@ -203,11 +202,7 @@ public class BackgroundServicesLauncher {
         };
     }
 
-    @Autowired
-    private EmailBasedMonitor emailBasedMonitor;
-
     @Bean
-    @Order(7)
     public CommandLineRunner startEmailMonitor() {
         return args -> {
             if (properties.services.monitor.email.monitorEnabled && emailBasedMonitor != null) {

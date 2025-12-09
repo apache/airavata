@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,7 +32,6 @@ public class AuthzCache extends LinkedHashMap<AuthzCacheIndex, AuthzCacheEntry> 
     private final int maxSize;
     private static final Logger logger = LoggerFactory.getLogger(AuthzCache.class);
 
-    @Autowired
     public AuthzCache(AiravataServerProperties serverProperties) {
         super(serverProperties.airavata.inMemoryCacheSize);
         this.maxSize = serverProperties.airavata.inMemoryCacheSize;

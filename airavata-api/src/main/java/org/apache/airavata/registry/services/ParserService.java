@@ -27,18 +27,19 @@ import org.apache.airavata.registry.entities.appcatalog.ParserEntity;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ParserService {
-    @Autowired
-    private ParserRepository parserRepository;
+    private final ParserRepository parserRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ParserService(ParserRepository parserRepository, Mapper mapper) {
+        this.parserRepository = parserRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isExists(String parserId) throws RegistryException {
         return parserRepository.existsById(parserId);

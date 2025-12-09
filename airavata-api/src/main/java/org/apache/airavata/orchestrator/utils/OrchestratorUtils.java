@@ -51,7 +51,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -63,17 +62,18 @@ public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final CredentialReader credentialReader;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private CredentialReader credentialReader;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public OrchestratorUtils(
+            RegistryService registryService,
+            CredentialReader credentialReader,
+            AiravataServerProperties properties,
+            ApplicationContext applicationContext) {
+        this.registryService = registryService;
+        this.credentialReader = credentialReader;
+        this.properties = properties;
         OrchestratorUtils.applicationContext = applicationContext;
     }
 

@@ -36,7 +36,6 @@ import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,21 +43,20 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
-
-    @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    ExperimentService experimentService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final ExperimentService experimentService;
 
     private String gatewayId;
 
     private String projectId;
 
-    public ExperimentRepositoryTest() {
+    public ExperimentRepositoryTest(
+            GatewayService gatewayService, ProjectService projectService, ExperimentService experimentService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.experimentService = experimentService;
     }
 
     @org.junit.jupiter.api.BeforeEach

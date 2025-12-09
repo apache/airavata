@@ -38,7 +38,6 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
-import org.apache.airavata.metascheduler.process.scheduling.api.ProcessSchedulerImpl;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -83,30 +82,33 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
-    @Autowired
-    private OrchestratorRegistryService orchestratorRegistryService;
-
-    @Autowired
-    private AiravataServerProperties properties;
-
-    @Autowired
-    private SimpleOrchestratorImpl orchestrator;
+    private final OrchestratorRegistryService orchestratorRegistryService;
+    private final RegistryService registryService;
+    private final AiravataServerProperties properties;
+    private final ProcessScheduler processScheduler;
+    private final SimpleOrchestratorImpl orchestrator;
 
     private CuratorFramework curatorClient;
     private Publisher publisher;
     private Subscriber experimentSubscriber;
 
-    public OrchestratorService() throws OrchestratorException {
-        // Default constructor for Spring - initialization happens after injection
-        // Note: This constructor is called by Spring, but initialization is deferred
-        // to allow Spring to inject dependencies first
+    public OrchestratorService(
+            OrchestratorRegistryService orchestratorRegistryService,
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            SimpleOrchestratorImpl orchestrator,
+            ProcessScheduler processScheduler) {
+        this.orchestratorRegistryService = orchestratorRegistryService;
+        this.registryService = registryService;
+        this.properties = properties;
+        this.orchestrator = orchestrator;
+        this.processScheduler = processScheduler;
     }
 
     @PostConstruct
@@ -152,11 +154,17 @@ public class OrchestratorService {
 
     public OrchestratorService(
             OrchestratorRegistryService orchestratorRegistryService,
+            RegistryService registryService,
+            AiravataServerProperties properties,
             SimpleOrchestratorImpl orchestrator,
             CuratorFramework curatorClient,
-            Publisher publisher) {
+            Publisher publisher,
+            ProcessScheduler processScheduler) {
         this.orchestratorRegistryService = orchestratorRegistryService;
+        this.registryService = registryService;
+        this.properties = properties;
         this.orchestrator = orchestrator;
+        this.processScheduler = processScheduler;
         this.curatorClient = curatorClient;
         this.publisher = publisher;
     }
@@ -228,8 +236,8 @@ public class OrchestratorService {
             throw exception;
         }
 
-        ProcessScheduler scheduler = new ProcessSchedulerImpl();
-        if (!experiment.getUserConfigurationData().isAiravataAutoSchedule() || scheduler.canLaunch(experimentId)) {
+        if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()
+                || processScheduler.canLaunch(experimentId)) {
             createAndValidateTasks(experiment, false);
             return true; // runExperimentLauncher will be called separately
         } else {

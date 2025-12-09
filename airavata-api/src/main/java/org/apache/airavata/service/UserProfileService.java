@@ -43,7 +43,6 @@ import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -56,26 +55,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    @Autowired
     @Lazy
-    private IamAdminService iamAdminService;
+    private final IamAdminService iamAdminService;
 
-    @Autowired
-    private Mapper mapper;
+    private final Mapper mapper;
+    private final AiravataSecurityManager securityManager;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private AiravataSecurityManager securityManager;
-
-    @Autowired
-    @Qualifier("profileServiceEntityManager")
-    private EntityManager entityManager;
+    public UserProfileService(
+            UserProfileRepository userProfileRepository,
+            @Lazy IamAdminService iamAdminService,
+            Mapper mapper,
+            AiravataSecurityManager securityManager,
+            @Qualifier("profileServiceEntityManager") EntityManager entityManager) {
+        this.userProfileRepository = userProfileRepository;
+        this.iamAdminService = iamAdminService;
+        this.mapper = mapper;
+        this.securityManager = securityManager;
+        this.entityManager = entityManager;
+    }
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
-
-    public UserProfileService() {}
 
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);

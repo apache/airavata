@@ -40,7 +40,6 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -51,8 +50,11 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
 
-    @Autowired
-    private SharingRegistryService sharingRegistryService;
+    private final SharingRegistryService sharingRegistryService;
+
+    public SharingServiceDBEventHandler(SharingRegistryService sharingRegistryService) {
+        this.sharingRegistryService = sharingRegistryService;
+    }
 
     @Override
     public void onMessage(MessageContext messageContext) {

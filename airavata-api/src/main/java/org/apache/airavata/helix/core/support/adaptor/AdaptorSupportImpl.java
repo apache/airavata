@@ -30,6 +30,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * TODO: Class level comments please
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class AdaptorSupportImpl implements AdaptorSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
@@ -44,12 +46,20 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     private static AdaptorSupportImpl INSTANCE;
 
     private final AgentStore agentStore = new AgentStore();
+    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.CredentialStoreService credentialStoreService;
 
-    private AdaptorSupportImpl() {}
+    public AdaptorSupportImpl(
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        this.registryService = registryService;
+        this.credentialStoreService = credentialStoreService;
+        INSTANCE = this;
+    }
 
     public static synchronized AdaptorSupportImpl getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new AdaptorSupportImpl();
+            throw new IllegalStateException("AdaptorSupportImpl must be initialized via Spring");
         }
         return INSTANCE;
     }
@@ -80,7 +90,8 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             + ". Creating new one");
                     switch (protocol) {
                         case SSH:
-                            SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor();
+                            SSHJAgentAdaptor agentAdaptor =
+                                    new SSHJAgentAdaptor(registryService, credentialStoreService);
                             agentAdaptor.init(computeResourceId, gatewayId, userId, authToken);
                             agentStore.putAgentAdaptor(computeResourceId, protocol, authToken, userId, agentAdaptor);
                             return agentAdaptor;
@@ -119,7 +130,8 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             + ". Creating new one");
                     switch (protocol) {
                         case SCP:
-                            SSHJStorageAdaptor storageResourceAdaptor = new SSHJStorageAdaptor();
+                            SSHJStorageAdaptor storageResourceAdaptor =
+                                    new SSHJStorageAdaptor(registryService, credentialStoreService);
                             storageResourceAdaptor.init(storageResourceId, gatewayId, userId, authToken);
                             agentStore.putStorageAdaptor(
                                     storageResourceId, protocol, authToken, userId, storageResourceAdaptor);
@@ -171,7 +183,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             gatewayUserId,
                             loginUserName);
 
-                    SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor();
+                    SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
                     agentAdaptor.init(resourceId, gatewayId, loginUserName, authToken);
 
                     agentStore.putSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName, agentAdaptor);
@@ -217,7 +229,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             gatewayUserId,
                             loginUserName);
 
-                    SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor();
+                    SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor(registryService, credentialStoreService);
                     storageAdaptor.init(resourceId, gatewayId, loginUserName, authToken);
 
                     agentStore.putSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName, storageAdaptor);

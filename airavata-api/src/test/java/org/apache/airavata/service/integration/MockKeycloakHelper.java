@@ -20,14 +20,11 @@
 package org.apache.airavata.service.integration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * Helper class for mocking Keycloak operations in tests.
@@ -46,8 +43,8 @@ public class MockKeycloakHelper {
     /**
      * Sets up mock behaviors for gateway setup operations.
      */
-    public static void setupMockGatewaySetup(
-            TenantManagementKeycloakImpl mockClient, Gateway gateway) throws Exception {
+    public static void setupMockGatewaySetup(TenantManagementKeycloakImpl mockClient, Gateway gateway)
+            throws Exception {
         Gateway gatewayWithCredentials = new Gateway();
         gatewayWithCredentials.setGatewayId(gateway.getGatewayId());
         gatewayWithCredentials.setOauthClientId("test-client-id");
@@ -79,8 +76,8 @@ public class MockKeycloakHelper {
     /**
      * Sets up mock behaviors for user creation.
      */
-    public static void setupMockUserCreation(
-            TenantManagementKeycloakImpl mockClient, String gatewayId, String username) throws Exception {
+    public static void setupMockUserCreation(TenantManagementKeycloakImpl mockClient, String gatewayId, String username)
+            throws Exception {
         Mockito.when(mockClient.createUser(
                         Mockito.anyString(),
                         Mockito.eq(gatewayId),
@@ -118,13 +115,17 @@ public class MockKeycloakHelper {
     /**
      * Sets up mock behaviors for user search.
      */
-    public static void setupMockUserSearch(
-            TenantManagementKeycloakImpl mockClient, String gatewayId) throws Exception {
+    public static void setupMockUserSearch(TenantManagementKeycloakImpl mockClient, String gatewayId) throws Exception {
         List<UserProfile> users = new ArrayList<>();
         users.add(TestDataFactory.createTestUserProfile("user1", gatewayId));
         users.add(TestDataFactory.createTestUserProfile("user2", gatewayId));
 
-        Mockito.when(mockClient.getUsers(Mockito.anyString(), Mockito.eq(gatewayId), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
+        Mockito.when(mockClient.getUsers(
+                        Mockito.anyString(),
+                        Mockito.eq(gatewayId),
+                        Mockito.anyInt(),
+                        Mockito.anyInt(),
+                        Mockito.anyString()))
                 .thenReturn(users);
         Mockito.when(mockClient.findUser(
                         Mockito.anyString(), Mockito.eq(gatewayId), Mockito.anyString(), Mockito.anyString()))
@@ -137,9 +138,11 @@ public class MockKeycloakHelper {
     public static void setupMockRoleOperations(
             TenantManagementKeycloakImpl mockClient, String gatewayId, String username, String roleName)
             throws Exception {
-        Mockito.when(mockClient.addRoleToUser(Mockito.any(), Mockito.eq(gatewayId), Mockito.eq(username), Mockito.eq(roleName)))
+        Mockito.when(mockClient.addRoleToUser(
+                        Mockito.any(), Mockito.eq(gatewayId), Mockito.eq(username), Mockito.eq(roleName)))
                 .thenReturn(true);
-        Mockito.when(mockClient.removeRoleFromUser(Mockito.any(), Mockito.eq(gatewayId), Mockito.eq(username), Mockito.eq(roleName)))
+        Mockito.when(mockClient.removeRoleFromUser(
+                        Mockito.any(), Mockito.eq(gatewayId), Mockito.eq(username), Mockito.eq(roleName)))
                 .thenReturn(true);
 
         List<UserProfile> usersWithRole = new ArrayList<>();
@@ -148,4 +151,3 @@ public class MockKeycloakHelper {
                 .thenReturn(usersWithRole);
     }
 }
-

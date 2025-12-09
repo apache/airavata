@@ -48,27 +48,30 @@ import org.apache.airavata.registry.repositories.appcatalog.BatchQueuePolicyRepo
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePolicyRepository;
 import org.apache.airavata.registry.repositories.appcatalog.GroupResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.GrpComputePrefRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GroupResourceProfileService {
-    @Autowired
-    private GroupResourceProfileRepository groupResourceProfileRepository;
+    private final GroupResourceProfileRepository groupResourceProfileRepository;
+    private final GrpComputePrefRepository grpComputePrefRepository;
+    private final ComputeResourcePolicyRepository computeResourcePolicyRepository;
+    private final Mapper mapper;
+    private final BatchQueuePolicyRepository batchQueuePolicyRepository;
 
-    @Autowired
-    private GrpComputePrefRepository grpComputePrefRepository;
-
-    @Autowired
-    private ComputeResourcePolicyRepository computeResourcePolicyRepository;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    private BatchQueuePolicyRepository batchQueuePolicyRepository;
+    public GroupResourceProfileService(
+            GroupResourceProfileRepository groupResourceProfileRepository,
+            GrpComputePrefRepository grpComputePrefRepository,
+            ComputeResourcePolicyRepository computeResourcePolicyRepository,
+            Mapper mapper,
+            BatchQueuePolicyRepository batchQueuePolicyRepository) {
+        this.groupResourceProfileRepository = groupResourceProfileRepository;
+        this.grpComputePrefRepository = grpComputePrefRepository;
+        this.computeResourcePolicyRepository = computeResourcePolicyRepository;
+        this.mapper = mapper;
+        this.batchQueuePolicyRepository = batchQueuePolicyRepository;
+    }
 
     public String addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
         final String groupResourceProfileId = UUID.randomUUID().toString();

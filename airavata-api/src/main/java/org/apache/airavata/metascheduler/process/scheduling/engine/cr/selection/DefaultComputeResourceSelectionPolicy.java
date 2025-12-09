@@ -44,14 +44,15 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultComputeResourceSelectionPolicy.class);
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public DefaultComputeResourceSelectionPolicy(ApplicationContext applicationContext) {
+        super(applicationContext);
         DefaultComputeResourceSelectionPolicy.applicationContext = applicationContext;
     }
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService registryService = applicationContext.getBean(RegistryService.class);
+        RegistryService registryService =
+                DefaultComputeResourceSelectionPolicy.applicationContext.getBean(RegistryService.class);
         try {
             ProcessModel processModel = registryService.getProcess(processId);
 
@@ -84,8 +85,10 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
     }
 
     public static void main(String[] args) {
-        DefaultComputeResourceSelectionPolicy defaultComputeResourceSelectionPolicy =
-                new DefaultComputeResourceSelectionPolicy();
-        defaultComputeResourceSelectionPolicy.selectComputeResource("PROCESS_5dd4f56b-f0fd-41d0-9437-693ad25f4a1d");
+        // Note: DefaultComputeResourceSelectionPolicy is a Spring component and requires ApplicationContext.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException(
+                "DefaultComputeResourceSelectionPolicy must be used within a Spring application context");
     }
 }

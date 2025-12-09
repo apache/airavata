@@ -58,7 +58,6 @@ import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -66,11 +65,13 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHJAgentAdaptor.class);
 
-    @Autowired
-    protected RegistryService registryService;
+    protected final RegistryService registryService;
+    protected final CredentialStoreService credentialService;
 
-    @Autowired
-    protected CredentialStoreService credentialService;
+    public SSHJAgentAdaptor(RegistryService registryService, CredentialStoreService credentialService) {
+        this.registryService = registryService;
+        this.credentialService = credentialService;
+    }
 
     private PoolingSSHJClient sshjClient;
 

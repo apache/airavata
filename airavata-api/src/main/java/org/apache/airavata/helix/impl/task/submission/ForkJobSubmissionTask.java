@@ -24,7 +24,6 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
@@ -41,11 +40,20 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
 
+    public ForkJobSubmissionTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
-            GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+            GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
 
             JobModel jobModel = new JobModel();
             jobModel.setProcessId(getProcessId());

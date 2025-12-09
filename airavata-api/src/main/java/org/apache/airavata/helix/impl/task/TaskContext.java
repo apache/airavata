@@ -334,7 +334,6 @@ public class TaskContext {
         this.userStoragePreference = userStoragePreference;
     }
 
-
     public ComputeResourceDescription getComputeResourceDescription() throws Exception {
         if (this.computeResourceDescription == null) {
             this.computeResourceDescription = registryService.getComputeResource(getComputeResourceId());
@@ -783,7 +782,6 @@ public class TaskContext {
         }
     }
 
-
     public RegistryService getRegistryService() {
         if (registryService == null) {
             // Get from AiravataTask if available
@@ -805,7 +803,6 @@ public class TaskContext {
         }
         return profileService;
     }
-
 
     public UserProfile getUserProfile() throws TaskOnFailException {
 

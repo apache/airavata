@@ -20,38 +20,45 @@
 package org.apache.airavata.api.thrift.util;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, ThriftClientPoolTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ThriftClientPoolTest {
 
-    @Mocked
+    @MockitoBean
     private BaseAPI.Client mockClient;
+
+    public ThriftClientPoolTest(BaseAPI.Client mockClient) {
+        this.mockClient = mockClient;
+    }
 
     @Test
     public void testWithDefaultConfig() throws TException {
-        new Expectations() {
-            {
-                mockClient.getAPIVersion();
-                result = "0.19";
-                mockClient.getInputProtocol().getTransport().isOpen();
-                result = true;
-                mockClient.getOutputProtocol().getTransport().isOpen();
-                result = true;
-            }
-        };
+        when(mockClient.getAPIVersion()).thenReturn("0.19");
+        when(mockClient.getInputProtocol().getTransport().isOpen()).thenReturn(true);
+        when(mockClient.getOutputProtocol().getTransport().isOpen()).thenReturn(true);
 
         GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
         ThriftClientPool<BaseAPI.Client> thriftClientPool =
@@ -60,27 +67,16 @@ public class ThriftClientPoolTest {
         thriftClientPool.returnResource(client);
         thriftClientPool.close();
 
-        new Verifications() {
-            {
-                mockClient.getInputProtocol().getTransport().close();
-                mockClient.getOutputProtocol().getTransport().close();
-            }
-        };
+        verify(mockClient.getInputProtocol().getTransport()).close();
+        verify(mockClient.getOutputProtocol().getTransport()).close();
     }
 
     @Test
     public void testWithAbandonConfigAndAbandoned() throws TException {
 
-        new Expectations() {
-            {
-                mockClient.getAPIVersion();
-                result = "0.19";
-                mockClient.getInputProtocol().getTransport().isOpen();
-                result = true;
-                mockClient.getOutputProtocol().getTransport().isOpen();
-                result = true;
-            }
-        };
+        when(mockClient.getAPIVersion()).thenReturn("0.19");
+        when(mockClient.getInputProtocol().getTransport().isOpen()).thenReturn(true);
+        when(mockClient.getOutputProtocol().getTransport().isOpen()).thenReturn(true);
 
         GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
         // timeBetweenEvictionRunsMillis must be positive for abandoned removal on
@@ -109,30 +105,17 @@ public class ThriftClientPoolTest {
         // The stack trace should contain this method's name
         assertTrue(log.toString().contains("testWithAbandonConfigAndAbandoned"));
 
-        new Verifications() {
-            {
-                // Verify client is destroyed when abandoned
-                mockClient.getInputProtocol().getTransport().close();
-                times = 1;
-                mockClient.getOutputProtocol().getTransport().close();
-                times = 1;
-            }
-        };
+        // Verify client is destroyed when abandoned
+        verify(mockClient.getInputProtocol().getTransport(), times(1)).close();
+        verify(mockClient.getOutputProtocol().getTransport(), times(1)).close();
     }
 
     @Test
     public void testWithAbandonConfigAndAbandonedAndNotLogged() throws TException {
 
-        new Expectations() {
-            {
-                mockClient.getAPIVersion();
-                result = "0.19";
-                mockClient.getInputProtocol().getTransport().isOpen();
-                result = true;
-                mockClient.getOutputProtocol().getTransport().isOpen();
-                result = true;
-            }
-        };
+        when(mockClient.getAPIVersion()).thenReturn("0.19");
+        when(mockClient.getInputProtocol().getTransport().isOpen()).thenReturn(true);
+        when(mockClient.getOutputProtocol().getTransport().isOpen()).thenReturn(true);
 
         GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
         // timeBetweenEvictionRunsMillis must be positive for abandoned removal on
@@ -161,15 +144,9 @@ public class ThriftClientPoolTest {
         // Verify that nothing was logged
         assertEquals(0, log.toString().length());
 
-        new Verifications() {
-            {
-                // Verify client is destroyed when abandoned
-                mockClient.getInputProtocol().getTransport().close();
-                times = 1;
-                mockClient.getOutputProtocol().getTransport().close();
-                times = 1;
-            }
-        };
+        // Verify client is destroyed when abandoned
+        verify(mockClient.getInputProtocol().getTransport(), times(1)).close();
+        verify(mockClient.getOutputProtocol().getTransport(), times(1)).close();
     }
 
     /**
@@ -183,22 +160,15 @@ public class ThriftClientPoolTest {
     @Disabled("Test requires long wait time to account for default removeAbandonedTimeout")
     public void testWithDefaultAbandonedRemovalEnabled() throws TException, ApplicationSettingsException {
 
-        new Expectations() {
-            {
-                mockClient.getAPIVersion();
-                result = "0.19";
-                mockClient.getInputProtocol().getTransport().isOpen();
-                result = true;
-                mockClient.getOutputProtocol().getTransport().isOpen();
-                result = true;
-            }
-        };
+        when(mockClient.getAPIVersion()).thenReturn("0.19");
+        when(mockClient.getInputProtocol().getTransport().isOpen()).thenReturn(true);
+        when(mockClient.getOutputProtocol().getTransport().isOpen()).thenReturn(true);
 
         GenericObjectPoolConfig<BaseAPI.Client> poolConfig = new GenericObjectPoolConfig<>();
         // timeBetweenEvictionRunsMillis must be positive for abandoned removal on
         // maintenance to run
         poolConfig.setTimeBetweenEvictionRunsMillis(1);
-        ServerSettings.setSetting("thrift.client.pool.abandoned.removal.enabled", "true");
+        ApplicationSettings.setSetting("airavata.thrift-client-pool-abandoned-removal-enabled", "true");
         ThriftClientPool<BaseAPI.Client> thriftClientPool =
                 new ThriftClientPool<>((protocol) -> mockClient, () -> null, poolConfig);
         thriftClientPool.getResource();
@@ -211,14 +181,25 @@ public class ThriftClientPoolTest {
             fail("sleep interrupted");
         }
 
-        new Verifications() {
-            {
-                // Verify client is destroyed when abandoned
-                mockClient.getInputProtocol().getTransport().close();
-                times = 1;
-                mockClient.getOutputProtocol().getTransport().close();
-                times = 1;
-            }
-        };
+        // Verify client is destroyed when abandoned
+        verify(mockClient.getInputProtocol().getTransport(), times(1)).close();
+        verify(mockClient.getOutputProtocol().getTransport(), times(1)).close();
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.api",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

@@ -66,7 +66,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -81,11 +80,10 @@ public class DataParsingTask extends AbstractTask {
     private static final CountMonitor parsingTaskCounter = new CountMonitor("parsing_task_counter");
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public DataParsingTask(RegistryService registryService, ApplicationContext applicationContext) {
+        this.registryService = registryService;
         DataParsingTask.applicationContext = applicationContext;
     }
 

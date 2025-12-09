@@ -26,18 +26,19 @@ import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.registry.entities.appcatalog.ParsingTemplateEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParsingTemplateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ParsingTemplateService {
-    @Autowired
-    private ParsingTemplateRepository parsingTemplateRepository;
+    private final ParsingTemplateRepository parsingTemplateRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ParsingTemplateService(ParsingTemplateRepository parsingTemplateRepository, Mapper mapper) {
+        this.parsingTemplateRepository = parsingTemplateRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isExists(String templateId) throws RegistryException {
         return parsingTemplateRepository.existsById(templateId);

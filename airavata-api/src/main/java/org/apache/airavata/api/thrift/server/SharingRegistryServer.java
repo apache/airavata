@@ -37,7 +37,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -56,13 +55,12 @@ public class SharingRegistryServer implements IServer {
     // Unused field - commented out
     // private boolean testMode = false;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
-
-    public SharingRegistryServer() {
+    public SharingRegistryServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
         setStatus(IServer.ServerStatus.STOPPED);
     }
 

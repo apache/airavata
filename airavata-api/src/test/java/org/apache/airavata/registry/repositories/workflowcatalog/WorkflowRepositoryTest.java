@@ -25,10 +25,8 @@ import org.apache.airavata.model.workflow.*;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.WorkflowService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -38,8 +36,12 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class WorkflowRepositoryTest extends TestBase {
 
-    @Autowired
-    private WorkflowService workflowService;
+    private final WorkflowService workflowService;
+
+    public WorkflowRepositoryTest(WorkflowService workflowService) {
+        super(Database.WORKFLOW_CATALOG);
+        this.workflowService = workflowService;
+    }
 
     // Workflow related constants
     private String EXPERIMENT_ID = "sample_exp_id";
@@ -63,10 +65,6 @@ public class WorkflowRepositoryTest extends TestBase {
 
     private String SAMPLE_HANDLER_INPUT_NAME = "handler_input";
     private String SAMPLE_HANDLER_OUTPUT_NAME = "handler_output";
-
-    public WorkflowRepositoryTest() {
-        super(Database.WORKFLOW_CATALOG);
-    }
 
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
@@ -131,6 +129,7 @@ public class WorkflowRepositoryTest extends TestBase {
         workflow.addToApplications(application2);
 
         // Adding workflow handlers
+        // Note: These classes are Thrift-generated and should be available after Thrift code generation
         WorkflowHandler handler1 = new WorkflowHandler();
         handler1.setId(HANDLER_PREFIX + 1);
         handler1.setType(HandlerType.FLOW_STARTER);

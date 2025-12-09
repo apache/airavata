@@ -24,7 +24,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,17 +31,17 @@ public class ExpCatalogJPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
 
     private static ExpCatalogJPAUtils instance;
-    private EntityManagerFactory factory;
+    private final EntityManagerFactory factory;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public ExpCatalogJPAUtils(AiravataServerProperties properties) {
+        var db = properties.database.registry;
+        this.factory = JPAUtils.getEntityManagerFactory(
+                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
+    }
 
     @PostConstruct
     public void init() {
         instance = this;
-        var db = properties.database.registry;
-        factory = JPAUtils.getEntityManagerFactory(
-                PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     public static EntityManager getEntityManager() {

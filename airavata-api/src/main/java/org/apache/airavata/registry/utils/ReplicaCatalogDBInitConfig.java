@@ -21,14 +21,16 @@ package org.apache.airavata.registry.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public ReplicaCatalogDBInitConfig(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     public static final String CHECK_TABLE = "CONFIGURATION";
     private String dbInitScriptPrefix = "database_scripts/replicacatalog";

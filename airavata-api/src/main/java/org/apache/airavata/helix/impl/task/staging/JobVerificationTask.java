@@ -41,6 +41,14 @@ public class JobVerificationTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(JobVerificationTask.class);
 
+    public JobVerificationTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 

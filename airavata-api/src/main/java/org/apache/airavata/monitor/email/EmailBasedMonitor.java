@@ -33,7 +33,7 @@ import java.time.Duration;
 import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.monitor.AbstractMonitor;
@@ -50,8 +50,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties airavataProperties;
+    private final AiravataServerProperties airavataProperties;
+    private final org.apache.airavata.service.RegistryService registryService;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -67,7 +67,12 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private long emailExpirationTimeMinutes;
     private String publisherId;
 
-    public EmailBasedMonitor() throws Exception {
+    public EmailBasedMonitor(
+            org.apache.airavata.service.RegistryService registryService, AiravataServerProperties airavataProperties)
+            throws Exception {
+        super(registryService, airavataProperties);
+        this.registryService = registryService;
+        this.airavataProperties = airavataProperties;
         // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 
@@ -198,7 +203,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     @Override
     public void run() {
 
-        while (!ServerSettings.isStopAllThreads()) {
+        while (!ShutdownFlag.isStopAllThreads()) {
             try {
                 Session session = Session.getDefaultInstance(properties);
                 store = session.getStore(storeProtocol);
@@ -206,7 +211,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 emailFolder = store.getFolder(folderName);
                 // first we search for all unread messages.
                 SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                while (!ServerSettings.isStopAllThreads()) {
+                while (!ShutdownFlag.isStopAllThreads()) {
                     Thread.sleep(airavataProperties.services.monitor.email.period); // sleep for long enough
                     if (!store.isConnected()) {
                         store.connect();
@@ -340,13 +345,9 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        EmailBasedMonitor monitor = new EmailBasedMonitor();
-        monitor.start();
-        // Keep main thread alive
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            log.error("EmailBasedMonitor main thread interrupted", e);
-        }
+        // Note: EmailBasedMonitor is a Spring component and requires RegistryService and AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException("EmailBasedMonitor must be used within a Spring application context");
     }
 }

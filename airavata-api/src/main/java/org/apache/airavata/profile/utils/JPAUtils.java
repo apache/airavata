@@ -23,7 +23,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("profileJPAUtils")
@@ -33,8 +32,11 @@ public class JPAUtils {
     private static JPAUtils instance;
     private EntityManagerFactory factory;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public JPAUtils(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @PostConstruct
     public void init() {

@@ -36,7 +36,6 @@ import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,15 +43,15 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class DataProductRepositoryTest extends TestBase {
 
-    @Autowired
-    private DataProductService dataProductService;
+    private final DataProductService dataProductService;
 
     private String gatewayId = "testGateway";
     private String userId = "testUser";
     private String productName = "testProduct";
 
-    public DataProductRepositoryTest() {
+    public DataProductRepositoryTest(DataProductService dataProductService) {
         super(Database.REPLICA_CATALOG);
+        this.dataProductService = dataProductService;
     }
 
     @Test

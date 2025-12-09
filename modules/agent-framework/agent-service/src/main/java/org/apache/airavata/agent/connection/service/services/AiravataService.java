@@ -41,7 +41,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +58,11 @@ public class AiravataService {
     @Value("${airavata.server.secure:false}")
     private boolean secure;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public AiravataService(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     public Airavata.Client airavata() {
         try {

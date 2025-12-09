@@ -25,18 +25,19 @@ import org.apache.airavata.sharing.entities.DomainEntity;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.DomainRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class DomainService {
-    @Autowired
-    private DomainRepository domainRepository;
+    private final DomainRepository domainRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public DomainService(DomainRepository domainRepository, Mapper mapper) {
+        this.domainRepository = domainRepository;
+        this.mapper = mapper;
+    }
 
     public Domain get(String domainId) throws SharingRegistryException {
         DomainEntity entity = domainRepository.findById(domainId).orElse(null);

@@ -38,7 +38,6 @@ import org.apache.airavata.registry.repositories.appcatalog.UserResourceProfileR
 import org.apache.airavata.registry.repositories.appcatalog.UserStoragePreferenceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,17 +46,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserResourceProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileService.class);
 
-    @Autowired
-    private UserResourceProfileRepository userResourceProfileRepository;
+    private final UserResourceProfileRepository userResourceProfileRepository;
+    private final UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository;
+    private final UserStoragePreferenceRepository userStoragePreferenceRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository;
-
-    @Autowired
-    private UserStoragePreferenceRepository userStoragePreferenceRepository;
-
-    @Autowired
-    private Mapper mapper;
+    public UserResourceProfileService(
+            UserResourceProfileRepository userResourceProfileRepository,
+            UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository,
+            UserStoragePreferenceRepository userStoragePreferenceRepository,
+            Mapper mapper) {
+        this.userResourceProfileRepository = userResourceProfileRepository;
+        this.userComputeResourcePreferenceRepository = userComputeResourcePreferenceRepository;
+        this.userStoragePreferenceRepository = userStoragePreferenceRepository;
+        this.mapper = mapper;
+    }
 
     public String addUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException {
         return saveUserResourceProfileData(userResourceProfile);

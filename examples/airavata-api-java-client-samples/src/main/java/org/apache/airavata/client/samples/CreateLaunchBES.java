@@ -52,7 +52,7 @@ public class CreateLaunchBES {
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
 
-    private static final String DEFAULT_USER = "default.registry.user";
+    private static final String DEFAULT_USER = "airavata.default.user";
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 

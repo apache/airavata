@@ -27,18 +27,19 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ExperimentStatusService {
-    @Autowired
-    private ExperimentStatusRepository experimentStatusRepository;
+    private final ExperimentStatusRepository experimentStatusRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ExperimentStatusService(ExperimentStatusRepository experimentStatusRepository, Mapper mapper) {
+        this.experimentStatusRepository = experimentStatusRepository;
+        this.mapper = mapper;
+    }
 
     public String addExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryException {
         if (experimentStatus.getStatusId() == null) {

@@ -37,18 +37,19 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 
-    @Autowired
-    private UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
+    private final SharingRegistryService sharingService;
 
-    @Autowired
-    private SharingRegistryService sharingService;
+    public GroupManagerService(UserProfileService userProfileService, SharingRegistryService sharingService) {
+        this.userProfileService = userProfileService;
+        this.sharingService = sharingService;
+    }
 
     private SharingRegistryService getSharingService() {
         return sharingService;

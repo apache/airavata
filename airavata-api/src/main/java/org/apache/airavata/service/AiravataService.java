@@ -135,7 +135,6 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -144,8 +143,7 @@ import org.springframework.stereotype.Service;
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
 
     private record StorageInfoContext(String loginUserName, String credentialToken, AgentAdaptor adaptor) {}
 
@@ -187,9 +185,11 @@ public class AiravataService {
     private Publisher experimentPublisher;
 
     public AiravataService(
+            AiravataServerProperties properties,
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
             CredentialStoreService credentialStoreService) {
+        this.properties = properties;
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.credentialStoreService = credentialStoreService;

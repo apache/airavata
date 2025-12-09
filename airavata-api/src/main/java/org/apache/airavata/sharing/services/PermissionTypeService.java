@@ -35,7 +35,6 @@ import org.apache.airavata.sharing.entities.PermissionTypePK;
 import org.apache.airavata.sharing.models.PermissionType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,15 +42,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class PermissionTypeService {
-    @Autowired
-    private PermissionTypeRepository permissionTypeRepository;
+    private final PermissionTypeRepository permissionTypeRepository;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManager")
-    private EntityManager entityManager;
+    public PermissionTypeService(
+            PermissionTypeRepository permissionTypeRepository,
+            Mapper mapper,
+            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+        this.permissionTypeRepository = permissionTypeRepository;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public PermissionType get(PermissionTypePK pk) throws SharingRegistryException {
         PermissionTypeEntity entity = permissionTypeRepository.findById(pk).orElse(null);

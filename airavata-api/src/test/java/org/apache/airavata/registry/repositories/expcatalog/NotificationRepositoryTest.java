@@ -28,7 +28,6 @@ import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.NotificationService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -38,11 +37,11 @@ public class NotificationRepositoryTest extends TestBase {
 
     private String testGateway = "testGateway";
 
-    @Autowired
-    NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    public NotificationRepositoryTest() {
+    public NotificationRepositoryTest(NotificationService notificationService) {
         super(Database.EXP_CATALOG);
+        this.notificationService = notificationService;
     }
 
     @Test

@@ -39,7 +39,6 @@ import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +49,13 @@ public class ExperimentSummaryService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryService.class);
     private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
 
-    @Autowired
-    private Mapper mapper;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    @Qualifier("expCatalogEntityManager")
-    private EntityManager entityManager;
+    public ExperimentSummaryService(Mapper mapper, @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(
             List<String> accessibleExperimentIds,

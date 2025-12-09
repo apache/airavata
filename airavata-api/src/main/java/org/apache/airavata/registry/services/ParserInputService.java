@@ -24,18 +24,19 @@ import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.registry.entities.appcatalog.ParserInputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParserInputRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ParserInputService {
-    @Autowired
-    private ParserInputRepository parserInputRepository;
+    private final ParserInputRepository parserInputRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ParserInputService(ParserInputRepository parserInputRepository, Mapper mapper) {
+        this.parserInputRepository = parserInputRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isExists(String parserInputId) throws RegistryException {
         return parserInputRepository.existsById(parserInputId);

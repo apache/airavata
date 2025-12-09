@@ -27,7 +27,6 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
-import org.apache.airavata.helix.impl.task.TaskFactory;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -61,14 +60,29 @@ public class PostWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
     private static final CountMonitor postwfCounter = new CountMonitor("post_wf_counter");
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
+    private final org.apache.airavata.helix.impl.task.TaskFactory taskFactory;
+    private final org.springframework.context.ApplicationContext applicationContext;
+    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.UserProfileService userProfileService;
+    private final org.apache.airavata.service.CredentialStoreService credentialStoreService;
     private final ExecutorService processingPool = Executors.newFixedThreadPool(10);
 
-    public PostWorkflowManager() {
+    public PostWorkflowManager(
+            AiravataServerProperties properties,
+            org.apache.airavata.helix.impl.task.TaskFactory taskFactory,
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
         // Default values, will be updated in @PostConstruct
-        super("post-workflow-manager", false);
+        super("post-workflow-manager", false, registryService, properties);
+        this.properties = properties;
+        this.taskFactory = taskFactory;
+        this.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.userProfileService = userProfileService;
+        this.credentialStoreService = credentialStoreService;
     }
 
     @jakarta.annotation.PostConstruct
@@ -88,10 +102,10 @@ public class PostWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
-        PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.start();
-        // Keep main thread alive
-        Thread.currentThread().join();
+        // Note: PostWorkflowManager is a Spring component and requires dependencies.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException("PostWorkflowManager must be used within a Spring application context");
     }
 
     private void init() throws Exception {
@@ -233,7 +247,7 @@ public class PostWorkflowManager extends WorkflowManager {
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         postwfCounter.inc();
-        RegistryService registryService = getRegistryService();
+        RegistryService registryService = this.registryService;
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
@@ -249,7 +263,7 @@ public class PostWorkflowManager extends WorkflowManager {
                     .getGroupComputeResourcePreference(crId, grpId)
                     .getResourceType();
 
-            taskFactory = TaskFactory.getFactory(resourceType);
+            taskFactory = this.taskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
         } catch (RegistryServiceException e) {
@@ -419,7 +433,7 @@ public class PostWorkflowManager extends WorkflowManager {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            RegistryService registryService = getRegistryService();
+            RegistryService registryService = this.registryService;
 
             try {
                 registryService.addJobStatus(jobStatus, taskId, jobId);

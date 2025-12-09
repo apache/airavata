@@ -32,7 +32,6 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -42,14 +41,13 @@ import org.springframework.stereotype.Component;
 @Component("metaschedulerUtils")
 public class Utils {
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
 
     private static Publisher statusPublisher;
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public Utils(RegistryService registryService, ApplicationContext applicationContext) {
+        this.registryService = registryService;
         Utils.applicationContext = applicationContext;
     }
 

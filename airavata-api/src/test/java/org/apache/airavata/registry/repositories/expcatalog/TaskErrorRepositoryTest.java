@@ -40,7 +40,6 @@ import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskErrorService;
 import org.apache.airavata.registry.services.TaskService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -48,26 +47,27 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class TaskErrorRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final ExperimentService experimentService;
+    private final ProcessService processService;
+    private final TaskService taskService;
+    private final TaskErrorService taskErrorService;
 
-    @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    ExperimentService experimentService;
-
-    @Autowired
-    ProcessService processService;
-
-    @Autowired
-    TaskService taskService;
-
-    @Autowired
-    TaskErrorService taskErrorService;
-
-    public TaskErrorRepositoryTest() {
+    public TaskErrorRepositoryTest(
+            GatewayService gatewayService,
+            ProjectService projectService,
+            ExperimentService experimentService,
+            ProcessService processService,
+            TaskService taskService,
+            TaskErrorService taskErrorService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.experimentService = experimentService;
+        this.processService = processService;
+        this.taskService = taskService;
+        this.taskErrorService = taskErrorService;
     }
 
     @Test

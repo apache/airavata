@@ -21,6 +21,8 @@ package org.apache.airavata.security.interceptor;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +33,17 @@ import org.slf4j.LoggerFactory;
 public class SecurityModule extends AbstractModule {
     private static final Logger logger = LoggerFactory.getLogger(SecurityModule.class);
 
+    private final AiravataSecurityManager securityManager;
+    private final AiravataServerProperties properties;
+
+    public SecurityModule(AiravataSecurityManager securityManager, AiravataServerProperties properties) {
+        this.securityManager = securityManager;
+        this.properties = properties;
+    }
+
     public void configure() {
         logger.info("Security module reached...");
-        SecurityInterceptor interceptor = new SecurityInterceptor();
-        // requestInjection(interceptor);
+        SecurityInterceptor interceptor = new SecurityInterceptor(securityManager, properties);
 
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(SecurityCheck.class), interceptor);
     }

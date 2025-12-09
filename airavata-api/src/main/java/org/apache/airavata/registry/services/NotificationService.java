@@ -26,18 +26,19 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.NotificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class NotificationService {
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public NotificationService(NotificationRepository notificationRepository, Mapper mapper) {
+        this.notificationRepository = notificationRepository;
+        this.mapper = mapper;
+    }
 
     public void deleteNotification(String notificationId) throws RegistryException {
         notificationRepository.deleteById(notificationId);

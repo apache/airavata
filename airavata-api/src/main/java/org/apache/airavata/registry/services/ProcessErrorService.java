@@ -26,18 +26,19 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ProcessErrorService {
-    @Autowired
-    private ProcessErrorRepository processErrorRepository;
+    private final ProcessErrorRepository processErrorRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ProcessErrorService(ProcessErrorRepository processErrorRepository, Mapper mapper) {
+        this.processErrorRepository = processErrorRepository;
+        this.mapper = mapper;
+    }
 
     public String addProcessError(ErrorModel error, String processId) throws RegistryException {
         ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);

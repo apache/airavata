@@ -21,7 +21,6 @@ package org.apache.airavata.agents.api;
 
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -31,11 +30,17 @@ public class AgentUtils implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final CredentialStoreService credentialStoreService;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
+    public AgentUtils(
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            CredentialStoreService credentialStoreService) {
+        AgentUtils.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.credentialStoreService = credentialStoreService;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {

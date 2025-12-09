@@ -26,18 +26,19 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentErrorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ExperimentErrorService {
-    @Autowired
-    private ExperimentErrorRepository experimentErrorRepository;
+    private final ExperimentErrorRepository experimentErrorRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ExperimentErrorService(ExperimentErrorRepository experimentErrorRepository, Mapper mapper) {
+        this.experimentErrorRepository = experimentErrorRepository;
+        this.mapper = mapper;
+    }
 
     public String addExperimentError(ErrorModel error, String experimentId) throws RegistryException {
         ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);

@@ -32,7 +32,6 @@ import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,11 +40,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobService {
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public JobService(JobRepository jobRepository, Mapper mapper) {
+        this.jobRepository = jobRepository;
+        this.mapper = mapper;
+    }
 
     public void populateParentIds(JobEntity jobEntity) {
         String jobId = jobEntity.getJobId();

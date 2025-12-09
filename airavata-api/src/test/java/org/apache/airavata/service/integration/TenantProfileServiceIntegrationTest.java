@@ -31,7 +31,6 @@ import org.apache.airavata.service.TenantProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for TenantProfileService (Gateway operations).
@@ -39,9 +38,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("TenantProfileService Integration Tests")
 public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private TenantProfileService tenantProfileService;
+    private final TenantProfileService tenantProfileService;
 
+    public TenantProfileServiceIntegrationTest(TenantProfileService tenantProfileService) {
+        this.tenantProfileService = tenantProfileService;
+    }
 
     @Nested
     @DisplayName("Gateway CRUD Operations")
@@ -188,4 +189,3 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         }
     }
 }
-

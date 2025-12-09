@@ -37,8 +37,11 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
 
     private static final Logger logger = LoggerFactory.getLogger(SSHJStorageAdaptor.class);
 
-    public SSHJStorageAdaptor() throws AgentException {
-        super();
+    public SSHJStorageAdaptor(
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.CredentialStoreService credentialService)
+            throws AgentException {
+        super(registryService, credentialService);
         // Services are inherited from SSHJAgentAdaptor or will be injected via Spring
     }
 

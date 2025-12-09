@@ -27,7 +27,6 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -65,7 +64,6 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     }
 
     // Constructor for Spring - uses constructor injection for properties
-    @Autowired
     public GlobalParticipant(AiravataServerProperties properties) throws ApplicationSettingsException {
         super(createTaskClasses(), null, properties);
     }

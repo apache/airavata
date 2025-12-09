@@ -27,10 +27,8 @@ public class TestRegistryServiceServer {
     private static final Logger logger = LoggerFactory.getLogger(TestRegistryServiceServer.class);
 
     public static void main(String[] args) {
-        try {
-            new RegistryServiceServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        throw new UnsupportedOperationException(
+                "RegistryServiceServer must be used within a Spring application context. " +
+                "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

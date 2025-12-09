@@ -21,9 +21,7 @@ package org.apache.airavata.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,13 +29,15 @@ import org.springframework.stereotype.Component;
  * Runs early in the startup sequence to validate configuration.
  */
 @Component
-@Order(1)
 public class PropertiesVerification implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesVerification.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public PropertiesVerification(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public void run(String... args) throws Exception {

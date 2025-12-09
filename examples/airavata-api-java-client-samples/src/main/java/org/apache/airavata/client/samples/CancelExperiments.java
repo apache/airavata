@@ -33,7 +33,7 @@ public class CancelExperiments {
     // FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
-    private static final String DEFAULT_USER = "default.registry.user";
+    private static final String DEFAULT_USER = "airavata.default.user";
     private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client client;
 

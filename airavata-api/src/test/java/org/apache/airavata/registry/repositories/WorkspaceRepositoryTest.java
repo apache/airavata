@@ -19,10 +19,15 @@
 */
 package org.apache.airavata.registry.repositories;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.repositories.common.TestBase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
-public class WorkspaceRepositoryTest {
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
+@Transactional
+public class WorkspaceRepositoryTest extends TestBase {
 
     //    private final static Logger logger = LoggerFactory.getLogger(WorkspaceRepositoryTest.class);
     //
@@ -176,4 +181,10 @@ public class WorkspaceRepositoryTest {
     //
     //
     //    }
+    public WorkspaceRepositoryTest() {
+        super(TestBase.Database.EXP_CATALOG, TestBase.Database.APP_CATALOG);
+    }
+
+    // Test methods can be added here when needed
+    // Previous test code was commented out and can be restored if needed
 }

@@ -58,7 +58,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -68,18 +67,19 @@ public abstract class AiravataTask extends AbstractTask {
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private RegistryService registryService;
+    protected final RegistryService registryService;
+    private final UserProfileService userProfileService;
+    private final CredentialStoreService credentialStoreService;
 
-    @Autowired
-    private UserProfileService userProfileService;
-
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public AiravataTask(
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService) {
         AiravataTask.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.userProfileService = userProfileService;
+        this.credentialStoreService = credentialStoreService;
     }
 
     public static ApplicationContext getApplicationContext() {

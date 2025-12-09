@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -41,7 +41,6 @@ import org.apache.airavata.registry.services.GwyResourceProfileService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -51,14 +50,18 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
 
-    @Autowired
-    private GwyResourceProfileService gwyResourceProfileService;
+    private final GwyResourceProfileService gwyResourceProfileService;
+    private final ComputeResourceService computeResourceService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    public GatewayProfileRepositoryTest() {
+    public GatewayProfileRepositoryTest(
+            GwyResourceProfileService gwyResourceProfileService,
+            ComputeResourceService computeResourceService,
+            AiravataServerProperties properties) {
         super(Database.APP_CATALOG);
+        this.gwyResourceProfileService = gwyResourceProfileService;
+        this.computeResourceService = computeResourceService;
+        this.properties = properties;
     }
 
     @Test
@@ -69,7 +72,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 this.gwyResourceProfileService.getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(
-                ServerSettings.getDefaultUserGateway(),
+                properties.services.default_.gateway,
                 defaultGatewayResourceProfileList.get(0).getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();

@@ -30,7 +30,6 @@ import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.UserResourceProfileService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -38,14 +37,14 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class UserResourceProfileRepositoryTest extends TestBase {
 
-    @Autowired
-    private UserResourceProfileService userResourceProfileService;
+    private final UserResourceProfileService userResourceProfileService;
 
     private String userId = "testUser";
     private String gatewayId = "testGateway";
 
-    public UserResourceProfileRepositoryTest() {
+    public UserResourceProfileRepositoryTest(UserResourceProfileService userResourceProfileService) {
         super(Database.APP_CATALOG);
+        this.userResourceProfileService = userResourceProfileService;
     }
 
     @Test

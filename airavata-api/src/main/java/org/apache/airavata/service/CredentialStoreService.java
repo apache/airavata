@@ -49,27 +49,30 @@ import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final SSHCredentialWriter sshCredentialWriter;
+    private final CertificateCredentialWriter certificateCredentialWriter;
+    private final CredentialReaderImpl credentialReader;
+    private final CredentialStoreDBInitConfig dbInitConfig;
 
-    @Autowired
-    private SSHCredentialWriter sshCredentialWriter;
-
-    @Autowired
-    private CertificateCredentialWriter certificateCredentialWriter;
-
-    @Autowired
-    private CredentialReaderImpl credentialReader;
-
-    @Autowired
-    private CredentialStoreDBInitConfig dbInitConfig;
+    public CredentialStoreService(
+            AiravataServerProperties properties,
+            SSHCredentialWriter sshCredentialWriter,
+            CertificateCredentialWriter certificateCredentialWriter,
+            CredentialReaderImpl credentialReader,
+            CredentialStoreDBInitConfig dbInitConfig) {
+        this.properties = properties;
+        this.sshCredentialWriter = sshCredentialWriter;
+        this.certificateCredentialWriter = certificateCredentialWriter;
+        this.credentialReader = credentialReader;
+        this.dbInitConfig = dbInitConfig;
+    }
 
     @jakarta.annotation.PostConstruct
     public void init() {

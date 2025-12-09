@@ -26,7 +26,6 @@ import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,8 +36,11 @@ import org.springframework.test.context.TestPropertySource;
 public class CipresTest implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(CipresTest.class);
 
-    @Autowired
-    private SharingRegistryService sharingService;
+    private final SharingRegistryService sharingService;
+
+    public CipresTest(SharingRegistryService sharingService) {
+        this.sharingService = sharingService;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(CipresTest.class, args);

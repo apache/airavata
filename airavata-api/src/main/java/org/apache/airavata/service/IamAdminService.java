@@ -39,28 +39,26 @@ import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
-
-    @Autowired
-    private UserProfileService userProfileService;
+    private final AiravataServerProperties properties;
+    private final UserProfileService userProfileService;
+    private final CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
 
-    @Autowired
-    private final CredentialStoreService credentialStoreService;
-
-    @Autowired
-    private final RegistryService registryService;
-
-    public IamAdminService(CredentialStoreService credentialStoreService, RegistryService registryService) {
+    public IamAdminService(
+            AiravataServerProperties properties,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            RegistryService registryService) {
+        this.properties = properties;
+        this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
     }

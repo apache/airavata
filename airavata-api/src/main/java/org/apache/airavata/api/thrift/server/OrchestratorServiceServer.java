@@ -34,7 +34,6 @@ import org.apache.thrift.transport.TTransportException;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -51,19 +50,23 @@ public class OrchestratorServiceServer implements IServer {
 
     private static ComputationalResourceMonitoringService monitoringService;
 
-    private static ProcessReschedulingService metaschedulerService;
+    private final ProcessReschedulingService metaschedulerService;
+    private final DataInterpreterService dataInterpreterService;
 
-    private static DataInterpreterService dataInterpreterService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private AiravataServerProperties properties;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
 
     //	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
-    public OrchestratorServiceServer() {
+    public OrchestratorServiceServer(
+            ApplicationContext applicationContext,
+            AiravataServerProperties properties,
+            ProcessReschedulingService metaschedulerService,
+            DataInterpreterService dataInterpreterService) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
+        this.metaschedulerService = metaschedulerService;
+        this.dataInterpreterService = dataInterpreterService;
         setStatus(ServerStatus.STOPPED);
     }
 
@@ -128,12 +131,8 @@ public class OrchestratorServiceServer implements IServer {
 
     public void startMetaschedulerJobScanning() throws SchedulerException {
         try {
-            if (metaschedulerService == null) {
-                metaschedulerService = new ProcessReschedulingService();
+            if (!metaschedulerService.getStatus().equals(ServerStatus.STARTED)) {
                 metaschedulerService.setServerStatus(ServerStatus.STARTING);
-            }
-            if (metaschedulerService != null
-                    && !metaschedulerService.getStatus().equals(ServerStatus.STARTED)) {
                 metaschedulerService.start();
                 metaschedulerService.setServerStatus(ServerStatus.STARTED);
                 logger.info("Airavata metascheduler job scanning service started ....");
@@ -145,12 +144,8 @@ public class OrchestratorServiceServer implements IServer {
 
     public void startMetadataDataAnalyzer() throws SchedulerException {
         try {
-            if (dataInterpreterService == null) {
-                dataInterpreterService = new DataInterpreterService();
+            if (!dataInterpreterService.getStatus().equals(ServerStatus.STARTED)) {
                 dataInterpreterService.setServerStatus(ServerStatus.STARTING);
-            }
-            if (dataInterpreterService != null
-                    && !dataInterpreterService.getStatus().equals(ServerStatus.STARTED)) {
                 dataInterpreterService.start();
                 dataInterpreterService.setServerStatus(ServerStatus.STARTED);
                 logger.info("Airavata data interpreter job scanning service started ....");

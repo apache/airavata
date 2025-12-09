@@ -25,15 +25,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 8/25/13
  * Time: 10:28 AM
  */
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, ConfigurationReaderTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class ConfigurationReaderTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationReaderTest.class);
+
+    public ConfigurationReaderTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @BeforeEach
     public void setUp() throws Exception {}
@@ -59,4 +74,21 @@ public class ConfigurationReaderTest {
         ConfigurationReader configurationReader = new ConfigurationReader();
         assertEquals("/credential-store/show-redirect.jsp", configurationReader.getPortalRedirectUrl());
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.credential",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

@@ -109,128 +109,129 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
-    @Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
     // Note: ApplicationDeploymentRepository removed - now accessed through ApplicationDeploymentService
     // Note: ApplicationInterfaceRepository removed - now accessed through ApplicationInterfaceService
-
-    @Autowired
-    private ApplicationDeploymentService applicationDeploymentService;
-
-    @Autowired
-    private StorageResourceService storageResourceService;
-
-    @Autowired
-    private GwyResourceProfileService gwyResourceProfileService;
-
-    @Autowired
-    private UserResourceProfileService userResourceProfileService;
-
-    @Autowired
-    private GroupResourceProfileService groupResourceProfileService;
-
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
+    private final ApplicationDeploymentService applicationDeploymentService;
+    private final StorageResourceService storageResourceService;
+    private final GwyResourceProfileService gwyResourceProfileService;
+    private final UserResourceProfileService userResourceProfileService;
+    private final GroupResourceProfileService groupResourceProfileService;
+    private final ComputeResourceService computeResourceService;
     // Note: All repository access now through service classes
+    private final ExperimentService experimentService;
+    private final ProcessService processService;
+    private final TaskService taskService;
+    private final JobService jobService;
+    private final ExperimentSummaryService experimentSummaryService;
+    private final UserService userService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final NotificationService notificationService;
+    private final ProcessStatusService processStatusService;
+    private final TaskStatusService taskStatusService;
+    private final ExperimentStatusService experimentStatusService;
+    private final JobStatusService jobStatusService;
+    private final ProcessOutputService processOutputService;
+    private final ExperimentOutputService experimentOutputService;
+    private final ProcessWorkflowService processWorkflowService;
+    private final ExperimentErrorService experimentErrorService;
+    private final QueueStatusService queueStatusService;
+    private final TaskErrorService taskErrorService;
+    private final ProcessErrorService processErrorService;
+    private final DataProductService dataProductService;
+    private final DataReplicaLocationService dataReplicaLocationService;
+    private final WorkflowService workflowService;
+    private final ParserService parserService;
+    private final ParserInputService parserInputService;
+    private final ParserOutputService parserOutputService;
+    private final ParsingTemplateService parsingTemplateService;
+    private final GatewayGroupsService gatewayGroupsService;
+    private final GatewayUsageReportingCommandService gatewayUsageReportingCommandService;
+    private final ApplicationInterfaceService applicationInterfaceService;
 
-    @Autowired
-    private ExperimentService experimentService;
-
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private JobService jobService;
-
-    @Autowired
-    private ExperimentSummaryService experimentSummaryService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private GatewayService gatewayService;
-
-    @Autowired
-    private ProjectService projectService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private ProcessStatusService processStatusService;
-
-    @Autowired
-    private TaskStatusService taskStatusService;
-
-    @Autowired
-    private ExperimentStatusService experimentStatusService;
-
-    @Autowired
-    private JobStatusService jobStatusService;
-
-    @Autowired
-    private ProcessOutputService processOutputService;
-
-    @Autowired
-    private ExperimentOutputService experimentOutputService;
-
-    @Autowired
-    private ProcessWorkflowService processWorkflowService;
-
-    @Autowired
-    private ExperimentErrorService experimentErrorService;
-
-    @Autowired
-    private QueueStatusService queueStatusService;
-
-    @Autowired
-    private TaskErrorService taskErrorService;
-
-    @Autowired
-    private ProcessErrorService processErrorService;
-
-    @Autowired
-    private DataProductService dataProductService;
-
-    @Autowired
-    private DataReplicaLocationService dataReplicaLocationService;
-
-    @Autowired
-    private WorkflowService workflowService;
-
-    @Autowired
-    private ParserService parserService;
-
-    @Autowired
-    private ParserInputService parserInputService;
-
-    @Autowired
-    private ParserOutputService parserOutputService;
-
-    @Autowired
-    private ParsingTemplateService parsingTemplateService;
-
-    @Autowired
-    private GatewayGroupsService gatewayGroupsService;
-
-    @Autowired
-    private GatewayUsageReportingCommandService gatewayUsageReportingCommandService;
-
-    @Autowired
-    private ApplicationInterfaceService applicationInterfaceService;
+    public RegistryService(
+            AiravataServerProperties properties,
+            ApplicationDeploymentService applicationDeploymentService,
+            StorageResourceService storageResourceService,
+            GwyResourceProfileService gwyResourceProfileService,
+            UserResourceProfileService userResourceProfileService,
+            GroupResourceProfileService groupResourceProfileService,
+            ComputeResourceService computeResourceService,
+            ExperimentService experimentService,
+            ProcessService processService,
+            TaskService taskService,
+            JobService jobService,
+            ExperimentSummaryService experimentSummaryService,
+            UserService userService,
+            GatewayService gatewayService,
+            ProjectService projectService,
+            NotificationService notificationService,
+            ProcessStatusService processStatusService,
+            TaskStatusService taskStatusService,
+            ExperimentStatusService experimentStatusService,
+            JobStatusService jobStatusService,
+            ProcessOutputService processOutputService,
+            ExperimentOutputService experimentOutputService,
+            ProcessWorkflowService processWorkflowService,
+            ExperimentErrorService experimentErrorService,
+            QueueStatusService queueStatusService,
+            TaskErrorService taskErrorService,
+            ProcessErrorService processErrorService,
+            DataProductService dataProductService,
+            DataReplicaLocationService dataReplicaLocationService,
+            WorkflowService workflowService,
+            ParserService parserService,
+            ParserInputService parserInputService,
+            ParserOutputService parserOutputService,
+            ParsingTemplateService parsingTemplateService,
+            GatewayGroupsService gatewayGroupsService,
+            GatewayUsageReportingCommandService gatewayUsageReportingCommandService,
+            ApplicationInterfaceService applicationInterfaceService) {
+        this.properties = properties;
+        this.applicationDeploymentService = applicationDeploymentService;
+        this.storageResourceService = storageResourceService;
+        this.gwyResourceProfileService = gwyResourceProfileService;
+        this.userResourceProfileService = userResourceProfileService;
+        this.groupResourceProfileService = groupResourceProfileService;
+        this.computeResourceService = computeResourceService;
+        this.experimentService = experimentService;
+        this.processService = processService;
+        this.taskService = taskService;
+        this.jobService = jobService;
+        this.experimentSummaryService = experimentSummaryService;
+        this.userService = userService;
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.notificationService = notificationService;
+        this.processStatusService = processStatusService;
+        this.taskStatusService = taskStatusService;
+        this.experimentStatusService = experimentStatusService;
+        this.jobStatusService = jobStatusService;
+        this.processOutputService = processOutputService;
+        this.experimentOutputService = experimentOutputService;
+        this.processWorkflowService = processWorkflowService;
+        this.experimentErrorService = experimentErrorService;
+        this.queueStatusService = queueStatusService;
+        this.taskErrorService = taskErrorService;
+        this.processErrorService = processErrorService;
+        this.dataProductService = dataProductService;
+        this.dataReplicaLocationService = dataReplicaLocationService;
+        this.workflowService = workflowService;
+        this.parserService = parserService;
+        this.parserInputService = parserInputService;
+        this.parserOutputService = parserOutputService;
+        this.parsingTemplateService = parsingTemplateService;
+        this.gatewayGroupsService = gatewayGroupsService;
+        this.gatewayUsageReportingCommandService = gatewayUsageReportingCommandService;
+        this.applicationInterfaceService = applicationInterfaceService;
+    }
 
     public String getAPIVersion() {
         return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;

@@ -25,18 +25,19 @@ import org.apache.airavata.sharing.entities.GroupAdminPK;
 import org.apache.airavata.sharing.models.GroupAdmin;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.GroupAdminRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GroupAdminService {
-    @Autowired
-    private GroupAdminRepository groupAdminRepository;
+    private final GroupAdminRepository groupAdminRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public GroupAdminService(GroupAdminRepository groupAdminRepository, Mapper mapper) {
+        this.groupAdminRepository = groupAdminRepository;
+        this.mapper = mapper;
+    }
 
     public GroupAdmin get(GroupAdminPK pk) throws SharingRegistryException {
         GroupAdminEntity entity = groupAdminRepository.findById(pk).orElse(null);

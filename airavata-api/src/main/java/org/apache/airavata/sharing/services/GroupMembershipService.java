@@ -39,7 +39,6 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.airavata.sharing.repositories.GroupMembershipRepository;
 import org.apache.airavata.sharing.utils.DBConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,22 +46,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class GroupMembershipService {
-    @Autowired
-    private GroupMembershipRepository groupMembershipRepository;
+    private final GroupMembershipRepository groupMembershipRepository;
+    private final UserService userService;
+    private final UserGroupService userGroupService;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    @Qualifier("sharingUserService")
-    private UserService userService;
-
-    @Autowired
-    private UserGroupService userGroupService;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManager")
-    private EntityManager entityManager;
+    public GroupMembershipService(
+            GroupMembershipRepository groupMembershipRepository,
+            @Qualifier("sharingUserService") UserService userService,
+            UserGroupService userGroupService,
+            Mapper mapper,
+            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+        this.groupMembershipRepository = groupMembershipRepository;
+        this.userService = userService;
+        this.userGroupService = userGroupService;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public GroupMembership get(GroupMembershipPK pk) throws SharingRegistryException {
         GroupMembershipEntity entity = groupMembershipRepository.findById(pk).orElse(null);

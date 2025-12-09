@@ -19,18 +19,31 @@
 */
 package org.apache.airavata.common.utils;
 
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, NameValidatorTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class NameValidatorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(NameValidatorTest.class);
 
-    /**
-     * @param args
-     * @Description some quick tests
-     */
-    public static void main(String[] args) {
+    public NameValidatorTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
+
+    @Test
+    public void testValidate() {
         logger.info("validate('abc90_90abc'): {}", NameValidator.validate("abc90_90abc")); // true
         logger.info("validate('abc_abc_123'): {}", NameValidator.validate("abc_abc_123")); // true
         logger.info("validate('abc_abc_'): {}", NameValidator.validate("abc_abc_")); // true
@@ -41,4 +54,21 @@ public class NameValidatorTest {
         logger.info("validate('\\abc_abc'): {}", NameValidator.validate("\\abc_abc")); // false, starts with backslash
         logger.info("validate('abc\\_abc'): {}", NameValidator.validate("abc\\_abc")); // false, contains backslash
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.common",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

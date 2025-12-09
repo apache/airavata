@@ -47,6 +47,17 @@ import org.slf4j.LoggerFactory;
 public abstract class JobSubmissionTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(JobSubmissionTask.class);
+    protected final org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder;
+
+    public JobSubmissionTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+        this.groovyMapBuilder = groovyMapBuilder;
+    }
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {

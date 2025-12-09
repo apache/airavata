@@ -19,65 +19,41 @@
 */
 package org.apache.airavata.orchestrator.core;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+
 // import org.apache.airavata.client.tools.DocumentCreatorNew;
 
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, BaseOrchestratorTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class BaseOrchestratorTest {
 
-    /*    private GatewayResource gatewayResource;
-    private WorkerResource workerResource;
-    private UserResource userResource;
-    private Initialize initialize;
-    private DocumentCreatorNew documentCreator;
-
-    public void setUp() throws Exception {
-        initialize = new Initialize("registry-derby.sql");
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource) ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
-        workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
-        userResource = new UserResource();
-        userResource.setUserName(ServerSettings.getDefaultUser());
-        userResource.setPassword(ServerSettings.getDefaultUser());
-
-        documentCreator = new DocumentCreatorNew(getAiravataClient());
-        documentCreator.createLocalHostDocs();
-        documentCreator.createPBSDocsForOGCE_Echo();
+    public BaseOrchestratorTest() {
+        // Spring Boot test - dependencies can be injected via constructor if needed
     }
 
-    public void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-    }
-
-    public GatewayResource getGatewayResource() {
-        return gatewayResource;
-    }
-
-    public WorkerResource getWorkerResource() {
-        return workerResource;
-    }
-
-    public UserResource getUserResource() {
-        return userResource;
-    }
-
-    private Airavata.Client getAiravataClient() {
-        Airavata.Client client = null;
-        try {
-            client = AiravataClientFactory.createAiravataClient("localhost", 8930);
-        } catch (AiravataClientConnectException e) {
-            e.printStackTrace();
-        }
-        return client;
-    }
-
-    public DocumentCreatorNew getDocumentCreator() {
-        return documentCreator;
-    }
-
-    public void setDocumentCreator(DocumentCreatorNew documentCreator) {
-        this.documentCreator = documentCreator;
-    }
-
-    private void settingServerProperties(){
-
-    }*/
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.orchestrator",
+                "org.apache.airavata.service",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

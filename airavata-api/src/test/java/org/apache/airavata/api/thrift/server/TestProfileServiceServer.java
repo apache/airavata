@@ -27,10 +27,8 @@ public class TestProfileServiceServer {
     private static final Logger logger = LoggerFactory.getLogger(TestProfileServiceServer.class);
 
     public static void main(String[] args) {
-        try {
-            new ProfileServiceServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        throw new UnsupportedOperationException(
+                "ProfileServiceServer must be used within a Spring application context. " +
+                "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

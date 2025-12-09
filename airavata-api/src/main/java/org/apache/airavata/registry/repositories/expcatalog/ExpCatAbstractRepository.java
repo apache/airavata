@@ -23,23 +23,24 @@ import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.registry.repositories.AbstractRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 
 public class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 
-    @Autowired
-    @Qualifier("expCatalogEntityManagerFactory")
-    private EntityManagerFactory entityManagerFactory;
-
-    @Autowired
-    private Mapper mapper;
+    private final EntityManagerFactory entityManagerFactory;
+    private final Mapper mapper;
 
     private EntityManager entityManager;
 
-    public ExpCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
+    public ExpCatAbstractRepository(
+            Class<T> thriftGenericClass,
+            Class<E> dbEntityGenericClass,
+            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory entityManagerFactory,
+            Mapper mapper) {
         super(thriftGenericClass, dbEntityGenericClass);
+        this.entityManagerFactory = entityManagerFactory;
+        this.mapper = mapper;
     }
 
     @Override

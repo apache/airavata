@@ -21,15 +21,17 @@ package org.apache.airavata.profile.utils;
 
 import java.net.URI;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("profileUtils")
 public class Utils {
     private static Utils instance;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public Utils(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @jakarta.annotation.PostConstruct
     public void init() {

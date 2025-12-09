@@ -30,7 +30,6 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -38,11 +37,11 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ComputeResourceRepositoryTest extends TestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
+    private final ComputeResourceService computeResourceService;
 
-    public ComputeResourceRepositoryTest() {
+    public ComputeResourceRepositoryTest(ComputeResourceService computeResourceService) {
         super(Database.APP_CATALOG);
+        this.computeResourceService = computeResourceService;
     }
 
     @Test
@@ -391,7 +390,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         SCPDataMovement savedDataMovement = computeResourceService.getSCPDataMovement(dataMovementId);
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
     }
-
 
     @Test
     public void addGridFTPDataMovementTest() throws AppCatalogException {

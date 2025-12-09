@@ -34,7 +34,6 @@ import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,7 +42,6 @@ public class IamAdminServiceHandler implements IamAdminServices.Iface {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminServiceHandler.class);
     private final IamAdminService iamAdminService;
 
-    @Autowired
     public IamAdminServiceHandler(IamAdminService iamAdminService) {
         this.iamAdminService = iamAdminService;
         logger.info("IamAdminServiceHandler initialized with Spring-injected IamAdminService");

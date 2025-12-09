@@ -41,7 +41,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -50,17 +49,18 @@ public class ClusterStatusMonitorJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final CredentialStoreService credentialStoreService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @Autowired
-    private AiravataServerProperties properties;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public ClusterStatusMonitorJob(
+            RegistryService registryService,
+            CredentialStoreService credentialStoreService,
+            AiravataServerProperties properties,
+            ApplicationContext applicationContext) {
+        this.registryService = registryService;
+        this.credentialStoreService = credentialStoreService;
+        this.properties = properties;
         ClusterStatusMonitorJob.applicationContext = applicationContext;
     }
 

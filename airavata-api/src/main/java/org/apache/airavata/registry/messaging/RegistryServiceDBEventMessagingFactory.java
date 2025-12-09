@@ -33,12 +33,15 @@ import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by goshenoy on 3/30/17.
  */
+@Component
 public class RegistryServiceDBEventMessagingFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventMessagingFactory.class);
@@ -46,6 +49,14 @@ public class RegistryServiceDBEventMessagingFactory {
     private static Publisher dbEventPublisher;
 
     private static Subscriber registryServiceDBEventSubscriber;
+    private static RegistryServiceDBEventMessagingFactory instance;
+
+    private final RegistryService registryService;
+
+    public RegistryServiceDBEventMessagingFactory(RegistryService registryService) {
+        this.registryService = registryService;
+        instance = this;
+    }
 
     private static Publisher getDBEventPublisher() throws AiravataException {
         if (null == dbEventPublisher) {
@@ -68,7 +79,12 @@ public class RegistryServiceDBEventMessagingFactory {
                     RegistryServiceDBEventHandler handler;
                     String serviceName = DBEventService.REGISTRY.toString();
                     try {
-                        handler = new RegistryServiceDBEventHandler();
+                        RegistryService service = instance != null ? instance.registryService : null;
+                        if (service == null) {
+                            throw new IllegalStateException(
+                                    "RegistryServiceDBEventMessagingFactory not initialized via Spring");
+                        }
+                        handler = new RegistryServiceDBEventHandler(service);
                     } catch (Exception e) {
                         throw new AiravataException(
                                 "Failed to create registry service DB event handler for service: " + serviceName, e);

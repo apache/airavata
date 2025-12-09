@@ -38,11 +38,12 @@ public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final ApplicationContext applicationContextInstance;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public ProcessScannerImpl(AiravataServerProperties properties, ApplicationContext applicationContext) {
+        this.properties = properties;
+        this.applicationContextInstance = applicationContext;
         ProcessScannerImpl.applicationContext = applicationContext;
     }
 
@@ -50,7 +51,7 @@ public class ProcessScannerImpl implements ProcessScanner {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Process scanner ....... ");
-            RegistryService registryService = applicationContext.getBean(RegistryService.class);
+            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
             ProcessState state = ProcessState.QUEUED;
             List<ProcessModel> processModelList = registryService.getProcessListInState(state);
 

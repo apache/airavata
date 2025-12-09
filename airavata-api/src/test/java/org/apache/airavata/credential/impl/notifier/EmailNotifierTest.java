@@ -17,20 +17,35 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.notifier.impl;
+package org.apache.airavata.credential.impl.notifier;
 
 import org.apache.airavata.credential.impl.notifier.EmailNotificationMessage;
 import org.apache.airavata.credential.impl.notifier.EmailNotifier;
 import org.apache.airavata.credential.impl.notifier.EmailNotifierConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/27/13
  * Time: 1:54 PM
  */
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, EmailNotifierTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class EmailNotifierTest {
+
+    public EmailNotifierTest() {
+        // Spring Boot test - dependencies injected via constructor if needed
+    }
 
     @BeforeEach
     public void setUp() throws Exception {}
@@ -51,4 +66,21 @@ public class EmailNotifierTest {
     // Just to ignore test failures.
     @Test
     public void testIgnore() {}
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.credential",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

@@ -29,7 +29,7 @@ import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -139,7 +139,8 @@ public class UnitLoad {
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
+        boolean tlsEnabled = Boolean.parseBoolean(ApplicationSettings.getSetting("security.tls.enabled", "false"));
+        Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, tlsEnabled);
 
         List<InputDataObjectType> applicationInputs =
                 airavataClient.getApplicationInputs(authzToken, config.getApplicationInterfaceId());

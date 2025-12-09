@@ -26,8 +26,23 @@ import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.provisioner.TestSSHAccountProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, SSHAccountProvisionerFactoryTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class SSHAccountProvisionerFactoryTest {
+
+    public SSHAccountProvisionerFactoryTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @Test
     public void testGetSSHAccountProvisionerImplementationNames() {
@@ -79,4 +94,21 @@ public class SSHAccountProvisionerFactoryTest {
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test2));
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test3));
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.accountprovisioning",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

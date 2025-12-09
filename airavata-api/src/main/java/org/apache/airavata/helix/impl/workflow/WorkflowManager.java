@@ -42,7 +42,6 @@ import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class WorkflowManager {
 
@@ -51,11 +50,13 @@ public class WorkflowManager {
     private Publisher statusPublisher;
     private List<WorkflowOperator> workflowOperators = new ArrayList<>();
 
-    @Autowired
-    protected RegistryService registryService;
+    protected final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public WorkflowManager(RegistryService registryService, AiravataServerProperties properties) {
+        this.registryService = registryService;
+        this.properties = properties;
+    }
 
     protected String workflowManagerName;
     private ZKHelixAdmin zkHelixAdmin;
@@ -63,9 +64,15 @@ public class WorkflowManager {
 
     private int currentOperator = 0;
 
-    public WorkflowManager(String workflowManagerName, boolean loadBalanceClusters) {
+    public WorkflowManager(
+            String workflowManagerName,
+            boolean loadBalanceClusters,
+            RegistryService registryService,
+            AiravataServerProperties properties) {
         this.workflowManagerName = workflowManagerName;
         this.loadBalanceClusters = loadBalanceClusters;
+        this.registryService = registryService;
+        this.properties = properties;
     }
 
     protected void initComponents() throws Exception {

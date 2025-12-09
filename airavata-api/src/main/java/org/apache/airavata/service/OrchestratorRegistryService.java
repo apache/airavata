@@ -34,14 +34,16 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrchestratorRegistryService {
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+
+    public OrchestratorRegistryService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
     private RegistryService getRegistryService() {
         return registryService;

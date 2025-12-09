@@ -26,18 +26,19 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GatewayService {
-    @Autowired
-    private GatewayRepository gatewayRepository;
+    private final GatewayRepository gatewayRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public GatewayService(GatewayRepository gatewayRepository, Mapper mapper) {
+        this.gatewayRepository = gatewayRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isGatewayExist(String gatewayId) throws RegistryException {
         return gatewayRepository.existsById(gatewayId);

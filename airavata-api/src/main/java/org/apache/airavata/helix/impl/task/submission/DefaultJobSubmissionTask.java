@@ -25,7 +25,6 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
@@ -34,11 +33,12 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.UserProfileService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 @TaskDef(name = "Default Job Submission")
@@ -47,13 +47,15 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
     private static final CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
 
-    @Autowired
-    private RegistryService registryService;
-
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public DefaultJobSubmissionTask(
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
         DefaultJobSubmissionTask.applicationContext = applicationContext;
     }
 
@@ -82,15 +84,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         }
 
         try {
-            // Use injected service, fallback to ApplicationContext if not injected
-            RegistryService regService = this.registryService;
-            if (regService == null && applicationContext != null) {
-                regService = applicationContext.getBean(RegistryService.class);
-            }
-            if (regService == null) {
-                return onFail("RegistryService not available", true, null);
-            }
-            var jobsOfTask = regService.getJobs("taskId", getTaskId());
+            var jobsOfTask = registryService.getJobs("taskId", getTaskId());
 
             if (jobsOfTask.size() > 0) {
                 logger.warn("A job is already available for task " + getTaskId());
@@ -98,7 +92,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             }
 
             saveAndPublishProcessStatus(ProcessState.EXECUTING);
-            GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+            GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
 
             JobModel jobModel = new JobModel();
             jobModel.setProcessId(getProcessId());

@@ -22,7 +22,6 @@ package org.apache.airavata.service.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -33,9 +32,6 @@ import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
@@ -43,7 +39,6 @@ import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for SLURM compute resources.
@@ -51,11 +46,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("SLURM Compute Resource Integration Tests")
 public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
+    private final ComputeResourceService computeResourceService;
+    private final GroupResourceProfileService groupResourceProfileService;
 
-    @Autowired
-    private GroupResourceProfileService groupResourceProfileService;
+    public SlurmComputeResourceIntegrationTest(
+            ComputeResourceService computeResourceService, GroupResourceProfileService groupResourceProfileService) {
+        this.computeResourceService = computeResourceService;
+        this.groupResourceProfileService = groupResourceProfileService;
+    }
 
     @Nested
     @DisplayName("SLURM Compute Resource Registration")
@@ -158,8 +156,8 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
             String computeResourceId = computeResourceService.addComputeResource(computeResource);
 
             GroupResourceProfile groupProfile = TestDataFactory.createGroupResourceProfile(TEST_GATEWAY_ID);
-            GroupComputeResourcePreference preference =
-                    TestDataFactory.createSlurmGroupComputeResourcePreference(computeResourceId, groupProfile.getGroupResourceProfileId());
+            GroupComputeResourcePreference preference = TestDataFactory.createSlurmGroupComputeResourcePreference(
+                    computeResourceId, groupProfile.getGroupResourceProfileId());
             groupProfile.addToComputePreferences(preference);
 
             // Act
@@ -193,4 +191,3 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         return computeResource;
     }
 }
-

@@ -27,10 +27,8 @@ public class TestCredentialServiceServer {
     private static final Logger logger = LoggerFactory.getLogger(TestCredentialServiceServer.class);
 
     public static void main(String[] args) {
-        try {
-            new CredentialServiceServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        throw new UnsupportedOperationException(
+                "CredentialServiceServer must be used within a Spring application context. " +
+                "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

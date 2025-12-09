@@ -40,7 +40,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -55,24 +54,25 @@ public class RegistryServiceServer implements IServer {
 
     private TServer server;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private AiravataServerProperties properties;
-
-    @Autowired
-    private ExpCatalogDBInitConfig expCatalogDBInitConfig;
-
-    @Autowired
-    private AppCatalogDBInitConfig appCatalogDBInitConfig;
-
-    @Autowired
-    private ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
+    private final ExpCatalogDBInitConfig expCatalogDBInitConfig;
+    private final AppCatalogDBInitConfig appCatalogDBInitConfig;
+    private final ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig;
 
     private List<DBInitConfig> dbInitConfigs;
 
-    public RegistryServiceServer() {
+    public RegistryServiceServer(
+            ApplicationContext applicationContext,
+            AiravataServerProperties properties,
+            ExpCatalogDBInitConfig expCatalogDBInitConfig,
+            AppCatalogDBInitConfig appCatalogDBInitConfig,
+            ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
+        this.expCatalogDBInitConfig = expCatalogDBInitConfig;
+        this.appCatalogDBInitConfig = appCatalogDBInitConfig;
+        this.replicaCatalogDBInitConfig = replicaCatalogDBInitConfig;
         setStatus(ServerStatus.STOPPED);
     }
 

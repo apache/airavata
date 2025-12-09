@@ -25,12 +25,14 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ComputeResourceMonitor {
 
-    @Autowired
-    protected RegistryService registryService;
+    protected final RegistryService registryService;
+
+    protected ComputeResourceMonitor(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
     private boolean isValid(String str) {
         return str != null && !str.trim().isEmpty();

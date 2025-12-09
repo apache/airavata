@@ -38,7 +38,6 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -46,19 +45,20 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ApplicationDeploymentRepositoryTest extends TestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    @Autowired
-    private ApplicationInterfaceService applicationInterfaceService;
-
-    @Autowired
-    private ApplicationDeploymentService applicationDeploymentService;
+    private final ComputeResourceService computeResourceService;
+    private final ApplicationInterfaceService applicationInterfaceService;
+    private final ApplicationDeploymentService applicationDeploymentService;
 
     private String gatewayId = "testGateway";
 
-    public ApplicationDeploymentRepositoryTest() {
+    public ApplicationDeploymentRepositoryTest(
+            ComputeResourceService computeResourceService,
+            ApplicationInterfaceService applicationInterfaceService,
+            ApplicationDeploymentService applicationDeploymentService) {
         super(Database.APP_CATALOG);
+        this.computeResourceService = computeResourceService;
+        this.applicationInterfaceService = applicationInterfaceService;
+        this.applicationDeploymentService = applicationDeploymentService;
     }
 
     private String addSampleApplicationModule(String tag) throws AppCatalogException {

@@ -35,7 +35,6 @@ import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -43,20 +42,21 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ExperimentErrorRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final ExperimentService experimentService;
+    private final ExperimentErrorService experimentErrorService;
 
-    @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    ExperimentService experimentService;
-
-    @Autowired
-    ExperimentErrorService experimentErrorService;
-
-    public ExperimentErrorRepositoryTest() {
+    public ExperimentErrorRepositoryTest(
+            GatewayService gatewayService,
+            ProjectService projectService,
+            ExperimentService experimentService,
+            ExperimentErrorService experimentErrorService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.experimentService = experimentService;
+        this.experimentErrorService = experimentErrorService;
     }
 
     @Test

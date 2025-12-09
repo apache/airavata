@@ -32,15 +32,17 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+
+    public BatchQueueValidator(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
         ValidationResults validationResults = new ValidationResults();

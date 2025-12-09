@@ -21,14 +21,16 @@ package org.apache.airavata.credential.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CredentialStoreDBInitConfig implements DBInitConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public CredentialStoreDBInitConfig(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @Override
     public String getDriver() {

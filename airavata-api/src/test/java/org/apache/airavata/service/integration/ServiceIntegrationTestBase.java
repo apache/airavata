@@ -25,6 +25,8 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.security.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
  * All tests use @Transactional for automatic rollback.
  */
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, org.apache.airavata.config.AiravataServerProperties.class},
+        classes = {org.apache.airavata.config.JpaConfig.class, ServiceIntegrationTestBase.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
@@ -79,5 +81,29 @@ public abstract class ServiceIntegrationTestBase {
         }
         TestTransaction.start();
     }
-}
 
+    /**
+     * Test configuration that enables component scanning for services
+     * without loading background services or Thrift servers.
+     */
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.service",
+                "org.apache.airavata.registry",
+                "org.apache.airavata.profile",
+                "org.apache.airavata.sharing",
+                "org.apache.airavata.credential",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
+}

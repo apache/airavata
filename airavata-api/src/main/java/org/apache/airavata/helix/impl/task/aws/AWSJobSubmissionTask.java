@@ -31,7 +31,6 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;
 import org.apache.airavata.helix.impl.task.aws.utils.ExponentialBackoffWaiter;
 import org.apache.airavata.helix.impl.task.submission.JobSubmissionTask;
-import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
@@ -50,7 +49,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
@@ -64,11 +62,13 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public AWSJobSubmissionTask(
+            ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
         AWSJobSubmissionTask.applicationContext = applicationContext;
     }
 
@@ -81,7 +81,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         LOGGER.info("Starting AWS Job Submission Task for process {}", getProcessId());
 
         try {
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
+            AWSProcessContextManager awsContext = new AWSProcessContextManager(registryService, getTaskContext());
             AwsComputeResourcePreference awsPrefs = getTaskContext()
                     .getGroupComputeResourcePreference()
                     .getSpecificPreferences()
@@ -113,7 +113,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
             JobManagerConfiguration jobManagerConfig =
                     JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
-            GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+            GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
             addMonitoringCommands(mapData);
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             LOGGER.info("Generated job submission script for AWS:\n{}", scriptContent);
@@ -197,7 +197,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         LOGGER.warn("Full cleanup triggered for process {}. Terminating all AWS resources.", getProcessId());
 
         try {
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
+            AWSProcessContextManager awsContext = new AWSProcessContextManager(registryService, taskContext);
             String publicIpAddress = awsContext.getPublicIp();
             String sshCredentialToken = awsContext.getSSHCredentialToken();
             String jobId = awsContext.getJobId();
@@ -335,15 +335,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     }
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
-        SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-        // Use injected service, fallback to ApplicationContext if not injected
-        CredentialStoreService credentialStoreService = this.credentialStoreService;
-        if (credentialStoreService == null && applicationContext != null) {
-            credentialStoreService = applicationContext.getBean(CredentialStoreService.class);
-        }
-        if (credentialStoreService == null) {
-            throw new RuntimeException("CredentialStoreService not available.");
-        }
+        org.apache.airavata.service.RegistryService registryService = getRegistryService();
+        CredentialStoreService credentialStoreService = getCredentialStoreService();
+        SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
         SSHCredential sshCredential = credentialStoreService.getSSHCredential(sshCredentialToken, getGatewayId());
         adaptor.init(
                 getTaskContext().getComputeResourceLoginUserName(),

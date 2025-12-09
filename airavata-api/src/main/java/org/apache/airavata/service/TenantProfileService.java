@@ -44,7 +44,6 @@ import org.apache.airavata.profile.repositories.TenantProfileRepository;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,23 +52,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
-    @Autowired
-    private TenantProfileRepository tenantProfileRepository;
+    private final TenantProfileRepository tenantProfileRepository;
+    private final CredentialStoreService credentialStoreService;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("profileServiceEntityManager")
-    private EntityManager entityManager;
-
-    public TenantProfileService() {
-        logger.debug("Initializing TenantProfileService");
+    public TenantProfileService(
+            TenantProfileRepository tenantProfileRepository,
+            CredentialStoreService credentialStoreService,
+            Mapper mapper,
+            @Qualifier("profileServiceEntityManager") EntityManager entityManager) {
+        this.tenantProfileRepository = tenantProfileRepository;
+        this.credentialStoreService = credentialStoreService;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
     }
 
     public String addGateway(AuthzToken authzToken, Gateway gateway)

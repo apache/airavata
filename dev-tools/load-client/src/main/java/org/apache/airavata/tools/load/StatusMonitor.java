@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
@@ -52,10 +52,11 @@ public class StatusMonitor {
         Map<String, ExperimentModel> experimentModelMap = new HashMap<>();
 
         Airavata.Client airavataClient;
+        boolean tlsEnabled = Boolean.parseBoolean(ApplicationSettings.getSetting("security.tls.enabled", "false"));
         long monitoringStartTime = System.currentTimeMillis();
         while (experiments.size() > jobModelMap.size()) {
             logger.info("Running a monitoring round....");
-            airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
+            airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, tlsEnabled);
 
             for (String experiment : experiments) {
 
@@ -81,7 +82,7 @@ public class StatusMonitor {
             }
         }
 
-        airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, ServerSettings.isTLSEnabled());
+        airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, tlsEnabled);
 
         for (String experiment : experiments) {
             experimentModelMap.put(experiment, airavataClient.getExperiment(authzToken, experiment));

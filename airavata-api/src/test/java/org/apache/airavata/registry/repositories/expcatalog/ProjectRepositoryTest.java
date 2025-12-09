@@ -33,22 +33,57 @@ import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.utils.Constants;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, ProjectRepositoryTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ProjectRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
+    @Configuration
+    @ComponentScan(
+            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class,
+                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
+                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
+                            org.apache.airavata.monitor.AbstractMonitor.class,
+                            org.apache.airavata.helix.impl.controller.HelixController.class,
+                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
+                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class,
+                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
+                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class
+                        }),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.helix\\..*")
+            })
+    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 
-    @Autowired
-    ProjectService projectService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
 
-    public ProjectRepositoryTest() {
+    public ProjectRepositoryTest(GatewayService gatewayService, ProjectService projectService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
     }
 
     @Test

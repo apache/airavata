@@ -41,12 +41,12 @@ import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.model.workspace.Project;
 
 /**
  * Factory class for creating test data objects.
@@ -272,4 +272,3 @@ public class TestDataFactory {
         return sshCredential;
     }
 }
-

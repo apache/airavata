@@ -28,7 +28,6 @@ import org.apache.airavata.credential.services.CredentialEntityService;
 import org.apache.airavata.credential.utils.CredentialWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,13 +38,14 @@ public class CertificateCredentialWriter implements CredentialWriter {
 
     protected static Logger log = LoggerFactory.getLogger(CertificateCredentialWriter.class);
 
-    @Autowired
-    private CredentialEntityService credentialEntityService;
+    private final CredentialEntityService credentialEntityService;
+    private final CommunityUserEntityService communityUserEntityService;
 
-    @Autowired
-    private CommunityUserEntityService communityUserEntityService;
-
-    public CertificateCredentialWriter() {}
+    public CertificateCredentialWriter(
+            CredentialEntityService credentialEntityService, CommunityUserEntityService communityUserEntityService) {
+        this.credentialEntityService = credentialEntityService;
+        this.communityUserEntityService = communityUserEntityService;
+    }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
         CertificateCredential certificateCredential = (CertificateCredential) credential;

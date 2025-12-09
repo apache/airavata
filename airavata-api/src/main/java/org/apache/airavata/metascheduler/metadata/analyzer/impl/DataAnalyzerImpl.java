@@ -38,11 +38,12 @@ public class DataAnalyzerImpl implements DataAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final ApplicationContext applicationContextInstance;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public DataAnalyzerImpl(AiravataServerProperties properties, ApplicationContext applicationContext) {
+        this.properties = properties;
+        this.applicationContextInstance = applicationContext;
         DataAnalyzerImpl.applicationContext = applicationContext;
     }
 
@@ -50,7 +51,7 @@ public class DataAnalyzerImpl implements DataAnalyzer {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Data Analyzer ....... ");
-            RegistryService registryService = applicationContext.getBean(RegistryService.class);
+            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
 
             // TODO: handle multiple gateways
             String gateway = properties.services.parser.enabledGateways;

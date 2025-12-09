@@ -59,7 +59,7 @@ public class CreateLaunchExperiment {
     //	public static final int THRIFT_SERVER_PORT = 9930;
 
     private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
-    public static final String DEFAULT_USER = "default.registry.user";
+    public static final String DEFAULT_USER = "airavata.default.user";
     public static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 

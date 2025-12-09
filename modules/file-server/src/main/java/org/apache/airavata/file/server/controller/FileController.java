@@ -25,7 +25,6 @@ import org.apache.airavata.file.server.model.FileUploadResponse;
 import org.apache.airavata.file.server.service.AirvataFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -39,8 +38,11 @@ public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
-    @Autowired
-    private AirvataFileService fileService;
+    private final AirvataFileService fileService;
+
+    public FileController(AirvataFileService fileService) {
+        this.fileService = fileService;
+    }
 
     @GetMapping("/list/{live}/{processId}")
     @ResponseBody

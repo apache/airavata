@@ -28,7 +28,6 @@ import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +44,11 @@ public class SessionController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionController.class);
 
-    @Autowired
-    private SessionHandler sessionHandler;
+    private final SessionHandler sessionHandler;
+
+    public SessionController(SessionHandler sessionHandler) {
+        this.sessionHandler = sessionHandler;
+    }
 
     @GetMapping("/")
     @Operation(summary = "Get all sessions by session status and userId")

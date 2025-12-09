@@ -34,7 +34,6 @@ import org.apache.airavata.sharing.entities.EntityTypePK;
 import org.apache.airavata.sharing.models.EntityType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,15 +41,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class EntityTypeService {
-    @Autowired
-    private EntityTypeRepository entityTypeRepository;
+    private final EntityTypeRepository entityTypeRepository;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManager")
-    private EntityManager entityManager;
+    public EntityTypeService(
+            EntityTypeRepository entityTypeRepository,
+            Mapper mapper,
+            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+        this.entityTypeRepository = entityTypeRepository;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public EntityType get(EntityTypePK pk) throws SharingRegistryException {
         EntityTypeEntity entity = entityTypeRepository.findById(pk).orElse(null);

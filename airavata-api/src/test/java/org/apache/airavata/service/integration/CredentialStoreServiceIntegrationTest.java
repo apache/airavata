@@ -11,10 +11,11 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing,
-* software distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-* OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and
-* limitations under the License.
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
 */
 package org.apache.airavata.service.integration;
 
@@ -30,15 +31,17 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.service.CredentialStoreService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for CredentialStoreService (Vault operations).
  */
 public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
+    private final CredentialStoreService credentialStoreService;
+
+    public CredentialStoreServiceIntegrationTest(CredentialStoreService credentialStoreService) {
+        this.credentialStoreService = credentialStoreService;
+    }
 
     @Test
     public void shouldAddSSHCredential() throws CredentialStoreException {
@@ -89,7 +92,8 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
         // Assert
         assertThat(deleted).isTrue();
-        assertThat(credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID)).isNull();
+        assertThat(credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID))
+                .isNull();
     }
 
     @Test

@@ -27,18 +27,19 @@ import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public UserService(UserRepository userRepository, Mapper mapper) {
+        this.userRepository = userRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isUserExists(String gatewayId, String userName) throws RegistryException {
         UserPK pk = new UserPK();

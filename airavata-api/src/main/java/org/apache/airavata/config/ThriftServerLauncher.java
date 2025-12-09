@@ -26,10 +26,8 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,7 +48,6 @@ import org.springframework.stereotype.Component;
  * The main thread is kept alive to prevent the application from exiting.
  */
 @Component
-@Order(10)
 public class ThriftServerLauncher implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ThriftServerLauncher.class);
@@ -65,11 +62,13 @@ public class ThriftServerLauncher implements CommandLineRunner {
     private static final String PROFILE_SERVICE = "profile_service.class";
     private static final String DB_EVENT_MANAGER = "db_event_manager.class";
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public ThriftServerLauncher(ApplicationContext applicationContext, AiravataServerProperties properties) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
+    }
 
     @Override
     public void run(String... args) throws Exception {

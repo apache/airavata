@@ -22,7 +22,6 @@ package org.apache.airavata.security.authzcache;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,8 +29,11 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);
 
-    @Autowired
-    private AuthzCache authzCache;
+    private final AuthzCache authzCache;
+
+    public DefaultAuthzCacheManager(AuthzCache authzCache) {
+        this.authzCache = authzCache;
+    }
 
     @Override
     public AuthzCachedStatus getAuthzCachedStatus(AuthzCacheIndex authzCacheIndex) throws AiravataSecurityException {

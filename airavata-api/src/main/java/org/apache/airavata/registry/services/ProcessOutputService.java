@@ -26,18 +26,19 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ProcessOutputService {
-    @Autowired
-    private ProcessOutputRepository processOutputRepository;
+    private final ProcessOutputRepository processOutputRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ProcessOutputService(ProcessOutputRepository processOutputRepository, Mapper mapper) {
+        this.processOutputRepository = processOutputRepository;
+        this.mapper = mapper;
+    }
 
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
         List<ProcessOutputEntity> entities = processOutputRepository.findByProcessId(processId);

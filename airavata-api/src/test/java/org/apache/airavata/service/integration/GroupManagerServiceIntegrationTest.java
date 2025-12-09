@@ -20,7 +20,6 @@
 package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for GroupManagerService.
@@ -43,14 +41,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("GroupManagerService Integration Tests")
 public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private GroupManagerService groupManagerService;
+    private final GroupManagerService groupManagerService;
+    private final SharingRegistryService sharingRegistryService;
+    private final UserProfileService userProfileService;
 
-    @Autowired
-    private SharingRegistryService sharingRegistryService;
-
-    @Autowired
-    private UserProfileService userProfileService;
+    public GroupManagerServiceIntegrationTest(
+            GroupManagerService groupManagerService,
+            SharingRegistryService sharingRegistryService,
+            UserProfileService userProfileService) {
+        this.groupManagerService = groupManagerService;
+        this.sharingRegistryService = sharingRegistryService;
+        this.userProfileService = userProfileService;
+    }
 
     private String testGroupId;
 
@@ -149,7 +151,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
 
         @Test
         @DisplayName("Should add users to group")
-        void shouldAddUsersToGroup() throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
+        void shouldAddUsersToGroup()
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
             // Arrange
             List<String> userIds = new ArrayList<>();
             userIds.add("user1@" + TEST_GATEWAY_ID);
@@ -185,7 +188,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
 
         @Test
         @DisplayName("Should add group admins")
-        void shouldAddGroupAdmins() throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
+        void shouldAddGroupAdmins()
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
             // Arrange
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
@@ -222,7 +226,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @DisplayName("Should check admin access")
         void shouldCheckAdminAccess() throws GroupManagerServiceException, SharingRegistryException {
             // Act
-            boolean hasAccess = groupManagerService.hasAdminAccess(testAuthzToken, testGroupId, "admin@" + TEST_GATEWAY_ID);
+            boolean hasAccess =
+                    groupManagerService.hasAdminAccess(testAuthzToken, testGroupId, "admin@" + TEST_GATEWAY_ID);
 
             // Assert
             assertThat(hasAccess).isNotNull();
@@ -243,4 +248,3 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         }
     }
 }
-

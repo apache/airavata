@@ -27,7 +27,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,13 +36,12 @@ public class AbstractMonitor {
 
     private MessageProducer messageProducer;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
-
-    public AbstractMonitor() {
+    public AbstractMonitor(RegistryService registryService, AiravataServerProperties properties) {
+        this.registryService = registryService;
+        this.properties = properties;
         // MessageProducer will be initialized in @PostConstruct
     }
 

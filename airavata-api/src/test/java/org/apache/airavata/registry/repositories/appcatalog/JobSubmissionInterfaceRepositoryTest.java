@@ -33,7 +33,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -41,19 +40,20 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    @Autowired
-    private JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
-
-    @Autowired
-    private Mapper mapper;
+    private final ComputeResourceService computeResourceService;
+    private final JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
+    private final Mapper mapper;
 
     private String computeResourceId;
 
-    public JobSubmissionInterfaceRepositoryTest() {
+    public JobSubmissionInterfaceRepositoryTest(
+            ComputeResourceService computeResourceService,
+            JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository,
+            Mapper mapper) {
         super(Database.APP_CATALOG);
+        this.computeResourceService = computeResourceService;
+        this.jobSubmissionInterfaceRepository = jobSubmissionInterfaceRepository;
+        this.mapper = mapper;
     }
 
     @BeforeEach

@@ -50,6 +50,14 @@ public abstract class DataStagingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(DataStagingTask.class);
     private static final CountMonitor transferSizeTaskCounter = new CountMonitor("transfer_data_size_counter");
 
+    public DataStagingTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     private static final ExecutorService PASS_THROUGH_EXECUTOR =
             new ThreadPoolExecutor(10, 60, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 

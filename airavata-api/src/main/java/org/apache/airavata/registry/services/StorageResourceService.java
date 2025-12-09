@@ -37,7 +37,6 @@ import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,14 +45,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class StorageResourceService {
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceService.class);
 
-    @Autowired
-    private StorageResourceRepository storageResourceRepository;
+    private final StorageResourceRepository storageResourceRepository;
+    private final StorageInterfaceRepository storageInterfaceRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private StorageInterfaceRepository storageInterfaceRepository;
-
-    @Autowired
-    private Mapper mapper;
+    public StorageResourceService(
+            StorageResourceRepository storageResourceRepository,
+            StorageInterfaceRepository storageInterfaceRepository,
+            Mapper mapper) {
+        this.storageResourceRepository = storageResourceRepository;
+        this.storageInterfaceRepository = storageInterfaceRepository;
+        this.mapper = mapper;
+    }
 
     public String addStorageResource(StorageResourceDescription description) throws AppCatalogException {
         try {

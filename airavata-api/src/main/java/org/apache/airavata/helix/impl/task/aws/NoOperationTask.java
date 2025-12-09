@@ -28,6 +28,14 @@ import org.apache.helix.task.TaskResult;
 @TaskDef(name = "No Operation Task")
 public class NoOperationTask extends AiravataTask {
 
+    public NoOperationTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         return new TaskResult(TaskResult.Status.COMPLETED, "OK");

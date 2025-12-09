@@ -29,7 +29,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.Future;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.commons.cli.CommandLine;
@@ -103,10 +103,11 @@ public class LoadClient {
 
     private void createStorageResourceManagers(Configurations configurations) throws Exception {
 
+        boolean tlsEnabled = Boolean.parseBoolean(ApplicationSettings.getSetting("security.tls.enabled", "false"));
         Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(
                 configurations.getApiHost(),
                 configurations.getApiPort(),
-                ServerSettings.isTLSEnabled());
+                tlsEnabled);
 
         for (Configuration configuration : configurations.getConfigurations()) {
             String storageResourceId = configuration.getStorageResourceId();

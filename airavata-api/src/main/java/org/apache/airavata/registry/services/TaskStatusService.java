@@ -27,18 +27,19 @@ import org.apache.airavata.registry.entities.expcatalog.TaskStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class TaskStatusService {
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
+    private final TaskStatusRepository taskStatusRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public TaskStatusService(TaskStatusRepository taskStatusRepository, Mapper mapper) {
+        this.taskStatusRepository = taskStatusRepository;
+        this.mapper = mapper;
+    }
 
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
         if (taskStatus.getStatusId() == null) {

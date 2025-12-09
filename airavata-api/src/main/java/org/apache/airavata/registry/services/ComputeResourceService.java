@@ -85,7 +85,6 @@ import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,63 +94,66 @@ import org.springframework.transaction.annotation.Transactional;
 public class ComputeResourceService {
     private static final Logger logger = LoggerFactory.getLogger(ComputeResourceService.class);
 
-    @Autowired
-    private ComputeResourceRepository computeResourceRepository;
+    private final ComputeResourceRepository computeResourceRepository;
+    private final ComputeResourceFileSystemRepository computeResourceFileSystemRepository;
+    private final ResourceJobManagerRepository resourceJobManagerRepository;
+    private final JobManagerCommandRepository jobManagerCommandRepository;
+    private final ParallelismCommandRepository parallelismCommandRepository;
+    private final JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
+    private final SshJobSubmissionRepository sshJobSubmissionRepository;
+    private final CloudJobSubmissionRepository cloudJobSubmissionRepository;
+    private final LocalSubmissionRepository localSubmissionRepository;
+    private final UnicoreSubmissionRepository unicoreSubmissionRepository;
+    private final DataMovementRepository dataMovementRepository;
+    private final LocalDataMovementRepository localDataMovementRepository;
+    private final ScpDataMovementRepository scpDataMovementRepository;
+    private final GridftpDataMovementRepository gridftpDataMovementRepository;
+    private final GridftpEndpointRepository gridftpEndpointRepository;
+    private final UnicoreDatamovementRepository unicoreDatamovementRepository;
+    private final BatchQueueRepository batchQueueRepository;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private ComputeResourceFileSystemRepository computeResourceFileSystemRepository;
-
-    @Autowired
-    private ResourceJobManagerRepository resourceJobManagerRepository;
-
-    @Autowired
-    private JobManagerCommandRepository jobManagerCommandRepository;
-
-    @Autowired
-    private ParallelismCommandRepository parallelismCommandRepository;
-
-    @Autowired
-    private JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
-
-    @Autowired
-    private SshJobSubmissionRepository sshJobSubmissionRepository;
-
-    @Autowired
-    private CloudJobSubmissionRepository cloudJobSubmissionRepository;
-
-    @Autowired
-    private LocalSubmissionRepository localSubmissionRepository;
-
-    @Autowired
-    private UnicoreSubmissionRepository unicoreSubmissionRepository;
-
-    @Autowired
-    private DataMovementRepository dataMovementRepository;
-
-    @Autowired
-    private LocalDataMovementRepository localDataMovementRepository;
-
-    @Autowired
-    private ScpDataMovementRepository scpDataMovementRepository;
-
-    @Autowired
-    private GridftpDataMovementRepository gridftpDataMovementRepository;
-
-    @Autowired
-    private GridftpEndpointRepository gridftpEndpointRepository;
-
-    @Autowired
-    private UnicoreDatamovementRepository unicoreDatamovementRepository;
-
-    @Autowired
-    private BatchQueueRepository batchQueueRepository;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("appCatalogEntityManager")
-    private EntityManager entityManager;
+    public ComputeResourceService(
+            ComputeResourceRepository computeResourceRepository,
+            ComputeResourceFileSystemRepository computeResourceFileSystemRepository,
+            ResourceJobManagerRepository resourceJobManagerRepository,
+            JobManagerCommandRepository jobManagerCommandRepository,
+            ParallelismCommandRepository parallelismCommandRepository,
+            JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository,
+            SshJobSubmissionRepository sshJobSubmissionRepository,
+            CloudJobSubmissionRepository cloudJobSubmissionRepository,
+            LocalSubmissionRepository localSubmissionRepository,
+            UnicoreSubmissionRepository unicoreSubmissionRepository,
+            DataMovementRepository dataMovementRepository,
+            LocalDataMovementRepository localDataMovementRepository,
+            ScpDataMovementRepository scpDataMovementRepository,
+            GridftpDataMovementRepository gridftpDataMovementRepository,
+            GridftpEndpointRepository gridftpEndpointRepository,
+            UnicoreDatamovementRepository unicoreDatamovementRepository,
+            BatchQueueRepository batchQueueRepository,
+            Mapper mapper,
+            @Qualifier("appCatalogEntityManager") EntityManager entityManager) {
+        this.computeResourceRepository = computeResourceRepository;
+        this.computeResourceFileSystemRepository = computeResourceFileSystemRepository;
+        this.resourceJobManagerRepository = resourceJobManagerRepository;
+        this.jobManagerCommandRepository = jobManagerCommandRepository;
+        this.parallelismCommandRepository = parallelismCommandRepository;
+        this.jobSubmissionInterfaceRepository = jobSubmissionInterfaceRepository;
+        this.sshJobSubmissionRepository = sshJobSubmissionRepository;
+        this.cloudJobSubmissionRepository = cloudJobSubmissionRepository;
+        this.localSubmissionRepository = localSubmissionRepository;
+        this.unicoreSubmissionRepository = unicoreSubmissionRepository;
+        this.dataMovementRepository = dataMovementRepository;
+        this.localDataMovementRepository = localDataMovementRepository;
+        this.scpDataMovementRepository = scpDataMovementRepository;
+        this.gridftpDataMovementRepository = gridftpDataMovementRepository;
+        this.gridftpEndpointRepository = gridftpEndpointRepository;
+        this.unicoreDatamovementRepository = unicoreDatamovementRepository;
+        this.batchQueueRepository = batchQueueRepository;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         if (description.getComputeResourceId().equals("")

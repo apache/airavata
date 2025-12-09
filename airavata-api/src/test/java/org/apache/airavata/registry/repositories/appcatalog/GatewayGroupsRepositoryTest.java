@@ -24,7 +24,6 @@ import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayGroupsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -37,11 +36,11 @@ public class GatewayGroupsRepositoryTest extends TestBase {
     private static final String READ_ONLY_ADMINS_GROUP_ID = "read-only-admins-group-id";
     private static final String DEFAULT_GATEWAY_USERS_GROUP_ID = "default-gateway-users-group-id";
 
-    @Autowired
-    private GatewayGroupsService gatewayGroupsService;
+    private final GatewayGroupsService gatewayGroupsService;
 
-    public GatewayGroupsRepositoryTest() {
+    public GatewayGroupsRepositoryTest(GatewayGroupsService gatewayGroupsService) {
         super(Database.APP_CATALOG);
+        this.gatewayGroupsService = gatewayGroupsService;
     }
 
     @Test

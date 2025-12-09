@@ -132,7 +132,6 @@ public class ApplicationSettings {
         }
     }
 
-
     private static String getVariableNameOnly(String variableWithIdentifiers) {
         return variableWithIdentifiers.substring(2, (variableWithIdentifiers.length() - 1));
     }
@@ -298,15 +297,15 @@ public class ApplicationSettings {
     }
 
     public static String getProfileServiceServerHost() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
+        return getSetting("services.api.profile.server.host");
     }
 
     public static String getProfileServiceServerPort() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_PORT);
+        return getSetting("services.api.profile.server.port");
     }
 
     public static String getIamServerUrl() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.IAM_SERVER_URL);
+        return getSetting("security.iam.server-url");
     }
 
     public static boolean isThriftClientPoolAbandonedRemovalEnabled() {

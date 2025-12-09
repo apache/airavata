@@ -26,18 +26,19 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class TaskErrorService {
-    @Autowired
-    private TaskErrorRepository taskErrorRepository;
+    private final TaskErrorRepository taskErrorRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public TaskErrorService(TaskErrorRepository taskErrorRepository, Mapper mapper) {
+        this.taskErrorRepository = taskErrorRepository;
+        this.mapper = mapper;
+    }
 
     public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
         TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);

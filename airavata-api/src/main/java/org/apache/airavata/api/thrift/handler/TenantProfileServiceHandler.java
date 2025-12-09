@@ -31,7 +31,6 @@ import org.apache.airavata.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,10 +41,10 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
-    @Autowired
-    private org.apache.airavata.service.TenantProfileService tenantProfileService;
+    private final org.apache.airavata.service.TenantProfileService tenantProfileService;
 
-    public TenantProfileServiceHandler() {
+    public TenantProfileServiceHandler(org.apache.airavata.service.TenantProfileService tenantProfileService) {
+        this.tenantProfileService = tenantProfileService;
         logger.debug("Initializing TenantProfileServiceHandler");
     }
 

@@ -43,7 +43,6 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -51,29 +50,30 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class JobStatusRepositoryTest extends TestBase {
 
-    @Autowired
-    GatewayService gatewayService;
+    private final GatewayService gatewayService;
+    private final ProjectService projectService;
+    private final ExperimentService experimentService;
+    private final ProcessService processService;
+    private final TaskService taskService;
+    private final JobService jobService;
+    private final JobStatusService jobStatusService;
 
-    @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    ExperimentService experimentService;
-
-    @Autowired
-    ProcessService processService;
-
-    @Autowired
-    TaskService taskService;
-
-    @Autowired
-    JobService jobService;
-
-    @Autowired
-    JobStatusService jobStatusService;
-
-    public JobStatusRepositoryTest() {
+    public JobStatusRepositoryTest(
+            GatewayService gatewayService,
+            ProjectService projectService,
+            ExperimentService experimentService,
+            ProcessService processService,
+            TaskService taskService,
+            JobService jobService,
+            JobStatusService jobStatusService) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.projectService = projectService;
+        this.experimentService = experimentService;
+        this.processService = processService;
+        this.taskService = taskService;
+        this.jobService = jobService;
+        this.jobStatusService = jobStatusService;
     }
 
     @Test

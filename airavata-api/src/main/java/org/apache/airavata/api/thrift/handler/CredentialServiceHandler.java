@@ -28,17 +28,17 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CredentialServiceHandler implements org.apache.airavata.credential.cpi.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
+    private final CredentialStoreService credentialStoreService;
 
-    public CredentialServiceHandler() {}
+    public CredentialServiceHandler(CredentialStoreService credentialStoreService) {
+        this.credentialStoreService = credentialStoreService;
+    }
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {

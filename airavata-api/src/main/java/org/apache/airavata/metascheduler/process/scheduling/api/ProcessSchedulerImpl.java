@@ -35,7 +35,6 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,11 +44,13 @@ import org.springframework.stereotype.Component;
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    public ProcessSchedulerImpl(RegistryService registryService, AiravataServerProperties properties) {
+        this.registryService = registryService;
+        this.properties = properties;
+    }
 
     @Override
     public boolean canLaunch(String experimentId) {

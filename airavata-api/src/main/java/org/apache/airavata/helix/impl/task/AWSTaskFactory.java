@@ -23,51 +23,78 @@ import org.apache.airavata.helix.impl.task.aws.AWSCompletingTask;
 import org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask;
 import org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask;
 import org.apache.airavata.helix.impl.task.aws.NoOperationTask;
+import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AWSTaskFactory implements HelixTaskFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSTaskFactory.class);
 
+    private final ApplicationContext applicationContext;
+    private final RegistryService registryService;
+    private final UserProfileService userProfileService;
+    private final CredentialStoreService credentialStoreService;
+    private final org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder;
+
+    public AWSTaskFactory(
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        this.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.userProfileService = userProfileService;
+        this.credentialStoreService = credentialStoreService;
+        this.groovyMapBuilder = groovyMapBuilder;
+    }
+
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
         LOGGER.info("Creating AWS CreateEc2InstanceTask for process {}...", processId);
-        return new CreateEC2InstanceTask();
+        return new CreateEC2InstanceTask(
+                applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
-        return new NoOperationTask();
+        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
-        return new AWSJobSubmissionTask();
+        return new AWSJobSubmissionTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
-        return new NoOperationTask();
+        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
-        return new NoOperationTask();
+        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
-        return new NoOperationTask();
+        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return new AWSCompletingTask();
+        return new AWSCompletingTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
-        return new NoOperationTask();
+        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
     }
 }

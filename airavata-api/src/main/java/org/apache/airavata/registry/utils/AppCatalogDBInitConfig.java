@@ -23,17 +23,19 @@ import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.registry.services.GwyResourceProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final GwyResourceProfileService gwyResourceProfileService;
 
-    @Autowired
-    private GwyResourceProfileService gwyResourceProfileService;
+    public AppCatalogDBInitConfig(
+            AiravataServerProperties properties, GwyResourceProfileService gwyResourceProfileService) {
+        this.properties = properties;
+        this.gwyResourceProfileService = gwyResourceProfileService;
+    }
 
     private String dbInitScriptPrefix = "database_scripts/appcatalog";
 

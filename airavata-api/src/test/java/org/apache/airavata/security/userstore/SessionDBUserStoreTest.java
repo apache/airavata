@@ -24,52 +24,43 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.utils.DerbyUtil;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
  * Test class for session DB authenticator.
  */
-public class SessionDBUserStoreTest extends DatabaseTestCases {
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, SessionDBUserStoreTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
+@Transactional
+public class SessionDBUserStoreTest {
 
-    @BeforeAll
-    public static void setUpDatabase() throws Exception {
-        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
+    private SessionDBUserStore sessionDBUserStore;
 
-        waitTillServerStarts();
+    private InputStream configurationFileStream =
+            this.getClass().getClassLoader().getResourceAsStream("session-authenticator.xml");
 
-        String dropTable = "drop table Persons";
-
-        try {
-            executeSQL(dropTable);
-        } catch (Exception e) {
-        }
-
-        String createTable = "create table Persons ( sessionId varchar(255) )";
-        executeSQL(createTable);
-
-        String insertSQL = "INSERT INTO Persons VALUES('1234')";
-        executeSQL(insertSQL);
-    }
-
-    @AfterAll
-    public static void shutDownDatabase() throws Exception {
-        DerbyUtil.stopDerbyServer();
+    public SessionDBUserStoreTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
     }
 
     @BeforeEach
     public void setUp() throws Exception {
-
+        sessionDBUserStore = new SessionDBUserStore();
         loadConfigurations();
     }
-
-    private SessionDBUserStore sessionDBUserStore = new SessionDBUserStore();
-
-    private InputStream configurationFileStream =
-            this.getClass().getClassLoader().getResourceAsStream("session-authenticator.xml");
 
     private void loadConfigurations() throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -90,4 +81,21 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
     public void testAuthenticateFailure() throws Exception {
         assertFalse(sessionDBUserStore.authenticate("12345"));
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

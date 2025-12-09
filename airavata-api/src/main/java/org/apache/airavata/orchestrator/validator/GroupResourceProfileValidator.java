@@ -33,7 +33,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,8 +40,11 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileValidator.class);
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+
+    public GroupResourceProfileValidator(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
     @Override
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {

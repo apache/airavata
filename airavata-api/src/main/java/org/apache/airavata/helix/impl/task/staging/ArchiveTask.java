@@ -42,6 +42,14 @@ public class ArchiveTask extends DataStagingTask {
     private static final long MAX_ARCHIVE_SIZE = 1024L * 1024L * 1024L * 20L; // 20GB
     private static final CountMonitor archiveTaskCounter = new CountMonitor("archive_task_counter");
 
+    public ArchiveTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting archival task " + getTaskId() + " in experiment " + getExperimentId());

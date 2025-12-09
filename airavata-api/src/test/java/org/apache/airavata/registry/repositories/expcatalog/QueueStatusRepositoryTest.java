@@ -29,7 +29,6 @@ import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.QueueStatusService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -37,11 +36,11 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class QueueStatusRepositoryTest extends TestBase {
 
-    @Autowired
-    QueueStatusService queueStatusService;
+    private final QueueStatusService queueStatusService;
 
-    public QueueStatusRepositoryTest() {
+    public QueueStatusRepositoryTest(QueueStatusService queueStatusService) {
         super(Database.EXP_CATALOG);
+        this.queueStatusService = queueStatusService;
     }
 
     @Test

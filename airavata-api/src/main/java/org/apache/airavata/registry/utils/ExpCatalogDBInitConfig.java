@@ -27,20 +27,21 @@ import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ExpCatalogDBInitConfig implements DBInitConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final GatewayService gatewayService;
+    private final UserService userService;
 
-    @Autowired
-    private GatewayService gatewayService;
-
-    @Autowired
-    private UserService userService;
+    public ExpCatalogDBInitConfig(
+            AiravataServerProperties properties, GatewayService gatewayService, UserService userService) {
+        this.properties = properties;
+        this.gatewayService = gatewayService;
+        this.userService = userService;
+    }
 
     private String dbInitScriptPrefix = "database_scripts/expcatalog";
 

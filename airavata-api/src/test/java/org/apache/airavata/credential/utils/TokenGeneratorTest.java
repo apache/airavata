@@ -24,15 +24,30 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
  * Date: 8/5/13
  * Time: 4:20 PM
  */
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, TokenGeneratorTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class TokenGeneratorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenGeneratorTest.class);
+
+    public TokenGeneratorTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @Test
     public void testGenerateToken() throws Exception {
@@ -41,4 +56,21 @@ public class TokenGeneratorTest {
         assertNotNull(token);
         logger.info("Token: {}", token);
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.credential",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

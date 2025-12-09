@@ -24,7 +24,6 @@ import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.apache.airavata.common.utils.JPAUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,33 +43,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JpaConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public JpaConfig(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     public static OpenJpaEntityManagerFactoryPostProcessor openJpaEntityManagerFactoryPostProcessor() {
         return new OpenJpaEntityManagerFactoryPostProcessor();
     }
 
-    /**
-     * Custom JpaMetamodelMappingContext factory that handles OpenJPA enhancement errors gracefully.
-     * This overrides the default Spring Data JPA factory which doesn't handle OpenJPA enhancement issues.
-     */
-    @Bean(name = "jpaMappingContext")
-    public OpenJpaMetamodelMappingContextFactoryBean jpaMappingContext(
-            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory profileServiceEmf,
-            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory appCatalogEmf,
-            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory expCatalogEmf,
-            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory replicaCatalogEmf,
-            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory workflowCatalogEmf,
-            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory sharingRegistryEmf,
-            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory credentialStoreEmf) {
-        OpenJpaMetamodelMappingContextFactoryBean factory = new OpenJpaMetamodelMappingContextFactoryBean();
-        factory.setEntityManagerFactories(java.util.Arrays.asList(
-                profileServiceEmf, appCatalogEmf, expCatalogEmf, replicaCatalogEmf,
-                workflowCatalogEmf, sharingRegistryEmf, credentialStoreEmf));
-        return factory;
-    }
+    // Note: Removed custom jpaMappingContext bean - Spring Data JPA will auto-configure
+    // the mapping context for each @EnableJpaRepositories configuration independently.
+    // This follows Spring Boot's standard approach for multiple persistence units.
 
     // Persistence unit names
     public static final String PROFILE_SERVICE_PU = "profile_service";
@@ -280,6 +266,8 @@ public class JpaConfig {
     }
 
     // Spring Data JPA Repository Configuration for each persistence unit
+    // Each configuration uses its own EntityManagerFactory and TransactionManager
+    // Spring Data JPA will automatically create a mapping context for each configuration
     // Note: Order matters - repositories registered later will override earlier ones with the same name
     // We register expcatalog last so it's not overridden by sharing's UserRepository
     @Configuration
@@ -287,42 +275,48 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.profile.repositories",
             entityManagerFactoryRef = "profileServiceEntityManagerFactory",
             transactionManagerRef = "profileServiceTransactionManager",
-            enableDefaultTransactions = true)
+            enableDefaultTransactions = true,
+            considerNestedRepositories = true)
     static class ProfileServiceJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.appcatalog",
             entityManagerFactoryRef = "appCatalogEntityManagerFactory",
-            transactionManagerRef = "appCatalogTransactionManager")
+            transactionManagerRef = "appCatalogTransactionManager",
+            considerNestedRepositories = true)
     static class AppCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
             entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
-            transactionManagerRef = "replicaCatalogTransactionManager")
+            transactionManagerRef = "replicaCatalogTransactionManager",
+            considerNestedRepositories = true)
     static class ReplicaCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
             entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
-            transactionManagerRef = "workflowCatalogTransactionManager")
+            transactionManagerRef = "workflowCatalogTransactionManager",
+            considerNestedRepositories = true)
     static class WorkflowCatalogJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.sharing.repositories",
             entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
-            transactionManagerRef = "sharingRegistryTransactionManager")
+            transactionManagerRef = "sharingRegistryTransactionManager",
+            considerNestedRepositories = true)
     static class SharingRegistryJpaRepositoriesConfig {}
 
     @Configuration
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.credential.repositories",
             entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
-            transactionManagerRef = "credentialStoreTransactionManager")
+            transactionManagerRef = "credentialStoreTransactionManager",
+            considerNestedRepositories = true)
     static class CredentialStoreJpaRepositoriesConfig {}
 
     // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
@@ -331,6 +325,7 @@ public class JpaConfig {
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.expcatalog",
             entityManagerFactoryRef = "expCatalogEntityManagerFactory",
-            transactionManagerRef = "expCatalogTransactionManager")
+            transactionManagerRef = "expCatalogTransactionManager",
+            considerNestedRepositories = true)
     static class ExpCatalogJpaRepositoriesConfig {}
 }

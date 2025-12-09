@@ -28,18 +28,19 @@ import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.JobStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class JobStatusService {
-    @Autowired
-    private JobStatusRepository jobStatusRepository;
+    private final JobStatusRepository jobStatusRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public JobStatusService(JobStatusRepository jobStatusRepository, Mapper mapper) {
+        this.jobStatusRepository = jobStatusRepository;
+        this.mapper = mapper;
+    }
 
     public JobStatus getJobStatus(JobPK jobPK) throws RegistryException {
         List<JobStatusEntity> entities = jobStatusRepository.findByJobIdAndTaskIdOrderByTimeOfStateChangeDesc(

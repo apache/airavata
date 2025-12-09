@@ -37,7 +37,6 @@ import org.apache.airavata.registry.services.StorageResourceService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -50,14 +49,14 @@ public class StorageResourceRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceRepository.class);
 
-    @Autowired
-    private StorageResourceService storageResourceService;
+    private final StorageResourceService storageResourceService;
+    private final ComputeResourceService computeResourceService;
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    public StorageResourceRepositoryTest() {
+    public StorageResourceRepositoryTest(
+            StorageResourceService storageResourceService, ComputeResourceService computeResourceService) {
         super(Database.APP_CATALOG);
+        this.storageResourceService = storageResourceService;
+        this.computeResourceService = computeResourceService;
     }
 
     @Test

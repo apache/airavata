@@ -26,7 +26,6 @@ import org.apache.airavata.credential.services.CredentialEntityService;
 import org.apache.airavata.credential.utils.CredentialWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,10 +36,11 @@ public class SSHCredentialWriter implements CredentialWriter {
 
     protected static Logger logger = LoggerFactory.getLogger(SSHCredentialWriter.class);
 
-    @Autowired
-    private CredentialEntityService credentialEntityService;
+    private final CredentialEntityService credentialEntityService;
 
-    public SSHCredentialWriter() {}
+    public SSHCredentialWriter(CredentialEntityService credentialEntityService) {
+        this.credentialEntityService = credentialEntityService;
+    }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
         SSHCredential sshCredential = (SSHCredential) credential;

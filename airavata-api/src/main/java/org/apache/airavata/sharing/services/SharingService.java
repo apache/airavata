@@ -29,21 +29,22 @@ import org.apache.airavata.sharing.models.Sharing;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.repositories.SharingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class SharingService {
-    @Autowired
-    private SharingRepository sharingRepository;
+    private final SharingRepository sharingRepository;
+    private final PermissionTypeService permissionTypeService;
+    private final Mapper mapper;
 
-    @Autowired
-    private PermissionTypeService permissionTypeService;
-
-    @Autowired
-    private Mapper mapper;
+    public SharingService(
+            SharingRepository sharingRepository, PermissionTypeService permissionTypeService, Mapper mapper) {
+        this.sharingRepository = sharingRepository;
+        this.permissionTypeService = permissionTypeService;
+        this.mapper = mapper;
+    }
 
     public Sharing get(SharingPK pk) throws SharingRegistryException {
         SharingEntity entity = sharingRepository.findById(pk).orElse(null);

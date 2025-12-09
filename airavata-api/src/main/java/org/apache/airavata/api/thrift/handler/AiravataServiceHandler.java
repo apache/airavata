@@ -74,7 +74,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.AiravataService;
 import org.apache.airavata.sharing.models.SharingRegistryException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -82,7 +81,6 @@ public class AiravataServiceHandler implements Airavata.Iface {
 
     private final AiravataService airavataService;
 
-    @Autowired
     public AiravataServiceHandler(AiravataService airavataService) throws AiravataException {
         this.airavataService = airavataService;
         this.airavataService.init();

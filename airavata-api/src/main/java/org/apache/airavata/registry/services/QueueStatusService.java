@@ -26,18 +26,19 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.entities.expcatalog.QueueStatusEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.QueueStatusRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class QueueStatusService {
-    @Autowired
-    private QueueStatusRepository queueStatusRepository;
+    private final QueueStatusRepository queueStatusRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public QueueStatusService(QueueStatusRepository queueStatusRepository, Mapper mapper) {
+        this.queueStatusRepository = queueStatusRepository;
+        this.mapper = mapper;
+    }
 
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
         // Get all queue statuses, then group by hostName and queueName to get latest

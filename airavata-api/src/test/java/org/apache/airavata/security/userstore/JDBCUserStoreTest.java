@@ -23,17 +23,29 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.security.UserStore;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
  * Test class for JDBC user store.
  */
-public class JDBCUserStoreTest extends DatabaseTestCases {
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, JDBCUserStoreTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
+@Transactional
+public class JDBCUserStoreTest {
 
     /**
      * <specificConfigurations>
@@ -50,29 +62,8 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
      * </specificConfigurations>
      * @throws Exception
      */
-    @BeforeAll
-    public static void setUpDatabase() throws Exception {
-        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
-
-        waitTillServerStarts();
-
-        String dropTable = "drop table AIRAVATA_USER";
-
-        try {
-            executeSQL(dropTable);
-        } catch (Exception e) {
-        }
-
-        String createTable = "create table AIRAVATA_USER ( USERID varchar(255), PASSWORD varchar(255) )";
-        executeSQL(createTable);
-
-        String insertSQL = "INSERT INTO AIRAVATA_USER VALUES('amilaj', 'secret')";
-        executeSQL(insertSQL);
-    }
-
-    @AfterAll
-    public static void shutDownDatabase() throws Exception {
-        DerbyUtil.stopDerbyServer();
+    public JDBCUserStoreTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
     }
 
     @BeforeEach
@@ -94,4 +85,21 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
         assertFalse(userStore.authenticate("amilaj", "1secret"));
         assertFalse(userStore.authenticate("lahiru", "1234"));
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

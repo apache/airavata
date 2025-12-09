@@ -27,7 +27,6 @@ import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.service.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -43,16 +42,12 @@ public final class AWSTaskUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSTaskUtil.class);
     private static ApplicationContext applicationContext;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
+    private final CredentialStoreService credentialStoreService;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public AWSTaskUtil(CredentialStoreService credentialStoreService, ApplicationContext applicationContext) {
+        this.credentialStoreService = credentialStoreService;
         AWSTaskUtil.applicationContext = applicationContext;
     }
-
-    // Default constructor for Spring - allows Spring to instantiate this component
-    public AWSTaskUtil() {}
 
     // Instance method for Spring DI
     private CredentialStoreService getCredentialStoreServiceInstance() {
@@ -85,7 +80,12 @@ public final class AWSTaskUtil {
     public static void terminateEC2Instance(TaskContext taskContext, String gatewayId) {
         LOGGER.warn("Full resource cleanup triggered for process {}", taskContext.getProcessId());
         try {
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
+            if (applicationContext == null) {
+                throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
+            }
+            org.apache.airavata.service.RegistryService registryService =
+                    applicationContext.getBean(org.apache.airavata.service.RegistryService.class);
+            AWSProcessContextManager awsContext = new AWSProcessContextManager(registryService, taskContext);
             AwsComputeResourcePreference awsPrefs = taskContext
                     .getGroupComputeResourcePreference()
                     .getSpecificPreferences()

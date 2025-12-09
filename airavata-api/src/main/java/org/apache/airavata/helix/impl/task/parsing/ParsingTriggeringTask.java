@@ -41,7 +41,12 @@ public class ParsingTriggeringTask extends AiravataTask {
     private static Producer<String, ProcessCompletionMessage> producer;
     private String topic;
 
-    public ParsingTriggeringTask() {
+    public ParsingTriggeringTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
         // Topic will be initialized in @PostConstruct or from ApplicationContext
     }
 

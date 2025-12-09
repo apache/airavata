@@ -36,23 +36,23 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SSHAccountManager {
 
-    @Autowired
-    private RegistryService registryService;
-
-    @Autowired
-    private CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
+    private final CredentialStoreService credentialStoreService;
 
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public SSHAccountManager(
+            RegistryService registryService,
+            CredentialStoreService credentialStoreService,
+            ApplicationContext applicationContext) {
+        this.registryService = registryService;
+        this.credentialStoreService = credentialStoreService;
         SSHAccountManager.applicationContext = applicationContext;
     }
 

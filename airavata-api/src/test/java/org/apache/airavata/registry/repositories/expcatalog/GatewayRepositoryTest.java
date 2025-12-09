@@ -24,28 +24,64 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, GatewayRepositoryTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class GatewayRepositoryTest extends TestBase {
 
+    @Configuration
+    @ComponentScan(
+            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class,
+                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
+                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
+                            org.apache.airavata.monitor.AbstractMonitor.class
+                        }),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.helix\\..*")
+            })
+    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
+
     private String testGatewayId = "testGateway";
 
-    @Autowired
-    GatewayService gatewayService;
+    private final GatewayService gatewayService;
+    private final AiravataServerProperties properties;
 
-    public GatewayRepositoryTest() {
+    public GatewayRepositoryTest(GatewayService gatewayService, AiravataServerProperties properties) {
         super(Database.EXP_CATALOG);
+        this.gatewayService = gatewayService;
+        this.properties = properties;
     }
 
     @Test
@@ -54,7 +90,7 @@ public class GatewayRepositoryTest extends TestBase {
         List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
         assertEquals(
-                ServerSettings.getDefaultUserGateway(),
+                properties.services.default_.gateway,
                 defaultGatewayList.get(0).getGatewayId());
 
         Gateway gateway = new Gateway();

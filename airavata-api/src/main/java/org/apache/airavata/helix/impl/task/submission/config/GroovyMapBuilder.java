@@ -45,20 +45,18 @@ import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GroovyMapBuilder {
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
 
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public GroovyMapBuilder(RegistryService registryService, ApplicationContext applicationContext) {
+        this.registryService = registryService;
         GroovyMapBuilder.applicationContext = applicationContext;
     }
 
@@ -71,20 +69,7 @@ public class GroovyMapBuilder {
 
     public static final String MULTIPLE_INPUTS_SPLITTER = ",";
 
-    private TaskContext taskContext;
-
-    // Default constructor for Spring
-    public GroovyMapBuilder() {}
-
-    public GroovyMapBuilder(TaskContext taskContext) {
-        this.taskContext = taskContext;
-    }
-
-    public void setTaskContext(TaskContext taskContext) {
-        this.taskContext = taskContext;
-    }
-
-    public GroovyMapData build() throws Exception {
+    public GroovyMapData build(TaskContext taskContext) throws Exception {
         GroovyMapData mapData = new GroovyMapData();
 
         setMailAddresses(taskContext, mapData);

@@ -32,7 +32,6 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
-import org.apache.airavata.helix.impl.task.TaskFactory;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
@@ -67,14 +66,29 @@ public class PreWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
     private static final CountMonitor prewfCounter = new CountMonitor("pre_wf_counter");
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
+    private final org.apache.airavata.helix.impl.task.TaskFactory taskFactory;
+    private final org.springframework.context.ApplicationContext applicationContext;
+    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.UserProfileService userProfileService;
+    private final org.apache.airavata.service.CredentialStoreService credentialStoreService;
     private Subscriber subscriber;
 
-    public PreWorkflowManager() {
+    public PreWorkflowManager(
+            AiravataServerProperties properties,
+            org.apache.airavata.helix.impl.task.TaskFactory taskFactory,
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
         // Default values, will be updated in @PostConstruct
-        super("pre-workflow-manager", false);
+        super("pre-workflow-manager", false, registryService, properties);
+        this.properties = properties;
+        this.taskFactory = taskFactory;
+        this.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.userProfileService = userProfileService;
+        this.credentialStoreService = credentialStoreService;
     }
 
     @jakarta.annotation.PostConstruct
@@ -112,7 +126,7 @@ public class PreWorkflowManager extends WorkflowManager {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService registryService = getRegistryService();
+        RegistryService registryService = this.registryService;
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
@@ -124,7 +138,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     .getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
-            taskFactory = TaskFactory.getFactory(resourceType);
+            taskFactory = this.taskFactory.getFactory(resourceType);
             logger.info("Initialized task factory for resource type {} for process {}", resourceType, processId);
 
         } catch (RegistryServiceException e) {
@@ -198,7 +212,8 @@ public class PreWorkflowManager extends WorkflowManager {
 
         // For intermediate transfers add a final CompletingTask
         if (intermediateTransfer) {
-            CompletingTask completingTask = new CompletingTask();
+            CompletingTask completingTask =
+                    new CompletingTask(applicationContext, registryService, userProfileService, credentialStoreService);
             completingTask.setGatewayId(experimentModel.getGatewayId());
             completingTask.setExperimentId(experimentModel.getExperimentId());
             completingTask.setProcessId(processModel.getProcessId());
@@ -222,7 +237,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        RegistryService registryService = getRegistryService();
+        RegistryService registryService = this.registryService;
 
         ProcessModel processModel;
         GroupComputeResourcePreference gcrPref;
@@ -271,7 +286,8 @@ public class PreWorkflowManager extends WorkflowManager {
                     processId,
                     gcrPref.getResourceType());
 
-            RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
+            RemoteJobCancellationTask rjct = new RemoteJobCancellationTask(
+                    applicationContext, registryService, userProfileService, credentialStoreService);
             rjct.setTaskId(UUID.randomUUID().toString());
             rjct.setExperimentId(experimentId);
             rjct.setProcessId(processId);
@@ -284,7 +300,8 @@ public class PreWorkflowManager extends WorkflowManager {
             allTasks.add(rjct);
         }
 
-        CancelCompletingTask cct = new CancelCompletingTask();
+        CancelCompletingTask cct = new CancelCompletingTask(
+                applicationContext, registryService, userProfileService, credentialStoreService);
         cct.setTaskId(UUID.randomUUID().toString());
         cct.setExperimentId(experimentId);
         cct.setProcessId(processId);
@@ -303,10 +320,10 @@ public class PreWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
-        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.start();
-        // Keep main thread alive
-        Thread.currentThread().join();
+        // Note: PreWorkflowManager is a Spring component and requires dependencies.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException("PreWorkflowManager must be used within a Spring application context");
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

@@ -73,7 +73,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -84,18 +83,13 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
-
-    @jakarta.annotation.PostConstruct
-    public void init() throws OrchestratorException {
-        initialize(properties);
-    }
-
-    public SimpleOrchestratorImpl() throws OrchestratorException {
+    public SimpleOrchestratorImpl(RegistryService registryService, AiravataServerProperties properties)
+            throws OrchestratorException {
+        this.registryService = registryService;
+        this.properties = properties;
         try {
             try {
                 // We are only going to use GFacPassiveJobSubmitter
@@ -113,6 +107,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             logger.error("Error Constructing the Orchestrator");
             throw e;
         }
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() throws OrchestratorException {
+        initialize(properties);
     }
 
     public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {

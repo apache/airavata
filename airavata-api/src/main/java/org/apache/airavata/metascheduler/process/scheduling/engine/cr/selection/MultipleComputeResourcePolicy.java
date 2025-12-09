@@ -45,8 +45,8 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public MultipleComputeResourcePolicy(ApplicationContext applicationContext) {
+        super(applicationContext);
         MultipleComputeResourcePolicy.applicationContext = applicationContext;
     }
 

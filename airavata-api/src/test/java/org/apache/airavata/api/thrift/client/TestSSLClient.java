@@ -31,7 +31,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -41,8 +40,11 @@ public class TestSSLClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSSLClient.class);
 
-    @Autowired
-    private CredentialStoreService credentialService;
+    private final CredentialStoreService credentialService;
+
+    public TestSSLClient(CredentialStoreService credentialService) {
+        this.credentialService = credentialService;
+    }
 
     @Test
     public void invoke() {

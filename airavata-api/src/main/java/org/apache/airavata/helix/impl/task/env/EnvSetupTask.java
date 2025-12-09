@@ -36,6 +36,14 @@ public class EnvSetupTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(EnvSetupTask.class);
     private static final CountMonitor envSetupTaskCounter = new CountMonitor("env_setup_task_counter");
 
+    public EnvSetupTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         try {

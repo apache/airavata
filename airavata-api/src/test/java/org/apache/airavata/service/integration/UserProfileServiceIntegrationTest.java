@@ -30,7 +30,6 @@ import org.apache.airavata.service.UserProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for UserProfileService.
@@ -38,8 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("UserProfileService Integration Tests")
 public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
+
+    public UserProfileServiceIntegrationTest(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @Nested
     @DisplayName("User Profile CRUD Operations")
@@ -103,8 +105,8 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         @DisplayName("Should throw exception when getting non-existent user profile")
         void shouldThrowExceptionForNonExistentUser() {
             // Act & Assert
-            assertThatThrownBy(() -> userProfileService.getUserProfileById(
-                            testAuthzToken, "non-existent-user", TEST_GATEWAY_ID))
+            assertThatThrownBy(() ->
+                            userProfileService.getUserProfileById(testAuthzToken, "non-existent-user", TEST_GATEWAY_ID))
                     .isInstanceOf(UserProfileServiceException.class);
         }
 
@@ -147,8 +149,7 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         @DisplayName("Should return false when user does not exist")
         void shouldReturnFalseWhenUserDoesNotExist() throws UserProfileServiceException {
             // Act
-            boolean exists = userProfileService.doesUserExist(
-                    testAuthzToken, "non-existent-user", TEST_GATEWAY_ID);
+            boolean exists = userProfileService.doesUserExist(testAuthzToken, "non-existent-user", TEST_GATEWAY_ID);
 
             // Assert
             assertThat(exists).isFalse();
@@ -231,4 +232,3 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         }
     }
 }
-

@@ -153,7 +153,7 @@ public class OpenJpaMetamodelMappingContextFactoryBean
             if (e.getCause() instanceof org.apache.openjpa.util.MetaDataException) {
                 logger.warn(
                         "Standard factory failed due to OpenJPA enhancement issue, but continuing with {} working EMFs. "
-                        + "Some repositories may not work correctly.",
+                                + "Some repositories may not work correctly.",
                         workingEmfs.size());
                 // Try to create context with just the EMFs that don't have the problematic entity
                 // For now, rethrow to see the full error

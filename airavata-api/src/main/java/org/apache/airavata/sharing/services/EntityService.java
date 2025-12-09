@@ -36,7 +36,6 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,15 +45,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class EntityService {
     private static final Logger logger = LoggerFactory.getLogger(EntityService.class);
 
-    @Autowired
-    private EntityRepository entityRepository;
+    private final EntityRepository entityRepository;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManager")
-    private EntityManager entityManager;
+    public EntityService(
+            EntityRepository entityRepository,
+            Mapper mapper,
+            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+        this.entityRepository = entityRepository;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public Entity get(EntityPK pk) throws SharingRegistryException {
         EntityEntity entity = entityRepository.findById(pk).orElse(null);

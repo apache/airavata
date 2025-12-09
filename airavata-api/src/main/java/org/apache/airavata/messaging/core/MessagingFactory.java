@@ -33,7 +33,6 @@ import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,8 +40,11 @@ public class MessagingFactory {
 
     private static MessagingFactory instance;
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public MessagingFactory(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     @jakarta.annotation.PostConstruct
     public void init() {

@@ -22,7 +22,6 @@ package org.apache.airavata.config;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.env.Environment;
@@ -36,11 +35,14 @@ public class AiravataServerProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerProperties.class);
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
 
     // ==================== Core Configuration ====================
     public String airavataConfigDir = ".";
+
+    public AiravataServerProperties(Environment environment) {
+        this.environment = environment;
+    }
 
     @PostConstruct
     public void bindProperties() {
@@ -120,6 +122,13 @@ public class AiravataServerProperties {
 
             // Bind database-level validation query
             database.validationQuery = getProperty("database.validation-query", database.validationQuery);
+        }
+
+        // Manually bind default properties from airavata.default.* to services.default_.*
+        if (services != null && services.default_ != null && environment != null) {
+            services.default_.gateway = getProperty("airavata.default.gateway", services.default_.gateway);
+            services.default_.user = getProperty("airavata.default.user", services.default_.user);
+            services.default_.password = getProperty("airavata.default.password", services.default_.password);
         }
 
         // Log configuration

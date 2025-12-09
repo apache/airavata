@@ -48,12 +48,20 @@ public class CreateEC2InstanceTask extends AiravataTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEC2InstanceTask.class);
 
+    public CreateEC2InstanceTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         LOGGER.info("Starting Create EC2 Instance Task for process {}", getProcessId());
         Security.addProvider(new BouncyCastleProvider());
 
-        AWSProcessContextManager awsContext = new AWSProcessContextManager(taskContext);
+        AWSProcessContextManager awsContext = new AWSProcessContextManager(registryService, taskContext);
         Ec2Client ec2Client = null;
 
         try {

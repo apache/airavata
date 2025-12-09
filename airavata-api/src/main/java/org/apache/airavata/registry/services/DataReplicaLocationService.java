@@ -26,18 +26,19 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.replicacatalog.DataReplicaLocationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class DataReplicaLocationService {
-    @Autowired
-    private DataReplicaLocationRepository dataReplicaLocationRepository;
+    private final DataReplicaLocationRepository dataReplicaLocationRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public DataReplicaLocationService(DataReplicaLocationRepository dataReplicaLocationRepository, Mapper mapper) {
+        this.dataReplicaLocationRepository = dataReplicaLocationRepository;
+        this.mapper = mapper;
+    }
 
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
             throws ReplicaCatalogException {

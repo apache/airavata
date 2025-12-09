@@ -42,6 +42,14 @@ public class InputDataStagingTask extends DataStagingTask {
     private static final Logger logger = LoggerFactory.getLogger(InputDataStagingTask.class);
     private static final CountMonitor inputDSTaskCounter = new CountMonitor("input_ds_task_counter");
 
+    public InputDataStagingTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting Input Data Staging Task " + getTaskId());

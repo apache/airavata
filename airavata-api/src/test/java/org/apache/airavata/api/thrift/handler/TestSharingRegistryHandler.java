@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -36,8 +35,11 @@ import org.springframework.test.context.TestPropertySource;
 public class TestSharingRegistryHandler {
     private static final Logger logger = LoggerFactory.getLogger(TestSharingRegistryHandler.class);
 
-    @Autowired
-    private SharingRegistryServerHandler sharingRegistryServerHandler;
+    private final SharingRegistryServerHandler sharingRegistryServerHandler;
+
+    public TestSharingRegistryHandler(SharingRegistryServerHandler sharingRegistryServerHandler) {
+        this.sharingRegistryServerHandler = sharingRegistryServerHandler;
+    }
 
     @Test
     public void test() throws Exception {

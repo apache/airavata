@@ -36,7 +36,6 @@ import org.apache.airavata.registry.repositories.appcatalog.ApplicationDeploymen
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,14 +44,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicationDeploymentService implements ApplicationDeployment {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentService.class);
 
-    @Autowired
-    private ApplicationDeploymentRepository applicationDeploymentRepository;
+    private final ApplicationDeploymentRepository applicationDeploymentRepository;
+    private final ComputeResourceService computeResourceService;
+    private final Mapper mapper;
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
-
-    @Autowired
-    private Mapper mapper;
+    public ApplicationDeploymentService(
+            ApplicationDeploymentRepository applicationDeploymentRepository,
+            ComputeResourceService computeResourceService,
+            Mapper mapper) {
+        this.applicationDeploymentRepository = applicationDeploymentRepository;
+        this.computeResourceService = computeResourceService;
+        this.mapper = mapper;
+    }
 
     @Override
     public String addApplicationDeployment(

@@ -47,7 +47,6 @@ import org.apache.airavata.registry.repositories.appcatalog.ApplicationOutputRep
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,23 +55,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicationInterfaceService implements ApplicationInterface {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceService.class);
 
-    @Autowired
-    private ApplicationInterfaceRepository applicationInterfaceRepository;
+    private final ApplicationInterfaceRepository applicationInterfaceRepository;
+    private final ApplicationModuleRepository applicationModuleRepository;
+    private final ApplicationInputRepository applicationInputRepository;
+    private final ApplicationOutputRepository applicationOutputRepository;
+    private final AppModuleMappingRepository appModuleMappingRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private ApplicationModuleRepository applicationModuleRepository;
-
-    @Autowired
-    private ApplicationInputRepository applicationInputRepository;
-
-    @Autowired
-    private ApplicationOutputRepository applicationOutputRepository;
-
-    @Autowired
-    private AppModuleMappingRepository appModuleMappingRepository;
-
-    @Autowired
-    private Mapper mapper;
+    public ApplicationInterfaceService(
+            ApplicationInterfaceRepository applicationInterfaceRepository,
+            ApplicationModuleRepository applicationModuleRepository,
+            ApplicationInputRepository applicationInputRepository,
+            ApplicationOutputRepository applicationOutputRepository,
+            AppModuleMappingRepository appModuleMappingRepository,
+            Mapper mapper) {
+        this.applicationInterfaceRepository = applicationInterfaceRepository;
+        this.applicationModuleRepository = applicationModuleRepository;
+        this.applicationInputRepository = applicationInputRepository;
+        this.applicationOutputRepository = applicationOutputRepository;
+        this.appModuleMappingRepository = appModuleMappingRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public String addApplicationModule(ApplicationModule applicationModule, String gatewayId)

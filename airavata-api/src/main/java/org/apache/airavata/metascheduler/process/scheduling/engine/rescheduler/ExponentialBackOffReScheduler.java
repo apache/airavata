@@ -48,18 +48,19 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
     private static ApplicationContext applicationContext;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+    private final ApplicationContext applicationContextInstance;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public ExponentialBackOffReScheduler(AiravataServerProperties properties, ApplicationContext applicationContext) {
+        this.properties = properties;
+        this.applicationContextInstance = applicationContext;
         ExponentialBackOffReScheduler.applicationContext = applicationContext;
     }
 
     @Override
     public void reschedule(ProcessModel processModel, ProcessState processState) {
         try {
-            RegistryService registryService = applicationContext.getBean(RegistryService.class);
+            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
             int maxReschedulingCount = properties.services.scheduler.maximumReschedulerThreshold;
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());

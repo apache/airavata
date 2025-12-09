@@ -42,15 +42,17 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
+    private final org.apache.airavata.service.RegistryService registryService;
     private final RealtimeJobStatusParser parser;
     private String publisherId;
     private String brokerTopic;
 
-    public RealtimeMonitor() {
-        super();
+    public RealtimeMonitor(
+            org.apache.airavata.service.RegistryService registryService, AiravataServerProperties properties) {
+        super(registryService, properties);
+        this.registryService = registryService;
+        this.properties = properties;
         parser = new RealtimeJobStatusParser();
     }
 
@@ -118,13 +120,9 @@ public class RealtimeMonitor extends AbstractMonitor {
     }
 
     public static void main(String args[]) throws ApplicationSettingsException {
-        RealtimeMonitor monitor = new RealtimeMonitor();
-        monitor.start();
-        // Keep main thread alive
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            logger.error("RealtimeMonitor main thread interrupted", e);
-        }
+        // Note: RealtimeMonitor is a Spring component and requires RegistryService and AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException("RealtimeMonitor must be used within a Spring application context");
     }
 }

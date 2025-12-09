@@ -40,9 +40,7 @@ public class HelixController implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
     private String clusterName;
     private String controllerName;
     private String zkAddress;
@@ -52,8 +50,8 @@ public class HelixController implements Runnable {
     private CountDownLatch stopLatch = new CountDownLatch(1);
 
     @SuppressWarnings("WeakerAccess")
-    public HelixController() {
-        // Properties will be injected by Spring
+    public HelixController(AiravataServerProperties properties) {
+        this.properties = properties;
     }
 
     @jakarta.annotation.PostConstruct
@@ -131,15 +129,9 @@ public class HelixController implements Runnable {
     }
 
     public static void main(String args[]) {
-        try {
-
-            logger.info("Starting helix controller");
-
-            HelixController helixController = new HelixController();
-            helixController.startServer();
-
-        } catch (Exception e) {
-            logger.error("Failed to start the helix controller", e);
-        }
+        // Note: HelixController is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException("HelixController must be used within a Spring application context");
     }
 }

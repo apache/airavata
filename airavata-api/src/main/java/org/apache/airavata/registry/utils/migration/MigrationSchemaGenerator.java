@@ -23,7 +23,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DBInitializer;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.GwyResourceProfileService;
+import org.apache.airavata.registry.services.UserService;
 import org.apache.airavata.registry.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.utils.JPAUtil.AppCatalogJPAUtils;
@@ -37,17 +40,27 @@ public class MigrationSchemaGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(MigrationSchemaGenerator.class);
 
-    private enum Database {
-        app_catalog(
-                new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog"),
-                AppCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
-        experiment_catalog(
-                new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog"),
-                ExpCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
-        replica_catalog(
-                new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replicacatalog"),
-                RepCatalogJPAUtils.PERSISTENCE_UNIT_NAME);
+    private static Database[] createDatabases(
+            AiravataServerProperties properties,
+            GwyResourceProfileService gwyResourceProfileService,
+            GatewayService gatewayService,
+            UserService userService) {
+        return new Database[] {
+            new Database(
+                    new AppCatalogDBInitConfig(properties, gwyResourceProfileService)
+                            .setDbInitScriptPrefix("appcatalog"),
+                    AppCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
+            new Database(
+                    new ExpCatalogDBInitConfig(properties, gatewayService, userService)
+                            .setDbInitScriptPrefix("expcatalog"),
+                    ExpCatalogJPAUtils.PERSISTENCE_UNIT_NAME),
+            new Database(
+                    new ReplicaCatalogDBInitConfig(properties).setDbInitScriptPrefix("replicacatalog"),
+                    RepCatalogJPAUtils.PERSISTENCE_UNIT_NAME)
+        };
+    }
 
+    private static class Database {
         private final DBInitConfig dbInitConfig;
         private final String persistenceUnitName;
 
@@ -58,31 +71,14 @@ public class MigrationSchemaGenerator {
     }
 
     public static void main(String[] args) throws Exception {
-
-        String schemaAction = args.length > 0 ? args[0] : "add";
-        try {
-            for (Database database : Database.values()) {
-
-                waitForDatabaseServer(database.dbInitConfig, 60);
-                try {
-                    logger.info("initializing database " + database.name());
-                    DBInitializer.initializeDB(database.dbInitConfig);
-                } catch (Exception e) {
-
-                    logger.error("Failed to initialize database " + database.name(), e);
-                } finally {
-                    String outputFile = "add".equals(schemaAction)
-                            ? database.name() + "-migration.sql"
-                            : database.name() + "-schema.sql";
-                    logger.info("creating database script: " + outputFile);
-                    MappingToolRunner.run(
-                            database.dbInitConfig, outputFile, database.persistenceUnitName, schemaAction);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Failed to create the databases", e);
-            throw e;
-        }
+        // Note: This utility requires dependencies that should be provided via Spring context
+        // or passed as parameters. For standalone execution, these need to be initialized.
+        logger.warn("MigrationSchemaGenerator requires AiravataServerProperties and service dependencies.");
+        logger.warn(
+                "This utility should be run within a Spring application context or dependencies must be provided manually.");
+        throw new UnsupportedOperationException(
+                "MigrationSchemaGenerator must be run within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 
     private static void waitForDatabaseServer(DBInitConfig dbInitConfig, int timeoutSeconds) {

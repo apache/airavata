@@ -26,18 +26,19 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessInputRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ProcessInputService {
-    @Autowired
-    private ProcessInputRepository processInputRepository;
+    private final ProcessInputRepository processInputRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ProcessInputService(ProcessInputRepository processInputRepository, Mapper mapper) {
+        this.processInputRepository = processInputRepository;
+        this.mapper = mapper;
+    }
 
     public String addProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
         for (InputDataObjectType input : inputs) {

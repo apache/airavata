@@ -56,14 +56,20 @@ public class ParserWorkflowManager extends WorkflowManager {
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AiravataServerProperties properties;
-
+    private final AiravataServerProperties properties;
+    private final org.springframework.context.ApplicationContext applicationContext;
+    private final org.apache.airavata.service.RegistryService registryService;
     private String parserStorageResourceId;
 
-    public ParserWorkflowManager() {
+    public ParserWorkflowManager(
+            AiravataServerProperties properties,
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService) {
         // Default values, will be updated in @PostConstruct
-        super("parser-workflow-manager", false);
+        super("parser-workflow-manager", false, registryService, properties);
+        this.properties = properties;
+        this.applicationContext = applicationContext;
+        this.registryService = registryService;
     }
 
     @jakarta.annotation.PostConstruct
@@ -95,10 +101,11 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     public static void main(String[] args) throws Exception {
-        ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.start();
-        // Keep main thread alive
-        Thread.currentThread().join();
+        // Note: ParserWorkflowManager is a Spring component and requires dependencies.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException(
+                "ParserWorkflowManager must be used within a Spring application context");
     }
 
     private void init() throws Exception {
@@ -237,7 +244,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplateInput> templateInputs,
             RegistryService registryService)
             throws Exception {
-        DataParsingTask parsingTask = new DataParsingTask();
+        DataParsingTask parsingTask = new DataParsingTask(registryService, applicationContext);
         parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-"
                 + UUID.randomUUID().toString()));
         parsingTask.setGatewayId(completionMessage.getGatewayId());
@@ -389,7 +396,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (ParserConnector connector : parentToChild.get(parentParserInfo.getId())) {
                 Parser childParserInfo =
                         registryService.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
-                DataParsingTask parsingTask = new DataParsingTask();
+                DataParsingTask parsingTask = new DataParsingTask(registryService, applicationContext);
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-"
                         + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());

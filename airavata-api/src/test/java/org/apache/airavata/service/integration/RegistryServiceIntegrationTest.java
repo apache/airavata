@@ -24,18 +24,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
-import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.RegistryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for RegistryService (Registry and catalog operations).
@@ -43,11 +42,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("RegistryService Integration Tests")
 public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final ComputeResourceService computeResourceService;
 
-    @Autowired
-    private ComputeResourceService computeResourceService;
+    public RegistryServiceIntegrationTest(
+            RegistryService registryService, ComputeResourceService computeResourceService) {
+        this.registryService = registryService;
+        this.computeResourceService = computeResourceService;
+    }
 
     @Nested
     @DisplayName("Gateway Operations")
@@ -55,7 +57,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should check if gateway exists")
-        void shouldCheckGatewayExists() throws RegistryException {
+        void shouldCheckGatewayExists() throws RegistryServiceException {
             // Act
             boolean exists = registryService.isGatewayExist(TEST_GATEWAY_ID);
 
@@ -65,7 +67,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all gateways")
-        void shouldGetAllGateways() throws RegistryException {
+        void shouldGetAllGateways() throws RegistryServiceException {
             // Act
             List<Gateway> gateways = registryService.getAllGateways();
 
@@ -80,7 +82,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should create and retrieve project")
-        void shouldCreateAndRetrieveProject() throws RegistryException, ProjectNotFoundException {
+        void shouldCreateAndRetrieveProject() throws RegistryServiceException, ProjectNotFoundException {
             // Arrange
             Project project = TestDataFactory.createTestProject("Test Project", TEST_GATEWAY_ID);
 
@@ -97,7 +99,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get user projects")
-        void shouldGetUserProjects() throws RegistryException {
+        void shouldGetUserProjects() throws RegistryServiceException {
             // Arrange
             Project project = TestDataFactory.createTestProject("User Project", TEST_GATEWAY_ID);
             project.setOwner("test-user");
@@ -117,11 +119,12 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should create and retrieve experiment")
-        void shouldCreateAndRetrieveExperiment() throws RegistryException {
+        void shouldCreateAndRetrieveExperiment() throws RegistryServiceException {
             // Arrange
             Project project = TestDataFactory.createTestProject("Experiment Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Test Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Test Experiment", projectId, TEST_GATEWAY_ID);
 
             // Act
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
@@ -136,7 +139,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get experiments in project")
-        void shouldGetExperimentsInProject() throws RegistryException {
+        void shouldGetExperimentsInProject() throws RegistryServiceException {
             // Arrange
             Project project = TestDataFactory.createTestProject("Project for Experiments", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -144,7 +147,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             registryService.createExperiment(TEST_GATEWAY_ID, experiment);
 
             // Act
-            List<ExperimentModel> experiments = registryService.getExperimentsInProject(TEST_GATEWAY_ID, projectId, 10, 0);
+            List<ExperimentModel> experiments =
+                    registryService.getExperimentsInProject(TEST_GATEWAY_ID, projectId, 10, 0);
 
             // Assert
             assertThat(experiments).isNotNull();
@@ -153,7 +157,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should delete experiment")
-        void shouldDeleteExperiment() throws RegistryException {
+        void shouldDeleteExperiment() throws RegistryServiceException {
             // Arrange
             Project project = TestDataFactory.createTestProject("Delete Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -166,7 +170,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             // Assert
             assertThat(deleted).isTrue();
             assertThatThrownBy(() -> registryService.getExperiment(experimentId))
-                    .isInstanceOf(RegistryException.class);
+                    .isInstanceOf(RegistryServiceException.class);
         }
     }
 
@@ -178,7 +182,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         @DisplayName("Should register SLURM compute resource")
         void shouldRegisterSlurmComputeResource() throws AppCatalogException {
             // Arrange
-            ComputeResourceDescription computeResource = TestDataFactory.createSlurmComputeResource("slurm-host.example.com");
+            ComputeResourceDescription computeResource =
+                    TestDataFactory.createSlurmComputeResource("slurm-host.example.com");
 
             // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);
@@ -229,7 +234,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should check if user exists")
-        void shouldCheckUserExists() throws RegistryException {
+        void shouldCheckUserExists() throws RegistryServiceException {
             // Act
             boolean exists = registryService.isUserExists(TEST_GATEWAY_ID, TEST_USERNAME);
 
@@ -239,7 +244,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all users in gateway")
-        void shouldGetAllUsersInGateway() throws RegistryException {
+        void shouldGetAllUsersInGateway() throws RegistryServiceException {
             // Act
             List<String> users = registryService.getAllUsersInGateway(TEST_GATEWAY_ID);
 
@@ -263,4 +268,3 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         }
     }
 }
-

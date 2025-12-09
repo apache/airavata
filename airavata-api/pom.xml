@@ -489,6 +489,20 @@ under the License.
               <goal>enhance</goal>
             </goals>
           </execution>
+          <execution>
+            <id>test-enhancer</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>enhance</goal>
+            </goals>
+            <configuration>
+              <includes>**/entities/**/*.class</includes>
+              <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
+              <addDefaultConstructor>true</addDefaultConstructor>
+              <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+              <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
+            </configuration>
+          </execution>
         </executions>
         <dependencies>
           <dependency>
@@ -520,7 +534,7 @@ under the License.
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
-          <argLine>-Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+          <argLine>-Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar</argLine>
         </configuration>
       </plugin>
 

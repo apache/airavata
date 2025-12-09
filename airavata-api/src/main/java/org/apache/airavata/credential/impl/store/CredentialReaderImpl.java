@@ -28,7 +28,6 @@ import org.apache.airavata.credential.impl.certificate.CertificateAuditInfo;
 import org.apache.airavata.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.services.CredentialEntityService;
 import org.apache.airavata.credential.utils.CredentialReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,10 +36,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CredentialReaderImpl implements CredentialReader, Serializable {
 
-    @Autowired
-    private CredentialEntityService credentialEntityService;
+    private final CredentialEntityService credentialEntityService;
 
-    public CredentialReaderImpl() {}
+    public CredentialReaderImpl(CredentialEntityService credentialEntityService) {
+        this.credentialEntityService = credentialEntityService;
+    }
 
     @Override
     public Credential getCredential(String gatewayId, String tokenId) throws CredentialStoreException {

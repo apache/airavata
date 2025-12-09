@@ -36,7 +36,6 @@ import org.apache.airavata.sharing.services.UserService;
 import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -44,33 +43,39 @@ import org.springframework.stereotype.Service;
 public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
 
-    @Autowired
-    private EntityService entityService;
+    private final EntityService entityService;
+    private final DomainService domainService;
+    private final EntityTypeService entityTypeService;
+    private final PermissionTypeService permissionTypeService;
 
-    @Autowired
-    private DomainService domainService;
-
-    @Autowired
-    private EntityTypeService entityTypeService;
-
-    @Autowired
-    private PermissionTypeService permissionTypeService;
-
-    @Autowired
     @Qualifier("sharingUserService")
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UserGroupService userGroupService;
+    private final UserGroupService userGroupService;
+    private final GroupMembershipService groupMembershipService;
+    private final SharingService sharingService;
+    private final GroupAdminService groupAdminService;
 
-    @Autowired
-    private GroupMembershipService groupMembershipService;
-
-    @Autowired
-    private SharingService sharingService;
-
-    @Autowired
-    private GroupAdminService groupAdminService;
+    public SharingRegistryService(
+            EntityService entityService,
+            DomainService domainService,
+            EntityTypeService entityTypeService,
+            PermissionTypeService permissionTypeService,
+            @Qualifier("sharingUserService") UserService userService,
+            UserGroupService userGroupService,
+            GroupMembershipService groupMembershipService,
+            SharingService sharingService,
+            GroupAdminService groupAdminService) {
+        this.entityService = entityService;
+        this.domainService = domainService;
+        this.entityTypeService = entityTypeService;
+        this.permissionTypeService = permissionTypeService;
+        this.userService = userService;
+        this.userGroupService = userGroupService;
+        this.groupMembershipService = groupMembershipService;
+        this.sharingService = sharingService;
+        this.groupAdminService = groupAdminService;
+    }
 
     public static String OWNER_PERMISSION_NAME = "OWNER";
 

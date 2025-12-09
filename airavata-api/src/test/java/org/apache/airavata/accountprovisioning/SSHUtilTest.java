@@ -25,14 +25,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, SSHUtilTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class SSHUtilTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHUtilTest.class);
 
-    public static void main(String[] args) throws JSchException {
+    public SSHUtilTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
+
+    @Test
+    public void testValidate() throws JSchException {
 
         // Test the validate method
         String username = System.getProperty("user.name");
@@ -43,6 +60,11 @@ public class SSHUtilTest {
 
         Path privateKeyPath = Paths.get(privateKeyFilepath);
         Path publicKeyPath = Paths.get(publicKeyFilepath);
+
+        if (!Files.exists(privateKeyPath) || !Files.exists(publicKeyPath)) {
+            logger.warn("SSH key files not found. Skipping test.");
+            return;
+        }
 
         SSHCredential sshCredential = new SSHCredential();
         sshCredential.setPassphrase(passphrase);
@@ -55,4 +77,21 @@ public class SSHUtilTest {
         boolean result = SSHUtil.validate(hostname, 22, username, sshCredential);
         logger.info("SSH validation result: {}", result);
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.accountprovisioning",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

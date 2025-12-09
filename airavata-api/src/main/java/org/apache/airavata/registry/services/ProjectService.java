@@ -28,18 +28,19 @@ import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ProjectService {
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public ProjectService(ProjectRepository projectRepository, Mapper mapper) {
+        this.projectRepository = projectRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isProjectExist(String projectId) throws RegistryException {
         return projectRepository.existsById(projectId);

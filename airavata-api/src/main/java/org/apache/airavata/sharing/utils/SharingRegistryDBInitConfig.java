@@ -21,14 +21,16 @@ package org.apache.airavata.sharing.utils;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SharingRegistryDBInitConfig implements DBInitConfig {
 
-    @Autowired
-    private AiravataServerProperties properties;
+    private final AiravataServerProperties properties;
+
+    public SharingRegistryDBInitConfig(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     private String dbInitScriptPrefix = "database_scripts/sharing-registry";
 

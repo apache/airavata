@@ -32,7 +32,6 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,14 +40,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+    private final JobService jobService;
+    private final Mapper mapper;
 
-    @Autowired
-    private JobService jobService;
-
-    @Autowired
-    private Mapper mapper;
+    public TaskService(TaskRepository taskRepository, JobService jobService, Mapper mapper) {
+        this.taskRepository = taskRepository;
+        this.jobService = jobService;
+        this.mapper = mapper;
+    }
 
     public void populateParentIds(TaskEntity taskEntity) {
         String taskId = taskEntity.getTaskId();

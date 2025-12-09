@@ -29,7 +29,6 @@ import org.apache.airavata.service.RegistryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for OrchestratorService (Orchestration workflows).
@@ -37,14 +36,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("OrchestratorService Integration Tests")
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private OrchestratorService orchestratorService;
+    private final OrchestratorService orchestratorService;
+    private final AiravataService airavataService;
+    private final RegistryService registryService;
 
-    @Autowired
-    private AiravataService airavataService;
-
-    @Autowired
-    private RegistryService registryService;
+    public OrchestratorServiceIntegrationTest(
+            OrchestratorService orchestratorService, AiravataService airavataService, RegistryService registryService) {
+        this.orchestratorService = orchestratorService;
+        this.airavataService = airavataService;
+        this.registryService = registryService;
+    }
 
     @Nested
     @DisplayName("Experiment Orchestration")
@@ -56,7 +57,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
             // Arrange
             Project project = TestDataFactory.createTestProject("Orchestration Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Orchestration Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Orchestration Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
 
             // Note: Actual orchestration requires proper compute resources and applications
@@ -68,4 +70,3 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
         }
     }
 }
-

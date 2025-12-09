@@ -32,27 +32,30 @@ import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePrefR
 import org.apache.airavata.registry.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.SSHAccountProvisionerConfigurationRepository;
 import org.apache.airavata.registry.repositories.appcatalog.StoragePrefRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GwyResourceProfileService {
-    @Autowired
-    private GwyResourceProfileRepository gwyResourceProfileRepository;
+    private final GwyResourceProfileRepository gwyResourceProfileRepository;
+    private final ComputeResourcePrefRepository computeResourcePrefRepository;
+    private final StoragePrefRepository storagePrefRepository;
+    private final Mapper mapper;
+    private final SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository;
 
-    @Autowired
-    private ComputeResourcePrefRepository computeResourcePrefRepository;
-
-    @Autowired
-    private StoragePrefRepository storagePrefRepository;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    private SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository;
+    public GwyResourceProfileService(
+            GwyResourceProfileRepository gwyResourceProfileRepository,
+            ComputeResourcePrefRepository computeResourcePrefRepository,
+            StoragePrefRepository storagePrefRepository,
+            Mapper mapper,
+            SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository) {
+        this.gwyResourceProfileRepository = gwyResourceProfileRepository;
+        this.computeResourcePrefRepository = computeResourcePrefRepository;
+        this.storagePrefRepository = storagePrefRepository;
+        this.mapper = mapper;
+        this.sshAccountProvisionerConfigurationRepository = sshAccountProvisionerConfigurationRepository;
+    }
 
     public String addGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         return updateGatewayResourceProfile(gatewayResourceProfile);

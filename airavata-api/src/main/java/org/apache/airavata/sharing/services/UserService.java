@@ -35,7 +35,6 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.SharingType;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,19 +42,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("sharingUserService")
 @Transactional
 public class UserService {
-    @Autowired
-    @Qualifier("sharingUserRepository")
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PermissionTypeService permissionTypeService;
+    private final Mapper mapper;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private PermissionTypeService permissionTypeService;
-
-    @Autowired
-    private Mapper mapper;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManager")
-    private EntityManager entityManager;
+    public UserService(
+            @Qualifier("sharingUserRepository") UserRepository userRepository,
+            PermissionTypeService permissionTypeService,
+            Mapper mapper,
+            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+        this.userRepository = userRepository;
+        this.permissionTypeService = permissionTypeService;
+        this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
 
     public User get(UserPK pk) throws SharingRegistryException {
         UserEntity entity = userRepository.findById(pk).orElse(null);

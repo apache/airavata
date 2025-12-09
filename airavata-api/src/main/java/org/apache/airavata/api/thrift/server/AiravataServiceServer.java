@@ -33,7 +33,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -48,13 +47,12 @@ public class AiravataServiceServer implements IServer {
 
     private TServer server, TLSServer;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private AiravataServerProperties properties;
-
-    public AiravataServiceServer() {
+    public AiravataServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
         setStatus(ServerStatus.STOPPED);
     }
 

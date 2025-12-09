@@ -31,6 +31,15 @@ import org.apache.helix.task.TaskResult;
 @TaskDef(name = "Local Job Submission")
 public class LocalJobSubmissionTask extends JobSubmissionTask {
 
+    public LocalJobSubmissionTask(
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.RegistryService registryService,
+            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
+    }
+
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
@@ -59,7 +68,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                         getTaskContext().getComputeResourceCredentialToken(),
                         getTaskContext().getComputeResourceLoginUserName());
 
-                GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+                GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
                 JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, groovyMapData.getWorkingDirectory());
 
                 JobStatus jobStatus = new JobStatus();

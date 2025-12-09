@@ -28,7 +28,6 @@ import org.apache.airavata.orchestrator.utils.OrchestratorServerThreadPoolExecut
 import org.apache.airavata.service.OrchestratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,7 +43,6 @@ public class OrchestratorServiceHandler implements org.apache.airavata.orchestra
         return org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
-    @Autowired
     public OrchestratorServiceHandler(OrchestratorService orchestratorService) {
         this.orchestratorService = orchestratorService;
         log.info("OrchestratorServiceHandler initialized with Spring-injected OrchestratorService");

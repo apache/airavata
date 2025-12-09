@@ -20,7 +20,6 @@
 package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -34,7 +33,6 @@ import org.apache.airavata.service.RegistryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -43,21 +41,26 @@ import org.springframework.test.context.TestPropertySource;
  * Some tests may be skipped if Keycloak is not available.
  */
 @DisplayName("IamAdminService Integration Tests")
-@TestPropertySource(properties = {
-    "security.iam.server-url=http://localhost:18080",
-    "security.iam.super-admin-username=admin",
-    "security.iam.super-admin-password=admin"
-})
+@TestPropertySource(
+        properties = {
+            "security.iam.server-url=http://localhost:18080",
+            "security.iam.super-admin-username=admin",
+            "security.iam.super-admin-password=admin"
+        })
 public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @Autowired
-    private IamAdminService iamAdminService;
+    private final IamAdminService iamAdminService;
+    private final CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
 
-    @Autowired
-    private CredentialStoreService credentialStoreService;
-
-    @Autowired
-    private RegistryService registryService;
+    public IamAdminServiceIntegrationTest(
+            IamAdminService iamAdminService,
+            CredentialStoreService credentialStoreService,
+            RegistryService registryService) {
+        this.iamAdminService = iamAdminService;
+        this.credentialStoreService = credentialStoreService;
+        this.registryService = registryService;
+    }
 
     @Nested
     @DisplayName("User Existence and Availability Checks")
@@ -116,8 +119,8 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
             String email = username + "@example.com";
 
             // Act
-            boolean registered = iamAdminService.registerUser(
-                    testAuthzToken, username, email, "Test", "User", "password123");
+            boolean registered =
+                    iamAdminService.registerUser(testAuthzToken, username, email, "Test", "User", "password123");
 
             // Assert - result depends on Keycloak state
             assertThat(registered).isNotNull();
@@ -216,8 +219,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(added).isNotNull();
             } catch (Exception e) {
                 // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(
-                        IamAdminServicesException.class, RegistryServiceException.class);
+                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
             }
         }
 
@@ -235,8 +237,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(removed).isNotNull();
             } catch (Exception e) {
                 // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(
-                        IamAdminServicesException.class, RegistryServiceException.class);
+                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
             }
         }
 
@@ -253,8 +254,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(users).isNotNull();
             } catch (Exception e) {
                 // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(
-                        IamAdminServicesException.class, RegistryServiceException.class);
+                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
             }
         }
     }
@@ -285,10 +285,11 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(result).isNotNull();
             } catch (Exception e) {
                 // Expected if Keycloak is not available or not properly configured
-                assertThat(e).isInstanceOfAny(
-                        IamAdminServicesException.class, org.apache.airavata.credential.exceptions.CredentialStoreException.class);
+                assertThat(e)
+                        .isInstanceOfAny(
+                                IamAdminServicesException.class,
+                                org.apache.airavata.credential.exceptions.CredentialStoreException.class);
             }
         }
     }
 }
-

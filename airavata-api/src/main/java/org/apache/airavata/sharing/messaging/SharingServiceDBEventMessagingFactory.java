@@ -32,13 +32,16 @@ import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/28/17.
  */
+@Component
 public class SharingServiceDBEventMessagingFactory {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventMessagingFactory.class);
@@ -46,6 +49,14 @@ public class SharingServiceDBEventMessagingFactory {
     private static Publisher dbEventPublisher;
 
     private static Subscriber sharingServiceDBEventSubscriber;
+    private static SharingServiceDBEventMessagingFactory instance;
+
+    private final SharingRegistryService sharingRegistryService;
+
+    public SharingServiceDBEventMessagingFactory(SharingRegistryService sharingRegistryService) {
+        this.sharingRegistryService = sharingRegistryService;
+        instance = this;
+    }
 
     /**
      * Get publisher for DB Event queue
@@ -74,7 +85,12 @@ public class SharingServiceDBEventMessagingFactory {
                     String serviceName = DBEventService.SHARING.toString();
                     log.info("Creating DB Event subscriber for service: " + serviceName);
                     try {
-                        handler = new SharingServiceDBEventHandler();
+                        SharingRegistryService service = instance != null ? instance.sharingRegistryService : null;
+                        if (service == null) {
+                            throw new IllegalStateException(
+                                    "SharingServiceDBEventMessagingFactory not initialized via Spring");
+                        }
+                        handler = new SharingServiceDBEventHandler(service);
                     } catch (Exception e) {
                         throw new AiravataException(
                                 "Failed to create sharing service DB event handler for service: " + serviceName, e);

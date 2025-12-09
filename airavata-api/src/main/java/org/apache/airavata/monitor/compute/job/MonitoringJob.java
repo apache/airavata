@@ -49,6 +49,10 @@ import org.slf4j.LoggerFactory;
 public class MonitoringJob extends ComputeResourceMonitor implements Job {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringJob.class);
 
+    public MonitoringJob(RegistryService registryService) {
+        super(registryService);
+    }
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {

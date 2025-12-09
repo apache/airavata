@@ -25,18 +25,20 @@ import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingCom
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayUsageReportingCommandRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class GatewayUsageReportingCommandService {
-    @Autowired
-    private GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository;
+    private final GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public GatewayUsageReportingCommandService(
+            GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository, Mapper mapper) {
+        this.gatewayUsageReportingCommandRepository = gatewayUsageReportingCommandRepository;
+        this.mapper = mapper;
+    }
 
     public boolean isGatewayUsageReportingCommandExists(String gatewayId, String computeResourceId)
             throws RegistryException {

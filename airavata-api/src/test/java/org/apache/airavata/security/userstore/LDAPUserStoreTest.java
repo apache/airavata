@@ -26,6 +26,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.security.UserStore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -33,9 +37,20 @@ import org.w3c.dom.NodeList;
  * User store test 2
  */
 @Disabled("Need LDAP server to run these tests")
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, LDAPUserStoreTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class LDAPUserStoreTest {
 
     private LDAPUserStore ldapUserStore;
+
+    public LDAPUserStoreTest() {
+        // Spring Boot test - no dependencies to inject for this utility test
+    }
 
     @Test
     public void setUp() {
@@ -61,4 +76,21 @@ public class LDAPUserStoreTest {
         userStore.configure(configurations.item(0));
         assertTrue(userStore.authenticate("amilaj", "secret"));
     }
+
+    @org.springframework.context.annotation.Configuration
+    @ComponentScan(
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.config.BackgroundServicesLauncher.class,
+                            org.apache.airavata.config.ThriftServerLauncher.class
+                        })
+            })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    static class TestConfiguration {}
 }

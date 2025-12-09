@@ -26,18 +26,19 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class DataProductService {
-    @Autowired
-    private DataProductRepository dataProductRepository;
+    private final DataProductRepository dataProductRepository;
+    private final Mapper mapper;
 
-    @Autowired
-    private Mapper mapper;
+    public DataProductService(DataProductRepository dataProductRepository, Mapper mapper) {
+        this.dataProductRepository = dataProductRepository;
+        this.mapper = mapper;
+    }
 
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductEntity entity = dataProductRepository.findById(productUri).orElse(null);

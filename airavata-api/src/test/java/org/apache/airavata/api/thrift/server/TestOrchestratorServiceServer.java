@@ -28,6 +28,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.OrchestratorService;
@@ -36,7 +37,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,22 +44,26 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class TestOrchestratorServiceServer {
 
-    @Autowired
-    private OrchestratorService orchestratorService;
+    private final OrchestratorService orchestratorService;
+    private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private RegistryService registryService;
+    public TestOrchestratorServiceServer(
+            OrchestratorService orchestratorService,
+            RegistryService registryService,
+            AiravataServerProperties properties) {
+        this.orchestratorService = orchestratorService;
+        this.registryService = registryService;
+        this.properties = properties;
+    }
 
     private static int NUM_CONCURRENT_REQUESTS = 1;
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static final Logger logger = LoggerFactory.getLogger(TestOrchestratorServiceServer.class);
 
     public static void main(String[] args) {
-        try {
-            new OrchestratorServiceServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        throw new UnsupportedOperationException(
+                "OrchestratorServiceServer must be used within a Spring application context. " +
+                "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 
     @Test
@@ -81,8 +85,9 @@ public class TestOrchestratorServiceServer {
                     output.setValue("");
                     exOut.add(output);
 
+                    String defaultGateway = properties.services.default_.gateway;
                     ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(
-                            DEFAULT_GATEWAY,
+                            defaultGateway,
                             "default",
                             "admin",
                             "echoExperiment",
@@ -101,7 +106,7 @@ public class TestOrchestratorServiceServer {
 
                     String expId = null;
                     try {
-                        expId = registryService.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        expId = registryService.createExperiment(defaultGateway, simpleExperiment);
                     } catch (RegistryServiceException e) {
                         logger.error("Error while creating experiment", e);
                         Assertions.fail("Error while creating experiment");
@@ -109,7 +114,7 @@ public class TestOrchestratorServiceServer {
                     Assertions.assertNotNull(expId, "Experiment ID should not be null");
 
                     try {
-                        orchestratorService.launchExperiment(expId, DEFAULT_GATEWAY, null);
+                        orchestratorService.launchExperiment(expId, defaultGateway, null);
                     } catch (OrchestratorException e) {
                         logger.error("Error while launching experiment", e);
                         Assertions.fail("Error while launching experiment");

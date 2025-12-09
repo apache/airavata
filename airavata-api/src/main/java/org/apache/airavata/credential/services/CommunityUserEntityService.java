@@ -28,7 +28,6 @@ import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.credential.repositories.CommunityUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,8 +40,11 @@ public class CommunityUserEntityService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommunityUserEntityService.class);
 
-    @Autowired
-    private CommunityUserRepository communityUserRepository;
+    private final CommunityUserRepository communityUserRepository;
+
+    public CommunityUserEntityService(CommunityUserRepository communityUserRepository) {
+        this.communityUserRepository = communityUserRepository;
+    }
 
     /**
      * Add or update community user.

@@ -20,7 +20,6 @@
 package org.apache.airavata.config;
 
 import org.apache.airavata.service.RegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,8 +31,7 @@ public class RegistryServiceProvider {
 
     private static RegistryService instance;
 
-    @Autowired
-    public void setRegistryService(RegistryService registryService) {
+    public RegistryServiceProvider(RegistryService registryService) {
         RegistryServiceProvider.instance = registryService;
     }
 

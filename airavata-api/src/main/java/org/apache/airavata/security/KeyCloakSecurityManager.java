@@ -52,7 +52,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -102,16 +101,18 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "/airavata/fetchIntermediateOutputs|/airavata/getIntermediateOutputProcessStatus";
     private final HashMap<String, String> rolePermissionConfig = new HashMap<>();
 
-    @Autowired
-    private RegistryService registryService;
+    private final RegistryService registryService;
+    private final SharingRegistryService sharingRegistryService;
+    private final AiravataServerProperties properties;
 
-    @Autowired
-    private SharingRegistryService sharingRegistryService;
-
-    @Autowired
-    private AiravataServerProperties properties;
-
-    public KeyCloakSecurityManager() throws AiravataSecurityException {
+    public KeyCloakSecurityManager(
+            RegistryService registryService,
+            SharingRegistryService sharingRegistryService,
+            AiravataServerProperties properties)
+            throws AiravataSecurityException {
+        this.registryService = registryService;
+        this.sharingRegistryService = sharingRegistryService;
+        this.properties = properties;
         rolePermissionConfig.put("admin", "/airavata/.*");
         rolePermissionConfig.put("gateway-provider", "/airavata/.*");
         rolePermissionConfig.put(
