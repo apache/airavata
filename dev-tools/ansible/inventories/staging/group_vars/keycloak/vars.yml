@@ -1,0 +1,12 @@
+---
+# Keycloak server configuration for staging environment
+
+# Keycloak database connection (points to database server)
+keycloak_db_host: "xxx.xxx.xxx.xx"
+keycloak_db_port: "3306"
+keycloak_db_schema_name: "keycloak"
+
+# Keycloak virtual host hostname (for Let's Encrypt certificate)
+keycloak_vhost_servername: "auth.staging.cybershuttle.org"
+
+
