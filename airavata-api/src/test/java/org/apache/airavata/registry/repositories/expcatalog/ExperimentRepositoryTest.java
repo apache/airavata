@@ -61,10 +61,8 @@ public class ExperimentRepositoryTest extends TestBase {
         super(Database.EXP_CATALOG);
     }
 
-    @Override
+    @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
-
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

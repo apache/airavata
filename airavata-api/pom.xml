@@ -508,7 +508,10 @@ under the License.
           <failIfNoTests>false</failIfNoTests>
           <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
           <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
-          <!--  -->
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+          </includes>
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
             <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
@@ -517,6 +520,7 @@ under the License.
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
+          <argLine>-Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
         </configuration>
       </plugin>
 

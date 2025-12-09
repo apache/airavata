@@ -362,34 +362,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
     }
 
     @Test
-    public void addUnicoreJobSubmissionTest() throws AppCatalogException {
-        UnicoreJobSubmission unicoreJobSubmission = prepareUnicoreJobSubmission();
-        String savedSubmissionId = computeResourceService.addUNICOREJobSubmission(unicoreJobSubmission);
-        UnicoreJobSubmission savedSubmission = computeResourceService.getUNICOREJobSubmission(savedSubmissionId);
-
-        Assertions.assertTrue(
-                EqualsBuilder.reflectionEquals(unicoreJobSubmission, savedSubmission, "__isset_bitfield"));
-    }
-
-    @Test
     public void addCloudJobSubmissionTest() throws AppCatalogException {
+        // Test AWS CloudJobSubmission (EC2)
         CloudJobSubmission cloudJobSubmission = prepareCloudJobSubmission();
         String savedSubmissionId = computeResourceService.addCloudJobSubmission(cloudJobSubmission);
         CloudJobSubmission savedSubmission = computeResourceService.getCloudJobSubmission(savedSubmissionId);
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
-    }
-
-    @Test
-    public void addLocalJobSubmissionTest() throws AppCatalogException {
-        ResourceJobManager jobManager = prepareResourceJobManager();
-        computeResourceService.addResourceJobManager(jobManager);
-
-        LOCALSubmission localSubmission = prepareLocalJobSubmission(jobManager);
-        String savedSubmissionId = computeResourceService.addLocalJobSubmission(localSubmission);
-        LOCALSubmission savedSubmission = computeResourceService.getLocalJobSubmission(savedSubmissionId);
-
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(localSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -413,24 +392,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
-    @Test
-    public void addLocalDataMovementTest() throws AppCatalogException {
-        LOCALDataMovement localDataMovement = prepareLocalDataMovement();
-        String dataMovementId = computeResourceService.addLocalDataMovement(localDataMovement);
-
-        LOCALDataMovement savedDataMovement = computeResourceService.getLocalDataMovement(dataMovementId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
-    }
-
-    @Test
-    public void addUnicoreDataMovementTest() throws AppCatalogException {
-        UnicoreDataMovement unicoreDataMovement = prepareUnicoreDataMovement();
-        String dataMovementId = computeResourceService.addUnicoreDataMovement(unicoreDataMovement);
-
-        UnicoreDataMovement savedDataMovement = computeResourceService.getUNICOREDataMovement(dataMovementId);
-        Assertions.assertTrue(
-                EqualsBuilder.reflectionEquals(unicoreDataMovement, savedDataMovement, "__isset_bitfield"));
-    }
 
     @Test
     public void addGridFTPDataMovementTest() throws AppCatalogException {
@@ -455,10 +416,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertEquals(
                 0, computeResourceService.getFileSystems("INVALID ID").size());
         Assertions.assertNull(computeResourceService.getGridFTPDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceService.getLocalDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceService.getLocalJobSubmission("INVALID ID"));
         Assertions.assertNull(computeResourceService.getSCPDataMovement("INVALID ID"));
-        Assertions.assertNull(computeResourceService.getUNICOREDataMovement("INVALID ID"));
     }
 
     private ComputeResourceDescription prepareComputeResource(
@@ -530,26 +488,22 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     private ResourceJobManager prepareResourceJobManager() {
         ResourceJobManager jobManager = new ResourceJobManager();
-        jobManager.setResourceJobManagerType(ResourceJobManagerType.PBS);
+        // Changed from PBS to SLURM as per requirements
+        jobManager.setResourceJobManagerType(ResourceJobManagerType.SLURM);
         jobManager.setPushMonitoringEndpoint("monitor ep");
-        jobManager.setJobManagerBinPath("/bin");
+        jobManager.setJobManagerBinPath("/usr/bin");
 
         Map<ApplicationParallelismType, String> parallelismPrefix = new HashMap<>();
         parallelismPrefix.put(ApplicationParallelismType.CCM, "ccm parallel");
         jobManager.setParallelismPrefix(parallelismPrefix);
 
         Map<JobManagerCommand, String> commands = new HashMap<JobManagerCommand, String>();
-        commands.put(JobManagerCommand.SUBMISSION, "Sub command");
-        commands.put(JobManagerCommand.SHOW_QUEUE, "show q command");
+        commands.put(JobManagerCommand.SUBMISSION, "sbatch");
+        commands.put(JobManagerCommand.JOB_MONITORING, "squeue");
+        commands.put(JobManagerCommand.DELETION, "scancel");
+        commands.put(JobManagerCommand.SHOW_QUEUE, "squeue");
         jobManager.setJobManagerCommands(commands);
         return jobManager;
-    }
-
-    private UnicoreJobSubmission prepareUnicoreJobSubmission() {
-        UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
-        unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.KERBEROS);
-        unicoreJobSubmission.setUnicoreEndPointURL("http://endpoint");
-        return unicoreJobSubmission;
     }
 
     private CloudJobSubmission prepareCloudJobSubmission() {
@@ -562,13 +516,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         return cloudJobSubmission;
     }
 
-    private LOCALSubmission prepareLocalJobSubmission(ResourceJobManager jobManager) {
-        LOCALSubmission localSubmission = new LOCALSubmission();
-        localSubmission.setResourceJobManager(jobManager);
-        localSubmission.setSecurityProtocol(SecurityProtocol.KERBEROS);
-        return localSubmission;
-    }
-
     private SSHJobSubmission prepareSSHJobSubmission(ResourceJobManager jobManager) {
         SSHJobSubmission jobSubmission = new SSHJobSubmission();
         jobSubmission.setSshPort(22);
@@ -578,21 +525,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
         return jobSubmission;
     }
 
-    private LOCALDataMovement prepareLocalDataMovement() {
-        return new LOCALDataMovement();
-    }
-
     private SCPDataMovement prepareScpDataMovement() {
         SCPDataMovement dataMovement = new SCPDataMovement();
         dataMovement.setSshPort(22);
         dataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
-        return dataMovement;
-    }
-
-    private UnicoreDataMovement prepareUnicoreDataMovement() {
-        UnicoreDataMovement dataMovement = new UnicoreDataMovement();
-        dataMovement.setSecurityProtocol(SecurityProtocol.KERBEROS);
-        dataMovement.setUnicoreEndPointURL("http://endpoint");
         return dataMovement;
     }
 

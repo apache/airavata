@@ -19,22 +19,20 @@
 */
 package org.apache.airavata.registry.repositories.common;
 
-import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.common.utils.DerbyUtil;
-import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.registry.utils.AppCatalogDBInitConfig;
-import org.apache.airavata.registry.utils.ExpCatalogDBInitConfig;
-import org.apache.airavata.registry.utils.ReplicaCatalogDBInitConfig;
-import org.apache.airavata.registry.utils.WorkflowCatalogDBInitConfig;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.config.JpaConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Base class for repository tests using Spring Boot testing framework.
+ * Migrated from Derby-based setup to Spring Boot with H2 in-memory databases.
+ * All tests use @Transactional for automatic rollback.
+ */
+@SpringBootTest(classes = {JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
+@Transactional
 public class TestBase {
-
-    private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
 
     public enum Database {
         APP_CATALOG,
@@ -52,73 +50,7 @@ public class TestBase {
         this.databases = databases;
     }
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        try {
-            DerbyUtil.startDerbyInServerMode("127.0.0.1", 20000, "airavata", "airavata");
-
-            for (Database database : databases) {
-                logger.info("Creating database " + database.name());
-                DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
-                DBInitializer.initializeDB(getDBInitConfig(database));
-            }
-        } catch (Exception e) {
-            logger.error("Failed to create the databases", e);
-            throw e;
-        }
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        for (Database database : databases) {
-            logger.info("Tearing down database {}", database.name());
-            DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
-        }
-        DerbyUtil.stopDerbyServer();
-    }
-
-    private JDBCConfig getDatabaseJDBCConfig(Database database) {
-        DBInitConfig dbInitConfig = getDBInitConfig(database);
-        return new JDBCConfig() {
-            @Override
-            public String getURL() {
-                return dbInitConfig.getUrl();
-            }
-
-            @Override
-            public String getDriver() {
-                return dbInitConfig.getDriver();
-            }
-
-            @Override
-            public String getUser() {
-                return dbInitConfig.getUser();
-            }
-
-            @Override
-            public String getPassword() {
-                return dbInitConfig.getPassword();
-            }
-
-            @Override
-            public String getValidationQuery() {
-                return dbInitConfig.getValidationQuery();
-            }
-        };
-    }
-
-    private DBInitConfig getDBInitConfig(Database database) {
-        switch (database) {
-            case APP_CATALOG:
-                return new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog");
-            case EXP_CATALOG:
-                return new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
-            case REPLICA_CATALOG:
-                return new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replicacatalog");
-            case WORKFLOW_CATALOG:
-                return new WorkflowCatalogDBInitConfig().setDbInitScriptPrefix("airavataworkflowcatalog");
-            default:
-                return null;
-        }
-    }
+    // Note: Database setup is now handled by Spring Boot configuration
+    // H2 in-memory databases are configured via airavata.properties
+    // No manual setup/teardown needed - Spring Boot handles it automatically
 }

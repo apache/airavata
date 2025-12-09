@@ -68,10 +68,9 @@ public class WorkflowRepositoryTest extends TestBase {
         super(Database.WORKFLOW_CATALOG);
     }
 
-    @BeforeEach
-    @Override
+    @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
+        // Setup handled by Spring Boot
     }
 
     @Test

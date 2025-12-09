@@ -64,9 +64,8 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         super(Database.APP_CATALOG);
     }
 
-    @Override
+    @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
 
         ComputeResourceDescription description = new ComputeResourceDescription();
 
