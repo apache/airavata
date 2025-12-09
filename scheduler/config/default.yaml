@@ -1,0 +1,121 @@
+# Airavata Scheduler Default Configuration
+# This file contains all default configuration values
+# Environment variables override these defaults
+# Command line flags override environment variables
+
+database:
+  dsn: "postgres://user:password@localhost:5432/airavata?sslmode=disable"
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: "15s"
+  write_timeout: "15s"
+  idl_timeout: "60s"
+
+grpc:
+  host: "0.0.0.0"
+  port: 50051
+
+worker:
+  binary_path: "./build/worker"
+  binary_url: "http://localhost:8080/api/worker-binary"
+  default_working_dir: "/tmp/worker"
+  heartbeat_interval: "10s"
+  dial_timeout: "30s"
+  request_timeout: "60s"
+
+spicedb:
+  endpoint: "localhost:50052"
+  preshared_key: "somerandomkeyhere"
+  dial_timeout: "30s"
+
+openbao:
+  address: "http://localhost:8200"
+  token: "dev-token"
+  mount_path: "secret"
+  dial_timeout: "30s"
+
+services:
+  postgres:
+    host: "localhost"
+    port: 5432
+    database: "airavata"
+    user: "user"
+    password: "password"
+    ssl_mode: "disable"
+  minio:
+    host: "localhost"
+    port: 9000
+    access_key: "minioadmin"
+    secret_key: "minioadmin"
+    use_ssl: false
+  sftp:
+    host: "localhost"
+    port: 2222
+    username: "testuser"
+  nfs:
+    host: "localhost"
+    port: 2049
+    mount_path: "/mnt/nfs"
+
+jwt:
+  secret_key: ""
+  algorithm: "HS256"
+  issuer: "airavata-scheduler"
+  audience: "airavata-users"
+  expiration: "24h"
+
+compute:
+  slurm:
+    default_partition: "debug"
+    default_account: ""
+    default_qos: ""
+    job_timeout: "3600s"
+    ssh_timeout: "30s"
+  baremetal:
+    ssh_timeout: "30s"
+    default_working_dir: "/tmp/worker"
+  kubernetes:
+    default_namespace: "default"
+    default_service_account: "default"
+    pod_timeout: "300s"
+    job_timeout: "3600s"
+  docker:
+    default_image: "alpine:latest"
+    container_timeout: "300s"
+    network_mode: "bridge"
+
+storage:
+  s3:
+    region: "us-east-1"
+    timeout: "30s"
+    max_retries: 3
+  sftp:
+    timeout: "30s"
+    max_retries: 3
+  nfs:
+    timeout: "30s"
+    max_retries: 3
+
+cache:
+  default_ttl: "1h"
+  max_size: "100MB"
+  cleanup_interval: "10m"
+
+metrics:
+  enabled: true
+  port: 9090
+  path: "/metrics"
+
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+
+# Test configuration defaults
+test:
+  timeout: "30s"
+  retries: 3
+  cleanup_timeout: "10s"
+  resource_timeout: "60s"

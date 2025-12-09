@@ -1,0 +1,238 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.resource;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+import "worker.proto";
+
+// Compute resource type enumeration
+enum ComputeResourceType {
+  COMPUTE_RESOURCE_TYPE_SLURM = 0;
+  COMPUTE_RESOURCE_TYPE_BAREMETAL = 1;
+  COMPUTE_RESOURCE_TYPE_KUBERNETES = 2;
+  COMPUTE_RESOURCE_TYPE_AWS_EC2 = 3;
+  COMPUTE_RESOURCE_TYPE_AZURE_VM = 4;
+  COMPUTE_RESOURCE_TYPE_GCP_COMPUTE = 5;
+}
+
+// Storage resource type enumeration
+enum StorageResourceType {
+  STORAGE_RESOURCE_TYPE_SFTP = 0;
+  STORAGE_RESOURCE_TYPE_S3 = 1;
+  STORAGE_RESOURCE_TYPE_NFS = 2;
+  // Future extension points (commented for reference):
+  // STORAGE_RESOURCE_TYPE_GOOGLE_DRIVE
+  // STORAGE_RESOURCE_TYPE_ONEDRIVE
+  // STORAGE_RESOURCE_TYPE_DROPBOX
+  // STORAGE_RESOURCE_TYPE_AZURE_BLOB
+  // STORAGE_RESOURCE_TYPE_GCP_STORAGE
+}
+
+// Resource status enumeration
+enum ResourceStatus {
+  RESOURCE_STATUS_ACTIVE = 0;
+  RESOURCE_STATUS_INACTIVE = 1;
+  RESOURCE_STATUS_MAINTENANCE = 2;
+  RESOURCE_STATUS_ERROR = 3;
+}
+
+
+// Compute resource representation
+message ComputeResource {
+  string id = 1;
+  string name = 2;
+  ComputeResourceType type = 3;
+  string endpoint = 4;
+  apache.airavata.scheduler.common.Credentials credentials = 5;
+  ResourceStatus status = 6;
+  
+  // SLURM-specific fields
+  string partition = 7;
+  string account = 8;
+  string qos = 9;
+  
+  // Bare metal fields
+  string ssh_key_path = 10;
+  string username = 11;
+  int32 port = 12;
+  
+  // Scheduler fields
+  double cost_per_hour = 13;
+  double data_latency = 14;
+  int32 current_load = 15;
+  int32 max_workers = 16;
+  double availability = 17;
+  
+  // Metadata
+  map<string, string> metadata = 18;
+  google.protobuf.Timestamp created_at = 19;
+  google.protobuf.Timestamp updated_at = 20;
+  repeated apache.airavata.scheduler.common.Error errors = 21;
+}
+
+// Storage resource representation
+message StorageResource {
+  string id = 1;
+  string name = 2;
+  StorageResourceType type = 3;
+  string endpoint = 4;
+  apache.airavata.scheduler.common.Credentials credentials = 5;
+  ResourceStatus status = 6;
+  
+  // Storage-specific fields
+  int64 total_capacity = 7;
+  int64 used_capacity = 8;
+  int64 available_capacity = 9;
+  string region = 10;
+  string zone = 11;
+  
+  // Metadata
+  map<string, string> metadata = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  repeated apache.airavata.scheduler.common.Error errors = 15;
+}
+
+// Worker representation
+message Worker {
+  string id = 1;
+  string compute_id = 2;
+  apache.airavata.scheduler.worker.WorkerStatus status = 3;
+  string current_task = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  google.protobuf.Timestamp last_activity_at = 7;
+  
+  // Worker capabilities
+  repeated string capabilities = 8;
+  map<string, string> metadata = 9;
+  repeated apache.airavata.scheduler.common.Error errors = 10;
+}
+
+// Task execution representation
+message TaskExecution {
+  string id = 1;
+  string task_id = 2;
+  apache.airavata.scheduler.common.Status status = 3;
+  string command = 4;
+  string output_path = 5;
+  string worker_id = 6;
+  string compute_id = 7;
+  int32 retry_count = 8;
+  int32 max_retries = 9;
+  string error = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  google.protobuf.Timestamp started_at = 13;
+  google.protobuf.Timestamp completed_at = 14;
+  
+  // Execution metadata
+  map<string, string> metadata = 15;
+  repeated apache.airavata.scheduler.common.Error errors = 16;
+}
+
+// Create compute resource request
+message CreateComputeResourceRequest {
+  string name = 1;
+  ComputeResourceType type = 2;
+  string endpoint = 3;
+  apache.airavata.scheduler.common.Credentials credentials = 4;
+  string partition = 5;
+  string account = 6;
+  string qos = 7;
+  string ssh_key_path = 8;
+  string username = 9;
+  int32 port = 10;
+  double cost_per_hour = 11;
+  double data_latency = 12;
+  int32 max_workers = 13;
+  double availability = 14;
+  map<string, string> metadata = 15;
+}
+
+// Create compute resource response
+message CreateComputeResourceResponse {
+  ComputeResource resource = 1;
+  apache.airavata.scheduler.common.ValidationResult validation = 2;
+}
+
+// Create storage resource request
+message CreateStorageResourceRequest {
+  string name = 1;
+  StorageResourceType type = 2;
+  string endpoint = 3;
+  apache.airavata.scheduler.common.Credentials credentials = 4;
+  int64 total_capacity = 5;
+  string region = 6;
+  string zone = 7;
+  map<string, string> metadata = 8;
+}
+
+// Create storage resource response
+message CreateStorageResourceResponse {
+  StorageResource resource = 1;
+  apache.airavata.scheduler.common.ValidationResult validation = 2;
+}
+
+// List resources request
+message ListResourcesRequest {
+  ComputeResourceType compute_type = 1;
+  StorageResourceType storage_type = 2;
+  ResourceStatus status = 3;
+  apache.airavata.scheduler.common.PaginationRequest pagination = 4;
+}
+
+// List resources response
+message ListResourcesResponse {
+  repeated ComputeResource compute_resources = 1;
+  repeated StorageResource storage_resources = 2;
+  apache.airavata.scheduler.common.PaginationResponse pagination = 3;
+}
+
+// Get resource request
+message GetResourceRequest {
+  string resource_id = 1;
+  bool include_credentials = 2;
+  bool include_metadata = 3;
+}
+
+// Get resource response
+message GetResourceResponse {
+  oneof resource {
+    ComputeResource compute_resource = 1;
+    StorageResource storage_resource = 2;
+  }
+  bool found = 3;
+}
+
+// Update resource request
+message UpdateResourceRequest {
+  string resource_id = 1;
+  ResourceStatus status = 2;
+  apache.airavata.scheduler.common.Credentials credentials = 3;
+  map<string, string> metadata = 4;
+}
+
+// Update resource response
+message UpdateResourceResponse {
+  oneof resource {
+    ComputeResource compute_resource = 1;
+    StorageResource storage_resource = 2;
+  }
+  apache.airavata.scheduler.common.ValidationResult validation = 3;
+}
+
+// Delete resource request
+message DeleteResourceRequest {
+  string resource_id = 1;
+  bool force = 2;
+}
+
+// Delete resource response
+message DeleteResourceResponse {
+  bool deleted = 1;
+  string message = 2;
+}
