@@ -28,6 +28,7 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -40,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SSHUtilTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHUtilTest.class);

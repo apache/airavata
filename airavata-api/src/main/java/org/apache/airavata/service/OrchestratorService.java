@@ -152,23 +152,6 @@ public class OrchestratorService {
         }
     }
 
-    public OrchestratorService(
-            OrchestratorRegistryService orchestratorRegistryService,
-            RegistryService registryService,
-            AiravataServerProperties properties,
-            SimpleOrchestratorImpl orchestrator,
-            CuratorFramework curatorClient,
-            Publisher publisher,
-            ProcessScheduler processScheduler) {
-        this.orchestratorRegistryService = orchestratorRegistryService;
-        this.registryService = registryService;
-        this.properties = properties;
-        this.orchestrator = orchestrator;
-        this.processScheduler = processScheduler;
-        this.curatorClient = curatorClient;
-        this.publisher = publisher;
-    }
-
     private boolean launchExperimentInternal(String experimentId, String gatewayId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryServiceException,
                     LaunchValidationException {

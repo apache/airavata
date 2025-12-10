@@ -24,9 +24,11 @@ import java.util.Map;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.security.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public abstract class ServiceIntegrationTestBase {
 

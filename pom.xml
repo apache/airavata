@@ -330,6 +330,11 @@ under the License.
                 <artifactId>mariadb-java-client</artifactId>
                 <version>3.5.4</version>
             </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.2.224</version>
+            </dependency>
 
             <!-- Jakarta -->
             <dependency>
@@ -612,7 +617,7 @@ under the License.
                     <skipTests>${skipTests}</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m --add-opens java.base/java.lang=ALL-UNNAMED
+                    <argLine>-Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED
                         -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar
                     </argLine>
                     <reuseForks>false</reuseForks>

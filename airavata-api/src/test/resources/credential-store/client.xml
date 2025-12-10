@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<credential-store>
+    <successUri>/credential-store/success.jsp</successUri>
+    <errorUri>/credential-store/error.jsp</errorUri>
+    <redirectUri>/credential-store/show-redirect.jsp</redirectUri>
+</credential-store>

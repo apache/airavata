@@ -42,8 +42,6 @@ import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -56,7 +54,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(classes = {KeyCloakSecurityManagerTest.TestConfiguration.class})
 @TestPropertySource(properties = {"security.tls.enabled=true", "security.iam.server-url=https://iam.server/auth"})
 public class KeyCloakSecurityManagerTest {
-    private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManagerTest.class);
+
     public static final String TEST_USERNAME = "test-user";
     public static final String TEST_GATEWAY = "test-gateway";
     public static final String TEST_ACCESS_TOKEN = "abc123";
@@ -94,7 +92,8 @@ public class KeyCloakSecurityManagerTest {
         @Bean
         @Primary
         public AiravataServerProperties airavataServerProperties(org.springframework.core.env.Environment environment) {
-            AiravataServerProperties properties = new AiravataServerProperties(environment);
+            AiravataServerProperties properties = new AiravataServerProperties();
+            properties.setEnvironment(environment);
             properties.security.tls.enabled = true;
             return properties;
         }
@@ -102,7 +101,6 @@ public class KeyCloakSecurityManagerTest {
 
     @BeforeEach
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
-        // Reset mocks
         reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManagerFactory, mockAuthzCacheManager);
     }
 

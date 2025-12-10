@@ -35,17 +35,26 @@ public class AiravataServerProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerProperties.class);
 
-    private final Environment environment;
+    private Environment environment;
+
+    public AiravataServerProperties() {
+        // No-arg constructor required for @ConfigurationProperties
+        logger.info("[BEAN-INIT] AiravataServerProperties constructor called");
+    }
+
+    public void setEnvironment(Environment environment) {
+        logger.info("[BEAN-INIT] setEnvironment() called on AiravataServerProperties - environment is {}", 
+                environment != null ? "SET" : "NULL");
+        this.environment = environment;
+    }
 
     // ==================== Core Configuration ====================
     public String airavataConfigDir = ".";
 
-    public AiravataServerProperties(Environment environment) {
-        this.environment = environment;
-    }
-
     @PostConstruct
     public void bindProperties() {
+        logger.info("[BEAN-INIT] bindProperties() called on AiravataServerProperties - environment is {}", 
+                environment != null ? "SET" : "NULL");
         logger.info("Binding properties to AiravataServerProperties");
 
         // Manually bind database properties from environment
@@ -139,6 +148,10 @@ public class AiravataServerProperties {
     }
 
     private String getProperty(String key, String defaultValue) {
+        if (environment == null) {
+            logger.warn("[BEAN-INIT] Environment is null when calling getProperty({}), returning default", key);
+            return defaultValue;
+        }
         String value = environment.getProperty(key);
         return value != null ? value : defaultValue;
     }
