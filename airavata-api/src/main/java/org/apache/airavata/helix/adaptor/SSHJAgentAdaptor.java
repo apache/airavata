@@ -43,9 +43,9 @@ import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
 import org.apache.airavata.agents.api.*;
-import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
-import org.apache.airavata.helix.adaptor.wrapper.SFTPClientWrapper;
-import org.apache.airavata.helix.adaptor.wrapper.SessionWrapper;
+import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SessionResource;
+import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SCPFileTransferResource;
+import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SFTPClientResource;
 import org.apache.airavata.helix.agent.ssh.StandardOutReader;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -222,11 +222,11 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
-        SessionWrapper session = null;
+        SessionResource sessionResource = null;
         try {
-            session = sshjClient.startSessionWrapper();
+            sessionResource = sshjClient.startSessionResource();
             Session.Command exec =
-                    session.exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
+                    sessionResource.getSession().exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             StandardOutReader standardOutReader = new StandardOutReader();
 
             try {
@@ -241,15 +241,15 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(session).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sessionResource).ifPresent(SessionResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(session).ifPresent(ss -> {
+            Optional.ofNullable(sessionResource).ifPresent(ss -> {
                 try {
                     ss.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -263,25 +263,25 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public void createDirectory(String path, boolean recursive) throws AgentException {
-        SFTPClientWrapper sftpClient = null;
+        SFTPClientResource sftpClientResource = null;
         try {
-            sftpClient = sshjClient.newSFTPClientWrapper();
+            sftpClientResource = sshjClient.newSFTPClientResource();
             if (recursive) {
-                sftpClient.mkdirs(path);
+                sftpClientResource.getSFTPClient().mkdirs(path);
             } else {
-                sftpClient.mkdir(path);
+                sftpClientResource.getSFTPClient().mkdir(path);
             }
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sftpClientResource).ifPresent(SFTPClientResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(sftpClient).ifPresent(client -> {
+            Optional.ofNullable(sftpClientResource).ifPresent(client -> {
                 try {
                     client.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -293,22 +293,22 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         if (path == null || path.trim().isEmpty()) {
             throw new AgentException("Directory path cannot be null or empty");
         }
-        SFTPClientWrapper sftpClient = null;
+        SFTPClientResource sftpClientResource = null;
         try {
-            sftpClient = sshjClient.newSFTPClientWrapper();
-            sftpClient.rmdir(path);
+            sftpClientResource = sshjClient.newSFTPClientResource();
+            sftpClientResource.getSFTPClient().rmdir(path);
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sftpClientResource).ifPresent(SFTPClientResource::markErrored);
             }
             logger.error("Error while deleting directory {}", path, e);
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(sftpClient).ifPresent(client -> {
+            Optional.ofNullable(sftpClientResource).ifPresent(client -> {
                 try {
                     client.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -317,22 +317,22 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
-        SCPFileTransferWrapper fileTransfer = null;
+        SCPFileTransferResource fileTransferResource = null;
         try {
-            fileTransfer = sshjClient.newSCPFileTransferWrapper();
-            fileTransfer.upload(localFile, remoteFile);
+            fileTransferResource = sshjClient.newSCPFileTransferResource();
+            fileTransferResource.getFileTransfer().upload(localFile, remoteFile);
 
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(fileTransfer).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(fileTransferResource).ifPresent(SCPFileTransferResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(fileTransfer).ifPresent(scpFileTransferWrapper -> {
+            Optional.ofNullable(fileTransferResource).ifPresent(resource -> {
                 try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
+                    resource.close();
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -341,11 +341,11 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public void uploadFile(InputStream localInStream, FileMetadata metadata, String remoteFile) throws AgentException {
-        SCPFileTransferWrapper fileTransfer = null;
+        SCPFileTransferResource fileTransferResource = null;
 
         try {
-            fileTransfer = sshjClient.newSCPFileTransferWrapper();
-            fileTransfer.upload(
+            fileTransferResource = sshjClient.newSCPFileTransferResource();
+            fileTransferResource.getFileTransfer().upload(
                     new LocalSourceFile() {
                         @Override
                         public String getName() {
@@ -401,15 +401,15 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                     remoteFile);
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(fileTransfer).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(fileTransferResource).ifPresent(SCPFileTransferResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(fileTransfer).ifPresent(scpFileTransferWrapper -> {
+            Optional.ofNullable(fileTransferResource).ifPresent(resource -> {
                 try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
+                    resource.close();
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -418,22 +418,22 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public void downloadFile(String remoteFile, String localFile) throws AgentException {
-        SCPFileTransferWrapper fileTransfer = null;
+        SCPFileTransferResource fileTransferResource = null;
         try {
-            fileTransfer = sshjClient.newSCPFileTransferWrapper();
-            fileTransfer.download(remoteFile, localFile);
+            fileTransferResource = sshjClient.newSCPFileTransferResource();
+            fileTransferResource.getFileTransfer().download(remoteFile, localFile);
 
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(fileTransfer).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(fileTransferResource).ifPresent(SCPFileTransferResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(fileTransfer).ifPresent(scpFileTransferWrapper -> {
+            Optional.ofNullable(fileTransferResource).ifPresent(resource -> {
                 try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
+                    resource.close();
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -443,10 +443,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     @Override
     public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata)
             throws AgentException {
-        SCPFileTransferWrapper fileTransfer = null;
+        SCPFileTransferResource fileTransferResource = null;
         try {
-            fileTransfer = sshjClient.newSCPFileTransferWrapper();
-            fileTransfer.download(remoteFile, new LocalDestFile() {
+            fileTransferResource = sshjClient.newSCPFileTransferResource();
+            fileTransferResource.getFileTransfer().download(remoteFile, new LocalDestFile() {
                 @Override
                 public long getLength() {
                     return metadata.getSize();
@@ -488,15 +488,15 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             });
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(fileTransfer).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(fileTransferResource).ifPresent(SCPFileTransferResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(fileTransfer).ifPresent(scpFileTransferWrapper -> {
+            Optional.ofNullable(fileTransferResource).ifPresent(resource -> {
                 try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
+                    resource.close();
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -505,22 +505,22 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public List<String> listDirectory(String path) throws AgentException {
-        SFTPClientWrapper sftpClient = null;
+        SFTPClientResource sftpClientResource = null;
         try {
-            sftpClient = sshjClient.newSFTPClientWrapper();
-            List<RemoteResourceInfo> ls = sftpClient.ls(path);
+            sftpClientResource = sshjClient.newSFTPClientResource();
+            List<RemoteResourceInfo> ls = sftpClientResource.getSFTPClient().ls(path);
             return ls.stream().map(RemoteResourceInfo::getName).collect(Collectors.toList());
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sftpClientResource).ifPresent(SFTPClientResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(sftpClient).ifPresent(client -> {
+            Optional.ofNullable(sftpClientResource).ifPresent(client -> {
                 try {
                     client.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -529,21 +529,21 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public Boolean doesFileExist(String filePath) throws AgentException {
-        SFTPClientWrapper sftpClient = null;
+        SFTPClientResource sftpClientResource = null;
         try {
-            sftpClient = sshjClient.newSFTPClientWrapper();
-            return sftpClient.statExistence(filePath) != null;
+            sftpClientResource = sshjClient.newSFTPClientResource();
+            return sftpClientResource.getSFTPClient().statExistence(filePath) != null;
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sftpClientResource).ifPresent(SFTPClientResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(sftpClient).ifPresent(client -> {
+            Optional.ofNullable(sftpClientResource).ifPresent(client -> {
                 try {
                     client.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Ignore
                 }
             });
@@ -579,10 +579,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
     @Override
     public FileMetadata getFileMetadata(String remoteFile) throws AgentException {
-        SFTPClientWrapper sftpClient = null;
+        SFTPClientResource sftpClientResource = null;
         try {
-            sftpClient = sshjClient.newSFTPClientWrapper();
-            FileAttributes stat = sftpClient.stat(remoteFile);
+            sftpClientResource = sshjClient.newSFTPClientResource();
+            FileAttributes stat = sftpClientResource.getSFTPClient().stat(remoteFile);
             FileMetadata metadata = new FileMetadata();
             metadata.setName(new File(remoteFile).getName());
             metadata.setSize(stat.getSize());
@@ -591,15 +591,15 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             return metadata;
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
-                Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
+                Optional.ofNullable(sftpClientResource).ifPresent(SFTPClientResource::markErrored);
             }
             throw new AgentException(e);
 
         } finally {
-            Optional.ofNullable(sftpClient).ifPresent(scpFileTransferWrapper -> {
+            Optional.ofNullable(sftpClientResource).ifPresent(resource -> {
                 try {
-                    scpFileTransferWrapper.close();
-                } catch (IOException e) {
+                    resource.close();
+                } catch (Exception e) {
                     // Ignore
                 }
             });

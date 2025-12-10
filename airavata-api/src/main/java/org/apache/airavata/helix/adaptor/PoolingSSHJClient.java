@@ -36,10 +36,8 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.method.AuthMethod;
-import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
-import org.apache.airavata.helix.adaptor.wrapper.SFTPClientWrapper;
-import org.apache.airavata.helix.adaptor.wrapper.SSHClientWrapper;
-import org.apache.airavata.helix.adaptor.wrapper.SessionWrapper;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +52,8 @@ public class PoolingSSHJClient extends SSHClient {
     private static final Logger logger = LoggerFactory.getLogger(PoolingSSHJClient.class);
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Map<SSHClientWrapper, SSHClientInfo> clientInfoMap = new HashMap<>();
+    private final Map<SSHClient, SSHClientInfo> clientInfoMap = new HashMap<>();
+    private final Map<SSHClient, Boolean> clientErrorMap = new HashMap<>();
 
     private HostKeyVerifier hostKeyVerifier;
     private String username;
@@ -100,8 +99,8 @@ public class PoolingSSHJClient extends SSHClient {
 
     ////////////////// client specific operations ///////
 
-    private SSHClientWrapper newClientWithSessionValidation() throws IOException {
-        SSHClientWrapper newClient = createNewSSHClient();
+    private SSHClient newClientWithSessionValidation() throws IOException {
+        SSHClient newClient = createNewSSHClient();
         SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
         clientInfoMap.put(newClient, info);
 
@@ -137,7 +136,7 @@ public class PoolingSSHJClient extends SSHClient {
         return newClient;
     }
 
-    private SSHClientWrapper leaseSSHClient() throws Exception {
+    private SSHClient leaseSSHClient() throws Exception {
         lock.writeLock().lock();
 
         try {
@@ -146,10 +145,10 @@ public class PoolingSSHJClient extends SSHClient {
 
             } else {
 
-                Optional<Map.Entry<SSHClientWrapper, SSHClientInfo>> minEntryOp = clientInfoMap.entrySet().stream()
+                Optional<Map.Entry<SSHClient, SSHClientInfo>> minEntryOp = clientInfoMap.entrySet().stream()
                         .min(Comparator.comparing(entry -> entry.getValue().sessionCount));
                 if (minEntryOp.isPresent()) {
-                    Map.Entry<SSHClientWrapper, SSHClientInfo> minEntry = minEntryOp.get();
+                    Map.Entry<SSHClient, SSHClientInfo> minEntry = minEntryOp.get();
                     // use the connection with least amount of sessions created.
 
                     logger.debug(
@@ -176,9 +175,9 @@ public class PoolingSSHJClient extends SSHClient {
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
                         minEntry.getValue().setLastAccessedTime(System.currentTimeMillis());
 
-                        SSHClientWrapper sshClient = minEntry.getKey();
+                        SSHClient sshClient = minEntry.getKey();
 
-                        if (!sshClient.isConnected() || !sshClient.isAuthenticated() || sshClient.isErrored()) {
+                        if (!sshClient.isConnected() || !sshClient.isAuthenticated() || isClientErrored(sshClient)) {
                             logger.warn(
                                     "Client for host {} is not connected or not authenticated. Creating a new client",
                                     host);
@@ -198,14 +197,14 @@ public class PoolingSSHJClient extends SSHClient {
         }
     }
 
-    private void removeDisconnectedClients(SSHClientWrapper client, boolean doDisconnect) {
+    private void removeDisconnectedClients(SSHClient client, boolean doDisconnect) {
         lock.writeLock().lock();
 
         if (doDisconnect) {
             try {
                 client.disconnect();
             } catch (Exception e) {
-                log.warn("Errored while disconnecting the client " + e.getMessage());
+                logger.warn("Errored while disconnecting the client " + e.getMessage());
                 // Ignore
             }
         }
@@ -217,6 +216,7 @@ public class PoolingSSHJClient extends SSHClient {
                         clientInfoMap.get(client).getClientId(),
                         host);
                 clientInfoMap.remove(client);
+                clientErrorMap.remove(client);
             }
 
         } finally {
@@ -224,7 +224,7 @@ public class PoolingSSHJClient extends SSHClient {
         }
     }
 
-    private void untrackClosedSessions(SSHClientWrapper client, int sessionId) {
+    public void untrackClosedSessions(SSHClient client, int sessionId) {
         lock.writeLock().lock();
 
         try {
@@ -243,7 +243,7 @@ public class PoolingSSHJClient extends SSHClient {
     }
 
     private void removeStaleConnections() {
-        List<Map.Entry<SSHClientWrapper, SSHClientInfo>> entriesTobeRemoved;
+        List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved;
         lock.writeLock().lock();
         logger.info("Current active connections for  {} @ {} : {} are {}", username, host, port, clientInfoMap.size());
         try {
@@ -266,19 +266,20 @@ public class PoolingSSHJClient extends SSHClient {
         entriesTobeRemoved.forEach(entry -> {
             try {
                 entry.getKey().disconnect();
+                clientErrorMap.remove(entry.getKey());
             } catch (IOException e) {
                 logger.warn("Failed to disconnect connection {} for host {}", entry.getValue().clientId, host);
             }
         });
     }
 
-    private SSHClientWrapper createNewSSHClient() throws IOException {
+    private SSHClient createNewSSHClient() throws IOException {
 
-        SSHClientWrapper sshClient;
+        SSHClient sshClient;
         if (config != null) {
-            sshClient = new SSHClientWrapper(config);
+            sshClient = new SSHClient(config);
         } else {
-            sshClient = new SSHClientWrapper();
+            sshClient = new SSHClient();
         }
 
         sshClient.getConnection().getTransport().setDisconnectListener(new DisconnectListener() {
@@ -304,67 +305,147 @@ public class PoolingSSHJClient extends SSHClient {
         return sshClient;
     }
 
-    public SessionWrapper startSessionWrapper() throws Exception {
+    public static class SessionResource {
+        private final Session session;
+        private final SSHClient sshClient;
+        private final PoolingSSHJClient pool;
 
-        final SSHClientWrapper sshClient = leaseSSHClient();
+        SessionResource(Session session, SSHClient sshClient, PoolingSSHJClient pool) {
+            this.session = session;
+            this.sshClient = sshClient;
+            this.pool = pool;
+        }
 
+        public Session getSession() {
+            return session;
+        }
+
+        public void close() throws Exception {
+            session.close();
+            pool.untrackClosedSessions(sshClient, session.getID());
+        }
+
+        public void markErrored() {
+            pool.markClientErrored(sshClient);
+        }
+    }
+
+    public static class SCPFileTransferResource {
+        private final SCPFileTransfer fileTransfer;
+        private final SSHClient sshClient;
+        private final PoolingSSHJClient pool;
+
+        SCPFileTransferResource(SCPFileTransfer fileTransfer, SSHClient sshClient, PoolingSSHJClient pool) {
+            this.fileTransfer = fileTransfer;
+            this.sshClient = sshClient;
+            this.pool = pool;
+        }
+
+        public SCPFileTransfer getFileTransfer() {
+            return fileTransfer;
+        }
+
+        public void close() throws Exception {
+            // SCPFileTransfer doesn't need explicit closing, just track the session
+            pool.untrackClosedSessions(sshClient, -1);
+        }
+
+        public void markErrored() {
+            pool.markClientErrored(sshClient);
+        }
+    }
+
+    public static class SFTPClientResource {
+        private final SFTPClient sftpClient;
+        private final SSHClient sshClient;
+        private final PoolingSSHJClient pool;
+
+        SFTPClientResource(SFTPClient sftpClient, SSHClient sshClient, PoolingSSHJClient pool) {
+            this.sftpClient = sftpClient;
+            this.sshClient = sshClient;
+            this.pool = pool;
+        }
+
+        public SFTPClient getSFTPClient() {
+            return sftpClient;
+        }
+
+        public void close() throws Exception {
+            sftpClient.close();
+            pool.untrackClosedSessions(sshClient, -1);
+        }
+
+        public void markErrored() {
+            pool.markClientErrored(sshClient);
+        }
+    }
+
+    public SessionResource startSessionResource() throws Exception {
+        final SSHClient sshClient = leaseSSHClient();
         try {
-            return new SessionWrapper(
-                    sshClient.startSession(), (id) -> untrackClosedSessions(sshClient, id), sshClient);
-
+            Session session = sshClient.startSession();
+            return new SessionResource(session, sshClient, this);
         } catch (Exception e) {
             if (sshClient != null) {
                 // If it is a ConnectionExceptions, explicitly invalidate the client
                 if (e instanceof ConnectionException) {
-                    sshClient.setErrored(true);
+                    markClientErrored(sshClient);
                 }
-
                 untrackClosedSessions(sshClient, -1);
             }
             throw e;
         }
     }
 
-    public SCPFileTransferWrapper newSCPFileTransferWrapper() throws Exception {
-
-        final SSHClientWrapper sshClient = leaseSSHClient();
-
+    public SCPFileTransferResource newSCPFileTransferResource() throws Exception {
+        final SSHClient sshClient = leaseSSHClient();
         try {
-            return new SCPFileTransferWrapper(
-                    sshClient.newSCPFileTransfer(), (id) -> untrackClosedSessions(sshClient, id), sshClient);
-
+            SCPFileTransfer fileTransfer = sshClient.newSCPFileTransfer();
+            return new SCPFileTransferResource(fileTransfer, sshClient, this);
         } catch (Exception e) {
-
             if (sshClient != null) {
                 // If it is a ConnectionExceptions, explicitly invalidate the client
                 if (e instanceof ConnectionException) {
-                    sshClient.setErrored(true);
+                    markClientErrored(sshClient);
                 }
-
                 untrackClosedSessions(sshClient, -1);
             }
             throw e;
         }
     }
 
-    public SFTPClientWrapper newSFTPClientWrapper() throws Exception {
-
-        final SSHClientWrapper sshClient = leaseSSHClient();
-
+    public SFTPClientResource newSFTPClientResource() throws Exception {
+        final SSHClient sshClient = leaseSSHClient();
         try {
-            return new SFTPClientWrapper(
-                    sshClient.newSFTPClient(), (id) -> untrackClosedSessions(sshClient, id), sshClient);
+            SFTPClient sftpClient = sshClient.newSFTPClient();
+            return new SFTPClientResource(sftpClient, sshClient, this);
         } catch (Exception e) {
-
             if (sshClient != null) {
                 // If it is a ConnectionExceptions, explicitly invalidate the client
                 if (e instanceof ConnectionException) {
-                    sshClient.setErrored(true);
+                    markClientErrored(sshClient);
                 }
-
                 untrackClosedSessions(sshClient, -1);
             }
             throw e;
+        }
+    }
+
+    public void markClientErrored(SSHClient client) {
+        lock.writeLock().lock();
+        try {
+            clientErrorMap.put(client, true);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    private boolean isClientErrored(SSHClient client) {
+        lock.readLock().lock();
+        try {
+            return clientErrorMap.getOrDefault(client, false);
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
@@ -461,7 +542,7 @@ public class PoolingSSHJClient extends SSHClient {
         return this;
     }
 
-    public Map<SSHClientWrapper, SSHClientInfo> getClientInfoMap() {
+    public Map<SSHClient, SSHClientInfo> getClientInfoMap() {
         return clientInfoMap;
     }
 }
