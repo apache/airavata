@@ -151,21 +151,42 @@ public class AiravataService {
     private record SharingEntity(Entity delegate) {}
 
     private boolean validateString(String name) {
-        boolean valid = true;
-        if (name == null || name.equals("") || name.trim().length() == 0) {
-            valid = false;
-        }
-        return valid;
+        return name != null && !name.trim().isEmpty();
     }
 
     private AiravataSystemException airavataSystemException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        var exception = new AiravataSystemException(errorType);
-        exception.setMessage(message);
-        if (cause != null) {
-            exception.initCause(cause);
+        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+                errorType, message, cause);
+    }
+
+    /**
+     * Functional interface for operations that may throw RegistryServiceException.
+     */
+    @FunctionalInterface
+    private interface RegistryOperation<T> {
+        T execute() throws RegistryServiceException;
+    }
+
+    /**
+     * Helper method to execute registry operations with standardized error handling.
+     * Reduces boilerplate code for try-catch blocks.
+     *
+     * @param operation The operation name for logging
+     * @param registryOp The operation to execute
+     * @param <T> The return type
+     * @return The result of the operation
+     * @throws AiravataSystemException if the operation fails
+     */
+    private <T> T executeRegistryOperation(String operation, RegistryOperation<T> registryOp)
+            throws AiravataSystemException {
+        try {
+            return registryOp.execute();
+        } catch (RegistryServiceException e) {
+            String msg = String.format("Error while %s: %s", operation, e.getMessage());
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
-        return exception;
     }
 
     private boolean safeIsUserResourceProfileExists(AuthzToken authzToken, String userId, String gatewayId)
@@ -1171,109 +1192,59 @@ public class AiravataService {
     }
 
     public ComputeResourceDescription getComputeResource(String computeResourceId) throws AiravataSystemException {
-        try {
-            return registryService.getComputeResource(computeResourceId);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving compute resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("retrieving compute resource",
+                () -> registryService.getComputeResource(computeResourceId));
     }
 
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
             throws AiravataSystemException {
-        try {
-            return registryService.registerComputeResource(computeResourceDescription);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while saving compute resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("saving compute resource",
+                () -> registryService.registerComputeResource(computeResourceDescription));
     }
 
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws AiravataSystemException {
-        try {
-            return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while updating compute resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("updating compute resource",
+                () -> registryService.updateComputeResource(computeResourceId, computeResourceDescription));
     }
 
     public boolean deleteComputeResource(String computeResourceId) throws AiravataSystemException {
-        try {
-            return registryService.deleteComputeResource(computeResourceId);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while deleting compute resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("deleting compute resource",
+                () -> registryService.deleteComputeResource(computeResourceId));
     }
 
     public Map<String, String> getAllComputeResourceNames() throws AiravataSystemException {
-        try {
-            return registryService.getAllComputeResourceNames();
-        } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving compute resource names: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("retrieving compute resource names",
+                () -> registryService.getAllComputeResourceNames());
     }
 
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
             throws AiravataSystemException {
-        try {
-            return registryService.registerStorageResource(storageResourceDescription);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while saving storage resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("saving storage resource",
+                () -> registryService.registerStorageResource(storageResourceDescription));
     }
 
     public StorageResourceDescription getStorageResource(String storageResourceId) throws AiravataSystemException {
-        try {
-            return registryService.getStorageResource(storageResourceId);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving storage resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("retrieving storage resource",
+                () -> registryService.getStorageResource(storageResourceId));
     }
 
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
             throws AiravataSystemException {
-        try {
-            return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while updating storage resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("updating storage resource",
+                () -> registryService.updateStorageResource(storageResourceId, storageResourceDescription));
     }
 
     public boolean deleteStorageResource(String storageResourceId) throws AiravataSystemException {
-        try {
-            return registryService.deleteStorageResource(storageResourceId);
-        } catch (RegistryServiceException e) {
-            String msg = "Error while deleting storage resource: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("deleting storage resource",
+                () -> registryService.deleteStorageResource(storageResourceId));
     }
 
     public Map<String, String> getAllStorageResourceNames() throws AiravataSystemException {
-        try {
-            return registryService.getAllStorageResourceNames();
-        } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving storage resource names: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
+        return executeRegistryOperation("retrieving storage resource names",
+                () -> registryService.getAllStorageResourceNames());
     }
 
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)

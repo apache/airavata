@@ -21,7 +21,6 @@ package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.credential.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -42,7 +41,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return credential_store_cpiConstants.CS_CPI_VERSION;
+        return org.apache.airavata.credential.cpi.credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
     private CredentialStoreException wrapException(

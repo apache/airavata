@@ -25,6 +25,10 @@ import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.kafka.common.serialization.Deserializer;
 
 public class JobStatusResultDeserializer implements Deserializer<JobStatusResult> {
+    /**
+     * Configure the deserializer. Required by Kafka Deserializer interface.
+     * No configuration needed for this deserializer.
+     */
     @Override
     public void configure(Map<String, ?> map, boolean b) {}
 
@@ -40,6 +44,10 @@ public class JobStatusResultDeserializer implements Deserializer<JobStatusResult
         return jobStatusResult;
     }
 
+    /**
+     * Close the deserializer. Required by Kafka Deserializer interface.
+     * No cleanup needed for this deserializer.
+     */
     @Override
     public void close() {}
 }

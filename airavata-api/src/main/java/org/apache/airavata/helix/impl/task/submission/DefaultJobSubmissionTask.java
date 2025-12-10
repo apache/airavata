@@ -296,6 +296,10 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         return jobId;
     }
 
+    /**
+     * Called when the task is cancelled.
+     * No cleanup needed for job submission tasks.
+     */
     @Override
     public void onCancel(TaskContext taskContext) {}
 }

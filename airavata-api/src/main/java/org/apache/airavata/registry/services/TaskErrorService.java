@@ -20,10 +20,11 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
+import org.apache.airavata.registry.entities.expcatalog.TaskErrorPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
 import org.springframework.stereotype.Service;
@@ -31,32 +32,63 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class TaskErrorService {
-    private final TaskErrorRepository taskErrorRepository;
-    private final Mapper mapper;
+public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErrorRepository, TaskErrorPK> {
 
     public TaskErrorService(TaskErrorRepository taskErrorRepository, Mapper mapper) {
-        this.taskErrorRepository = taskErrorRepository;
-        this.mapper = mapper;
+        super(taskErrorRepository, mapper);
     }
 
+    @Override
+    protected BiConsumer<TaskErrorEntity, String> getParentIdSetter() {
+        return TaskErrorEntity::setTaskId;
+    }
+
+    @Override
+    protected Function<String, java.util.List<TaskErrorEntity>> getFindByParentIdFunction() {
+        return repository::findByTaskId;
+    }
+
+    @Override
+    protected Class<TaskErrorEntity> getEntityClass() {
+        return TaskErrorEntity.class;
+    }
+
+    @Override
+    protected Function<TaskErrorEntity, String> getErrorIdExtractor() {
+        return TaskErrorEntity::getErrorId;
+    }
+
+    /**
+     * Add a task error.
+     *
+     * @param error The error model to persist
+     * @param taskId The ID of the task
+     * @return The ID of the saved error entity
+     * @throws RegistryException if the operation fails
+     */
     public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
-        TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
-        entity.setTaskId(taskId);
-        TaskErrorEntity saved = taskErrorRepository.save(entity);
-        return saved.getErrorId();
+        return addError(error, taskId);
     }
 
+    /**
+     * Update a task error.
+     *
+     * @param error The error model with updated information
+     * @param taskId The ID of the task
+     * @throws RegistryException if the operation fails
+     */
     public void updateTaskError(ErrorModel error, String taskId) throws RegistryException {
-        TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
-        entity.setTaskId(taskId);
-        taskErrorRepository.save(entity);
+        updateError(error, taskId);
     }
 
-    public List<ErrorModel> getTaskError(String taskId) throws RegistryException {
-        List<TaskErrorEntity> entities = taskErrorRepository.findByTaskId(taskId);
-        List<ErrorModel> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
-        return result;
+    /**
+     * Retrieve all errors for a task.
+     *
+     * @param taskId The ID of the task
+     * @return List of error models
+     * @throws RegistryException if the operation fails
+     */
+    public java.util.List<ErrorModel> getTaskError(String taskId) throws RegistryException {
+        return getErrors(taskId);
     }
 }

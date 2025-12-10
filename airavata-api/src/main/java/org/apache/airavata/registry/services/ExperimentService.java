@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class ExperimentService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
 
@@ -53,6 +52,7 @@ public class ExperimentService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
         ExperimentStatus experimentStatus = new ExperimentStatus();
         experimentStatus.setState(ExperimentState.CREATED);
@@ -66,16 +66,19 @@ public class ExperimentService {
         return saveExperimentModelData(experimentModel);
     }
 
+    @Transactional
     public void updateExperiment(ExperimentModel updatedExperimentModel, String experimentId) throws RegistryException {
         saveExperimentModelData(updatedExperimentModel);
     }
 
+    @Transactional(readOnly = true)
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
         return mapper.map(entity, ExperimentModel.class);
     }
 
+    @Transactional
     public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId)
             throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
@@ -84,17 +87,20 @@ public class ExperimentService {
         return experimentId;
     }
 
+    @Transactional
     public String updateUserConfigurationData(
             UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId)
             throws RegistryException {
         return addUserConfigurationData(updatedUserConfigurationDataModel, experimentId);
     }
 
+    @Transactional(readOnly = true)
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
         return experimentModel.getUserConfigurationData();
     }
 
+    @Transactional(readOnly = true)
     public List<ExperimentModel> getExperimentList(
             String gatewayId,
             String fieldName,
@@ -126,10 +132,12 @@ public class ExperimentService {
         return experimentModelList;
     }
 
+    @Transactional(readOnly = true)
     public boolean isExperimentExist(String experimentId) throws RegistryException {
         return experimentRepository.existsById(experimentId);
     }
 
+    @Transactional
     public void removeExperiment(String experimentId) throws RegistryException {
         experimentRepository.deleteById(experimentId);
     }

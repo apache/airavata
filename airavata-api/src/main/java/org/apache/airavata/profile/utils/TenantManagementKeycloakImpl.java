@@ -667,7 +667,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
     }
 
-    // TODO: this is needed for migrating from roles to group-based auth but after migration we can remove this
+    // TODO: Remove after migration to group-based auth is complete
+    // This method is needed for backward compatibility during migration from role-based to group-based authentication
     @Override
     public List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName)
             throws IamAdminServicesException {

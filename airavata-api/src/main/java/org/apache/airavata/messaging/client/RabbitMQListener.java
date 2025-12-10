@@ -88,13 +88,4 @@ public class RabbitMQListener {
         }
     }
 
-    // Unused enum - commented out
-    /*
-    private enum LEVEL {
-        ALL,
-        GATEWAY,
-        EXPERIMENT,
-        JOB;
-    }
-    */
 }

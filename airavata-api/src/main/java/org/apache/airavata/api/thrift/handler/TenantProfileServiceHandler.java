@@ -25,10 +25,9 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
-import org.apache.airavata.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.TenantProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,20 +36,20 @@ import org.springframework.stereotype.Component;
  * Created by goshenoy on 3/6/17.
  */
 @Component
-public class TenantProfileServiceHandler implements TenantProfileService.Iface {
+public class TenantProfileServiceHandler implements org.apache.airavata.profile.tenant.cpi.TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
-    private final org.apache.airavata.service.TenantProfileService tenantProfileService;
+    private final TenantProfileService tenantProfileService;
 
-    public TenantProfileServiceHandler(org.apache.airavata.service.TenantProfileService tenantProfileService) {
+    public TenantProfileServiceHandler(TenantProfileService tenantProfileService) {
         this.tenantProfileService = tenantProfileService;
         logger.debug("Initializing TenantProfileServiceHandler");
     }
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
+        return org.apache.airavata.profile.tenant.cpi.profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 
     @Override

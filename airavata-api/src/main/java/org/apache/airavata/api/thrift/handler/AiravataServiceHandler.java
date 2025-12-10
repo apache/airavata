@@ -23,8 +23,6 @@ import java.util.*;
 import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
@@ -77,7 +75,7 @@ import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AiravataServiceHandler implements Airavata.Iface {
+public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.Iface {
 
     private final AiravataService airavataService;
 
@@ -91,7 +89,7 @@ public class AiravataServiceHandler implements Airavata.Iface {
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return airavata_apiConstants.AIRAVATA_API_VERSION;
+        return org.apache.airavata.api.airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
     /**

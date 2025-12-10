@@ -61,20 +61,19 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.api.registry_apiConstants;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegistryServiceHandler implements RegistryService.Iface {
+public class RegistryServiceHandler implements org.apache.airavata.registry.api.RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceHandler.class);
 
-    private final org.apache.airavata.service.RegistryService registryService;
+    private final RegistryService registryService;
 
-    public RegistryServiceHandler(org.apache.airavata.service.RegistryService registryService) {
+    public RegistryServiceHandler(RegistryService registryService) {
         this.registryService = registryService;
     }
 
@@ -91,7 +90,7 @@ public class RegistryServiceHandler implements RegistryService.Iface {
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return registry_apiConstants.REGISTRY_API_VERSION;
+        return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;
     }
 
     /**

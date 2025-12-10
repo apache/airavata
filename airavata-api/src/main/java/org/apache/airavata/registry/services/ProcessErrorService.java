@@ -20,10 +20,11 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
 import org.springframework.stereotype.Service;
@@ -31,32 +32,63 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ProcessErrorService {
-    private final ProcessErrorRepository processErrorRepository;
-    private final Mapper mapper;
+public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, ProcessErrorRepository, ProcessErrorPK> {
 
     public ProcessErrorService(ProcessErrorRepository processErrorRepository, Mapper mapper) {
-        this.processErrorRepository = processErrorRepository;
-        this.mapper = mapper;
+        super(processErrorRepository, mapper);
     }
 
+    @Override
+    protected BiConsumer<ProcessErrorEntity, String> getParentIdSetter() {
+        return ProcessErrorEntity::setProcessId;
+    }
+
+    @Override
+    protected Function<String, java.util.List<ProcessErrorEntity>> getFindByParentIdFunction() {
+        return repository::findByProcessId;
+    }
+
+    @Override
+    protected Class<ProcessErrorEntity> getEntityClass() {
+        return ProcessErrorEntity.class;
+    }
+
+    @Override
+    protected Function<ProcessErrorEntity, String> getErrorIdExtractor() {
+        return ProcessErrorEntity::getErrorId;
+    }
+
+    /**
+     * Add a process error.
+     *
+     * @param error The error model to persist
+     * @param processId The ID of the process
+     * @return The ID of the saved error entity
+     * @throws RegistryException if the operation fails
+     */
     public String addProcessError(ErrorModel error, String processId) throws RegistryException {
-        ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
-        entity.setProcessId(processId);
-        ProcessErrorEntity saved = processErrorRepository.save(entity);
-        return saved.getErrorId();
+        return addError(error, processId);
     }
 
+    /**
+     * Update a process error.
+     *
+     * @param error The error model with updated information
+     * @param processId The ID of the process
+     * @throws RegistryException if the operation fails
+     */
     public void updateProcessError(ErrorModel error, String processId) throws RegistryException {
-        ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
-        entity.setProcessId(processId);
-        processErrorRepository.save(entity);
+        updateError(error, processId);
     }
 
-    public List<ErrorModel> getProcessError(String processId) throws RegistryException {
-        List<ProcessErrorEntity> entities = processErrorRepository.findByProcessId(processId);
-        List<ErrorModel> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
-        return result;
+    /**
+     * Retrieve all errors for a process.
+     *
+     * @param processId The ID of the process
+     * @return List of error models
+     * @throws RegistryException if the operation fails
+     */
+    public java.util.List<ErrorModel> getProcessError(String processId) throws RegistryException {
+        return getErrors(processId);
     }
 }

@@ -27,8 +27,6 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.sharing.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
-// Unused import - commented out
-// import org.apache.airavata.sharing.utils.SharingRegistryDBInitConfig;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -82,8 +80,7 @@ public class SharingRegistryServer implements IServer {
             final int serverPort = properties.services.sharing.serverPort;
             // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a Spring bean
             SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
-            SharingRegistryService.Processor<SharingRegistryServerHandler> processor =
-                    new SharingRegistryService.Processor<>(handler);
+            var processor = new SharingRegistryService.Processor<>(handler);
 
             TServerTransport serverTransport;
             TThreadPoolServer.Args options;
@@ -159,6 +156,10 @@ public class SharingRegistryServer implements IServer {
         start();
     }
 
+    /**
+     * Configure the server. Required by IServer interface.
+     * No configuration needed for SharingRegistryServer.
+     */
     @Override
     public void configure() throws Exception {}
 

@@ -147,6 +147,10 @@ public class WorkflowCancellationTask extends AbstractTask {
         }
     }
 
+    /**
+     * Called when the task is cancelled.
+     * No cleanup needed for workflow cancellation tasks.
+     */
     @Override
     public void onCancel() {}
 

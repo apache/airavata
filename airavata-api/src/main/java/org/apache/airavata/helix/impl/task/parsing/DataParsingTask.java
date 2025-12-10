@@ -260,6 +260,10 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
+    /**
+     * Called when the task is cancelled.
+     * No cleanup needed for data parsing tasks.
+     */
     @Override
     public void onCancel() {}
 

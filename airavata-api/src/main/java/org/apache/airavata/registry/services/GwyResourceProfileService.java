@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class GwyResourceProfileService {
     private final GwyResourceProfileRepository gwyResourceProfileRepository;
     private final ComputeResourcePrefRepository computeResourcePrefRepository;
@@ -57,15 +56,18 @@ public class GwyResourceProfileService {
         this.sshAccountProvisionerConfigurationRepository = sshAccountProvisionerConfigurationRepository;
     }
 
+    @Transactional
     public String addGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         return updateGatewayResourceProfile(gatewayResourceProfile);
     }
 
+    @Transactional
     public void updateGatewayResourceProfile(String gatewayId, GatewayResourceProfile updatedProfile)
             throws AppCatalogException {
         updateGatewayResourceProfile(updatedProfile);
     }
 
+    @Transactional
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
         GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
@@ -108,6 +110,7 @@ public class GwyResourceProfileService {
         return persistedCopy.getGatewayId();
     }
 
+    @Transactional(readOnly = true)
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
         GatewayProfileEntity entity =
                 gwyResourceProfileRepository.findById(gatewayId).orElse(null);
@@ -125,6 +128,7 @@ public class GwyResourceProfileService {
         return gatewayResourceProfile;
     }
 
+    @Transactional
     public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
         if (!gwyResourceProfileRepository.existsById(gatewayId)) {
             return false;
@@ -133,6 +137,7 @@ public class GwyResourceProfileService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
         List<GatewayProfileEntity> entities = gwyResourceProfileRepository.findAll();
         List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<>();
@@ -151,6 +156,7 @@ public class GwyResourceProfileService {
         return gatewayResourceProfileList;
     }
 
+    @Transactional
     public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
@@ -159,6 +165,7 @@ public class GwyResourceProfileService {
         return true;
     }
 
+    @Transactional
     public boolean removeDataStoragePreferenceFromGateway(String gatewayId, String preferenceId) {
         StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
         storagePreferencePK.setGatewayId(gatewayId);
@@ -167,10 +174,12 @@ public class GwyResourceProfileService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
         return gwyResourceProfileRepository.existsById(gatewayId);
     }
 
+    @Transactional(readOnly = true)
     public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
@@ -186,6 +195,7 @@ public class GwyResourceProfileService {
         return computeResourcePreference;
     }
 
+    @Transactional(readOnly = true)
     public StoragePreference getStoragePreference(String gatewayId, String storageId) {
         StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
         storagePreferencePK.setStorageResourceId(storageId);
@@ -196,6 +206,7 @@ public class GwyResourceProfileService {
                 .orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
         List<ComputeResourcePreferenceEntity> entities = computeResourcePrefRepository.findByGatewayId(gatewayId);
         List<ComputeResourcePreference> preferences = entities.stream()
@@ -211,6 +222,7 @@ public class GwyResourceProfileService {
         return preferences;
     }
 
+    @Transactional(readOnly = true)
     public List<StoragePreference> getAllStoragePreferences(String gatewayId) {
         List<StoragePreferenceEntity> entities = storagePrefRepository.findByGatewayId(gatewayId);
         return entities.stream()

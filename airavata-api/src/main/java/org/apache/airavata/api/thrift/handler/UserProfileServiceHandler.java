@@ -26,7 +26,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +40,7 @@ public class UserProfileServiceHandler implements org.apache.airavata.profile.us
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
+        return org.apache.airavata.profile.user.cpi.profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
     }
 
     @Override

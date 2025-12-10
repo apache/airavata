@@ -25,6 +25,15 @@ import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Placeholder implementation of OutputParser for Airavata custom command output parsing.
+ * 
+ * <p>This class is currently a stub implementation where all methods throw
+ * UnsupportedOperationException. It is used by CloudJobManagerConfiguration but
+ * requires implementation to be functional.
+ * 
+ * <p>TODO: Implement the parsing logic for Airavata custom command output format.
+ */
 public class AiravataCustomCommandOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(AiravataCustomCommandOutputParser.class);
 

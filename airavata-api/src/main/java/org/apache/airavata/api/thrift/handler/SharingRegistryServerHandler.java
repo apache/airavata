@@ -21,24 +21,23 @@ package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
 import org.apache.airavata.sharing.models.*;
-import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.service.cpi.sharing_cpiConstants;
 import org.springframework.stereotype.Component;
+import org.apache.airavata.service.SharingRegistryService;
 
 @Component
-public class SharingRegistryServerHandler implements SharingRegistryService.Iface {
-    private final org.apache.airavata.service.SharingRegistryService sharingRegistryService;
+public class SharingRegistryServerHandler implements org.apache.airavata.sharing.service.cpi.SharingRegistryService.Iface {
+    private final SharingRegistryService sharingRegistryService;
 
-    public SharingRegistryServerHandler(org.apache.airavata.service.SharingRegistryService sharingRegistryService) {
+    public SharingRegistryServerHandler(SharingRegistryService sharingRegistryService) {
         this.sharingRegistryService = sharingRegistryService;
     }
 
     public static String OWNER_PERMISSION_NAME =
-            org.apache.airavata.service.SharingRegistryService.OWNER_PERMISSION_NAME;
+            SharingRegistryService.OWNER_PERMISSION_NAME;
 
     @Override
     public String getAPIVersion() {
-        return sharing_cpiConstants.SHARING_CPI_VERSION;
+        return org.apache.airavata.sharing.service.cpi.sharing_cpiConstants.SHARING_CPI_VERSION;
     }
 
     /**

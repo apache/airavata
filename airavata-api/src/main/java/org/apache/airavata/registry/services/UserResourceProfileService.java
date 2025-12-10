@@ -42,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class UserResourceProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileService.class);
 
@@ -62,10 +61,12 @@ public class UserResourceProfileService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public String addUserResourceProfile(UserResourceProfile userResourceProfile) throws AppCatalogException {
         return saveUserResourceProfileData(userResourceProfile);
     }
 
+    @Transactional
     public void updateUserResourceProfile(String userId, String gatewayId, UserResourceProfile updatedProfile)
             throws AppCatalogException {
         saveUserResourceProfileData(updatedProfile);
@@ -111,6 +112,7 @@ public class UserResourceProfileService {
         return userResourceProfileRepository.save(userResourceProfileEntity);
     }
 
+    @Transactional(readOnly = true)
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
         UserResourceProfilePK userResourceProfilePK = new UserResourceProfilePK();
         userResourceProfilePK.setUserId(userId);
@@ -121,6 +123,7 @@ public class UserResourceProfileService {
         return mapper.map(entity, UserResourceProfile.class);
     }
 
+    @Transactional(readOnly = true)
     public UserComputeResourcePreference getUserComputeResourcePreference(
             String userId, String gatewayId, String hostId) throws AppCatalogException {
         UserComputeResourcePreferencePK userComputeResourcePreferencePK = new UserComputeResourcePreferencePK();
@@ -133,6 +136,7 @@ public class UserResourceProfileService {
                 .orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayId, String storageId)
             throws AppCatalogException {
         UserStoragePreferencePK userStoragePreferencePK = new UserStoragePreferencePK();
@@ -145,6 +149,7 @@ public class UserResourceProfileService {
                 .orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
         List<UserResourceProfile> result = new ArrayList<>();
@@ -152,6 +157,7 @@ public class UserResourceProfileService {
         return result;
     }
 
+    @Transactional(readOnly = true)
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayId)
             throws AppCatalogException {
         List<UserComputeResourcePreferenceEntity> entities =
@@ -161,6 +167,7 @@ public class UserResourceProfileService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayId)
             throws AppCatalogException {
         List<UserStoragePreferenceEntity> entities =
@@ -170,6 +177,7 @@ public class UserResourceProfileService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
         List<String> gatewayIdList = new ArrayList<>();
@@ -182,10 +190,12 @@ public class UserResourceProfileService {
         return gatewayIdList;
     }
 
+    @Transactional(readOnly = true)
     public String getUserNamefromID(String userId, String gatewayID) throws AppCatalogException {
         return userId;
     }
 
+    @Transactional
     public boolean removeUserResourceProfile(String userId, String gatewayId) throws AppCatalogException {
         UserResourceProfilePK userResourceProfilePK = new UserResourceProfilePK();
         userResourceProfilePK.setUserId(userId);
@@ -197,6 +207,7 @@ public class UserResourceProfileService {
         return true;
     }
 
+    @Transactional
     public boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId)
             throws AppCatalogException {
         UserComputeResourcePreferencePK userComputeResourcePreferencePK = new UserComputeResourcePreferencePK();
@@ -207,6 +218,7 @@ public class UserResourceProfileService {
         return true;
     }
 
+    @Transactional
     public boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId)
             throws AppCatalogException {
         UserStoragePreferencePK userStoragePreferencePK = new UserStoragePreferencePK();
@@ -217,6 +229,7 @@ public class UserResourceProfileService {
         return true;
     }
 
+    @Transactional(readOnly = true)
     public boolean isUserResourceProfileExists(String userId, String gatewayId) throws AppCatalogException {
         UserResourceProfilePK userResourceProfilePK = new UserResourceProfilePK();
         userResourceProfilePK.setUserId(userId);
@@ -224,6 +237,7 @@ public class UserResourceProfileService {
         return userResourceProfileRepository.existsById(userResourceProfilePK);
     }
 
+    @Transactional(readOnly = true)
     public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayId, String preferenceId)
             throws AppCatalogException {
         UserComputeResourcePreferencePK userComputeResourcePreferencePK = new UserComputeResourcePreferencePK();

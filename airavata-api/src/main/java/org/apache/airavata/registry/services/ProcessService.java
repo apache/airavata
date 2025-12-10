@@ -41,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class ProcessService {
     private static final Logger logger = LoggerFactory.getLogger(ProcessService.class);
 
@@ -97,6 +96,7 @@ public class ProcessService {
         }
     }
 
+    @Transactional
     public String addProcess(ProcessModel process, String experimentId) throws RegistryException {
         process.setExperimentId(experimentId);
 
@@ -106,16 +106,19 @@ public class ProcessService {
         return processId;
     }
 
+    @Transactional
     public void updateProcess(ProcessModel updatedProcess, String processId) throws RegistryException {
         saveProcessModelData(updatedProcess);
     }
 
+    @Transactional(readOnly = true)
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
         return mapper.map(entity, ProcessModel.class);
     }
 
+    @Transactional
     public String addProcessResourceSchedule(
             ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId)
             throws RegistryException {
@@ -125,17 +128,20 @@ public class ProcessService {
         return processId;
     }
 
+    @Transactional
     public String updateProcessResourceSchedule(
             ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId)
             throws RegistryException {
         return addProcessResourceSchedule(computationalResourceSchedulingModel, processId);
     }
 
+    @Transactional(readOnly = true)
     public ComputationalResourceSchedulingModel getProcessResourceSchedule(String processId) throws RegistryException {
         ProcessModel processModel = getProcess(processId);
         return processModel.getProcessResourceSchedule();
     }
 
+    @Transactional(readOnly = true)
     public List<ProcessModel> getProcessList(String fieldName, Object value) throws RegistryException {
         List<ProcessModel> processModelList;
 
@@ -152,6 +158,7 @@ public class ProcessService {
         return processModelList;
     }
 
+    @Transactional(readOnly = true)
     public List<String> getProcessIds(String fieldName, Object value) throws RegistryException {
         List<String> processIds = new ArrayList<>();
         List<ProcessModel> processModelList = getProcessList(fieldName, value);
@@ -161,14 +168,17 @@ public class ProcessService {
         return processIds;
     }
 
+    @Transactional(readOnly = true)
     public boolean isProcessExist(String processId) throws RegistryException {
         return processRepository.existsById(processId);
     }
 
+    @Transactional
     public void removeProcess(String processId) throws RegistryException {
         processRepository.deleteById(processId);
     }
 
+    @Transactional(readOnly = true)
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         List<ProcessEntity> entities = processRepository.findAll();
         List<ProcessModel> result = new ArrayList<>();

@@ -197,8 +197,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
                             ex);
                 }
 
-                // TODO this is temporary fix. Remove this line when the schedulers are configured to notify when an job
-                // is externally cancelled
+                // TODO: Remove this temporary fix once schedulers are configured to notify when a job is externally cancelled
+                // This is a workaround until proper job cancellation notification is implemented
                 // forcefully make the job state as cancelled as some schedulers do not notify when the job is
                 // cancelled.
                 saveAndPublishJobStatus(
@@ -219,6 +219,10 @@ public class RemoteJobCancellationTask extends AiravataTask {
         }
     }
 
+    /**
+     * Called when the task is cancelled.
+     * Cancellation logic is handled in the onRun method's catch block.
+     */
     @Override
     public void onCancel(TaskContext taskContext) {}
 }

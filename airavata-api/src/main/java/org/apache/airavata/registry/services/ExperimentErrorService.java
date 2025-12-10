@@ -20,10 +20,11 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorPK;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentErrorRepository;
 import org.springframework.stereotype.Service;
@@ -31,32 +32,63 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ExperimentErrorService {
-    private final ExperimentErrorRepository experimentErrorRepository;
-    private final Mapper mapper;
+public class ExperimentErrorService extends BaseErrorService<ExperimentErrorEntity, ExperimentErrorRepository, ExperimentErrorPK> {
 
     public ExperimentErrorService(ExperimentErrorRepository experimentErrorRepository, Mapper mapper) {
-        this.experimentErrorRepository = experimentErrorRepository;
-        this.mapper = mapper;
+        super(experimentErrorRepository, mapper);
     }
 
+    @Override
+    protected BiConsumer<ExperimentErrorEntity, String> getParentIdSetter() {
+        return ExperimentErrorEntity::setExperimentId;
+    }
+
+    @Override
+    protected Function<String, java.util.List<ExperimentErrorEntity>> getFindByParentIdFunction() {
+        return repository::findByExperimentId;
+    }
+
+    @Override
+    protected Class<ExperimentErrorEntity> getEntityClass() {
+        return ExperimentErrorEntity.class;
+    }
+
+    @Override
+    protected Function<ExperimentErrorEntity, String> getErrorIdExtractor() {
+        return ExperimentErrorEntity::getErrorId;
+    }
+
+    /**
+     * Add an experiment error.
+     *
+     * @param error The error model to persist
+     * @param experimentId The ID of the experiment
+     * @return The ID of the saved error entity
+     * @throws RegistryException if the operation fails
+     */
     public String addExperimentError(ErrorModel error, String experimentId) throws RegistryException {
-        ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
-        entity.setExperimentId(experimentId);
-        ExperimentErrorEntity saved = experimentErrorRepository.save(entity);
-        return saved.getErrorId();
+        return addError(error, experimentId);
     }
 
+    /**
+     * Update an experiment error.
+     *
+     * @param error The error model with updated information
+     * @param experimentId The ID of the experiment
+     * @throws RegistryException if the operation fails
+     */
     public void updateExperimentError(ErrorModel error, String experimentId) throws RegistryException {
-        ExperimentErrorEntity entity = mapper.map(error, ExperimentErrorEntity.class);
-        entity.setExperimentId(experimentId);
-        experimentErrorRepository.save(entity);
+        updateError(error, experimentId);
     }
 
-    public List<ErrorModel> getExperimentErrors(String experimentId) throws RegistryException {
-        List<ExperimentErrorEntity> entities = experimentErrorRepository.findByExperimentId(experimentId);
-        List<ErrorModel> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ErrorModel.class)));
-        return result;
+    /**
+     * Retrieve all errors for an experiment.
+     *
+     * @param experimentId The ID of the experiment
+     * @return List of error models
+     * @throws RegistryException if the operation fails
+     */
+    public java.util.List<ErrorModel> getExperimentErrors(String experimentId) throws RegistryException {
+        return getErrors(experimentId);
     }
 }

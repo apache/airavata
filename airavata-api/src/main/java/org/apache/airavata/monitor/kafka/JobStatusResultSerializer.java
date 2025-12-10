@@ -25,6 +25,10 @@ import org.apache.kafka.common.serialization.Serializer;
 
 public class JobStatusResultSerializer implements Serializer<JobStatusResult> {
 
+    /**
+     * Configure the serializer. Required by Kafka Serializer interface.
+     * No configuration needed for this serializer.
+     */
     @Override
     public void configure(Map<String, ?> map, boolean b) {}
 
@@ -36,6 +40,10 @@ public class JobStatusResultSerializer implements Serializer<JobStatusResult> {
         return serializedData.getBytes();
     }
 
+    /**
+     * Close the serializer. Required by Kafka Serializer interface.
+     * No cleanup needed for this serializer.
+     */
     @Override
     public void close() {}
 }

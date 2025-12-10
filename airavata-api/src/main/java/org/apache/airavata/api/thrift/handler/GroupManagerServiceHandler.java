@@ -24,29 +24,28 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.GroupManagerService;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupManagerServiceHandler implements GroupManagerService.Iface {
+public class GroupManagerServiceHandler implements org.apache.airavata.profile.groupmanager.cpi.GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
-    private final org.apache.airavata.service.GroupManagerService groupManagerService;
+    private final GroupManagerService groupManagerService;
 
-    public GroupManagerServiceHandler(org.apache.airavata.service.GroupManagerService groupManagerService) {
+    public GroupManagerServiceHandler(GroupManagerService groupManagerService) {
         this.groupManagerService = groupManagerService;
         logger.info("GroupManagerServiceHandler initialized with Spring-injected GroupManagerService");
     }
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
+        return org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
     @Override

@@ -64,10 +64,40 @@ public abstract class AbstractRepository<T, E, Id> {
         return update(t);
     }
 
-    // FIXME do a bulk insert
+    /**
+     * Bulk create entities. Uses batch processing for better performance.
+     *
+     * @param tList List of Thrift models to persist
+     * @return List of persisted Thrift models
+     * @throws SharingRegistryException if the operation fails
+     */
     @Transactional
     public List<T> create(List<T> tList) throws SharingRegistryException {
-        return update(tList);
+        if (tList == null || tList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        EntityManager em = getEntityManager();
+        List<T> result = new ArrayList<>();
+        int batchSize = 50; // Process in batches to avoid memory issues
+        
+        for (int i = 0; i < tList.size(); i++) {
+            E entity = getMapper().map(tList.get(i), dbEntityGenericClass);
+            em.persist(entity);
+            result.add(getMapper().map(entity, thriftGenericClass));
+            
+            // Flush and clear every batchSize entities to manage memory
+            if ((i + 1) % batchSize == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
+        
+        // Final flush for remaining entities
+        if (tList.size() % batchSize != 0) {
+            em.flush();
+        }
+        
+        return result;
     }
 
     @Transactional
@@ -78,12 +108,40 @@ public abstract class AbstractRepository<T, E, Id> {
         return getMapper().map(persistedCopy, thriftGenericClass);
     }
 
-    // FIXME do a bulk update
+    /**
+     * Bulk update entities. Uses batch processing for better performance.
+     *
+     * @param tList List of Thrift models to update
+     * @return List of updated Thrift models
+     * @throws SharingRegistryException if the operation fails
+     */
     @Transactional
     public List<T> update(List<T> tList) throws SharingRegistryException {
-        List<T> returnList = new ArrayList<>();
-        for (T temp : tList) returnList.add(update(temp));
-        return returnList;
+        if (tList == null || tList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        EntityManager em = getEntityManager();
+        List<T> result = new ArrayList<>();
+        int batchSize = 50; // Process in batches to avoid memory issues
+        
+        for (int i = 0; i < tList.size(); i++) {
+            E entity = getMapper().map(tList.get(i), dbEntityGenericClass);
+            E merged = em.merge(entity);
+            result.add(getMapper().map(merged, thriftGenericClass));
+            
+            // Flush and clear every batchSize entities to manage memory
+            if ((i + 1) % batchSize == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
+        
+        // Final flush for remaining entities
+        if (tList.size() % batchSize != 0) {
+            em.flush();
+        }
+        
+        return result;
     }
 
     @Transactional

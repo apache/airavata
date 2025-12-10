@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.logging.MDCConstants;
-import org.apache.airavata.common.logging.MDCUtil;
+import org.apache.airavata.common.logging.LoggingUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -894,7 +894,7 @@ public class OrchestratorService {
                             logger.error("expId: " + experimentId + ", Error while launching single app experiment", e);
                         }
                     };
-                    executorService.execute(MDCUtil.wrapWithMDC(runner));
+                    executorService.execute(LoggingUtil.withMDC(runner));
                 }
             }
             return result;

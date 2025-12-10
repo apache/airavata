@@ -55,6 +55,10 @@ public class AWSCompletingTask extends AiravataTask {
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 
+    /**
+     * Called when the task is cancelled.
+     * No cleanup needed for AWS completing tasks.
+     */
     @Override
     public void onCancel(TaskContext taskContext) {}
 }

@@ -108,7 +108,8 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 break;
 
                             case READ:
-                                // FIXME: Remove if not required
+                                // FIXME: Remove if not required - READ permission handling may be redundant
+                                // Verify if this case is needed after reviewing permission model
                                 break;
 
                             case DELETE:
