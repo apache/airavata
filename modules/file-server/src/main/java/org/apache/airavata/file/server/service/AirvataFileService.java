@@ -29,9 +29,12 @@ import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,10 +45,21 @@ public class AirvataFileService {
 
     private final AdaptorSupport adaptorSupport;
     private final RegistryService registryService;
+    private final ApplicationContext applicationContext;
+    private final UserProfileService userProfileService;
+    private final CredentialStoreService credentialStoreService;
 
-    public AirvataFileService(AdaptorSupport adaptorSupport, RegistryService registryService) {
+    public AirvataFileService(
+            AdaptorSupport adaptorSupport,
+            RegistryService registryService,
+            ApplicationContext applicationContext,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService) {
         this.adaptorSupport = adaptorSupport;
         this.registryService = registryService;
+        this.applicationContext = applicationContext;
+        this.userProfileService = userProfileService;
+        this.credentialStoreService = credentialStoreService;
     }
 
     private AgentAdaptor getAgentAdaptor(ProcessDataManager dataManager, String processId) throws Exception {
@@ -60,7 +74,8 @@ public class AirvataFileService {
     }
 
     public FileMetadata getInfo(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryService, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(
+                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
@@ -69,7 +84,8 @@ public class AirvataFileService {
     }
 
     public AiravataDirectory listDir(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryService, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(
+                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
@@ -96,7 +112,8 @@ public class AirvataFileService {
     }
 
     public AiravataFile listFile(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(registryService, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(
+                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
@@ -113,7 +130,8 @@ public class AirvataFileService {
         metadata.setSize(file.getSize());
         Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
-        ProcessDataManager dataManager = new ProcessDataManager(registryService, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(
+                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
@@ -133,7 +151,8 @@ public class AirvataFileService {
 
     public Path downloadFile(String processId, String subPath) throws Exception {
 
-        ProcessDataManager dataManager = new ProcessDataManager(registryService, processId, adaptorSupport);
+        ProcessDataManager dataManager = new ProcessDataManager(
+                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
         AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 

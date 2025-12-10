@@ -21,7 +21,6 @@ package org.apache.airavata.file.server;
 
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.service.RegistryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -35,8 +34,5 @@ public class FileServerConfiguration {
         return AdaptorSupportImpl.getInstance();
     }
 
-    @Bean
-    public RegistryService registryService() {
-        return new RegistryService();
-    }
+    // RegistryService is already a @Service bean, no need to create it here
 }

@@ -60,16 +60,17 @@ import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
-    private static ApplicationContext applicationContext;
+    private final AWSTaskUtil awsTaskUtil;
 
     public AWSJobSubmissionTask(
             ApplicationContext applicationContext,
             org.apache.airavata.service.RegistryService registryService,
             org.apache.airavata.service.UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
+            AWSTaskUtil awsTaskUtil) {
         super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
-        AWSJobSubmissionTask.applicationContext = applicationContext;
+        this.awsTaskUtil = awsTaskUtil;
     }
 
     private static final int WAIT_MAX_RETRIES = 10;
@@ -218,7 +219,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                     awsContext.getInstanceId(),
                     publicIpAddress,
                     getProcessId());
-            AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+            awsTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
 
         } catch (Exception e) {
             LOGGER.error("Failed to execute full cleanup during onCancel for process {}", getProcessId(), e);
@@ -230,7 +231,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     protected void cleanup() {
         super.cleanup();
         LOGGER.info("AWS Job Submission Task cleanup for process {}", getProcessId());
-        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+        awsTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
     }
 
     private String verifyInstanceIsRunning(String token, String instanceId, String region) throws Exception {
@@ -241,7 +242,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                 MAX_DELAY_SECONDS,
                 TimeUnit.SECONDS);
 
-        try (Ec2Client ec2Client = AWSTaskUtil.buildEc2Client(token, getGatewayId(), region)) {
+        try (Ec2Client ec2Client = awsTaskUtil.buildEc2Client(token, getGatewayId(), region)) {
             return waiter.waitUntil(() -> {
                 DescribeInstancesRequest request = DescribeInstancesRequest.builder()
                         .instanceIds(instanceId)

@@ -134,19 +134,7 @@ public class PostWorkflowManager extends WorkflowManager {
             return false;
         }
 
-        RegistryService registryService;
-        // Use injected registryService from WorkflowManager
-        if (this.registryService != null) {
-            registryService = this.registryService;
-        } else {
-            // Try to get from Spring context via RegistryServiceProvider
-            try {
-                registryService = org.apache.airavata.config.RegistryServiceProvider.getInstance();
-            } catch (Exception e) {
-                logger.error("Failed to get RegistryService from RegistryServiceProvider", e);
-                return false;
-            }
-        }
+        RegistryService registryService = this.registryService;
 
         var jobId = jobStatusResult.getJobId();
         var jobName = jobStatusResult.getJobName();

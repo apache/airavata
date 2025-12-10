@@ -41,25 +41,28 @@ public class AWSTaskFactory implements HelixTaskFactory {
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder;
+    private final org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil awsTaskUtil;
 
     public AWSTaskFactory(
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
+            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
+            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil awsTaskUtil) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
         this.groovyMapBuilder = groovyMapBuilder;
+        this.awsTaskUtil = awsTaskUtil;
     }
 
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
         LOGGER.info("Creating AWS CreateEc2InstanceTask for process {}...", processId);
         return new CreateEC2InstanceTask(
-                applicationContext, registryService, userProfileService, credentialStoreService);
+                applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
     }
 
     @Override
@@ -70,7 +73,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
         return new AWSJobSubmissionTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
+                applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder, awsTaskUtil);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return new AWSCompletingTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new AWSCompletingTask(applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
     }
 
     @Override

@@ -65,8 +65,8 @@ import org.springframework.stereotype.Component;
 public abstract class AiravataTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
-    private static ApplicationContext applicationContext;
 
+    protected final ApplicationContext applicationContext;
     protected final RegistryService registryService;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
@@ -76,13 +76,13 @@ public abstract class AiravataTask extends AbstractTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService) {
-        AiravataTask.applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
     }
 
-    public static ApplicationContext getApplicationContext() {
+    protected ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 
@@ -688,42 +688,4 @@ public abstract class AiravataTask extends AbstractTask {
         this.autoSchedule = autoSchedule;
     }
 
-    // Static methods for backward compatibility - delegate to instance via ApplicationContext
-    public static RegistryService getRegistryServiceStatic() {
-        if (applicationContext != null) {
-            // Try to get from a bean instance first
-            try {
-                AiravataTask task = applicationContext.getBean(AiravataTask.class);
-                return task.getRegistryService();
-            } catch (Exception e) {
-                // Fallback to direct bean lookup
-                return applicationContext.getBean(RegistryService.class);
-            }
-        }
-        throw new IllegalStateException("ApplicationContext not available");
-    }
-
-    public static UserProfileService getUserProfileServiceStatic() {
-        if (applicationContext != null) {
-            try {
-                AiravataTask task = applicationContext.getBean(AiravataTask.class);
-                return task.getUserProfileService();
-            } catch (Exception e) {
-                return applicationContext.getBean(UserProfileService.class);
-            }
-        }
-        throw new IllegalStateException("ApplicationContext not available");
-    }
-
-    public static CredentialStoreService getCredentialStoreServiceStatic() {
-        if (applicationContext != null) {
-            try {
-                AiravataTask task = applicationContext.getBean(AiravataTask.class);
-                return task.getCredentialStoreService();
-            } catch (Exception e) {
-                return applicationContext.getBean(CredentialStoreService.class);
-            }
-        }
-        throw new IllegalStateException("ApplicationContext not available");
-    }
 }

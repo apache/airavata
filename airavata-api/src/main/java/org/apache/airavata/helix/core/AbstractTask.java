@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.helix.core;
 
-import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.core.util.TaskUtil;
@@ -227,18 +226,9 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         if (curatorClient == null) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
             try {
-                // Try to get properties from ApplicationContext via AiravataTask
-                String zkConnection = "localhost:2181"; // default
-                try {
-                    var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
-                    if (ctx != null) {
-                        var props = ctx.getBean(AiravataServerProperties.class);
-                        zkConnection = props.zookeeper.serverConnection;
-                    }
-                } catch (Exception e) {
-                    logger.warn(
-                            "Could not get properties from ApplicationContext, using default zookeeper connection", e);
-                }
+                // Try to get properties from ApplicationSettings
+                String zkConnection = org.apache.airavata.common.utils.ApplicationSettings.getSetting(
+                        "zookeeper.server-connection", "localhost:2181");
                 AbstractTask.curatorClient = CuratorFrameworkFactory.newClient(zkConnection, retryPolicy);
                 AbstractTask.curatorClient.start();
             } catch (Exception e) {

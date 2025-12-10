@@ -25,11 +25,12 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/29/17.
  */
+@Component
 public class DBEventManagerRunner implements IServer {
 
     private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
@@ -37,7 +38,12 @@ public class DBEventManagerRunner implements IServer {
     private static final String SERVER_NAME = "DB Event Manager";
     private static final String SERVER_VERSION = "1.0";
 
+    private final AiravataServerProperties properties;
     private ServerStatus status;
+
+    public DBEventManagerRunner(AiravataServerProperties properties) {
+        this.properties = properties;
+    }
 
     /**
      * Start required messaging utilities
@@ -72,23 +78,10 @@ public class DBEventManagerRunner implements IServer {
     public void start() throws Exception {
 
         try {
-            // Get properties from ApplicationContext if available
-            AiravataServerProperties props = null;
-            try {
-                ApplicationContext ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
-                if (ctx != null) {
-                    props = ctx.getBean(AiravataServerProperties.class);
-                }
-            } catch (Exception e) {
-                log.warn("Could not get properties from ApplicationContext", e);
-            }
-
-            final AiravataServerProperties finalProps = props;
             Runnable runner = new Runnable() {
                 @Override
                 public void run() {
-                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner(finalProps);
+                    DBEventManagerRunner.this.startDBEventManagerRunner(properties);
                 }
             };
 

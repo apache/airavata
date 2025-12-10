@@ -47,6 +47,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     private static final Object mutex = new Object();
     private Publisher publisher;
     private AiravataServerProperties properties;
+    private OrchestratorUtils orchestratorUtils;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         if (orchestratorContext.getPublisher() != null) {
@@ -67,6 +68,10 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
         this.properties = properties;
     }
 
+    public void setOrchestratorUtils(OrchestratorUtils orchestratorUtils) {
+        this.orchestratorUtils = orchestratorUtils;
+    }
+
     /**
      * Submit the job to a shared launch.queue accross multiple gfac instances
      *
@@ -79,7 +84,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     public boolean submit(String experimentId, String processId, String tokenId) throws OrchestratorException {
         try {
             String gatewayId = null;
-            CredentialReader credentialReader = OrchestratorUtils.getCredentialReader();
+            CredentialReader credentialReader = orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);
@@ -119,7 +124,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     public boolean terminate(String experimentId, String processId, String tokenId) throws OrchestratorException {
         String gatewayId = null;
         try {
-            CredentialReader credentialReader = OrchestratorUtils.getCredentialReader();
+            CredentialReader credentialReader = orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);

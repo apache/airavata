@@ -33,13 +33,16 @@ import org.slf4j.LoggerFactory;
 public class AWSCompletingTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AWSCompletingTask.class);
+    private final AWSTaskUtil awsTaskUtil;
 
     public AWSCompletingTask(
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.RegistryService registryService,
             org.apache.airavata.service.UserProfileService userProfileService,
-            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            AWSTaskUtil awsTaskUtil) {
         super(applicationContext, registryService, userProfileService, credentialStoreService);
+        this.awsTaskUtil = awsTaskUtil;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class AWSCompletingTask extends AiravataTask {
         logger.info("Process {} successfully completed", getProcessId());
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
         cleanup();
-        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+        awsTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 

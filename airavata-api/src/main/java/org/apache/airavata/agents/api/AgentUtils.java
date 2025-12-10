@@ -21,53 +21,26 @@ package org.apache.airavata.agents.api;
 
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AgentUtils implements ApplicationContextAware {
-
-    private static ApplicationContext applicationContext;
+public class AgentUtils {
 
     private final RegistryService registryService;
     private final CredentialStoreService credentialStoreService;
 
     public AgentUtils(
-            ApplicationContext applicationContext,
             RegistryService registryService,
             CredentialStoreService credentialStoreService) {
-        AgentUtils.applicationContext = applicationContext;
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        AgentUtils.applicationContext = applicationContext;
-    }
-
-    // Instance methods for Spring DI
-    public RegistryService getRegistryServiceInstance() {
+    public RegistryService getRegistryService() {
         return registryService;
     }
 
-    public CredentialStoreService getCredentialServiceInstance() {
+    public CredentialStoreService getCredentialService() {
         return credentialStoreService;
-    }
-
-    // Static methods for backward compatibility - delegate to instance
-    public static RegistryService getRegistryService() throws AgentException {
-        if (applicationContext != null) {
-            return applicationContext.getBean(AgentUtils.class).getRegistryServiceInstance();
-        }
-        throw new AgentException("ApplicationContext not available. RegistryService cannot be retrieved.");
-    }
-
-    public static CredentialStoreService getCredentialService() throws AgentException {
-        if (applicationContext != null) {
-            return applicationContext.getBean(AgentUtils.class).getCredentialServiceInstance();
-        }
-        throw new AgentException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
     }
 }

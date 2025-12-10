@@ -31,7 +31,6 @@ import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,36 +40,10 @@ import org.springframework.stereotype.Component;
 public class GatewayGroupsInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayGroupsInitializer.class);
-    private static ApplicationContext applicationContext;
 
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final CredentialStoreService credentialStoreService;
-
-    public GatewayGroupsInitializer(
-            ApplicationContext applicationContext,
-            RegistryService registryService,
-            SharingRegistryService sharingRegistryService,
-            CredentialStoreService credentialStoreService) {
-        GatewayGroupsInitializer.applicationContext = applicationContext;
-        this.registryService = registryService;
-        this.sharingRegistryService = sharingRegistryService;
-        this.credentialStoreService = credentialStoreService;
-    }
-
-    public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
-        try {
-            if (applicationContext == null) {
-                throw new RuntimeException(
-                        "ApplicationContext not available. GatewayGroupsInitializer cannot be retrieved.");
-            }
-            GatewayGroupsInitializer gatewayGroupsInitializer =
-                    applicationContext.getBean(GatewayGroupsInitializer.class);
-            return gatewayGroupsInitializer.initialize(gatewayId);
-        } catch (SharingRegistryException | RegistryServiceException | CredentialStoreException e) {
-            throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
-        }
-    }
 
     public GatewayGroupsInitializer(
             RegistryService registryService,

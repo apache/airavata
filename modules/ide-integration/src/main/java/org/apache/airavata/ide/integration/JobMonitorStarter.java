@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.ide.integration;
 
-import org.apache.airavata.monitor.email.EmailBasedMonitor;
-
 public class JobMonitorStarter {
     public static void main(String args[]) throws Exception {
-        EmailBasedMonitor emailBasedMonitor = new EmailBasedMonitor();
-        emailBasedMonitor.startServer();
+        // Note: EmailBasedMonitor is a Spring component and requires dependencies.
+        // This main method should be run within a Spring application context.
+        throw new UnsupportedOperationException(
+                "EmailBasedMonitor must be used within a Spring application context");
     }
 }

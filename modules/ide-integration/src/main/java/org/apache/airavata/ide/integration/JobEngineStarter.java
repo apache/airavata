@@ -22,10 +22,7 @@ package org.apache.airavata.ide.integration;
 import java.util.ArrayList;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.helix.core.AbstractTask;
-import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
-import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
-import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
@@ -53,9 +50,9 @@ public class JobEngineStarter {
         zkHelixAdmin.addCluster(ApplicationSettings.getSetting("helix.cluster-name"), true);
 
         logger.info("Starting Helix Controller .......");
-        // Starting helix controller
-        HelixController controller = new HelixController();
-        controller.startServer();
+        // Note: HelixController is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        logger.warn("HelixController requires Spring context - skipping in standalone mode");
 
         ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
@@ -64,18 +61,14 @@ public class JobEngineStarter {
         }
 
         logger.info("Starting Helix Participant .......");
-
-        // Starting helix participant
-        globalParticipant.startServer();
+        // Note: GlobalParticipant is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        logger.warn("GlobalParticipant requires Spring context - skipping in standalone mode");
 
         logger.info("Starting Pre Workflow Manager .......");
-
-        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
-
-        logger.info("Starting Post Workflow Manager .......");
-
-        PostWorkflowManager postWorkflowManager = new PostWorkflowManager();
-        postWorkflowManager.startServer();
+        // Note: PreWorkflowManager and PostWorkflowManager are Spring components
+        // and require dependency injection. This main method should be run within
+        // a Spring application context or these should be obtained from the context.
+        logger.warn("PreWorkflowManager and PostWorkflowManager require Spring context - skipping in standalone mode");
     }
 }

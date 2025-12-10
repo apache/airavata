@@ -181,6 +181,8 @@ public class AiravataService {
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final CredentialStoreService credentialStoreService;
+    private final SSHAccountManager sshAccountManager;
+    private final GatewayGroupsInitializer gatewayGroupsInitializer;
     private Publisher statusPublisher;
     private Publisher experimentPublisher;
 
@@ -188,11 +190,15 @@ public class AiravataService {
             AiravataServerProperties properties,
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
-            CredentialStoreService credentialStoreService) {
+            CredentialStoreService credentialStoreService,
+            SSHAccountManager sshAccountManager,
+            GatewayGroupsInitializer gatewayGroupsInitializer) {
         this.properties = properties;
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.credentialStoreService = credentialStoreService;
+        this.sshAccountManager = sshAccountManager;
+        this.gatewayGroupsInitializer = gatewayGroupsInitializer;
 
         logger.info("Initialized RegistryService");
         logger.info("Initialized SharingRegistryService");
@@ -2873,10 +2879,14 @@ public class AiravataService {
             if (isGatewayGroupsExists(gatewayId)) {
                 return getGatewayGroups(gatewayId);
             } else {
-                return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+                return gatewayGroupsInitializer.initialize(gatewayId);
             }
         } catch (AiravataSystemException e) {
             throw e;
+        } catch (Exception e) {
+            String msg = "Error while initializing gateway groups: " + gatewayId + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -4445,7 +4455,7 @@ public class AiravataService {
                     userId,
                     computeResourceId,
                     gatewayId);
-            return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
+            return sshAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
         } catch (InvalidSetupException | InvalidUsernameException e) {
             String msg = "Error occurred while checking if user has an SSH Account: " + e.getMessage();
             logger.error(msg, e);
@@ -4466,7 +4476,7 @@ public class AiravataService {
                     gatewayId);
 
             SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
-            return SSHAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
+            return sshAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
         } catch (InvalidSetupException
                 | InvalidUsernameException
                 | CredentialStoreException
@@ -4489,7 +4499,7 @@ public class AiravataService {
                     gatewayId);
 
             SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
-            return SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
+            return sshAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
         } catch (AiravataSystemException e) {
             throw e;
         } catch (CredentialStoreException | InvalidSetupException | InvalidUsernameException e) {

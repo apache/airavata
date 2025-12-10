@@ -74,7 +74,6 @@ import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -784,24 +783,24 @@ public class TaskContext {
 
     public RegistryService getRegistryService() {
         if (registryService == null) {
-            // Get from AiravataTask if available
-            ApplicationContext applicationContext = AiravataTask.getApplicationContext();
-            if (applicationContext != null) {
-                registryService = applicationContext.getBean(RegistryService.class);
-            }
+            throw new IllegalStateException("RegistryService not set in TaskContext. It must be set via setRegistryService()");
         }
         return registryService;
     }
 
+    public void setRegistryService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
+
     public UserProfileService getProfileService() {
         if (profileService == null) {
-            // Get from AiravataTask if available
-            ApplicationContext applicationContext = AiravataTask.getApplicationContext();
-            if (applicationContext != null) {
-                profileService = applicationContext.getBean(UserProfileService.class);
-            }
+            throw new IllegalStateException("UserProfileService not set in TaskContext. It must be set via setProfileService()");
         }
         return profileService;
+    }
+
+    public void setProfileService(UserProfileService profileService) {
+        this.profileService = profileService;
     }
 
     public UserProfile getUserProfile() throws TaskOnFailException {
@@ -1035,10 +1034,8 @@ public class TaskContext {
     }
 
     private AiravataSecurityManager getSecurityManager() {
-        ApplicationContext applicationContext = AiravataTask.getApplicationContext();
-        if (applicationContext != null) {
-            return applicationContext.getBean(AiravataSecurityManager.class);
-        }
-        throw new RuntimeException("Unable to get SecurityManager - ApplicationContext not available");
+        // SecurityManager should be injected or retrieved via a different mechanism
+        // For now, throw an exception indicating it needs to be set
+        throw new RuntimeException("Unable to get SecurityManager - SecurityManager must be injected into TaskContext");
     }
 }

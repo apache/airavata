@@ -25,9 +25,9 @@ import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -40,34 +40,18 @@ import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 public final class AWSTaskUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSTaskUtil.class);
-    private static ApplicationContext applicationContext;
 
     private final CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
 
-    public AWSTaskUtil(CredentialStoreService credentialStoreService, ApplicationContext applicationContext) {
+    public AWSTaskUtil(
+            CredentialStoreService credentialStoreService, RegistryService registryService) {
         this.credentialStoreService = credentialStoreService;
-        AWSTaskUtil.applicationContext = applicationContext;
+        this.registryService = registryService;
     }
 
-    // Instance method for Spring DI
-    private CredentialStoreService getCredentialStoreServiceInstance() {
-        return credentialStoreService;
-    }
-
-    // Static method for backward compatibility - delegates to Spring-managed instance
-    private static CredentialStoreService getCredentialStoreServiceStatic() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(AWSTaskUtil.class).getCredentialStoreServiceInstance();
-        }
-        throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
-    }
-
-    public static Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
+    public Ec2Client buildEc2Client(String token, String gatewayId, String region) throws Exception {
         LOGGER.info("Building EC2 client for token {} and gateway id {} in region {}", token, gatewayId, region);
-        if (applicationContext == null) {
-            throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
-        }
-        CredentialStoreService credentialStoreService = applicationContext.getBean(CredentialStoreService.class);
         PasswordCredential pwdCred = credentialStoreService.getPasswordCredential(token, gatewayId);
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
@@ -77,14 +61,9 @@ public final class AWSTaskUtil {
                 .build();
     }
 
-    public static void terminateEC2Instance(TaskContext taskContext, String gatewayId) {
+    public void terminateEC2Instance(TaskContext taskContext, String gatewayId) {
         LOGGER.warn("Full resource cleanup triggered for process {}", taskContext.getProcessId());
         try {
-            if (applicationContext == null) {
-                throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
-            }
-            org.apache.airavata.service.RegistryService registryService =
-                    applicationContext.getBean(org.apache.airavata.service.RegistryService.class);
             AWSProcessContextManager awsContext = new AWSProcessContextManager(registryService, taskContext);
             AwsComputeResourcePreference awsPrefs = taskContext
                     .getGroupComputeResourcePreference()
@@ -143,7 +122,6 @@ public final class AWSTaskUtil {
                     ec2Client.deleteKeyPair(req -> req.keyName(keyName));
                 }
                 if (sshCredentialToken != null) {
-                    CredentialStoreService credentialStoreService = getCredentialStoreServiceStatic();
                     credentialStoreService.deleteSSHCredential(sshCredentialToken, gatewayId);
                 }
             }

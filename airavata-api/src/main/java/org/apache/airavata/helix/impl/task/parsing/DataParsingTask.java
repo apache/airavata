@@ -60,13 +60,13 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.monitor.platform.CountMonitor;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Implementation of the data parsing task.
@@ -78,13 +78,14 @@ public class DataParsingTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
     private static final CountMonitor parsingTaskCounter = new CountMonitor("parsing_task_counter");
-    private static ApplicationContext applicationContext;
 
     private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    public DataParsingTask(RegistryService registryService, ApplicationContext applicationContext) {
+    public DataParsingTask(
+            RegistryService registryService, AiravataServerProperties properties) {
         this.registryService = registryService;
-        DataParsingTask.applicationContext = applicationContext;
+        this.properties = properties;
     }
 
     @TaskParam(name = "Parser Id")
@@ -336,20 +337,11 @@ public class DataParsingTask extends AbstractTask {
                     .exec(new WaitContainerResultCallback())
                     .awaitStatusCode();
             logger.info("Container " + containerResponse.getId() + " exited with status code " + statusCode);
-
             logger.info("Container logs " + dockerLogs.toString());
         }
 
-        boolean deleteContainer = false;
-        try {
-            var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
-            if (ctx != null) {
-                var props = ctx.getBean(org.apache.airavata.config.AiravataServerProperties.class);
-                deleteContainer = props.services.parser.deleteContainer;
-            }
-        } catch (Exception e) {
-            logger.warn("Could not get properties from ApplicationContext", e);
-        }
+        boolean deleteContainer = this.properties != null && this.properties.services != null 
+                && this.properties.services.parser != null && this.properties.services.parser.deleteContainer;
         if (deleteContainer) {
             dockerClient.removeContainerCmd(containerResponse.getId()).exec();
             logger.info("Successfully removed container with id " + containerResponse.getId());
@@ -358,11 +350,6 @@ public class DataParsingTask extends AbstractTask {
 
     private StorageResourceAdaptor getStorageResourceAdaptor(String storageResourceId, AdaptorSupport adaptorSupport)
             throws TaskOnFailException, AgentException, RegistryServiceException {
-        // Use injected service, fallback to ApplicationContext if not injected
-        RegistryService registryService = this.registryService;
-        if (registryService == null && applicationContext != null) {
-            registryService = applicationContext.getBean(RegistryService.class);
-        }
         if (registryService == null) {
             throw new TaskOnFailException("RegistryService not available.", false, null);
         }
@@ -502,20 +489,8 @@ public class DataParsingTask extends AbstractTask {
 
     private RegistryService getRegistryServiceClient() throws TaskOnFailException {
         // Use injected service, fallback to ApplicationContext if not injected
-        RegistryService registryService = this.registryService;
-        if (registryService == null && applicationContext != null) {
-            registryService = applicationContext.getBean(RegistryService.class);
-        }
         if (registryService == null) {
-            org.springframework.context.ApplicationContext airavataContext =
-                    org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
-            if (airavataContext != null) {
-                registryService = airavataContext.getBean(RegistryService.class);
-            }
-        }
-        if (registryService == null) {
-            throw new TaskOnFailException(
-                    "ApplicationContext not available. RegistryService cannot be retrieved.", false, null);
+            throw new TaskOnFailException("RegistryService not available.", false, null);
         }
         return registryService;
     }

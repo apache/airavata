@@ -36,7 +36,6 @@ import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,39 +44,11 @@ public class SSHAccountManager {
     private final RegistryService registryService;
     private final CredentialStoreService credentialStoreService;
 
-    private static ApplicationContext applicationContext;
-
     public SSHAccountManager(
             RegistryService registryService,
-            CredentialStoreService credentialStoreService,
-            ApplicationContext applicationContext) {
+            CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
-        SSHAccountManager.applicationContext = applicationContext;
-    }
-
-    // Instance methods for Spring DI
-    private RegistryService getRegistryServiceInstance() {
-        return registryService;
-    }
-
-    private CredentialStoreService getCredentialStoreServiceInstance() {
-        return credentialStoreService;
-    }
-
-    // Static methods for backward compatibility - delegate to Spring-managed instance
-    private static RegistryService getRegistryServiceStatic() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(SSHAccountManager.class).getRegistryServiceInstance();
-        }
-        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
-    }
-
-    private static CredentialStoreService getCredentialStoreServiceStatic() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(SSHAccountManager.class).getCredentialStoreServiceInstance();
-        }
-        throw new RuntimeException("ApplicationContext not available. CredentialStoreService cannot be retrieved.");
     }
 
     /**
@@ -89,7 +60,7 @@ public class SSHAccountManager {
      * @throws InvalidSetupException
      * @throws InvalidUsernameException
      */
-    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String userId)
+    public boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String userId)
             throws InvalidSetupException, InvalidUsernameException {
         SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
 
@@ -102,10 +73,10 @@ public class SSHAccountManager {
         }
     }
 
-    private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
+    private SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get registry service
-        RegistryService registryService = getRegistryServiceStatic();
+        RegistryService registryService = this.registryService;
         // get compute resource preferences for the gateway and hostname
         ComputeResourcePreference computeResourcePreference = null;
         try {
@@ -126,7 +97,7 @@ public class SSHAccountManager {
         return createSshAccountProvisioner(gatewayId, computeResourcePreference);
     }
 
-    public static boolean isSSHAccountSetupComplete(
+    public boolean isSSHAccountSetupComplete(
             String gatewayId, String computeResourceId, String userId, SSHCredential sshCredential)
             throws InvalidSetupException, InvalidUsernameException {
         SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
@@ -143,12 +114,12 @@ public class SSHAccountManager {
      * @throws InvalidSetupException
      * @throws InvalidUsernameException
      */
-    public static UserComputeResourcePreference setupSSHAccount(
+    public UserComputeResourcePreference setupSSHAccount(
             String gatewayId, String computeResourceId, String userId, SSHCredential sshCredential)
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService registryService = getRegistryServiceStatic();
+        RegistryService registryService = this.registryService;
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -251,7 +222,7 @@ public class SSHAccountManager {
         return userComputeResourcePreference;
     }
 
-    private static String getSSHHostname(
+    private String getSSHHostname(
             ComputeResourceDescription computeResourceDescription, SSHJobSubmission sshJobSubmission) {
         String alternativeSSHHostName = sshJobSubmission.getAlternativeSSHHostName();
         if (alternativeSSHHostName != null && !"".equals(alternativeSSHHostName.trim())) {
@@ -261,7 +232,7 @@ public class SSHAccountManager {
         }
     }
 
-    private static SSHAccountProvisioner createSshAccountProvisioner(
+    private SSHAccountProvisioner createSshAccountProvisioner(
             String gatewayId, ComputeResourcePreference computeResourcePreference) throws InvalidSetupException {
         String provisionerName = computeResourcePreference.getSshAccountProvisioner();
         Map<ConfigParam, String> provisionerConfig =
@@ -274,10 +245,10 @@ public class SSHAccountManager {
         return SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
     }
 
-    private static Map<ConfigParam, String> resolveProvisionerConfig(
+    private Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService credentialStoreService = getCredentialStoreServiceStatic();
+        CredentialStoreService credentialStoreService = this.credentialStoreService;
         // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
         Map<ConfigParam, String> resolvedConfig = new HashMap<>();
         for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
@@ -301,7 +272,7 @@ public class SSHAccountManager {
         return resolvedConfig;
     }
 
-    private static Map<ConfigParam, String> convertConfigParams(
+    private Map<ConfigParam, String> convertConfigParams(
             String provisionerName, Map<String, String> thriftConfigParams) throws InvalidSetupException {
         List<ConfigParam> configParams =
                 SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);

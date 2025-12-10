@@ -45,24 +45,17 @@ import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GroovyMapBuilder {
 
     private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
-    private static ApplicationContext applicationContext;
-
-    public GroovyMapBuilder(RegistryService registryService, ApplicationContext applicationContext) {
+    public GroovyMapBuilder(RegistryService registryService, AiravataServerProperties properties) {
         this.registryService = registryService;
-        GroovyMapBuilder.applicationContext = applicationContext;
-    }
-
-    // Instance method for Spring DI
-    protected RegistryService getRegistryServiceInstance() {
-        return registryService;
+        this.properties = properties;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(GroovyMapBuilder.class);
@@ -467,19 +460,11 @@ public class GroovyMapBuilder {
         }
     }
 
-    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
+    private void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
         ProcessModel processModel = taskContext.getProcessModel();
         String emailIds = null;
 
-        AiravataServerProperties props = null;
-        try {
-            var ctx = org.apache.airavata.helix.impl.task.AiravataTask.getApplicationContext();
-            if (ctx != null) {
-                props = ctx.getBean(AiravataServerProperties.class);
-            }
-        } catch (Exception e) {
-            logger.warn("Could not get properties from ApplicationContext", e);
-        }
+        AiravataServerProperties props = this.properties;
 
         if (isEmailBasedJobMonitor(taskContext) && props != null) {
             emailIds = props.services.monitor.email.address;
@@ -517,12 +502,12 @@ public class GroovyMapBuilder {
         }
     }
 
-    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
+    public boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
         JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
         JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = getRegistryService().getSSHJobSubmission(jobSubmissionInterfaceId);
+            SSHJobSubmission sshJobSubmission = registryService.getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
@@ -547,11 +532,4 @@ public class GroovyMapBuilder {
         return sb.toString();
     }
 
-    // Static method for backward compatibility - delegates to Spring-managed instance
-    private static RegistryService getRegistryService() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(GroovyMapBuilder.class).getRegistryServiceInstance();
-        }
-        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
-    }
 }

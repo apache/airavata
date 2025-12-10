@@ -34,6 +34,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
     protected OrchestratorContext orchestratorContext;
     protected OrchestratorConfiguration orchestratorConfiguration;
     protected AiravataServerProperties properties;
+    protected OrchestratorUtils orchestratorUtils;
 
     private String registryURL;
 
@@ -73,8 +74,8 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         this.properties = props;
         try {
             /* Initializing the OrchestratorConfiguration object */
-            if (properties != null) {
-                orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration(properties);
+            if (properties != null && orchestratorUtils != null) {
+                orchestratorConfiguration = orchestratorUtils.loadOrchestratorConfiguration();
                 setGatewayProperties();
             } else {
                 // Fallback for non-Spring usage

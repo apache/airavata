@@ -31,20 +31,15 @@ import org.springframework.stereotype.Service;
 public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
+    private final UserProfileService userProfileService;
 
-    public UserProfileService userProfileService() {
-        try {
-            LOGGER.info("User profile service initialized");
-            return new UserProfileService();
-        } catch (Exception e) {
-            LOGGER.error("Error while creating user profile service", e);
-            throw new RuntimeException(e);
-        }
+    public AiravataService(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
     }
 
     public UserProfile getUserProfile(String userId) {
         try {
-            return userProfileService().getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
+            return userProfileService.getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
         } catch (Exception e) {
             LOGGER.error("Error while getting user profile with the id: {}", userId, e);
             throw new RuntimeException("Error while getting user profile with the id: " + userId, e);
@@ -53,7 +48,7 @@ public class AiravataService {
 
     public UserProfile getUserProfile(AuthzToken authzToken, String userId, String gatewayId) {
         try {
-            return userProfileService().getUserProfileById(authzToken, userId, gatewayId);
+            return userProfileService.getUserProfileById(authzToken, userId, gatewayId);
         } catch (Exception e) {
             LOGGER.error("Error while getting user profile with the id: {} in the gateway: {}", userId, gatewayId, e);
             throw new RuntimeException(

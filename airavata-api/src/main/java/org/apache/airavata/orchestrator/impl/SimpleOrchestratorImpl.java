@@ -85,15 +85,22 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
+    private final OrchestratorUtils orchestratorUtils;
 
-    public SimpleOrchestratorImpl(RegistryService registryService, AiravataServerProperties properties)
+    public SimpleOrchestratorImpl(
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            OrchestratorUtils orchestratorUtils)
             throws OrchestratorException {
         this.registryService = registryService;
         this.properties = properties;
+        this.orchestratorUtils = orchestratorUtils;
+        super.orchestratorUtils = orchestratorUtils;
         try {
             try {
                 // We are only going to use GFacPassiveJobSubmitter
                 jobSubmitter = new GFACPassiveJobSubmitter();
+                ((GFACPassiveJobSubmitter) jobSubmitter).setOrchestratorUtils(orchestratorUtils);
                 if (this.orchestratorContext != null) {
                     jobSubmitter.initialize(this.orchestratorContext);
                 }
@@ -308,7 +315,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
         try {
             GroupComputeResourcePreference preference =
-                    OrchestratorUtils.getGroupComputeResourcePreference(processModel);
+                    orchestratorUtils.getGroupComputeResourcePreference(processModel);
             ResourceType resourceType = preference.getResourceType();
             logger.info("Determined resource type as {} for process {}", resourceType, processModel.getProcessId());
 
@@ -321,9 +328,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
             // TODO - handle for different resource types
             JobSubmissionInterface preferredJobSubmissionInterface =
-                    OrchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
-            JobSubmissionProtocol preferredJobSubmissionProtocol =
-                    OrchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
+                    orchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
+                    JobSubmissionProtocol preferredJobSubmissionProtocol =
+                    orchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
 
             if (preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
@@ -351,7 +358,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId, ProcessModel processModel, ProcessModel parentProcess) throws OrchestratorException {
         try {
             GroupComputeResourcePreference preference =
-                    OrchestratorUtils.getGroupComputeResourcePreference(processModel);
+                    orchestratorUtils.getGroupComputeResourcePreference(processModel);
             ResourceType resourceType = preference.getResourceType();
             List<String> taskIdList = new ArrayList<>(createAndSaveIntermediateOutputDataStagingTasks(
                     processModel, gatewayId, parentProcess, resourceType));
@@ -390,9 +397,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(
-                OrchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
+                orchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
 
-        String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
+        String scratchLocation = orchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
         envSetupSubModel.setLocation(workingDir);
 
@@ -464,7 +471,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
             List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-            String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
+            String appName = orchestratorUtils.getApplicationInterfaceName(processModel);
             if (processOutputs != null) {
                 for (OutputDataObjectType processOutput : processOutputs) {
                     DataType type = processOutput.getType();
@@ -532,7 +539,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
             List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-            String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
+            String appName = orchestratorUtils.getApplicationInterfaceName(processModel);
             if (processOutputs != null) {
                 for (OutputDataObjectType processOutput : processOutputs) {
                     DataType type = processOutput.getType();
@@ -666,7 +673,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH
                 || jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
             SSHJobSubmission sshJobSubmission =
-                    OrchestratorUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                    orchestratorUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
             monitorMode = sshJobSubmission.getMonitorMode();
         } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
             monitorMode = MonitorMode.FORK;
@@ -774,7 +781,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         ComputeResourceDescription computeResource =
                 registryService.getComputeResource(processModel.getComputeResourceId());
 
-        String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
+        String scratchLocation = orchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir =
                 (scratchLocation.endsWith(File.separator) ? scratchLocation : scratchLocation + File.separator)
                         + processModel.getProcessId()
@@ -783,8 +790,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         URI destination;
         try {
             DataMovementProtocol dataMovementProtocol =
-                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
-            String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
+                    orchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+            String loginUserName = orchestratorUtils.getLoginUserName(processModel, gatewayId);
             StringBuilder destinationPath = new StringBuilder(workingDir);
             Optional.ofNullable(processInput.getOverrideFilename())
                     .ifPresent(destinationPath::append); // If an override filename is provided
@@ -793,7 +800,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     dataMovementProtocol.name(),
                     loginUserName,
                     computeResource.getHostName(),
-                    OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                    orchestratorUtils.getDataMovementPort(processModel, gatewayId),
                     destinationPath.toString(),
                     null,
                     null);
@@ -843,15 +850,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     registryService.getComputeResource(processModel.getComputeResourceId());
             DataStagingTaskModel submodel = new DataStagingTaskModel();
 
-            String workingDir = OrchestratorUtils.getScratchLocation(processModel, gatewayId)
+            String workingDir = orchestratorUtils.getScratchLocation(processModel, gatewayId)
                     + File.separator
                     + (parentProcess == null ? processModel.getProcessId() : parentProcess.getProcessId())
                     + File.separator;
             DataMovementProtocol dataMovementProtocol =
-                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
+                    orchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
             URI source;
             try {
-                String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
+                String loginUserName = orchestratorUtils.getLoginUserName(processModel, gatewayId);
                 if (processOutput != null) {
                     submodel.setType(DataStageType.OUPUT);
                     submodel.setProcessOutput(processOutput);
@@ -859,7 +866,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             dataMovementProtocol.name(),
                             loginUserName,
                             computeResource.getHostName(),
-                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                            orchestratorUtils.getDataMovementPort(processModel, gatewayId),
                             workingDir + processOutput.getValue(),
                             null,
                             null);
@@ -870,7 +877,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             dataMovementProtocol.name(),
                             loginUserName,
                             computeResource.getHostName(),
-                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                            orchestratorUtils.getDataMovementPort(processModel, gatewayId),
                             workingDir,
                             null,
                             null);

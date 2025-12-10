@@ -19,31 +19,13 @@
 */
 package org.apache.airavata.ide.integration;
 
-import org.apache.airavata.api.thrift.server.AiravataServiceServer;
-import org.apache.airavata.api.thrift.server.CredentialServiceServer;
-import org.apache.airavata.api.thrift.server.OrchestratorServiceServer;
-import org.apache.airavata.api.thrift.server.ProfileServiceServer;
-import org.apache.airavata.api.thrift.server.RegistryServiceServer;
-import org.apache.airavata.api.thrift.server.SharingRegistryServer;
-import org.apache.airavata.manager.dbevent.DBEventManagerRunner;
-
 public class APIServerStarter {
 
     public static void main(String[] args) throws Exception {
-        DBEventManagerRunner dbEventManagerRunner = new DBEventManagerRunner();
-        RegistryServiceServer registryAPIServer = new RegistryServiceServer();
-        CredentialServiceServer credentialStoreServer = new CredentialServiceServer();
-        SharingRegistryServer sharingRegistryServer = new SharingRegistryServer();
-        AiravataServiceServer airavataAPIServer = new AiravataServiceServer();
-        OrchestratorServiceServer orchestratorServer = new OrchestratorServiceServer();
-        ProfileServiceServer profileServiceServer = new ProfileServiceServer();
-
-        dbEventManagerRunner.start();
-        registryAPIServer.start();
-        credentialStoreServer.start();
-        sharingRegistryServer.start();
-        airavataAPIServer.start();
-        orchestratorServer.start();
-        profileServiceServer.start();
+        // Note: DBEventManagerRunner is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        // For standalone execution, use Spring Boot application or provide dependencies manually.
+        throw new UnsupportedOperationException(
+                "APIServerStarter must be used within a Spring application context");
     }
 }

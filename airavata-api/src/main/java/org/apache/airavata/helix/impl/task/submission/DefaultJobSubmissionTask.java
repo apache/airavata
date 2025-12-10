@@ -47,8 +47,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
     private static final CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
 
-    private static ApplicationContext applicationContext;
-
     public DefaultJobSubmissionTask(
             ApplicationContext applicationContext,
             RegistryService registryService,
@@ -56,7 +54,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
         super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
-        DefaultJobSubmissionTask.applicationContext = applicationContext;
     }
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";

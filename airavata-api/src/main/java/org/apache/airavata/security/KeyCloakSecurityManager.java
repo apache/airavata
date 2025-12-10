@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.authzcache.*;
+import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.service.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.UserGroup;
@@ -104,15 +105,21 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final AiravataServerProperties properties;
+    private final AuthzCacheManagerFactory authzCacheManagerFactory;
+    private final GatewayGroupsInitializer gatewayGroupsInitializer;
 
     public KeyCloakSecurityManager(
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
-            AiravataServerProperties properties)
+            AiravataServerProperties properties,
+            AuthzCacheManagerFactory authzCacheManagerFactory,
+            GatewayGroupsInitializer gatewayGroupsInitializer)
             throws AiravataSecurityException {
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.properties = properties;
+        this.authzCacheManagerFactory = authzCacheManagerFactory;
+        this.gatewayGroupsInitializer = gatewayGroupsInitializer;
         rolePermissionConfig.put("admin", "/airavata/.*");
         rolePermissionConfig.put("gateway-provider", "/airavata/.*");
         rolePermissionConfig.put(
@@ -193,7 +200,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
             boolean decision;
             if (properties.security.authzCache.enabled) {
-                var authzCacheManager = AuthzCacheManagerFactory.getAuthzCacheManager();
+                var authzCacheManager = authzCacheManagerFactory.getAuthzCacheManager();
                 var cacheIndex = new AuthzCacheIndex(subject, gatewayId, accessToken, action);
                 var authzCachedStatus = authzCacheManager.getAuthzCachedStatus(cacheIndex);
                 switch (authzCachedStatus) {
@@ -296,7 +303,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         if (registryService.isGatewayGroupsExists(gatewayId)) {
             return registryService.getGatewayGroups(gatewayId);
         } else {
-            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+            return gatewayGroupsInitializer.initialize(gatewayId);
         }
     }
 

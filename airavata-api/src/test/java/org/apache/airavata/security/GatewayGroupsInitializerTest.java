@@ -61,14 +61,12 @@ public class GatewayGroupsInitializerTest {
     private CredentialStoreService mockCredentialStoreService;
 
     private GatewayGroupsInitializer gatewayGroupsInitializer;
-    private final ApplicationContext applicationContext;
 
     public GatewayGroupsInitializerTest(
             ApplicationContext applicationContext,
             RegistryService mockRegistryService,
             SharingRegistryService mockSharingRegistryService,
             CredentialStoreService mockCredentialStoreService) {
-        this.applicationContext = applicationContext;
         this.mockRegistryService = mockRegistryService;
         this.mockSharingRegistryService = mockSharingRegistryService;
         this.mockCredentialStoreService = mockCredentialStoreService;
@@ -77,7 +75,6 @@ public class GatewayGroupsInitializerTest {
     @BeforeEach
     public void setUp() {
         gatewayGroupsInitializer = new GatewayGroupsInitializer(
-                applicationContext,
                 mockRegistryService, mockSharingRegistryService, mockCredentialStoreService);
     }
 

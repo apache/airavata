@@ -244,7 +244,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplateInput> templateInputs,
             RegistryService registryService)
             throws Exception {
-        DataParsingTask parsingTask = new DataParsingTask(registryService, applicationContext);
+        DataParsingTask parsingTask = new DataParsingTask(registryService, properties);
         parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-"
                 + UUID.randomUUID().toString()));
         parsingTask.setGatewayId(completionMessage.getGatewayId());
@@ -396,7 +396,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (ParserConnector connector : parentToChild.get(parentParserInfo.getId())) {
                 Parser childParserInfo =
                         registryService.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
-                DataParsingTask parsingTask = new DataParsingTask(registryService, applicationContext);
+                DataParsingTask parsingTask = new DataParsingTask(registryService, properties);
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-"
                         + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());

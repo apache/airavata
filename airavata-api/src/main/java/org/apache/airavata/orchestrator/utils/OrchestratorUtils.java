@@ -51,7 +51,6 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -60,7 +59,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
-    private static ApplicationContext applicationContext;
 
     private final RegistryService registryService;
     private final CredentialReader credentialReader;
@@ -69,22 +67,10 @@ public class OrchestratorUtils {
     public OrchestratorUtils(
             RegistryService registryService,
             CredentialReader credentialReader,
-            AiravataServerProperties properties,
-            ApplicationContext applicationContext) {
+            AiravataServerProperties properties) {
         this.registryService = registryService;
         this.credentialReader = credentialReader;
         this.properties = properties;
-        OrchestratorUtils.applicationContext = applicationContext;
-    }
-
-    // Instance method for Spring DI
-    protected RegistryService getRegistryServiceInstance() {
-        return registryService;
-    }
-
-    // Instance method for Spring DI
-    protected CredentialReader getCredentialReaderInstance() {
-        return credentialReader;
     }
 
     public OrchestratorConfiguration loadOrchestratorConfiguration()
@@ -101,48 +87,31 @@ public class OrchestratorUtils {
         return orchestratorConfiguration;
     }
 
-    public static OrchestratorConfiguration loadOrchestratorConfiguration(AiravataServerProperties properties)
-            throws OrchestratorException, IOException, NumberFormatException {
-
-        OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setEnableValidation(properties.airavata.enableValidation);
-        if (orchestratorConfiguration.isEnableValidation()) {
-            String validators = properties.services.monitor.job.validators;
-            if (validators != null && !validators.isEmpty()) {
-                orchestratorConfiguration.setValidatorClasses(Arrays.asList(validators.split(",")));
-            }
-        }
-        return orchestratorConfiguration;
-    }
-
-    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model, String gatewayId)
+    public JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model, String gatewayId)
             throws RegistryServiceException, OrchestratorException {
         return getPreferredJobSubmissionInterface(model, gatewayId).getJobSubmissionProtocol();
     }
 
-    public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
             throws RegistryServiceException {
-        final RegistryService registryService = getRegistryService();
         return registryService.getGroupComputeResourcePreference(
                 model.getComputeResourceId(), model.getGroupResourceProfileId());
     }
 
-    public static String getApplicationInterfaceName(ProcessModel model)
+    public String getApplicationInterfaceName(ProcessModel model)
             throws RegistryServiceException, OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         ApplicationInterfaceDescription appInterface =
                 registryService.getApplicationInterface(model.getApplicationInterfaceId());
         return appInterface.getApplicationName();
     }
 
-    public static DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model, String gatewayId)
+    public DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model, String gatewayId)
             throws RegistryServiceException, OrchestratorException {
         return getPreferredDataMovementInterface(model, gatewayId).getDataMovementProtocol();
     }
 
-    public static StoragePreference getStoragePreference(ProcessModel processModel, String gatewayId)
+    public StoragePreference getStoragePreference(ProcessModel processModel, String gatewayId)
             throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             return registryService.getGatewayStoragePreference(gatewayId, resourceHostId);
@@ -152,9 +121,8 @@ public class OrchestratorUtils {
         }
     }
 
-    public static String getLoginUserName(ProcessModel processModel, String gatewayId)
+    public String getLoginUserName(ProcessModel processModel, String gatewayId)
             throws AiravataException, RegistryServiceException {
-        final RegistryService registryService = getRegistryService();
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         if (processModel.isUseUserCRPref()) {
@@ -189,9 +157,8 @@ public class OrchestratorUtils {
         }
     }
 
-    public static String getScratchLocation(ProcessModel processModel, String gatewayId)
+    public String getScratchLocation(ProcessModel processModel, String gatewayId)
             throws AiravataException, RegistryServiceException {
-        final RegistryService registryService = getRegistryService();
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         String scratchLocation = computeResourcePreference.getScratchLocation();
@@ -229,9 +196,8 @@ public class OrchestratorUtils {
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessModel processModel, String gatewayId)
+    public JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessModel processModel, String gatewayId)
             throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             ComputeResourceDescription resourceDescription = registryService.getComputeResource(resourceHostId);
@@ -249,9 +215,8 @@ public class OrchestratorUtils {
         }
     }
 
-    public static DataMovementInterface getPreferredDataMovementInterface(ProcessModel processModel, String gatewayId)
+    public DataMovementInterface getPreferredDataMovementInterface(ProcessModel processModel, String gatewayId)
             throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
         try {
             String resourceHostId = processModel.getComputeResourceId();
             ComputeResourceDescription resourceDescription = registryService.getComputeResource(resourceHostId);
@@ -269,7 +234,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static int getDataMovementPort(ProcessModel processModel, String gatewayId)
+    public int getDataMovementPort(ProcessModel processModel, String gatewayId)
             throws RegistryServiceException, ApplicationSettingsException, OrchestratorException {
         try {
             DataMovementProtocol protocol = getPreferredDataMovementProtocol(processModel, gatewayId);
@@ -287,7 +252,7 @@ public class OrchestratorUtils {
         return 0;
     }
 
-    public static SecurityProtocol getSecurityProtocol(ProcessModel processModel, String gatewayId)
+    public SecurityProtocol getSecurityProtocol(ProcessModel processModel, String gatewayId)
             throws RegistryServiceException, ApplicationSettingsException, OrchestratorException {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processModel, gatewayId);
@@ -323,8 +288,7 @@ public class OrchestratorUtils {
         return null;
     }
 
-    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
+    public LOCALSubmission getLocalJobSubmission(String submissionId) throws OrchestratorException {
         try {
             return registryService.getLocalJobSubmission(submissionId);
         } catch (Exception e) {
@@ -334,8 +298,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
+    public UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws OrchestratorException {
         try {
             return registryService.getUnicoreJobSubmission(submissionId);
         } catch (Exception e) {
@@ -345,8 +308,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
+    public SSHJobSubmission getSSHJobSubmission(String submissionId) throws OrchestratorException {
         try {
             return registryService.getSSHJobSubmission(submissionId);
         } catch (Exception e) {
@@ -356,8 +318,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
+    public CloudJobSubmission getCloudJobSubmission(String submissionId) throws OrchestratorException {
         try {
             return registryService.getCloudJobSubmission(submissionId);
         } catch (Exception e) {
@@ -367,8 +328,7 @@ public class OrchestratorUtils {
         }
     }
 
-    public static SCPDataMovement getSCPDataMovement(String dataMoveId) throws OrchestratorException {
-        final RegistryService registryService = getRegistryService();
+    public SCPDataMovement getSCPDataMovement(String dataMoveId) throws OrchestratorException {
         try {
             return registryService.getSCPDataMovement(dataMoveId);
         } catch (Exception e) {
@@ -378,23 +338,11 @@ public class OrchestratorUtils {
         }
     }
 
-    private static boolean isValid(String str) {
+    private boolean isValid(String str) {
         return (str != null && !str.trim().isEmpty());
     }
 
-    // Static method for backward compatibility - delegates to Spring-managed instance
-    public static CredentialReader getCredentialReader() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(OrchestratorUtils.class).getCredentialReaderInstance();
-        }
-        throw new IllegalStateException("ApplicationContext not available. CredentialReader cannot be retrieved.");
-    }
-
-    private static RegistryService getRegistryService() {
-        if (applicationContext != null) {
-            OrchestratorUtils instance = applicationContext.getBean(OrchestratorUtils.class);
-            return instance.registryService;
-        }
-        throw new IllegalStateException("ApplicationContext not available");
+    public CredentialReader getCredentialReader() {
+        return credentialReader;
     }
 }

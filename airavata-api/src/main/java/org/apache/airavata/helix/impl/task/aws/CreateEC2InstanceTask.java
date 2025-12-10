@@ -47,13 +47,16 @@ import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 public class CreateEC2InstanceTask extends AiravataTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEC2InstanceTask.class);
+    private final AWSTaskUtil awsTaskUtil;
 
     public CreateEC2InstanceTask(
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.RegistryService registryService,
             org.apache.airavata.service.UserProfileService userProfileService,
-            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            AWSTaskUtil awsTaskUtil) {
         super(applicationContext, registryService, userProfileService, credentialStoreService);
+        this.awsTaskUtil = awsTaskUtil;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
             String credentialToken =
                     taskContext.getGroupComputeResourcePreference().getResourceSpecificCredentialStoreToken();
 
-            ec2Client = AWSTaskUtil.buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion());
+            ec2Client = awsTaskUtil.buildEc2Client(credentialToken, getGatewayId(), awsPrefs.getRegion());
             LOGGER.info("Successfully built EC2 client for region {}", awsPrefs.getRegion());
 
             String securityGroupId = createSecurityGroup(ec2Client);
@@ -130,14 +133,14 @@ public class CreateEC2InstanceTask extends AiravataTask {
 
     @Override
     public void onCancel(TaskContext taskContext) {
-        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+        awsTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
     }
 
     @Override
     protected void cleanup() {
         super.cleanup();
         LOGGER.info("AWS Create EC2 Instance Task cleanup for process {}", getProcessId());
-        AWSTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
+        awsTaskUtil.terminateEC2Instance(getTaskContext(), getGatewayId());
     }
 
     private String saveSSHCredential(String privateKey, String publicKey) throws Exception {

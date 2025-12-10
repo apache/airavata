@@ -81,16 +81,12 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         return taskClasses;
     }
 
-    public void startServer() {
-        Thread t = new Thread(this);
-        t.start();
-    }
-
     /**
      * Standardized start method for Spring Boot integration.
      * Non-blocking: starts internal thread and returns immediately.
      */
     public void start() {
-        startServer();
+        Thread t = new Thread(this);
+        t.start();
     }
 }
