@@ -40,10 +40,13 @@ public class JPAUtils {
 
     @PostConstruct
     public void init() {
+        org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JPAUtils.class);
+        logger.info("[BEAN-INIT] ProfileService JPAUtils.init() called - setting static instance");
         instance = this;
         var db = properties.database.profile;
         factory = org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(
                 PERSISTENCE_UNIT_NAME, db.driver, db.url, db.user, db.password, db.validationQuery);
+        logger.info("[BEAN-INIT] ProfileService JPAUtils static instance set successfully");
     }
 
     public static EntityManager getEntityManager() {

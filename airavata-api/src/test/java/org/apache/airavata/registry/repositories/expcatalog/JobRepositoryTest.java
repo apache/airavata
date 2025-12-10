@@ -52,6 +52,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestConstructor;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, JobRepositoryTest.TestConfiguration.class},
@@ -60,6 +61,7 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class JobRepositoryTest extends TestBase {
 
     @Configuration

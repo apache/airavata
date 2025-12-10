@@ -76,6 +76,7 @@ public class CredentialStoreService {
 
     @jakarta.annotation.PostConstruct
     public void init() {
+        logger.info("[BEAN-INIT] CredentialStoreService.init() called");
         var db = properties.database.vault;
         String jdbcUrl = db.url;
         if (jdbcUrl == null || jdbcUrl.isEmpty()) {

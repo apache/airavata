@@ -118,7 +118,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     @jakarta.annotation.PostConstruct
     public void init() throws OrchestratorException {
+        logger.info("[BEAN-INIT] SimpleOrchestratorImpl.init() called");
         initialize(properties);
+        logger.info("[BEAN-INIT] SimpleOrchestratorImpl initialized successfully");
     }
 
     public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {

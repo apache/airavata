@@ -40,7 +40,10 @@ public class JPAUtils {
 
     @PostConstruct
     public void init() {
+        org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JPAUtils.class);
+        logger.info("[BEAN-INIT] SharingRegistry JPAUtils.init() called - setting static instance");
         instance = this;
+        logger.info("[BEAN-INIT] SharingRegistry JPAUtils static instance set successfully");
     }
 
     public static EntityManager getEntityManager() {

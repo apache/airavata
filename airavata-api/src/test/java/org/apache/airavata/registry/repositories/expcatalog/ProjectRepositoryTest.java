@@ -39,6 +39,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
@@ -48,12 +49,12 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProjectRepositoryTest extends TestBase {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"},
             excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
@@ -75,6 +76,10 @@ public class ProjectRepositoryTest extends TestBase {
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @org.springframework.boot.autoconfigure.SpringBootApplication(exclude = {
+        org.apache.airavata.config.BackgroundServicesLauncher.class,
+        org.apache.airavata.config.ThriftServerLauncher.class
+    })
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;

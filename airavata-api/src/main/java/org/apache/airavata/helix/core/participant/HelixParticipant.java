@@ -67,19 +67,51 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         logger.info("Initializing Participant Node");
 
         this.properties = properties;
-        this.zkAddress = properties.zookeeper.serverConnection;
-        this.clusterName = properties.helix.clusterName;
-        this.participantName = getParticipantName();
-
         this.taskTypeName = taskTypeName;
-        this.taskClasses = taskClasses;
+        this.taskClasses = taskClasses;  // Can be null for deferred initialization
 
-        logger.info("Zookeeper connection URL " + zkAddress);
-        logger.info("Cluster name " + clusterName);
-        logger.info("Participant name " + participantName);
-        logger.info("Task type " + taskTypeName);
+        // Property-dependent initialization moved to initialize() method
+        // This allows subclasses to set taskClasses before initializing properties
+    }
+
+    /**
+     * Initialize property-dependent fields. This method should be called after
+     * taskClasses are set (if deferred initialization is used).
+     * Can be called from @PostConstruct in subclasses.
+     */
+    protected void initialize() {
+        if (properties != null) {
+            this.zkAddress = properties.zookeeper.serverConnection;
+            this.clusterName = properties.helix.clusterName;
+            this.participantName = getParticipantName();
+
+            logger.info("Zookeeper connection URL " + zkAddress);
+            logger.info("Cluster name " + clusterName);
+            logger.info("Participant name " + participantName);
+            logger.info("Task type " + taskTypeName);
+        }
 
         if (taskClasses != null) {
+            for (Class<? extends T> taskClass : taskClasses) {
+                logger.info("Task classes include: " + taskClass.getCanonicalName());
+            }
+        }
+    }
+
+    /**
+     * Set task classes after construction. Used for deferred initialization.
+     * 
+     * @param taskClasses the task classes to set
+     * @throws IllegalStateException if task classes are already set and not empty
+     */
+    public void setTaskClasses(List<Class<? extends T>> taskClasses) {
+        if (this.taskClasses != null && !this.taskClasses.isEmpty()) {
+            throw new IllegalStateException("Task classes already set");
+        }
+        this.taskClasses = taskClasses;
+        
+        // Log task classes if they were set
+        if (taskClasses != null && !taskClasses.isEmpty()) {
             for (Class<? extends T> taskClass : taskClasses) {
                 logger.info("Task classes include: " + taskClass.getCanonicalName());
             }
@@ -110,6 +142,10 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     @SuppressWarnings("WeakerAccess")
     public Map<String, TaskFactory> getTaskFactory() {
+        if (taskClasses == null || taskClasses.isEmpty()) {
+            throw new IllegalStateException("Task classes must be set before creating task factory");
+        }
+        
         Map<String, TaskFactory> taskRegistry = new HashMap<>();
 
         for (Class<? extends T> taskClass : taskClasses) {

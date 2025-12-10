@@ -33,11 +33,14 @@ import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MessagingFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(MessagingFactory.class);
     private static MessagingFactory instance;
 
     private final AiravataServerProperties properties;
@@ -48,7 +51,9 @@ public class MessagingFactory {
 
     @jakarta.annotation.PostConstruct
     public void init() {
+        logger.info("[BEAN-INIT] MessagingFactory.init() called - setting static instance");
         instance = this;
+        logger.info("[BEAN-INIT] MessagingFactory static instance set successfully");
     }
 
     public static Subscriber getSubscriber(final MessageHandler messageHandler, List<String> routingKeys, Type type)

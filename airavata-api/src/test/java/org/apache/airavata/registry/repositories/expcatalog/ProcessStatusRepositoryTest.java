@@ -40,6 +40,7 @@ import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestConstructor;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
@@ -54,6 +55,7 @@ import org.springframework.context.annotation.Import;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessStatusRepositoryTest extends TestBase {
 
     @Configuration

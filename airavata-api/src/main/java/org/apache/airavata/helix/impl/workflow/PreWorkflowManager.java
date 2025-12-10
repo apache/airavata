@@ -58,9 +58,11 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
+@DependsOn("messagingFactory")
 public class PreWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);

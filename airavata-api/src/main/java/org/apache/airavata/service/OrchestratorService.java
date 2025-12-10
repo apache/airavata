@@ -82,9 +82,11 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
+@DependsOn("messagingFactory")
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
@@ -113,8 +115,10 @@ public class OrchestratorService {
 
     @PostConstruct
     public void postConstruct() {
+        logger.info("[BEAN-INIT] OrchestratorService.postConstruct() called");
         try {
             initializeInternal();
+            logger.info("[BEAN-INIT] OrchestratorService initialized successfully");
         } catch (OrchestratorException e) {
             logger.error("Failed to initialize OrchestratorService", e);
             throw new RuntimeException("Failed to initialize OrchestratorService", e);

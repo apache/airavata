@@ -21,15 +21,17 @@ package org.apache.airavata.helix.impl.participant;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import jakarta.annotation.PostConstruct;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
+@DependsOn("airavataServerProperties")
 public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
@@ -58,14 +60,28 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     @SuppressWarnings("WeakerAccess")
     public GlobalParticipant(
-            List<Class<? extends AbstractTask>> taskClasses, String taskTypeName, AiravataServerProperties properties)
-            throws ApplicationSettingsException {
+            List<Class<? extends AbstractTask>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
         super(taskClasses, taskTypeName, properties);
+        // Initialize property-dependent fields immediately for programmatic creation
+        initialize();
     }
 
     // Constructor for Spring - uses constructor injection for properties
-    public GlobalParticipant(AiravataServerProperties properties) throws ApplicationSettingsException {
-        super(createTaskClasses(), null, properties);
+    // No checked exceptions - initialization happens in @PostConstruct
+    public GlobalParticipant(AiravataServerProperties properties) {
+        // Pass empty list for taskClasses - will be set in @PostConstruct
+        // Using Collections.emptyList() to avoid ambiguity with Class<T> constructor
+        super(new ArrayList<>(), null, properties);
+    }
+
+    @PostConstruct
+    public void init() {
+        // All initialization logic here - no exceptions in constructor
+        List<Class<? extends AbstractTask>> taskClasses = createTaskClasses();
+        setTaskClasses(taskClasses);
+        
+        // Initialize parent's property-dependent fields
+        initialize();
     }
 
     private static List<Class<? extends AbstractTask>> createTaskClasses() {

@@ -228,9 +228,10 @@ public class AiravataService {
 
     @jakarta.annotation.PostConstruct
     public void initializePublishers() throws AiravataException {
+        logger.info("[BEAN-INIT] AiravataService.initializePublishers() called");
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-            logger.info("Initialized StatusPublisher");
+            logger.info("[BEAN-INIT] Initialized StatusPublisher");
         } catch (AiravataException e) {
             String msg = String.format(
                     "Error while getting StatusPublisher: %s. Publisher will be unavailable.", e.getMessage());
@@ -240,7 +241,7 @@ public class AiravataService {
 
         try {
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
-            logger.info("Initialized ExperimentPublisher");
+            logger.info("[BEAN-INIT] Initialized ExperimentPublisher");
         } catch (AiravataException e) {
             String msg = String.format(
                     "Error while getting ExperimentPublisher: %s. Publisher will be unavailable.", e.getMessage());
@@ -251,6 +252,7 @@ public class AiravataService {
 
     @jakarta.annotation.PostConstruct
     public void init() throws AiravataException {
+        logger.info("[BEAN-INIT] AiravataService.init() called");
         try {
             initSharingRegistry();
         } catch (SharingRegistryException | DuplicateEntryException e) {
