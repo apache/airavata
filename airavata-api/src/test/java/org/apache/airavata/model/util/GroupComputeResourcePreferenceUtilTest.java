@@ -35,7 +35,10 @@ import org.springframework.test.context.TestPropertySource;
  * GroupComputeResourcePreferenceUtilTest
  */
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, GroupComputeResourcePreferenceUtilTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            GroupComputeResourcePreferenceUtilTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
@@ -156,10 +159,7 @@ public class GroupComputeResourcePreferenceUtilTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.model",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.model", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

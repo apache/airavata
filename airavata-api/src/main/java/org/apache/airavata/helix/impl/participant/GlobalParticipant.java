@@ -27,11 +27,16 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
 @DependsOn("airavataServerProperties")
+@ConditionalOnProperty(
+        name = "services.helix.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);

@@ -46,7 +46,10 @@ import org.springframework.test.context.TestPropertySource;
         classes = {org.apache.airavata.config.JpaConfig.class, ProjectRepositoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "services.background.enabled=false",
+            "services.thrift.enabled=false",
+            "services.helix.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -54,32 +57,14 @@ public class ProjectRepositoryTest extends TestBase {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"},
+            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry"},
             excludeFilters = {
                 @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class
-                        }),
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.helix\\..*")
+                        type = FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|config\\.(Background|Thrift)).*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
-    @org.springframework.boot.autoconfigure.SpringBootApplication(exclude = {
-        org.apache.airavata.config.BackgroundServicesLauncher.class,
-        org.apache.airavata.config.ThriftServerLauncher.class
-    })
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;

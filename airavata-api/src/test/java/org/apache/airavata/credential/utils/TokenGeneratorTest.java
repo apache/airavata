@@ -59,10 +59,7 @@ public class TokenGeneratorTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.credential",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.credential", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

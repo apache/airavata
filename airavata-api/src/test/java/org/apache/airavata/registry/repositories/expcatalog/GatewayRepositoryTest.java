@@ -43,7 +43,10 @@ import org.springframework.test.context.TestPropertySource;
         classes = {org.apache.airavata.config.JpaConfig.class, GatewayRepositoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "services.background.enabled=false",
+            "services.thrift.enabled=false",
+            "services.helix.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -92,8 +95,7 @@ public class GatewayRepositoryTest extends TestBase {
         List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
         assertEquals(
-                properties.services.default_.gateway,
-                defaultGatewayList.get(0).getGatewayId());
+                properties.services.default_.gateway, defaultGatewayList.get(0).getGatewayId());
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGatewayId);

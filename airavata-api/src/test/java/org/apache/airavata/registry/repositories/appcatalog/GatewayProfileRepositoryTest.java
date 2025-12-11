@@ -55,6 +55,10 @@ import org.springframework.test.context.TestConstructor;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+        ,
+            "services.background.enabled=false",
+            "services.thrift.enabled=false",
+            "services.helix.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)

@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,10 @@ import org.springframework.stereotype.Component;
  * The main thread is kept alive to prevent the application from exiting.
  */
 @Component
+@ConditionalOnProperty(
+        name = "services.thrift.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class ThriftServerLauncher implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ThriftServerLauncher.class);

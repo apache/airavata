@@ -29,6 +29,7 @@ import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,6 +51,10 @@ import org.springframework.context.annotation.Configuration;
  * Each service can be enabled/disabled via configuration properties.
  */
 @Configuration
+@ConditionalOnProperty(
+        name = "services.background.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class BackgroundServicesLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundServicesLauncher.class);

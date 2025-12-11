@@ -22,7 +22,6 @@ package org.apache.airavata.credential.impl.store;
 import java.io.File;
 import java.io.FileInputStream;
 import org.apache.airavata.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.impl.store.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(
@@ -61,7 +59,7 @@ public class SSHCredentialTest {
         try {
             File privateKeyFile = new File(privateKeyPath);
             File pubKeyFile = new File(pubKeyPath);
-            
+
             if (!privateKeyFile.exists() || !pubKeyFile.exists()) {
                 logger.warn("SSH key files not found at {} and {}. Skipping test.", privateKeyPath, pubKeyPath);
                 return;
@@ -78,19 +76,19 @@ public class SSHCredentialTest {
             File filePri = new File(privateKeyPath);
             byte[] bFilePri = new byte[(int) filePri.length()];
             privateKeyStream.read(bFilePri);
-            
+
             FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
             File filePub = new File(pubKeyPath);
             byte[] bFilePub = new byte[(int) filePub.length()];
             pubKeyStream.read(bFilePub);
-            
+
             privateKeyStream.close();
             pubKeyStream.close();
-            
+
             sshCredential.setPrivateKey(bFilePri);
             sshCredential.setPublicKey(bFilePub);
             sshCredential.setPassphrase("test-passphrase");
-            
+
             sshCredentialWriter.writeCredentials(sshCredential);
             logger.info("SSH Token: {}", token);
         } catch (Exception e) {
@@ -101,10 +99,7 @@ public class SSHCredentialTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.credential",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.credential", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

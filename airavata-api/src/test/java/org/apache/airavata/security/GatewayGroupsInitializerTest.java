@@ -22,10 +22,10 @@ package org.apache.airavata.security;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.CredentialStoreService;
 import org.apache.airavata.service.RegistryService;
@@ -102,7 +102,8 @@ public class GatewayGroupsInitializerTest {
             when(mockRegistryService.getGatewayResourceProfile(GATEWAY_ID)).thenReturn(gatewayResourceProfile);
             when(mockCredentialStoreService.getPasswordCredential(IDENTITY_SERVER_PWD_CRED_TOKEN, GATEWAY_ID))
                     .thenReturn(passwordCredential);
-            when(mockSharingRegistryService.isUserExists(GATEWAY_ID, ADMIN_OWNER_ID)).thenReturn(doesAdminUserExist);
+            when(mockSharingRegistryService.isUserExists(GATEWAY_ID, ADMIN_OWNER_ID))
+                    .thenReturn(doesAdminUserExist);
 
             GatewayGroups gatewayGroups = gatewayGroupsInitializer.initialize(GATEWAY_ID);
             assertEquals(GATEWAY_ID, gatewayGroups.getGatewayId());
@@ -129,10 +130,7 @@ public class GatewayGroupsInitializerTest {
 
     @Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.security",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.security", "org.apache.airavata.config"},
             excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,

@@ -57,10 +57,7 @@ public class NameValidatorTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.common",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.common", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

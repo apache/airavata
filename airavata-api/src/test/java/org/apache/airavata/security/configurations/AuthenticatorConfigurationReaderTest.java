@@ -39,7 +39,10 @@ import org.springframework.test.context.TestPropertySource;
  * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
  */
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, AuthenticatorConfigurationReaderTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            AuthenticatorConfigurationReaderTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
@@ -122,10 +125,7 @@ public class AuthenticatorConfigurationReaderTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.security",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.security", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
