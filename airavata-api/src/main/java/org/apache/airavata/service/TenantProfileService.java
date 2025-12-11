@@ -45,11 +45,16 @@ import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceExce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class TenantProfileService {
+@ConditionalOnProperty(
+        name = "services.tenantProfileService.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+    public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
     private final TenantProfileRepository tenantProfileRepository;

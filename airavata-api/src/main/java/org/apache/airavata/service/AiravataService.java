@@ -136,10 +136,15 @@ import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
+@ConditionalOnProperty(
+        name = "services.airavata.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 

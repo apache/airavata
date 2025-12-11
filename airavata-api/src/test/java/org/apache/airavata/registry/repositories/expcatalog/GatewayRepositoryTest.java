@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
+import java.util.UUID;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.workspace.Gateway;
@@ -44,9 +45,16 @@ import org.springframework.test.context.TestPropertySource;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
-            "services.helix.enabled=false"
+            "services.helix.enabled=false",
+            "services.airavata.enabled=false",
+            "services.userprofile.enabled=false",
+            "services.groupmanager.enabled=false",
+            "services.iam.enabled=false",
+            "services.orchestrator.enabled=false",
+            "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -54,31 +62,36 @@ public class GatewayRepositoryTest extends TestBase {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"
+            basePackages = {
+                "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.repositories",
+                "org.apache.airavata.registry.utils",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
+            useDefaultFilters = false,
+            includeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
+                        classes = {
+                            org.springframework.stereotype.Component.class,
+                            org.springframework.stereotype.Service.class,
+                            org.springframework.stereotype.Repository.class,
+                            org.springframework.context.annotation.Configuration.class
+                        })
             },
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.AbstractMonitor.class
-                        }),
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning|registry\\.messaging)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.helix\\..*")
+                        pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
     static class TestConfiguration {}
 
-    private String testGatewayId = "testGateway";
 
     private final GatewayService gatewayService;
     private final AiravataServerProperties properties;
@@ -91,12 +104,26 @@ public class GatewayRepositoryTest extends TestBase {
 
     @Test
     public void gatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
+        // Create default gateway if it doesn't exist
+        String defaultGatewayId = properties.services.default_.gateway;
+        if (!gatewayService.isGatewayExist(defaultGatewayId)) {
+            Gateway defaultGateway = new Gateway();
+            defaultGateway.setGatewayId(defaultGatewayId);
+            defaultGateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+            defaultGateway.setOauthClientId(properties.security.iam.oauthClientId);
+            defaultGateway.setOauthClientSecret(properties.security.iam.oauthClientSecret);
+            gatewayService.addGateway(defaultGateway);
+        }
+        
         // Verify that default Gateway is already created
         List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
         assertEquals(
                 properties.services.default_.gateway, defaultGatewayList.get(0).getGatewayId());
 
+        // Generate unique test gateway ID for this test run
+        String testGatewayId = "testGateway-" + UUID.randomUUID().toString().substring(0, 8);
+        
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGatewayId);
         gateway.setDomain("SEAGRID");

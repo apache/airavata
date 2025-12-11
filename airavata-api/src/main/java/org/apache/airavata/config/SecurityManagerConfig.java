@@ -23,6 +23,7 @@ import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,10 @@ import org.springframework.context.annotation.Primary;
  * Provides the configured AiravataSecurityManager bean based on application settings.
  */
 @Configuration
+@ConditionalOnProperty(
+        name = "security.manager.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class SecurityManagerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerConfig.class);

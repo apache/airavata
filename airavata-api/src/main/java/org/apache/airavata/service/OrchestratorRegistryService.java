@@ -34,10 +34,15 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrchestratorRegistryService {
+@ConditionalOnProperty(
+        name = "services.orchestratorRegistryService.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+    public class OrchestratorRegistryService {
 
     private final RegistryService registryService;
 

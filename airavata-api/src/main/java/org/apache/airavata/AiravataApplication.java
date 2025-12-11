@@ -68,6 +68,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.helix",
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift"
+        },
+        excludeFilters = {
+            @org.springframework.context.annotation.ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = ".*\\$.*"  // Exclude inner classes (Thrift-generated)
+            ),
+            @org.springframework.context.annotation.ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
+            )
         })
 @EntityScan(
         basePackages = {

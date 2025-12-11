@@ -37,10 +37,15 @@ import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SharingRegistryService {
+@ConditionalOnProperty(
+        name = "services.sharingRegistryService.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+    public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
 
     private final EntityService entityService;

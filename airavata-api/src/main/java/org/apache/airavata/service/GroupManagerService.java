@@ -37,9 +37,14 @@ import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(
+        name = "services.groupmanager.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 

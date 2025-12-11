@@ -69,8 +69,8 @@ import org.apache.airavata.registry.exceptions.AppCatalogException;
 import org.apache.airavata.registry.exceptions.RegistryException;
 import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
-import org.apache.airavata.registry.services.ApplicationDeploymentService;
-import org.apache.airavata.registry.services.ApplicationInterfaceService;
+import org.apache.airavata.registry.cpi.ApplicationDeployment;
+import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
@@ -109,16 +109,21 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(
+        name = "services.registryService.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
     private final AiravataServerProperties properties;
     // Note: ApplicationDeploymentRepository removed - now accessed through ApplicationDeploymentService
     // Note: ApplicationInterfaceRepository removed - now accessed through ApplicationInterfaceService
-    private final ApplicationDeploymentService applicationDeploymentService;
+    private final ApplicationDeployment applicationDeploymentService;
     private final StorageResourceService storageResourceService;
     private final GwyResourceProfileService gwyResourceProfileService;
     private final UserResourceProfileService userResourceProfileService;
@@ -154,11 +159,11 @@ public class RegistryService {
     private final ParsingTemplateService parsingTemplateService;
     private final GatewayGroupsService gatewayGroupsService;
     private final GatewayUsageReportingCommandService gatewayUsageReportingCommandService;
-    private final ApplicationInterfaceService applicationInterfaceService;
+    private final ApplicationInterface applicationInterfaceService;
 
     public RegistryService(
             AiravataServerProperties properties,
-            ApplicationDeploymentService applicationDeploymentService,
+            ApplicationDeployment applicationDeploymentService,
             StorageResourceService storageResourceService,
             GwyResourceProfileService gwyResourceProfileService,
             UserResourceProfileService userResourceProfileService,
@@ -193,7 +198,7 @@ public class RegistryService {
             ParsingTemplateService parsingTemplateService,
             GatewayGroupsService gatewayGroupsService,
             GatewayUsageReportingCommandService gatewayUsageReportingCommandService,
-            ApplicationInterfaceService applicationInterfaceService) {
+            ApplicationInterface applicationInterfaceService) {
         this.properties = properties;
         this.applicationDeploymentService = applicationDeploymentService;
         this.storageResourceService = storageResourceService;

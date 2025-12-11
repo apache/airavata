@@ -48,10 +48,15 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@ConditionalOnProperty(
+        name = "services.userprofile.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 

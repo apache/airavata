@@ -82,11 +82,16 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
+@ConditionalOnProperty(
+        name = "services.orchestrator.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 

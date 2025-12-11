@@ -42,7 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {org.apache.airavata.config.JpaConfig.class, ServiceIntegrationTestBase.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "spring.aop.proxy-target-class=true",
+            "services.background.enabled=false",
+            "services.thrift.enabled=false",
+            "services.helix.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -98,15 +102,22 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.profile",
                 "org.apache.airavata.sharing",
                 "org.apache.airavata.credential",
+                "org.apache.airavata.messaging",
                 "org.apache.airavata.config"
             },
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
-                        })
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|config\\.(Background|Thrift)|sharing\\.migrator).*"
+                ),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = ".*\\$.*"  // Exclude inner classes (Thrift-generated)
+                ),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
+                )
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {}

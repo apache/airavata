@@ -39,9 +39,14 @@ import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(
+        name = "services.iam.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 

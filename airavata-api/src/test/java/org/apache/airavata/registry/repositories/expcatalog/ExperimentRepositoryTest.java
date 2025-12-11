@@ -50,9 +50,16 @@ import org.springframework.test.context.TestPropertySource;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
-            "services.helix.enabled=false"
+            "services.helix.enabled=false",
+            "services.airavata.enabled=false",
+            "services.userprofile.enabled=false",
+            "services.groupmanager.enabled=false",
+            "services.iam.enabled=false",
+            "services.orchestrator.enabled=false",
+            "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -60,29 +67,34 @@ public class ExperimentRepositoryTest extends TestBase {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.service", "org.apache.airavata.registry", "org.apache.airavata.config"
+            basePackages = {
+                "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.repositories",
+                "org.apache.airavata.registry.utils",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
+            useDefaultFilters = false,
+            includeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
+                        classes = {
+                            org.springframework.stereotype.Component.class,
+                            org.springframework.stereotype.Service.class,
+                            org.springframework.stereotype.Repository.class,
+                            org.springframework.context.annotation.Configuration.class
+                        })
             },
             excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class
-                        }),
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.apache\\.airavata\\.helix\\..*")
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
