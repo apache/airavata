@@ -29,9 +29,9 @@ import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.service.CredentialStoreService;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -74,9 +74,8 @@ public class AirvataFileService {
     }
 
     public FileMetadata getInfo(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(
-                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
-        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        var dataManager = new ProcessDataManager(applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
+        var agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
         logger.info("Getting metadata for path {}", absPath);
@@ -84,9 +83,8 @@ public class AirvataFileService {
     }
 
     public AiravataDirectory listDir(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(
-                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
-        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        var dataManager = new ProcessDataManager(applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
+        var agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
         logger.info("Getting metadata for path {}", absPath);
@@ -112,9 +110,8 @@ public class AirvataFileService {
     }
 
     public AiravataFile listFile(String processId, String subPath) throws Exception {
-        ProcessDataManager dataManager = new ProcessDataManager(
-                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
-        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        var dataManager = new ProcessDataManager(applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
+        var agentAdaptor = getAgentAdaptor(dataManager, processId);
 
         String absPath = dataManager.getBaseDir() + subPath;
 
@@ -130,9 +127,8 @@ public class AirvataFileService {
         metadata.setSize(file.getSize());
         Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
-        ProcessDataManager dataManager = new ProcessDataManager(
-                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
-        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        var dataManager = new ProcessDataManager(applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
+        var agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
         try {
@@ -151,9 +147,8 @@ public class AirvataFileService {
 
     public Path downloadFile(String processId, String subPath) throws Exception {
 
-        ProcessDataManager dataManager = new ProcessDataManager(
-                applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
-        AgentAdaptor agentAdaptor = getAgentAdaptor(dataManager, processId);
+        var dataManager = new ProcessDataManager(applicationContext, registryService, userProfileService, credentialStoreService, processId, adaptorSupport);
+        var agentAdaptor = getAgentAdaptor(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
         if (agentAdaptor.doesFileExist(absPath)) {

@@ -26,9 +26,7 @@ import java.util.List;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.service.GroupManagerService;
-import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.service.security.GroupManagerService;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,16 +40,9 @@ import org.junit.jupiter.api.Test;
 public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final GroupManagerService groupManagerService;
-    private final SharingRegistryService sharingRegistryService;
-    private final UserProfileService userProfileService;
 
-    public GroupManagerServiceIntegrationTest(
-            GroupManagerService groupManagerService,
-            SharingRegistryService sharingRegistryService,
-            UserProfileService userProfileService) {
+    public GroupManagerServiceIntegrationTest(GroupManagerService groupManagerService) {
         this.groupManagerService = groupManagerService;
-        this.sharingRegistryService = sharingRegistryService;
-        this.userProfileService = userProfileService;
     }
 
     private String testGroupId;

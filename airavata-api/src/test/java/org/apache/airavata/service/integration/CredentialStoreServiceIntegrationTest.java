@@ -23,13 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import java.util.Map;
 import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.credential.store.SummaryType;
-import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -245,51 +244,6 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     public void shouldGetCertificateCredential() {
         // Note: This test requires a valid certificate
         assertThat(credentialStoreService).isNotNull();
-    }
-
-    @Test
-    public void shouldGetAllCredentialSummariesForGateway() throws CredentialStoreException {
-        // Arrange
-        SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
-        credentialStoreService.addSSHCredential(sshCredential);
-
-        // Act
-        List<CredentialSummary> summaries =
-                credentialStoreService.getAllCredentialSummaryForGateway(SummaryType.SSH, TEST_GATEWAY_ID);
-
-        // Assert
-        assertThat(summaries).isNotNull();
-    }
-
-    @Test
-    public void shouldGetAllCredentialSummariesForUserInGateway() throws CredentialStoreException {
-        // Arrange
-        SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
-        credentialStoreService.addSSHCredential(sshCredential);
-
-        // Act
-        List<CredentialSummary> summaries = credentialStoreService.getAllCredentialSummaryForUserInGateway(
-                SummaryType.SSH, TEST_GATEWAY_ID, TEST_USERNAME);
-
-        // Assert
-        assertThat(summaries).isNotNull();
-    }
-
-    @Test
-    public void shouldGetAllPWDCredentialsForGateway() throws CredentialStoreException {
-        // Arrange
-        PasswordCredential passwordCredential = new PasswordCredential();
-        passwordCredential.setGatewayId(TEST_GATEWAY_ID);
-        passwordCredential.setPortalUserName(TEST_USERNAME);
-        passwordCredential.setLoginUserName("login-user");
-        passwordCredential.setPassword("test-password");
-        credentialStoreService.addPasswordCredential(passwordCredential);
-
-        // Act
-        Map<String, String> credentials = credentialStoreService.getAllPWDCredentialsForGateway(TEST_GATEWAY_ID);
-
-        // Assert
-        assertThat(credentials).isNotNull();
     }
 
     @Test

@@ -26,7 +26,7 @@ import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

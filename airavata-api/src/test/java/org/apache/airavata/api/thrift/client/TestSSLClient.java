@@ -26,7 +26,7 @@ import java.security.cert.X509Certificate;
 import org.apache.airavata.model.credential.store.CertificateCredential;
 import org.apache.airavata.model.credential.store.CommunityUser;
 import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -37,7 +37,7 @@ import org.apache.airavata.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.authzcache.AuthzCacheManager;
 import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.security.authzcache.AuthzCachedStatus;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.junit.jupiter.api.BeforeEach;

@@ -27,7 +27,7 @@ import org.apache.airavata.credential.exceptions.CredentialStoreException;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
-import org.apache.airavata.service.TenantProfileService;
+import org.apache.airavata.service.profile.TenantProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

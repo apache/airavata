@@ -22,7 +22,7 @@ package org.apache.airavata.research.service;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.model.UserContext;
-import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
