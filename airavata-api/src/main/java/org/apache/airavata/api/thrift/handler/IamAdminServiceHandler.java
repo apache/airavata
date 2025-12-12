@@ -29,7 +29,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.apache.airavata.service.IamAdminService;
+import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -144,50 +144,5 @@ public class IamAdminServiceHandler implements org.apache.airavata.profile.iam.a
     public boolean deleteUser(AuthzToken authzToken, String username)
             throws IamAdminServicesException, AuthorizationException {
         return iamAdminService.deleteUser(authzToken, username);
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.addRoleToUser(authzToken, username, roleName);
-        } catch (RegistryServiceException | CredentialStoreException e) {
-            IamAdminServicesException ex =
-                    new IamAdminServicesException("Error adding role to user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.removeRoleFromUser(authzToken, username, roleName);
-        } catch (RegistryServiceException | CredentialStoreException e) {
-            IamAdminServicesException ex =
-                    new IamAdminServicesException("Error removing role from user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
-            throws IamAdminServicesException, AuthorizationException {
-        try {
-            return iamAdminService.getUsersWithRole(authzToken, roleName);
-        } catch (RegistryServiceException | CredentialStoreException e) {
-            IamAdminServicesException ex =
-                    new IamAdminServicesException("Error getting users with role: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        }
     }
 }

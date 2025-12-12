@@ -43,13 +43,13 @@ public class RealtimeMonitor extends AbstractMonitor {
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
     private final AiravataServerProperties properties;
-    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
     private final RealtimeJobStatusParser parser;
     private String publisherId;
     private String brokerTopic;
 
     public RealtimeMonitor(
-            org.apache.airavata.service.RegistryService registryService, AiravataServerProperties properties) {
+            org.apache.airavata.service.registry.RegistryService registryService, AiravataServerProperties properties) {
         super(registryService, properties);
         this.registryService = registryService;
         this.properties = properties;

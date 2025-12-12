@@ -51,7 +51,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private final AiravataServerProperties airavataProperties;
-    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -68,7 +68,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private String publisherId;
 
     public EmailBasedMonitor(
-            org.apache.airavata.service.RegistryService registryService, AiravataServerProperties airavataProperties)
+            org.apache.airavata.service.registry.RegistryService registryService, AiravataServerProperties airavataProperties)
             throws Exception {
         super(registryService, airavataProperties);
         this.registryService = registryService;

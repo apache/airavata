@@ -31,7 +31,7 @@ import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

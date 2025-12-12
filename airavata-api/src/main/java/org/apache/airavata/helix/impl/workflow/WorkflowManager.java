@@ -37,7 +37,7 @@ import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;

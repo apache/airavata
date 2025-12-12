@@ -55,7 +55,7 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
@@ -71,18 +71,18 @@ public class PreWorkflowManager extends WorkflowManager {
     private final AiravataServerProperties properties;
     private final org.apache.airavata.helix.impl.task.TaskFactory taskFactory;
     private final org.springframework.context.ApplicationContext applicationContext;
-    private final org.apache.airavata.service.RegistryService registryService;
-    private final org.apache.airavata.service.UserProfileService userProfileService;
-    private final org.apache.airavata.service.CredentialStoreService credentialStoreService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
+    private final org.apache.airavata.service.profile.UserProfileService userProfileService;
+    private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
     private Subscriber subscriber;
 
     public PreWorkflowManager(
             AiravataServerProperties properties,
             org.apache.airavata.helix.impl.task.TaskFactory taskFactory,
             org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.RegistryService registryService,
-            org.apache.airavata.service.UserProfileService userProfileService,
-            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.service.profile.UserProfileService userProfileService,
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
         // Default values, will be updated in @PostConstruct
         super("pre-workflow-manager", false, registryService, properties);
         this.properties = properties;

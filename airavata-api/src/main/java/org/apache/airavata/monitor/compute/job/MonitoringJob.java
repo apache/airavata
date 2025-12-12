@@ -35,7 +35,7 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.monitor.compute.job.output.OutputParser;
 import org.apache.airavata.monitor.compute.job.output.OutputParserImpl;
 import org.apache.airavata.monitor.compute.utils.Constants;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

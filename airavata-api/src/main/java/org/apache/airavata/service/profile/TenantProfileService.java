@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.profile;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
@@ -42,6 +42,7 @@ import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.repositories.TenantProfileRepository;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;

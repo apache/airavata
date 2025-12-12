@@ -16,15 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain.impl;
+package org.apache.airavata.service.notification.impl;
 
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.domain.DataProductService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.notification.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,15 +31,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Implementation of DataProductService.
+ * Implementation of NotificationService.
  */
 @Service
-public class DataProductServiceImpl implements DataProductService {
-    private static final Logger logger = LoggerFactory.getLogger(DataProductServiceImpl.class);
+public class NotificationServiceImpl implements NotificationService {
+    private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
     
     private final RegistryService registryService;
     
-    public DataProductServiceImpl(RegistryService registryService) {
+    public NotificationServiceImpl(RegistryService registryService) {
         this.registryService = registryService;
     }
     
@@ -49,55 +48,55 @@ public class DataProductServiceImpl implements DataProductService {
     }
     
     @Override
-    public String registerDataProduct(DataProductModel dataProductModel) throws AiravataSystemException {
+    public String createNotification(Notification notification) throws AiravataSystemException {
         try {
-            return registryService.registerDataProduct(dataProductModel);
+            return registryService.createNotification(notification);
         } catch (RegistryServiceException e) {
-            var msg = "Error in registering the data resource" + dataProductModel.getProductName() + ".";
+            String msg = "Error while creating notification: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public DataProductModel getDataProduct(String productUri) throws AiravataSystemException {
+    public boolean updateNotification(Notification notification) throws AiravataSystemException {
         try {
-            return registryService.getDataProduct(productUri);
+            return registryService.updateNotification(notification);
         } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving data product: " + e.getMessage();
+            String msg = "Error while updating notification: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws AiravataSystemException {
+    public boolean deleteNotification(String gatewayId, String notificationId) throws AiravataSystemException {
         try {
-            return registryService.registerReplicaLocation(replicaLocationModel);
+            return registryService.deleteNotification(gatewayId, notificationId);
         } catch (RegistryServiceException e) {
-            var msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + "." + e.getMessage();
+            String msg = "Error while deleting notification: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public DataProductModel getParentDataProduct(String productUri) throws AiravataSystemException {
+    public Notification getNotification(String gatewayId, String notificationId) throws AiravataSystemException {
         try {
-            return registryService.getParentDataProduct(productUri);
+            return registryService.getNotification(gatewayId, notificationId);
         } catch (RegistryServiceException e) {
-            var msg = "Error in retreiving the parent data product for " + productUri + "." + e.getMessage();
+            String msg = "Error while retrieving notification: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public List<DataProductModel> getChildDataProducts(String productUri) throws AiravataSystemException {
+    public List<Notification> getAllNotifications(String gatewayId) throws AiravataSystemException {
         try {
-            return registryService.getChildDataProducts(productUri);
+            return registryService.getAllNotifications(gatewayId);
         } catch (RegistryServiceException e) {
-            var msg = "Error in retreiving the child products for " + productUri + "." + e.getMessage();
+            String msg = "Error while getting all notifications: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }

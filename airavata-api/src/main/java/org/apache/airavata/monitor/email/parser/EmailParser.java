@@ -23,7 +23,7 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 
 public interface EmailParser {
     static final String STATUS = "status";

@@ -16,30 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain.impl;
+package org.apache.airavata.service.project.impl;
 
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.domain.NotificationService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.project.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * Implementation of NotificationService.
+ * Implementation of ProjectService.
  */
 @Service
-public class NotificationServiceImpl implements NotificationService {
-    private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+public class ProjectServiceImpl implements ProjectService {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
     
     private final RegistryService registryService;
     
-    public NotificationServiceImpl(RegistryService registryService) {
+    public ProjectServiceImpl(RegistryService registryService) {
         this.registryService = registryService;
     }
     
@@ -48,55 +51,61 @@ public class NotificationServiceImpl implements NotificationService {
     }
     
     @Override
-    public String createNotification(Notification notification) throws AiravataSystemException {
+    public String createProject(String gatewayId, Project project) throws AiravataSystemException {
         try {
-            return registryService.createNotification(notification);
+            return registryService.createProject(gatewayId, project);
         } catch (RegistryServiceException e) {
-            String msg = "Error while creating notification: " + e.getMessage();
+            String msg = "Error occurred while creating project: " + project.getName() + " " + project.getDescription()
+                    + " " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public boolean updateNotification(Notification notification) throws AiravataSystemException {
+    public Project getProject(String projectId) throws AiravataSystemException, ProjectNotFoundException {
         try {
-            return registryService.updateNotification(notification);
+            return registryService.getProject(projectId);
+        } catch (ProjectNotFoundException e) {
+            throw e;
         } catch (RegistryServiceException e) {
-            String msg = "Error while updating notification: " + e.getMessage();
+            String msg = "Error while retrieving the project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public boolean deleteNotification(String gatewayId, String notificationId) throws AiravataSystemException {
+    public void updateProject(String projectId, Project updatedProject) throws AiravataSystemException {
         try {
-            return registryService.deleteNotification(gatewayId, notificationId);
+            registryService.updateProject(projectId, updatedProject);
         } catch (RegistryServiceException e) {
-            String msg = "Error while deleting notification: " + e.getMessage();
+            String msg = "Error while updating project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public Notification getNotification(String gatewayId, String notificationId) throws AiravataSystemException {
+    public boolean deleteProject(String projectId) throws AiravataSystemException, ProjectNotFoundException {
         try {
-            return registryService.getNotification(gatewayId, notificationId);
+            return registryService.deleteProject(projectId);
+        } catch (ProjectNotFoundException e) {
+            throw e;
         } catch (RegistryServiceException e) {
-            String msg = "Error while retrieving notification: " + e.getMessage();
+            String msg = "Error while removing the project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
     
     @Override
-    public List<Notification> getAllNotifications(String gatewayId) throws AiravataSystemException {
+    public List<Project> searchProjects(String gatewayId, String userName, ProjectSearchFields searchFields, int limit, int offset) throws AiravataSystemException {
         try {
-            return registryService.getAllNotifications(gatewayId);
+            Map<ProjectSearchFields, String> filters = searchFields != null ? Map.of(searchFields, "") : Map.of();
+            return registryService.searchProjects(gatewayId, userName, List.of(), filters, limit, offset);
         } catch (RegistryServiceException e) {
-            String msg = "Error while getting all notifications: " + e.getMessage();
+            String msg = "Error while retrieving projects: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }

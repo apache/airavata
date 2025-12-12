@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.orchestrator;
 
 import java.util.List;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -34,6 +34,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +45,9 @@ import org.springframework.stereotype.Service;
         matchIfMissing = true)
     public class OrchestratorRegistryService {
 
-    private final RegistryService registryService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
 
-    public OrchestratorRegistryService(RegistryService registryService) {
+    public OrchestratorRegistryService(org.apache.airavata.service.registry.RegistryService registryService) {
         this.registryService = registryService;
     }
 

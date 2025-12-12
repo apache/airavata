@@ -24,7 +24,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

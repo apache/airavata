@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

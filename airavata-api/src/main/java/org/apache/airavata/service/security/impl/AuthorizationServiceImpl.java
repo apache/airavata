@@ -28,9 +28,9 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.service.domain.ApplicationService;
+import org.apache.airavata.service.application.ApplicationService;
 import org.apache.airavata.service.security.AuthorizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +136,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     public void validateLaunchExperimentAccess(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException, AuthorizationException, AiravataSystemException {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
         
-        // For backwards compatibility, if there is no groupResourceProfileId, look up
-        // one that is shared with the user
         if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
             throw new InvalidRequestException("Experiment doesn't have groupResourceProfileId");
         }

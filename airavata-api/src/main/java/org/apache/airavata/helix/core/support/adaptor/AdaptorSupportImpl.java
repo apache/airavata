@@ -46,12 +46,12 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     private static AdaptorSupportImpl INSTANCE;
 
     private final AgentStore agentStore = new AgentStore();
-    private final org.apache.airavata.service.RegistryService registryService;
-    private final org.apache.airavata.service.CredentialStoreService credentialStoreService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
+    private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
 
     public AdaptorSupportImpl(
-            org.apache.airavata.service.RegistryService registryService,
-            org.apache.airavata.service.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
         INSTANCE = this;

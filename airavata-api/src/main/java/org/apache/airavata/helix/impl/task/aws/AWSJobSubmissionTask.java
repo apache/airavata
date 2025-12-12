@@ -44,7 +44,7 @@ import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -64,8 +64,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     public AWSJobSubmissionTask(
             ApplicationContext applicationContext,
-            org.apache.airavata.service.RegistryService registryService,
-            org.apache.airavata.service.UserProfileService userProfileService,
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.service.profile.UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
             AWSTaskUtil awsTaskUtil) {
@@ -336,7 +336,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     }
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
-        org.apache.airavata.service.RegistryService registryService = getRegistryService();
+        org.apache.airavata.service.registry.RegistryService registryService = getRegistryService();
         CredentialStoreService credentialStoreService = getCredentialStoreService();
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
         SSHCredential sshCredential = credentialStoreService.getSSHCredential(sshCredentialToken, getGatewayId());

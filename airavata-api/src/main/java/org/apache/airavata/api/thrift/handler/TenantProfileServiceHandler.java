@@ -27,7 +27,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.apache.airavata.service.TenantProfileService;
+import org.apache.airavata.service.profile.TenantProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

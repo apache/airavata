@@ -16,24 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain;
+package org.apache.airavata.service.project;
 
 import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
 
 import java.util.List;
 
 /**
- * Service interface for notification management operations.
+ * Service interface for project management operations.
  */
-public interface NotificationService {
-    String createNotification(Notification notification) throws AiravataSystemException;
+public interface ProjectService {
+    String createProject(String gatewayId, Project project) throws AiravataSystemException;
     
-    boolean updateNotification(Notification notification) throws AiravataSystemException;
+    Project getProject(String projectId) throws AiravataSystemException, ProjectNotFoundException;
     
-    boolean deleteNotification(String gatewayId, String notificationId) throws AiravataSystemException;
+    void updateProject(String projectId, Project updatedProject) throws AiravataSystemException;
     
-    Notification getNotification(String gatewayId, String notificationId) throws AiravataSystemException;
+    boolean deleteProject(String projectId) throws AiravataSystemException, ProjectNotFoundException;
     
-    List<Notification> getAllNotifications(String gatewayId) throws AiravataSystemException;
+    List<Project> searchProjects(String gatewayId, String userName, ProjectSearchFields searchFields, int limit, int offset) throws AiravataSystemException;
 }

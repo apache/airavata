@@ -121,6 +121,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.models.Domain;
 import org.apache.airavata.sharing.models.DuplicateEntryException;
@@ -206,16 +207,16 @@ public class AiravataService {
 
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
-    private final CredentialStoreService credentialStoreService;
+    private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
     private final SSHAccountManager sshAccountManager;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
     
     // Domain services
-    private final org.apache.airavata.service.domain.ExperimentService experimentService;
-    private final org.apache.airavata.service.domain.ProjectService projectService;
-    private final org.apache.airavata.service.domain.NotificationService notificationService;
-    private final org.apache.airavata.service.domain.DataProductService dataProductService;
-    private final org.apache.airavata.service.domain.ApplicationService applicationService;
+    private final org.apache.airavata.service.experiment.ExperimentService experimentService;
+    private final org.apache.airavata.service.project.ProjectService projectService;
+    private final org.apache.airavata.service.notification.NotificationService notificationService;
+    private final org.apache.airavata.service.data.DataProductService dataProductService;
+    private final org.apache.airavata.service.application.ApplicationService applicationService;
     private final org.apache.airavata.service.security.AuthorizationService authorizationService;
     private final org.apache.airavata.service.sharing.SharingManager sharingManager;
     
@@ -226,14 +227,14 @@ public class AiravataService {
             AiravataServerProperties properties,
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
-            CredentialStoreService credentialStoreService,
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             SSHAccountManager sshAccountManager,
             GatewayGroupsInitializer gatewayGroupsInitializer,
-            org.apache.airavata.service.domain.ExperimentService experimentService,
-            org.apache.airavata.service.domain.ProjectService projectService,
-            org.apache.airavata.service.domain.NotificationService notificationService,
-            org.apache.airavata.service.domain.DataProductService dataProductService,
-            org.apache.airavata.service.domain.ApplicationService applicationService,
+            org.apache.airavata.service.experiment.ExperimentService experimentService,
+            org.apache.airavata.service.project.ProjectService projectService,
+            org.apache.airavata.service.notification.NotificationService notificationService,
+            org.apache.airavata.service.data.DataProductService dataProductService,
+            org.apache.airavata.service.application.ApplicationService applicationService,
             org.apache.airavata.service.security.AuthorizationService authorizationService,
             org.apache.airavata.service.sharing.SharingManager sharingManager) {
         this.properties = properties;

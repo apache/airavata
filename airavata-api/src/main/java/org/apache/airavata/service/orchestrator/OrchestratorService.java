@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.orchestrator;
 
 import jakarta.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
@@ -70,6 +70,8 @@ import org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.orchestrator.OrchestratorRegistryService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;

@@ -28,7 +28,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.sharing.SharingManager;
 import org.apache.airavata.sharing.models.DuplicateEntryException;

@@ -37,7 +37,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -58,13 +58,13 @@ public class ParserWorkflowManager extends WorkflowManager {
 
     private final AiravataServerProperties properties;
     private final org.springframework.context.ApplicationContext applicationContext;
-    private final org.apache.airavata.service.RegistryService registryService;
+    private final org.apache.airavata.service.registry.RegistryService registryService;
     private String parserStorageResourceId;
 
     public ParserWorkflowManager(
             AiravataServerProperties properties,
             org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.RegistryService registryService) {
+            org.apache.airavata.service.registry.RegistryService registryService) {
         // Default values, will be updated in @PostConstruct
         super("parser-workflow-manager", false, registryService, properties);
         this.properties = properties;

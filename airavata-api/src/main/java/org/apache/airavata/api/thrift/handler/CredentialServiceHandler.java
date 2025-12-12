@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.service.CredentialStoreService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -121,38 +121,6 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.getPasswordCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
-            throw wrapException(e);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
-            throws CredentialStoreException {
-        try {
-            return credentialStoreService.getAllCredentialSummaryForGateway(type, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
-            throw wrapException(e);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
-            SummaryType type, String gatewayId, String userId) throws CredentialStoreException {
-        try {
-            return credentialStoreService.getAllCredentialSummaryForUserInGateway(type, gatewayId, userId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
-            throw wrapException(e);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws CredentialStoreException {
-        try {
-            return credentialStoreService.getAllPWDCredentialsForGateway(gatewayId);
         } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
             throw wrapException(e);
         }

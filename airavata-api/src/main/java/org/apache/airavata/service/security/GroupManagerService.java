@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,8 @@ import org.apache.airavata.sharing.models.GroupType;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.apache.airavata.sharing.models.User;
 import org.apache.airavata.sharing.models.UserGroup;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.SharingRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

@@ -66,20 +66,6 @@ service CredentialStoreService extends base_api.BaseAPI {
   credential_store_models.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credential_store_errors.CredentialStoreException csException);
 
-  // Deprecated
-  list<credential_store_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required credential_store_models.SummaryType type,
-                              2: required string gatewayId)
-                              throws (1:credential_store_errors.CredentialStoreException csException);
-
-    // Deprecated
-    list<credential_store_models.CredentialSummary> getAllCredentialSummaryForUserInGateway (1: required credential_store_models.SummaryType type,
-                                                2: required string gatewayId,
-                                                3: required string userId)
-                                                throws (1:credential_store_errors.CredentialStoreException csException);
-
-  // Deprecated
-  map<string,string> getAllPWDCredentialsForGateway (1: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
-
   bool deleteSSHCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);
 
   bool deletePWDCredential(1: required string tokenId, 2: required string gatewayId) throws (1:credential_store_errors.CredentialStoreException csException);

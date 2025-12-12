@@ -42,9 +42,9 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
 
     public ForkJobSubmissionTask(
             org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.RegistryService registryService,
-            org.apache.airavata.service.UserProfileService userProfileService,
-            org.apache.airavata.service.CredentialStoreService credentialStoreService,
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.service.profile.UserProfileService userProfileService,
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
         super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
     }

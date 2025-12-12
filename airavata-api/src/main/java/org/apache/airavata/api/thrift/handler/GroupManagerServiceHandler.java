@@ -26,7 +26,7 @@ import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
-import org.apache.airavata.service.GroupManagerService;
+import org.apache.airavata.service.security.GroupManagerService;
 import org.apache.airavata.sharing.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -25,7 +25,7 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.utils.OrchestratorServerThreadPoolExecutor;
-import org.apache.airavata.service.OrchestratorService;
+import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

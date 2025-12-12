@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain.impl;
+package org.apache.airavata.service.application.impl;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -24,8 +24,8 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.domain.ApplicationService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.application.ApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -25,7 +25,7 @@ import org.apache.airavata.metascheduler.core.engine.ProcessScanner;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;

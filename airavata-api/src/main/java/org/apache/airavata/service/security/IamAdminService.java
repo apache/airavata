@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.security;
 
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
@@ -37,6 +37,8 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

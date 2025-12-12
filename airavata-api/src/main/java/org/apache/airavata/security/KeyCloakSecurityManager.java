@@ -37,7 +37,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.authzcache.*;
 import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.models.UserGroup;
 import org.apache.http.Consts;
@@ -147,7 +147,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                         + "|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|/airavata/getWorkflow|/airavata/getWorkflowTemplateId"
                         + "|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|/airavata/getDataProduct|/airavata/registerReplicaLocation"
                         + "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers"
-                        + "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin|/airavata/getAllCredentialSummaryForGateway"
+                        + "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin"
                         + "|"
                         + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" + "|"
                         + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS + "|"

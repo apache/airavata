@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain;
+package org.apache.airavata.service.experiment;
 
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.experiment.ExperimentModel;

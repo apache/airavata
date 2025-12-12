@@ -34,8 +34,8 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.CredentialStoreService;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.stereotype.Component;
 
 @Component

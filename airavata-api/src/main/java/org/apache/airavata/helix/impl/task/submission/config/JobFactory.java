@@ -24,7 +24,7 @@ import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.exceptions.AppCatalogException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

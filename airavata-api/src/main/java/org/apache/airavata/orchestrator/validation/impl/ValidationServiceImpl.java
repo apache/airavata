@@ -29,7 +29,7 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.validation.ValidationService;
 import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

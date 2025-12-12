@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

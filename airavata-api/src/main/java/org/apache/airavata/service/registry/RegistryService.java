@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.registry;
 
 import java.util.*;
 import org.apache.airavata.config.AiravataServerProperties;

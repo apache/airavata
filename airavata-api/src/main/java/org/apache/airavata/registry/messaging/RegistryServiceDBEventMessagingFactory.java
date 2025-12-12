@@ -33,7 +33,7 @@ import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

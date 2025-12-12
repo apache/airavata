@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.profile;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
@@ -38,6 +38,7 @@ import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.service.security.IamAdminService;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.UserInfo;
@@ -71,7 +72,7 @@ public class UserProfileService {
 
     public UserProfileService(
             UserProfileRepository userProfileRepository,
-            @Lazy IamAdminService iamAdminService,
+            @Lazy org.apache.airavata.service.security.IamAdminService iamAdminService,
             Mapper mapper,
             AiravataSecurityManager securityManager,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager) {

@@ -62,7 +62,7 @@ import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;

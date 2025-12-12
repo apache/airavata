@@ -32,9 +32,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserProfileServiceHandler implements org.apache.airavata.profile.user.cpi.UserProfileService.Iface {
 
-    private final org.apache.airavata.service.UserProfileService userProfileService;
+    private final org.apache.airavata.service.profile.UserProfileService userProfileService;
 
-    public UserProfileServiceHandler(org.apache.airavata.service.UserProfileService userProfileService) {
+    public UserProfileServiceHandler(org.apache.airavata.service.profile.UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
     }
 

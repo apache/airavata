@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service;
+package org.apache.airavata.service.security;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
@@ -442,135 +442,6 @@ import org.springframework.stereotype.Service;
         } catch (CredentialStoreException e) {
             throw e;
         }
-    }
-
-    @Deprecated
-    public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
-            throws CredentialStoreException {
-        if (type.equals(SummaryType.SSH)) {
-            List<CredentialSummary> summaryList = new ArrayList<>();
-            try {
-                List<Credential> allCredentials;
-                try {
-                    allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
-                } catch (CredentialStoreException e) {
-                    String message = String.format(
-                            "Error occurred while retrieving credential Summary for gateway_id=%s", gatewayId);
-                    logger.error(message, e);
-                    throw new CredentialStoreException(message, e);
-                }
-                if (allCredentials != null && !allCredentials.isEmpty()) {
-                    for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
-                                && !(credential
-                                        instanceof org.apache.airavata.credential.impl.password.PasswordCredential)
-                                && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
-                            org.apache.airavata.credential.impl.ssh.SSHCredential sshCredential =
-                                    (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
-                            CredentialSummary sshCredentialSummary = new CredentialSummary();
-                            sshCredentialSummary.setType(SummaryType.SSH);
-                            sshCredentialSummary.setToken(sshCredential.getToken());
-                            sshCredentialSummary.setUsername(sshCredential.getPortalUserName());
-                            sshCredentialSummary.setGatewayId(sshCredential.getGateway());
-                            sshCredentialSummary.setDescription(sshCredential.getDescription());
-                            sshCredentialSummary.setPublicKey(new String(sshCredential.getPublicKey()));
-                            summaryList.add(sshCredentialSummary);
-                        }
-                    }
-                }
-            } catch (CredentialStoreException e) {
-                throw e;
-            }
-            return summaryList;
-        } else {
-            String msg = String.format("Summary type=%s not supported for gateway_id=%s", type.name(), gatewayId);
-            logger.error(msg);
-            throw new CredentialStoreException(msg);
-        }
-    }
-
-    @Deprecated
-    public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
-            SummaryType type, String gatewayId, String userId) throws CredentialStoreException {
-        if (type.equals(SummaryType.SSH)) {
-            List<CredentialSummary> summaryList = new ArrayList<>();
-            try {
-                List<Credential> allCredentials;
-                try {
-                    allCredentials = credentialReader.getAllCredentials();
-                } catch (CredentialStoreException e) {
-                    String message = String.format(
-                            "Error retrieving credential summaries for user_id=%s and gateway_id=%s",
-                            userId, gatewayId);
-                    logger.error(message, e);
-                    throw new CredentialStoreException(message, e);
-                }
-                if (allCredentials != null && !allCredentials.isEmpty()) {
-                    for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
-                                && !(credential
-                                        instanceof org.apache.airavata.credential.impl.password.PasswordCredential)) {
-                            org.apache.airavata.credential.impl.ssh.SSHCredential sshCredential =
-                                    (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
-                            String portalUserName = sshCredential.getPortalUserName();
-                            String gateway = sshCredential.getGateway();
-                            if (portalUserName != null && gateway != null) {
-                                if (portalUserName.equals(userId)
-                                        && gateway.equals(gatewayId)
-                                        && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER) {
-                                    org.apache.airavata.credential.impl.ssh.SSHCredential sshCredentialKey =
-                                            (org.apache.airavata.credential.impl.ssh.SSHCredential) credential;
-                                    CredentialSummary sshCredentialSummary = new CredentialSummary();
-                                    sshCredentialSummary.setType(SummaryType.SSH);
-                                    sshCredentialSummary.setToken(sshCredentialKey.getToken());
-                                    sshCredentialSummary.setUsername(sshCredentialKey.getPortalUserName());
-                                    sshCredentialSummary.setGatewayId(sshCredentialKey.getGateway());
-                                    sshCredentialSummary.setDescription(sshCredentialKey.getDescription());
-                                    sshCredentialSummary.setPublicKey(new String(sshCredentialKey.getPublicKey()));
-                                    summaryList.add(sshCredentialSummary);
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (CredentialStoreException e) {
-                throw e;
-            }
-            return summaryList;
-        } else {
-            logger.info("Summay Type" + type.toString() + " not supported for user Id - " + userId + " and "
-                    + "gateway id - " + gatewayId);
-            return null;
-        }
-    }
-
-    @Deprecated
-    public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws CredentialStoreException {
-        Map<String, String> pwdCredMap = new HashMap<>();
-        try {
-            List<Credential> allCredentials;
-            try {
-                allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
-            } catch (CredentialStoreException e) {
-                String message = String.format("Error retrieving credentials for gateway_id=%s", gatewayId);
-                logger.error(message, e);
-                throw new CredentialStoreException(message, e);
-            }
-            if (allCredentials != null && !allCredentials.isEmpty()) {
-                for (Credential credential : allCredentials) {
-                    if (credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential) {
-                        org.apache.airavata.credential.impl.password.PasswordCredential pwdCredential =
-                                (org.apache.airavata.credential.impl.password.PasswordCredential) credential;
-                        pwdCredMap.put(
-                                pwdCredential.getToken(),
-                                pwdCredential.getDescription() == null ? "" : pwdCredential.getDescription());
-                    }
-                }
-            }
-        } catch (CredentialStoreException e) {
-            throw e;
-        }
-        return pwdCredMap;
     }
 
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {

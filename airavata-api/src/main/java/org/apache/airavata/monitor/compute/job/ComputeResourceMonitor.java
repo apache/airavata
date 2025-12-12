@@ -24,7 +24,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourcePr
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 
 public abstract class ComputeResourceMonitor {
 

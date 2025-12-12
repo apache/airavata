@@ -22,7 +22,7 @@ package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

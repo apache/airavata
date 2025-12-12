@@ -70,8 +70,8 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityManager;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

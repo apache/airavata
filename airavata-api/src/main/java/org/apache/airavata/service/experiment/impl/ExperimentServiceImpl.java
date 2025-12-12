@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.service.domain.impl;
+package org.apache.airavata.service.experiment.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -33,8 +33,8 @@ import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.RegistryService;
-import org.apache.airavata.service.domain.ExperimentService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.experiment.ExperimentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
