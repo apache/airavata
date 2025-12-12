@@ -277,6 +277,24 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         }
     }
 
+
+    private void deleteDirectoryRecursively(SFTPClientWrapper sftpClient, String path) throws IOException {
+        FileAttributes lstat = sftpClient.lstat(path);
+        if (lstat.getMode().getType() == Type.DIRECTORY) {
+            List<RemoteResourceInfo> ls = sftpClient.ls(path);
+            if (ls == null || ls.isEmpty()) {
+                sftpClient.rmdir(path);
+            } else {
+                for (RemoteResourceInfo r : ls) {
+                    deleteDirectoryRecursively(sftpClient, path + "/" + r.getName());
+                }
+                sftpClient.rmdir(path);
+            }
+        } else {
+            sftpClient.rm(path);
+        }
+    }
+
     @Override
     public void deleteDirectory(String path) throws AgentException {
         if (path == null || path.trim().isEmpty()) {
@@ -285,7 +303,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SFTPClientWrapper sftpClient = null;
         try {
             sftpClient = sshjClient.newSFTPClientWrapper();
-            sftpClient.rmdir(path);
+            deleteDirectoryRecursively(sftpClient, path);
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
                 Optional.ofNullable(sftpClient).ifPresent(ft -> ft.setErrored(true));
