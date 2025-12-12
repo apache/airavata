@@ -35,7 +35,7 @@ public class DataProductEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PRODUCT_URI")
+    @Column(name = "PRODUCT_URI", nullable = false)
     private String productUri;
 
     @Column(name = "GATEWAY_ID")

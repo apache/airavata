@@ -31,7 +31,7 @@ public class ProcessResourceScheduleEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROCESS_ID")
+    @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
     @Column(name = "RESOURCE_HOST_ID")

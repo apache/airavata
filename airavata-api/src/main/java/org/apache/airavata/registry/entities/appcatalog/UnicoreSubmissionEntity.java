@@ -33,7 +33,7 @@ public class UnicoreSubmissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "SUBMISSION_ID")
+    @Column(name = "SUBMISSION_ID", nullable = false)
     private String jobSubmissionInterfaceId;
 
     @Column(name = "SECURITY_PROTOCAL")

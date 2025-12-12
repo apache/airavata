@@ -33,11 +33,11 @@ public class GsisshPostjobcommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "SUBMISSION_ID")
+    @Column(name = "SUBMISSION_ID", nullable = false)
     private String submissionId;
 
     @Id
-    @Column(name = "COMMAND")
+    @Column(name = "COMMAND", nullable = false)
     private String command;
 
     public GsisshPostjobcommandEntity() {}

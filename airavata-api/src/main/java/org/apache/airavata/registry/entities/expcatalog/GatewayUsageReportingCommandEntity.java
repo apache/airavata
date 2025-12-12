@@ -29,11 +29,11 @@ public class GatewayUsageReportingCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Id
-    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
     @Lob

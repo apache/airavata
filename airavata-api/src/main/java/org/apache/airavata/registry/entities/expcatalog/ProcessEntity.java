@@ -34,16 +34,16 @@ public class ProcessEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROCESS_ID")
+    @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "LAST_UPDATE_TIME")
+    @Column(name = "LAST_UPDATE_TIME", nullable = false)
     private Timestamp lastUpdateTime;
 
     @Lob
@@ -78,6 +78,9 @@ public class ProcessEntity implements Serializable {
 
     @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
     private String outputStorageResourceId;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
 
     @Column(name = "USER_DN")
     private String userDn;
@@ -263,6 +266,14 @@ public class ProcessEntity implements Serializable {
 
     public void setOutputStorageResourceId(String outputStorageResourceId) {
         this.outputStorageResourceId = outputStorageResourceId;
+    }
+
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
     }
 
     public String getUserDn() {

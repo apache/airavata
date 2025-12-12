@@ -174,14 +174,17 @@ public class ExperimentService {
         ExperimentEntity experimentEntity;
         
         if (existingEntity != null) {
+            // Map model to new entity to get the desired state
             ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
+            // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(experimentModel, existingEntity);
             
-            mergeLists(existingEntity.getExperimentStatus(), newEntity.getExperimentStatus(), org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity::getStatusId);
-            mergeLists(existingEntity.getExperimentInputs(), newEntity.getExperimentInputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity::getName);
-            mergeLists(existingEntity.getExperimentOutputs(), newEntity.getExperimentOutputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity::getName);
-            mergeLists(existingEntity.getErrors(), newEntity.getErrors(), org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity::getErrorId);
-            mergeLists(existingEntity.getProcesses(), newEntity.getProcesses(), org.apache.airavata.registry.entities.expcatalog.ProcessEntity::getProcessId);
+            // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentStatus(), newEntity.getExperimentStatus(), org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity::getStatusId);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentInputs(), newEntity.getExperimentInputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity::getName);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentOutputs(), newEntity.getExperimentOutputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity::getName);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getErrors(), newEntity.getErrors(), org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity::getErrorId);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getProcesses(), newEntity.getProcesses(), org.apache.airavata.registry.entities.expcatalog.ProcessEntity::getProcessId);
             
             experimentEntity = existingEntity;
         } else {
@@ -242,25 +245,4 @@ public class ExperimentService {
         return experimentRepository.save(experimentEntity);
     }
 
-    private <T> void mergeLists(List<T> currentList, List<T> newList, java.util.function.Function<T, String> idExtractor) {
-        if (currentList == null || newList == null) return;
-        
-        java.util.Map<String, T> currentMap = currentList.stream()
-            .collect(java.util.stream.Collectors.toMap(idExtractor, java.util.function.Function.identity()));
-        
-        java.util.List<T> result = new ArrayList<>();
-        for (T newItem : newList) {
-            String id = idExtractor.apply(newItem);
-            if (id != null && currentMap.containsKey(id)) {
-                T existing = currentMap.get(id);
-                mapper.map(newItem, existing);
-                result.add(existing);
-            } else {
-                result.add(newItem);
-            }
-        }
-        
-        currentList.clear();
-        currentList.addAll(result);
-    }
 }

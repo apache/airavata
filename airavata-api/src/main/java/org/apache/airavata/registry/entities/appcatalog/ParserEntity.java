@@ -32,19 +32,19 @@ public class ParserEntity implements Serializable {
     @Column(name = "PARSER_ID")
     private String id;
 
-    @Column(name = "IMAGE_NAME")
+    @Column(name = "IMAGE_NAME", nullable = false)
     private String imageName;
 
-    @Column(name = "OUTPUT_DIR_PATH")
+    @Column(name = "OUTPUT_DIR_PATH", nullable = false)
     private String outputDirPath;
 
-    @Column(name = "INPUT_DIR_PATH")
+    @Column(name = "INPUT_DIR_PATH", nullable = false)
     private String inputDirPath;
 
-    @Column(name = "EXECUTION_COMMAND")
+    @Column(name = "EXECUTION_COMMAND", nullable = false)
     private String executionCommand;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @OneToMany(

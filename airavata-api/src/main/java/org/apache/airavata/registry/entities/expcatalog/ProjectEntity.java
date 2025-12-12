@@ -32,13 +32,13 @@ public class ProjectEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROJECT_ID")
+    @Column(name = "PROJECT_ID", nullable = false)
     private String projectID;
 
     @Column(name = "USER_NAME")
     private String owner;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Column(name = "PROJECT_NAME")
@@ -47,7 +47,7 @@ public class ProjectEntity implements Serializable {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     public ProjectEntity() {}

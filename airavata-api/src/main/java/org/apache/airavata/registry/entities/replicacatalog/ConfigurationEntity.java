@@ -32,11 +32,11 @@ public class ConfigurationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "CONFIG_KEY")
+    @Column(name = "CONFIG_KEY", nullable = false)
     private String configKey;
 
     @Id
-    @Column(name = "CONFIG_VAL")
+    @Column(name = "CONFIG_VAL", nullable = false)
     private String configVal;
 
     public String getConfigKey() {

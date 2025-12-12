@@ -32,11 +32,11 @@ public class ProjectUserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROJECT_ID")
+    @Column(name = "PROJECT_ID", nullable = false)
     private String projectID;
 
     @Id
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME", nullable = false)
     private String userName;
 
     public ProjectUserEntity() {}

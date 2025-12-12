@@ -32,10 +32,10 @@ public class ParsingTemplateEntity implements Serializable {
     @Column(name = "PARSING_TEMPLATE_ID")
     private String id;
 
-    @Column(name = "APP_INTERFACE_ID")
+    @Column(name = "APP_INTERFACE_ID", nullable = false)
     private String applicationInterface;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @OneToMany(

@@ -32,11 +32,11 @@ public class GatewayWorkerEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Id
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME", nullable = false)
     private String userName;
 
     public GatewayWorkerEntity() {}

@@ -28,11 +28,11 @@ import java.sql.Timestamp;
 public class ProcessWorkflowEntity {
 
     @Id
-    @Column(name = "PROCESS_ID")
+    @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
     @Id
-    @Column(name = "WORKFLOW_ID")
+    @Column(name = "WORKFLOW_ID", nullable = false)
     private String workflowId;
 
     @Column(name = "CREATION_TIME")

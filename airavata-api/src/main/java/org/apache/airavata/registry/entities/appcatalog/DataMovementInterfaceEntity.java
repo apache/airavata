@@ -29,29 +29,27 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
  */
 @Entity
 @Table(name = "DATA_MOVEMENT_INTERFACE")
-@IdClass(DataMovementInterfacePK.class)
 public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "COMPUTE_RESOURCE_ID")
     @Id
-    private String computeResourceId;
-
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
-    @Id
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    private String computeResourceId;
+
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "DATA_MOVEMENT_PROTOCOL")
+    @Column(name = "DATA_MOVEMENT_PROTOCOL", nullable = false)
     @Enumerated(EnumType.STRING)
     private DataMovementProtocol dataMovementProtocol;
 
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = ComputeResourceEntity.class)

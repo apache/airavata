@@ -33,17 +33,17 @@ public class GridftpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "SECURITY_PROTOCOL")
+    @Column(name = "SECURITY_PROTOCOL", nullable = false)
     @Enumerated(EnumType.STRING)
     private SecurityProtocol securityProtocol;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     public GridftpDataMovementEntity() {}

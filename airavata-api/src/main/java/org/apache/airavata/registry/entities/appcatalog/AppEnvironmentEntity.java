@@ -34,14 +34,14 @@ public class AppEnvironmentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DEPLOYMENT_ID")
+    @Column(name = "DEPLOYMENT_ID", nullable = false)
     private String deploymentId;
 
     @Column(name = "VALUE")
     private String value;
 
     @Id
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     private String name;
 
     @Column(name = "ENV_ORDER")

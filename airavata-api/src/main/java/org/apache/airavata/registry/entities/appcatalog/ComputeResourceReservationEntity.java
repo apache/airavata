@@ -45,7 +45,7 @@ public class ComputeResourceReservationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESERVATION_ID")
+    @Column(name = "RESERVATION_ID", nullable = false)
     private String reservationId;
 
     @Column(name = "RESERVATION_NAME", nullable = false)

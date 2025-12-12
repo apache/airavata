@@ -28,10 +28,10 @@ public class ParserConnectorInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PARSER_CONNECTOR_INPUT_ID")
+    @Column(name = "PARSER_CONNECTOR_INPUT_ID", nullable = false)
     private String id;
 
-    @Column(name = "PARSER_INPUT_ID")
+    @Column(name = "PARSER_INPUT_ID", nullable = false)
     private String inputId;
 
     @Column(name = "PARSER_OUTPUT_ID")
@@ -40,7 +40,7 @@ public class ParserConnectorInputEntity implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "PARSER_CONNECTOR_ID")
+    @Column(name = "PARSER_CONNECTOR_ID", nullable = false)
     private String parserConnectorId;
 
     @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)

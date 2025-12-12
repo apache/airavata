@@ -33,11 +33,11 @@ public class UserResourceProfileEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Column(name = "CS_TOKEN")

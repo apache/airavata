@@ -55,7 +55,7 @@ public class GatewayEntity {
     }
 
     @Id
-    @Column(name = "AIRAVATA_INTERNAL_GATEWAY_ID")
+    @Column(name = "AIRAVATA_INTERNAL_GATEWAY_ID", nullable = false)
     public String getAiravataInternalGatewayId() {
         return airavataInternalGatewayId;
     }

@@ -31,15 +31,15 @@ public class UserStoragePreferenceEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "STORAGE_RESOURCE_ID")
+    @Column(name = "STORAGE_RESOURCE_ID", nullable = false)
     private String storageResourceId;
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Column(name = "RESOURCE_CS_TOKEN")

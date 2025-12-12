@@ -34,11 +34,11 @@ public class PrejobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "APPDEPLOYMENT_ID")
+    @Column(name = "APPDEPLOYMENT_ID", nullable = false)
     private String appdeploymentId;
 
     @Id
-    @Column(name = "COMMAND")
+    @Column(name = "COMMAND", nullable = false)
     private String command;
 
     @Column(name = "COMMAND_ORDER")

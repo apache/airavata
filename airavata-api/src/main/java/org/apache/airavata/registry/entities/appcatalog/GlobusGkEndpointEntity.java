@@ -33,11 +33,11 @@ public class GlobusGkEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "SUBMISSION_ID")
+    @Column(name = "SUBMISSION_ID", nullable = false)
     private String submissionId;
 
     @Id
-    @Column(name = "ENDPOINT")
+    @Column(name = "ENDPOINT", nullable = false)
     private String endpoint;
 
     public GlobusGkEndpointEntity() {}

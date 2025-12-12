@@ -36,7 +36,7 @@ public class EntityTypeEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "ENTITY_TYPE_ID")
+    @Column(name = "ENTITY_TYPE_ID", nullable = false)
     public String getEntityTypeId() {
         return entityTypeId;
     }
@@ -46,7 +46,7 @@ public class EntityTypeEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -56,7 +56,7 @@ public class EntityTypeEntity {
     }
 
     @Basic
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     public String getName() {
         return name;
     }
@@ -76,7 +76,7 @@ public class EntityTypeEntity {
     }
 
     @Basic
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", nullable = false)
     public Long getCreatedTime() {
         return createdTime;
     }
@@ -86,7 +86,7 @@ public class EntityTypeEntity {
     }
 
     @Basic
-    @Column(name = "UPDATED_TIME")
+    @Column(name = "UPDATED_TIME", nullable = false)
     public Long getUpdatedTime() {
         return updatedTime;
     }

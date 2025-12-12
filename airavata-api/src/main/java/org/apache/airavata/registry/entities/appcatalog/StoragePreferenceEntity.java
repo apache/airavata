@@ -31,11 +31,11 @@ import java.io.Serializable;
 public class StoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     @Id
     private String gatewayId;
 
-    @Column(name = "STORAGE_RESOURCE_ID")
+    @Column(name = "STORAGE_RESOURCE_ID", nullable = false)
     @Id
     private String storageResourceId;
 

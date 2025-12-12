@@ -35,7 +35,7 @@ public class SshJobSubmissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "JOB_SUBMISSION_INTERFACE_ID")
+    @Column(name = "JOB_SUBMISSION_INTERFACE_ID", nullable = false)
     private String jobSubmissionInterfaceId;
 
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -51,14 +51,14 @@ public class SshJobSubmissionEntity implements Serializable {
     @Column(name = "MONITOR_MODE")
     private String monitorMode;
 
-    @Column(name = "SECURITY_PROTOCOL")
+    @Column(name = "SECURITY_PROTOCOL", nullable = false)
     @Enumerated(EnumType.STRING)
     private SecurityProtocol securityProtocol;
 
     @Column(name = "SSH_PORT")
     private int sshPort;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     public SshJobSubmissionEntity() {}

@@ -35,10 +35,10 @@ public class DataReplicaLocationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "REPLICA_ID")
+    @Column(name = "REPLICA_ID", nullable = false)
     private String replicaId;
 
-    @Column(name = "PRODUCT_URI")
+    @Column(name = "PRODUCT_URI", nullable = false)
     private String productUri;
 
     @Lob

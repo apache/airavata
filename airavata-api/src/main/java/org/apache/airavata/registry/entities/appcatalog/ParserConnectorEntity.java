@@ -29,16 +29,16 @@ public class ParserConnectorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PARSER_CONNECTOR_ID")
+    @Column(name = "PARSER_CONNECTOR_ID", nullable = false)
     private String id;
 
-    @Column(name = "PARENT_PARSER_ID")
+    @Column(name = "PARENT_PARSER_ID", nullable = false)
     private String parentParserId;
 
-    @Column(name = "CHILD_PARSER_ID")
+    @Column(name = "CHILD_PARSER_ID", nullable = false)
     private String childParserId;
 
-    @Column(name = "PARSING_TEMPLATE_ID")
+    @Column(name = "PARSING_TEMPLATE_ID", nullable = false)
     private String parsingTemplateId;
 
     @OneToMany(

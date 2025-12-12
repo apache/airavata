@@ -32,7 +32,7 @@ public class UserConfigurationDataEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
 
     @Column(name = "AIRAVATA_AUTO_SCHEDULE")

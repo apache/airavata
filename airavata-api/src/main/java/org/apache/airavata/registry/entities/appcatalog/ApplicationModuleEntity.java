@@ -36,7 +36,7 @@ public class ApplicationModuleEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "MODULE_ID")
+    @Column(name = "MODULE_ID", nullable = false)
     private String appModuleId;
 
     @Column(name = "CREATION_TIME", nullable = false, updatable = false)

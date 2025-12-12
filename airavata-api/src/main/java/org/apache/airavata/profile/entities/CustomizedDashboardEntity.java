@@ -55,7 +55,7 @@ public class CustomizedDashboardEntity {
     private UserProfileEntity userProfileEntity;
 
     @Id
-    @Column(name = "AIRAVATA_INTERNAL_USER_ID")
+    @Column(name = "AIRAVATA_INTERNAL_USER_ID", nullable = false)
     public String getAiravataInternalUserId() {
         return airavataInternalUserId;
     }

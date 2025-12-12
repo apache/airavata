@@ -30,7 +30,7 @@ public class AiravataWorkflowEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private String id;
 
     @Column(name = "EXPERIMENT_ID")

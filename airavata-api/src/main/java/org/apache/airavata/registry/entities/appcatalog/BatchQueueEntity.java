@@ -32,11 +32,11 @@ public class BatchQueueEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
     @Id
-    @Column(name = "QUEUE_NAME")
+    @Column(name = "QUEUE_NAME", nullable = false)
     private String queueName;
 
     @Column(name = "MAX_JOB_IN_QUEUE")

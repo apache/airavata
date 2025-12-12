@@ -32,15 +32,15 @@ public class UserComputeResourcePreferenceEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Column(name = "PREFERED_BATCH_QUEUE")

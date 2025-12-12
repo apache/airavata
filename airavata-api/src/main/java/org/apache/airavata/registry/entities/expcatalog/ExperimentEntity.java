@@ -23,7 +23,6 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.experiment.ExperimentCleanupStrategy;
 import org.apache.airavata.model.experiment.ExperimentType;
 
 /**
@@ -35,10 +34,10 @@ public class ExperimentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     public String experimentId;
 
-    @Column(name = "PROJECT_ID")
+    @Column(name = "PROJECT_ID", nullable = false)
     public String projectId;
 
     @Column(name = "GATEWAY_ID")
@@ -48,17 +47,13 @@ public class ExperimentEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     public ExperimentType experimentType;
 
-    @Column(name = "CLEANUP_STRATEGY")
-    @Enumerated(EnumType.STRING)
-    public ExperimentCleanupStrategy cleanupStrategy;
-
     @Column(name = "USER_NAME")
     public String userName;
 
     @Column(name = "EXPERIMENT_NAME")
     public String experimentName;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     public Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")
@@ -272,14 +267,6 @@ public class ExperimentEntity implements Serializable {
 
     public void setExperimentStatus(List<ExperimentStatusEntity> experimentStatus) {
         this.experimentStatus = experimentStatus;
-    }
-
-    public ExperimentCleanupStrategy getCleanupStrategy() {
-        return cleanupStrategy;
-    }
-
-    public void setCleanupStrategy(ExperimentCleanupStrategy cleanupStrategy) {
-        this.cleanupStrategy = cleanupStrategy;
     }
 
     public List<ProcessEntity> getProcesses() {

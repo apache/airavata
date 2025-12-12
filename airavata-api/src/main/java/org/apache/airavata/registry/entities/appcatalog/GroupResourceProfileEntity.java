@@ -42,17 +42,17 @@ public class GroupResourceProfileEntity implements Serializable {
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
     @Column(name = "GROUP_RESOURCE_PROFILE_NAME")
     private String groupResourceProfileName;
 
     // TODO: change these timestamp to actual Timestamp
-    @Column(name = "CREATION_TIME", updatable = false)
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
     private Long creationTime;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Long updatedTime;
 
     @Column(name = "DEFAULT_CREDENTIAL_STORE_TOKEN")

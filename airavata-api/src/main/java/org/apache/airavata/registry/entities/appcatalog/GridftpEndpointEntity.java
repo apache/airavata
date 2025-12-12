@@ -33,17 +33,17 @@ public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
     @Id
-    @Column(name = "ENDPOINT")
+    @Column(name = "ENDPOINT", nullable = false)
     private String endpoint;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @ManyToOne(cascade = CascadeType.MERGE)

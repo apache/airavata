@@ -36,11 +36,11 @@ public class ApplicationInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "INTERFACE_ID")
+    @Column(name = "INTERFACE_ID", nullable = false)
     private String interfaceId;
 
     @Id
-    @Column(name = "INPUT_KEY")
+    @Column(name = "INPUT_KEY", nullable = false)
     private String name;
 
     @Column(name = "APP_ARGUMENT")

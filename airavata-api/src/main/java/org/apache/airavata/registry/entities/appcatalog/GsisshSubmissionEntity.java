@@ -35,7 +35,7 @@ public class GsisshSubmissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "SUBMISSION_ID")
+    @Column(name = "SUBMISSION_ID", nullable = false)
     private String submissionId;
 
     @Column(name = "INSTALLED_PATH")

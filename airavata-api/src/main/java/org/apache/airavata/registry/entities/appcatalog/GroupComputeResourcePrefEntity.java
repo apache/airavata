@@ -51,11 +51,11 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", nullable = false)
     @Id
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false)
     @Id
     private String groupResourceProfileId;
 

@@ -33,10 +33,10 @@ public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Column(name = "ENABLED")
@@ -51,7 +51,7 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "GATEWAY_USAGE_REPORTING")
     private boolean gatewayUsageReporting;
 
-    @Column(name = "HOST_NAME")
+    @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
 
     @Column(name = "MAX_MEMORY_NODE")
@@ -60,7 +60,7 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @Column(name = "CPUS_PER_NODE")

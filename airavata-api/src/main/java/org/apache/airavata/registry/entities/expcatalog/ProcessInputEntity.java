@@ -33,11 +33,11 @@ public class ProcessInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROCESS_ID")
+    @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
     @Id
-    @Column(name = "INPUT_NAME")
+    @Column(name = "INPUT_NAME", nullable = false)
     private String name;
 
     @Lob

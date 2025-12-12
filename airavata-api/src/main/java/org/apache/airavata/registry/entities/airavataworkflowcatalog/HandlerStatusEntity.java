@@ -30,11 +30,11 @@ public class HandlerStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private String id;
 
     @Id
-    @Column(name = "HANDLER_ID")
+    @Column(name = "HANDLER_ID", nullable = false)
     private String handlerId;
 
     @Column(name = "STATE")

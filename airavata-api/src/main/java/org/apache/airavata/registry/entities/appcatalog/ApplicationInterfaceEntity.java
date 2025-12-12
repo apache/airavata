@@ -34,7 +34,7 @@ public class ApplicationInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "INTERFACE_ID")
+    @Column(name = "INTERFACE_ID", nullable = false)
     private String applicationInterfaceId;
 
     @Column(name = "APPLICATION_DESCRIPTION")

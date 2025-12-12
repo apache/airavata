@@ -46,11 +46,11 @@ public class ResourceJobManagerEntity implements Serializable {
     @Column(name = "PUSH_MONITORING_ENDPOINT")
     private String pushMonitoringEndpoint;
 
-    @Column(name = "RESOURCE_JOB_MANAGER_TYPE")
+    @Column(name = "RESOURCE_JOB_MANAGER_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private ResourceJobManagerType resourceJobManagerType;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     public ResourceJobManagerEntity() {}

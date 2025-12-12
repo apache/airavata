@@ -43,7 +43,7 @@ public class EntityEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "ENTITY_ID")
+    @Column(name = "ENTITY_ID", nullable = false)
     public String getEntityId() {
         return entityId;
     }
@@ -53,7 +53,7 @@ public class EntityEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -63,7 +63,7 @@ public class EntityEntity {
     }
 
     @Basic
-    @Column(name = "ENTITY_TYPE_ID")
+    @Column(name = "ENTITY_TYPE_ID", nullable = false)
     public String getEntityTypeId() {
         return entityTypeId;
     }
@@ -73,7 +73,7 @@ public class EntityEntity {
     }
 
     @Basic
-    @Column(name = "OWNER_ID")
+    @Column(name = "OWNER_ID", nullable = false)
     public String getOwnerId() {
         return ownerId;
     }
@@ -93,7 +93,7 @@ public class EntityEntity {
     }
 
     @Basic
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     public String getName() {
         return name;
     }

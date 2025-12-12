@@ -34,21 +34,21 @@ public class JobEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "JOB_ID")
+    @Column(name = "JOB_ID", nullable = false)
     private String jobId;
 
     @Id
-    @Column(name = "TASK_ID")
+    @Column(name = "TASK_ID", nullable = false)
     private String taskId;
 
     @Column(name = "PROCESS_ID")
     private String processId;
 
     @Lob
-    @Column(name = "JOB_DESCRIPTION")
+    @Column(name = "JOB_DESCRIPTION", nullable = false)
     private String jobDescription;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Column(name = "COMPUTE_RESOURCE_CONSUMED")

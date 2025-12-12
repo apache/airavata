@@ -49,7 +49,6 @@ import org.apache.airavata.registry.entities.appcatalog.CloudJobSubmissionEntity
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceFileSystemEntity;
 import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity;
-import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.GridftpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.GridftpEndpointEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandEntity;
@@ -180,12 +179,15 @@ public class ComputeResourceService {
         ComputeResourceEntity computeResourceEntity;
         
         if (existingEntity != null) {
+            // Map model to new entity to get the desired state
             ComputeResourceEntity newEntity = mapper.map(description, ComputeResourceEntity.class);
+            // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(description, existingEntity);
             
-            mergeLists(existingEntity.getBatchQueues(), newEntity.getBatchQueues(), org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity::getQueueName);
-            mergeLists(existingEntity.getDataMovementInterfaces(), newEntity.getDataMovementInterfaces(), org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity::getDataMovementInterfaceId);
-            mergeLists(existingEntity.getJobSubmissionInterfaces(), newEntity.getJobSubmissionInterfaces(), org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
+            // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getBatchQueues(), newEntity.getBatchQueues(), org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity::getQueueName);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getDataMovementInterfaces(), newEntity.getDataMovementInterfaces(), org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity::getDataMovementInterfaceId);
+            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getJobSubmissionInterfaces(), newEntity.getJobSubmissionInterfaces(), org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
             
             computeResourceEntity = existingEntity;
         } else {
@@ -253,8 +255,16 @@ public class ComputeResourceService {
 
     public List<ComputeResourceDescription> getComputeResourceList(Map<String, String> filters)
             throws AppCatalogException {
+        if (filters == null || filters.isEmpty()) {
+            return getAllComputeResourceList();
+        }
+        
         if (filters.containsKey(DBConstants.ComputeResource.HOST_NAME)) {
-            String hostName = "%" + filters.get(DBConstants.ComputeResource.HOST_NAME) + "%";
+            String hostNameValue = filters.get(DBConstants.ComputeResource.HOST_NAME);
+            if (hostNameValue == null || hostNameValue.trim().isEmpty()) {
+                return getAllComputeResourceList();
+            }
+            String hostName = "%" + hostNameValue + "%";
             List<ComputeResourceEntity> entities = computeResourceRepository.findByHostName(hostName);
             List<ComputeResourceDescription> result = entities.stream()
                     .map(e -> {
@@ -265,7 +275,7 @@ public class ComputeResourceService {
                     .collect(Collectors.toList());
             return result;
         } else {
-            logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
+            logger.error("Unsupported field name for compute resource: " + (filters.keySet().isEmpty() ? "empty filters" : filters.keySet().iterator().next()));
             throw new IllegalArgumentException("Unsupported field name for compute resource.");
         }
     }
@@ -769,25 +779,4 @@ public class ComputeResourceService {
         return saved.getDataMovementInterfaceId();
     }
 
-    private <T> void mergeLists(List<T> currentList, List<T> newList, java.util.function.Function<T, String> idExtractor) {
-        if (currentList == null || newList == null) return;
-        
-        java.util.Map<String, T> currentMap = currentList.stream()
-            .collect(java.util.stream.Collectors.toMap(idExtractor, java.util.function.Function.identity()));
-        
-        java.util.List<T> result = new java.util.ArrayList<>();
-        for (T newItem : newList) {
-            String id = idExtractor.apply(newItem);
-            if (id != null && currentMap.containsKey(id)) {
-                T existing = currentMap.get(id);
-                mapper.map(newItem, existing);
-                result.add(existing);
-            } else {
-                result.add(newItem);
-            }
-        }
-        
-        currentList.clear();
-        currentList.addAll(result);
-    }
 }

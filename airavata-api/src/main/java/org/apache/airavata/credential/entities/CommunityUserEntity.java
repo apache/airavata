@@ -39,10 +39,11 @@ public class CommunityUserEntity implements Serializable {
     @Column(name = "COMMUNITY_USER_NAME", length = 256, nullable = false)
     private String communityUserName;
 
-    @Column(name = "TOKEN_ID", length = 256)
+    @Id
+    @Column(name = "TOKEN_ID", length = 256, nullable = false)
     private String tokenId;
 
-    @Column(name = "COMMUNITY_USER_EMAIL", length = 256)
+    @Column(name = "COMMUNITY_USER_EMAIL", length = 256, nullable = false)
     private String communityUserEmail;
 
     public CommunityUserEntity() {}

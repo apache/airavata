@@ -30,10 +30,10 @@ public class WorkflowDataBlockEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private String id;
 
-    @Column(name = "WORKFLOW_ID")
+    @Column(name = "WORKFLOW_ID", nullable = false)
     private String workflowId;
 
     @Column(name = "VALUE")

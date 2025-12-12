@@ -33,7 +33,7 @@ public class NotificationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "NOTIFICATION_ID")
+    @Column(name = "NOTIFICATION_ID", nullable = false)
     private String notificationId;
 
     @Column(name = "GATEWAY_ID")
@@ -42,16 +42,16 @@ public class NotificationEntity implements Serializable {
     @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "NOTIFICATION_MESSAGE", length = 4096)
+    @Column(name = "NOTIFICATION_MESSAGE", length = 4096, nullable = false)
     private String notificationMessage;
 
-    @Column(name = "CREATION_DATE")
+    @Column(name = "CREATION_DATE", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "PUBLISHED_DATE")
+    @Column(name = "PUBLISHED_DATE", nullable = false)
     private Timestamp publishedTime;
 
-    @Column(name = "EXPIRATION_DATE")
+    @Column(name = "EXPIRATION_DATE", nullable = false)
     private Timestamp expirationTime;
 
     @Column(name = "PRIORITY")

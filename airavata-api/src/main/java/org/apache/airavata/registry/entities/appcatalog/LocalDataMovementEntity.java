@@ -34,7 +34,7 @@ public class LocalDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
     public LocalDataMovementEntity() {}

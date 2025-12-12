@@ -47,13 +47,13 @@ public class CredentialEntity implements Serializable {
     @Column(name = "PORTAL_USER_ID", length = 256, nullable = false)
     private String portalUserId;
 
-    @Column(name = "TIME_PERSISTED")
+    @Column(name = "TIME_PERSISTED", nullable = false)
     private Timestamp timePersisted;
 
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "CREDENTIAL_OWNER_TYPE", length = 50)
+    @Column(name = "CREDENTIAL_OWNER_TYPE", length = 50, nullable = false)
     private String credentialOwnerType;
 
     public CredentialEntity() {}

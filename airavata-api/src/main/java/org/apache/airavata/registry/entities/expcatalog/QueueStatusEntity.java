@@ -33,15 +33,15 @@ public class QueueStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "HOST_NAME")
+    @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
 
     @Id
-    @Column(name = "QUEUE_NAME")
+    @Column(name = "QUEUE_NAME", nullable = false)
     private String queueName;
 
     @Id
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", nullable = false)
     private BigInteger time;
 
     @Column(name = "QUEUE_UP")

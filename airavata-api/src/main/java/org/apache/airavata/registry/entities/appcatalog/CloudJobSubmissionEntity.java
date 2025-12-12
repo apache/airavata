@@ -33,7 +33,7 @@ public class CloudJobSubmissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "JOB_SUBMISSION_INTERFACE_ID")
+    @Column(name = "JOB_SUBMISSION_INTERFACE_ID", nullable = false)
     private String jobSubmissionInterfaceId;
 
     @Column(name = "SECURITY_PROTOCOL")

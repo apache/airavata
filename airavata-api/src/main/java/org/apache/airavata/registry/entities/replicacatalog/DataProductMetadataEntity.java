@@ -32,11 +32,11 @@ public class DataProductMetadataEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PRODUCT_URI")
+    @Column(name = "PRODUCT_URI", nullable = false)
     private String productUri;
 
     @Id
-    @Column(name = "METADATA_KEY")
+    @Column(name = "METADATA_KEY", nullable = false)
     private String metadataKey;
 
     @Column(name = "METADATA_VALUE")

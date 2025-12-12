@@ -32,11 +32,11 @@ public class DataReplicaMetadataEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "REPLICA_ID")
+    @Column(name = "REPLICA_ID", nullable = false)
     private String replicaId;
 
     @Id
-    @Column(name = "METADATA_KEY")
+    @Column(name = "METADATA_KEY", nullable = false)
     private String metadataKey;
 
     @Column(name = "METADATA_VALUE")

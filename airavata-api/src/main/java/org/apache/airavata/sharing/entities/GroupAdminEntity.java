@@ -34,7 +34,7 @@ public class GroupAdminEntity {
     private UserGroupEntity userGroup;
 
     @Id
-    @Column(name = "GROUP_ID")
+    @Column(name = "GROUP_ID", nullable = false)
     public String getGroupId() {
         return groupId;
     }
@@ -44,7 +44,7 @@ public class GroupAdminEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -54,7 +54,7 @@ public class GroupAdminEntity {
     }
 
     @Id
-    @Column(name = "ADMIN_ID")
+    @Column(name = "ADMIN_ID", nullable = false)
     public String getAdminId() {
         return adminId;
     }

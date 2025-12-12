@@ -36,7 +36,7 @@ public class GroupMembershipEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "PARENT_ID")
+    @Column(name = "PARENT_ID", nullable = false)
     public String getParentId() {
         return parentId;
     }
@@ -46,7 +46,7 @@ public class GroupMembershipEntity {
     }
 
     @Id
-    @Column(name = "CHILD_ID")
+    @Column(name = "CHILD_ID", nullable = false)
     public String getChildId() {
         return childId;
     }
@@ -56,7 +56,7 @@ public class GroupMembershipEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -66,7 +66,7 @@ public class GroupMembershipEntity {
     }
 
     @Basic
-    @Column(name = "CHILD_TYPE")
+    @Column(name = "CHILD_TYPE", nullable = false)
     public String getChildType() {
         return childType;
     }
@@ -76,7 +76,7 @@ public class GroupMembershipEntity {
     }
 
     @Basic
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", nullable = false)
     public Long getCreatedTime() {
         return createdTime;
     }
@@ -86,7 +86,7 @@ public class GroupMembershipEntity {
     }
 
     @Basic
-    @Column(name = "UPDATED_TIME")
+    @Column(name = "UPDATED_TIME", nullable = false)
     public Long getUpdatedTime() {
         return updatedTime;
     }

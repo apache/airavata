@@ -33,11 +33,11 @@ public class ParallelismCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_JOB_MANAGER_ID")
+    @Column(name = "RESOURCE_JOB_MANAGER_ID", nullable = false)
     private String resourceJobManagerId;
 
     @Id
-    @Column(name = "COMMAND_TYPE")
+    @Column(name = "COMMAND_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationParallelismType commandType;
 

@@ -38,7 +38,7 @@ public class UnicoreDatamovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATAMOVEMENT_ID")
+    @Column(name = "DATAMOVEMENT_ID", nullable = false)
     private String dataMovementInterfaceId;
 
     @Column(name = "SECURITY_PROTOCAL")

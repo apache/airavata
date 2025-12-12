@@ -35,11 +35,11 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
 public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     @Id
     private String gatewayId;
 
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", nullable = false)
     @Id
     private String computeResourceId;
 
@@ -69,10 +69,10 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     @Column(name = "RESERVATION")
     private String reservation;
 
-    @Column(name = "RESERVATION_END_TIME")
+    @Column(name = "RESERVATION_END_TIME", nullable = false)
     private Timestamp reservationEndTime;
 
-    @Column(name = "RESERVATION_START_TIME")
+    @Column(name = "RESERVATION_START_TIME", nullable = false)
     private Timestamp reservationStartTime;
 
     @Column(name = "RESOURCE_CS_TOKEN")

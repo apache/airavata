@@ -41,7 +41,7 @@ public class UserGroupEntity {
     private List<GroupAdminEntity> groupAdmins;
 
     @Id
-    @Column(name = "GROUP_ID")
+    @Column(name = "GROUP_ID", nullable = false)
     public String getGroupId() {
         return groupId;
     }
@@ -51,7 +51,7 @@ public class UserGroupEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -61,7 +61,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "OWNER_ID")
+    @Column(name = "OWNER_ID", nullable = false)
     public String getOwnerId() {
         return ownerId;
     }
@@ -71,7 +71,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     public String getName() {
         return name;
     }
@@ -91,7 +91,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "GROUP_CARDINALITY")
+    @Column(name = "GROUP_CARDINALITY", nullable = false)
     public String getGroupCardinality() {
         return groupCardinality;
     }
@@ -101,7 +101,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "GROUP_TYPE")
+    @Column(name = "GROUP_TYPE", nullable = false)
     public String getGroupType() {
         return groupType;
     }
@@ -111,7 +111,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", nullable = false)
     public Long getCreatedTime() {
         return createdTime;
     }
@@ -121,7 +121,7 @@ public class UserGroupEntity {
     }
 
     @Basic
-    @Column(name = "UPDATED_TIME")
+    @Column(name = "UPDATED_TIME", nullable = false)
     public Long getUpdatedTime() {
         return updatedTime;
     }

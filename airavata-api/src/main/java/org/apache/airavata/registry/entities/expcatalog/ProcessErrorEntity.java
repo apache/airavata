@@ -33,14 +33,14 @@ public class ProcessErrorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ERROR_ID")
+    @Column(name = "ERROR_ID", nullable = false)
     private String errorId;
 
     @Id
-    @Column(name = "PROCESS_ID")
+    @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Lob

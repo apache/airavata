@@ -30,11 +30,11 @@ public class HandlerOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "HANDLER_ID")
+    @Column(name = "HANDLER_ID", nullable = false)
     private String handlerId;
 
     @Id
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     private String name;
 
     @Lob

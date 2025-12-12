@@ -28,23 +28,23 @@ public class ParserInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PARSER_INPUT_ID")
+    @Column(name = "PARSER_INPUT_ID", nullable = false)
     private String id;
 
-    @Column(name = "PARSER_INPUT_NAME")
+    @Column(name = "PARSER_INPUT_NAME", nullable = false)
     private String name;
 
-    @Column(name = "PARSER_INPUT_REQUIRED")
+    @Column(name = "PARSER_INPUT_REQUIRED", nullable = false)
     private boolean requiredInput;
 
-    @Column(name = "PARSER_ID")
+    @Column(name = "PARSER_ID", nullable = false)
     private String parserId;
 
     @ManyToOne(targetEntity = ParserEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSER_ID")
     private ParserEntity parser;
 
-    @Column(name = "INPUT_TYPE")
+    @Column(name = "INPUT_TYPE", nullable = false)
     private String type;
 
     public String getId() {

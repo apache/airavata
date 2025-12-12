@@ -59,7 +59,7 @@ public class UserEntity {
     }
 
     @Basic
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME", nullable = false)
     public String getUserName() {
         return userName;
     }

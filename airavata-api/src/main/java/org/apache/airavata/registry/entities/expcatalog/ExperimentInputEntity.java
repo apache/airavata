@@ -33,11 +33,11 @@ public class ExperimentInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
 
     @Id
-    @Column(name = "INPUT_NAME")
+    @Column(name = "INPUT_NAME", nullable = false)
     private String name;
 
     @Lob

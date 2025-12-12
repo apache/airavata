@@ -34,7 +34,7 @@ public class ApplicationDeploymentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DEPLOYMENT_ID")
+    @Column(name = "DEPLOYMENT_ID", nullable = false)
     private String appDeploymentId;
 
     @Column(name = "APPLICATION_DESC")
@@ -52,17 +52,17 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "GATEWAY_ID", nullable = false, updatable = false)
     private String gatewayId;
 
-    @Column(name = "parallelism")
+    @Column(name = "PARALLELISM")
     @Enumerated(EnumType.STRING)
     private ApplicationParallelismType parallelism;
 
     @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
-    @Column(name = "COMPUTE_HOSTID")
+    @Column(name = "COMPUTE_HOSTID", nullable = false)
     private String computeHostId;
 
-    @Column(name = "APP_MODULE_ID")
+    @Column(name = "APP_MODULE_ID", nullable = false)
     private String appModuleId;
 
     @Column(name = "DEFAULT_NODE_COUNT")

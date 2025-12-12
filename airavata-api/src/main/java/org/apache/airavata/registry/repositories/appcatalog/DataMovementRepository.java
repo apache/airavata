@@ -20,9 +20,8 @@
 package org.apache.airavata.registry.repositories.appcatalog;
 
 import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity;
-import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfacePK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DataMovementRepository extends JpaRepository<DataMovementInterfaceEntity, DataMovementInterfacePK> {}
+public interface DataMovementRepository extends JpaRepository<DataMovementInterfaceEntity, String> {}

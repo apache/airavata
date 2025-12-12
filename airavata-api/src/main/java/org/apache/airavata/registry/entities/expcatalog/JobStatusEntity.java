@@ -34,22 +34,22 @@ public class JobStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "STATUS_ID")
+    @Column(name = "STATUS_ID", nullable = false)
     private String statusId;
 
     @Id
-    @Column(name = "JOB_ID")
+    @Column(name = "JOB_ID", nullable = false)
     private String jobId;
 
     @Id
-    @Column(name = "TASK_ID")
+    @Column(name = "TASK_ID", nullable = false)
     private String taskId;
 
     @Column(name = "STATE")
     @Enumerated(EnumType.STRING)
     private JobState jobState;
 
-    @Column(name = "TIME_OF_STATE_CHANGE")
+    @Column(name = "TIME_OF_STATE_CHANGE", nullable = false)
     private Timestamp timeOfStateChange;
 
     @Lob

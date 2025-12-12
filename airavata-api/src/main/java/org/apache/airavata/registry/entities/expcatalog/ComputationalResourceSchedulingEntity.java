@@ -32,15 +32,15 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
 
     @Id
-    @Column(name = "RESOURCE_HOST_ID")
+    @Column(name = "RESOURCE_HOST_ID", nullable = false)
     private String resourceHostId;
 
     @Id
-    @Column(name = "QUEUE_NAME")
+    @Column(name = "QUEUE_NAME", nullable = false)
     private String queueName;
 
     @Column(name = "TOTAL_CPU_COUNT")

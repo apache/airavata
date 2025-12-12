@@ -33,26 +33,26 @@ public class ScpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
     @Column(name = "ALTERNATIVE_SCP_HOSTNAME")
     private String alternativeSCPHostName;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Column(name = "QUEUE_DESCRIPTION")
     private String queueDescription;
 
-    @Column(name = "SECURITY_PROTOCOL")
+    @Column(name = "SECURITY_PROTOCOL", nullable = false)
     @Enumerated(EnumType.STRING)
     private SecurityProtocol securityProtocol;
 
     @Column(name = "SSH_PORT")
     private int sshPort;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     public ScpDataMovementEntity() {}

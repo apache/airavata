@@ -32,7 +32,7 @@ public class UserEntity {
     private GatewayEntity gateway;
 
     @Id
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME", nullable = false)
     public String getUserId() {
         return userId;
     }
@@ -42,7 +42,7 @@ public class UserEntity {
     }
 
     @Id
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     public String getGatewayId() {
         return gatewayId;
     }

@@ -36,7 +36,7 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")
@@ -45,10 +45,10 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "ENABLED")
     private boolean enabled;
 
-    @Column(name = "HOST_NAME")
+    @Column(name = "HOST_NAME", nullable = false)
     private String hostName;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @OneToMany(

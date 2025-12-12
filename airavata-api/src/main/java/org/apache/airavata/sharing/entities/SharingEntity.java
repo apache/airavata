@@ -38,7 +38,7 @@ public class SharingEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "PERMISSION_TYPE_ID")
+    @Column(name = "PERMISSION_TYPE_ID", nullable = false)
     public String getPermissionTypeId() {
         return permissionTypeId;
     }
@@ -48,7 +48,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "ENTITY_ID")
+    @Column(name = "ENTITY_ID", nullable = false)
     public String getEntityId() {
         return entityId;
     }
@@ -58,7 +58,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "GROUP_ID")
+    @Column(name = "GROUP_ID", nullable = false)
     public String getGroupId() {
         return groupId;
     }
@@ -68,7 +68,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "INHERITED_PARENT_ID")
+    @Column(name = "INHERITED_PARENT_ID", nullable = false)
     public String getInheritedParentId() {
         return inheritedParentId;
     }
@@ -78,7 +78,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", nullable = false)
     public String getDomainId() {
         return domainId;
     }
@@ -88,7 +88,7 @@ public class SharingEntity {
     }
 
     @Basic
-    @Column(name = "SHARING_TYPE")
+    @Column(name = "SHARING_TYPE", nullable = false)
     public String getSharingType() {
         return sharingType;
     }
@@ -98,7 +98,7 @@ public class SharingEntity {
     }
 
     @Basic
-    @Column(name = "CREATED_TIME")
+    @Column(name = "CREATED_TIME", nullable = false)
     public Long getCreatedTime() {
         return createdTime;
     }
@@ -108,7 +108,7 @@ public class SharingEntity {
     }
 
     @Basic
-    @Column(name = "UPDATED_TIME")
+    @Column(name = "UPDATED_TIME", nullable = false)
     public Long getUpdatedTime() {
         return updatedTime;
     }

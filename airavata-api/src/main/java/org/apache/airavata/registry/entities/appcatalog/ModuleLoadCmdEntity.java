@@ -34,11 +34,11 @@ public class ModuleLoadCmdEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "APP_DEPLOYMENT_ID")
+    @Column(name = "APP_DEPLOYMENT_ID", nullable = false)
     private String appdeploymentId;
 
     @Id
-    @Column(name = "CMD")
+    @Column(name = "CMD", nullable = false)
     private String command;
 
     @Column(name = "COMMAND_ORDER")

@@ -30,14 +30,14 @@ public class HandlerErrorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ERROR_ID")
+    @Column(name = "ERROR_ID", nullable = false)
     private String errorId;
 
     @Id
-    @Column(name = "HANDLER_ID")
+    @Column(name = "HANDLER_ID", nullable = false)
     private String handlerId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
     @Lob

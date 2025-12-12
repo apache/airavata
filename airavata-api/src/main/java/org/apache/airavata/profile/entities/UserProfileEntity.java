@@ -55,7 +55,7 @@ public class UserProfileEntity {
     private CustomizedDashboardEntity customizedDashboardEntity;
 
     @Id
-    @Column(name = "AIRAVATA_INTERNAL_USER_ID")
+    @Column(name = "AIRAVATA_INTERNAL_USER_ID", nullable = false)
     public String getAiravataInternalUserId() {
         return airavataInternalUserId;
     }
@@ -64,7 +64,7 @@ public class UserProfileEntity {
         this.airavataInternalUserId = id;
     }
 
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", nullable = false)
     public String getUserId() {
         return userId;
     }
@@ -73,7 +73,7 @@ public class UserProfileEntity {
         this.userId = userId;
     }
 
-    @Column(name = "GATEWAY_ID")
+    @Column(name = "GATEWAY_ID", nullable = false)
     public String getGatewayId() {
         return gatewayId;
     }
@@ -205,7 +205,7 @@ public class UserProfileEntity {
         this.orginationAffiliation = orginationAffiliation;
     }
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     public Date getCreationTime() {
         return creationTime;
     }
@@ -214,7 +214,7 @@ public class UserProfileEntity {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "LAST_ACCESS_TIME")
+    @Column(name = "LAST_ACCESS_TIME", nullable = false)
     public Date getLastAccessTime() {
         return lastAccessTime;
     }

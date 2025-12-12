@@ -31,11 +31,11 @@ public class ApplicationStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", nullable = false)
     private String id;
 
     @Id
-    @Column(name = "APPLICATION_ID")
+    @Column(name = "APPLICATION_ID", nullable = false)
     private String applicationId;
 
     @Column(name = "STATE")

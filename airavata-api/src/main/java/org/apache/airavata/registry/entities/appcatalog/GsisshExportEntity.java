@@ -32,11 +32,11 @@ public class GsisshExportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "SUBMISSION_ID")
+    @Column(name = "SUBMISSION_ID", nullable = false)
     private String submissionId;
 
     @Id
-    @Column(name = "EXPORT")
+    @Column(name = "EXPORT", nullable = false)
     private String export;
 
     public GsisshExportEntity() {}

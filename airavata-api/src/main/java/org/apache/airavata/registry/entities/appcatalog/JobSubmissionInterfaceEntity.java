@@ -33,7 +33,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 public class JobSubmissionInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false)
     @Id
     private String computeResourceId;
 
@@ -41,17 +41,17 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     @Id
     private String jobSubmissionInterfaceId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", nullable = false)
     private Timestamp creationTime;
 
-    @Column(name = "JOB_SUBMISSION_PROTOCOL")
+    @Column(name = "JOB_SUBMISSION_PROTOCOL", nullable = false)
     @Enumerated(EnumType.STRING)
     private JobSubmissionProtocol jobSubmissionProtocol;
 
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = ComputeResourceEntity.class)
