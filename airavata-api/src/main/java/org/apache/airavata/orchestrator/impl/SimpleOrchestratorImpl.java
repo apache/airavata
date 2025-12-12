@@ -24,7 +24,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,16 +39,17 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterfa
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -66,9 +66,7 @@ import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.job.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.job.JobSubmitter;
-import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
-import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
@@ -86,15 +84,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
     private final OrchestratorUtils orchestratorUtils;
+    private final org.apache.airavata.orchestrator.validation.ValidationService validationService;
 
     public SimpleOrchestratorImpl(
             RegistryService registryService,
             AiravataServerProperties properties,
-            OrchestratorUtils orchestratorUtils)
+            OrchestratorUtils orchestratorUtils,
+            org.apache.airavata.orchestrator.validation.ValidationService validationService)
             throws OrchestratorException {
         this.registryService = registryService;
         this.properties = properties;
         this.orchestratorUtils = orchestratorUtils;
+        this.validationService = validationService;
         super.orchestratorUtils = orchestratorUtils;
         try {
             try {
@@ -133,129 +134,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public ValidationResults validateExperiment(ExperimentModel experiment)
             throws OrchestratorException, LaunchValidationException {
-        ValidationResults validationResults = new ValidationResults();
-        validationResults.setValidationState(
-                true); // initially making it to success, if atleast one failed them simply mark it failed.
-        String errorMsg = "Validation Errors : ";
-        if (this.orchestratorConfiguration.isEnableValidation()) {
-            List<String> validatorClasses =
-                    this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
-            for (String validator : validatorClasses) {
-                try {
-                    Class<? extends JobMetadataValidator> vClass =
-                            Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
-                    JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    validationResults = jobMetadataValidator.validate(experiment, null);
-                    if (validationResults.isValidationState()) {
-                        logger.info("Validation of " + validator + " is SUCCESSFUL");
-                    } else {
-                        List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
-                        for (ValidatorResult result : validationResultList) {
-                            if (!result.isResult()) {
-                                String validationError = result.getErrorDetails();
-                                if (validationError != null) {
-                                    errorMsg += validationError + " ";
-                                }
-                            }
-                        }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId()
-                                + " is FAILED:[error]. " + errorMsg);
-                        validationResults.setValidationState(false);
-                        ErrorModel details = new ErrorModel();
-                        details.setActualErrorMessage(errorMsg);
-                        details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                        try {
-                            registryService.addErrors(
-                                    OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
-                        } catch (RegistryServiceException e) {
-                            logger.error("Error while saving error details to registry", e);
-                            throw new OrchestratorException("Error while saving error details to registry", e);
-                        }
-                        break;
-                    }
-                } catch (ClassNotFoundException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                } catch (InstantiationException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                } catch (IllegalAccessException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                }
-            }
-        }
-        if (validationResults.isValidationState()) {
-            return validationResults;
-        } else {
-            // atleast one validation has failed, so we throw an exception
-            LaunchValidationException launchValidationException = new LaunchValidationException();
-            launchValidationException.setValidationResult(validationResults);
-            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for "
-                    + "detail error. Validation errors : " + errorMsg);
-            throw launchValidationException;
-        }
+        return validationService.validateExperiment(experiment);
     }
 
     public ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel)
             throws OrchestratorException, LaunchValidationException {
-
-        ValidationResults validationResults = new ValidationResults();
-        validationResults.setValidationState(
-                true); // initially making it to success, if atleast one failed them simply mark it failed.
-        String errorMsg = "Validation Errors : ";
-        if (this.orchestratorConfiguration.isEnableValidation()) {
-            List<String> validatorClzzez =
-                    this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
-            for (String validator : validatorClzzez) {
-                try {
-                    Class<? extends JobMetadataValidator> vClass =
-                            Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
-                    JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    validationResults = jobMetadataValidator.validate(experiment, processModel);
-                    if (validationResults.isValidationState()) {
-                        logger.info("Validation of " + validator + " is SUCCESSFUL");
-                    } else {
-                        List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
-                        for (ValidatorResult result : validationResultList) {
-                            if (!result.isResult()) {
-                                String validationError = result.getErrorDetails();
-                                if (validationError != null) {
-                                    errorMsg += validationError + " ";
-                                }
-                            }
-                        }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId()
-                                + " is FAILED:[error]. " + errorMsg);
-                        validationResults.setValidationState(false);
-                        ErrorModel details = new ErrorModel();
-                        details.setActualErrorMessage(errorMsg);
-                        details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                        try {
-                            registryService.addErrors(
-                                    OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
-                        } catch (RegistryServiceException e) {
-                            logger.error("Error while saving error details to registry", e);
-                            throw new OrchestratorException("Error while saving error details to registry", e);
-                        }
-                        break;
-                    }
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                }
-            }
-        }
-        if (validationResults.isValidationState()) {
-            return validationResults;
-        } else {
-            // atleast one validation has failed, so we throw an exception
-            LaunchValidationException launchValidationException = new LaunchValidationException();
-            launchValidationException.setValidationResult(validationResults);
-            launchValidationException.setErrorMessage("Validation failed refer the validationResults "
-                    + "list for detail error. Validation errors : " + errorMsg);
-            throw launchValidationException;
-        }
+        return validationService.validateProcess(experiment, processModel);
     }
 
     public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
@@ -599,8 +483,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     private boolean isArchive(RegistryService registryService, ProcessModel processModel)
             throws RegistryServiceException {
-        ApplicationInterfaceDescription appInterface =
-                registryService.getApplicationInterface(processModel.getApplicationInterfaceId());
+        var appInterface = registryService.getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.isArchiveWorkingDirectory();
     }
 
@@ -780,8 +663,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ComputeResourceDescription computeResource =
-                registryService.getComputeResource(processModel.getComputeResourceId());
+        var computeResource = registryService.getComputeResource(processModel.getComputeResourceId());
 
         String scratchLocation = orchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir =
@@ -848,8 +730,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             taskModel.setTaskStatuses(List.of(taskStatus));
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
 
-            ComputeResourceDescription computeResource =
-                    registryService.getComputeResource(processModel.getComputeResourceId());
+            var computeResource = registryService.getComputeResource(processModel.getComputeResourceId());
             DataStagingTaskModel submodel = new DataStagingTaskModel();
 
             String workingDir = orchestratorUtils.getScratchLocation(processModel, gatewayId)
