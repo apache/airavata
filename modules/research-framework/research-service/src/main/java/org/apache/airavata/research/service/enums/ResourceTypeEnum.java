@@ -23,7 +23,10 @@ public enum ResourceTypeEnum {
     NOTEBOOK("NOTEBOOK"),
     DATASET("DATASET"),
     REPOSITORY("REPOSITORY"),
-    MODEL("MODEL");
+    MODEL("MODEL"),
+    CODE("CODE"),
+    COMPUTE_RESOURCE("COMPUTE_RESOURCE"),
+    STORAGE_RESOURCE("STORAGE_RESOURCE");
 
     private String str;
 

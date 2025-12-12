@@ -22,8 +22,11 @@ package org.apache.airavata.research.service.config;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
+import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
+import org.apache.airavata.research.service.model.entity.ModelResource;
+import org.apache.airavata.research.service.model.entity.NotebookResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Tag;
@@ -80,6 +83,7 @@ public class DevDataInitializer implements CommandLineRunner {
         repo.setHeaderImage("header_image.png");
         repo.setRepositoryUrl(repoUrl);
         repo.setStatus(StatusEnum.VERIFIED);
+        repo.setState(StateEnum.ACTIVE);
         repo.setPrivacy(PrivacyEnum.PUBLIC);
         repo.setTags(tagSet);
         repo.setAuthors(authors);
@@ -91,16 +95,43 @@ public class DevDataInitializer implements CommandLineRunner {
         dataset.setHeaderImage("header_image.png");
         dataset.setDatasetUrl(datasetUrl);
         dataset.setStatus(StatusEnum.VERIFIED);
+        dataset.setState(StateEnum.ACTIVE);
         dataset.setPrivacy(PrivacyEnum.PUBLIC);
         dataset.setTags(tagSet);
         dataset.setAuthors(authors);
         dataset = resourceRepository.save(dataset);
+
+        ModelResource model = new ModelResource();
+        model.setName(name + " - ML Model");
+        model.setDescription("Machine learning model for " + description);
+        model.setHeaderImage("header_image.png");
+        model.setApplicationInterfaceId("app-" + datasetUrl);
+        model.setVersion("1.0");
+        model.setStatus(StatusEnum.VERIFIED);
+        model.setState(StateEnum.ACTIVE);
+        model.setPrivacy(PrivacyEnum.PUBLIC);
+        model.setTags(tagSet);
+        model.setAuthors(authors);
+        model = resourceRepository.save(model);
+
+        NotebookResource notebook = new NotebookResource();
+        notebook.setName(name + " - Analysis Notebook");
+        notebook.setDescription("Jupyter notebook for " + description);
+        notebook.setHeaderImage("header_image.png");
+        notebook.setNotebookPath(datasetUrl + ".ipynb");
+        notebook.setStatus(StatusEnum.VERIFIED);
+        notebook.setState(StateEnum.ACTIVE);
+        notebook.setPrivacy(PrivacyEnum.PUBLIC);
+        notebook.setTags(tagSet);
+        notebook.setAuthors(authors);
+        notebook = resourceRepository.save(notebook);
 
         Project project = new Project();
         project.setRepositoryResource(repo);
         project.getDatasetResources().add(dataset);
         project.setName(name);
         project.setOwnerId(user);
+        project.setState(StateEnum.ACTIVE);
         projectRepository.save(project);
 
         System.out.println("Initialized Project with id: " + project.getId());
