@@ -55,7 +55,7 @@ public class StorageInterfaceEntity implements Serializable {
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "STORAGE_RESOURCE_ID")
+    @JoinColumn(name = "STORAGE_RESOURCE_ID", insertable = false, updatable = false)
     private StorageResourceEntity storageResource;
 
     public StorageInterfaceEntity() {}

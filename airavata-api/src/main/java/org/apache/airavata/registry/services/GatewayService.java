@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("profileServiceTransactionManager")
 public class GatewayService {
     private final GatewayRepository gatewayRepository;
     private final Mapper mapper;

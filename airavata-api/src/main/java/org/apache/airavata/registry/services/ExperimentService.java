@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional("expCatalogTransactionManager")
 public class ExperimentService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
 
@@ -52,7 +53,7 @@ public class ExperimentService {
         this.mapper = mapper;
     }
 
-    @Transactional
+    @Transactional("expCatalogTransactionManager")
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
         ExperimentStatus experimentStatus = new ExperimentStatus();
         experimentStatus.setState(ExperimentState.CREATED);
@@ -66,7 +67,7 @@ public class ExperimentService {
         return saveExperimentModelData(experimentModel);
     }
 
-    @Transactional
+    @Transactional("expCatalogTransactionManager")
     public void updateExperiment(ExperimentModel updatedExperimentModel, String experimentId) throws RegistryException {
         saveExperimentModelData(updatedExperimentModel);
     }
@@ -78,7 +79,7 @@ public class ExperimentService {
         return mapper.map(entity, ExperimentModel.class);
     }
 
-    @Transactional
+    @Transactional("expCatalogTransactionManager")
     public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId)
             throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
@@ -87,20 +88,20 @@ public class ExperimentService {
         return experimentId;
     }
 
-    @Transactional
+    @Transactional("expCatalogTransactionManager")
     public String updateUserConfigurationData(
             UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId)
             throws RegistryException {
         return addUserConfigurationData(updatedUserConfigurationDataModel, experimentId);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(value = "expCatalogTransactionManager", readOnly = true)
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
         ExperimentModel experimentModel = getExperiment(experimentId);
         return experimentModel.getUserConfigurationData();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(value = "expCatalogTransactionManager", readOnly = true)
     public List<ExperimentModel> getExperimentList(
             String gatewayId,
             String fieldName,
@@ -132,12 +133,12 @@ public class ExperimentService {
         return experimentModelList;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(value = "expCatalogTransactionManager", readOnly = true)
     public boolean isExperimentExist(String experimentId) throws RegistryException {
         return experimentRepository.existsById(experimentId);
     }
 
-    @Transactional
+    @Transactional("expCatalogTransactionManager")
     public void removeExperiment(String experimentId) throws RegistryException {
         experimentRepository.deleteById(experimentId);
     }
@@ -169,7 +170,23 @@ public class ExperimentService {
             experimentModel.setCreationTime(System.currentTimeMillis());
         }
 
-        ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
+        ExperimentEntity existingEntity = experimentRepository.findById(experimentId).orElse(null);
+        ExperimentEntity experimentEntity;
+        
+        if (existingEntity != null) {
+            ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
+            mapper.map(experimentModel, existingEntity);
+            
+            mergeLists(existingEntity.getExperimentStatus(), newEntity.getExperimentStatus(), org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity::getStatusId);
+            mergeLists(existingEntity.getExperimentInputs(), newEntity.getExperimentInputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity::getName);
+            mergeLists(existingEntity.getExperimentOutputs(), newEntity.getExperimentOutputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity::getName);
+            mergeLists(existingEntity.getErrors(), newEntity.getErrors(), org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity::getErrorId);
+            mergeLists(existingEntity.getProcesses(), newEntity.getProcesses(), org.apache.airavata.registry.entities.expcatalog.ProcessEntity::getProcessId);
+            
+            experimentEntity = existingEntity;
+        } else {
+            experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
+        }
 
         if (experimentEntity.getUserConfigurationData() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");
@@ -223,5 +240,27 @@ public class ExperimentService {
         }
 
         return experimentRepository.save(experimentEntity);
+    }
+
+    private <T> void mergeLists(List<T> currentList, List<T> newList, java.util.function.Function<T, String> idExtractor) {
+        if (currentList == null || newList == null) return;
+        
+        java.util.Map<String, T> currentMap = currentList.stream()
+            .collect(java.util.stream.Collectors.toMap(idExtractor, java.util.function.Function.identity()));
+        
+        java.util.List<T> result = new ArrayList<>();
+        for (T newItem : newList) {
+            String id = idExtractor.apply(newItem);
+            if (id != null && currentMap.containsKey(id)) {
+                T existing = currentMap.get(id);
+                mapper.map(newItem, existing);
+                result.add(existing);
+            } else {
+                result.add(newItem);
+            }
+        }
+        
+        currentList.clear();
+        currentList.addAll(result);
     }
 }

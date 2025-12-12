@@ -55,7 +55,7 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = ComputeResourceEntity.class)
-    @JoinColumn(name = "COMPUTE_RESOURCE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
     private ComputeResourceEntity computeResource;
 
     public JobSubmissionInterfaceEntity() {}

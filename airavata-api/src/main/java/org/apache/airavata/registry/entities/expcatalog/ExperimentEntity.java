@@ -91,6 +91,7 @@ public class ExperimentEntity implements Serializable {
             targetEntity = ExperimentInputEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "experiment",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<ExperimentInputEntity> experimentInputs;
 
@@ -98,6 +99,7 @@ public class ExperimentEntity implements Serializable {
             targetEntity = ExperimentOutputEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "experiment",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<ExperimentOutputEntity> experimentOutputs;
 
@@ -105,6 +107,7 @@ public class ExperimentEntity implements Serializable {
             targetEntity = ExperimentStatusEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "experiment",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     @OrderBy("timeOfStateChange ASC")
     private List<ExperimentStatusEntity> experimentStatus;
@@ -113,6 +116,7 @@ public class ExperimentEntity implements Serializable {
             targetEntity = ExperimentErrorEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "experiment",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<ExperimentErrorEntity> errors;
 
@@ -120,6 +124,7 @@ public class ExperimentEntity implements Serializable {
             targetEntity = ProcessEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "experiment",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<ProcessEntity> processes;
 

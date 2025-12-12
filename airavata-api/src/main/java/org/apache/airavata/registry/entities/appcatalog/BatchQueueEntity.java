@@ -58,7 +58,7 @@ public class BatchQueueEntity implements Serializable {
     private String queueDescription;
 
     @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
     private ComputeResourceEntity computeResource;
 
     @Column(name = "CPU_PER_NODE")

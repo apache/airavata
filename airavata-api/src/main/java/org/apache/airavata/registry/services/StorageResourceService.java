@@ -93,8 +93,15 @@ public class StorageResourceService {
                 updatedStorageResource.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(updatedStorageResource.getStorageResourceId()));
             }
-            StorageResourceEntity entity = mapper.map(updatedStorageResource, StorageResourceEntity.class);
-            storageResourceRepository.save(entity);
+            
+            StorageResourceEntity existingEntity = storageResourceRepository.findById(storageResourceId).orElse(null);
+            if (existingEntity != null) {
+                mapper.map(updatedStorageResource, existingEntity);
+                storageResourceRepository.save(existingEntity);
+            } else {
+                StorageResourceEntity entity = mapper.map(updatedStorageResource, StorageResourceEntity.class);
+                storageResourceRepository.save(entity);
+            }
         } catch (Exception e) {
             logger.error(
                     "Error while updating storage resource. StorageResourceId : "

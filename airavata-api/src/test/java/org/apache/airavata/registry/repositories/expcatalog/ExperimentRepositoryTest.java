@@ -63,6 +63,7 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
 public class ExperimentRepositoryTest extends TestBase {
 
     @Configuration
@@ -120,7 +121,7 @@ public class ExperimentRepositoryTest extends TestBase {
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
         gateway.setEmailAddress("abc@d.com");
         gatewayId = gatewayService.addGateway(gateway);

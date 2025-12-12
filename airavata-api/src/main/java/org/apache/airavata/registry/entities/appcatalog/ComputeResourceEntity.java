@@ -89,6 +89,7 @@ public class ComputeResourceEntity implements Serializable {
             targetEntity = BatchQueueEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<BatchQueueEntity> batchQueues;
 
@@ -96,6 +97,7 @@ public class ComputeResourceEntity implements Serializable {
             targetEntity = JobSubmissionInterfaceEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
 
@@ -103,6 +105,7 @@ public class ComputeResourceEntity implements Serializable {
             targetEntity = DataMovementInterfaceEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "computeResource",
+            orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<DataMovementInterfaceEntity> dataMovementInterfaces;
 

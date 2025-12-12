@@ -49,7 +49,7 @@ public class StoragePreferenceEntity implements Serializable {
     private String resourceSpecificCredentialStoreToken;
 
     @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_ID")
+    @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
     private GatewayProfileEntity gatewayProfileResource;
 
     public StoragePreferenceEntity() {}

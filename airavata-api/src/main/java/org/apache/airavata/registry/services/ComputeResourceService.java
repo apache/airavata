@@ -53,11 +53,13 @@ import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.GridftpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.GridftpEndpointEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandEntity;
+import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandPK;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.LocalDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.LocalSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandEntity;
+import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandPK;
 import org.apache.airavata.registry.entities.appcatalog.ResourceJobManagerEntity;
 import org.apache.airavata.registry.entities.appcatalog.ScpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.SshJobSubmissionEntity;
@@ -173,7 +175,23 @@ public class ComputeResourceService {
     private ComputeResourceEntity saveComputeResource(ComputeResourceDescription description)
             throws AppCatalogException {
         String computeResourceId = description.getComputeResourceId();
-        ComputeResourceEntity computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
+        
+        ComputeResourceEntity existingEntity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        ComputeResourceEntity computeResourceEntity;
+        
+        if (existingEntity != null) {
+            ComputeResourceEntity newEntity = mapper.map(description, ComputeResourceEntity.class);
+            mapper.map(description, existingEntity);
+            
+            mergeLists(existingEntity.getBatchQueues(), newEntity.getBatchQueues(), org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity::getQueueName);
+            mergeLists(existingEntity.getDataMovementInterfaces(), newEntity.getDataMovementInterfaces(), org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity::getDataMovementInterfaceId);
+            mergeLists(existingEntity.getJobSubmissionInterfaces(), newEntity.getJobSubmissionInterfaces(), org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
+            
+            computeResourceEntity = existingEntity;
+        } else {
+            computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
+        }
+
         if (computeResourceEntity.getBatchQueues() != null) {
             computeResourceEntity
                     .getBatchQueues()
@@ -297,8 +315,13 @@ public class ComputeResourceService {
         String submissionId = AppCatalogUtils.getID("SSH");
         sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
         String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
+        
+        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository.findById(resourceJobManagerId)
+                .orElseThrow(() -> new AppCatalogException("ResourceJobManager not found: " + resourceJobManagerId));
+
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
-        sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        sshJobSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
+        
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
                     sshJobSubmission.getResourceJobManager().getParallelismPrefix(),
@@ -318,7 +341,14 @@ public class ComputeResourceService {
     }
 
     public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        SshJobSubmissionEntity existingEntity = sshJobSubmissionRepository.findById(sshJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        SshJobSubmissionEntity sshJobSubmissionEntity;
+        if (existingEntity != null) {
+            mapper.map(sshJobSubmission, existingEntity);
+            sshJobSubmissionEntity = existingEntity;
+        } else {
+            sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        }
         sshJobSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         sshJobSubmissionRepository.save(sshJobSubmissionEntity);
     }
@@ -332,8 +362,14 @@ public class ComputeResourceService {
     }
 
     public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        CloudJobSubmissionEntity cloudJobSubmissionEntity =
-                mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
+        CloudJobSubmissionEntity existingEntity = cloudJobSubmissionRepository.findById(cloudJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        CloudJobSubmissionEntity cloudJobSubmissionEntity;
+        if (existingEntity != null) {
+            mapper.map(cloudJobSubmission, existingEntity);
+            cloudJobSubmissionEntity = existingEntity;
+        } else {
+            cloudJobSubmissionEntity = mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
+        }
         cloudJobSubmissionRepository.save(cloudJobSubmissionEntity);
     }
 
@@ -357,8 +393,16 @@ public class ComputeResourceService {
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws AppCatalogException {
         updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
-        ResourceJobManagerEntity resourceJobManagerEntity =
-                mapper.map(updatedResourceJobManager, ResourceJobManagerEntity.class);
+        
+        ResourceJobManagerEntity existingEntity = resourceJobManagerRepository.findById(resourceJobManagerId).orElse(null);
+        ResourceJobManagerEntity resourceJobManagerEntity;
+        if (existingEntity != null) {
+            mapper.map(updatedResourceJobManager, existingEntity);
+            resourceJobManagerEntity = existingEntity;
+        } else {
+            resourceJobManagerEntity = mapper.map(updatedResourceJobManager, ResourceJobManagerEntity.class);
+        }
+        
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
         Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
@@ -393,9 +437,14 @@ public class ComputeResourceService {
     public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
         localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
         String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
+        
+        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository.findById(resourceJobManagerId)
+                .orElseThrow(() -> new AppCatalogException("ResourceJobManager not found: " + resourceJobManagerId));
+
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
-        localSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        localSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
+        
         if (localSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
                     localSubmission.getResourceJobManager().getParallelismPrefix(),
@@ -413,7 +462,14 @@ public class ComputeResourceService {
     }
 
     public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        LocalSubmissionEntity existingEntity = localSubmissionRepository.findById(localSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        LocalSubmissionEntity localSubmissionEntity;
+        if (existingEntity != null) {
+            mapper.map(localSubmission, existingEntity);
+            localSubmissionEntity = existingEntity;
+        } else {
+            localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        }
         localSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         localSubmissionRepository.save(localSubmissionEntity);
     }
@@ -434,8 +490,15 @@ public class ComputeResourceService {
     }
 
     public void updateUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        UnicoreSubmissionEntity unicoreSubmissionEntity =
-                mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
+        UnicoreSubmissionEntity existingEntity = unicoreSubmissionRepository.findById(unicoreJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        UnicoreSubmissionEntity unicoreSubmissionEntity;
+        if (existingEntity != null) {
+            mapper.map(unicoreJobSubmission, existingEntity);
+            unicoreSubmissionEntity = existingEntity;
+        } else {
+            unicoreSubmissionEntity = mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
+        }
+        
         if (unicoreJobSubmission.getSecurityProtocol() != null) {
             unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
         }
@@ -450,7 +513,14 @@ public class ComputeResourceService {
     }
 
     public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
-        LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
+        LocalDataMovementEntity existingEntity = localDataMovementRepository.findById(localDataMovement.getDataMovementInterfaceId()).orElse(null);
+        LocalDataMovementEntity localDataMovementEntity;
+        if (existingEntity != null) {
+            mapper.map(localDataMovement, existingEntity);
+            localDataMovementEntity = existingEntity;
+        } else {
+            localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
+        }
         localDataMovementRepository.save(localDataMovementEntity);
     }
 
@@ -462,7 +532,14 @@ public class ComputeResourceService {
     }
 
     public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
-        ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        ScpDataMovementEntity existingEntity = scpDataMovementRepository.findById(scpDataMovement.getDataMovementInterfaceId()).orElse(null);
+        ScpDataMovementEntity scpDataMovementEntity;
+        if (existingEntity != null) {
+            mapper.map(scpDataMovement, existingEntity);
+            scpDataMovementEntity = existingEntity;
+        } else {
+            scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        }
         scpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         scpDataMovementRepository.save(scpDataMovementEntity);
     }
@@ -563,25 +640,30 @@ public class ComputeResourceService {
 
     public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws AppCatalogException {
-        JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
-        jobSubmissionInterfacePK.setComputeResourceId(computeResourceId);
-        jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        jobSubmissionInterfaceRepository.deleteById(jobSubmissionInterfacePK);
+        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        if (entity != null && entity.getJobSubmissionInterfaces() != null) {
+            entity.getJobSubmissionInterfaces().removeIf(iface -> 
+                iface.getJobSubmissionInterfaceId().equals(jobSubmissionInterfaceId));
+            computeResourceRepository.save(entity);
+        }
     }
 
     public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)
             throws AppCatalogException {
-        DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
-        dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterfaceId);
-        dataMovementInterfacePK.setComputeResourceId(computeResourceId);
-        dataMovementRepository.deleteById(dataMovementInterfacePK);
+        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        if (entity != null && entity.getDataMovementInterfaces() != null) {
+            entity.getDataMovementInterfaces().removeIf(iface -> 
+                iface.getDataMovementInterfaceId().equals(dataMovementInterfaceId));
+            computeResourceRepository.save(entity);
+        }
     }
 
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        BatchQueuePK batchQueuePK = new BatchQueuePK();
-        batchQueuePK.setQueueName(queueName);
-        batchQueuePK.setComputeResourceId(computeResourceId);
-        batchQueueRepository.deleteById(batchQueuePK);
+        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        if (entity != null && entity.getBatchQueues() != null) {
+            entity.getBatchQueues().removeIf(queue -> queue.getQueueName().equals(queueName));
+            computeResourceRepository.save(entity);
+        }
     }
 
     public LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException {
@@ -616,11 +698,16 @@ public class ComputeResourceService {
         }
         String resourceJobManagerId = resourceJobManagerEntity.getResourceJobManagerId();
         for (Map.Entry<ApplicationParallelismType, String> entry : parallelismPrefix.entrySet()) {
-            ParallelismCommandEntity entity = new ParallelismCommandEntity();
+            ParallelismCommandPK pk = new ParallelismCommandPK();
+            pk.setResourceJobManagerId(resourceJobManagerId);
+            pk.setCommandType(entry.getKey());
+            
+            ParallelismCommandEntity entity = parallelismCommandRepository.findById(pk).orElse(new ParallelismCommandEntity());
+            
             entity.setResourceJobManagerId(resourceJobManagerId);
             entity.setCommandType(entry.getKey());
             entity.setCommand(entry.getValue());
-            entity.setResourceJobManager(resourceJobManagerEntity);
+            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent unmanaged object exception
             parallelismCommandRepository.save(entity);
         }
     }
@@ -632,11 +719,16 @@ public class ComputeResourceService {
         }
         String resourceJobManagerId = resourceJobManagerEntity.getResourceJobManagerId();
         for (Map.Entry<JobManagerCommand, String> entry : jobManagerCommands.entrySet()) {
-            JobManagerCommandEntity entity = new JobManagerCommandEntity();
+            JobManagerCommandPK pk = new JobManagerCommandPK();
+            pk.setResourceJobManagerId(resourceJobManagerId);
+            pk.setCommandType(entry.getKey());
+            
+            JobManagerCommandEntity entity = jobManagerCommandRepository.findById(pk).orElse(new JobManagerCommandEntity());
+            
             entity.setResourceJobManagerId(resourceJobManagerId);
             entity.setCommandType(entry.getKey());
             entity.setCommand(entry.getValue());
-            entity.setResourceJobManager(resourceJobManagerEntity);
+            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent unmanaged object exception
             jobManagerCommandRepository.save(entity);
         }
     }
@@ -675,5 +767,27 @@ public class ComputeResourceService {
         entity.setComputeResourceId(resourceId);
         DataMovementInterfaceEntity saved = dataMovementRepository.save(entity);
         return saved.getDataMovementInterfaceId();
+    }
+
+    private <T> void mergeLists(List<T> currentList, List<T> newList, java.util.function.Function<T, String> idExtractor) {
+        if (currentList == null || newList == null) return;
+        
+        java.util.Map<String, T> currentMap = currentList.stream()
+            .collect(java.util.stream.Collectors.toMap(idExtractor, java.util.function.Function.identity()));
+        
+        java.util.List<T> result = new java.util.ArrayList<>();
+        for (T newItem : newList) {
+            String id = idExtractor.apply(newItem);
+            if (id != null && currentMap.containsKey(id)) {
+                T existing = currentMap.get(id);
+                mapper.map(newItem, existing);
+                result.add(existing);
+            } else {
+                result.add(newItem);
+            }
+        }
+        
+        currentList.clear();
+        currentList.addAll(result);
     }
 }

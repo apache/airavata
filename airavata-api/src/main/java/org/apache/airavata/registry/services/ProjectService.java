@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
