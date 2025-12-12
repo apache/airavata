@@ -46,7 +46,16 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
-            "services.helix.enabled=false"
+            "services.helix.enabled=false",
+            "services.airavata.enabled=false",
+            "services.userprofile.enabled=true",
+            "services.groupmanager.enabled=true",
+            "services.iam.enabled=true",
+            "services.orchestrator.enabled=false",
+            "services.registryService.enabled=true",
+            "services.credentialstore.enabled=true",
+            "services.sharingregistry.enabled=true",
+            "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -97,19 +106,32 @@ public abstract class ServiceIntegrationTestBase {
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
             basePackages = {
+                "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.repositories",
+                "org.apache.airavata.registry.utils",
                 "org.apache.airavata.service",
-                "org.apache.airavata.registry",
                 "org.apache.airavata.profile",
                 "org.apache.airavata.sharing",
                 "org.apache.airavata.credential",
                 "org.apache.airavata.messaging",
-                "org.apache.airavata.config"
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
+            useDefaultFilters = false,
+            includeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
+                        classes = {
+                            org.springframework.stereotype.Component.class,
+                            org.springframework.stereotype.Service.class,
+                            org.springframework.stereotype.Repository.class,
+                            org.springframework.context.annotation.Configuration.class
+                        })
             },
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|config\\.(Background|Thrift)|sharing\\.migrator).*"
-                ),
+                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|registry\\.messaging)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = ".*\\$.*"  // Exclude inner classes (Thrift-generated)
@@ -119,6 +141,47 @@ public abstract class ServiceIntegrationTestBase {
                         pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
                 )
             })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
-    static class TestConfiguration {}
+    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    static class TestConfiguration {
+        @org.springframework.context.annotation.Bean
+        public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
+                org.apache.airavata.config.AiravataServerProperties properties) {
+            return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
+        }
+
+        @org.springframework.context.annotation.Bean
+        @org.springframework.context.annotation.Primary
+        public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager() {
+            return new org.apache.airavata.security.AiravataSecurityManager() {
+                @Override
+                public boolean isUserAuthorized(org.apache.airavata.model.security.AuthzToken authzToken, java.util.Map<String, String> metaData) throws org.apache.airavata.security.AiravataSecurityException {
+                    return true;
+                }
+
+                @Override
+                public org.apache.airavata.model.security.AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws org.apache.airavata.security.AiravataSecurityException {
+                    org.apache.airavata.model.security.AuthzToken token = new org.apache.airavata.model.security.AuthzToken("test-service-token");
+                    java.util.Map<String, String> claims = new java.util.HashMap<>();
+                    claims.put("gatewayId", gatewayId);
+                    token.setClaimsMap(claims);
+                    return token;
+                }
+
+                @Override
+                public org.apache.airavata.security.UserInfo getUserInfoFromAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.security.AiravataSecurityException {
+                    // Extract from token if available, otherwise use defaults
+                    String userId = "test-user";
+                    String gatewayId = "test-gateway";
+                    if (authzToken != null && authzToken.getClaimsMap() != null) {
+                        userId = authzToken.getClaimsMap().getOrDefault("userName", userId);
+                        gatewayId = authzToken.getClaimsMap().getOrDefault("gatewayId", gatewayId);
+                    }
+                    org.apache.airavata.security.UserInfo userInfo = new org.apache.airavata.security.UserInfo();
+                    userInfo.setUsername(userId);
+                    userInfo.setSub(gatewayId + "@" + userId);
+                    return userInfo;
+                }
+            };
+        }
+    }
 }

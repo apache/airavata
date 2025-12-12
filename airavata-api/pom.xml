@@ -473,12 +473,12 @@ under the License.
       <plugin>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-maven-plugin</artifactId>
-        <version>4.1.1</version>
+        <version>4.0.0</version>
         <configuration>
           <includes>**/entities/**/*.class</includes>
           <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
-          <addDefaultConstructor>true</addDefaultConstructor>
-          <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+          <addDefaultConstructor>false</addDefaultConstructor>
+          <enforcePropertyRestrictions>false</enforcePropertyRestrictions>
           <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
         </configuration>
         <executions>
@@ -498,8 +498,8 @@ under the License.
             <configuration>
               <includes>**/entities/**/*.class</includes>
               <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
-              <addDefaultConstructor>true</addDefaultConstructor>
-              <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+              <addDefaultConstructor>false</addDefaultConstructor>
+              <enforcePropertyRestrictions>false</enforcePropertyRestrictions>
               <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
             </configuration>
           </execution>
@@ -509,6 +509,16 @@ under the License.
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>4.1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+          </dependency>
+          <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.1</version>
           </dependency>
         </dependencies>
       </plugin>

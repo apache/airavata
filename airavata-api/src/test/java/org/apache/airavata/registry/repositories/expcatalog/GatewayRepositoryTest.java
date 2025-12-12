@@ -50,6 +50,7 @@ import org.springframework.test.context.TestPropertySource;
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
             "services.airavata.enabled=false",
+            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
@@ -83,15 +84,18 @@ public class GatewayRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning|registry\\.messaging)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning|registry\\.messaging)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
-
 
     private final GatewayService gatewayService;
     private final AiravataServerProperties properties;
@@ -114,7 +118,7 @@ public class GatewayRepositoryTest extends TestBase {
             defaultGateway.setOauthClientSecret(properties.security.iam.oauthClientSecret);
             gatewayService.addGateway(defaultGateway);
         }
-        
+
         // Verify that default Gateway is already created
         List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
@@ -123,7 +127,7 @@ public class GatewayRepositoryTest extends TestBase {
 
         // Generate unique test gateway ID for this test run
         String testGatewayId = "testGateway-" + UUID.randomUUID().toString().substring(0, 8);
-        
+
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGatewayId);
         gateway.setDomain("SEAGRID");

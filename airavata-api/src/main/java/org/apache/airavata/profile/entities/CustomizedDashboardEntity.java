@@ -25,6 +25,7 @@ import jakarta.persistence.*;
 @Table(name = "CUSTOMIZED_DASHBOARD")
 public class CustomizedDashboardEntity {
 
+    // Enhanced entity
     private String airavataInternalUserId;
     private String experimentId;
     private String name;

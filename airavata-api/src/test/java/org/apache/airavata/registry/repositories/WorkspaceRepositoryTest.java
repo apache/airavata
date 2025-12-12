@@ -24,7 +24,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
             "services.airavata.enabled=false",
+            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
@@ -72,13 +72,17 @@ public class WorkspaceRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     //    private final static Logger logger = LoggerFactory.getLogger(WorkspaceRepositoryTest.class);

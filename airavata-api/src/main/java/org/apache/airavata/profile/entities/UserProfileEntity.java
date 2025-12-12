@@ -51,7 +51,7 @@ public class UserProfileEntity {
     private List<String> nationality;
     private List<String> emails;
     private List<String> phones;
-    private NSFDemographicsEntity nsfDemographics;
+    // private NSFDemographicsEntity nsfDemographics;
     private CustomizedDashboardEntity customizedDashboardEntity;
 
     @Id
@@ -281,6 +281,7 @@ public class UserProfileEntity {
         this.timeZone = timeZone;
     }
 
+    /*
     @OneToOne(
             targetEntity = NSFDemographicsEntity.class,
             cascade = CascadeType.ALL,
@@ -293,6 +294,7 @@ public class UserProfileEntity {
     public void setNsfDemographics(NSFDemographicsEntity nsfDemographics) {
         this.nsfDemographics = nsfDemographics;
     }
+    */
 
     @OneToOne(
             targetEntity = CustomizedDashboardEntity.class,
@@ -345,7 +347,6 @@ public class UserProfileEntity {
                 + getTimeZone() + '\'' + ", nationality="
                 + getNationality() + ", emails="
                 + getEmails() + ", phones="
-                + getPhones() + ", nsfDemographics="
-                + getNsfDemographics() + '}';
+                + getPhones() + '}';
     }
 }

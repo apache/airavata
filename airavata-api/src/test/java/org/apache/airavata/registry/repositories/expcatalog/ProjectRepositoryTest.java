@@ -51,6 +51,7 @@ import org.springframework.test.context.TestPropertySource;
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
             "services.airavata.enabled=false",
+            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
@@ -84,13 +85,20 @@ public class ProjectRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning|registry\\.messaging)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.registry\\.messaging\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -104,7 +112,8 @@ public class ProjectRepositoryTest extends TestBase {
 
     @Test
     public void testProjectRepository() throws RegistryException {
-        String testGateway = "testGateway";
+        String testGateway =
+                "testGateway-" + java.util.UUID.randomUUID().toString().substring(0, 8);
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGateway);
         gateway.setDomain("SEAGRID");

@@ -47,7 +47,6 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest(
@@ -55,12 +54,12 @@ import org.springframework.context.annotation.Import;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
             "services.airavata.enabled=false",
+            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",

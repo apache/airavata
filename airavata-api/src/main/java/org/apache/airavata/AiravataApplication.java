@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableTransactionManagement
 @EnableConfigurationProperties(AiravataServerProperties.class)
-@Import(AiravataPropertiesConfiguration.class)
+@Import({AiravataPropertiesConfiguration.class, org.apache.airavata.config.JpaMappingContextRegistrar.class})
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
@@ -77,6 +77,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             @org.springframework.context.annotation.ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
                     pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
+            ),
+            @org.springframework.context.annotation.ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = "org\\.apache\\.airavata\\.model\\..*"  // Exclude Thrift-generated model classes
             )
         })
 @EntityScan(
@@ -94,11 +98,15 @@ public class AiravataApplication {
         logger.info("Starting Airavata Spring Boot application...");
         // Spring Boot will automatically load properties via AiravataPropertiesConfiguration
         // Command line arguments are automatically merged by Spring Boot
+        // Command line arguments are automatically merged by Spring Boot
 
         // Start Spring Boot application - this will initialize all beans and run CommandLineRunners
         SpringApplication app = new SpringApplication(AiravataApplication.class);
         // Enable bean overriding to handle repository name conflicts
-        app.setDefaultProperties(java.util.Map.of("spring.main.allow-bean-definition-overriding", "true"));
+        app.setDefaultProperties(java.util.Map.of(
+            "spring.main.allow-bean-definition-overriding", "true",
+            "spring.classformat.ignore", "true"  // Ignore class format issues in Thrift-generated classes
+        ));
         // Don't exit immediately - keep running for background services
         app.setRegisterShutdownHook(true);
         app.run(args);

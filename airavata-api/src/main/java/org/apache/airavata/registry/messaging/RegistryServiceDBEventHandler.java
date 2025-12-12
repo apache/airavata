@@ -39,12 +39,14 @@ import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by goshenoy on 3/30/17.
  */
 @Component
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);

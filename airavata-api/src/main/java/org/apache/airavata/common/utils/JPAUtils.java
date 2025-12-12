@@ -45,9 +45,10 @@ public class JPAUtils {
         properties.put(
                 "openjpa.RuntimeUnenhancedClasses",
                 System.getProperty("openjpa.RuntimeUnenhancedClasses", "supported"));
-        // Enable dynamic enhancement agent to enhance classes at runtime if needed
+        // Disable dynamic enhancement agent since we use build-time enhancement
+        // Enabling both can cause conflicts or class loading issues
         properties.put(
-                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "true"));
+                "openjpa.DynamicEnhancementAgent", System.getProperty("openjpa.DynamicEnhancementAgent", "false"));
         properties.put("openjpa.RemoteCommitProvider", "sjvm");
         properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
         // use the following to enable logging of all SQL statements

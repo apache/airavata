@@ -44,6 +44,7 @@ import org.springframework.test.context.TestConstructor;
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
             "services.airavata.enabled=false",
+            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",

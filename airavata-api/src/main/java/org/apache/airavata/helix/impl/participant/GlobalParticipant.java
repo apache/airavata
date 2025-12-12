@@ -28,11 +28,9 @@ import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
-@DependsOn("airavataServerProperties")
 @ConditionalOnProperty(
         name = "services.helix.enabled",
         havingValue = "true",
@@ -73,6 +71,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     // Constructor for Spring - uses constructor injection for properties
     // No checked exceptions - initialization happens in @PostConstruct
+    @org.springframework.beans.factory.annotation.Autowired
     public GlobalParticipant(AiravataServerProperties properties) {
         // Pass empty list for taskClasses - will be set in @PostConstruct
         // Using Collections.emptyList() to avoid ambiguity with Class<T> constructor
