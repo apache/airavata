@@ -23,13 +23,13 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.airavata.credential.impl.ssh.SSHCredential;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,9 +91,9 @@ public class Utility {
             kpair.writePrivateKey(fileName, credential.getPassphrase().getBytes());
             kpair.writePublicKey(fileName + ".pub", "");
             kpair.dispose();
-            byte[] priKey = FileUtils.readFileToByteArray(new File(fileName));
+            byte[] priKey = Files.readAllBytes(new File(fileName).toPath());
 
-            byte[] pubKey = FileUtils.readFileToByteArray(new File(fileName + ".pub"));
+            byte[] pubKey = Files.readAllBytes(new File(fileName + ".pub").toPath());
             credential.setPrivateKey(priKey);
             credential.setPublicKey(pubKey);
             return credential;

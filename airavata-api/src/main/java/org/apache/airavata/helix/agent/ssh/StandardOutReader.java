@@ -19,11 +19,13 @@
 */
 package org.apache.airavata.helix.agent.ssh;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.commons.io.IOUtils;
 
 /**
  * TODO: Class level comments please
@@ -54,13 +56,25 @@ public class StandardOutReader implements CommandOutput {
 
     public void readStdOutFromStream(InputStream is) throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(is, writer, "UTF-8");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.write(System.lineSeparator());
+            }
+        }
         this.stdOut = writer.toString();
     }
 
     public void readStdErrFromStream(InputStream is) throws IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(is, writer, "UTF-8");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.write(System.lineSeparator());
+            }
+        }
         this.stdError = writer.toString();
     }
 

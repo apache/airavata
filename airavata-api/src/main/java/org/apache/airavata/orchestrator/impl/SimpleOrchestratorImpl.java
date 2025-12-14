@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.orchestrator.impl;
 
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,13 +58,13 @@ import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.job.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.job.JobSubmitter;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.util.ExperimentModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -112,7 +113,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    @jakarta.annotation.PostConstruct
+    @PostConstruct
     public void init() throws OrchestratorException {
         logger.info("[BEAN-INIT] SimpleOrchestratorImpl.init() called");
         initialize(properties);

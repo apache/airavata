@@ -24,12 +24,11 @@ import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -588,7 +587,7 @@ public class GroovyMapData {
         }
 
         try {
-            String templateStr = IOUtils.toString(templateUrl.openStream(), Charset.defaultCharset());
+            String templateStr = new String(templateUrl.openStream().readAllBytes(), StandardCharsets.UTF_8);
             return loadFromString(templateStr);
         } catch (Exception e) {
             throw new Exception(

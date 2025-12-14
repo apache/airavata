@@ -41,6 +41,7 @@ import org.apache.airavata.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -73,11 +75,11 @@ public class KeyCloakSecurityManagerTest {
     @MockitoBean
     private AuthzCacheManager mockAuthzCacheManager;
 
-    private final KeyCloakSecurityManager keyCloakSecurityManager;
+    @MockitoBean
+    private CredentialStoreService mockCredentialStoreService;
 
-    public KeyCloakSecurityManagerTest(KeyCloakSecurityManager keyCloakSecurityManager) {
-        this.keyCloakSecurityManager = keyCloakSecurityManager;
-    }
+    @Autowired
+    private KeyCloakSecurityManager keyCloakSecurityManager;
 
     @Configuration
     @ComponentScan(

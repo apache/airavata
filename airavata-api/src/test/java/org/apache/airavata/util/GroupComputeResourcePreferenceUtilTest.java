@@ -17,13 +17,14 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.model.util;
+package org.apache.airavata.util;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.common.model.ComputeResourceReservation;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.util.GroupComputeResourcePreferenceUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

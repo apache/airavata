@@ -33,9 +33,9 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 /**
  * Computational Resource Monitoring Service

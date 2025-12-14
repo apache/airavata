@@ -21,6 +21,8 @@ package org.apache.airavata.helix.impl.task.aws;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +47,6 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +125,12 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             File localScriptFile = new File(
                     getLocalDataDir(),
                     "aws-job-" + new SecureRandom().nextInt() + jobManagerConfig.getScriptExtension());
-            FileUtils.writeStringToFile(localScriptFile, scriptContent, StandardCharsets.UTF_8);
+            Files.writeString(
+                    localScriptFile.toPath(),
+                    scriptContent,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
 
             jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
             saveJobModel(jobModel);

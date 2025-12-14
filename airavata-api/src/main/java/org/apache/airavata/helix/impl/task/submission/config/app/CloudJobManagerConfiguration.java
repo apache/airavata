@@ -20,11 +20,11 @@
 package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import java.io.File;
+import java.nio.file.Paths;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.impl.task.submission.config.app.parser.AiravataCustomCommandOutputParser;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * A Job Manager Configuration for executing jobs directly on a cloud VM via SSH
@@ -71,7 +71,9 @@ public class CloudJobManagerConfiguration implements JobManagerConfiguration {
 
     @Override
     public RawCommandInfo getSubmitCommand(String workingDirectory, String filePath) {
-        String remoteScriptPath = workingDirectory + File.separator + FilenameUtils.getName(filePath);
+        String remoteScriptPath = workingDirectory
+                + File.separator
+                + Paths.get(filePath).getFileName().toString();
         return new RawCommandInfo("/bin/bash " + remoteScriptPath);
     }
 

@@ -11,7 +11,8 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing,
-* software distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 * KIND, either express or implied. See the License for the
 * specific language governing permissions and limitations
 * under the License.
@@ -59,9 +60,9 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
         try {
             String password = passwordDigester.getPasswordHashValue((String) credentials);
-            UsernamePasswordAuthenticationToken authRequest = 
-                new UsernamePasswordAuthenticationToken(userName, password);
-            
+            UsernamePasswordAuthenticationToken authRequest =
+                    new UsernamePasswordAuthenticationToken(userName, password);
+
             Authentication authentication = authenticationProvider.authenticate(authRequest);
             return authentication != null && authentication.isAuthenticated();
         } catch (BadCredentialsException e) {
@@ -155,12 +156,13 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn)
             throws ApplicationSettingsException, UserStoreException {
         try {
-            DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
+            DBUtil dbUtil =
+                    new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
             dataSource = dbUtil.getDataSource();
 
             // Create user details service
-            UserDetailsService userDetailsService = new JdbcUserDetailsService(
-                dataSource, userTable, userNameColumn, passwordColumn);
+            UserDetailsService userDetailsService =
+                    new JdbcUserDetailsService(dataSource, userTable, userNameColumn, passwordColumn);
 
             // Create password encoder adapter
             PasswordEncoder passwordEncoder = new PasswordDigesterEncoder(passwordDigester);
@@ -188,8 +190,8 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         private final String userNameColumn;
         private final String passwordColumn;
 
-        public JdbcUserDetailsService(DataSource dataSource, String userTable, 
-                                     String userNameColumn, String passwordColumn) {
+        public JdbcUserDetailsService(
+                DataSource dataSource, String userTable, String userNameColumn, String passwordColumn) {
             this.jdbcTemplate = new JdbcTemplate(dataSource);
             this.userTable = userTable;
             this.userNameColumn = userNameColumn;
@@ -198,18 +200,17 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
 
         @Override
         public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-            String sql = String.format("SELECT %s FROM %s WHERE %s = ?", 
-                passwordColumn, userTable, userNameColumn);
-            
+            String sql = String.format("SELECT %s FROM %s WHERE %s = ?", passwordColumn, userTable, userNameColumn);
+
             try {
                 String password = jdbcTemplate.queryForObject(sql, String.class, username);
                 if (password == null) {
                     throw new UsernameNotFoundException("User not found: " + username);
                 }
                 return User.withUsername(username)
-                    .password(password)
-                    .authorities("ROLE_USER")
-                    .build();
+                        .password(password)
+                        .authorities("ROLE_USER")
+                        .build();
             } catch (org.springframework.dao.EmptyResultDataAccessException e) {
                 throw new UsernameNotFoundException("User not found: " + username, e);
             }

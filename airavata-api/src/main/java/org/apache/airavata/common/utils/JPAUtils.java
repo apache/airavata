@@ -21,7 +21,6 @@ package org.apache.airavata.common.utils;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -92,8 +91,11 @@ public class JPAUtils {
         properties.put("jakarta.persistence.jdbc.url", url + urlSuffix);
         properties.put("jakarta.persistence.jdbc.user", jdbcConfig.getUser());
         properties.put("jakarta.persistence.jdbc.password", jdbcConfig.getPassword());
-        logger.debug("Connection properties: driver={}, url={}, user={}", 
-                jdbcConfig.getDriver(), url + urlSuffix, jdbcConfig.getUser());
+        logger.debug(
+                "Connection properties: driver={}, url={}, user={}",
+                jdbcConfig.getDriver(),
+                url + urlSuffix,
+                jdbcConfig.getUser());
         return properties;
     }
 

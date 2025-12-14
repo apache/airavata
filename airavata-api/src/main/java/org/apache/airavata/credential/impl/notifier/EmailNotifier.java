@@ -22,12 +22,11 @@ package org.apache.airavata.credential.impl.notifier;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.utils.CredentialStoreNotifier;
 import org.apache.airavata.credential.utils.NotificationMessage;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -46,27 +45,40 @@ public class EmailNotifier implements CredentialStoreNotifier {
 
     public void notifyMessage(NotificationMessage message) throws CredentialStoreException {
         try {
-            Email email = new SimpleEmail();
-            email.setHostName(this.emailNotifierConfiguration.getEmailServer());
-            email.setSmtpPort(this.emailNotifierConfiguration.getEmailServerPort());
-            email.setAuthenticator(new DefaultAuthenticator(
-                    this.emailNotifierConfiguration.getEmailUserName(),
-                    this.emailNotifierConfiguration.getEmailPassword()));
-            email.setSSLOnConnect(this.emailNotifierConfiguration.isSslConnect());
+            JavaMailSender mailSender = createMailSender();
+            SimpleMailMessage email = new SimpleMailMessage();
             email.setFrom(this.emailNotifierConfiguration.getFromAddress());
 
             EmailNotificationMessage emailMessage = (EmailNotificationMessage) message;
 
             email.setSubject(emailMessage.getSubject());
-            email.setMsg(emailMessage.getMessage());
-            email.addTo(emailMessage.getSenderEmail());
-            email.send();
+            email.setText(emailMessage.getMessage());
+            email.setTo(emailMessage.getSenderEmail());
+            mailSender.send(email);
 
-        } catch (EmailException e) {
-            log.error("[CredentialStore]Error sending email notification message.");
+        } catch (Exception e) {
+            log.error("[CredentialStore]Error sending email notification message.", e);
             CredentialStoreException cse = new CredentialStoreException("Error sending email notification message");
             cse.initCause(e);
             throw cse;
         }
+    }
+
+    private JavaMailSender createMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(this.emailNotifierConfiguration.getEmailServer());
+        mailSender.setPort(this.emailNotifierConfiguration.getEmailServerPort());
+        mailSender.setUsername(this.emailNotifierConfiguration.getEmailUserName());
+        mailSender.setPassword(this.emailNotifierConfiguration.getEmailPassword());
+
+        java.util.Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        if (this.emailNotifierConfiguration.isSslConnect()) {
+            props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+        }
+        props.put("mail.smtp.auth", "true");
+
+        return mailSender;
     }
 }

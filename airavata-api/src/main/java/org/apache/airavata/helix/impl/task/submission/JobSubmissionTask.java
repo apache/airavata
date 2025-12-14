@@ -20,6 +20,8 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,6 @@ import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.registry.exception.RegistryServiceException;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
         File tempJobFile = new File(
                 getLocalDataDir(), "job_" + Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
 
-        FileUtils.writeStringToFile(tempJobFile, scriptAsString);
+        Files.writeString(
+                tempJobFile.toPath(), scriptAsString, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         logger.info("Job submission file for process " + getProcessId() + " was created at : "
                 + tempJobFile.getAbsolutePath());
 

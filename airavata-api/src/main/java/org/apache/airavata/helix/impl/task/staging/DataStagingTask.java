@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -47,7 +48,6 @@ import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,7 +213,7 @@ public abstract class DataStagingTask extends AiravataTask {
         localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator)
                 + getProcessId() + File.separator + "temp_inputs" + File.separator;
         try {
-            FileUtils.forceMkdir(new File(localDataPath));
+            Files.createDirectories(new File(localDataPath).toPath());
         } catch (IOException e) {
             throw new TaskOnFailException("Failed build directories " + localDataPath, true, e);
         }

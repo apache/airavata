@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.security;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -55,7 +57,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -112,6 +113,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final AiravataServerProperties properties;
     private final AuthzCacheManagerFactory authzCacheManagerFactory;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public KeyCloakSecurityManager(
             RegistryService registryService,
@@ -245,9 +247,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             initServiceClients();
             Gateway gateway = registryService.getGateway(gatewayId);
             String tokenURL = getTokenEndpoint(gatewayId);
-            JSONObject clientCredentials =
+            JsonNode clientCredentials =
                     getClientCredentials(tokenURL, gateway.getOauthClientId(), gateway.getOauthClientSecret());
-            String accessToken = clientCredentials.getString("access_token");
+            String accessToken = clientCredentials.get("access_token").asText();
             AuthzToken authzToken = new AuthzToken(accessToken);
             authzToken.putToClaimsMap(Constants.GATEWAY_ID, gatewayId);
             authzToken.putToClaimsMap(Constants.USER_NAME, gateway.getOauthClientId());
@@ -277,16 +279,16 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         GatewayResourceProfile gwrp = registryService.getGatewayResourceProfile(gatewayId);
         String identityServerRealm = gwrp.getIdentityServerTenant();
         String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
-        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
-        String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
-        JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
+        JsonNode openIdConnectConfig = objectMapper.readTree(getFromUrl(openIdConnectUrl, null));
+        String userInfoEndPoint = openIdConnectConfig.get("userinfo_endpoint").asText();
+        JsonNode userInfo = objectMapper.readTree(getFromUrl(userInfoEndPoint, token));
         return new UserInfo()
-                .setSub(userInfo.getString("sub"))
-                .setFullName(userInfo.getString("name"))
-                .setFirstName(userInfo.getString("given_name"))
-                .setLastName(userInfo.getString("family_name"))
-                .setEmailAddress(userInfo.getString("email"))
-                .setUsername(userInfo.getString("preferred_username"));
+                .setSub(userInfo.get("sub").asText())
+                .setFullName(userInfo.get("name").asText())
+                .setFirstName(userInfo.get("given_name").asText())
+                .setLastName(userInfo.get("family_name").asText())
+                .setEmailAddress(userInfo.get("email").asText())
+                .setUsername(userInfo.get("preferred_username").asText());
     }
 
     private GatewayGroupMembership getGatewayGroupMembership(String username, String token, String gatewayId)
@@ -344,11 +346,11 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
     private String getTokenEndpoint(String gatewayId) throws Exception {
         String openIdConnectUrl = getOpenIDConfigurationUrl(gatewayId);
-        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
-        return openIdConnectConfig.getString("token_endpoint");
+        JsonNode openIdConnectConfig = objectMapper.readTree(getFromUrl(openIdConnectUrl, null));
+        return openIdConnectConfig.get("token_endpoint").asText();
     }
 
-    public JSONObject getClientCredentials(String tokenURL, String clientId, String clientSecret) throws IOException {
+    public JsonNode getClientCredentials(String tokenURL, String clientId, String clientSecret) throws IOException {
 
         CloseableHttpClient httpClient = HttpClients.createSystem();
 
@@ -362,7 +364,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         httpPost.setEntity(entity);
         try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
             String responseBody = EntityUtils.toString(response.getEntity());
-            return new JSONObject(responseBody);
+            return objectMapper.readTree(responseBody);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

@@ -19,11 +19,6 @@
 */
 package org.apache.airavata.messaging.client;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,53 +32,53 @@ public class RabbitMQListener {
 
     public static void parseArguments(String[] args) {
         try {
-            Options options = new Options();
-
-            options.addOption("gId", true, "Gateway ID");
-            options.addOption("eId", true, "Experiment ID");
-            options.addOption("jId", true, "Job ID");
-            options.addOption("a", false, "All Notifications");
-
-            CommandLineParser parser = new PosixParser();
-            CommandLine cmd = parser.parse(options, args);
-            if (cmd.getOptions() == null || cmd.getOptions().length == 0) {
+            if (args == null || args.length == 0) {
                 logger.info("You have not specified any options. We assume you need to listen to all the messages...");
                 gatewayId = "*";
+                return;
             }
-            if (cmd.hasOption("a")) {
-                logger.info("Listening to all the messages...");
-                gatewayId = "*";
-            } else {
-                gatewayId = cmd.getOptionValue("gId");
-                if (gatewayId == null) {
+
+            // Simple manual parsing
+            java.util.Map<String, String> options = new java.util.HashMap<>();
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-a")) {
+                    logger.info("Listening to all the messages...");
                     gatewayId = "*";
-                    logger.info(
-                            "You have not specified a gateway id. We assume you need to listen to all the messages...");
-                }
-                experimentId = cmd.getOptionValue("eId");
-                if (experimentId == null && !gatewayId.equals("*")) {
-                    experimentId = "*";
-                    logger.info(
-                            "You have not specified a experiment id. We assume you need to listen to all the messages for the gateway with id "
-                                    + gatewayId);
-                } else if (experimentId == null && gatewayId.equals("*")) {
-                    experimentId = "*";
-                    logger.info(
-                            "You have not specified a experiment id and a gateway id. We assume you need to listen to all the messages...");
-                }
-                jobId = cmd.getOptionValue("jId");
-                if (jobId == null && !gatewayId.equals("*") && !experimentId.equals("*")) {
-                    jobId = "*";
-                    logger.info(
-                            "You have not specified a job id. We assume you need to listen to all the messages for the gateway with id "
-                                    + gatewayId + " with experiment id : " + experimentId);
-                } else if (jobId == null && gatewayId.equals("*") && experimentId.equals("*")) {
-                    jobId = "*";
-                    logger.info(
-                            "You have not specified a job Id or experiment Id or a gateway Id. We assume you need to listen to all the messages...");
+                    return;
+                } else if (args[i].equals("-gId") && i + 1 < args.length) {
+                    options.put("gId", args[++i]);
+                } else if (args[i].equals("-eId") && i + 1 < args.length) {
+                    options.put("eId", args[++i]);
+                } else if (args[i].equals("-jId") && i + 1 < args.length) {
+                    options.put("jId", args[++i]);
                 }
             }
-        } catch (ParseException e) {
+
+            gatewayId = options.getOrDefault("gId", "*");
+            if (gatewayId.equals("*")) {
+                logger.info("You have not specified a gateway id. We assume you need to listen to all the messages...");
+            }
+
+            experimentId = options.getOrDefault("eId", "*");
+            if (experimentId.equals("*") && !gatewayId.equals("*")) {
+                logger.info(
+                        "You have not specified a experiment id. We assume you need to listen to all the messages for the gateway with id "
+                                + gatewayId);
+            } else if (experimentId.equals("*") && gatewayId.equals("*")) {
+                logger.info(
+                        "You have not specified a experiment id and a gateway id. We assume you need to listen to all the messages...");
+            }
+
+            jobId = options.getOrDefault("jId", "*");
+            if (jobId.equals("*") && !gatewayId.equals("*") && !experimentId.equals("*")) {
+                logger.info(
+                        "You have not specified a job id. We assume you need to listen to all the messages for the gateway with id "
+                                + gatewayId + " with experiment id : " + experimentId);
+            } else if (jobId.equals("*") && gatewayId.equals("*") && experimentId.equals("*")) {
+                logger.info(
+                        "You have not specified a job Id or experiment Id or a gateway Id. We assume you need to listen to all the messages...");
+            }
+        } catch (Exception e) {
             logger.error("Error while reading command line parameters", e);
         }
     }

@@ -19,9 +19,14 @@
 */
 package org.apache.airavata.helix.impl.task;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,12 +69,8 @@ import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -85,6 +86,7 @@ public abstract class AiravataTask extends AbstractTask {
     protected final RegistryService registryService;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AiravataTask(
             ApplicationContext applicationContext,
@@ -195,7 +197,7 @@ public abstract class AiravataTask extends AbstractTask {
             error = new TaskOnFailException(errorMessage, true, error);
 
             status.setReason(errorMessage);
-            errors.write(ExceptionUtils.getStackTrace(error));
+            error.printStackTrace(new PrintWriter(errors));
             logger.error(errorMessage, error);
 
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -262,7 +264,18 @@ public abstract class AiravataTask extends AbstractTask {
             localDataPath = localDataPath + getProcessId();
 
             try {
-                FileUtils.deleteDirectory(new File(localDataPath));
+                Path path = Path.of(localDataPath);
+                if (Files.exists(path)) {
+                    Files.walk(path)
+                            .sorted((a, b) -> b.compareTo(a)) // Delete files before directories
+                            .forEach(p -> {
+                                try {
+                                    Files.delete(p);
+                                } catch (IOException e) {
+                                    logger.warn("Failed to delete " + p, e);
+                                }
+                            });
+                }
             } catch (IOException e) {
                 logger.error("Failed to delete local data directory " + localDataPath, e);
             }
@@ -422,15 +435,15 @@ public abstract class AiravataTask extends AbstractTask {
         // Copy experiment output's file-metadata to data product's metadata
         if (outputMetadata != null) {
             try {
-                JSONObject outputMetadataJSON = new JSONObject(outputMetadata);
+                JsonNode outputMetadataJSON = objectMapper.readTree(outputMetadata);
                 if (outputMetadataJSON.has("file-metadata")) {
-                    JSONObject fileMetadata = outputMetadataJSON.getJSONObject("file-metadata");
-                    for (Object key : fileMetadata.keySet()) {
-                        String k = key.toString();
-                        dataProductModel.putToProductMetadata(k, fileMetadata.getString(k));
-                    }
+                    JsonNode fileMetadata = outputMetadataJSON.get("file-metadata");
+                    fileMetadata.fields().forEachRemaining(entry -> {
+                        dataProductModel.putToProductMetadata(
+                                entry.getKey(), entry.getValue().asText());
+                    });
                 }
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 logger.warn("Failed to parse output metadata: [" + outputMetadata + "]", e);
             }
         }

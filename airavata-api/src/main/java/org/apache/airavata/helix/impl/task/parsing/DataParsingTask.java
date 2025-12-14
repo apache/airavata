@@ -32,6 +32,7 @@ import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,6 @@ import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -471,7 +471,7 @@ public class DataParsingTask extends AbstractTask {
                 + "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "input"
                 + File.separator;
         try {
-            FileUtils.forceMkdir(new File(localInpDir));
+            Files.createDirectories(new File(localInpDir).toPath());
             return localInpDir;
 
         } catch (IOException e) {
@@ -484,7 +484,7 @@ public class DataParsingTask extends AbstractTask {
                 + "parsers" + File.separator + containerName + File.separator + "data" + File.separator + "output"
                 + File.separator;
         try {
-            FileUtils.forceMkdir(new File(localOutDir));
+            Files.createDirectories(new File(localOutDir).toPath());
             return localOutDir;
 
         } catch (IOException e) {

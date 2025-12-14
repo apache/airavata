@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.model.util;
+package org.apache.airavata.util;
 
 import org.apache.airavata.common.model.ComputeResourceReservation;
 import org.apache.airavata.common.model.ComputeResourceType;

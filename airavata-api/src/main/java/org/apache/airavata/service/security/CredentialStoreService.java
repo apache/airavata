@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +44,6 @@ import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.credential.utils.CredentialStoreDBInitConfig;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.apache.airavata.credential.utils.Utility;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -159,8 +159,8 @@ public class CredentialStoreService {
             String token = TokenGenerator.generateToken(
                     certificateCredential.getCommunityUser().getGatewayName(), null);
             credential.setToken(token);
-            Base64 encoder = new Base64(64);
-            byte[] decoded = encoder.decode(certificateCredential
+            Base64.Decoder decoder = Base64.getMimeDecoder();
+            byte[] decoded = decoder.decode(certificateCredential
                     .getX509Cert()
                     .replaceAll("-----BEGIN CERTIFICATE-----", "")
                     .replaceAll("-----END CERTIFICATE-----", ""));

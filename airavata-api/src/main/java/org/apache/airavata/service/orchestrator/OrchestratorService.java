@@ -74,14 +74,13 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
-import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.airavata.util.ExperimentModelUtil;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -288,7 +287,7 @@ public class OrchestratorService {
                         filePathList.add(uri);
                     }
                 }
-                pi.setValue(StringUtils.join(filePathList, ','));
+                pi.setValue(String.join(",", filePathList));
             }
         }
     }

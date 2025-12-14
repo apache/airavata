@@ -29,11 +29,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,8 +225,23 @@ public class ApplicationSettings {
 
     public static boolean getBooleanSetting(String key) throws ApplicationSettingsException {
         String val = getInstance().getSettingImpl(key);
-        return Optional.ofNullable(BooleanUtils.toBooleanObject(val))
-                .orElseThrow(() -> new ApplicationSettingsException("Value can not be parsed to Boolean"));
+        if (val == null) {
+            throw new ApplicationSettingsException("Value can not be parsed to Boolean");
+        }
+        String normalized = val.trim().toLowerCase();
+        if ("true".equals(normalized)
+                || "yes".equals(normalized)
+                || "on".equals(normalized)
+                || "1".equals(normalized)) {
+            return true;
+        } else if ("false".equals(normalized)
+                || "no".equals(normalized)
+                || "off".equals(normalized)
+                || "0".equals(normalized)) {
+            return false;
+        } else {
+            throw new ApplicationSettingsException("Value can not be parsed to Boolean");
+        }
     }
 
     public static boolean isSettingDefined(String key) throws ApplicationSettingsException {

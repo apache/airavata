@@ -19,16 +19,12 @@
 */
 package org.apache.airavata.api.thrift.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.airavata.api.model.BaseAPI;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.AbandonedConfig;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -41,119 +37,61 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     private static final Logger logger = LoggerFactory.getLogger(ThriftClientPool.class);
 
-    private final GenericObjectPool<T> internalPool;
+    private final BlockingQueue<T> pool;
+    private final ClientFactory<T> clientFactory;
+    private final ProtocolFactory protocolFactory;
+    private final int maxTotal;
+    private final int maxIdle;
+    private final long maxWaitMillis;
+    private final long timeBetweenEvictionRunsMillis;
+    private final AtomicInteger createdCount = new AtomicInteger(0);
     private final AiravataServerProperties properties;
 
-    /**
-     * StringWriter that flushes to SLF4J logger.
-     */
-    private static class ErrorLoggingStringWriter extends StringWriter {
-
-        @Override
-        public void flush() {
-            logger.error(this.toString());
-            // Reset buffer
-            this.getBuffer().setLength(0);
-        }
+    public ThriftClientPool(ClientFactory<T> clientFactory, PoolConfig poolConfig, String host, int port) {
+        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig, null);
     }
 
-    public ThriftClientPool(
-            ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host, int port) {
-        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig, null, null);
-    }
-
-    public ThriftClientPool(
-            ClientFactory<T> clientFactory, ProtocolFactory protocolFactory, GenericObjectPoolConfig<T> poolConfig) {
-        this(clientFactory, protocolFactory, poolConfig, null, null);
+    public ThriftClientPool(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory, PoolConfig poolConfig) {
+        this(clientFactory, protocolFactory, poolConfig, null);
     }
 
     public ThriftClientPool(
             ClientFactory<T> clientFactory,
             ProtocolFactory protocolFactory,
-            GenericObjectPoolConfig<T> poolConfig,
+            PoolConfig poolConfig,
             AiravataServerProperties properties) {
-        this(clientFactory, protocolFactory, poolConfig, null, properties);
-    }
-
-    public ThriftClientPool(
-            ClientFactory<T> clientFactory,
-            ProtocolFactory protocolFactory,
-            GenericObjectPoolConfig<T> poolConfig,
-            AbandonedConfig abandonedConfig) {
-        this(clientFactory, protocolFactory, poolConfig, abandonedConfig, null);
-    }
-
-    private ThriftClientPool(
-            ClientFactory<T> clientFactory,
-            ProtocolFactory protocolFactory,
-            GenericObjectPoolConfig<T> poolConfig,
-            AbandonedConfig abandonedConfig,
-            AiravataServerProperties properties) {
+        this.clientFactory = clientFactory;
+        this.protocolFactory = protocolFactory;
         this.properties = properties;
-
-        // If abandonedConfig not provided but properties are, create from properties
-        if (abandonedConfig == null && properties != null) {
-            if (properties.airavata.thriftClientPoolAbandonedRemovalEnabled) {
-                abandonedConfig = new AbandonedConfig();
-                abandonedConfig.setRemoveAbandonedOnBorrow(true);
-                abandonedConfig.setRemoveAbandonedOnMaintenance(true);
-                if (properties.airavata.thriftClientPoolAbandonedRemovalLogged) {
-                    abandonedConfig.setLogAbandoned(true);
-                    abandonedConfig.setLogWriter(new PrintWriter(new ErrorLoggingStringWriter()));
-                } else {
-                    abandonedConfig.setLogAbandoned(false);
-                }
-            }
-        }
-
-        if (abandonedConfig != null
-                && abandonedConfig.getRemoveAbandonedOnMaintenance()
-                && poolConfig.getTimeBetweenEvictionRunsMillis() <= 0) {
-            logger.warn(
-                    "Abandoned removal is enabled but"
-                            + " removeAbandonedOnMaintenance won't run since"
-                            + " timeBetweenEvictionRunsMillis is not positive, current value: {}",
-                    poolConfig.getTimeBetweenEvictionRunsMillis());
-        }
-        this.internalPool = new GenericObjectPool<T>(
-                new ThriftClientFactory(clientFactory, protocolFactory), poolConfig, abandonedConfig);
+        this.maxTotal = poolConfig.getMaxTotal();
+        this.maxIdle = poolConfig.getMaxIdle() > 0 ? poolConfig.getMaxIdle() : poolConfig.getMaxTotal();
+        this.maxWaitMillis = poolConfig.getMaxWaitMillis();
+        this.timeBetweenEvictionRunsMillis = poolConfig.getTimeBetweenEvictionRunsMillis();
+        this.pool = new LinkedBlockingQueue<>(maxIdle);
     }
 
-    class ThriftClientFactory extends BasePooledObjectFactory<T> {
-
-        private ClientFactory<T> clientFactory;
-        private ProtocolFactory protocolFactory;
-
-        public ThriftClientFactory(ClientFactory<T> clientFactory, ProtocolFactory protocolFactory) {
-            this.clientFactory = clientFactory;
-            this.protocolFactory = protocolFactory;
+    private T createClient() throws Exception {
+        try {
+            TProtocol protocol = protocolFactory.make();
+            T client = clientFactory.make(protocol);
+            createdCount.incrementAndGet();
+            return client;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            throw new ThriftClientException("Can not make a new object for pool", e);
         }
+    }
 
-        @Override
-        public T create() throws Exception {
-            try {
-                TProtocol protocol = protocolFactory.make();
-                return clientFactory.make(protocol);
-            } catch (Exception e) {
-                logger.warn(e.getMessage(), e);
-                throw new ThriftClientException("Can not make a new object for pool", e);
+    private void destroyClient(T client) {
+        try {
+            if (client.getOutputProtocol().getTransport().isOpen()) {
+                client.getOutputProtocol().getTransport().close();
             }
-        }
-
-        @Override
-        public void destroyObject(PooledObject<T> pooledObject) throws Exception {
-            T obj = pooledObject.getObject();
-            if (obj.getOutputProtocol().getTransport().isOpen()) {
-                obj.getOutputProtocol().getTransport().close();
+            if (client.getInputProtocol().getTransport().isOpen()) {
+                client.getInputProtocol().getTransport().close();
             }
-            if (obj.getInputProtocol().getTransport().isOpen()) {
-                obj.getInputProtocol().getTransport().close();
-            }
-        }
-
-        @Override
-        public PooledObject<T> wrap(T obj) {
-            return new DefaultPooledObject<T>(obj);
+        } catch (Exception e) {
+            logger.warn("Error destroying client", e);
         }
     }
 
@@ -204,17 +142,29 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
         try {
             for (int i = 0; i < 10; i++) {
                 // This tries to fetch a client from the pool and validate it before returning.
-                final T client = internalPool.borrowObject();
+                T client = null;
                 try {
+                    // Try to get from pool first
+                    client = pool.poll(maxWaitMillis, TimeUnit.MILLISECONDS);
+                    if (client == null && createdCount.get() < maxTotal) {
+                        // Create new client if under max total
+                        client = createClient();
+                    }
+                    if (client == null) {
+                        throw new Exception("Pool exhausted and max total reached");
+                    }
+                    // Validate client
                     String apiVersion = client.getAPIVersion();
                     logger.debug("Validated client and fetched api version " + apiVersion);
                     return client;
                 } catch (Exception e) {
                     logger.warn("Failed to validate the client. Retrying " + i, e);
-                    returnBrokenResource(client);
+                    if (client != null) {
+                        returnBrokenResource(client);
+                    }
                 }
             }
-            throw new Exception("Failed to fetch a client form the pool after validation");
+            throw new Exception("Failed to fetch a client from the pool after validation");
         } catch (Exception e) {
             throw new ThriftClientException("Could not get a resource from the pool", e);
         }
@@ -222,9 +172,15 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     public void returnResourceObject(T resource) {
         try {
-            internalPool.returnObject(resource);
+            if (!pool.offer(resource)) {
+                // Pool is full, destroy the client
+                destroyClient(resource);
+                createdCount.decrementAndGet();
+            }
         } catch (Exception e) {
-            throw new ThriftClientException("Could not return the resource to the pool", e);
+            logger.warn("Error returning resource to pool", e);
+            destroyClient(resource);
+            createdCount.decrementAndGet();
         }
     }
 
@@ -238,9 +194,10 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     protected void returnBrokenResourceObject(T resource) {
         try {
-            internalPool.invalidateObject(resource);
+            destroyClient(resource);
+            createdCount.decrementAndGet();
         } catch (Exception e) {
-            throw new ThriftClientException("Could not return the resource to the pool", e);
+            logger.warn("Error destroying broken resource", e);
         }
     }
 
@@ -250,9 +207,55 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
     public void close() {
         try {
-            internalPool.close();
+            T client;
+            while ((client = pool.poll()) != null) {
+                destroyClient(client);
+                createdCount.decrementAndGet();
+            }
         } catch (Exception e) {
-            throw new ThriftClientException("Could not destroy the pool", e);
+            logger.error("Error closing pool", e);
+        }
+    }
+
+    /**
+     * Simple pool configuration class to replace GenericObjectPoolConfig
+     */
+    public static class PoolConfig {
+        private int maxTotal = 8;
+        private int maxIdle = 8;
+        private long maxWaitMillis = -1;
+        private long timeBetweenEvictionRunsMillis = -1;
+
+        public int getMaxTotal() {
+            return maxTotal;
+        }
+
+        public void setMaxTotal(int maxTotal) {
+            this.maxTotal = maxTotal;
+        }
+
+        public int getMaxIdle() {
+            return maxIdle;
+        }
+
+        public void setMaxIdle(int maxIdle) {
+            this.maxIdle = maxIdle;
+        }
+
+        public long getMaxWaitMillis() {
+            return maxWaitMillis;
+        }
+
+        public void setMaxWaitMillis(long maxWaitMillis) {
+            this.maxWaitMillis = maxWaitMillis;
+        }
+
+        public long getTimeBetweenEvictionRunsMillis() {
+            return timeBetweenEvictionRunsMillis;
+        }
+
+        public void setTimeBetweenEvictionRunsMillis(long timeBetweenEvictionRunsMillis) {
+            this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
         }
     }
 }

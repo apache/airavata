@@ -11,7 +11,8 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing,
-* software distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 * KIND, either express or implied. See the License for the
 * specific language governing permissions and limitations
 * under the License.
@@ -51,9 +52,9 @@ public class LDAPUserStore implements UserStore {
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
         try {
             String password = passwordDigester.getPasswordHashValue((String) credentials);
-            UsernamePasswordAuthenticationToken authRequest = 
-                new UsernamePasswordAuthenticationToken(userName, password);
-            
+            UsernamePasswordAuthenticationToken authRequest =
+                    new UsernamePasswordAuthenticationToken(userName, password);
+
             Authentication authentication = ldapAuthenticationProvider.authenticate(authRequest);
             return authentication != null && authentication.isAuthenticated();
         } catch (BadCredentialsException e) {
@@ -126,8 +127,8 @@ public class LDAPUserStore implements UserStore {
         initializeLDAP(url, systemUser, systemUserPassword, userTemplate);
     }
 
-    protected void initializeLDAP(
-            String ldapUrl, String systemUser, String systemUserPassword, String userNameTemplate) throws UserStoreException {
+    protected void initializeLDAP(String ldapUrl, String systemUser, String systemUserPassword, String userNameTemplate)
+            throws UserStoreException {
 
         try {
             // Create LDAP context source
@@ -154,8 +155,7 @@ public class LDAPUserStore implements UserStore {
             }
         }
 
-        FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(
-            searchBase, searchFilter, contextSource);
+        FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(searchBase, searchFilter, contextSource);
 
         // Create authenticator
         PasswordComparisonAuthenticator authenticator = new PasswordComparisonAuthenticator(contextSource);
@@ -163,8 +163,7 @@ public class LDAPUserStore implements UserStore {
         authenticator.setPasswordEncoder(new PasswordDigesterEncoder(passwordDigester));
 
         // Create authorities populator (empty for now - can be extended)
-        DefaultLdapAuthoritiesPopulator authoritiesPopulator = 
-            new DefaultLdapAuthoritiesPopulator(contextSource, "");
+        DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, "");
 
         // Create authentication provider
         ldapAuthenticationProvider = new LdapAuthenticationProvider(authenticator, authoritiesPopulator);
@@ -173,7 +172,8 @@ public class LDAPUserStore implements UserStore {
     /**
      * Password encoder adapter for PasswordDigester
      */
-    private static class PasswordDigesterEncoder implements org.springframework.security.crypto.password.PasswordEncoder {
+    private static class PasswordDigesterEncoder
+            implements org.springframework.security.crypto.password.PasswordEncoder {
         private final PasswordDigester passwordDigester;
 
         public PasswordDigesterEncoder(PasswordDigester passwordDigester) {

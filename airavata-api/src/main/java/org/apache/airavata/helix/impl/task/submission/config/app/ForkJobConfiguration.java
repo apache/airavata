@@ -20,12 +20,12 @@
 package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 import org.apache.airavata.common.model.JobManagerCommand;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
-import org.apache.commons.io.FilenameUtils;
 
 public class ForkJobConfiguration implements JobManagerConfiguration {
     private final Map<JobManagerCommand, String> jobManagerCommands;
@@ -87,7 +87,7 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
     public RawCommandInfo getSubmitCommand(String workingDirectory, String forkFilePath) {
         return new RawCommandInfo(this.installedPath
                 + jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim() + " " + workingDirectory + File.separator
-                + FilenameUtils.getName(forkFilePath));
+                + Paths.get(forkFilePath).getFileName().toString());
     }
 
     @Override

@@ -28,9 +28,9 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 public class ClusterStatusMonitorJobScheduler {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJobScheduler.class);

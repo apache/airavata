@@ -66,12 +66,12 @@ import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.util.GroupComputeResourcePreferenceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -90,11 +90,11 @@ public class JSONUtil {
                 String key = fieldNames.next();
                 JsonNode valueOrig = originalJsonObject.get(key);
                 JsonNode valueNew = newJsonObject.get(key);
-                
+
                 if (valueNew == null) {
                     return false;
                 }
-                
+
                 if (valueOrig.isObject() && valueNew.isObject()) {
                     if (!isEqual((ObjectNode) valueOrig, (ObjectNode) valueNew)) {
                         return false;
