@@ -36,10 +36,7 @@ under the License.
 
   <dependencies>
     <!-- Core libraries -->
-    <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>libthrift</artifactId>
-    </dependency>
+    <!-- Thrift dependency moved to thrift-api module -->
     <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-framework</artifactId>
@@ -151,6 +148,11 @@ under the License.
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -302,6 +304,14 @@ under the License.
           <groupId>org.eclipse.angus</groupId>
           <artifactId>angus-mail</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.jboss.jandex</groupId>
+          <artifactId>jandex</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -355,10 +365,16 @@ under the License.
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>io.smallrye</groupId>
+          <groupId>org.jboss.jandex</groupId>
           <artifactId>jandex</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- Use io.smallrye jandex 3.x for Hibernate 6.6 compatibility -->
+    <dependency>
+      <groupId>io.smallrye</groupId>
+      <artifactId>jandex</artifactId>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -388,53 +404,7 @@ under the License.
         </executions>
       </plugin>
 
-      <!-- Consolidated Thrift code generation -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-thrift-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <mkdir dir="${project.build.directory}/generated-sources/thrift" />
-                <exec executable="thrift">
-                  <arg value="-r" />
-                  <arg value="--gen" />
-                  <arg value="java:beans,jakarta_annotations=undated" />
-                  <arg value="-out" />
-                  <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg value="${project.basedir}/../thrift-interface-descriptions/stubs_java.thrift" />
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Add generated sources -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-thrift-generated-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/thrift</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      <!-- Thrift code generation moved to thrift-api module -->
 
       <!-- Strip generated date annotations -->
       <plugin>

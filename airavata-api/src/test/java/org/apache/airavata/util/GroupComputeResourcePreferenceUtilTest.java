@@ -19,49 +19,41 @@
 */
 package org.apache.airavata.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.common.model.ComputeResourceReservation;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
-import org.apache.airavata.util.GroupComputeResourcePreferenceUtil;
+import org.apache.airavata.common.model.SlurmComputeResourcePreference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * GroupComputeResourcePreferenceUtilTest
  */
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            GroupComputeResourcePreferenceUtilTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
-        })
-@TestPropertySource(locations = "classpath:airavata.properties")
 public class GroupComputeResourcePreferenceUtilTest {
-
-    public GroupComputeResourcePreferenceUtilTest() {
-        // Spring Boot test - no dependencies to inject for this utility test
-    }
 
     @Test
     public void testGetActiveReservationForQueue() {
 
         final GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.SLURM);
         final ComputeResourceReservation res1 = new ComputeResourceReservation(
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 10000,
                 System.currentTimeMillis() + 10000);
-        //        pref.addToReservations(res1); FIXME
+
+        SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
+        slurm.setReservations(new ArrayList<>());
+        slurm.getReservations().add(res1);
+        EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+        esp.setSlurm(slurm);
+        pref.setSpecificPreferences(esp);
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
@@ -84,13 +76,20 @@ public class GroupComputeResourcePreferenceUtilTest {
     public void testGetActiveReservationForQueueWhenReservationIsExpired() {
 
         final GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.SLURM);
         final ComputeResourceReservation res1 = new ComputeResourceReservation(
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 20000,
                 System.currentTimeMillis() - 10000);
-        //        pref.addToReservations(res1); FIXME
+
+        SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
+        slurm.setReservations(new ArrayList<>());
+        slurm.getReservations().add(res1);
+        EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+        esp.setSlurm(slurm);
+        pref.setSpecificPreferences(esp);
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
@@ -102,13 +101,20 @@ public class GroupComputeResourcePreferenceUtilTest {
     public void testGetActiveReservationForQueueWhenReservationActiveButWrongQueue() {
 
         final GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.SLURM);
         final ComputeResourceReservation res1 = new ComputeResourceReservation(
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 10000,
                 System.currentTimeMillis() + 10000);
-        //        pref.addToReservations(res1); FIXME
+
+        SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
+        slurm.setReservations(new ArrayList<>());
+        slurm.getReservations().add(res1);
+        EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+        esp.setSlurm(slurm);
+        pref.setSpecificPreferences(esp);
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "thirdqueue");
@@ -119,7 +125,6 @@ public class GroupComputeResourcePreferenceUtilTest {
     @Test
     public void testGetActiveReservationWithRandomOrder() {
 
-        final GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
         final ComputeResourceReservation res1 = new ComputeResourceReservation(
                 "id1",
                 "res1",
@@ -150,25 +155,21 @@ public class GroupComputeResourcePreferenceUtilTest {
         final List<ComputeResourceReservation> reservations = Arrays.asList(res1, res2, res3, res4);
 
         Collections.shuffle(reservations);
-        //        pref.setReservations(reservations); FIXME
+
+        final GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.SLURM);
+        SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
+        slurm.setReservations(new ArrayList<>());
+        for (ComputeResourceReservation res : reservations) {
+            slurm.getReservations().add(res);
+        }
+        EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences();
+        esp.setSlurm(slurm);
+        pref.setSpecificPreferences(esp);
 
         final ComputeResourceReservation result =
                 GroupComputeResourcePreferenceUtil.getActiveReservationForQueue(pref, "cpu");
 
         Assertions.assertSame(res1, result);
     }
-
-    @org.springframework.context.annotation.Configuration
-    @ComponentScan(
-            basePackages = {"org.apache.airavata.model", "org.apache.airavata.config"},
-            excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
-                        })
-            })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
-    static class TestConfiguration {}
 }

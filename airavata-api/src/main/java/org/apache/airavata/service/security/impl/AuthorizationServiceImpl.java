@@ -144,7 +144,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             throws InvalidRequestException, AuthorizationException, AiravataSystemException {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
-        if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
+        if (experiment.getUserConfigurationData().getGroupResourceProfileId() == null) {
             throw new InvalidRequestException("Experiment doesn't have groupResourceProfileId");
         }
 
@@ -170,7 +170,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =
                 applicationService.getApplicationDeployments(appModuleId);
 
-        if (!experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
+        if (!experiment.getUserConfigurationData().getAiravataAutoSchedule()) {
             final String resourceHostId = experiment
                     .getUserConfigurationData()
                     .getComputationalResourceScheduling()

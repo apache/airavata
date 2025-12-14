@@ -19,8 +19,7 @@
 */
 package org.apache.airavata.sharing.messaging;
 
-import org.apache.airavata.api.thrift.util.ThriftDataModelConversion;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.DBEventMessage;
@@ -49,6 +48,7 @@ import org.springframework.stereotype.Component;
 public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final SharingRegistryService sharingRegistryService;
 
@@ -62,11 +62,8 @@ public class SharingServiceDBEventHandler implements MessageHandler {
         log.info("New DB Event message to sharing service.");
 
         try {
-
-            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-
-            DBEventMessage dbEventMessage = new DBEventMessage();
-            ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
+            // DBEventMessage now extends MessagingEvent, so we can cast directly
+            DBEventMessage dbEventMessage = (DBEventMessage) messageContext.getEvent();
 
             log.info("DB Event message to sharing service from " + dbEventMessage.getPublisherService());
 
@@ -80,14 +77,26 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         log.info("User profile specific DB Event communicated by "
                                 + dbEventMessage.getPublisherService());
 
-                        UserProfile userProfile = new UserProfile();
-                        ThriftUtils.createThriftFromBytes(
-                                dBEventMessageContext
-                                        .getPublisher()
-                                        .getPublisherContext()
-                                        .getEntityDataModel(),
-                                userProfile);
-                        User user = ThriftDataModelConversion.getUser(userProfile);
+                        // Deserialize JSON to domain model
+                        java.nio.ByteBuffer entityDataBuffer = dBEventMessageContext
+                                .getPublisher()
+                                .getPublisherContext()
+                                .getEntityDataModel();
+                        byte[] entityDataBytes = new byte[entityDataBuffer.remaining()];
+                        entityDataBuffer.duplicate().get(entityDataBytes);
+
+                        UserProfile userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
+                        // Convert UserProfile to User
+                        User user = new User();
+                        user.setUserId(userProfile.getUserId());
+                        user.setDomainId(userProfile.getGatewayId());
+                        user.setUserName(userProfile.getUserId());
+                        if (userProfile.getEmails() != null
+                                && !userProfile.getEmails().isEmpty()) {
+                            user.setEmail(userProfile.getEmails().get(0));
+                        }
+                        user.setFirstName(userProfile.getFirstName());
+                        user.setLastName(userProfile.getLastName());
 
                         switch (dBEventMessageContext
                                 .getPublisher()
@@ -107,11 +116,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                                 break;
 
-                            case READ:
-                                // FIXME: Remove if not required - READ permission handling may be redundant
-                                // Verify if this case is needed after reviewing permission model
-                                break;
-
                             case DELETE:
                                 log.info("Deleting user. User Id : " + user.getUserId());
 
@@ -125,13 +129,15 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                     case TENANT:
                         log.info("Tenant specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
-                        Gateway gateway = new Gateway();
-                        ThriftUtils.createThriftFromBytes(
-                                dBEventMessageContext
-                                        .getPublisher()
-                                        .getPublisherContext()
-                                        .getEntityDataModel(),
-                                gateway);
+                        // Deserialize JSON to domain model
+                        java.nio.ByteBuffer tenantEntityDataBuffer = dBEventMessageContext
+                                .getPublisher()
+                                .getPublisherContext()
+                                .getEntityDataModel();
+                        byte[] tenantEntityDataBytes = new byte[tenantEntityDataBuffer.remaining()];
+                        tenantEntityDataBuffer.duplicate().get(tenantEntityDataBytes);
+
+                        Gateway gateway = objectMapper.readValue(tenantEntityDataBytes, Gateway.class);
 
                         switch (dBEventMessageContext
                                 .getPublisher()
@@ -143,7 +149,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 if (sharingRegistryService.isDomainExists(gateway.getGatewayId())) {
                                     break;
                                 }
-                            case READ:
                             case DELETE:
                                 // READ and DELETE operations don't require domain creation
                                 break;
@@ -315,13 +320,15 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                     case PROJECT:
                         log.info("Project specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
-                        Project project = new Project();
-                        ThriftUtils.createThriftFromBytes(
-                                dBEventMessageContext
-                                        .getPublisher()
-                                        .getPublisherContext()
-                                        .getEntityDataModel(),
-                                project);
+                        // Deserialize JSON to domain model
+                        java.nio.ByteBuffer projectEntityDataBuffer = dBEventMessageContext
+                                .getPublisher()
+                                .getPublisherContext()
+                                .getEntityDataModel();
+                        byte[] projectEntityDataBytes = new byte[projectEntityDataBuffer.remaining()];
+                        projectEntityDataBuffer.duplicate().get(projectEntityDataBytes);
+
+                        Project project = objectMapper.readValue(projectEntityDataBytes, Project.class);
                         final String domainId = project.getGatewayId();
                         final String entityId = project.getProjectID();
 
@@ -349,10 +356,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                     log.info("Project entity updated. Entity Id : " + entityId);
                                 }
 
-                                break;
-
-                            case READ:
-                                log.info("Ignoring READ crud operation for entity type PROJECT");
                                 break;
 
                             case DELETE:

@@ -31,9 +31,6 @@ import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TFieldIdEnum;
-import org.apache.thrift.meta_data.FieldMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +44,7 @@ public class CustomBeanFactory implements BeanFactory {
         Class<?> destClass = MappingUtils.loadClass(targetBeanId, beanContainer);
         if (GroupComputeResourcePrefEntity.class.equals(destClass)
                 && source instanceof GroupComputeResourcePreference pref) {
-            ComputeResourceType resourceType = pref.isSetResourceType() ? pref.getResourceType() : null;
+            ComputeResourceType resourceType = pref.getResourceType();
             if (resourceType == ComputeResourceType.AWS) {
                 destClass = AWSGroupComputeResourcePrefEntity.class;
             } else {
@@ -58,11 +55,28 @@ public class CustomBeanFactory implements BeanFactory {
             logger.debug("Creating bean of type {}", destClass.getSimpleName());
         }
         result = ReflectionUtils.newInstance(destClass);
-        if (result instanceof TBase) {
-
-            callSettersOnThriftFieldsWithDefaults((TBase) result);
+        // Check if result is a Thrift model using reflection (to avoid compile-time dependency)
+        if (isThriftModel(result)) {
+            callSettersOnThriftFieldsWithDefaults(result);
         }
         return result;
+    }
+
+    /**
+     * Check if an object is a Thrift model using reflection (to avoid compile-time dependency on Thrift).
+     */
+    private boolean isThriftModel(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        try {
+            // Check if the class implements TBase interface (Thrift models implement this)
+            Class<?> tBaseClass = Class.forName("org.apache.thrift.TBase");
+            return tBaseClass.isAssignableFrom(obj.getClass());
+        } catch (ClassNotFoundException e) {
+            // Thrift library not available, so it's not a Thrift model
+            return false;
+        }
     }
 
     /**
@@ -81,33 +95,50 @@ public class CustomBeanFactory implements BeanFactory {
      * <p>
      * See AIRAVATA-3268 and AIRAVATA-3328 for more information.
      *
-     * @param <T>
-     * @param <F>
      * @param instance
      */
-    private <T extends TBase<T, F>, F extends TFieldIdEnum> void callSettersOnThriftFieldsWithDefaults(
-            TBase<T, F> instance) {
+    private void callSettersOnThriftFieldsWithDefaults(Object instance) {
 
         try {
+            // Use reflection to access Thrift-specific methods and classes
+            Class<?> tBaseClass = Class.forName("org.apache.thrift.TBase");
+            Class<?> tFieldIdEnumClass = Class.forName("org.apache.thrift.TFieldIdEnum");
+            Class<?> fieldMetaDataClass = Class.forName("org.apache.thrift.meta_data.FieldMetaData");
+
             Field metaDataMapField = instance.getClass().getField("metaDataMap");
-            Map<F, FieldMetaData> metaDataMap = (Map<F, FieldMetaData>) metaDataMapField.get(null);
-            for (Entry<F, FieldMetaData> metaDataEntry : metaDataMap.entrySet()) {
+            @SuppressWarnings("unchecked")
+            Map<Object, Object> metaDataMap = (Map<Object, Object>) metaDataMapField.get(null);
+
+            for (Entry<Object, Object> metaDataEntry : metaDataMap.entrySet()) {
+                Object fieldMetaData = metaDataEntry.getValue();
+                String fieldName =
+                        (String) fieldMetaDataClass.getMethod("getFieldName").invoke(fieldMetaData);
+
                 if (logger.isDebugEnabled()) {
-                    logger.debug("processing field {}", metaDataEntry.getValue().fieldName);
+                    logger.debug("processing field {}", fieldName);
                 }
-                Object fieldValue = instance.getFieldValue(metaDataEntry.getKey());
+
+                Object fieldIdEnum = metaDataEntry.getKey();
+                java.lang.reflect.Method getFieldValueMethod = tBaseClass.getMethod("getFieldValue", tFieldIdEnumClass);
+                Object fieldValue = getFieldValueMethod.invoke(instance, fieldIdEnum);
+
                 if (fieldValue != null) {
                     if (logger.isDebugEnabled()) {
                         logger.debug(
                                 "field {} has a default value [{}], calling setter to force the field to be set",
-                                metaDataEntry.getValue().fieldName,
+                                fieldName,
                                 fieldValue);
                     }
-                    instance.setFieldValue(metaDataEntry.getKey(), fieldValue);
+                    java.lang.reflect.Method setFieldValueMethod =
+                            tBaseClass.getMethod("setFieldValue", tFieldIdEnumClass, Object.class);
+                    setFieldValueMethod.invoke(instance, fieldIdEnum, fieldValue);
                 }
             }
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            MappingUtils.throwMappingException(e);
+        } catch (Exception e) {
+            // If Thrift classes are not available or reflection fails, skip this optimization
+            if (logger.isDebugEnabled()) {
+                logger.debug("Could not call setters on Thrift fields with defaults (Thrift may not be available)", e);
+            }
         }
     }
 }

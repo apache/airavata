@@ -76,7 +76,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -86,11 +86,11 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -122,8 +122,12 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
         ComputeResourceDescription description = new ComputeResourceDescription();
         description.setHostName("localhost");
-        description.addToBatchQueues(new BatchQueue("queue1"));
-        description.addToBatchQueues(new BatchQueue("queue2"));
+        var queue1 = new BatchQueue();
+        queue1.setQueueName("queue1");
+        var queue2 = new BatchQueue();
+        queue2.setQueueName("queue2");
+        description.getBatchQueues().add(queue1);
+        description.getBatchQueues().add(queue2);
         computeResourceId = computeResourceService.addComputeResource(description);
     }
 

@@ -19,12 +19,17 @@
 */
 package org.apache.airavata.registry.utils;
 
-import org.apache.airavata.common.model.UserConfigurationDataModel;
-import org.apache.thrift.TFieldRequirementType;
+import com.github.dozermapper.core.config.BeanContainer;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
@@ -32,7 +37,8 @@ import org.springframework.test.context.TestPropertySource;
         classes = {org.apache.airavata.config.JpaConfig.class, CustomBeanFactoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class CustomBeanFactoryTest {
@@ -42,44 +48,74 @@ public class CustomBeanFactoryTest {
     }
 
     @Test
-    public void testRequiredFieldWithDefault() {
-        Assertions.assertEquals(
-                TFieldRequirementType.REQUIRED,
-                UserConfigurationDataModel.metaDataMap.get(UserConfigurationDataModel._Fields.AIRAVATA_AUTO_SCHEDULE)
-                        .requirementType);
-        UserConfigurationDataModel fromConstructor = new UserConfigurationDataModel();
-        Assertions.assertFalse(fromConstructor.isSetAiravataAutoSchedule());
+    public void testGroupComputeResourcePreferenceToSlurmEntity() {
+        // Create a GroupComputeResourcePreference with SLURM resource type
+        GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.SLURM);
+        pref.setComputeResourceId("test-resource-id");
+        pref.setGroupResourceProfileId("test-profile-id");
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
-        UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
-        Assertions.assertTrue(fromFactory.isSetAiravataAutoSchedule());
+        BeanContainer beanContainer = new BeanContainer();
+
+        GroupComputeResourcePrefEntity entity = (GroupComputeResourcePrefEntity) customBeanFactory.createBean(
+                pref,
+                GroupComputeResourcePreference.class,
+                GroupComputeResourcePrefEntity.class.getName(),
+                beanContainer);
+
+        // Should create SlurmGroupComputeResourcePrefEntity, not base class
+        Assertions.assertNotNull(entity);
+        Assertions.assertTrue(entity instanceof SlurmGroupComputeResourcePrefEntity);
+        Assertions.assertFalse(entity instanceof AWSGroupComputeResourcePrefEntity);
     }
 
     @Test
-    public void testOptionalFieldWithDefault() {
-        Assertions.assertEquals(
-                TFieldRequirementType.OPTIONAL,
-                UserConfigurationDataModel.metaDataMap.get(UserConfigurationDataModel._Fields.SHARE_EXPERIMENT_PUBLICLY)
-                        .requirementType);
-        UserConfigurationDataModel fromConstructor = new UserConfigurationDataModel();
-        Assertions.assertFalse(fromConstructor.isSetShareExperimentPublicly());
+    public void testGroupComputeResourcePreferenceToAWSEntity() {
+        // Create a GroupComputeResourcePreference with AWS resource type
+        GroupComputeResourcePreference pref = new GroupComputeResourcePreference();
+        pref.setResourceType(ComputeResourceType.AWS);
+        pref.setComputeResourceId("test-resource-id");
+        pref.setGroupResourceProfileId("test-profile-id");
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
-        UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
-        Assertions.assertTrue(fromFactory.isSetShareExperimentPublicly());
+        BeanContainer beanContainer = new BeanContainer();
+
+        GroupComputeResourcePrefEntity entity = (GroupComputeResourcePrefEntity) customBeanFactory.createBean(
+                pref,
+                GroupComputeResourcePreference.class,
+                GroupComputeResourcePrefEntity.class.getName(),
+                beanContainer);
+
+        // Should create AWSGroupComputeResourcePrefEntity, not base class
+        Assertions.assertNotNull(entity);
+        Assertions.assertTrue(entity instanceof AWSGroupComputeResourcePrefEntity);
+        Assertions.assertFalse(entity instanceof SlurmGroupComputeResourcePrefEntity);
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Test
+    public void testDomainModelCreation() {
+        // Test that domain models (non-Thrift) are created correctly
+        CustomBeanFactory customBeanFactory = new CustomBeanFactory();
+        BeanContainer beanContainer = new BeanContainer();
+
+        GroupComputeResourcePreference pref = (GroupComputeResourcePreference)
+                customBeanFactory.createBean(null, null, GroupComputeResourcePreference.class.getName(), beanContainer);
+
+        Assertions.assertNotNull(pref);
+        Assertions.assertInstanceOf(GroupComputeResourcePreference.class, pref);
+    }
+
+    @Configuration
     @ComponentScan(
             basePackages = {"org.apache.airavata.registry", "org.apache.airavata.config"},
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

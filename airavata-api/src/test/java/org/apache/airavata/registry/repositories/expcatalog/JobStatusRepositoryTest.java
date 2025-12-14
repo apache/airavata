@@ -83,7 +83,7 @@ public class JobStatusRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -93,11 +93,11 @@ public class JobStatusRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -158,7 +158,8 @@ public class JobStatusRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
 
-        ProcessModel processModel = new ProcessModel(null, experimentId);
+        ProcessModel processModel = new ProcessModel();
+        processModel.setExperimentId(experimentId);
         String processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();

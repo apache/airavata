@@ -25,7 +25,7 @@ include "data_movement_models.thrift"
 include "job_model.thrift"
 include "status_models.thrift"
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.Task
 namespace cpp apache.airavata.model.task
 namespace py airavata.model.task

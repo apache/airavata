@@ -21,7 +21,7 @@
 include "../airavata-apis/airavata_commons.thrift"
 include "application_io_models.thrift"
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.Workflow
 namespace cpp apache.airavata.model.workflow
 namespace py airavata.model.workflow

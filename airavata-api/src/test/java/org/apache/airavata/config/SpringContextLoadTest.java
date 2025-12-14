@@ -35,6 +35,7 @@ import org.apache.airavata.sharing.repositories.DomainRepository;
 import org.apache.airavata.sharing.repositories.EntityRepository;
 import org.apache.airavata.sharing.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -45,74 +46,74 @@ import org.springframework.test.context.TestPropertySource;
  * and all JPA repositories and entity manager factories are properly configured.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataServerProperties.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
-        })
+        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true"})
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class SpringContextLoadTest {
 
-    private final ApplicationContext applicationContext;
-    private final EntityManagerFactory profileServiceEntityManagerFactory;
-    private final EntityManagerFactory appCatalogEntityManagerFactory;
-    private final EntityManagerFactory expCatalogEntityManagerFactory;
-    private final EntityManagerFactory replicaCatalogEntityManagerFactory;
-    private final EntityManagerFactory workflowCatalogEntityManagerFactory;
-    private final EntityManagerFactory sharingRegistryEntityManagerFactory;
-    private final EntityManagerFactory credentialStoreEntityManagerFactory;
-    private final UserProfileRepository userProfileRepository;
-    private final TenantProfileRepository tenantProfileRepository;
-    private final ComputeResourceRepository computeResourceRepository;
-    private final ExperimentRepository experimentRepository;
-    private final DataProductRepository dataProductRepository;
-    private final WorkflowRepository workflowRepository;
-    private final DomainRepository domainRepository;
-    private final EntityRepository entityRepository;
-    private final UserRepository sharingUserRepository;
-    private final CredentialRepository credentialRepository;
-    private final CommunityUserRepository communityUserRepository;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    public SpringContextLoadTest(
-            ApplicationContext applicationContext,
-            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory profileServiceEntityManagerFactory,
-            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory appCatalogEntityManagerFactory,
-            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory expCatalogEntityManagerFactory,
-            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory replicaCatalogEntityManagerFactory,
-            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory workflowCatalogEntityManagerFactory,
-            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory sharingRegistryEntityManagerFactory,
-            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory credentialStoreEntityManagerFactory,
-            UserProfileRepository userProfileRepository,
-            TenantProfileRepository tenantProfileRepository,
-            ComputeResourceRepository computeResourceRepository,
-            ExperimentRepository experimentRepository,
-            DataProductRepository dataProductRepository,
-            WorkflowRepository workflowRepository,
-            DomainRepository domainRepository,
-            EntityRepository entityRepository,
-            UserRepository sharingUserRepository,
-            CredentialRepository credentialRepository,
-            CommunityUserRepository communityUserRepository) {
-        this.applicationContext = applicationContext;
-        this.profileServiceEntityManagerFactory = profileServiceEntityManagerFactory;
-        this.appCatalogEntityManagerFactory = appCatalogEntityManagerFactory;
-        this.expCatalogEntityManagerFactory = expCatalogEntityManagerFactory;
-        this.replicaCatalogEntityManagerFactory = replicaCatalogEntityManagerFactory;
-        this.workflowCatalogEntityManagerFactory = workflowCatalogEntityManagerFactory;
-        this.sharingRegistryEntityManagerFactory = sharingRegistryEntityManagerFactory;
-        this.credentialStoreEntityManagerFactory = credentialStoreEntityManagerFactory;
-        this.userProfileRepository = userProfileRepository;
-        this.tenantProfileRepository = tenantProfileRepository;
-        this.computeResourceRepository = computeResourceRepository;
-        this.experimentRepository = experimentRepository;
-        this.dataProductRepository = dataProductRepository;
-        this.workflowRepository = workflowRepository;
-        this.domainRepository = domainRepository;
-        this.entityRepository = entityRepository;
-        this.sharingUserRepository = sharingUserRepository;
-        this.credentialRepository = credentialRepository;
-        this.communityUserRepository = communityUserRepository;
-    }
+    @Autowired
+    @Qualifier("profileServiceEntityManagerFactory")
+    private EntityManagerFactory profileServiceEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("appCatalogEntityManagerFactory")
+    private EntityManagerFactory appCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("expCatalogEntityManagerFactory")
+    private EntityManagerFactory expCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("replicaCatalogEntityManagerFactory")
+    private EntityManagerFactory replicaCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("workflowCatalogEntityManagerFactory")
+    private EntityManagerFactory workflowCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("sharingRegistryEntityManagerFactory")
+    private EntityManagerFactory sharingRegistryEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("credentialStoreEntityManagerFactory")
+    private EntityManagerFactory credentialStoreEntityManagerFactory;
+
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private TenantProfileRepository tenantProfileRepository;
+
+    @Autowired
+    private ComputeResourceRepository computeResourceRepository;
+
+    @Autowired
+    private ExperimentRepository experimentRepository;
+
+    @Autowired
+    private DataProductRepository dataProductRepository;
+
+    @Autowired
+    private WorkflowRepository workflowRepository;
+
+    @Autowired
+    private DomainRepository domainRepository;
+
+    @Autowired
+    private EntityRepository entityRepository;
+
+    @Autowired
+    private UserRepository sharingUserRepository;
+
+    @Autowired
+    private CredentialRepository credentialRepository;
+
+    @Autowired
+    private CommunityUserRepository communityUserRepository;
 
     @Test
     public void testApplicationContextLoads() {

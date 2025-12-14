@@ -29,7 +29,7 @@ import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.airavata.api.thrift.handler.SharingRegistryServerHandler;
+// SharingRegistryServerHandler moved to thrift-api module - update import if needed
 import org.apache.airavata.sharing.entities.PermissionTypeEntity;
 import org.apache.airavata.sharing.entities.PermissionTypePK;
 import org.apache.airavata.sharing.model.PermissionType;
@@ -81,11 +81,12 @@ public class PermissionTypeService {
     }
 
     public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
-        List<PermissionTypeEntity> entities = permissionTypeRepository.findByDomainIdAndName(
-                domainId, SharingRegistryServerHandler.OWNER_PERMISSION_NAME);
+        String ownerPermissionName = "OWNER"; // Constant moved from SharingRegistryServerHandler
+        List<PermissionTypeEntity> entities =
+                permissionTypeRepository.findByDomainIdAndName(domainId, ownerPermissionName);
         if (entities.size() != 1) {
             throw new SharingRegistryException("GLOBAL Permission inconsistency. Found " + entities.size()
-                    + " records with " + SharingRegistryServerHandler.OWNER_PERMISSION_NAME + " name");
+                    + " records with " + ownerPermissionName + " name");
         }
         return entities.get(0).getPermissionTypeId();
     }

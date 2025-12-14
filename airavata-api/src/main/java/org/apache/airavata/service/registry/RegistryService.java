@@ -265,7 +265,7 @@ public class RegistryService {
     }
 
     public String getAPIVersion() {
-        return org.apache.airavata.registry.model.registry_apiConstants.REGISTRY_API_VERSION;
+        return org.apache.airavata.registry.model.RegistryApiConstants.REGISTRY_API_VERSION;
     }
 
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException {
@@ -2044,7 +2044,7 @@ public class RegistryService {
                 try {
                     ComputeResourceDescription computeResourceDescription =
                             computeResourceService.getComputeResource(compResourceId);
-                    if (!computeResourceDescription.isEnabled()) {
+                    if (!computeResourceDescription.getEnabled()) {
                         logger.error("Compute Resource is not enabled by the Admin!");
                         throw new RegistryException("Compute Resource is not enabled by the Admin!");
                     }
@@ -2062,7 +2062,7 @@ public class RegistryService {
                         ComputeResourceDescription computeResourceDescription =
                                 computeResourceService.getComputeResource(
                                         computationalResourceScheduling.getResourceHostId());
-                        if (!computeResourceDescription.isEnabled()) {
+                        if (!computeResourceDescription.getEnabled()) {
                             logger.error(
                                     "Compute Resource  with id" + computationalResourceScheduling.getResourceHostId()
                                             + "" + " is not enabled by the Admin!");
@@ -2200,7 +2200,7 @@ public class RegistryService {
                             try {
                                 ComputeResourceDescription computeResourceDescription =
                                         computeResourceService.getComputeResource(compResourceId);
-                                if (!computeResourceDescription.isEnabled()) {
+                                if (!computeResourceDescription.getEnabled()) {
                                     logger.error("Compute Resource is not enabled by the Admin!");
                                     throw new RegistryException("Compute Resource is not enabled by the Admin!");
                                 }
@@ -2618,7 +2618,10 @@ public class RegistryService {
                 throw new AppCatalogException("Gateway resource profile '" + gatewayID + "' does not exist!!!");
             }
             GatewayResourceProfile profile = gwyResourceProfileService.getGatewayProfile(gatewayID);
-            profile.addToComputeResourcePreferences(computeResourcePreference);
+            if (profile.getComputeResourcePreferences() == null) {
+                profile.setComputeResourcePreferences(new java.util.ArrayList<>());
+            }
+            profile.getComputeResourcePreferences().add(computeResourcePreference);
             gwyResourceProfileService.updateGatewayResourceProfile(profile);
             logger.debug("Airavata added gateway compute resource preference with gateway id : " + gatewayID
                     + " and for compute resource id : " + computeResourceId);
@@ -2679,7 +2682,10 @@ public class RegistryService {
             }
             GatewayResourceProfile profile = gwyResourceProfileService.getGatewayProfile(gatewayID);
             dataStoragePreference.setStorageResourceId(storageResourceId);
-            profile.addToStoragePreferences(dataStoragePreference);
+            if (profile.getStoragePreferences() == null) {
+                profile.setStoragePreferences(new java.util.ArrayList<>());
+            }
+            profile.getStoragePreferences().add(dataStoragePreference);
             gwyResourceProfileService.updateGatewayResourceProfile(profile);
             logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
                     + " and for storage resource id : " + storageResourceId);
@@ -3433,7 +3439,10 @@ public class RegistryService {
                         + gatewayID + "' does not exist!!!");
             }
             UserResourceProfile profile = userResourceProfileService.getUserResourceProfile(userId, gatewayID);
-            profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
+            if (profile.getUserComputeResourcePreferences() == null) {
+                profile.setUserComputeResourcePreferences(new java.util.ArrayList<>());
+            }
+            profile.getUserComputeResourcePreferences().add(userComputeResourcePreference);
             userResourceProfileService.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata added User compute resource preference with gateway id : " + gatewayID
                     + " and for compute resource id : " + computeResourceId);
@@ -3574,7 +3583,10 @@ public class RegistryService {
             }
             UserResourceProfile profile = userResourceProfileService.getUserResourceProfile(userId, gatewayID);
             dataStoragePreference.setStorageResourceId(storageResourceId);
-            profile.addToUserStoragePreferences(dataStoragePreference);
+            if (profile.getUserStoragePreferences() == null) {
+                profile.setUserStoragePreferences(new java.util.ArrayList<>());
+            }
+            profile.getUserStoragePreferences().add(dataStoragePreference);
             userResourceProfileService.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID
                     + " and for storage resource id : " + storageResourceId);

@@ -249,7 +249,7 @@ public class GroupManagerService {
         groupModel.setAdmins(admins);
 
         sharingService.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream()
-                .forEach(user -> groupModel.addToMembers(user.getUserId()));
+                .forEach(user -> groupModel.getMembers().add(user.getUserId()));
         return groupModel;
     }
 
@@ -272,7 +272,7 @@ public class GroupManagerService {
                 user.setUserName(userProfile.getUserId());
                 user.setCreatedTime(userProfile.getCreationTime());
                 user.setEmail(
-                        userProfile.getEmailsSize() > 0
+                        userProfile.getEmails().size() > 0
                                 ? userProfile.getEmails().get(0)
                                 : null);
                 user.setFirstName(userProfile.getFirstName());

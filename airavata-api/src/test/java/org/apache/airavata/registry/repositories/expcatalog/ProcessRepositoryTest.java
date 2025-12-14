@@ -86,7 +86,7 @@ public class ProcessRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -96,11 +96,11 @@ public class ProcessRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -152,16 +152,18 @@ public class ProcessRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
 
-        ProcessModel processModel = new ProcessModel(null, experimentId);
+        ProcessModel processModel = new ProcessModel();
+        processModel.setExperimentId(experimentId);
 
         TaskModel task = new TaskModel();
         task.setTaskId("task-id");
         task.setTaskType(TaskTypes.ENV_SETUP);
-        processModel.addToTasks(task);
+        processModel.getTasks().add(task);
 
-        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        TaskStatus taskStatus = new TaskStatus();
+        taskStatus.setState(TaskState.CREATED);
         taskStatus.setStatusId("task-status-id");
-        task.addToTaskStatuses(taskStatus);
+        task.getTaskStatuses().add(taskStatus);
 
         String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
@@ -169,8 +171,8 @@ public class ProcessRepositoryTest extends TestBase {
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
-        processModel.addToEmailAddresses("notify@example.com");
-        processModel.addToEmailAddresses("notify1@example.com");
+        processModel.getEmailAddresses().add("notify@example.com");
+        processModel.getEmailAddresses().add("notify1@example.com");
 
         TaskModel jobSubmissionTask = new TaskModel();
         jobSubmissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
@@ -181,22 +183,23 @@ public class ProcessRepositoryTest extends TestBase {
         job.setJobDescription("job-description");
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
         jobStatus.setStatusId("submitted-job-status-id");
-        job.addToJobStatuses(jobStatus);
-        jobSubmissionTask.addToJobs(job);
-        processModel.addToTasks(jobSubmissionTask);
+        job.getJobStatuses().add(jobStatus);
+        jobSubmissionTask.getJobs().add(job);
+        processModel.getTasks().add(jobSubmissionTask);
         processService.updateProcess(processModel, processId);
 
         ProcessModel retrievedProcess = processService.getProcess(processId);
         assertEquals(experimentId, retrievedProcess.getExperimentId());
         assertEquals("detail", retrievedProcess.getProcessDetail());
-        assertTrue(retrievedProcess.isUseUserCRPref());
-        assertEquals(1, retrievedProcess.getProcessStatusesSize(), "Added process should automatically have 1 status");
+        assertTrue(retrievedProcess.getUseUserCRPref());
+        assertEquals(
+                1, retrievedProcess.getProcessStatuses().size(), "Added process should automatically have 1 status");
         assertEquals(
                 ProcessState.CREATED,
                 retrievedProcess.getProcessStatuses().get(0).getState(),
                 "Added process should automatically have 1 status that is CREATED");
-        assertEquals(2, retrievedProcess.getTasksSize());
-        assertEquals(2, retrievedProcess.getEmailAddressesSize());
+        assertEquals(2, retrievedProcess.getTasks().size());
+        assertEquals(2, retrievedProcess.getEmailAddresses().size());
         assertEquals("notify@example.com", retrievedProcess.getEmailAddresses().get(0));
         assertEquals("notify1@example.com", retrievedProcess.getEmailAddresses().get(1));
 

@@ -46,6 +46,7 @@ import org.apache.airavata.common.exception.ExceptionHandlerUtil;
 import org.apache.airavata.common.exception.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.InvalidRequestException;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
@@ -105,7 +106,6 @@ import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -784,9 +784,9 @@ public class AiravataService {
             if (validateString(newExperimentName)) {
                 existingExperiment.setExperimentName(newExperimentName);
             }
-            existingExperiment.unsetErrors();
-            existingExperiment.unsetProcesses();
-            existingExperiment.unsetExperimentStatus();
+            existingExperiment.getErrors().clear();
+            existingExperiment.getProcesses().clear();
+            existingExperiment.getExperimentStatus().clear();
             if (existingExperiment.getUserConfigurationData() != null
                     && existingExperiment.getUserConfigurationData().getComputationalResourceScheduling() != null
                     && existingExperiment
@@ -801,7 +801,7 @@ public class AiravataService {
 
                 try {
                     var computeResource = getComputeResource(compResourceId);
-                    if (!computeResource.isEnabled()) {
+                    if (!computeResource.getEnabled()) {
                         existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
                     }
                 } catch (AiravataSystemException e) {
@@ -1397,7 +1397,7 @@ public class AiravataService {
             }
 
             existingInterface.setApplicationName(newApplicationName);
-            existingInterface.setApplicationInterfaceId(airavata_commonsConstants.DEFAULT_ID);
+            existingInterface.setApplicationInterfaceId(AiravataCommonsConstants.DEFAULT_ID);
             var interfaceId = registerApplicationInterface(gatewayId, existingInterface);
             logger.debug("Airavata cloned application interface : " + existingAppInterfaceID + " for gateway id : "
                     + gatewayId);
@@ -3274,8 +3274,8 @@ public class AiravataService {
             ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
             var jobs = getJobDetails(airavataExperimentId);
             boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
-                if (j.getJobStatusesSize() > 0) {
-                    return j.getJobStatuses().get(j.getJobStatusesSize() - 1).getJobState() == JobState.ACTIVE;
+                if (j.getJobStatuses().size() > 0) {
+                    return j.getJobStatuses().get(j.getJobStatuses().size() - 1).getJobState() == JobState.ACTIVE;
                 } else {
                     return false;
                 }
@@ -3292,10 +3292,10 @@ public class AiravataService {
             List<ProcessModel> intermediateOutputFetchProcesses = existingExperiment.getProcesses().stream()
                     .filter(p -> {
                         // Filter out completed or failed processes
-                        if (p.getProcessStatusesSize() > 0) {
-                            var latestStatus = p.getProcessStatuses().get(p.getProcessStatusesSize() - 1);
-                            if (latestStatus.getState() == ProcessState.COMPLETED
-                                    || latestStatus.getState() == ProcessState.FAILED) {
+                        var statuses = p.getProcessStatuses();
+                        if (statuses.size() > 0) {
+                            var latestState = statuses.get(statuses.size() - 1).getState();
+                            if (latestState == ProcessState.COMPLETED || latestState == ProcessState.FAILED) {
                                 return false;
                             }
                         }
@@ -3364,8 +3364,9 @@ public class AiravataService {
             ProcessStatus result;
             // Determine the most recent status for the most recent process
             ProcessModel process = mostRecentOutputFetchProcess.get();
-            if (process.getProcessStatusesSize() > 0) {
-                result = process.getProcessStatuses().get(process.getProcessStatusesSize() - 1);
+            var statuses = process.getProcessStatuses();
+            if (statuses.size() > 0) {
+                result = statuses.get(statuses.size() - 1);
             } else {
                 // Process has no statuses so it must be created but not yet running
                 result = new ProcessStatus(ProcessState.CREATED);
@@ -3627,7 +3628,7 @@ public class AiravataService {
             // For backwards compatibility, if there is no groupResourceProfileId, look up
             // one that is shared with the
             // user
-            if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
+            if (experiment.getUserConfigurationData().getGroupResourceProfileId() == null) {
                 List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
                 if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
                     // Just pick the first one
@@ -4222,7 +4223,11 @@ public class AiravataService {
                     logger.error(
                             "Invalid ResourcePermissionType : {}",
                             userPermission.getValue().toString());
-                    throw new AiravataSystemException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                    throw airavataSystemException(
+                            AiravataErrorType.UNSUPPORTED_OPERATION,
+                            "Invalid ResourcePermissionType : "
+                                    + userPermission.getValue().toString(),
+                            null);
                 }
             }
             return true;
@@ -4277,7 +4282,11 @@ public class AiravataService {
                     logger.error(
                             "Invalid ResourcePermissionType : {}",
                             groupPermission.getValue().toString());
-                    throw new AiravataSystemException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                    throw airavataSystemException(
+                            AiravataErrorType.UNSUPPORTED_OPERATION,
+                            "Invalid ResourcePermissionType : "
+                                    + groupPermission.getValue().toString(),
+                            null);
                 }
             }
             return true;
@@ -4324,7 +4333,11 @@ public class AiravataService {
                     logger.error(
                             "Invalid ResourcePermissionType : {}",
                             userPermission.getValue().toString());
-                    throw new AiravataSystemException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                    throw airavataSystemException(
+                            AiravataErrorType.UNSUPPORTED_OPERATION,
+                            "Invalid ResourcePermissionType : "
+                                    + userPermission.getValue().toString(),
+                            null);
                 }
             }
             return true;
@@ -4406,7 +4419,11 @@ public class AiravataService {
                     logger.error(
                             "Invalid ResourcePermissionType : {}",
                             groupPermission.getValue().toString());
-                    throw new AiravataSystemException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                    throw airavataSystemException(
+                            AiravataErrorType.UNSUPPORTED_OPERATION,
+                            "Invalid ResourcePermissionType : "
+                                    + groupPermission.getValue().toString(),
+                            null);
                 }
             }
             return true;

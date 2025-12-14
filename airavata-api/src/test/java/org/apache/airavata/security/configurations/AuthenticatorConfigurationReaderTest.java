@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
@@ -48,7 +49,8 @@ import org.springframework.test.context.TestPropertySource;
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class AuthenticatorConfigurationReaderTest {
@@ -126,15 +128,20 @@ public class AuthenticatorConfigurationReaderTest {
         assertFalse(AuthenticatorConfigurationReader.isAuthenticationEnabled());
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.security", "org.apache.airavata.config"},
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

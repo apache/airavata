@@ -87,7 +87,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -97,11 +97,11 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -311,15 +311,18 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         filters.remove(DBConstants.Experiment.USER_NAME);
         filters.remove(DBConstants.Experiment.EXECUTION_ID);
 
-        ExperimentStatus experimentStatusOne = new ExperimentStatus(ExperimentState.CREATED);
+        ExperimentStatus experimentStatusOne = new ExperimentStatus();
+        experimentStatusOne.setState(ExperimentState.CREATED);
         String statusIdOne = experimentStatusService.addExperimentStatus(experimentStatusOne, experimentIdOne);
         assertTrue(statusIdOne != null);
 
-        ExperimentStatus experimentStatusTwo = new ExperimentStatus(ExperimentState.EXECUTING);
+        ExperimentStatus experimentStatusTwo = new ExperimentStatus();
+        experimentStatusTwo.setState(ExperimentState.EXECUTING);
         String statusIdTwo = experimentStatusService.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
         assertTrue(statusIdTwo != null);
 
-        ExperimentStatus experimentStatusThree = new ExperimentStatus(ExperimentState.CANCELED);
+        ExperimentStatus experimentStatusThree = new ExperimentStatus();
+        experimentStatusThree.setState(ExperimentState.CANCELED);
         String statusIdThree = experimentStatusService.addExperimentStatus(experimentStatusThree, experimentIdThree);
         assertTrue(statusIdThree != null);
 
@@ -373,7 +376,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         // Should still return total count even when only returning the first page of experiment summaries
         assertEquals(3, experimentStatistics.getAllExperimentCount());
         // experiment 3 is most recent
-        assertEquals(1, experimentStatistics.getAllExperimentsSize());
+        assertEquals(1, experimentStatistics.getAllExperiments().size());
         assertEquals(
                 experimentIdThree,
                 experimentStatistics.getAllExperiments().get(0).getExperimentId());
@@ -383,7 +386,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         // Should still return total count even when only returning the first page of experiment summaries
         assertEquals(3, experimentStatistics.getAllExperimentCount());
         // experiment 2 is less recent
-        assertEquals(1, experimentStatistics.getAllExperimentsSize());
+        assertEquals(1, experimentStatistics.getAllExperiments().size());
         assertEquals(
                 experimentIdTwo, experimentStatistics.getAllExperiments().get(0).getExperimentId());
 

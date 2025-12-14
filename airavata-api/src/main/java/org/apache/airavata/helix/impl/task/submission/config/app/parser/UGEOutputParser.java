@@ -56,9 +56,13 @@ public class UGEOutputParser implements OutputParser {
         Pattern pattern = Pattern.compile("job_number:[\\s]+" + jobID);
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {
-            return new JobStatus(JobState.QUEUED); // fixme; return correct status.
+            var jobStatus = new JobStatus();
+            jobStatus.setJobState(JobState.QUEUED); // fixme; return correct status.
+            return jobStatus;
         }
-        return new JobStatus(JobState.UNKNOWN);
+        var jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.UNKNOWN);
+        return jobStatus;
     }
 
     public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
@@ -84,7 +88,9 @@ public class UGEOutputParser implements OutputParser {
                         // to avoid that we make a small tweek to the job status
                         columnList.set(4, "Er");
                     }
-                    statusMap.put(jobID, new JobStatus(JobState.valueOf(columnList.get(4))));
+                    var jobStatus = new JobStatus();
+                    jobStatus.setJobState(JobState.valueOf(columnList.get(4)));
+                    statusMap.put(jobID, jobStatus);
                     break;
                 }
             }

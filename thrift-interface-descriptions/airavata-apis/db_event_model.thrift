@@ -19,7 +19,7 @@
  */
 
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.Dbevent
 namespace py airavata.model.dbevent
 

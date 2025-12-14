@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
@@ -98,11 +99,11 @@ public class SSHAccountProvisionerFactoryTest {
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test3));
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
             basePackages = {"org.apache.airavata.accountprovisioning", "org.apache.airavata.config"},
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,

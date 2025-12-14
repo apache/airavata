@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.orchestrator.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.net.URI;
@@ -30,7 +31,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.LaunchValidationException;
 import org.apache.airavata.common.exception.ValidationResults;
@@ -72,6 +72,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private ExecutorService executor;
 
     // this is going to be null unless the thread count is 0
@@ -275,7 +276,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         TaskModel envSetupTask = new TaskModel();
         envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
-        envSetupTask.setTaskStatuses(List.of(new TaskStatus(TaskState.CREATED)));
+        TaskStatus envTaskStatus = new TaskStatus();
+        envTaskStatus.setState(TaskState.CREATED);
+        envSetupTask.setTaskStatuses(List.of(envTaskStatus));
         envSetupTask.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         envSetupTask.setLastUpdateTime(AiravataUtils.getCurrentTimestamp().getTime());
         envSetupTask.setParentProcessId(processModel.getProcessId());
@@ -288,9 +291,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
         envSetupSubModel.setLocation(workingDir);
 
-        byte[] envSetupSub = null;
+        java.nio.ByteBuffer envSetupSub = null;
         try {
-            envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
+            byte[] jsonBytes = objectMapper.writeValueAsBytes(envSetupSubModel);
+            envSetupSub = java.nio.ByteBuffer.wrap(jsonBytes);
         } catch (Exception e) {
             throw new OrchestratorException("Error while serializing environment setup sub task model", e);
         }
@@ -323,7 +327,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     case URI_COLLECTION:
                         if ((processInput.getValue() == null
                                         || processInput.getValue().isEmpty())
-                                && !processInput.isIsRequired()) {
+                                && !processInput.getIsRequired()) {
                             logger.debug(
                                     "Skipping input data staging task for {} since value is empty and not required",
                                     processInput.getName());
@@ -483,7 +487,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private boolean isArchive(RegistryService registryService, ProcessModel processModel)
             throws RegistryServiceException {
         var appInterface = registryService.getApplicationInterface(processModel.getApplicationInterfaceId());
-        return appInterface.isArchiveWorkingDirectory();
+        return appInterface.getArchiveWorkingDirectory();
     }
 
     private void createArchiveDataStatgingTask(
@@ -575,7 +579,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
 
         List<String> submissionTaskIds = new ArrayList<>();
-        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        TaskStatus taskStatus = new TaskStatus();
+        taskStatus.setState(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
         JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
@@ -583,9 +588,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         submissionSubTask.setJobSubmissionProtocol(jobSubmissionProtocol);
         submissionSubTask.setWallTime(wallTime);
 
-        byte[] bytes = null;
+        java.nio.ByteBuffer bytes = null;
         try {
-            bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
+            byte[] jsonBytes = objectMapper.writeValueAsBytes(submissionSubTask);
+            bytes = java.nio.ByteBuffer.wrap(jsonBytes);
         } catch (Exception e) {
             throw new OrchestratorException("Error while serializing job submission sub task model", e);
         }
@@ -607,7 +613,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         // create monitor task for this Email based monitor mode job
         if (monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR || monitorMode == MonitorMode.CLOUD_JOB_MONITOR) {
 
-            TaskStatus monitorTaskStatus = new TaskStatus(TaskState.CREATED);
+            TaskStatus monitorTaskStatus = new TaskStatus();
+            monitorTaskStatus.setState(TaskState.CREATED);
             monitorTaskStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
 
@@ -620,12 +627,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
             MonitorTaskModel monitorSubTaskModel = new MonitorTaskModel();
             monitorSubTaskModel.setMonitorMode(monitorMode);
+            java.nio.ByteBuffer monitorBytes = null;
             try {
-                bytes = ThriftUtils.serializeThriftObject(monitorSubTaskModel);
+                byte[] jsonBytes = objectMapper.writeValueAsBytes(monitorSubTaskModel);
+                monitorBytes = java.nio.ByteBuffer.wrap(jsonBytes);
             } catch (Exception e) {
                 throw new OrchestratorException("Error while serializing monitor sub task model", e);
             }
-            monitorTaskModel.setSubTaskModel(bytes);
+            monitorTaskModel.setSubTaskModel(monitorBytes);
 
             String mTaskId = registryService.addTask(monitorTaskModel, processModel.getProcessId());
             monitorTaskModel.setTaskId(mTaskId);
@@ -656,7 +665,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel.setParentProcessId(processModel.getProcessId());
         taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
-        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        TaskStatus taskStatus = new TaskStatus();
+        taskStatus.setState(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
@@ -697,9 +707,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
         submodel.setProcessInput(processInput);
-        byte[] bytes = null;
+        java.nio.ByteBuffer bytes = null;
         try {
-            bytes = ThriftUtils.serializeThriftObject(submodel);
+            byte[] jsonBytes = objectMapper.writeValueAsBytes(submodel);
+            bytes = java.nio.ByteBuffer.wrap(jsonBytes);
         } catch (Exception e) {
             throw new OrchestratorException("Error while serializing data staging sub task model", e);
         }
@@ -719,7 +730,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             throws RegistryServiceException, AiravataException, OrchestratorException {
         try {
             // create new task model for this task
-            TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+            TaskStatus taskStatus = new TaskStatus();
+            taskStatus.setState(TaskState.CREATED);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
             TaskModel taskModel = new TaskModel();
@@ -773,9 +785,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             // We don't know destination location at this time, data staging task will set this.
             // because destination is required field we set dummy destination
             submodel.setDestination("dummy://temp/file/location");
-            byte[] bytes = null;
+            java.nio.ByteBuffer bytes = null;
             try {
-                bytes = ThriftUtils.serializeThriftObject(submodel);
+                byte[] jsonBytes = objectMapper.writeValueAsBytes(submodel);
+                bytes = java.nio.ByteBuffer.wrap(jsonBytes);
             } catch (Exception e) {
                 throw new OrchestratorException("Error while serializing data staging sub task model", e);
             }

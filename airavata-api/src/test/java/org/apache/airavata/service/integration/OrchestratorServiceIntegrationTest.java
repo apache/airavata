@@ -19,54 +19,115 @@
 */
 package org.apache.airavata.service.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ExperimentModel;
-import org.apache.airavata.common.model.Project;
-import org.apache.airavata.service.AiravataService;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.orchestrator.exception.OrchestratorException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
+import org.apache.airavata.util.ExperimentModelUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
-/**
- * Integration tests for OrchestratorService (Orchestration workflows).
- */
-@DisplayName("OrchestratorService Integration Tests")
-public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
+@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@TestPropertySource(locations = "classpath:airavata.properties")
+public class OrchestratorServiceIntegrationTest {
 
     private final OrchestratorService orchestratorService;
-    private final AiravataService airavataService;
     private final RegistryService registryService;
+    private final AiravataServerProperties properties;
 
     public OrchestratorServiceIntegrationTest(
-            OrchestratorService orchestratorService, AiravataService airavataService, RegistryService registryService) {
+            OrchestratorService orchestratorService,
+            RegistryService registryService,
+            AiravataServerProperties properties) {
         this.orchestratorService = orchestratorService;
-        this.airavataService = airavataService;
         this.registryService = registryService;
+        this.properties = properties;
     }
 
-    @Nested
-    @DisplayName("Experiment Orchestration")
-    class ExperimentOrchestrationTests {
+    private static int NUM_CONCURRENT_REQUESTS = 1;
+    private static final Logger logger = LoggerFactory.getLogger(OrchestratorServiceIntegrationTest.class);
 
-        @Test
-        @DisplayName("Should orchestrate experiment workflow")
-        void shouldOrchestrateExperimentWorkflow() throws Exception {
-            // Arrange
-            Project project = TestDataFactory.createTestProject("Orchestration Project", TEST_GATEWAY_ID);
-            String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment =
-                    TestDataFactory.createTestExperiment("Orchestration Experiment", projectId, TEST_GATEWAY_ID);
-            String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
+    public static void main(String[] args) {
+        throw new UnsupportedOperationException(
+                "OrchestratorServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
+    }
 
-            // Note: Actual orchestration requires proper compute resources and applications
-            // This test verifies the service is available and can be called
-            assertThat(experimentId).isNotNull();
-            assertThat(orchestratorService).isNotNull();
-            ExperimentModel retrieved = airavataService.getExperiment(testAuthzToken, experimentId);
-            assertThat(retrieved).isNotNull();
+    @Test
+    public void testStoreExperimentDetail() {
+        for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
+            Thread thread = new Thread() {
+                public void run() {
+                    List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+                    InputDataObjectType input = new InputDataObjectType();
+                    input.setName("echo_input");
+                    input.setType(DataType.STRING);
+                    input.setValue("echo_output=Hello World");
+                    exInputs.add(input);
+
+                    List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+                    OutputDataObjectType output = new OutputDataObjectType();
+                    output.setName("echo_output");
+                    output.setType(DataType.STRING);
+                    output.setValue("");
+                    exOut.add(output);
+
+                    String defaultGateway = properties.services.default_.gateway;
+                    ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(
+                            defaultGateway,
+                            "default",
+                            "admin",
+                            "echoExperiment",
+                            "SimpleEcho2",
+                            "SimpleEcho2",
+                            exInputs);
+                    simpleExperiment.setExperimentOutputs(exOut);
+
+                    ComputationalResourceSchedulingModel scheduling =
+                            ExperimentModelUtil.createComputationResourceScheduling(
+                                    "trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0);
+                    scheduling.setResourceHostId("gsissh-trestles");
+                    UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
+                    userConfigurationDataModel.setComputationalResourceScheduling(scheduling);
+                    simpleExperiment.setUserConfigurationData(userConfigurationDataModel);
+
+                    String expId = null;
+                    try {
+                        expId = registryService.createExperiment(defaultGateway, simpleExperiment);
+                    } catch (RegistryServiceException e) {
+                        logger.error("Error while creating experiment", e);
+                        Assertions.fail("Error while creating experiment");
+                    }
+                    Assertions.assertNotNull(expId, "Experiment ID should not be null");
+
+                    try {
+                        orchestratorService.launchExperiment(expId, defaultGateway, null);
+                    } catch (OrchestratorException e) {
+                        logger.error("Error while launching experiment", e);
+                        Assertions.fail("Error while launching experiment");
+                    }
+                }
+            };
+            thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                logger.error("Error while joining thread", e);
+                Assertions.fail("Error while joining thread");
+            }
         }
     }
 }

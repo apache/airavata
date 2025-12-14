@@ -52,11 +52,7 @@ public class ExceptionHandlerUtil {
             Logger logger, String operation, AiravataErrorType errorType, Throwable exception) {
         String message = String.format("[%s] failed: %s", operation, exception.getMessage());
         LoggingUtil.logError(logger, operation, exception.getMessage(), exception);
-
-        AiravataSystemException airavataException = new AiravataSystemException(errorType);
-        airavataException.setMessage(message);
-        airavataException.initCause(exception);
-        return airavataException;
+        return new AiravataSystemException(message, exception);
     }
 
     /**
@@ -84,11 +80,7 @@ public class ExceptionHandlerUtil {
             context.forEach((key, value) -> message.append(String.format("%s=%s, ", key, value)));
             message.setLength(message.length() - 2);
         }
-
-        AiravataSystemException airavataException = new AiravataSystemException(errorType);
-        airavataException.setMessage(message.toString());
-        airavataException.initCause(exception);
-        return airavataException;
+        return new AiravataSystemException(message.toString(), exception);
     }
 
     /**
@@ -129,12 +121,7 @@ public class ExceptionHandlerUtil {
      */
     public static AiravataSystemException wrapAsAiravataException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        AiravataSystemException exception = new AiravataSystemException(errorType);
-        exception.setMessage(message);
-        if (cause != null) {
-            exception.initCause(cause);
-        }
-        return exception;
+        return new AiravataSystemException(message, cause);
     }
 
     /**

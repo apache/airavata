@@ -290,11 +290,11 @@ public class GroovyMapBuilder {
                 sortedInputSet.add(input);
             }
             for (InputDataObjectType inputDataObjectType : sortedInputSet) {
-                if (commandLineOnly && !inputDataObjectType.isRequiredToAddedToCommandLine()) {
+                if (commandLineOnly && !inputDataObjectType.getRequiredToAddedToCommandLine()) {
                     continue;
                 }
 
-                if (!inputDataObjectType.isIsRequired()
+                if (!inputDataObjectType.getIsRequired()
                         && (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
                     // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
                     continue;
@@ -351,7 +351,7 @@ public class GroovyMapBuilder {
                 sortedInputSet.add(input);
             }
             for (InputDataObjectType inputDataObjectType : sortedInputSet) {
-                if (!inputDataObjectType.isIsRequired()
+                if (!inputDataObjectType.getIsRequired()
                         && (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
                     // For URI/ Collection non required inputs, if the value is empty, ignore it. Fix for airavata-3276
                     continue;
@@ -397,7 +397,7 @@ public class GroovyMapBuilder {
                 if (commandLineOnly) {
                     if (output.getValue() != null
                             && !output.getValue().equals("")
-                            && output.isRequiredToAddedToCommandLine()) {
+                            && output.getRequiredToAddedToCommandLine()) {
                         if (output.getType() == DataType.URI) {
                             String filePath = output.getValue();
                             filePath =
@@ -489,7 +489,7 @@ public class GroovyMapBuilder {
                     emailIds = userJobNotifEmailIds;
                 }
             }
-            if (processModel.isEnableEmailNotification()) {
+            if (processModel.getEnableEmailNotification()) {
                 List<String> emailList = processModel.getEmailAddresses();
                 if (emailList == null) {
                     throw new TaskOnFailException(

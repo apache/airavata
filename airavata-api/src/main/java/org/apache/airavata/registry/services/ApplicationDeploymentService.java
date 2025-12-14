@@ -26,9 +26,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ComputeResourceDescription;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.model.ApplicationDeployment;
@@ -225,7 +225,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
             throws AppCatalogException {
 
         if (applicationDeploymentDescription.getAppDeploymentId().trim().isEmpty()
-                || applicationDeploymentDescription.getAppDeploymentId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                || applicationDeploymentDescription.getAppDeploymentId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug(
                     "If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
             ComputeResourceDescription computeResourceDescription =

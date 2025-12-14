@@ -21,6 +21,7 @@ package org.apache.airavata.orchestrator.core;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
@@ -39,7 +40,7 @@ public class BaseOrchestratorTest {
         // Spring Boot test - dependencies can be injected via constructor if needed
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.orchestrator",
@@ -47,7 +48,7 @@ public class BaseOrchestratorTest {
                 "org.apache.airavata.config"
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,

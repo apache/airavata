@@ -37,7 +37,7 @@ public class ParsingTemplateInputEntity implements Serializable {
     @Column(name = "PARSING_TEMPLATE_INPUT_ID", nullable = false)
     private String id;
 
-    @Column(name = "TARGET_PARSER_INPUT_ID", nullable = false)
+    @Column(name = "TARGET_PARSER_INPUT_ID", nullable = false, insertable = false, updatable = false)
     private String targetInputId;
 
     @Column(name = "APPLICATION_OUTPUT_NAME")
@@ -46,7 +46,7 @@ public class ParsingTemplateInputEntity implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "PARSING_TEMPLATE_ID", nullable = false)
+    @Column(name = "PARSING_TEMPLATE_ID", nullable = false, insertable = false, updatable = false)
     private String parsingTemplateId;
 
     @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)

@@ -73,12 +73,12 @@ public class ValidationServiceImpl implements ValidationService {
                 JobMetadataValidator jobMetadataValidator = vClass.newInstance();
                 validationResults = jobMetadataValidator.validate(experiment, processModel);
 
-                if (validationResults.isValidationState()) {
+                if (validationResults.getValidationState()) {
                     logger.info("Validation of " + validator + " is SUCCESSFUL");
                 } else {
                     List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
                     for (ValidatorResult result : validationResultList) {
-                        if (!result.isResult()) {
+                        if (!result.getResult()) {
                             String validationError = result.getErrorDetails();
                             if (validationError != null) {
                                 errorMsg += validationError + " ";
@@ -113,7 +113,7 @@ public class ValidationServiceImpl implements ValidationService {
         ValidationResults validationResults =
                 runValidators(experiment, null, OrchestratorConstants.EXPERIMENT_ERROR, experiment.getExperimentId());
 
-        if (validationResults.isValidationState()) {
+        if (validationResults.getValidationState()) {
             return validationResults;
         } else {
             LaunchValidationException launchValidationException = new LaunchValidationException();
@@ -130,7 +130,7 @@ public class ValidationServiceImpl implements ValidationService {
         ValidationResults validationResults = runValidators(
                 experiment, processModel, OrchestratorConstants.PROCESS_ERROR, processModel.getProcessId());
 
-        if (validationResults.isValidationState()) {
+        if (validationResults.getValidationState()) {
             return validationResults;
         } else {
             LaunchValidationException launchValidationException = new LaunchValidationException();

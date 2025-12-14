@@ -251,8 +251,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     getClientCredentials(tokenURL, gateway.getOauthClientId(), gateway.getOauthClientSecret());
             String accessToken = clientCredentials.get("access_token").asText();
             AuthzToken authzToken = new AuthzToken(accessToken);
-            authzToken.putToClaimsMap(Constants.GATEWAY_ID, gatewayId);
-            authzToken.putToClaimsMap(Constants.USER_NAME, gateway.getOauthClientId());
+
+            var claimsMap = authzToken.getClaimsMap();
+            claimsMap.put(Constants.GATEWAY_ID, gatewayId);
+            claimsMap.put(Constants.USER_NAME, gateway.getOauthClientId());
             return authzToken;
         } catch (Exception e) {
             throw new AiravataSecurityException(e);

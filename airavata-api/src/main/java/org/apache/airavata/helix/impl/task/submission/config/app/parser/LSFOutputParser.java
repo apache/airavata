@@ -79,9 +79,13 @@ public class LSFOutputParser implements OutputParser {
                     }
                     //                    lastStop = i + 1;
                     try {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf(columnList.get(2))));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.valueOf(columnList.get(2)));
+                        statusMap.put(jobID, jobStatus);
                     } catch (IndexOutOfBoundsException e) {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf("U")));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.UNKNOWN);
+                        statusMap.put(jobID, jobStatus);
                     }
                     found = true;
                     break;

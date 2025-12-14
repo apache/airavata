@@ -21,6 +21,7 @@ package org.apache.airavata.orchestrator.core;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,7 +115,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         super();
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.orchestrator",
@@ -122,7 +123,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
                 "org.apache.airavata.config"
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,

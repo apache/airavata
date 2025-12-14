@@ -21,7 +21,7 @@
 include "../airavata-apis/airavata_commons.thrift"
 include "data_movement_models.thrift"
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.AppCatalog.StorageResource
 namespace cpp apache.airavata.model.appcatalog.storageresource
 namespace py airavata.model.appcatalog.storageresource

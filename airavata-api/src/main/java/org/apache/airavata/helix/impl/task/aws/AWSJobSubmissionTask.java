@@ -131,8 +131,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                     StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
-
-            jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.QUEUED)));
+            var jobStatus = new JobStatus();
+            jobStatus.setJobState(JobState.QUEUED);
+            jobModel.setJobStatuses(Collections.singletonList(jobStatus));
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
 
@@ -155,8 +156,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                 LOGGER.error(reason, e);
                 return onFail(reason, false, e);
             }
-
-            jobModel.setJobStatuses(Collections.singletonList(new JobStatus(JobState.ACTIVE)));
+            jobStatus = new JobStatus();
+            jobStatus.setJobState(JobState.ACTIVE);
+            jobModel.setJobStatuses(Collections.singletonList(jobStatus));
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
 
@@ -310,7 +312,8 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         jobModel.setTaskId(getTaskId());
         jobModel.setJobName(mapData.getJobName());
 
-        JobStatus jobStatus = new JobStatus(JobState.FAILED);
+        JobStatus jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.FAILED);
         jobStatus.setReason(reason);
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         jobModel.setJobStatuses(Collections.singletonList(jobStatus));
@@ -329,12 +332,11 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         jobModel.setJobName(mapData.getJobName());
         jobModel.setJobDescription(jobScript);
 
-        JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
+        var jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.SUBMITTED);
         jobStatus.setReason("Job submitted to EC2 instance with PID: " + "DEFAULT_JOB_ID");
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-
         jobModel.setJobStatuses(Collections.singletonList(jobStatus));
-
         saveJobModel(jobModel);
         saveAndPublishJobStatus(jobModel);
 

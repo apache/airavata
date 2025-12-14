@@ -74,7 +74,7 @@ public class WorkflowRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -84,11 +84,11 @@ public class WorkflowRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -144,9 +144,9 @@ public class WorkflowRepositoryTest extends TestBase {
         // Assert workflow
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());
 
-        assertEquals(2, workflow.getApplicationsSize());
-        assertEquals(2, workflow.getHandlersSize());
-        assertEquals(3, workflow.getConnectionsSize());
+        assertEquals(2, workflow.getApplications().size());
+        assertEquals(2, workflow.getHandlers().size());
+        assertEquals(3, workflow.getConnections().size());
 
         // Assert applications
         for (WorkflowApplication app : workflow.getApplications()) {
@@ -188,8 +188,8 @@ public class WorkflowRepositoryTest extends TestBase {
         application2.setWallTimeLimit(SAMPLE_WALL_TIME_LIMIT);
         application2.setPhysicalMemory(SAMPLE_PHYSICAL_MEMORY);
 
-        workflow.addToApplications(application1);
-        workflow.addToApplications(application2);
+        workflow.getApplications().add(application1);
+        workflow.getApplications().add(application2);
 
         // Adding workflow handlers
         // Note: These classes are Thrift-generated and should be available after Thrift code generation
@@ -201,8 +201,8 @@ public class WorkflowRepositoryTest extends TestBase {
         handler2.setId(HANDLER_PREFIX + 2);
         handler2.setType(HandlerType.FLOW_TERMINATOR);
 
-        workflow.addToHandlers(handler1);
-        workflow.addToHandlers(handler2);
+        workflow.getHandlers().add(handler1);
+        workflow.getHandlers().add(handler2);
 
         // Adding workflow connections
         WorkflowConnection connection1 = new WorkflowConnection();
@@ -229,9 +229,9 @@ public class WorkflowRepositoryTest extends TestBase {
         connection3.setToId(HANDLER_PREFIX + 2);
         connection3.setToInputName(SAMPLE_HANDLER_INPUT_NAME);
 
-        workflow.addToConnections(connection1);
-        workflow.addToConnections(connection2);
-        workflow.addToConnections(connection3);
+        workflow.getConnections().add(connection1);
+        workflow.getConnections().add(connection2);
+        workflow.getConnections().add(connection3);
 
         return workflow;
     }

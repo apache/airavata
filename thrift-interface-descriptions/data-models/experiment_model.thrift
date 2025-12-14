@@ -25,7 +25,7 @@
  include "process_model.thrift"
  include "workflow_model.thrift"
 
- namespace java org.apache.airavata.common.model
+ namespace java org.apache.airavata.thriftapi.model
  namespace php Airavata.Model.Experiment
  namespace cpp apache.airavata.model.experiment
  namespace py airavata.model.experiment

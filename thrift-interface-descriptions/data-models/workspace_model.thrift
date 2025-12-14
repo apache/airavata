@@ -20,7 +20,7 @@
 
 include "../airavata-apis/airavata_commons.thrift"
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.Workspace
 namespace cpp apache.airavata.model.workspace
 namespace py airavata.model.workspace

@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.BatchQueue;
@@ -283,7 +282,7 @@ public class TaskContext {
 
     public UserResourceProfile getUserResourceProfile() throws Exception {
 
-        if (userResourceProfile == null && processModel.isUseUserCRPref()) {
+        if (userResourceProfile == null && processModel.getUseUserCRPref()) {
             try {
                 this.userResourceProfile =
                         registryService.getUserResourceProfile(processModel.getUserName(), gatewayId);
@@ -304,7 +303,7 @@ public class TaskContext {
     }
 
     private UserComputeResourcePreference getUserComputeResourcePreference() throws Exception {
-        if (this.userComputeResourcePreference == null && processModel.isUseUserCRPref()) {
+        if (this.userComputeResourcePreference == null && processModel.getUseUserCRPref()) {
             try {
                 this.userComputeResourcePreference = registryService.getUserComputeResourcePreference(
                         processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
@@ -691,11 +690,11 @@ public class TaskContext {
     }
 
     public boolean isUseUserCRPref() {
-        return getProcessModel().isUseUserCRPref();
+        return getProcessModel().getUseUserCRPref();
     }
 
     public boolean isSetGroupResourceProfile() {
-        return getProcessModel().isSetGroupResourceProfileId();
+        return getProcessModel().getGroupResourceProfileId() != null;
     }
 
     public String getComputeResourceLoginUserName() throws Exception {
@@ -887,7 +886,7 @@ public class TaskContext {
             return processModel.getProcessResourceSchedule().getQueueName();
         } else {
             Optional<BatchQueue> defaultQueue = getComputeResourceDescription().getBatchQueues().stream()
-                    .filter(q -> q.isIsDefaultQueue())
+                    .filter(q -> q.getIsDefaultQueue())
                     .findFirst();
             if (defaultQueue.isPresent()) {
                 return defaultQueue.get().getQueueName();
@@ -957,7 +956,7 @@ public class TaskContext {
     public Object getSubTaskModel() throws TaskOnFailException {
         try {
             if (subTaskModel == null) {
-                subTaskModel = ThriftUtils.getSubTaskModel(getCurrentTaskModel());
+                subTaskModel = getCurrentTaskModel();
             }
             return subTaskModel;
         } catch (Exception e) {
@@ -1016,9 +1015,9 @@ public class TaskContext {
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.getSpecificPreferences() != null) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
-            if (esp.isSetSlurm()) {
+            if (esp.getSlurm() != null) {
                 return esp.getSlurm().getAllocationProjectNumber();
             }
         }
@@ -1026,9 +1025,9 @@ public class TaskContext {
     }
 
     private String extractSlurmQoS(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.getSpecificPreferences() != null) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
-            if (esp.isSetSlurm()) {
+            if (esp.getSlurm() != null) {
                 return esp.getSlurm().getQualityOfService();
             }
         }

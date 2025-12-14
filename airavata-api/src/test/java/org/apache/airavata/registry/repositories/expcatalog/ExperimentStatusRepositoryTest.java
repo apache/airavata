@@ -75,7 +75,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -85,11 +85,11 @@ public class ExperimentStatusRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -149,7 +149,8 @@ public class ExperimentStatusRepositoryTest extends TestBase {
                         .getExperimentStatus()
                         .size());
 
-        ExperimentStatus experimentStatus = new ExperimentStatus(ExperimentState.VALIDATED);
+        ExperimentStatus experimentStatus = new ExperimentStatus();
+        experimentStatus.setState(ExperimentState.VALIDATED);
         String experimentStatusId = experimentStatusService.addExperimentStatus(experimentStatus, experimentId);
         assertTrue(experimentStatusId != null);
         assertEquals(
@@ -162,7 +163,8 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         experimentStatus.setState(ExperimentState.EXECUTING);
         experimentStatusService.updateExperimentStatus(experimentStatus, experimentId);
 
-        ExperimentStatus updatedExecutingStatus = new ExperimentStatus(ExperimentState.EXECUTING);
+        ExperimentStatus updatedExecutingStatus = new ExperimentStatus();
+        updatedExecutingStatus.setState(ExperimentState.EXECUTING);
         updatedExecutingStatus.setReason("updated reason");
         updatedExecutingStatus.setTimeOfStateChange(experimentStatus.getTimeOfStateChange());
         experimentStatusService.updateExperimentStatus(updatedExecutingStatus, experimentId);

@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.model.ErrorModel;
@@ -117,10 +116,12 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
                 jobModel.setJobId(DEFAULT_JOB_ID);
                 if (submissionOutput.isJobSubmissionFailed()) {
-                    List<JobStatus> statusList = new ArrayList<>();
-                    statusList.add(new JobStatus(JobState.FAILED));
-                    statusList.get(0).setReason(submissionOutput.getFailureReason());
-                    jobModel.setJobStatuses(statusList);
+                    var statusList = new ArrayList<JobStatus>();
+                    var jobStatus = new JobStatus();
+                    jobStatus.setJobState(JobState.FAILED);
+                    jobStatus.setReason(submissionOutput.getFailureReason());
+                    statusList.add(jobStatus);
+                    jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                     saveJobModel(jobModel);
                     logger.error("Job submission failed for job name " + jobModel.getJobName()
                             + ". Exit code : " + submissionOutput.getExitCode() + ", Submission failed : "

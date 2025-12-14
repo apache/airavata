@@ -75,7 +75,7 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
             String queueName = computationalResourceSchedulingModel.getQueueName();
 
             QueueStatusModel queueStatusModel = registryService.getQueueStatus(hostName, queueName);
-            if (queueStatusModel.isQueueUp()) {
+            if (queueStatusModel.getQueueUp()) {
                 return Optional.of(computationalResourceSchedulingModel);
             }
         } catch (Exception exception) {

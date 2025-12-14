@@ -81,7 +81,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -91,11 +91,11 @@ public class GatewayProfileRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -205,12 +205,12 @@ public class GatewayProfileRepositoryTest extends TestBase {
                     .filter(p -> p.getComputeResourceId().equals(hostId1))
                     .findFirst()
                     .get();
-            assertTrue(pref1.isOverridebyAiravata());
+            assertTrue(pref1.getOverridebyAiravata());
             ComputeResourcePreference pref2 = preferences.stream()
                     .filter(p -> p.getComputeResourceId().equals(hostId2))
                     .findFirst()
                     .get();
-            assertFalse(pref2.isOverridebyAiravata());
+            assertFalse(pref2.getOverridebyAiravata());
             for (ComputeResourcePreference cm : preferences) {
                 logger.info("******** host id ********* : {}", cm.getComputeResourceId());
                 logger.info("Preferred Batch Queue: {}", cm.getPreferredBatchQueue());

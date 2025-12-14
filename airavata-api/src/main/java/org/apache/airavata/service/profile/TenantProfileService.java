@@ -219,12 +219,15 @@ public class TenantProfileService {
             if (deleteSuccess) {
                 // delete tenant at end-places
                 try {
+                    Gateway gateway = new Gateway();
+                    gateway.setGatewayId(gatewayId);
+                    gateway.setGatewayApprovalStatus(GatewayApprovalStatus.DEACTIVATED);
                     dbEventPublisherUtils.publish(
                             EntityType.TENANT,
                             CrudType.DELETE,
                             // pass along gateway datamodel, with correct gatewayId;
                             // approvalstatus is not used for delete, hence set dummy value
-                            new Gateway(gatewayId, GatewayApprovalStatus.DEACTIVATED));
+                            gateway);
                 } catch (AiravataException e) {
                     logger.error("Error publishing gateway deletion event", e);
                 }

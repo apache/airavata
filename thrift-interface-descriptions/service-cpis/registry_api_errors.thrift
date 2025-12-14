@@ -24,7 +24,7 @@
 *  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
-namespace java org.apache.airavata.registry.exception
+namespace java org.apache.airavata.thriftapi.registry.exception
 namespace php Airavata.Registry.API.Error
 
 exception RegistryServiceException {

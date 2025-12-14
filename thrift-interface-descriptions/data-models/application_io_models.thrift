@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.Application.Io
 namespace cpp apache.airavata.model.application.io
 namespace py airavata.model.application.io

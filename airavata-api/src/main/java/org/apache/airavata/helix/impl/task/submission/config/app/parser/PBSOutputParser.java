@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.app.JobUtil;
@@ -72,7 +73,9 @@ public class PBSOutputParser implements OutputParser {
                     line = anInfo.split("=", 2);
                     if (line.length != 0) {
                         if (line[0].contains("job_state")) {
-                            return new JobStatus(JobUtil.getJobState(line[1].replaceAll(" ", "")));
+                            var jobStatus = new JobStatus();
+                            jobStatus.setJobState(JobUtil.getJobState(line[1].replaceAll(" ", "")));
+                            return jobStatus;
                         }
                     }
                 }
@@ -102,9 +105,13 @@ public class PBSOutputParser implements OutputParser {
                     }
                     //                    lastStop = i + 1;
                     try {
-                        statusMap.put(jobID, new JobStatus(JobUtil.getJobState(columnList.get(9))));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobUtil.getJobState(columnList.get(9)));
+                        statusMap.put(jobID, jobStatus);
                     } catch (IndexOutOfBoundsException e) {
-                        statusMap.put(jobID, new JobStatus(JobUtil.getJobState("U")));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.UNKNOWN);
+                        statusMap.put(jobID, jobStatus);
                     }
                     found = true;
                     break;

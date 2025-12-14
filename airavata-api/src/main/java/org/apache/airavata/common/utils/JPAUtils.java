@@ -45,6 +45,8 @@ public class JPAUtils {
         properties.put("hibernate.format_sql", "false");
         // Connection pool settings (HikariCP is used via DataSource)
         properties.put("hibernate.connection.provider_disables_autocommit", "true");
+        // Disable Jandex scanning and use reflection scanning instead
+        properties.put("hibernate.archive.scanner", "org.hibernate.boot.archive.scan.internal.StandardScanner");
         DEFAULT_ENTITY_MANAGER_FACTORY_PROPERTIES = properties;
     }
 
@@ -136,6 +138,9 @@ public class JPAUtils {
             finalProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
             // Enable automatic schema creation for H2 in-memory databases
             finalProperties.put("hibernate.hbm2ddl.auto", "update");
+            // Quote identifiers to handle reserved keywords like VALUE
+            finalProperties.put("hibernate.globally_quoted_identifiers", "true");
+            finalProperties.put("hibernate.globally_quoted_identifiers_skip_column_definitions", "false");
         }
         return Persistence.createEntityManagerFactory(persistenceUnitName, finalProperties);
     }

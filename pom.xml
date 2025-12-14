@@ -69,6 +69,7 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
+        <module>modules/thrift-api</module>
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework/research-service</module>
@@ -501,6 +502,12 @@ under the License.
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.3</version>
+            </dependency>
+            <!-- Force jandex version for Hibernate 6.6 compatibility -->
+            <dependency>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex</artifactId>
+                <version>3.2.0</version>
             </dependency>
 
             <!-- gRPC -->

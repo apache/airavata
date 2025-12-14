@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.messaging.core.util;
 
-import org.apache.airavata.api.thrift.util.ThriftUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.CrudType;
 import org.apache.airavata.common.model.DBEventMessage;
@@ -34,7 +34,6 @@ import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class DBEventPublisherUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(DBEventPublisherUtils.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private Publisher dbEventPublisher = null;
     private DBEventService publisherService;
 
@@ -55,9 +55,9 @@ public class DBEventPublisherUtils {
      * Publish DB Event for given entity.
      * @param entityType
      * @param crudType
-     * @param entityModel
+     * @param entityModel Can be either a domain model or Thrift model (detected via reflection)
      */
-    public void publish(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+    public void publish(EntityType entityType, CrudType crudType, Object entityModel) throws AiravataException {
 
         getDbEventPublisher()
                 .publish(
@@ -87,18 +87,29 @@ public class DBEventPublisherUtils {
      * Constructs the dbEventMessageContext
      * @param entityType
      * @param crudType
-     * @param entityModel
+     * @param entityModel Can be either a domain model or Thrift model (detected via reflection)
      * @return
      * @throws AiravataException
      */
-    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel)
+    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, Object entityModel)
             throws AiravataException {
         try {
+            // Check if entityModel is a Thrift model (from thriftapi package) or domain model
+            Object domainModel;
+            if (isThriftModel(entityModel)) {
+                // Convert Thrift model to domain model, then serialize to JSON
+                domainModel = convertThriftEntityToDomain(entityType, entityModel);
+            } else {
+                // Already a domain model, use directly
+                domainModel = entityModel;
+            }
+            byte[] jsonBytes = objectMapper.writeValueAsBytes(domainModel);
+
             // set the publisherContext
             DBEventMessage dbEventMessage = new DBEventMessage();
             DBEventPublisherContext publisherContext = new DBEventPublisherContext();
             publisherContext.setCrudType(crudType);
-            publisherContext.setEntityDataModel(ThriftUtils.serializeThriftObject(entityModel));
+            publisherContext.setEntityDataModel(java.nio.ByteBuffer.wrap(jsonBytes));
             publisherContext.setEntityType(entityType);
 
             // create dbEventPublisher with publisherContext
@@ -118,5 +129,38 @@ public class DBEventPublisherUtils {
         } catch (Exception ex) {
             throw new AiravataException(ex.getMessage(), ex);
         }
+    }
+
+    private boolean isThriftModel(Object model) {
+        // Check if the model is from the thriftapi package (Thrift-generated class)
+        return model != null && model.getClass().getName().startsWith("org.apache.airavata.thriftapi");
+    }
+
+    private Object convertThriftEntityToDomain(EntityType entityType, Object thriftModel) throws Exception {
+        // Use reflection to call appropriate mapper based on entity type
+        String mapperClassName;
+        String methodName = "toDomain";
+
+        switch (entityType) {
+            case USER_PROFILE:
+                mapperClassName = "org.apache.airavata.thriftapi.mapper.UserProfileMapper";
+                break;
+            case TENANT:
+                mapperClassName = "org.apache.airavata.thriftapi.mapper.GatewayMapper";
+                break;
+            case PROJECT:
+                mapperClassName = "org.apache.airavata.thriftapi.mapper.ProjectMapper";
+                break;
+            case EXPERIMENT:
+                mapperClassName = "org.apache.airavata.thriftapi.mapper.ExperimentModelMapper";
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported entity type: " + entityType);
+        }
+
+        Class<?> mapperClass = Class.forName(mapperClassName);
+        Object mapperInstance = mapperClass.getField("INSTANCE").get(null);
+        java.lang.reflect.Method toDomainMethod = mapperClass.getMethod(methodName, thriftModel.getClass());
+        return toDomainMethod.invoke(mapperInstance, thriftModel);
     }
 }

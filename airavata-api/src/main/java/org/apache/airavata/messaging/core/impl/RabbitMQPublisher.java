@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -27,10 +28,9 @@ import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.function.Function;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.model.Message;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageWrapper;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.RabbitMQProperties;
 import org.slf4j.Logger;
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class RabbitMQPublisher implements Publisher {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final RabbitMQProperties properties;
     private final Function<MessageContext, String> routingKeySupplier;
     private Connection connection;
@@ -77,16 +78,10 @@ public class RabbitMQPublisher implements Publisher {
     @Override
     public void publish(MessageContext messageContext) throws AiravataException {
         try {
-            byte[] body = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-            Message message = new Message();
-            message.setEvent(body);
-            message.setMessageId(messageContext.getMessageId());
-            message.setMessageType(messageContext.getType());
-            message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
+            // Serialize MessageContext to JSON using MessageWrapper
+            MessageWrapper wrapper = new MessageWrapper(messageContext);
             String routingKey = routingKeySupplier.apply(messageContext);
-            //            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" +
-            // messageContext.getType() + ", to routingKey:" + routingKey);
-            byte[] messageBody = ThriftUtils.serializeThriftObject(message);
+            byte[] messageBody = objectMapper.writeValueAsBytes(wrapper);
             send(messageBody, routingKey);
         } catch (Exception e) {
             String msg = "Error while publishing message";
@@ -104,17 +99,9 @@ public class RabbitMQPublisher implements Publisher {
     @Override
     public void publish(MessageContext messageContext, String routingKey) throws AiravataException {
         try {
-            byte[] body = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-            Message message = new Message();
-            message.setEvent(body);
-            message.setMessageId(messageContext.getMessageId());
-            message.setMessageType(messageContext.getType());
-            if (messageContext.getUpdatedTime() != null) {
-                message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
-            }
-            //            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" +
-            // messageContext.getType() + ", to routingKey:" + routingKey);
-            byte[] messageBody = ThriftUtils.serializeThriftObject(message);
+            // Serialize MessageContext to JSON using MessageWrapper
+            MessageWrapper wrapper = new MessageWrapper(messageContext);
+            byte[] messageBody = objectMapper.writeValueAsBytes(wrapper);
             send(messageBody, routingKey);
         } catch (Exception e) {
             String msg = "Error while publishing message";

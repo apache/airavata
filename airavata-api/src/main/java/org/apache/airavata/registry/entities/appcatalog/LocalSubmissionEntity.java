@@ -50,7 +50,7 @@ public class LocalSubmissionEntity implements Serializable {
     @Column(name = "UPDATE_TIME", nullable = false)
     private Timestamp updateTime;
 
-    @Column(name = "RESOURCE_JOB_MANAGER_ID", nullable = false)
+    @Column(name = "RESOURCE_JOB_MANAGER_ID", nullable = false, insertable = false, updatable = false)
     private String resourceJobManagerId;
 
     @Column(name = "SECURITY_PROTOCOL", nullable = false)

@@ -48,7 +48,7 @@ public class WorkflowConnectionEntity implements Serializable {
     @Column(name = "WORKFLOW_ID", nullable = false)
     private String workflowId;
 
-    @Column(name = "DATA_BLOCK_ID")
+    @Column(name = "DATA_BLOCK_ID", insertable = false, updatable = false)
     private String dataBlockId;
 
     @Column(name = "FROM_TYPE")

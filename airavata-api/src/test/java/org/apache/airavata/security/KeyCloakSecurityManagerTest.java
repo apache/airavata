@@ -45,18 +45,26 @@ import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(classes = {KeyCloakSecurityManagerTest.TestConfiguration.class})
-@TestPropertySource(properties = {"security.tls.enabled=true", "security.iam.server-url=https://iam.server/auth"})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, KeyCloakSecurityManagerTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "security.tls.enabled=true",
+            "security.iam.server-url=https://iam.server/auth",
+            "security.manager.enabled=true"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class KeyCloakSecurityManagerTest {
 
     public static final String TEST_USERNAME = "test-user";
@@ -83,15 +91,21 @@ public class KeyCloakSecurityManagerTest {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.security", "org.apache.airavata.config"},
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
             excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
+    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {
         @Bean
         @Primary
@@ -241,13 +255,13 @@ public class KeyCloakSecurityManagerTest {
             boolean isInAdminsGroup, boolean isInReadOnlyAdminsGroup) {
 
         try {
+            var testGatewayGroups = new GatewayGroups();
+            testGatewayGroups.setGatewayId(TEST_GATEWAY);
+            testGatewayGroups.setAdminsGroupId("admins-group-id");
+            testGatewayGroups.setReadOnlyAdminsGroupId("read-only-admins-group-id");
+            testGatewayGroups.setDefaultGatewayUsersGroupId("default-gateway-users-group-id");
             when(mockRegistryService.isGatewayGroupsExists(TEST_GATEWAY)).thenReturn(true);
-            when(mockRegistryService.getGatewayGroups(TEST_GATEWAY))
-                    .thenReturn(new GatewayGroups(
-                            TEST_GATEWAY,
-                            "admins-group-id",
-                            "read-only-admins-group-id",
-                            "default-gateway-users-group-id"));
+            when(mockRegistryService.getGatewayGroups(TEST_GATEWAY)).thenReturn(testGatewayGroups);
 
             List<UserGroup> userGroups = new ArrayList<>();
             UserGroup dummyGroup1 = new UserGroup();

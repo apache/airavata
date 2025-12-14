@@ -343,7 +343,7 @@ public class SharingRegistryService {
             group.setCreatedTime(System.currentTimeMillis());
             group.setUpdatedTime(System.currentTimeMillis());
             // Add group admins once the group is created
-            group.unsetGroupAdmins();
+            group.getGroupAdmins().clear();
             userGroupService.create(group);
 
             addUsersToGroup(group.getDomainId(), Arrays.asList(group.getOwnerId()), group.getGroupId());
@@ -1029,7 +1029,8 @@ public class SharingRegistryService {
                 }
             }
             entity = getUpdatedObject(oldEntity, entity);
-            entity.setSharedCount(sharingService.getSharedCount(entity.getDomainId(), entity.getEntityId()));
+            long sharedCount = sharingService.getSharedCount(entity.getDomainId(), entity.getEntityId());
+            entity.setSharedCount(sharedCount);
             entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {
@@ -1248,7 +1249,8 @@ public class SharingRegistryService {
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
             Entity entity = entityService.get(entityPK);
-            entity.setSharedCount(sharingService.getSharedCount(domainId, entityId));
+            long sharedCount = sharingService.getSharedCount(domainId, entityId);
+            entity.setSharedCount(sharedCount);
             entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {
@@ -1359,7 +1361,8 @@ public class SharingRegistryService {
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
             Entity entity = entityService.get(entityPK);
-            entity.setSharedCount(sharingService.getSharedCount(domainId, entityId));
+            long sharedCount = sharingService.getSharedCount(domainId, entityId);
+            entity.setSharedCount(sharedCount);
             entityService.update(entity);
             return true;
         } catch (SharingRegistryException e) {

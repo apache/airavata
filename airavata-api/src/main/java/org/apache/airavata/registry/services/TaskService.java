@@ -22,8 +22,8 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.TaskModel;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -139,7 +139,7 @@ public class TaskService {
     }
 
     private TaskEntity saveTask(TaskModel taskModel) throws RegistryException {
-        if (taskModel.getTaskId() == null || taskModel.getTaskId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+        if (taskModel.getTaskId() == null || taskModel.getTaskId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Task's TaskId");
             taskModel.setTaskId(ExpCatalogUtils.getID("TASK"));
         }

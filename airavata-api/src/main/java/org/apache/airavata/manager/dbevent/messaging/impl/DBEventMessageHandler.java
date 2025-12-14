@@ -21,7 +21,6 @@ package org.apache.airavata.manager.dbevent.messaging.impl;
 
 import java.util.Collections;
 import java.util.List;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.model.DBEventMessage;
 import org.apache.airavata.common.model.DBEventMessageContext;
 import org.apache.airavata.common.model.MessageType;
@@ -76,10 +75,13 @@ public class DBEventMessageHandler implements MessageHandler {
         log.info("Incoming DB event message. Message Id : " + messageContext.getMessageId());
         try {
 
-            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+            var event = messageContext.getEvent();
+            var type = messageContext.getType();
+            var messageId = messageContext.getMessageId();
+            var gatewayId = messageContext.getGatewayId();
 
-            DBEventMessage dbEventMessage = new DBEventMessage();
-            ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
+            // TODO: the code won't work until dbevent and message models are properly mapped or merged
+            var dbEventMessage = new DBEventMessage(messageContext);
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
 

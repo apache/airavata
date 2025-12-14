@@ -25,7 +25,7 @@
 */
 
 
-namespace java org.apache.airavata.common.exception
+namespace java org.apache.airavata.thriftapi.exception
 namespace php Airavata.API.Error
 namespace cpp apache.airavata.api.error
 namespace perl AiravataAPIError

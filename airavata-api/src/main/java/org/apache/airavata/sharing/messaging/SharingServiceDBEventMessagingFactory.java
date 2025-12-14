@@ -116,12 +116,15 @@ public class SharingServiceDBEventMessagingFactory {
             log.info("Sending service discovery message. Publisher : " + publisher + ", Subscriber : "
                     + DBEventService.SHARING.toString());
 
-            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber(DBEventService.SHARING.toString());
+            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber();
+            dbEventSubscriber.setSubscriberService(DBEventService.SHARING.toString());
             DBEventMessageContext dbEventMessageContext = new DBEventMessageContext();
             dbEventMessageContext.setSubscriber(dbEventSubscriber);
 
-            DBEventMessage dbEventMessage =
-                    new DBEventMessage(DBEventType.SUBSCRIBER, dbEventMessageContext, publisher);
+            DBEventMessage dbEventMessage = new DBEventMessage();
+            dbEventMessage.setDbEventType(DBEventType.SUBSCRIBER);
+            dbEventMessage.setMessageContext(dbEventMessageContext);
+            dbEventMessage.setPublisherService(publisher);
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 

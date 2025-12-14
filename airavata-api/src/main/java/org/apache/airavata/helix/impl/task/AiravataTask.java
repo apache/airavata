@@ -311,13 +311,11 @@ public abstract class AiravataTask extends AbstractTask {
                 }
                 getRegistryService().addProcessStatus(status, getProcessId());
                 ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
-                ProcessStatusChangeEvent processStatusChangeEvent =
-                        new ProcessStatusChangeEvent(status.getState(), identifier);
-                MessageContext msgCtx = new MessageContext(
-                        processStatusChangeEvent,
-                        MessageType.PROCESS,
-                        AiravataUtils.getId(MessageType.PROCESS.name()),
-                        getGatewayId());
+                var event = new ProcessStatusChangeEvent(status.getState(), identifier);
+                var type = MessageType.PROCESS;
+                var messageId = AiravataUtils.getId(MessageType.PROCESS.name());
+                var gatewayId = getGatewayId();
+                var msgCtx = new MessageContext(event, type, messageId, gatewayId);
                 msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 getStatusPublisher().publish(msgCtx);
             }
@@ -345,11 +343,12 @@ public abstract class AiravataTask extends AbstractTask {
 
             getRegistryService().addJobStatus(jobStatus, taskId, jobId);
 
-            JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
-
-            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
-            MessageContext msgCtx = new MessageContext(
-                    jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), gateway);
+            var identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
+            var event = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
+            var type = MessageType.JOB;
+            var messageId = AiravataUtils.getId(MessageType.JOB.name());
+            var gatewayId = getGatewayId();
+            var msgCtx = new MessageContext(event, type, messageId, gatewayId);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
 
@@ -439,8 +438,9 @@ public abstract class AiravataTask extends AbstractTask {
                 if (outputMetadataJSON.has("file-metadata")) {
                     JsonNode fileMetadata = outputMetadataJSON.get("file-metadata");
                     fileMetadata.fields().forEachRemaining(entry -> {
-                        dataProductModel.putToProductMetadata(
-                                entry.getKey(), entry.getValue().asText());
+                        dataProductModel
+                                .getProductMetadata()
+                                .put(entry.getKey(), entry.getValue().asText());
                     });
                 }
             } catch (Exception e) {
@@ -455,7 +455,7 @@ public abstract class AiravataTask extends AbstractTask {
         replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
         replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
         replicaLocationModel.setFilePath(outputVal);
-        dataProductModel.addToReplicaLocations(replicaLocationModel);
+        dataProductModel.getReplicaLocations().add(replicaLocationModel);
 
         return getRegistryService().registerDataProduct(dataProductModel);
     }
@@ -620,14 +620,12 @@ public abstract class AiravataTask extends AbstractTask {
             taskStatus.setState(ts);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             getRegistryService().addTaskStatus(taskStatus, getTaskId());
-            TaskIdentifier identifier =
-                    new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
-            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts, identifier);
-            MessageContext msgCtx = new MessageContext(
-                    taskStatusChangeEvent,
-                    MessageType.TASK,
-                    AiravataUtils.getId(MessageType.TASK.name()),
-                    getGatewayId());
+            var identifier = new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
+            var event = new TaskStatusChangeEvent(ts, identifier);
+            var type = MessageType.TASK;
+            var messageId = AiravataUtils.getId(MessageType.TASK.name());
+            var gatewayId = getGatewayId();
+            var msgCtx = new MessageContext(event, type, messageId, gatewayId);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             statusPublisher.publish(msgCtx);
         } catch (Exception e) {

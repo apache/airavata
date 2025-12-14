@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
 import org.apache.airavata.common.model.BatchQueueResourcePolicy;
 import org.apache.airavata.common.model.ComputeResourcePolicy;
@@ -34,7 +35,6 @@ import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.model.SlurmComputeResourcePreference;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.BatchQueueResourcePolicyEntity;
@@ -87,8 +87,8 @@ public class GroupResourceProfileService {
                 gcrPref.setGroupResourceProfileId(groupResourceProfileId);
 
                 if (gcrPref.getResourceType() == ComputeResourceType.SLURM
-                        && gcrPref.isSetSpecificPreferences()
-                        && gcrPref.getSpecificPreferences().isSetSlurm()) {
+                        && gcrPref.getSpecificPreferences() != null
+                        && gcrPref.getSpecificPreferences().isSlurm()) {
 
                     SlurmComputeResourcePreference slurm =
                             gcrPref.getSpecificPreferences().getSlurm();
@@ -103,7 +103,7 @@ public class GroupResourceProfileService {
                     if (slurm.getReservations() != null) {
                         slurm.getReservations().forEach(res -> {
                             if (res.getReservationId().trim().isEmpty()
-                                    || res.getReservationId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                                    || res.getReservationId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
                                 res.setReservationId(AiravataUtils.getId(res.getReservationName()));
                             }
                         });
@@ -114,7 +114,7 @@ public class GroupResourceProfileService {
         if (groupResourceProfile.getBatchQueueResourcePolicies() != null) {
             groupResourceProfile.getBatchQueueResourcePolicies().forEach(bq -> {
                 if (bq.getResourcePolicyId().trim().isEmpty()
-                        || bq.getResourcePolicyId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                        || bq.getResourcePolicyId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
                     bq.setResourcePolicyId(UUID.randomUUID().toString());
                 }
                 bq.setGroupResourceProfileId(groupResourceProfileId);
@@ -123,7 +123,7 @@ public class GroupResourceProfileService {
         if (groupResourceProfile.getComputeResourcePolicies() != null) {
             groupResourceProfile.getComputeResourcePolicies().forEach(cr -> {
                 if (cr.getResourcePolicyId().trim().isEmpty()
-                        || cr.getResourcePolicyId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                        || cr.getResourcePolicyId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
                     cr.setResourcePolicyId(UUID.randomUUID().toString());
                 }
                 cr.setGroupResourceProfileId(groupResourceProfileId);
@@ -169,11 +169,11 @@ public class GroupResourceProfileService {
 
         for (GroupComputeResourcePrefEntity prefEntity : destEntity.getComputePreferences()) {
             GroupComputeResourcePreference sourcePref = sourcePrefs.get(prefEntity.getComputeResourceId());
-            if (sourcePref == null || !sourcePref.isSetSpecificPreferences()) {
+            if (sourcePref == null || sourcePref.getSpecificPreferences() == null) {
                 continue;
             }
             if (prefEntity instanceof SlurmGroupComputeResourcePrefEntity slurmEntity) {
-                if (sourcePref.getSpecificPreferences().isSetSlurm()) {
+                if (sourcePref.getSpecificPreferences().isSlurm()) {
                     SlurmComputeResourcePreference slurm =
                             sourcePref.getSpecificPreferences().getSlurm();
                     slurmEntity.setAllocationProjectNumber(slurm.getAllocationProjectNumber());
@@ -184,7 +184,7 @@ public class GroupResourceProfileService {
                     slurmEntity.setSshAccountProvisionerAdditionalInfo(slurm.getSshAccountProvisionerAdditionalInfo());
                 }
             } else if (prefEntity instanceof AWSGroupComputeResourcePrefEntity awsEntity) {
-                if (sourcePref.getSpecificPreferences().isSetAws()) {
+                if (sourcePref.getSpecificPreferences().isAws()) {
                     AwsComputeResourcePreference aws =
                             sourcePref.getSpecificPreferences().getAws();
                     awsEntity.setRegion(aws.getRegion());

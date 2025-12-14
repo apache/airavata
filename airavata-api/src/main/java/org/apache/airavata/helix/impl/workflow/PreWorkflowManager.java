@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -202,7 +201,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     airavataTask.setTaskId(taskModel.getTaskId());
                     airavataTask.setRetryCount(taskModel.getMaxRetry());
                     airavataTask.setAutoSchedule(
-                            experimentModel.getUserConfigurationData().isAiravataAutoSchedule());
+                            experimentModel.getUserConfigurationData().getAiravataAutoSchedule());
                     if (allTasks.size() > 0) {
                         allTasks.get(allTasks.size() - 1)
                                 .setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
@@ -336,15 +335,13 @@ public class PreWorkflowManager extends WorkflowManager {
                     + " and with message type: " + messageContext.getType());
 
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
-                ProcessSubmitEvent event = new ProcessSubmitEvent();
-                var messageEvent = messageContext.getEvent();
-
+                ProcessSubmitEvent event;
                 try {
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    event = (ProcessSubmitEvent) messageContext.getEvent();
                 } catch (Exception e) {
                     logger.error("Failed to fetch process submit event", e);
                     subscriber.sendAck(messageContext.getDeliveryTag());
+                    return;
                 }
 
                 String processId = event.getProcessId();
@@ -374,15 +371,13 @@ public class PreWorkflowManager extends WorkflowManager {
                 }
 
             } else if (messageContext.getType().equals(MessageType.TERMINATEPROCESS)) {
-                ProcessTerminateEvent event = new ProcessTerminateEvent();
-                var messageEvent = messageContext.getEvent();
-
+                ProcessTerminateEvent event;
                 try {
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    event = (ProcessTerminateEvent) messageContext.getEvent();
                 } catch (Exception e) {
                     logger.error("Failed to fetch process cancellation event", e);
                     subscriber.sendAck(messageContext.getDeliveryTag());
+                    return;
                 }
 
                 String processId = event.getProcessId();

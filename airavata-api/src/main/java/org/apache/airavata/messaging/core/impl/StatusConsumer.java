@@ -19,31 +19,22 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
-import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
-import org.apache.airavata.common.model.JobStatusChangeEvent;
-import org.apache.airavata.common.model.Message;
-import org.apache.airavata.common.model.MessageType;
-import org.apache.airavata.common.model.ProcessStatusChangeEvent;
-import org.apache.airavata.common.model.ProcessSubmitEvent;
-import org.apache.airavata.common.model.ProcessTerminateEvent;
-import org.apache.airavata.common.model.TaskOutputChangeEvent;
-import org.apache.airavata.common.model.TaskStatusChangeEvent;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.thrift.TBase;
+import org.apache.airavata.messaging.core.MessageWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StatusConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(StatusConsumer.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private MessageHandler handler;
 
@@ -59,76 +50,20 @@ public class StatusConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
             throws IOException {
-        Message message = new Message();
-
         try {
-            ThriftUtils.createThriftFromBytes(body, message);
-            TBase event = null;
-            String gatewayId = null;
-
-            if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
-                ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  with status "
-                        + experimentStatusChangeEvent.getState());
-                event = experimentStatusChangeEvent;
-                gatewayId = experimentStatusChangeEvent.getGatewayId();
-            } else if (message.getMessageType().equals(MessageType.PROCESS)) {
-                ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), processStatusChangeEvent);
-                log.debug("Message Recieved with message id :" + message.getMessageId() + " and with " + "message type "
-                        + message.getMessageType() + " with status " + processStatusChangeEvent.getState());
-                event = processStatusChangeEvent;
-                gatewayId = processStatusChangeEvent.getProcessIdentity().getGatewayId();
-            } else if (message.getMessageType().equals(MessageType.TASK)) {
-                TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  with status "
-                        + taskStatusChangeEvent.getState());
-                event = taskStatusChangeEvent;
-                gatewayId = taskStatusChangeEvent.getTaskIdentity().getGatewayId();
-            } else if (message.getMessageType() == MessageType.PROCESSOUTPUT) {
-                TaskOutputChangeEvent taskOutputChangeEvent = new TaskOutputChangeEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), taskOutputChangeEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId() + "' and with message type '"
-                        + message.getMessageType());
-                event = taskOutputChangeEvent;
-                gatewayId = taskOutputChangeEvent.getTaskIdentity().getGatewayId();
-            } else if (message.getMessageType().equals(MessageType.JOB)) {
-                JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  with status "
-                        + jobStatusChangeEvent.getState());
-                event = jobStatusChangeEvent;
-                gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
-            } else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
-                ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  for experimentId: "
-                        + processSubmitEvent.getExperimentId()
-                        + "and processId: " + processSubmitEvent.getProcessId());
-                event = processSubmitEvent;
-                gatewayId = processSubmitEvent.getGatewayId();
-            } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
-                ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent();
-                ThriftUtils.createThriftFromBytes(message.getEvent(), processTerminateEvent);
-                log.debug(" Message Received with message id '" + message.getMessageId()
-                        + "' and with message type '" + message.getMessageType() + "'  for processId: "
-                        + processTerminateEvent.getProcessId());
-                event = processTerminateEvent;
-                gatewayId = null;
-            }
-            MessageContext messageContext =
-                    new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
-            messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+            // Deserialize JSON to MessageWrapper
+            MessageWrapper wrapper = objectMapper.readValue(body, MessageWrapper.class);
+            MessageContext messageContext = wrapper.toMessageContext();
             messageContext.setIsRedeliver(envelope.isRedeliver());
+
+            log.debug(
+                    "Message Received with message id '{}' and message type '{}'",
+                    messageContext.getMessageId(),
+                    messageContext.getType());
+
             handler.onMessage(messageContext);
         } catch (Exception e) {
-            String msg = "Failed to de-serialize the thrift message, from routing keys: " + envelope.getRoutingKey();
+            String msg = "Failed to deserialize JSON message, from routing keys: " + envelope.getRoutingKey();
             log.warn(msg, e);
         }
     }

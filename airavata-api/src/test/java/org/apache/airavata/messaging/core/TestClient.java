@@ -21,7 +21,6 @@ package org.apache.airavata.messaging.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
@@ -51,10 +50,7 @@ public class TestClient {
         return message -> {
             if (message.getType().equals(MessageType.EXPERIMENT)) {
                 try {
-                    ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                    var messageEvent = message.getEvent();
-                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) message.getEvent();
                     logger.info("Message Received with message id:" + message.getMessageId() + ", message type: "
                             + message.getType() + ", state: " + event.getState().toString());
                 } catch (Exception e) {

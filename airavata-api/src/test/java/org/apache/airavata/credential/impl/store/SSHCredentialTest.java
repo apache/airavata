@@ -26,29 +26,25 @@ import org.apache.airavata.credential.utils.TokenGenerator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, SSHCredentialTest.TestConfiguration.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
-        })
+        properties = {"spring.main.allow-bean-definition-overriding=true", "security.manager.enabled=false"})
 @TestPropertySource(locations = "classpath:airavata.properties")
 @Transactional
 public class SSHCredentialTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHCredentialTest.class);
 
-    private final SSHCredentialWriter sshCredentialWriter;
-
-    public SSHCredentialTest(SSHCredentialWriter sshCredentialWriter) {
-        this.sshCredentialWriter = sshCredentialWriter;
-    }
+    @Autowired
+    private SSHCredentialWriter sshCredentialWriter;
 
     @Test
     public void testWriteSSHCredential() throws Exception {
@@ -97,15 +93,20 @@ public class SSHCredentialTest {
         }
     }
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.credential", "org.apache.airavata.config"},
+            basePackages = {
+                "org.apache.airavata.credential",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

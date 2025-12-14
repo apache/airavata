@@ -69,7 +69,7 @@ public class InputDataStagingTask extends DataStagingTask {
                         + getTaskId() + ":- Couldn't stage file " + processInput.getName()
                         + " , file name shouldn't be null. ";
                 logger.error(message);
-                if (processInput.isIsRequired()) {
+                if (processInput.getIsRequired()) {
                     message += "File name is null, but this input's isRequired bit is not set";
                 } else {
                     message += "File name is null";

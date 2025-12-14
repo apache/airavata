@@ -88,7 +88,7 @@ public class SSHAccountManager {
         }
 
         // get the account provisioner and config values for the preferences
-        if (!computeResourcePreference.isSetSshAccountProvisioner()) {
+        if (computeResourcePreference.getSshAccountProvisioner() == null) {
             throw new InvalidSetupException("Compute resource [" + computeResourceId
                     + "] does not have an SSH Account Provisioner configured for it.");
         }
@@ -147,7 +147,7 @@ public class SSHAccountManager {
         }
 
         // get the account provisioner and config values for the preferences
-        if (!computeResourcePreference.isSetSshAccountProvisioner()) {
+        if (computeResourcePreference.getSshAccountProvisioner() == null) {
             throw new InvalidSetupException("Compute resource [" + computeResourceId
                     + "] does not have an SSH Account Provisioner " + "configured for it.");
         }

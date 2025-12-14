@@ -50,7 +50,7 @@ include "../data-models/gateway_groups_model.thrift"
 include "../data-models/replica_catalog_models.thrift"
 include "../data-models/group_manager_model.thrift"
 
-namespace java org.apache.airavata.api.model
+namespace java org.apache.airavata.thriftapi.service
 namespace php Airavata.API
 namespace cpp apache.airavata.api
 namespace perl ApacheAiravataAPI

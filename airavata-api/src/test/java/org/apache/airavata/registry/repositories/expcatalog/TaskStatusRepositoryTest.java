@@ -80,7 +80,7 @@ public class TaskStatusRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -90,11 +90,11 @@ public class TaskStatusRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -152,7 +152,8 @@ public class TaskStatusRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
 
-        ProcessModel processModel = new ProcessModel(null, experimentId);
+        ProcessModel processModel = new ProcessModel();
+        processModel.setExperimentId(experimentId);
         String processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
@@ -162,7 +163,8 @@ public class TaskStatusRepositoryTest extends TestBase {
         String taskId = taskService.addTask(taskModel, processId);
         assertTrue(taskId != null);
 
-        TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
+        TaskStatus taskStatus = new TaskStatus();
+        taskStatus.setState(TaskState.EXECUTING);
         taskStatusService.addTaskStatus(taskStatus, taskId);
         assertTrue(taskService.getTask(taskId).getTaskStatuses().size() == 1);
 

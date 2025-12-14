@@ -82,9 +82,13 @@ public class HTCondorOutputParser implements OutputParser {
             if (matcher.find()) {
                 if (matcher.group(STATUS).equals("E")) {
                     log.info("parsing the job status returned : " + STATUS);
-                    return new JobStatus(JobState.FAILED);
+                    var jobStatus = new JobStatus();
+                    jobStatus.setJobState(JobState.FAILED);
+                    return jobStatus;
                 }
-                return new JobStatus(JobUtil.getJobState(matcher.group(STATUS)));
+                var jobStatus = new JobStatus();
+                jobStatus.setJobState(JobUtil.getJobState(matcher.group(STATUS)));
+                return jobStatus;
             }
         }
         return null;
@@ -127,9 +131,13 @@ public class HTCondorOutputParser implements OutputParser {
                         columnList.set(4, "Er");
                     }
                     try {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf(columnList.get(4))));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.valueOf(columnList.get(4)));
+                        statusMap.put(jobID, jobStatus);
                     } catch (IndexOutOfBoundsException e) {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf("U")));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.valueOf("U"));
+                        statusMap.put(jobID, jobStatus);
                     }
                     found = true;
                     break;

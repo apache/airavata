@@ -104,12 +104,15 @@ public class RegistryServiceDBEventMessagingFactory {
             logger.info("Sending service discovery message. Publisher: " + publisher + ", Subscriber: "
                     + DBEventService.REGISTRY.toString());
 
-            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber(DBEventService.REGISTRY.toString());
+            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber();
+            dbEventSubscriber.setSubscriberService(DBEventService.REGISTRY.toString());
             DBEventMessageContext dbEventMessageContext = new DBEventMessageContext();
             dbEventMessageContext.setSubscriber(dbEventSubscriber);
 
-            DBEventMessage dbEventMessage =
-                    new DBEventMessage(DBEventType.SUBSCRIBER, dbEventMessageContext, publisher);
+            DBEventMessage dbEventMessage = new DBEventMessage();
+            dbEventMessage.setDbEventType(DBEventType.SUBSCRIBER);
+            dbEventMessage.setMessageContext(dbEventMessageContext);
+            dbEventMessage.setPublisherService(publisher);
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 

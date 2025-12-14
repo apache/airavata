@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.AppCatalog.Parser
 namespace cpp apache.airavata.model.appcatalog.parser
 namespace py airavata.model.appcatalog.parser

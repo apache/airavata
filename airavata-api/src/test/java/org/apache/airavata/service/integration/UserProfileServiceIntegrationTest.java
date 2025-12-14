@@ -219,8 +219,8 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         void shouldPreserveEmailAddresses() throws UserProfileServiceException, IamAdminServicesException {
             // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-email-user", TEST_GATEWAY_ID);
-            userProfile.addToEmails("email1@example.com");
-            userProfile.addToEmails("email2@example.com");
+            userProfile.getEmails().add("email1@example.com");
+            userProfile.getEmails().add("email2@example.com");
 
             // Act
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
@@ -228,7 +228,7 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
 
             // Assert
             assertThat(retrieved.getEmails()).isNotNull();
-            assertThat(retrieved.getEmailsSize()).isGreaterThanOrEqualTo(1);
+            assertThat(retrieved.getEmails().size()).isGreaterThanOrEqualTo(1);
         }
     }
 }

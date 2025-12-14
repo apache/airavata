@@ -53,7 +53,7 @@ public class TaskEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private TaskTypes taskType;
 
-    @Column(name = "PARENT_PROCESS_ID", nullable = false)
+    @Column(name = "PARENT_PROCESS_ID", nullable = false, insertable = false, updatable = false)
     private String parentProcessId;
 
     @Column(name = "CREATION_TIME", nullable = false)

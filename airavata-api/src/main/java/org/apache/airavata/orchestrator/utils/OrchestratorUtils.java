@@ -123,7 +123,7 @@ public class OrchestratorUtils {
             throws AiravataException, RegistryServiceException {
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
-        if (processModel.isUseUserCRPref()) {
+        if (processModel.getUseUserCRPref()) {
             UserComputeResourcePreference userComputeResourcePreference =
                     registryService.getUserComputeResourcePreference(
                             processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
@@ -161,7 +161,7 @@ public class OrchestratorUtils {
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         String scratchLocation = computeResourcePreference.getScratchLocation();
 
-        if (processModel.isUseUserCRPref()) {
+        if (processModel.getUseUserCRPref()) {
             UserComputeResourcePreference userComputeResourcePreference =
                     registryService.getUserComputeResourcePreference(
                             processModel.getUserName(), gatewayId, processModel.getComputeResourceId());

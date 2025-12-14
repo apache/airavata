@@ -19,23 +19,23 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
-import org.apache.airavata.common.model.DBEventMessage;
-import org.apache.airavata.common.model.Message;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessageWrapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class MessageConsumer extends DefaultConsumer {
 
     private static final Logger logger = LogManager.getLogger(MessageConsumer.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private MessageHandler handler;
     private Channel channel;
@@ -52,21 +52,13 @@ public class MessageConsumer extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
             throws IOException {
 
-        Message message = new Message();
-
         try {
             logger.info("handleDelivery() -> Handling message delivery. Consumer Tag : " + consumerTag);
-            ThriftUtils.createThriftFromBytes(body, message);
 
-            DBEventMessage dBEventMessage = new DBEventMessage();
-            ThriftUtils.createThriftFromBytes(message.getEvent(), dBEventMessage);
+            // Deserialize JSON to MessageWrapper
+            MessageWrapper wrapper = objectMapper.readValue(body, MessageWrapper.class);
+            MessageContext messageContext = wrapper.toMessageContext();
 
-            MessageContext messageContext = new MessageContext(
-                    dBEventMessage,
-                    message.getMessageType(),
-                    message.getMessageId(),
-                    "gatewayId",
-                    envelope.getDeliveryTag());
             handler.onMessage(messageContext);
             // sendAck(deliveryTag);
 

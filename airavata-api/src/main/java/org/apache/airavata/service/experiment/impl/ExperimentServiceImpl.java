@@ -56,7 +56,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         this.registryService = registryService;
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-        } catch (AiravataException e) {
+        } catch (Exception e) {
             logger.warn("StatusPublisher unavailable: " + e.getMessage());
         }
     }
@@ -72,7 +72,10 @@ public class ExperimentServiceImpl implements ExperimentService {
         try {
             var experimentId = registryService.createExperiment(gatewayId, experiment);
             if (statusPublisher != null) {
-                var event = new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
+                var event = new ExperimentStatusChangeEvent();
+                event.setState(ExperimentState.CREATED);
+                event.setExperimentId(experimentId);
+                event.setGatewayId(gatewayId);
                 var messageId = AiravataUtils.getId("EXPERIMENT");
                 var messageContext = new MessageContext(
                         event, org.apache.airavata.common.model.MessageType.EXPERIMENT, messageId, gatewayId);

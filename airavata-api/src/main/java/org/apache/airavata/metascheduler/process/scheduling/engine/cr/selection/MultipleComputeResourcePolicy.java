@@ -77,7 +77,7 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
                             registryService.getComputeResource(resourceSchedulingModel.getResourceHostId());
                     QueueStatusModel queueStatusModel = registryService.getQueueStatus(
                             comResourceDes.getHostName(), resourceSchedulingModel.getQueueName());
-                    if (queueStatusModel.isQueueUp()) {
+                    if (queueStatusModel.getQueueUp()) {
                         return Optional.of(resourceSchedulingModel);
                     } else {
                         retries.add(key);

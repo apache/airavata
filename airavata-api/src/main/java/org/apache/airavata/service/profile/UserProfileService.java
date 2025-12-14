@@ -96,7 +96,7 @@ public class UserProfileService {
             userProfile.setUserId(userInfo.getUsername().toLowerCase());
             userProfile.setGatewayId(gatewayId);
             userProfile.setAiravataInternalUserId(userProfile.getUserId() + "@" + gatewayId);
-            userProfile.addToEmails(userInfo.getEmailAddress());
+            userProfile.getEmails().add(userInfo.getEmailAddress());
             userProfile.setFirstName(userInfo.getFirstName());
             userProfile.setLastName(userInfo.getLastName());
             userProfile.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());

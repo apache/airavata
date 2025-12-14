@@ -51,7 +51,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         try {
             List<ValidatorResult> validatorResultList = validateUserConfiguration(experiment, processModel);
             for (ValidatorResult result : validatorResultList) {
-                if (!result.isResult()) {
+                if (!result.getResult()) {
                     validationResults.setValidationState(false);
                     break;
                 }
@@ -69,7 +69,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
         ComputationalResourceSchedulingModel computationalResourceScheduling =
                 userConfigurationData.getComputationalResourceScheduling();
-        if (userConfigurationData.isAiravataAutoSchedule()) {
+        if (userConfigurationData.getAiravataAutoSchedule()) {
             logger.info("User enabled Auto-Schedule. Hence we don't do validation..");
             ValidatorResult validatorResult = new ValidatorResult();
             validatorResult.setResult(true);

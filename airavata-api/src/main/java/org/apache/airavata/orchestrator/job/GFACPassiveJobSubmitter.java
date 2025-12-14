@@ -137,7 +137,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
             if (gatewayId == null || gatewayId.isEmpty()) {
                 gatewayId = properties.services.default_.gateway;
             }
-            ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent(processId, gatewayId, tokenId);
+            ProcessTerminateEvent processTerminateEvent =
+                    new ProcessTerminateEvent(processId, gatewayId, experimentId, tokenId);
             MessageContext messageContext = new MessageContext(
                     processTerminateEvent,
                     MessageType.TERMINATEPROCESS,

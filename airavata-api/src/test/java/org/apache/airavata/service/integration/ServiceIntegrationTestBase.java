@@ -28,8 +28,11 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -105,7 +108,7 @@ public abstract class ServiceIntegrationTestBase {
      * Test configuration that enables component scanning for services
      * without loading background services or Thrift servers.
      */
-    @org.springframework.context.annotation.Configuration
+    @Configuration
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
@@ -121,7 +124,7 @@ public abstract class ServiceIntegrationTestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -131,15 +134,15 @@ public abstract class ServiceIntegrationTestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|registry\\.messaging)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
                         ),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
                         )
@@ -149,14 +152,14 @@ public abstract class ServiceIntegrationTestBase {
         org.apache.airavata.config.DozerMapperConfig.class
     })
     static class TestConfiguration {
-        @org.springframework.context.annotation.Bean
+        @Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
                 org.apache.airavata.config.AiravataServerProperties properties) {
             return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
         }
 
-        @org.springframework.context.annotation.Bean
-        @org.springframework.context.annotation.Primary
+        @Bean
+        @Primary
         public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager() {
             return new org.apache.airavata.security.AiravataSecurityManager() {
                 @Override

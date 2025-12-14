@@ -27,13 +27,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationModule;
 import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CommandObject;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.SetEnvPaths;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
@@ -86,7 +86,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -96,11 +96,11 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -268,9 +268,9 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         String computeResource = addSampleComputeResource("1");
 
         ApplicationDeploymentDescription deployment = prepareSampleDeployment("1", applicationModule, computeResource);
-        deployment.setAppDeploymentId(airavata_commonsConstants.DEFAULT_ID);
+        deployment.setAppDeploymentId(AiravataCommonsConstants.DEFAULT_ID);
         String deploymentId = applicationDeploymentService.addApplicationDeployment(deployment, gatewayId);
-        Assertions.assertNotEquals(deploymentId, airavata_commonsConstants.DEFAULT_ID);
+        Assertions.assertNotEquals(deploymentId, AiravataCommonsConstants.DEFAULT_ID);
         Assertions.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 

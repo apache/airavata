@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Primary;
  * Provides the configured AiravataSecurityManager bean based on application settings.
  */
 @Configuration
-@ConditionalOnProperty(name = "security.manager.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "security.manager.enabled", havingValue = "true", matchIfMissing = false)
 public class SecurityManagerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerConfig.class);

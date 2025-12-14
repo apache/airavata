@@ -1,0 +1,67 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.common.model;
+
+/**
+ * Domain enum: GatewayApprovalStatus
+ */
+public enum GatewayApprovalStatus {
+    REQUESTED(0),
+    APPROVED(1),
+    ACTIVE(2),
+    DEACTIVATED(3),
+    CANCELLED(4),
+    DENIED(5),
+    CREATED(6),
+    DEPLOYED(7);
+
+    private final int value;
+
+    GatewayApprovalStatus(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public static GatewayApprovalStatus findByValue(int value) {
+        switch (value) {
+            case 0:
+                return REQUESTED;
+            case 1:
+                return APPROVED;
+            case 2:
+                return ACTIVE;
+            case 3:
+                return DEACTIVATED;
+            case 4:
+                return CANCELLED;
+            case 5:
+                return DENIED;
+            case 6:
+                return CREATED;
+            case 7:
+                return DEPLOYED;
+            default:
+                return null;
+        }
+    }
+}

@@ -22,8 +22,8 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.JobModel;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
@@ -123,7 +123,7 @@ public class JobService {
     }
 
     private JobEntity saveJob(JobModel jobModel, JobPK jobPK) throws RegistryException {
-        if (jobModel.getJobId() == null || jobModel.getJobId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+        if (jobModel.getJobId() == null || jobModel.getJobId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Job's JobId");
             jobModel.setJobId(jobPK.getJobId());
         }

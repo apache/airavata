@@ -53,7 +53,7 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         try {
             List<ValidatorResult> validatorResultList = validateGroupResourceProfile(experiment, processModel);
             for (ValidatorResult result : validatorResultList) {
-                if (!result.isResult()) {
+                if (!result.getResult()) {
                     validationResults.setValidationState(false);
                     break;
                 }

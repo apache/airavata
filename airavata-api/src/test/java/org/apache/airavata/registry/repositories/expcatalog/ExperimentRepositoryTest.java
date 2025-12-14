@@ -80,7 +80,7 @@ public class ExperimentRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -90,11 +90,11 @@ public class ExperimentRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -150,22 +150,27 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
-        assertEquals(0, experimentService.getExperiment(experimentId).getEmailAddressesSize());
+        assertEquals(
+                0,
+                experimentService
+                        .getExperiment(experimentId)
+                        .getEmailAddresses()
+                        .size());
 
         experimentModel.setDescription("description");
-        experimentModel.addToEmailAddresses("notify@example.com");
-        experimentModel.addToEmailAddresses("notify2@example.com");
+        experimentModel.getEmailAddresses().add("notify@example.com");
+        experimentModel.getEmailAddresses().add("notify2@example.com");
         experimentService.updateExperiment(experimentModel, experimentId);
 
         ExperimentModel retrievedExperimentModel = experimentService.getExperiment(experimentId);
         assertEquals("description", retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
-        assertEquals(1, retrievedExperimentModel.getExperimentStatusSize());
+        assertEquals(1, retrievedExperimentModel.getExperimentStatus().size());
         assertEquals(
                 ExperimentState.CREATED,
                 retrievedExperimentModel.getExperimentStatus().get(0).getState());
-        assertEquals(2, retrievedExperimentModel.getEmailAddressesSize());
+        assertEquals(2, retrievedExperimentModel.getEmailAddresses().size());
         assertEquals(
                 "notify@example.com",
                 retrievedExperimentModel.getEmailAddresses().get(0));
@@ -248,25 +253,25 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setUserFriendlyDescription("First argument");
         input1.setValue("value1");
         input1.setOverrideFilename("gaussian.com");
-        experimentModel.addToExperimentInputs(input1);
+        experimentModel.getExperimentInputs().add(input1);
 
         String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
 
         ExperimentModel retrievedExperimentModel = experimentService.getExperiment(experimentId);
-        assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
+        assertEquals(1, retrievedExperimentModel.getExperimentInputs().size());
         InputDataObjectType retrievedInput1 =
                 retrievedExperimentModel.getExperimentInputs().get(0);
         assertEquals("name1", retrievedInput1.getName());
-        assertTrue(retrievedInput1.isIsRequired());
+        assertTrue(retrievedInput1.getIsRequired());
         assertEquals(DataType.STRING, retrievedInput1.getType());
         assertEquals(0, retrievedInput1.getInputOrder());
         assertEquals("-arg1", retrievedInput1.getApplicationArgument());
-        assertTrue(retrievedInput1.isDataStaged());
-        assertTrue(retrievedInput1.isIsReadOnly());
+        assertTrue(retrievedInput1.getDataStaged());
+        assertTrue(retrievedInput1.getIsReadOnly());
         assertEquals("{\"foo\": 123}", retrievedInput1.getMetaData());
-        assertTrue(retrievedInput1.isRequiredToAddedToCommandLine());
-        assertTrue(retrievedInput1.isStandardInput());
+        assertTrue(retrievedInput1.getRequiredToAddedToCommandLine());
+        assertTrue(retrievedInput1.getStandardInput());
         assertEquals("storageResourceId", retrievedInput1.getStorageResourceId());
         assertEquals("First argument", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1", retrievedInput1.getValue());
@@ -290,17 +295,17 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentService.updateExperiment(retrievedExperimentModel, experimentId);
 
         retrievedExperimentModel = experimentService.getExperiment(experimentId);
-        assertEquals(1, retrievedExperimentModel.getExperimentInputsSize());
+        assertEquals(1, retrievedExperimentModel.getExperimentInputs().size());
         retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
-        assertFalse(retrievedInput1.isIsRequired());
+        assertFalse(retrievedInput1.getIsRequired());
         assertEquals(DataType.URI, retrievedInput1.getType());
         assertEquals(1, retrievedInput1.getInputOrder());
         assertEquals("-arg1a", retrievedInput1.getApplicationArgument());
-        assertFalse(retrievedInput1.isDataStaged());
-        assertFalse(retrievedInput1.isIsReadOnly());
+        assertFalse(retrievedInput1.getDataStaged());
+        assertFalse(retrievedInput1.getIsReadOnly());
         assertEquals("{\"bar\": 456}", retrievedInput1.getMetaData());
-        assertFalse(retrievedInput1.isRequiredToAddedToCommandLine());
-        assertFalse(retrievedInput1.isStandardInput());
+        assertFalse(retrievedInput1.getRequiredToAddedToCommandLine());
+        assertFalse(retrievedInput1.getStandardInput());
         assertEquals("storageResourceId2", retrievedInput1.getStorageResourceId());
         assertEquals("First argument~", retrievedInput1.getUserFriendlyDescription());
         assertEquals("value1a", retrievedInput1.getValue());

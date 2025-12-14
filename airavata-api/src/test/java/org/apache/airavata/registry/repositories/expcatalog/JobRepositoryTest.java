@@ -85,7 +85,7 @@ public class JobRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -95,11 +95,11 @@ public class JobRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -157,7 +157,8 @@ public class JobRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
 
-        ProcessModel processModel = new ProcessModel(null, experimentId);
+        ProcessModel processModel = new ProcessModel();
+        processModel.setExperimentId(experimentId);
         String processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
@@ -176,7 +177,7 @@ public class JobRepositoryTest extends TestBase {
         jobModel.setJobDescription("jobDescription");
 
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
-        jobModel.addToJobStatuses(jobStatus);
+        jobModel.getJobStatuses().add(jobStatus);
 
         String jobId = jobService.addJob(jobModel, processId);
         assertTrue(jobId != null);
@@ -190,7 +191,7 @@ public class JobRepositoryTest extends TestBase {
         jobService.updateJob(jobModel, jobPK);
         final JobModel retrievedJob = jobService.getJob(jobPK);
         assertEquals("jobName", retrievedJob.getJobName());
-        assertEquals(1, retrievedJob.getJobStatusesSize());
+        assertEquals(1, retrievedJob.getJobStatuses().size());
         assertEquals(JobState.SUBMITTED, retrievedJob.getJobStatuses().get(0).getJobState());
 
         List<String> jobIdList = jobService.getJobIds(DBConstants.Job.TASK_ID, taskId);

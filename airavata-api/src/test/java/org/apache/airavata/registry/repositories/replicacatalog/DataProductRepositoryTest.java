@@ -76,7 +76,7 @@ public class DataProductRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -86,11 +86,11 @@ public class DataProductRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -182,7 +182,7 @@ public class DataProductRepositoryTest extends TestBase {
         replicaLocationModel1.setStorageResourceId("storage_resource_id");
         replicaLocationModel1.setReplicaPersistentType(ReplicaPersistentType.PERSISTENT);
 
-        testDataProductModel1.addToReplicaLocations(replicaLocationModel1);
+        testDataProductModel1.getReplicaLocations().add(replicaLocationModel1);
 
         String productUri1 = dataProductService.registerDataProduct(testDataProductModel1);
         assertTrue(dataProductService.isDataProductExists(productUri1));
@@ -190,7 +190,7 @@ public class DataProductRepositoryTest extends TestBase {
         DataProductModel retrievedDataProductModel1 = dataProductService.getDataProduct(productUri1);
         assertEquals(productUri1, retrievedDataProductModel1.getProductUri());
 
-        assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
+        assertEquals(1, retrievedDataProductModel1.getReplicaLocations().size());
         DataReplicaLocationModel retrievedReplicaLocationModel1 =
                 retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());

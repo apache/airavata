@@ -27,7 +27,7 @@ include "../airavata-apis/airavata_errors.thrift"
 include "../base-api/base_api.thrift"
 include "../data-models/process_model.thrift"
 
-namespace java org.apache.airavata.orchestrator.model
+namespace java org.apache.airavata.thriftapi.orchestrator.model
 
 const string ORCHESTRATOR_CPI_VERSION = "0.18.0"
 

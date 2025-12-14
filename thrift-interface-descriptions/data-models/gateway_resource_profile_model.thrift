@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 namespace py airavata.model.appcatalog.gatewayprofile

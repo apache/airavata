@@ -75,7 +75,7 @@ public class ProjectRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -85,14 +85,14 @@ public class ProjectRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.registry\\.messaging\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -130,10 +130,10 @@ public class ProjectRepositoryTest extends TestBase {
         String projectId = projectService.addProject(project, gatewayId);
         assertTrue(projectId != null);
 
-        Project updatedProject = project.deepCopy();
+        Project updatedProject = new Project();
         // Simulate clients that may or may not set projectId but will pass
         // projectId as an argument to updateProject
-        updatedProject.unsetProjectID();
+        updatedProject.setProjectID(null);
         updatedProject.setName("updated projectName");
         updatedProject.setDescription("projectDescription");
         projectService.updateProject(updatedProject, projectId);

@@ -26,11 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationInputEntity;
@@ -271,7 +271,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("")
                 || applicationInterfaceDescription
                         .getApplicationInterfaceId()
-                        .equals(airavata_commonsConstants.DEFAULT_ID)) {
+                        .equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug(
                     "If Application Interface ID is empty or DEFAULT, set it as the Application Interface Name plus random UUID");
             applicationInterfaceDescription.setApplicationInterfaceId(
@@ -320,7 +320,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             throws AppCatalogException {
 
         if (applicationModule.getAppModuleId().trim().equals("")
-                || applicationModule.getAppModuleId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                || applicationModule.getAppModuleId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug(
                     "If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
             applicationModule.setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()));

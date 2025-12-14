@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CloudJobSubmission;
 import org.apache.airavata.common.model.ComputeResourceDescription;
@@ -41,7 +42,6 @@ import org.apache.airavata.common.model.SCPDataMovement;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.UnicoreDataMovement;
 import org.apache.airavata.common.model.UnicoreJobSubmission;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity;
 import org.apache.airavata.registry.entities.appcatalog.CloudJobSubmissionEntity;
@@ -149,7 +149,7 @@ public class ComputeResourceService {
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         if (description.getComputeResourceId().equals("")
-                || description.getComputeResourceId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                || description.getComputeResourceId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
         }
         return saveComputeResourceDescriptorData(description);
@@ -308,7 +308,7 @@ public class ComputeResourceService {
         Map<String, String> computeResourceMap = new HashMap<>();
         for (ComputeResourceEntity entity : entities) {
             ComputeResourceDescription desc = mapper.map(entity, ComputeResourceDescription.class);
-            if (desc.isEnabled()) {
+            if (desc.getEnabled()) {
                 computeResourceMap.put(desc.getComputeResourceId(), desc.getHostName());
             }
         }

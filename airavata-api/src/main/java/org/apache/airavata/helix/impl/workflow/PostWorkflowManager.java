@@ -29,7 +29,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -301,8 +300,7 @@ public class PostWorkflowManager extends WorkflowManager {
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (jobSubmissionFound) {
-                        DataStagingTaskModel subTaskModel =
-                                (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                        var subTaskModel = (DataStagingTaskModel) taskModel.getSubTaskModel();
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
                             case OUPUT:

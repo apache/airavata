@@ -36,12 +36,12 @@ public class GroupComputeResourcePreferenceUtil {
         }
 
         EnvironmentSpecificPreferences esp = groupComputeResourcePreference.getSpecificPreferences();
-        if (esp == null || !esp.isSetSlurm()) {
+        if (esp == null || !esp.isSlurm()) {
             return null;
         }
 
         SlurmComputeResourcePreference slurm = esp.getSlurm();
-        if (!slurm.isSetReservations() || slurm.getReservationsSize() == 0) {
+        if (slurm.getReservations() == null || slurm.getReservations().size() == 0) {
             return null;
         }
 

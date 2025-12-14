@@ -65,7 +65,9 @@ public class SlurmOutputParser implements OutputParser {
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {
-            return new JobStatus(JobUtil.getJobState(matcher.group(STATUS)));
+            var jobStatus = new JobStatus();
+            jobStatus.setJobState(JobUtil.getJobState(matcher.group(STATUS)));
+            return jobStatus;
         }
         return null;
     }
@@ -96,9 +98,13 @@ public class SlurmOutputParser implements OutputParser {
                         }
                     }
                     try {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf(columnList.get(4))));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.valueOf(columnList.get(4)));
+                        statusMap.put(jobID, jobStatus);
                     } catch (IndexOutOfBoundsException e) {
-                        statusMap.put(jobID, new JobStatus(JobState.valueOf("U")));
+                        var jobStatus = new JobStatus();
+                        jobStatus.setJobState(JobState.UNKNOWN);
+                        statusMap.put(jobID, jobStatus);
                     }
                     found = true;
                     break;

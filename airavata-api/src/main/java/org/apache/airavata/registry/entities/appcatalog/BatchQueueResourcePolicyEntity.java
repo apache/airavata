@@ -42,10 +42,10 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     @Column(name = "RESOURCE_POLICY_ID", nullable = false)
     private String resourcePolicyId;
 
-    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false)
+    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false, insertable = false, updatable = false)
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false)
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, insertable = false, updatable = false)
     private String groupResourceProfileId;
 
     @Column(name = "QUEUE_NAME", nullable = false)

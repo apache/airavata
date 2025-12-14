@@ -20,7 +20,7 @@
 
  include "status_models.thrift"
 
-  namespace java org.apache.airavata.common.model
+  namespace java org.apache.airavata.thriftapi.model
   namespace php Airavata.Model.Job
   namespace cpp apache.airavata.model.job
   namespace py airavata.model.job

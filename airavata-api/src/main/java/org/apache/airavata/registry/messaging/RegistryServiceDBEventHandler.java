@@ -19,11 +19,10 @@
 */
 package org.apache.airavata.registry.messaging;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.exception.DuplicateEntryException;
 import org.apache.airavata.common.model.CrudType;
 import org.apache.airavata.common.model.DBEventMessage;
 import org.apache.airavata.common.model.DBEventPublisherContext;
@@ -50,6 +49,7 @@ import org.springframework.stereotype.Component;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final RegistryService registryService;
 
@@ -64,10 +64,8 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         logger.info("RegistryServiceDBEventHandler | Received a new message!");
 
         try {
-            // construct dbeventmessage thrift datamodel
-            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-            DBEventMessage dbEventMessage = new DBEventMessage();
-            ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
+            // DBEventMessage now extends MessagingEvent, so we can cast directly
+            DBEventMessage dbEventMessage = (DBEventMessage) messageContext.getEvent();
             logger.info("RegistryService received db-event-message from publisher: "
                     + dbEventMessage.getPublisherService());
 
@@ -76,108 +74,94 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
 
-            // this try-block is mainly for catching DuplicateEntryException
-            try {
-                // check type of entity-type
-                switch (publisherContext.getEntityType()) {
-                    // Gateway related operations
-                    case TENANT: {
-                        // construct gateway datamodel from message
-                        Gateway gateway = new Gateway();
-                        ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), gateway);
+            // check type of entity-type
+            switch (publisherContext.getEntityType()) {
+                // Gateway related operations
+                case TENANT: {
+                    // Deserialize JSON to domain model
+                    java.nio.ByteBuffer entityDataBuffer = publisherContext.getEntityDataModel();
+                    byte[] entityDataBytes = new byte[entityDataBuffer.remaining()];
+                    entityDataBuffer.duplicate().get(entityDataBytes);
 
-                        // call service-methods based on CRUD type
-                        switch (publisherContext.getCrudType()) {
-                            case CREATE: {
-                                logger.info("Replicating addGateway in Registry.");
+                    Gateway gateway = objectMapper.readValue(entityDataBytes, Gateway.class);
+
+                    // call service-methods based on CRUD type
+                    switch (publisherContext.getCrudType()) {
+                        case CREATE: {
+                            logger.info("Replicating addGateway in Registry.");
+                            registryService.addGateway(gateway);
+                            logger.info("addGateway Replication Success!");
+                            break;
+                        }
+                        case UPDATE: {
+                            logger.info("Replicating updateGateway in Registry.");
+                            if (!registryService.isGatewayExist(gateway.getGatewayId())) {
+                                logger.info("Gateway doesn't exist so adding instead of updating.");
                                 registryService.addGateway(gateway);
-                                logger.info("addGateway Replication Success!");
-                                break;
+                            } else {
+                                registryService.updateGateway(gateway.getGatewayId(), gateway);
                             }
-                            case UPDATE: {
-                                logger.info("Replicating updateGateway in Registry.");
-                                if (!registryService.isGatewayExist(gateway.getGatewayId())) {
-                                    logger.info("Gateway doesn't exist so adding instead of updating.");
-                                    registryService.addGateway(gateway);
-                                } else {
-                                    registryService.updateGateway(gateway.getGatewayId(), gateway);
-                                }
-                                logger.info("updateGateway Replication Success!");
-                                break;
-                            }
-                            case DELETE: {
-                                logger.info("Replicating deleteGateway in Registry.");
-                                registryService.deleteGateway(gateway.getGatewayId());
-                                logger.info("deleteGateway Replication Success!");
-                                break;
-                            }
-                            case READ: {
-                                logger.info("Replicating readGateway in Registry: " + publisherContext.getCrudType());
-                                // TODO: find appropriate method
-                                break;
-                            }
+                            logger.info("updateGateway Replication Success!");
+                            break;
                         }
-                        // break entity: gateway
-                        break;
-                    }
-
-                    // UserProfile related operations
-                    case USER_PROFILE: {
-                        // construct userprofile datamodel from message
-                        UserProfile userProfile = new UserProfile();
-                        ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), userProfile);
-
-                        // call service-methods based on CRUD type
-                        switch (publisherContext.getCrudType()) {
-                            case CREATE: {
-                                logger.info("Replicating addUser in Registry.");
-                                if (!registryService.isUserExists(
-                                        userProfile.getGatewayId(), userProfile.getUserId())) {
-                                    registryService.addUser(userProfile);
-                                }
-                                Project defaultProject = createDefaultProject(registryService, userProfile);
-                                if (defaultProject != null) {
-
-                                    // Publish new PROJECT event (sharing service will listen for it and register this
-                                    // as a shared Entity)
-                                    dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
-                                }
-                                logger.info("addUser Replication Success!");
-                                break;
-                            }
-                            case UPDATE: {
-                                logger.info(
-                                        "Replicating updateGateway in Registry.",
-                                        publisherContext.getEntityDataModel());
-                                // TODO: find appropriate method
-                                break;
-                            }
-                            case DELETE: {
-                                logger.info(
-                                        "Replicating deleteGateway in Registry.",
-                                        publisherContext.getEntityDataModel());
-                                // TODO: find appropriate method
-                                break;
-                            }
-                            case READ: {
-                                logger.info("Replicating readGateway in Registry: " + publisherContext.getCrudType());
-                                // TODO: find appropriate method
-                                break;
-                            }
+                        case DELETE: {
+                            logger.info("Replicating deleteGateway in Registry.");
+                            registryService.deleteGateway(gateway.getGatewayId());
+                            logger.info("deleteGateway Replication Success!");
+                            break;
                         }
-                        // break entity: userprofile
-                        break;
                     }
-
-                    // no handler for entity
-                    default: {
-                        logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
-                    }
+                    // break entity: gateway
+                    break;
                 }
-            } catch (DuplicateEntryException ex) {
-                // log this exception and proceed (do nothing)
-                // this exception is thrown mostly when messages are re-consumed, hence ignore
-                logger.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
+
+                // UserProfile related operations
+                case USER_PROFILE: {
+                    // Deserialize JSON to domain model
+                    java.nio.ByteBuffer entityDataBuffer = publisherContext.getEntityDataModel();
+                    byte[] entityDataBytes = new byte[entityDataBuffer.remaining()];
+                    entityDataBuffer.duplicate().get(entityDataBytes);
+
+                    UserProfile userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
+
+                    // call service-methods based on CRUD type
+                    switch (publisherContext.getCrudType()) {
+                        case CREATE: {
+                            logger.info("Replicating addUser in Registry.");
+                            if (!registryService.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
+                                registryService.addUser(userProfile);
+                            }
+                            Project defaultProject = createDefaultProject(registryService, userProfile);
+                            if (defaultProject != null) {
+
+                                // Publish new PROJECT event (sharing service will listen for it and register this
+                                // as a shared Entity)
+                                dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
+                            }
+                            logger.info("addUser Replication Success!");
+                            break;
+                        }
+                        case UPDATE: {
+                            logger.info(
+                                    "Replicating updateGateway in Registry.", publisherContext.getEntityDataModel());
+                            // TODO: find appropriate method
+                            break;
+                        }
+                        case DELETE: {
+                            logger.info(
+                                    "Replicating deleteGateway in Registry.", publisherContext.getEntityDataModel());
+                            // TODO: find appropriate method
+                            break;
+                        }
+                    }
+                    // break entity: userprofile
+                    break;
+                }
+
+                // no handler for entity
+                default: {
+                    logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
+                }
             }
             // send ack for received message
             logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: "

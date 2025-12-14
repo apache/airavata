@@ -77,7 +77,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                         + getTaskId() + ":- Couldn't stage file " + processOutput.getName()
                         + " , file name shouldn't be null. ";
                 logger.error(message);
-                if (processOutput.isIsRequired()) {
+                if (processOutput.getIsRequired()) {
                     message += "File name is null, but this output's isRequired bit is not set";
                 } else {
                     message += "File name is null";
@@ -222,9 +222,8 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     try {
-                        ApplicationInterfaceDescription appInterface =
-                                getTaskContext().getApplicationInterfaceDescription();
-                        if (appInterface != null && appInterface.isCleanAfterStaged()) {
+                        var appInterface = getTaskContext().getApplicationInterfaceDescription();
+                        if (appInterface != null && appInterface.getCleanAfterStaged()) {
                             logger.info(
                                     "cleanAfterStaged is enabled, deleting source files after successful staging for task with the Id: {}",
                                     getTaskId());
@@ -261,7 +260,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                     try {
                         ApplicationInterfaceDescription appInterface =
                                 getTaskContext().getApplicationInterfaceDescription();
-                        if (appInterface != null && appInterface.isCleanAfterStaged()) {
+                        if (appInterface != null && appInterface.getCleanAfterStaged()) {
                             logger.info(
                                     "cleanAfterStaged is enabled, deleting source file after successful staging for task with the Id: {}",
                                     getTaskId());

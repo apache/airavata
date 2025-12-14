@@ -182,7 +182,7 @@ public class DataParsingTask extends AbstractTask {
                         }
                     }
                 } else {
-                    if (parserInput.isRequiredInput()) {
+                    if (parserInput.getRequiredInput()) {
                         logger.error("Parser input with id " + parserInput.getId() + " and name "
                                 + parserInput.getName() + " is not available");
                         throw new TaskOnFailException(
@@ -219,7 +219,7 @@ public class DataParsingTask extends AbstractTask {
                     if (new File(localFilePath).exists()) {
                         uploadFileToStorageResource(
                                 parsingTaskOutput, remoteFilePath, localFilePath, helper.getAdaptorSupport());
-                    } else if (parserOutput.isRequiredOutput()) {
+                    } else if (parserOutput.getRequiredOutput()) {
                         logger.error("Expected output file " + localFilePath + " can not be found");
                         throw new TaskOnFailException(
                                 "Expected output file " + localFilePath + " can not be found", false, null);
@@ -228,7 +228,7 @@ public class DataParsingTask extends AbstractTask {
                                 + " can not be found but skipping as it is not mandatory");
                     }
                 } else {
-                    if (parserOutput.isRequiredOutput()) {
+                    if (parserOutput.getRequiredOutput()) {
                         logger.error("File upload info with id " + parserOutput.getId() + " and name "
                                 + parserOutput.getName() + " is not available");
                         throw new TaskOnFailException(
@@ -444,7 +444,10 @@ public class DataParsingTask extends AbstractTask {
                     null);
 
             replicaLocationModel.setFilePath(destinationURI.toString());
-            dataProductModel.addToReplicaLocations(replicaLocationModel);
+            if (dataProductModel.getReplicaLocations() == null) {
+                dataProductModel.setReplicaLocations(new java.util.ArrayList<>());
+            }
+            dataProductModel.getReplicaLocations().add(replicaLocationModel);
 
             var productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
 

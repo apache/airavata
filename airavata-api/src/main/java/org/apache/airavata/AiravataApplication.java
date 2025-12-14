@@ -70,15 +70,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.api.thrift"
         },
         excludeFilters = {
-            @org.springframework.context.annotation.ComponentScan.Filter(
+            @ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
                     pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
                     ),
-            @org.springframework.context.annotation.ComponentScan.Filter(
+            @ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
                     pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
                     ),
-            @org.springframework.context.annotation.ComponentScan.Filter(
+            @ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
                     pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
                     )

@@ -31,7 +31,7 @@ include "../../../data-models/credential_store_models.thrift"
 include "../../../data-models/user_profile_model.thrift"
 include "../../../data-models/workspace_model.thrift"
 
-namespace java org.apache.airavata.profile.model
+namespace java org.apache.airavata.thriftapi.profile.model
 namespace php Airavata.Service.Iam.Admin.Services.CPI
 namespace py airavata.service.profile.iam.admin.services.cpi
 

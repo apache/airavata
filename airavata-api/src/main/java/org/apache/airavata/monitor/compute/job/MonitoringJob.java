@@ -101,7 +101,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         //        List<GroupComputeResourcePreference> computeResourcePreferenceList =
         // groupResourceProfile.getComputePreferences();
 
-        int size = groupResourceProfile.getComputeResourcePoliciesSize();
+        int size = groupResourceProfile.getComputeResourcePolicies().size();
 
         int chunkSize = size / parallelJobs;
 

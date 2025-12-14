@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.StorageResourceEntity;
@@ -62,7 +62,7 @@ public class StorageResourceService {
         try {
             final String storageResourceId = AppCatalogUtils.getID(description.getHostName());
             if ("".equals(description.getStorageResourceId())
-                    || airavata_commonsConstants.DEFAULT_ID.equals(description.getStorageResourceId())) {
+                    || AiravataCommonsConstants.DEFAULT_ID.equals(description.getStorageResourceId())) {
                 description.setStorageResourceId(storageResourceId);
             }
             description.setCreationTime(System.currentTimeMillis());

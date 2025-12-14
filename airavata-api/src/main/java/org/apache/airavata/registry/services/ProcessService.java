@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
-import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -101,7 +101,10 @@ public class ProcessService {
         process.setExperimentId(experimentId);
 
         ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
-        process.addToProcessStatuses(processStatus);
+        if (process.getProcessStatuses() == null) {
+            process.setProcessStatuses(new java.util.ArrayList<>());
+        }
+        process.getProcessStatuses().add(processStatus);
         String processId = saveProcessModelData(process);
         return processId;
     }
@@ -201,7 +204,7 @@ public class ProcessService {
 
     private ProcessEntity saveProcess(ProcessModel processModel) throws RegistryException {
         if (processModel.getProcessId() == null
-                || processModel.getProcessId().equals(airavata_commonsConstants.DEFAULT_ID)) {
+                || processModel.getProcessId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug("Setting the Process's ProcessId");
             processModel.setProcessId(ExpCatalogUtils.getID("PROCESS"));
         }

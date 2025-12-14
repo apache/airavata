@@ -140,7 +140,7 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
 
             // Assert
             assertThat(retrieved.getBatchQueues()).isNotEmpty();
-            assertThat(retrieved.getBatchQueues().get(0).isIsDefaultQueue()).isTrue();
+            assertThat(retrieved.getBatchQueues().get(0).getIsDefaultQueue()).isTrue();
         }
     }
 
@@ -158,7 +158,7 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
             GroupResourceProfile groupProfile = TestDataFactory.createGroupResourceProfile(TEST_GATEWAY_ID);
             GroupComputeResourcePreference preference = TestDataFactory.createSlurmGroupComputeResourcePreference(
                     computeResourceId, groupProfile.getGroupResourceProfileId());
-            groupProfile.addToComputePreferences(preference);
+            groupProfile.getComputePreferences().add(preference);
 
             // Act
             String groupProfileId = groupResourceProfileService.addGroupResourceProfile(groupProfile);

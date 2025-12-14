@@ -88,7 +88,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
             },
             useDefaultFilters = false,
             includeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ANNOTATION,
                         classes = {
                             org.springframework.stereotype.Component.class,
@@ -98,11 +98,11 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern =
                                 "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @org.springframework.context.annotation.ComponentScan.Filter(
+                @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
@@ -268,7 +268,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         input.setValue("113");
         input.setMetaData("Metadata");
         input.setStandardInput(true);
-        applicationInterfaceDescription.addToApplicationInputs(input);
+        applicationInterfaceDescription.getApplicationInputs().add(input);
 
         OutputDataObjectType output = new OutputDataObjectType();
         output.setName("output1");
@@ -281,7 +281,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         output.setSearchQuery("Search query");
         output.setRequiredToAddedToCommandLine(true);
         output.setOutputStreaming(true);
-        applicationInterfaceDescription.addToApplicationOutputs(output);
+        applicationInterfaceDescription.getApplicationOutputs().add(output);
 
         String interfaceId =
                 applicationInterfaceService.addApplicationInterface(applicationInterfaceDescription, gatewayId);
@@ -368,8 +368,8 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(1, savedInterface.getApplicationInputsSize());
-        Assertions.assertEquals(1, savedInterface.getApplicationOutputsSize());
+        Assertions.assertEquals(1, savedInterface.getApplicationInputs().size());
+        Assertions.assertEquals(1, savedInterface.getApplicationOutputs().size());
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(
                 input, savedInterface.getApplicationInputs().get(0), "__isset_bitfield"));
@@ -436,8 +436,8 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(2, savedInterface.getApplicationInputsSize());
-        Assertions.assertEquals(2, savedInterface.getApplicationOutputsSize());
+        Assertions.assertEquals(2, savedInterface.getApplicationInputs().size());
+        Assertions.assertEquals(2, savedInterface.getApplicationOutputs().size());
 
         savedInterface.setApplicationInputs(Arrays.asList(input));
         savedInterface.setApplicationOutputs(Arrays.asList(output));
@@ -445,8 +445,8 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         applicationInterfaceService.updateApplicationInterface(interfaceId, savedInterface);
         ApplicationInterfaceDescription updatedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(1, updatedInterface.getApplicationInputsSize());
-        Assertions.assertEquals(1, updatedInterface.getApplicationOutputsSize());
+        Assertions.assertEquals(1, updatedInterface.getApplicationInputs().size());
+        Assertions.assertEquals(1, updatedInterface.getApplicationOutputs().size());
     }
 
     @Test

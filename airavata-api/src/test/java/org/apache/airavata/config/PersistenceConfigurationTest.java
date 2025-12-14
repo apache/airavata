@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -33,39 +34,38 @@ import org.springframework.test.context.TestPropertySource;
  * and all EntityManagerFactory beans can be created without errors.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataServerProperties.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
-        })
+        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true"})
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class PersistenceConfigurationTest {
 
-    private final EntityManagerFactory profileServiceEntityManagerFactory;
-    private final EntityManagerFactory appCatalogEntityManagerFactory;
-    private final EntityManagerFactory expCatalogEntityManagerFactory;
-    private final EntityManagerFactory replicaCatalogEntityManagerFactory;
-    private final EntityManagerFactory workflowCatalogEntityManagerFactory;
-    private final EntityManagerFactory sharingRegistryEntityManagerFactory;
-    private final EntityManagerFactory credentialStoreEntityManagerFactory;
+    @Autowired
+    @Qualifier("profileServiceEntityManagerFactory")
+    private EntityManagerFactory profileServiceEntityManagerFactory;
 
-    public PersistenceConfigurationTest(
-            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory profileServiceEntityManagerFactory,
-            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory appCatalogEntityManagerFactory,
-            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory expCatalogEntityManagerFactory,
-            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory replicaCatalogEntityManagerFactory,
-            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory workflowCatalogEntityManagerFactory,
-            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory sharingRegistryEntityManagerFactory,
-            @Qualifier("credentialStoreEntityManagerFactory")
-                    EntityManagerFactory credentialStoreEntityManagerFactory) {
-        this.profileServiceEntityManagerFactory = profileServiceEntityManagerFactory;
-        this.appCatalogEntityManagerFactory = appCatalogEntityManagerFactory;
-        this.expCatalogEntityManagerFactory = expCatalogEntityManagerFactory;
-        this.replicaCatalogEntityManagerFactory = replicaCatalogEntityManagerFactory;
-        this.workflowCatalogEntityManagerFactory = workflowCatalogEntityManagerFactory;
-        this.sharingRegistryEntityManagerFactory = sharingRegistryEntityManagerFactory;
-        this.credentialStoreEntityManagerFactory = credentialStoreEntityManagerFactory;
-    }
+    @Autowired
+    @Qualifier("appCatalogEntityManagerFactory")
+    private EntityManagerFactory appCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("expCatalogEntityManagerFactory")
+    private EntityManagerFactory expCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("replicaCatalogEntityManagerFactory")
+    private EntityManagerFactory replicaCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("workflowCatalogEntityManagerFactory")
+    private EntityManagerFactory workflowCatalogEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("sharingRegistryEntityManagerFactory")
+    private EntityManagerFactory sharingRegistryEntityManagerFactory;
+
+    @Autowired
+    @Qualifier("credentialStoreEntityManagerFactory")
+    private EntityManagerFactory credentialStoreEntityManagerFactory;
 
     @Test
     public void testPersistenceUnitsCanBeCreated() {

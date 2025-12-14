@@ -27,7 +27,7 @@
 include "../airavata-apis/airavata_commons.thrift"
 include "parallelism_model.thrift"
 
-namespace java org.apache.airavata.common.model
+namespace java org.apache.airavata.thriftapi.model
 namespace php Airavata.Model.AppCatalog.AppDeployment
 namespace cpp apache.airavata.model.appcatalog.appdeployment
 namespace py airavata.model.appcatalog.appdeployment

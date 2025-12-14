@@ -75,7 +75,7 @@ public class ExperimentModelUtil {
         processModel.setCreationTime(experiment.getCreationTime());
         processModel.setExperimentId(experiment.getExperimentId());
         processModel.setApplicationInterfaceId(experiment.getExecutionId());
-        processModel.setEnableEmailNotification(experiment.isEnableEmailNotification());
+        processModel.setEnableEmailNotification(experiment.getEnableEmailNotification());
         List<String> emailAddresses = experiment.getEmailAddresses();
         if (emailAddresses != null && !emailAddresses.isEmpty()) {
             processModel.setEmailAddresses(emailAddresses);
@@ -95,14 +95,14 @@ public class ExperimentModelUtil {
             processModel.setInputStorageResourceId(configData.getInputStorageResourceId());
             processModel.setOutputStorageResourceId(configData.getOutputStorageResourceId());
             processModel.setExperimentDataDir(configData.getExperimentDataDir());
-            processModel.setGenerateCert(configData.isGenerateCert());
+            processModel.setGenerateCert(configData.getGenerateCert());
             processModel.setUserDn(configData.getUserDN());
             ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();
             if (scheduling != null) {
                 processModel.setProcessResourceSchedule(scheduling);
                 processModel.setComputeResourceId(scheduling.getResourceHostId());
             }
-            processModel.setUseUserCRPref(configData.isUseUserCRPref());
+            processModel.setUseUserCRPref(configData.getUseUserCRPref());
             processModel.setGroupResourceProfileId(configData.getGroupResourceProfileId());
         }
         processModel.setUserName(experiment.getUserName());

@@ -22,13 +22,14 @@ package org.apache.airavata.registry.repositories.expcatalog;
 import java.util.List;
 import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@org.springframework.context.annotation.Primary
+@Primary
 public interface UserRepository extends JpaRepository<UserEntity, UserPK> {
 
     @Query("SELECT u FROM UserEntity u WHERE u.gatewayId = :gatewayId")

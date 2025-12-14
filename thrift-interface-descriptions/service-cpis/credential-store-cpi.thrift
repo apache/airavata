@@ -27,7 +27,7 @@ include "credential_store_errors.thrift"
 include "../base-api/base_api.thrift"
 include "../data-models/credential_store_models.thrift"
 
-namespace java org.apache.airavata.credential.model
+namespace java org.apache.airavata.thriftapi.credential.model
 namespace py airavata.api.credential.store
 
 const string CS_CPI_VERSION = "0.18.0"

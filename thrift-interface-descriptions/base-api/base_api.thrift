@@ -1,4 +1,4 @@
-namespace java org.apache.airavata.api.model
+namespace java org.apache.airavata.thriftapi.service
 namespace php Airavata.Base.API
 namespace cpp apache.airavata.base.api
 namespace perl ApacheAiravataBaseAPI

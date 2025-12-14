@@ -39,7 +39,6 @@ import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -47,8 +46,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(classes = {GatewayGroupsInitializerTest.TestConfiguration.class})
-@TestPropertySource(properties = {"security.tls.enabled=true"})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, GatewayGroupsInitializerTest.TestConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "security.tls.enabled=true",
+            "security.manager.enabled=false"
+        })
+@TestPropertySource(locations = "classpath:airavata.properties")
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";
     public static final String IDENTITY_SERVER_PWD_CRED_TOKEN = "identity-server-pwd-cred-token";
@@ -65,16 +70,6 @@ public class GatewayGroupsInitializerTest {
     private CredentialStoreService mockCredentialStoreService;
 
     private GatewayGroupsInitializer gatewayGroupsInitializer;
-
-    public GatewayGroupsInitializerTest(
-            ApplicationContext applicationContext,
-            RegistryService mockRegistryService,
-            SharingRegistryService mockSharingRegistryService,
-            CredentialStoreService mockCredentialStoreService) {
-        this.mockRegistryService = mockRegistryService;
-        this.mockSharingRegistryService = mockSharingRegistryService;
-        this.mockCredentialStoreService = mockCredentialStoreService;
-    }
 
     @BeforeEach
     public void setUp() {
@@ -134,13 +129,18 @@ public class GatewayGroupsInitializerTest {
 
     @Configuration
     @ComponentScan(
-            basePackages = {"org.apache.airavata.security", "org.apache.airavata.config"},
+            basePackages = {
+                "org.apache.airavata.security",
+                "org.apache.airavata.config",
+                "org.apache.airavata.common.utils"
+            },
             excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.ThriftServerLauncher.class,
+                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

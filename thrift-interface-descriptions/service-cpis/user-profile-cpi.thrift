@@ -27,7 +27,7 @@ include "user_profile_cpi_errors.thrift"
 include "../base-api/base_api.thrift"
 include "../data-models/user_profile_model.thrift"
 
-namespace java org.apache.airavata.profile.model
+namespace java org.apache.airavata.thriftapi.profile.model
 
 const string USER_PROFILE_CPI_VERSION = "0.18.0"
 
