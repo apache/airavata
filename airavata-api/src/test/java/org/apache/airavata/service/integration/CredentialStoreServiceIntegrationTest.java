@@ -23,11 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.credential.store.SummaryType;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.CertificateCredential;
+import org.apache.airavata.credential.model.CommunityUser;
+import org.apache.airavata.credential.model.CredentialSummary;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +47,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     @Test
     public void shouldAddSSHCredential() throws CredentialStoreException {
         // Arrange
-        SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
+        var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         sshCredential.setDescription("Test SSH Credential");
 
         // Act
@@ -58,11 +60,11 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     @Test
     public void shouldGetSSHCredential() throws CredentialStoreException {
         // Arrange
-        SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
+        var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         String token = credentialStoreService.addSSHCredential(sshCredential);
 
         // Act
-        SSHCredential retrieved = credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID);
+        var retrieved = credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID);
 
         // Assert
         assertThat(retrieved).isNotNull();
@@ -74,7 +76,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     @Test
     public void shouldReturnNullForNonExistentSSHCredential() throws CredentialStoreException {
         // Act
-        SSHCredential retrieved = credentialStoreService.getSSHCredential("non-existent-token", TEST_GATEWAY_ID);
+        var retrieved = credentialStoreService.getSSHCredential("non-existent-token", TEST_GATEWAY_ID);
 
         // Assert
         assertThat(retrieved).isNull();
@@ -83,11 +85,11 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     @Test
     public void shouldDeleteSSHCredential() throws CredentialStoreException {
         // Arrange
-        SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
-        String token = credentialStoreService.addSSHCredential(sshCredential);
+        var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
+        var token = credentialStoreService.addSSHCredential(sshCredential);
 
         // Act
-        boolean deleted = credentialStoreService.deleteSSHCredential(token, TEST_GATEWAY_ID);
+        var deleted = credentialStoreService.deleteSSHCredential(token, TEST_GATEWAY_ID);
 
         // Assert
         assertThat(deleted).isTrue();
@@ -220,24 +222,19 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     @Test
     public void shouldAddCertificateCredential() throws CredentialStoreException {
         // Arrange
-        org.apache.airavata.model.credential.store.CertificateCredential certificateCredential =
-                new org.apache.airavata.model.credential.store.CertificateCredential();
-        org.apache.airavata.model.credential.store.CommunityUser communityUser =
-                new org.apache.airavata.model.credential.store.CommunityUser();
+        var certificateCredential = new CertificateCredential();
+        var communityUser = new CommunityUser();
         communityUser.setGatewayName(TEST_GATEWAY_ID);
         communityUser.setUsername(TEST_USERNAME);
         communityUser.setUserEmail(TEST_USERNAME + "@example.com");
         certificateCredential.setCommunityUser(communityUser);
         certificateCredential.setX509Cert("-----BEGIN CERTIFICATE-----\nTEST_CERT\n-----END CERTIFICATE-----");
 
-        // Act & Assert
-        try {
-            String token = credentialStoreService.addCertificateCredential(certificateCredential);
-            assertThat(token).isNotNull().isNotEmpty();
-        } catch (CredentialStoreException e) {
-            // Expected if certificate format is invalid
-            assertThat(e).isNotNull();
-        }
+        // Act
+        var token = credentialStoreService.addCertificateCredential(certificateCredential);
+
+        // Assert
+        assertThat(token).isNotNull().isNotEmpty();
     }
 
     @Test

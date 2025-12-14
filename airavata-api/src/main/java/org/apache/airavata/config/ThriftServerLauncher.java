@@ -49,10 +49,7 @@ import org.springframework.stereotype.Component;
  * The main thread is kept alive to prevent the application from exiting.
  */
 @Component
-@ConditionalOnProperty(
-        name = "services.thrift.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true", matchIfMissing = true)
 public class ThriftServerLauncher implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ThriftServerLauncher.class);

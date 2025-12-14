@@ -20,13 +20,13 @@
 package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection;
 
 import java.util.Optional;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

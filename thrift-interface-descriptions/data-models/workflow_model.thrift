@@ -21,7 +21,7 @@
 include "../airavata-apis/airavata_commons.thrift"
 include "application_io_models.thrift"
 
-namespace java org.apache.airavata.model.workflow
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.Workflow
 namespace cpp apache.airavata.model.workflow
 namespace py airavata.model.workflow
@@ -122,7 +122,7 @@ struct WorkflowHandler {
     8: optional i64 updatedAt
 }
 
-enum WorkflowState {
+enum WorkflowExecutionState {
     CREATED,
     VALIDATED,
     SCHEDULED,
@@ -139,7 +139,7 @@ enum WorkflowState {
 
 struct WorkflowStatus {
     1:  optional string id,
-    2:  required WorkflowState state,
+    2:  required WorkflowExecutionState state,
     3:  optional string description,
     4:  optional i64 updatedAt
 }

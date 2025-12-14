@@ -24,30 +24,26 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.SecurityProtocol;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SecurityProtocol;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.StorageResourceService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.TestConstructor;
-
-/**
- * Created by skariyat on 3/13/18.
- */
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, StorageResourceRepositoryTest.TestConfiguration.class},
@@ -93,13 +89,17 @@ public class StorageResourceRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceRepository.class);

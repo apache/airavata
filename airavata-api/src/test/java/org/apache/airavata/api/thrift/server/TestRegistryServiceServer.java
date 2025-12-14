@@ -28,7 +28,7 @@ public class TestRegistryServiceServer {
 
     public static void main(String[] args) {
         throw new UnsupportedOperationException(
-                "RegistryServiceServer must be used within a Spring application context. " +
-                "Use Spring Boot application or provide dependencies manually via constructor.");
+                "RegistryServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

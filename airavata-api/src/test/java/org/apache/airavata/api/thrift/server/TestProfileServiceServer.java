@@ -28,7 +28,7 @@ public class TestProfileServiceServer {
 
     public static void main(String[] args) {
         throw new UnsupportedOperationException(
-                "ProfileServiceServer must be used within a Spring application context. " +
-                "Use Spring Boot application or provide dependencies manually via constructor.");
+                "ProfileServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

@@ -19,9 +19,18 @@
 */
 package org.apache.airavata.registry.entities.appcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.common.model.ApplicationParallelismType;
 
 /**
  * The persistent class for the parallelism_command database table.

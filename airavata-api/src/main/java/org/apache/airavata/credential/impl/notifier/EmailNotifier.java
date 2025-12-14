@@ -19,10 +19,13 @@
 */
 package org.apache.airavata.credential.impl.notifier;
 
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.utils.CredentialStoreNotifier;
 import org.apache.airavata.credential.utils.NotificationMessage;
-import org.apache.commons.mail.*;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +64,9 @@ public class EmailNotifier implements CredentialStoreNotifier {
 
         } catch (EmailException e) {
             log.error("[CredentialStore]Error sending email notification message.");
-            throw new CredentialStoreException("Error sending email notification message", e);
+            CredentialStoreException cse = new CredentialStoreException("Error sending email notification message");
+            cse.initCause(e);
+            throw cse;
         }
     }
 }

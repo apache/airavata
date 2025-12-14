@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.model.util;
 
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
+import org.apache.airavata.common.model.ComputeResourceReservation;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.SlurmComputeResourcePreference;
 
 public class GroupComputeResourcePreferenceUtil {
 
@@ -31,7 +31,7 @@ public class GroupComputeResourcePreferenceUtil {
             GroupComputeResourcePreference groupComputeResourcePreference, String queueName) {
 
         // Only SLURM has reservations
-        if (groupComputeResourcePreference.getResourceType() != ResourceType.SLURM) {
+        if (groupComputeResourcePreference.getResourceType() != ComputeResourceType.SLURM) {
             return null;
         }
 

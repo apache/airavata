@@ -20,12 +20,12 @@
 package org.apache.airavata.helix.impl.task.aws.utils;
 
 import java.util.concurrent.TimeUnit;
+import org.apache.airavata.common.model.AwsComputeResourcePreference;
+import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -44,8 +44,7 @@ public final class AWSTaskUtil {
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
 
-    public AWSTaskUtil(
-            CredentialStoreService credentialStoreService, RegistryService registryService) {
+    public AWSTaskUtil(CredentialStoreService credentialStoreService, RegistryService registryService) {
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
     }

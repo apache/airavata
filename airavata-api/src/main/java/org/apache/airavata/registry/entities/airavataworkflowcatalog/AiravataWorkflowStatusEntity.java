@@ -19,10 +19,20 @@
 */
 package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.workflow.WorkflowState;
+import org.apache.airavata.common.model.WorkflowRuntimeState;
 
 @Entity
 @Table(name = "AIRAVATA_WORKFLOW_STATUS")
@@ -40,7 +50,7 @@ public class AiravataWorkflowStatusEntity implements Serializable {
 
     @Column(name = "STATE")
     @Enumerated(EnumType.STRING)
-    private WorkflowState state;
+    private WorkflowRuntimeState state;
 
     @Column(name = "DESCRIPTION")
     private String description;
@@ -62,7 +72,7 @@ public class AiravataWorkflowStatusEntity implements Serializable {
         this.workflowId = workflowId;
     }
 
-    public void setState(WorkflowState state) {
+    public void setState(WorkflowRuntimeState state) {
         this.state = state;
     }
 
@@ -86,7 +96,7 @@ public class AiravataWorkflowStatusEntity implements Serializable {
         return workflowId;
     }
 
-    public WorkflowState getState() {
+    public WorkflowRuntimeState getState() {
         return state;
     }
 

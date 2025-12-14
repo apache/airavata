@@ -21,8 +21,10 @@ package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.workspace.Project;
+import java.util.HashMap;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.Project;
 import org.apache.airavata.service.AiravataService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.DisplayName;
@@ -77,8 +79,7 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
 
             // Act
-            org.apache.airavata.model.status.ExperimentStatus status =
-                    airavataService.getExperimentStatus(experimentId);
+            var status = airavataService.getExperimentStatus(experimentId);
 
             // Assert
             assertThat(status).isNotNull();
@@ -110,16 +111,14 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
         @DisplayName("Should search experiments")
         void shouldSearchExperiments() throws Exception {
             // Arrange
-            Project project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
-            String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment =
-                    TestDataFactory.createTestExperiment("Search Experiment", projectId, TEST_GATEWAY_ID);
+            var project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
+            var projectId = registryService.createProject(TEST_GATEWAY_ID, project);
+            var experiment = TestDataFactory.createTestExperiment("Search Experiment", projectId, TEST_GATEWAY_ID);
             airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
 
             // Act
-            java.util.Map<org.apache.airavata.model.experiment.ExperimentSearchFields, String> filters =
-                    new java.util.HashMap<>();
-            filters.put(org.apache.airavata.model.experiment.ExperimentSearchFields.EXPERIMENT_NAME, "Search");
+            var filters = new HashMap<ExperimentSearchFields, String>();
+            filters.put(ExperimentSearchFields.EXPERIMENT_NAME, "Search");
             var experiments =
                     airavataService.searchExperiments(testAuthzToken, TEST_GATEWAY_ID, TEST_USERNAME, filters, 0, 10);
 

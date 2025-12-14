@@ -20,20 +20,20 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.group.GroupModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.model.GroupModel;
+import org.apache.airavata.profile.exception.GroupManagerServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.GroupManagerService;
-import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupManagerServiceHandler implements org.apache.airavata.profile.groupmanager.cpi.GroupManagerService.Iface {
+public class GroupManagerServiceHandler implements org.apache.airavata.profile.model.GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
     private final GroupManagerService groupManagerService;
@@ -45,7 +45,7 @@ public class GroupManagerServiceHandler implements org.apache.airavata.profile.g
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
+        return org.apache.airavata.profile.model.group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
     @Override

@@ -19,58 +19,87 @@
 */
 package org.apache.airavata.service.registry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GatewayUsageReportingCommand;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParserInput;
+import org.apache.airavata.common.model.ParserOutput;
+import org.apache.airavata.common.model.ParsingTemplate;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ProcessWorkflow;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.ProjectSearchFields;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.model.UserResourceProfile;
+import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParserInput;
-import org.apache.airavata.model.appcatalog.parser.ParserOutput;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.process.ProcessWorkflow;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
-import org.apache.airavata.registry.exceptions.RegistryException;
-import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
-import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
-import org.apache.airavata.registry.cpi.ApplicationDeployment;
-import org.apache.airavata.registry.cpi.ApplicationInterface;
+import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.model.ApplicationDeployment;
+import org.apache.airavata.registry.model.ApplicationInterface;
+import org.apache.airavata.registry.model.ExpCatChildDataType;
+import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
@@ -113,10 +142,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.registryService.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
@@ -239,7 +265,7 @@ public class RegistryService {
     }
 
     public String getAPIVersion() {
-        return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;
+        return org.apache.airavata.registry.model.registry_apiConstants.REGISTRY_API_VERSION;
     }
 
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException {
@@ -890,7 +916,7 @@ public class RegistryService {
     }
 
     public int getJobCount(
-            org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
+            org.apache.airavata.common.model.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException {
         try {
             var jobStatusList = jobStatusService.getDistinctListofJobStatus(

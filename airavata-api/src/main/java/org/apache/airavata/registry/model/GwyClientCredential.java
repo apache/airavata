@@ -17,15 +17,18 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
-public enum ExpCatParentDataType {
-    APPLiCATION_CATALOG,
-    GROUP,
-    USER,
-    PROJECT,
-    EXPERIMENT,
-    GATEWAY,
-    NOTIFICATION,
-    QUEUE_STATUS
+import java.util.Map;
+import org.apache.airavata.registry.exception.AppCatalogException;
+
+public interface GwyClientCredential {
+
+    Map.Entry<String, String> generateNewGatewayClientCredential(String gatewayId) throws AppCatalogException;
+
+    Map.Entry<String, String> getGatewayClientCredential(String clientKey) throws AppCatalogException;
+
+    void removeGatewayClientCredential(String clientKey) throws AppCatalogException;
+
+    Map<String, String> getAllGatewayClientCredentials(String gatewayId) throws AppCatalogException;
 }

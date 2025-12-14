@@ -34,8 +34,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 

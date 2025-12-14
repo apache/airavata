@@ -17,18 +17,20 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.exception;
 
-import java.util.Map;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+public class AppCatalogException extends Exception {
+    private static final long serialVersionUID = -2849422320139467602L;
 
-public interface GwyClientCredential {
+    public AppCatalogException(Throwable e) {
+        super(e);
+    }
 
-    Map.Entry<String, String> generateNewGatewayClientCredential(String gatewayId) throws AppCatalogException;
+    public AppCatalogException(String message) {
+        super(message, null);
+    }
 
-    Map.Entry<String, String> getGatewayClientCredential(String clientKey) throws AppCatalogException;
-
-    void removeGatewayClientCredential(String clientKey) throws AppCatalogException;
-
-    Map<String, String> getAllGatewayClientCredentials(String gatewayId) throws AppCatalogException;
+    public AppCatalogException(String message, Throwable e) {
+        super(message, e);
+    }
 }

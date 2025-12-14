@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.StorageResourceEntity;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.StorageInterfaceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.StorageResourceRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
@@ -93,8 +93,9 @@ public class StorageResourceService {
                 updatedStorageResource.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(updatedStorageResource.getStorageResourceId()));
             }
-            
-            StorageResourceEntity existingEntity = storageResourceRepository.findById(storageResourceId).orElse(null);
+
+            StorageResourceEntity existingEntity =
+                    storageResourceRepository.findById(storageResourceId).orElse(null);
             if (existingEntity != null) {
                 mapper.map(updatedStorageResource, existingEntity);
                 storageResourceRepository.save(existingEntity);

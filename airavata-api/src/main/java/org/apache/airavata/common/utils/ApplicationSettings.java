@@ -25,8 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-import java.util.regex.Matcher;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.commons.lang3.BooleanUtils;
@@ -42,8 +46,6 @@ public class ApplicationSettings {
     protected Properties properties = new Properties();
 
     private Exception propertyLoadException;
-
-    private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z.-]*\\}";
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
@@ -130,19 +132,6 @@ public class ApplicationSettings {
         if (propertyLoadException != null) {
             throw new ApplicationSettingsException(propertyLoadException.getMessage(), propertyLoadException);
         }
-    }
-
-    private static String getVariableNameOnly(String variableWithIdentifiers) {
-        return variableWithIdentifiers.substring(2, (variableWithIdentifiers.length() - 1));
-    }
-
-    private static List<String> getAllMatches(String text, String regex) {
-        List<String> matches = new ArrayList<String>();
-        Matcher m = Pattern.compile("(?=(" + regex + "))").matcher(text);
-        while (m.find()) {
-            matches.add(m.group(1));
-        }
-        return matches;
     }
 
     public String getSettingImpl(String key) throws ApplicationSettingsException {

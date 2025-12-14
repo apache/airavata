@@ -38,7 +38,7 @@ package org.apache.airavata.credential.utils; /*
                                                *
                                                */
 
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 
 /**
  * This class is used to notify particular entity with expiring credentials.

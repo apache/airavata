@@ -21,7 +21,7 @@ package org.apache.airavata.api.thrift.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import org.apache.airavata.base.api.BaseAPI;
+import org.apache.airavata.api.model.BaseAPI;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;

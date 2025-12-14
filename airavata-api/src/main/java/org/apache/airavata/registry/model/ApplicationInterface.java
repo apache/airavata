@@ -17,15 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.registry.exception.AppCatalogException;
 
 public interface ApplicationInterface {
     /**

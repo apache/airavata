@@ -17,24 +17,20 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.exception;
 
-public enum ExpCatChildDataType {
-    EXPERIMENT_INPUT,
-    EXPERIMENT_OUTPUT,
-    EXPERIMENT_STATUS,
-    EXPERIMENT_ERROR,
-    USER_CONFIGURATION_DATA,
-    PROCESS,
-    PROCESS_INPUT,
-    PROCESS_OUTPUT,
-    PROCESS_STATUS,
-    PROCESS_ERROR,
-    PROCESS_RESOURCE_SCHEDULE,
-    TASK,
-    TASK_STATUS,
-    TASK_ERROR,
-    JOB,
-    JOB_STATUS,
-    PROCESS_WORKFLOW
+public class ExperimentCatalogException extends Exception {
+    private static final long serialVersionUID = -2849422320139467602L;
+
+    public ExperimentCatalogException(Throwable e) {
+        super(e);
+    }
+
+    public ExperimentCatalogException(String message) {
+        super(message, null);
+    }
+
+    public ExperimentCatalogException(String message, Throwable e) {
+        super(message, e);
+    }
 }

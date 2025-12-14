@@ -19,13 +19,13 @@
  */
 
 
- namespace java org.apache.airavata.model.group
+ namespace java org.apache.airavata.common.model
  namespace php Airavata.Model.Group
  namespace cpp apache.airavata.model.group
  namespace py airavata.model.group
 
 
-enum ResourceType {
+enum SharingResourceType {
     PROJECT,
     EXPERIMENT,
     DATA,

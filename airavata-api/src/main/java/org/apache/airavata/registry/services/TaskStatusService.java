@@ -21,10 +21,10 @@ package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.registry.entities.expcatalog.TaskStatusEntity;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.stereotype.Service;

@@ -27,6 +27,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataProductType;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.JobIdentifier;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.JobStatusChangeEvent;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessIdentifier;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ProcessStatusChangeEvent;
+import org.apache.airavata.common.model.ReplicaLocationCategory;
+import org.apache.airavata.common.model.ReplicaPersistentType;
+import org.apache.airavata.common.model.TaskIdentifier;
+import org.apache.airavata.common.model.TaskState;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.TaskStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
@@ -38,17 +61,9 @@ import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.replica.*;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.messaging.event.*;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.*;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
@@ -687,5 +702,4 @@ public abstract class AiravataTask extends AbstractTask {
     public void setAutoSchedule(boolean autoSchedule) {
         this.autoSchedule = autoSchedule;
     }
-
 }

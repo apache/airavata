@@ -19,9 +19,11 @@
 */
 package org.apache.airavata.security;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,17 +31,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.authzcache.AuthzCacheManager;
 import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.security.authzcache.AuthzCachedStatus;
-import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.sharing.models.UserGroup;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

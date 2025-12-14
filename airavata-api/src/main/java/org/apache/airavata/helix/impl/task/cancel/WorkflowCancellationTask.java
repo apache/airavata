@@ -52,8 +52,8 @@ public class WorkflowCancellationTask extends AbstractTask {
         super.init(manager, workflowName, jobName, taskName);
 
         try {
-            String clusterName = org.apache.airavata.common.utils.ApplicationSettings.getSetting(
-                    "helix.cluster-name", "airavata");
+            String clusterName =
+                    org.apache.airavata.common.utils.ApplicationSettings.getSetting("helix.cluster-name", "airavata");
             String zkConnection = org.apache.airavata.common.utils.ApplicationSettings.getSetting(
                     "zookeeper.server-connection", "localhost:2181");
             helixManager =

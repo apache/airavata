@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog.gatewaygroups
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.GatewayGroups
 namespace cpp apache.airavata.model.appcatalog.gatewaygroups
 namespace py airavata.model.appcatalog.gatewaygroups

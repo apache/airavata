@@ -72,16 +72,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         excludeFilters = {
             @org.springframework.context.annotation.ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\$.*"  // Exclude inner classes (Thrift-generated)
-            ),
+                    pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
+                    ),
             @org.springframework.context.annotation.ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
-            ),
+                    pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
+                    ),
             @org.springframework.context.annotation.ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.model\\..*"  // Exclude Thrift-generated model classes
-            )
+                    pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
+                    )
         })
 @EntityScan(
         basePackages = {
@@ -104,9 +104,9 @@ public class AiravataApplication {
         SpringApplication app = new SpringApplication(AiravataApplication.class);
         // Enable bean overriding to handle repository name conflicts
         app.setDefaultProperties(java.util.Map.of(
-            "spring.main.allow-bean-definition-overriding", "true",
-            "spring.classformat.ignore", "true"  // Ignore class format issues in Thrift-generated classes
-        ));
+                "spring.main.allow-bean-definition-overriding", "true",
+                "spring.classformat.ignore", "true" // Ignore class format issues in Thrift-generated classes
+                ));
         // Don't exit immediately - keep running for background services
         app.setRegisterShutdownHook(true);
         app.run(args);

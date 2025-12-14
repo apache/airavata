@@ -23,11 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.group.GroupModel;
-import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.model.GroupModel;
+import org.apache.airavata.profile.exception.GroupManagerServiceException;
 import org.apache.airavata.service.security.GroupManagerService;
-import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

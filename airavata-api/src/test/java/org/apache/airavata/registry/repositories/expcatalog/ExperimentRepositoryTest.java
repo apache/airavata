@@ -19,18 +19,21 @@
 */
 package org.apache.airavata.registry.repositories.expcatalog;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;

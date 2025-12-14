@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,9 +111,6 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
     @Transactional(readOnly = true)
     public List<ErrorModel> getErrors(String parentId) throws RegistryException {
         List<TEntity> entities = getFindByParentIdFunction().apply(parentId);
-        return entities.stream()
-                .map(e -> mapper.map(e, ErrorModel.class))
-                .collect(Collectors.toList());
+        return entities.stream().map(e -> mapper.map(e, ErrorModel.class)).collect(Collectors.toList());
     }
 }
-

@@ -23,9 +23,9 @@ import org.apache.airavata.helix.impl.task.aws.AWSCompletingTask;
 import org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask;
 import org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask;
 import org.apache.airavata.helix.impl.task.aws.NoOperationTask;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -73,7 +73,12 @@ public class AWSTaskFactory implements HelixTaskFactory {
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
         return new AWSJobSubmissionTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder, awsTaskUtil);
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                groovyMapBuilder,
+                awsTaskUtil);
     }
 
     @Override
@@ -93,7 +98,8 @@ public class AWSTaskFactory implements HelixTaskFactory {
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return new AWSCompletingTask(applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
+        return new AWSCompletingTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
     }
 
     @Override

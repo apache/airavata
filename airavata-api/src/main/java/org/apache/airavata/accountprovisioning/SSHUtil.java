@@ -19,12 +19,16 @@
 */
 package org.apache.airavata.accountprovisioning;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

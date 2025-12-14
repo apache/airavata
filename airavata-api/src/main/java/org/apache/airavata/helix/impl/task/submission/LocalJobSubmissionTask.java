@@ -20,12 +20,12 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import java.util.UUID;
+import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.model.job.JobModel;
 import org.apache.helix.task.TaskResult;
 
 @TaskDef(name = "Local Job Submission")

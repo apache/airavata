@@ -28,13 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GwyResourceProfileService;
@@ -45,18 +45,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, GatewayProfileRepositoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -95,13 +93,17 @@ public class GatewayProfileRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);

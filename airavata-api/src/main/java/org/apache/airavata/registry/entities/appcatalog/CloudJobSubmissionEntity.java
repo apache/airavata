@@ -19,10 +19,15 @@
 */
 package org.apache.airavata.registry.entities.appcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.model.appcatalog.computeresource.ProviderName;
-import org.apache.airavata.model.data.movement.SecurityProtocol;
+import org.apache.airavata.common.model.ProviderName;
+import org.apache.airavata.common.model.SecurityProtocol;
 
 /**
  * The persistent class for the cloud_job_submission database table.

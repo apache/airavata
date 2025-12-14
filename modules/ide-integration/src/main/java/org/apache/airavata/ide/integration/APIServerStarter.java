@@ -25,7 +25,6 @@ public class APIServerStarter {
         // Note: DBEventManagerRunner is a Spring component and requires AiravataServerProperties.
         // This main method should be run within a Spring application context.
         // For standalone execution, use Spring Boot application or provide dependencies manually.
-        throw new UnsupportedOperationException(
-                "APIServerStarter must be used within a Spring application context");
+        throw new UnsupportedOperationException("APIServerStarter must be used within a Spring application context");
     }
 }

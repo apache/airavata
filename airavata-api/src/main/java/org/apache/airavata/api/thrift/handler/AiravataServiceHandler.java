@@ -19,63 +19,84 @@
 */
 package org.apache.airavata.api.thrift.handler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
+import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParsingTemplate;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.ProjectSearchFields;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourcePermissionType;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHAccountProvisionerConfigParam;
+import org.apache.airavata.common.model.SSHAccountProvisionerConfigParamType;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.StorageDirectoryInfo;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.StorageVolumeInfo;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.model.UserResourceProfile;
+import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParamType;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.credential.store.*;
-import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.model.group.ResourcePermissionType;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.credential.model.CredentialSummary;
+import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.AiravataService;
-import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.Iface {
+public class AiravataServiceHandler implements org.apache.airavata.api.model.Airavata.Iface {
 
     private final AiravataService airavataService;
 
@@ -89,7 +110,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.api.airavata_apiConstants.AIRAVATA_API_VERSION;
+        return org.apache.airavata.api.model.airavata_apiConstants.AIRAVATA_API_VERSION;
     }
 
     /**
@@ -485,8 +506,8 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      * registering the experiment in a persistent store.
      *
      * @param experiment@return The server-side generated.airavata.registry.core.experiment.globally unique identifier.
-     * @throws org.apache.airavata.model.error.InvalidRequestException For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                               <p/>
      *                                                               UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                               step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -497,7 +518,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *                                                               <p/>
      *                                                               INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                               is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.common.exception.AiravataSystemException This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -539,9 +560,9 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return experimentMetada
      * This method will return the previously stored experiment metadata.
-     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.common.exception.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -552,7 +573,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.common.exception.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -577,9 +598,9 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return experimentMetada
      * This method will return the previously stored experiment metadata.
-     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.common.exception.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -590,7 +611,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.common.exception.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -609,9 +630,9 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @param experiment
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.common.exception.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -622,7 +643,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.common.exception.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -705,9 +726,9 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return This method returns the previously configured experiment configuration data.
-     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.common.exception.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *<p/>
      *UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -718,7 +739,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *<p/>
      *INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any
+     * @throws org.apache.airavata.common.exception.AiravataSystemException     This exception will be thrown for any
      *          Airavata Server side issues and if the problem cannot be corrected by the client
      *         rather an Airavata Administrator will be notified to take corrective action.
      */
@@ -782,11 +803,11 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *
      * @param airavataExperimentId   The identifier for the requested experiment. This is returned during the create experiment step.
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.model.error.InvalidRequestException
+     * @throws org.apache.airavata.common.exception.InvalidRequestException
      *          For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException
      *          If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException
+     * @throws org.apache.airavata.common.exception.AiravataClientException
      *          The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *          <p/>
      *          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -798,7 +819,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *          <p/>
      *          INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *          is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException
+     * @throws org.apache.airavata.common.exception.AiravataSystemException
      *          This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
@@ -832,13 +853,13 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      * @return
      *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
      *
-     * @throws org.apache.airavata.model.error.InvalidRequestException
+     * @throws org.apache.airavata.common.exception.InvalidRequestException
      *    For any incorrect forming of the request itself.
      *
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      *
-     * @throws org.apache.airavata.model.error.AiravataClientException
+     * @throws org.apache.airavata.common.exception.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -851,7 +872,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      *
-     * @throws org.apache.airavata.model.error.AiravataSystemException
+     * @throws org.apache.airavata.common.exception.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      *
@@ -888,9 +909,9 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @This method call does not have a value.
-     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.common.exception.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.common.exception.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.common.exception.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -901,7 +922,7 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.common.exception.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -2074,18 +2095,21 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
 
     @Override
     @SecurityCheck
-    public List<SSHAccountProvisioner> getSSHAccountProvisioners(AuthzToken authzToken)
+    public List<org.apache.airavata.common.model.SSHAccountProvisionerDescription> getSSHAccountProvisioners(
+            AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException {
 
-        List<SSHAccountProvisioner> sshAccountProvisioners = new ArrayList<>();
+        List<org.apache.airavata.common.model.SSHAccountProvisionerDescription> sshAccountProvisioners =
+                new ArrayList<>();
         List<SSHAccountProvisionerProvider> sshAccountProvisionerProviders =
                 SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
         for (SSHAccountProvisionerProvider provider : sshAccountProvisionerProviders) {
             // TODO: Move this Thrift conversion to utility class
-            SSHAccountProvisioner sshAccountProvisioner = new SSHAccountProvisioner();
-            sshAccountProvisioner.setCanCreateAccount(provider.canCreateAccount());
-            sshAccountProvisioner.setCanInstallSSHKey(provider.canInstallSSHKey());
-            sshAccountProvisioner.setName(provider.getName());
+            org.apache.airavata.common.model.SSHAccountProvisionerDescription sshAccountProvisionerStruct =
+                    new org.apache.airavata.common.model.SSHAccountProvisionerDescription();
+            sshAccountProvisionerStruct.setCanCreateAccount(provider.canCreateAccount());
+            sshAccountProvisionerStruct.setCanInstallSSHKey(provider.canInstallSSHKey());
+            sshAccountProvisionerStruct.setName(provider.getName());
             List<SSHAccountProvisionerConfigParam> sshAccountProvisionerConfigParams = new ArrayList<>();
             for (ConfigParam configParam : provider.getConfigParams()) {
                 SSHAccountProvisionerConfigParam sshAccountProvisionerConfigParam =
@@ -2104,8 +2128,8 @@ public class AiravataServiceHandler implements org.apache.airavata.api.Airavata.
                 }
                 sshAccountProvisionerConfigParams.add(sshAccountProvisionerConfigParam);
             }
-            sshAccountProvisioner.setConfigParams(sshAccountProvisionerConfigParams);
-            sshAccountProvisioners.add(sshAccountProvisioner);
+            sshAccountProvisionerStruct.setConfigParams(sshAccountProvisionerConfigParams);
+            sshAccountProvisioners.add(sshAccountProvisionerStruct);
         }
         return sshAccountProvisioners;
     }

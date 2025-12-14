@@ -22,7 +22,7 @@ package org.apache.airavata.credential.utils;
 import java.util.List;
 import org.apache.airavata.credential.AuditInfo;
 import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 
 /**
  * This interface provides an API for Credential Store. Provides methods to manipulate credential store data.

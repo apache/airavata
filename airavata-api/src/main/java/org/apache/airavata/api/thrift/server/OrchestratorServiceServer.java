@@ -25,7 +25,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.model.OrchestratorService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;

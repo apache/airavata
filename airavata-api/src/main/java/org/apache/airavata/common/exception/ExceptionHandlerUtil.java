@@ -20,13 +20,11 @@
 package org.apache.airavata.common.exception;
 
 import org.apache.airavata.common.logging.LoggingUtil;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
 import org.slf4j.Logger;
 
 /**
  * Utility class for standardized exception handling patterns.
- * 
+ *
  * <p>This class provides helper methods to ensure consistent exception handling:
  * <ul>
  *   <li>Convert exceptions to AiravataSystemException with proper error types</li>
@@ -54,7 +52,7 @@ public class ExceptionHandlerUtil {
             Logger logger, String operation, AiravataErrorType errorType, Throwable exception) {
         String message = String.format("[%s] failed: %s", operation, exception.getMessage());
         LoggingUtil.logError(logger, operation, exception.getMessage(), exception);
-        
+
         AiravataSystemException airavataException = new AiravataSystemException(errorType);
         airavataException.setMessage(message);
         airavataException.initCause(exception);
@@ -72,10 +70,13 @@ public class ExceptionHandlerUtil {
      * @return AiravataSystemException with the error details
      */
     public static AiravataSystemException handleExceptionWithContext(
-            Logger logger, String operation, AiravataErrorType errorType, 
-            Throwable exception, java.util.Map<String, String> context) {
+            Logger logger,
+            String operation,
+            AiravataErrorType errorType,
+            Throwable exception,
+            java.util.Map<String, String> context) {
         LoggingUtil.logErrorWithContext(logger, operation, exception.getMessage(), exception, context);
-        
+
         StringBuilder message = new StringBuilder();
         message.append(String.format("[%s] failed: %s", operation, exception.getMessage()));
         if (context != null && !context.isEmpty()) {
@@ -83,7 +84,7 @@ public class ExceptionHandlerUtil {
             context.forEach((key, value) -> message.append(String.format("%s=%s, ", key, value)));
             message.setLength(message.length() - 2);
         }
-        
+
         AiravataSystemException airavataException = new AiravataSystemException(errorType);
         airavataException.setMessage(message.toString());
         airavataException.initCause(exception);
@@ -103,8 +104,13 @@ public class ExceptionHandlerUtil {
      * @return AiravataSystemException with the error details
      */
     public static AiravataSystemException handleExceptionWithMDC(
-            Logger logger, String operation, AiravataErrorType errorType, 
-            Throwable exception, String experimentId, String gatewayId, String processId) {
+            Logger logger,
+            String operation,
+            AiravataErrorType errorType,
+            Throwable exception,
+            String experimentId,
+            String gatewayId,
+            String processId) {
         LoggingUtil.setExperimentContext(experimentId, gatewayId, processId);
         try {
             return handleException(logger, operation, errorType, exception);
@@ -146,4 +152,3 @@ public class ExceptionHandlerUtil {
         return wrapAsAiravataException(errorType, messageWithCode, cause);
     }
 }
-

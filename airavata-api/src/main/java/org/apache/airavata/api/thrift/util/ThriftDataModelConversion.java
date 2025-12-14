@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.api.thrift.util;
 
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.sharing.models.User;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.sharing.model.User;
 
 /**
  * Created by Ajinkya on 3/29/17.

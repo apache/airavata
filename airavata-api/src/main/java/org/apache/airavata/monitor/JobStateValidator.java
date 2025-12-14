@@ -19,17 +19,17 @@
 */
 package org.apache.airavata.monitor;
 
-import static org.apache.airavata.model.status.JobState.ACTIVE;
-import static org.apache.airavata.model.status.JobState.CANCELED;
-import static org.apache.airavata.model.status.JobState.COMPLETE;
-import static org.apache.airavata.model.status.JobState.FAILED;
-import static org.apache.airavata.model.status.JobState.NON_CRITICAL_FAIL;
-import static org.apache.airavata.model.status.JobState.QUEUED;
-import static org.apache.airavata.model.status.JobState.SUBMITTED;
-import static org.apache.airavata.model.status.JobState.SUSPENDED;
-import static org.apache.airavata.model.status.JobState.UNKNOWN;
+import static org.apache.airavata.common.model.JobState.ACTIVE;
+import static org.apache.airavata.common.model.JobState.CANCELED;
+import static org.apache.airavata.common.model.JobState.COMPLETE;
+import static org.apache.airavata.common.model.JobState.FAILED;
+import static org.apache.airavata.common.model.JobState.NON_CRITICAL_FAIL;
+import static org.apache.airavata.common.model.JobState.QUEUED;
+import static org.apache.airavata.common.model.JobState.SUBMITTED;
+import static org.apache.airavata.common.model.JobState.SUSPENDED;
+import static org.apache.airavata.common.model.JobState.UNKNOWN;
 
-import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.common.model.JobState;
 
 public class JobStateValidator {
 

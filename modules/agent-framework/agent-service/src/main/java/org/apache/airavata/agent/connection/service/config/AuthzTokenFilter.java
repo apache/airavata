@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.airavata.agent.connection.service.UserContext;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.model.AuthzToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
 /**
  * This class is to uniquely identify third layer child objects. For example, workflow node status object can be

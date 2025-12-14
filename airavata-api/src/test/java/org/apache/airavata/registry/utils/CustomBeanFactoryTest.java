@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.utils;
 
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.thrift.TFieldRequirementType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

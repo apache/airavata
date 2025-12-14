@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.security;
 
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.model.AuthzToken;
 
 /**
  * This provides a thread local container for AuthzToken through out the execution of a particular thread.

@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.research.service.model;
 
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.security.model.AuthzToken;
 
 public class UserContext {
 

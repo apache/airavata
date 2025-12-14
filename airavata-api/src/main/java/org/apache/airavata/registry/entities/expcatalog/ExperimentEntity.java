@@ -19,11 +19,22 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.common.model.ExperimentType;
 
 /**
  * The persistent class for the experiment database table.

@@ -21,8 +21,8 @@ package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.Project;
 import org.apache.airavata.service.AiravataService;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;

@@ -19,21 +19,24 @@
 */
 package org.apache.airavata.registry.repositories.expcatalog;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskState;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;

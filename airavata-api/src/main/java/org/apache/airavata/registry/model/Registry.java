@@ -17,20 +17,17 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.exceptions;
+package org.apache.airavata.registry.model;
 
-public class ExperimentCatalogException extends Exception {
-    private static final long serialVersionUID = -2849422320139467602L;
+import org.apache.airavata.registry.exception.RegistryException;
 
-    public ExperimentCatalogException(Throwable e) {
-        super(e);
-    }
+public interface Registry {
+    public ExperimentCatalog getExperimentCatalog() throws RegistryException;
 
-    public ExperimentCatalogException(String message) {
-        super(message, null);
-    }
+    public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password)
+            throws RegistryException;
 
-    public ExperimentCatalogException(String message, Throwable e) {
-        super(message, e);
-    }
+    public AppCatalog getAppCatalog() throws RegistryException;
+
+    public ReplicaCatalog getReplicaCatalog() throws RegistryException;
 }

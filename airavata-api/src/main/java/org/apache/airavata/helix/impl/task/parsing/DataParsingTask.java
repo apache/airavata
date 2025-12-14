@@ -40,6 +40,16 @@ import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataProductType;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParserInput;
+import org.apache.airavata.common.model.ParserOutput;
+import org.apache.airavata.common.model.ReplicaLocationCategory;
+import org.apache.airavata.common.model.ReplicaPersistentType;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
@@ -50,18 +60,8 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParserInput;
-import org.apache.airavata.model.appcatalog.parser.ParserOutput;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataProductType;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
-import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
@@ -82,8 +82,7 @@ public class DataParsingTask extends AbstractTask {
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
-    public DataParsingTask(
-            RegistryService registryService, AiravataServerProperties properties) {
+    public DataParsingTask(RegistryService registryService, AiravataServerProperties properties) {
         this.registryService = registryService;
         this.properties = properties;
     }
@@ -344,8 +343,10 @@ public class DataParsingTask extends AbstractTask {
             logger.info("Container logs " + dockerLogs.toString());
         }
 
-        boolean deleteContainer = this.properties != null && this.properties.services != null 
-                && this.properties.services.parser != null && this.properties.services.parser.deleteContainer;
+        boolean deleteContainer = this.properties != null
+                && this.properties.services != null
+                && this.properties.services.parser != null
+                && this.properties.services.parser.deleteContainer;
         if (deleteContainer) {
             dockerClient.removeContainerCmd(containerResponse.getId()).exec();
             logger.info("Successfully removed container with id " + containerResponse.getId());

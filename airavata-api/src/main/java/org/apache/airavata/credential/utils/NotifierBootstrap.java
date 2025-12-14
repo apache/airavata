@@ -25,15 +25,18 @@ package org.apache.airavata.credential.utils;
  * Time: 2:22 PM
  */
 import java.text.ParseException;
-import java.util.*;
 import java.util.Calendar;
-import org.apache.airavata.credential.CommunityUser;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.impl.notifier.EmailNotificationMessage;
 import org.apache.airavata.credential.impl.notifier.EmailNotifier;
 import org.apache.airavata.credential.impl.notifier.EmailNotifierConfiguration;
+import org.apache.airavata.credential.model.CommunityUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,8 +113,8 @@ public class NotifierBootstrap extends TimerTask {
                         // Send an email
                         CommunityUser communityUser = certificateCredential.getCommunityUser();
                         String body = String.format(
-                                MESSAGE, communityUser.getUserName(), certificateCredential.getNotAfter());
-                        String subject = String.format(SUBJECT, communityUser.getUserName());
+                                MESSAGE, communityUser.getUsername(), certificateCredential.getNotAfter());
+                        String subject = String.format(SUBJECT, communityUser.getUsername());
                         NotificationMessage notificationMessage =
                                 new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
 

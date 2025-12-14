@@ -21,6 +21,9 @@ package org.apache.airavata.orchestrator.job;
 
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.ProcessSubmitEvent;
+import org.apache.airavata.common.model.ProcessTerminateEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.utils.CredentialReader;
@@ -28,9 +31,6 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
-import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.orchestrator.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
@@ -84,7 +84,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     public boolean submit(String experimentId, String processId, String tokenId) throws OrchestratorException {
         try {
             String gatewayId = null;
-            CredentialReader credentialReader = orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
+            CredentialReader credentialReader =
+                    orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);
@@ -124,7 +125,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     public boolean terminate(String experimentId, String processId, String tokenId) throws OrchestratorException {
         String gatewayId = null;
         try {
-            CredentialReader credentialReader = orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
+            CredentialReader credentialReader =
+                    orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
             if (credentialReader != null) {
                 try {
                     gatewayId = credentialReader.getGatewayID(tokenId);

@@ -22,7 +22,9 @@ package org.apache.airavata.service.integration;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.security.UserInfo;
+import org.apache.airavata.security.model.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -131,17 +133,21 @@ public abstract class ServiceIntegrationTestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|registry\\.messaging)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|registry\\.messaging)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = ".*\\$.*"  // Exclude inner classes (Thrift-generated)
-                ),
+                        pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
+                        ),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = ".*\\.cpi\\..*"  // Exclude Thrift CPI classes
-                )
+                        pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
+                        )
             })
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {
         @org.springframework.context.annotation.Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
@@ -154,21 +160,23 @@ public abstract class ServiceIntegrationTestBase {
         public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager() {
             return new org.apache.airavata.security.AiravataSecurityManager() {
                 @Override
-                public boolean isUserAuthorized(org.apache.airavata.model.security.AuthzToken authzToken, java.util.Map<String, String> metaData) throws org.apache.airavata.security.AiravataSecurityException {
+                public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData)
+                        throws AiravataSecurityException {
                     return true;
                 }
 
                 @Override
-                public org.apache.airavata.model.security.AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws org.apache.airavata.security.AiravataSecurityException {
-                    org.apache.airavata.model.security.AuthzToken token = new org.apache.airavata.model.security.AuthzToken("test-service-token");
-                    java.util.Map<String, String> claims = new java.util.HashMap<>();
+                public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId)
+                        throws AiravataSecurityException {
+                    var token = new AuthzToken("test-service-token");
+                    var claims = new HashMap<String, String>();
                     claims.put("gatewayId", gatewayId);
                     token.setClaimsMap(claims);
                     return token;
                 }
 
                 @Override
-                public org.apache.airavata.security.UserInfo getUserInfoFromAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.security.AiravataSecurityException {
+                public UserInfo getUserInfoFromAuthzToken(AuthzToken authzToken) throws AiravataSecurityException {
                     // Extract from token if available, otherwise use defaults
                     String userId = "test-user";
                     String gatewayId = "test-gateway";

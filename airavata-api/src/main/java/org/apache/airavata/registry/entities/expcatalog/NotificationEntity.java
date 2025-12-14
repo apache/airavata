@@ -19,10 +19,15 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.workspace.NotificationPriority;
+import org.apache.airavata.common.model.NotificationPriority;
 
 /**
  * The persistent class for the notification database table.

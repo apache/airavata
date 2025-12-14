@@ -20,24 +20,31 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.sharing.models.*;
-import org.springframework.stereotype.Component;
 import org.apache.airavata.service.SharingRegistryService;
+import org.apache.airavata.sharing.model.Domain;
+import org.apache.airavata.sharing.model.DuplicateEntryException;
+import org.apache.airavata.sharing.model.Entity;
+import org.apache.airavata.sharing.model.EntityType;
+import org.apache.airavata.sharing.model.PermissionType;
+import org.apache.airavata.sharing.model.SearchCriteria;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.sharing.model.UserGroup;
+import org.springframework.stereotype.Component;
 
 @Component
-public class SharingRegistryServerHandler implements org.apache.airavata.sharing.service.cpi.SharingRegistryService.Iface {
+public class SharingRegistryServerHandler implements org.apache.airavata.sharing.model.SharingRegistryService.Iface {
     private final SharingRegistryService sharingRegistryService;
 
     public SharingRegistryServerHandler(SharingRegistryService sharingRegistryService) {
         this.sharingRegistryService = sharingRegistryService;
     }
 
-    public static String OWNER_PERMISSION_NAME =
-            SharingRegistryService.OWNER_PERMISSION_NAME;
+    public static String OWNER_PERMISSION_NAME = SharingRegistryService.OWNER_PERMISSION_NAME;
 
     @Override
     public String getAPIVersion() {
-        return org.apache.airavata.sharing.service.cpi.sharing_cpiConstants.SHARING_CPI_VERSION;
+        return org.apache.airavata.sharing.model.sharing_cpiConstants.SHARING_CPI_VERSION;
     }
 
     /**

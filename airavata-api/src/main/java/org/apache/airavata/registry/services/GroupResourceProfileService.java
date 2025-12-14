@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.AwsComputeResourcePreference;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.SlurmComputeResourcePreference;
+import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.BatchQueueResourcePolicyEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePolicyEntity;
@@ -86,7 +86,7 @@ public class GroupResourceProfileService {
             for (GroupComputeResourcePreference gcrPref : groupResourceProfile.getComputePreferences()) {
                 gcrPref.setGroupResourceProfileId(groupResourceProfileId);
 
-                if (gcrPref.getResourceType() == ResourceType.SLURM
+                if (gcrPref.getResourceType() == ComputeResourceType.SLURM
                         && gcrPref.isSetSpecificPreferences()
                         && gcrPref.getSpecificPreferences().isSetSlurm()) {
 

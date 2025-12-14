@@ -23,7 +23,7 @@ include "airavata_commons.thrift"
 include "../data-models/status_models.thrift"
 include "../data-models/application_io_models.thrift"
 
-namespace java org.apache.airavata.model.messaging.event
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.Messaging.Event
 namespace cpp apache.airavata.model.messaging.event
 namespace py airavata.model.messaging.event

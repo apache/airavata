@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.model.util;
 
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.SetEnvPaths;
 
 public class AppDeploymentUtil {
     public static ApplicationDeploymentDescription createAppDeployment(

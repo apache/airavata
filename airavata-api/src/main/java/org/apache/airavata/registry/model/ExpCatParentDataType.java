@@ -17,11 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.profile.exceptions;
+package org.apache.airavata.registry.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class UserProfileRegistryException extends Exception {
-    private static final Logger logger = LoggerFactory.getLogger(UserProfileRegistryException.class);
+public enum ExpCatParentDataType {
+    APPLiCATION_CATALOG,
+    GROUP,
+    USER,
+    PROJECT,
+    EXPERIMENT,
+    GATEWAY,
+    NOTIFICATION,
+    QUEUE_STATUS
 }

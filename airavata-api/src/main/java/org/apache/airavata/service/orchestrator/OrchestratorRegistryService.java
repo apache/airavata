@@ -20,20 +20,20 @@
 package org.apache.airavata.service.orchestrator;
 
 import java.util.List;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Service;
         name = "services.orchestratorRegistryService.enabled",
         havingValue = "true",
         matchIfMissing = true)
-    public class OrchestratorRegistryService {
+public class OrchestratorRegistryService {
 
     private final org.apache.airavata.service.registry.RegistryService registryService;
 

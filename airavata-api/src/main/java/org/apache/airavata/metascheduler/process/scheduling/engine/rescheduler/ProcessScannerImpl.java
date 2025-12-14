@@ -20,11 +20,11 @@
 package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
 
 import java.util.List;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.ProcessScanner;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

@@ -17,12 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.registry.exception.AppCatalogException;
 
 public interface StorageResource {
     /**

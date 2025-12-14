@@ -20,31 +20,30 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
-import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.ApplicationParallelismType;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.FileSystems;
+import org.apache.airavata.common.model.GlobusJobSubmission;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.JobManagerCommand;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.LOCALDataMovement;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.UnicoreDataMovement;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.entities.appcatalog.BatchQueuePK;
+import org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity;
 import org.apache.airavata.registry.entities.appcatalog.CloudJobSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceFileSystemEntity;
@@ -54,7 +53,6 @@ import org.apache.airavata.registry.entities.appcatalog.GridftpEndpointEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandPK;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
-import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.LocalDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.LocalSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandEntity;
@@ -64,8 +62,7 @@ import org.apache.airavata.registry.entities.appcatalog.ScpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.SshJobSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.UnicoreDatamovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.UnicoreSubmissionEntity;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
-import org.apache.airavata.registry.repositories.appcatalog.BatchQueueRepository;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.appcatalog.CloudJobSubmissionRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceFileSystemRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
@@ -84,9 +81,9 @@ import org.apache.airavata.registry.repositories.appcatalog.UnicoreDatamovementR
 import org.apache.airavata.registry.repositories.appcatalog.UnicoreSubmissionRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
+import org.apache.airavata.registry.utils.EntityMergeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,9 +108,7 @@ public class ComputeResourceService {
     private final GridftpDataMovementRepository gridftpDataMovementRepository;
     private final GridftpEndpointRepository gridftpEndpointRepository;
     private final UnicoreDatamovementRepository unicoreDatamovementRepository;
-    private final BatchQueueRepository batchQueueRepository;
     private final Mapper mapper;
-    private final EntityManager entityManager;
 
     public ComputeResourceService(
             ComputeResourceRepository computeResourceRepository,
@@ -132,9 +127,7 @@ public class ComputeResourceService {
             GridftpDataMovementRepository gridftpDataMovementRepository,
             GridftpEndpointRepository gridftpEndpointRepository,
             UnicoreDatamovementRepository unicoreDatamovementRepository,
-            BatchQueueRepository batchQueueRepository,
-            Mapper mapper,
-            @Qualifier("appCatalogEntityManager") EntityManager entityManager) {
+            Mapper mapper) {
         this.computeResourceRepository = computeResourceRepository;
         this.computeResourceFileSystemRepository = computeResourceFileSystemRepository;
         this.resourceJobManagerRepository = resourceJobManagerRepository;
@@ -151,9 +144,7 @@ public class ComputeResourceService {
         this.gridftpDataMovementRepository = gridftpDataMovementRepository;
         this.gridftpEndpointRepository = gridftpEndpointRepository;
         this.unicoreDatamovementRepository = unicoreDatamovementRepository;
-        this.batchQueueRepository = batchQueueRepository;
         this.mapper = mapper;
-        this.entityManager = entityManager;
     }
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
@@ -174,21 +165,29 @@ public class ComputeResourceService {
     private ComputeResourceEntity saveComputeResource(ComputeResourceDescription description)
             throws AppCatalogException {
         String computeResourceId = description.getComputeResourceId();
-        
-        ComputeResourceEntity existingEntity = computeResourceRepository.findById(computeResourceId).orElse(null);
+
+        ComputeResourceEntity existingEntity =
+                computeResourceRepository.findById(computeResourceId).orElse(null);
         ComputeResourceEntity computeResourceEntity;
-        
+
         if (existingEntity != null) {
             // Map model to new entity to get the desired state
             ComputeResourceEntity newEntity = mapper.map(description, ComputeResourceEntity.class);
             // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(description, existingEntity);
-            
+
             // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getBatchQueues(), newEntity.getBatchQueues(), org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity::getQueueName);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getDataMovementInterfaces(), newEntity.getDataMovementInterfaces(), org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity::getDataMovementInterfaceId);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getJobSubmissionInterfaces(), newEntity.getJobSubmissionInterfaces(), org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
-            
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getBatchQueues(), newEntity.getBatchQueues(), BatchQueueEntity::getQueueName);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getDataMovementInterfaces(),
+                    newEntity.getDataMovementInterfaces(),
+                    DataMovementInterfaceEntity::getDataMovementInterfaceId);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getJobSubmissionInterfaces(),
+                    newEntity.getJobSubmissionInterfaces(),
+                    JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
+
             computeResourceEntity = existingEntity;
         } else {
             computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
@@ -258,7 +257,7 @@ public class ComputeResourceService {
         if (filters == null || filters.isEmpty()) {
             return getAllComputeResourceList();
         }
-        
+
         if (filters.containsKey(DBConstants.ComputeResource.HOST_NAME)) {
             String hostNameValue = filters.get(DBConstants.ComputeResource.HOST_NAME);
             if (hostNameValue == null || hostNameValue.trim().isEmpty()) {
@@ -275,7 +274,10 @@ public class ComputeResourceService {
                     .collect(Collectors.toList());
             return result;
         } else {
-            logger.error("Unsupported field name for compute resource: " + (filters.keySet().isEmpty() ? "empty filters" : filters.keySet().iterator().next()));
+            logger.error("Unsupported field name for compute resource: "
+                    + (filters.keySet().isEmpty()
+                            ? "empty filters"
+                            : filters.keySet().iterator().next()));
             throw new IllegalArgumentException("Unsupported field name for compute resource.");
         }
     }
@@ -325,13 +327,14 @@ public class ComputeResourceService {
         String submissionId = AppCatalogUtils.getID("SSH");
         sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
         String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
-        
-        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository.findById(resourceJobManagerId)
+
+        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository
+                .findById(resourceJobManagerId)
                 .orElseThrow(() -> new AppCatalogException("ResourceJobManager not found: " + resourceJobManagerId));
 
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
         sshJobSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
-        
+
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
                     sshJobSubmission.getResourceJobManager().getParallelismPrefix(),
@@ -351,7 +354,9 @@ public class ComputeResourceService {
     }
 
     public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        SshJobSubmissionEntity existingEntity = sshJobSubmissionRepository.findById(sshJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        SshJobSubmissionEntity existingEntity = sshJobSubmissionRepository
+                .findById(sshJobSubmission.getJobSubmissionInterfaceId())
+                .orElse(null);
         SshJobSubmissionEntity sshJobSubmissionEntity;
         if (existingEntity != null) {
             mapper.map(sshJobSubmission, existingEntity);
@@ -372,7 +377,9 @@ public class ComputeResourceService {
     }
 
     public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        CloudJobSubmissionEntity existingEntity = cloudJobSubmissionRepository.findById(cloudJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        CloudJobSubmissionEntity existingEntity = cloudJobSubmissionRepository
+                .findById(cloudJobSubmission.getJobSubmissionInterfaceId())
+                .orElse(null);
         CloudJobSubmissionEntity cloudJobSubmissionEntity;
         if (existingEntity != null) {
             mapper.map(cloudJobSubmission, existingEntity);
@@ -403,8 +410,9 @@ public class ComputeResourceService {
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws AppCatalogException {
         updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
-        
-        ResourceJobManagerEntity existingEntity = resourceJobManagerRepository.findById(resourceJobManagerId).orElse(null);
+
+        ResourceJobManagerEntity existingEntity =
+                resourceJobManagerRepository.findById(resourceJobManagerId).orElse(null);
         ResourceJobManagerEntity resourceJobManagerEntity;
         if (existingEntity != null) {
             mapper.map(updatedResourceJobManager, existingEntity);
@@ -412,7 +420,7 @@ public class ComputeResourceService {
         } else {
             resourceJobManagerEntity = mapper.map(updatedResourceJobManager, ResourceJobManagerEntity.class);
         }
-        
+
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
         Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
@@ -447,14 +455,15 @@ public class ComputeResourceService {
     public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
         localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
         String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
-        
-        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository.findById(resourceJobManagerId)
+
+        ResourceJobManagerEntity resourceJobManagerEntity = resourceJobManagerRepository
+                .findById(resourceJobManagerId)
                 .orElseThrow(() -> new AppCatalogException("ResourceJobManager not found: " + resourceJobManagerId));
 
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         localSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
-        
+
         if (localSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
                     localSubmission.getResourceJobManager().getParallelismPrefix(),
@@ -472,7 +481,9 @@ public class ComputeResourceService {
     }
 
     public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        LocalSubmissionEntity existingEntity = localSubmissionRepository.findById(localSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        LocalSubmissionEntity existingEntity = localSubmissionRepository
+                .findById(localSubmission.getJobSubmissionInterfaceId())
+                .orElse(null);
         LocalSubmissionEntity localSubmissionEntity;
         if (existingEntity != null) {
             mapper.map(localSubmission, existingEntity);
@@ -500,7 +511,9 @@ public class ComputeResourceService {
     }
 
     public void updateUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        UnicoreSubmissionEntity existingEntity = unicoreSubmissionRepository.findById(unicoreJobSubmission.getJobSubmissionInterfaceId()).orElse(null);
+        UnicoreSubmissionEntity existingEntity = unicoreSubmissionRepository
+                .findById(unicoreJobSubmission.getJobSubmissionInterfaceId())
+                .orElse(null);
         UnicoreSubmissionEntity unicoreSubmissionEntity;
         if (existingEntity != null) {
             mapper.map(unicoreJobSubmission, existingEntity);
@@ -508,7 +521,7 @@ public class ComputeResourceService {
         } else {
             unicoreSubmissionEntity = mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
         }
-        
+
         if (unicoreJobSubmission.getSecurityProtocol() != null) {
             unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
         }
@@ -523,7 +536,9 @@ public class ComputeResourceService {
     }
 
     public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
-        LocalDataMovementEntity existingEntity = localDataMovementRepository.findById(localDataMovement.getDataMovementInterfaceId()).orElse(null);
+        LocalDataMovementEntity existingEntity = localDataMovementRepository
+                .findById(localDataMovement.getDataMovementInterfaceId())
+                .orElse(null);
         LocalDataMovementEntity localDataMovementEntity;
         if (existingEntity != null) {
             mapper.map(localDataMovement, existingEntity);
@@ -542,7 +557,9 @@ public class ComputeResourceService {
     }
 
     public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
-        ScpDataMovementEntity existingEntity = scpDataMovementRepository.findById(scpDataMovement.getDataMovementInterfaceId()).orElse(null);
+        ScpDataMovementEntity existingEntity = scpDataMovementRepository
+                .findById(scpDataMovement.getDataMovementInterfaceId())
+                .orElse(null);
         ScpDataMovementEntity scpDataMovementEntity;
         if (existingEntity != null) {
             mapper.map(scpDataMovement, existingEntity);
@@ -650,26 +667,29 @@ public class ComputeResourceService {
 
     public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws AppCatalogException {
-        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        ComputeResourceEntity entity =
+                computeResourceRepository.findById(computeResourceId).orElse(null);
         if (entity != null && entity.getJobSubmissionInterfaces() != null) {
-            entity.getJobSubmissionInterfaces().removeIf(iface -> 
-                iface.getJobSubmissionInterfaceId().equals(jobSubmissionInterfaceId));
+            entity.getJobSubmissionInterfaces()
+                    .removeIf(iface -> iface.getJobSubmissionInterfaceId().equals(jobSubmissionInterfaceId));
             computeResourceRepository.save(entity);
         }
     }
 
     public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)
             throws AppCatalogException {
-        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        ComputeResourceEntity entity =
+                computeResourceRepository.findById(computeResourceId).orElse(null);
         if (entity != null && entity.getDataMovementInterfaces() != null) {
-            entity.getDataMovementInterfaces().removeIf(iface -> 
-                iface.getDataMovementInterfaceId().equals(dataMovementInterfaceId));
+            entity.getDataMovementInterfaces()
+                    .removeIf(iface -> iface.getDataMovementInterfaceId().equals(dataMovementInterfaceId));
             computeResourceRepository.save(entity);
         }
     }
 
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        ComputeResourceEntity entity = computeResourceRepository.findById(computeResourceId).orElse(null);
+        ComputeResourceEntity entity =
+                computeResourceRepository.findById(computeResourceId).orElse(null);
         if (entity != null && entity.getBatchQueues() != null) {
             entity.getBatchQueues().removeIf(queue -> queue.getQueueName().equals(queueName));
             computeResourceRepository.save(entity);
@@ -711,13 +731,15 @@ public class ComputeResourceService {
             ParallelismCommandPK pk = new ParallelismCommandPK();
             pk.setResourceJobManagerId(resourceJobManagerId);
             pk.setCommandType(entry.getKey());
-            
-            ParallelismCommandEntity entity = parallelismCommandRepository.findById(pk).orElse(new ParallelismCommandEntity());
-            
+
+            ParallelismCommandEntity entity =
+                    parallelismCommandRepository.findById(pk).orElse(new ParallelismCommandEntity());
+
             entity.setResourceJobManagerId(resourceJobManagerId);
             entity.setCommandType(entry.getKey());
             entity.setCommand(entry.getValue());
-            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent unmanaged object exception
+            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent
+            // unmanaged object exception
             parallelismCommandRepository.save(entity);
         }
     }
@@ -732,13 +754,15 @@ public class ComputeResourceService {
             JobManagerCommandPK pk = new JobManagerCommandPK();
             pk.setResourceJobManagerId(resourceJobManagerId);
             pk.setCommandType(entry.getKey());
-            
-            JobManagerCommandEntity entity = jobManagerCommandRepository.findById(pk).orElse(new JobManagerCommandEntity());
-            
+
+            JobManagerCommandEntity entity =
+                    jobManagerCommandRepository.findById(pk).orElse(new JobManagerCommandEntity());
+
             entity.setResourceJobManagerId(resourceJobManagerId);
             entity.setCommandType(entry.getKey());
             entity.setCommand(entry.getValue());
-            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent unmanaged object exception
+            // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent
+            // unmanaged object exception
             jobManagerCommandRepository.save(entity);
         }
     }
@@ -778,5 +802,4 @@ public class ComputeResourceService {
         DataMovementInterfaceEntity saved = dataMovementRepository.save(entity);
         return saved.getDataMovementInterfaceId();
     }
-
 }

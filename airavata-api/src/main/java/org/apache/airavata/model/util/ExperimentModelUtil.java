@@ -20,13 +20,13 @@
 package org.apache.airavata.model.util;
 
 import java.util.List;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 
 public class ExperimentModelUtil {
 

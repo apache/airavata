@@ -19,13 +19,17 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 import java.io.IOException;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
+import org.apache.airavata.common.model.DBEventMessage;
+import org.apache.airavata.common.model.Message;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.model.dbevent.DBEventMessage;
-import org.apache.airavata.model.messaging.event.Message;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

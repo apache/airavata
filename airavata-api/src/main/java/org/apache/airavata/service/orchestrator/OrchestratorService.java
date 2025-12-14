@@ -22,12 +22,48 @@ package org.apache.airavata.service.orchestrator;
 import jakarta.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.common.exception.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationResults;
 import org.apache.airavata.common.logging.LoggingUtil;
+import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.ExperimentIntermediateOutputsEvent;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
+import org.apache.airavata.common.model.ExperimentSubmitEvent;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessIdentifier;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ProcessStatusChangeEvent;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.ReplicaLocationCategory;
+import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -38,40 +74,13 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.messaging.event.*;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.schedule.HostScheduler;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.airavata.service.orchestrator.OrchestratorRegistryService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -90,10 +99,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
-@ConditionalOnProperty(
-        name = "services.orchestrator.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 

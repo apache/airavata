@@ -19,36 +19,48 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.DataStagingTaskModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.JobIdentifier;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.JobStatusChangeEvent;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.JobIdentifier;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.task.DataStagingTaskModel;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -247,7 +259,7 @@ public class PostWorkflowManager extends WorkflowManager {
             var grpId = processModel.getGroupResourceProfileId();
 
             experimentModel = registryService.getExperiment(experimentId);
-            ResourceType resourceType = registryService
+            ComputeResourceType resourceType = registryService
                     .getGroupComputeResourcePreference(crId, grpId)
                     .getResourceType();
 

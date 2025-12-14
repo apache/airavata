@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog.groupresourceprofile
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.GroupResourceProfile
 namespace cpp apache.airavata.model.appcatalog.groupresourceprofile
 namespace py airavata.model.appcatalog.groupresourceprofile
@@ -42,7 +42,7 @@ struct ComputeResourceReservation {
     5: required i64 endTime,
 }
 
-enum ResourceType {
+enum ComputeResourceType {
   SLURM = 0,
   AWS = 1,
 }
@@ -78,7 +78,7 @@ struct GroupComputeResourcePreference {
     6: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
     7: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
     8: optional string resourceSpecificCredentialStoreToken,
-    9: required ResourceType resourceType,
+    9: required ComputeResourceType resourceType,
     10: optional EnvironmentSpecificPreferences specificPreferences
 }
 

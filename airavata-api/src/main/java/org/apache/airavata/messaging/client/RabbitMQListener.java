@@ -87,5 +87,4 @@ public class RabbitMQListener {
             logger.error("Error while reading command line parameters", e);
         }
     }
-
 }

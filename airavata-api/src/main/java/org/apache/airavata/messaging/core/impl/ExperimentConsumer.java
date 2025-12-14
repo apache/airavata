@@ -26,10 +26,13 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
+import org.apache.airavata.common.model.ExperimentIntermediateOutputsEvent;
+import org.apache.airavata.common.model.ExperimentSubmitEvent;
+import org.apache.airavata.common.model.Message;
+import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.model.messaging.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

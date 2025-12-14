@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.api.thrift.server;
 
-import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.model.Airavata;
 import org.apache.airavata.api.thrift.handler.AiravataServiceHandler;
+import org.apache.airavata.common.exception.AiravataErrorType;
+import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;

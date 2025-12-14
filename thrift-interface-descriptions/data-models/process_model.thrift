@@ -24,7 +24,7 @@ include "scheduling_model.thrift"
 include "status_models.thrift"
 include "task_model.thrift"
 
-namespace java org.apache.airavata.model.process
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.Process
 namespace cpp apache.airavata.model.process
 namespace py airavata.model.process

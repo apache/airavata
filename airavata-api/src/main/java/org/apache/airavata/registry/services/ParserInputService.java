@@ -20,9 +20,9 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.model.appcatalog.parser.ParserInput;
+import org.apache.airavata.common.model.ParserInput;
 import org.apache.airavata.registry.entities.appcatalog.ParserInputEntity;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParserInputRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

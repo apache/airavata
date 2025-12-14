@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.orchestrator;
 
-import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.common.exception.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 
 /*

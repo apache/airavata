@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.agent.ssh;
 
-import java.io.*;
+import java.io.Serializable;
 import org.apache.airavata.agents.api.AdaptorParams;
 
 /**

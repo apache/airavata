@@ -22,10 +22,10 @@ package org.apache.airavata.service.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.apache.airavata.model.user.Status;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.common.model.Status;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

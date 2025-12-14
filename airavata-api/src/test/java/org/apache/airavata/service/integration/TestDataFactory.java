@@ -24,29 +24,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.Status;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.JobManagerCommand;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourceJobManagerType;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.SecurityProtocol;
+import org.apache.airavata.common.model.Status;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.security.model.AuthzToken;
 
 /**
  * Factory class for creating test data objects.
@@ -149,13 +150,13 @@ public class TestDataFactory {
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setResourceJobManager(resourceJobManager);
         sshJobSubmission.setJobSubmissionInterfaceId(UUID.randomUUID().toString());
-        sshJobSubmission.setSecurityProtocol(org.apache.airavata.model.data.movement.SecurityProtocol.SSH_KEYS);
+        sshJobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
         sshJobSubmission.setSshPort(22);
 
         // Create SCP Data Movement
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setDataMovementInterfaceId(UUID.randomUUID().toString());
-        scpDataMovement.setSecurityProtocol(org.apache.airavata.model.data.movement.SecurityProtocol.SSH_KEYS);
+        scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
         scpDataMovement.setSshPort(22);
 
         DataMovementInterface dataMovementInterface = new DataMovementInterface();
@@ -198,7 +199,7 @@ public class TestDataFactory {
         // Create Cloud Job Submission for AWS
         CloudJobSubmission cloudJobSubmission = new CloudJobSubmission();
         cloudJobSubmission.setJobSubmissionInterfaceId(UUID.randomUUID().toString());
-        cloudJobSubmission.setSecurityProtocol(org.apache.airavata.model.data.movement.SecurityProtocol.SSH_KEYS);
+        cloudJobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
 
         return computeResource;
     }
@@ -241,7 +242,7 @@ public class TestDataFactory {
         GroupComputeResourcePreference preference = new GroupComputeResourcePreference();
         preference.setComputeResourceId(computeResourceId);
         preference.setGroupResourceProfileId(groupResourceProfileId);
-        preference.setResourceType(ResourceType.SLURM);
+        preference.setResourceType(ComputeResourceType.SLURM);
         preference.setOverridebyAiravata(true);
         preference.setLoginUserName("testuser");
         return preference;
@@ -255,7 +256,7 @@ public class TestDataFactory {
         GroupComputeResourcePreference preference = new GroupComputeResourcePreference();
         preference.setComputeResourceId(computeResourceId);
         preference.setGroupResourceProfileId(groupResourceProfileId);
-        preference.setResourceType(ResourceType.AWS);
+        preference.setResourceType(ComputeResourceType.AWS);
         preference.setOverridebyAiravata(true);
         return preference;
     }

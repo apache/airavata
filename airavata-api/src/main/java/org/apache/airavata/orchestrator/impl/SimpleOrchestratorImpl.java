@@ -31,43 +31,38 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.DataStageType;
+import org.apache.airavata.common.model.DataStagingTaskModel;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.EnvironmentSetupTaskModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.JobSubmissionTaskModel;
+import org.apache.airavata.common.model.MonitorMode;
+import org.apache.airavata.common.model.MonitorTaskModel;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskState;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.model.task.DataStageType;
-import org.apache.airavata.model.task.DataStagingTaskModel;
-import org.apache.airavata.model.task.EnvironmentSetupTaskModel;
-import org.apache.airavata.model.task.JobSubmissionTaskModel;
-import org.apache.airavata.model.task.MonitorTaskModel;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.job.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.job.JobSubmitter;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +197,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         try {
             GroupComputeResourcePreference preference =
                     orchestratorUtils.getGroupComputeResourcePreference(processModel);
-            ResourceType resourceType = preference.getResourceType();
+            ComputeResourceType resourceType = preference.getResourceType();
             logger.info("Determined resource type as {} for process {}", resourceType, processModel.getProcessId());
 
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
@@ -215,7 +210,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             // TODO - handle for different resource types
             JobSubmissionInterface preferredJobSubmissionInterface =
                     orchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
-                    JobSubmissionProtocol preferredJobSubmissionProtocol =
+            JobSubmissionProtocol preferredJobSubmissionProtocol =
                     orchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
 
@@ -245,7 +240,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         try {
             GroupComputeResourcePreference preference =
                     orchestratorUtils.getGroupComputeResourcePreference(processModel);
-            ResourceType resourceType = preference.getResourceType();
+            ComputeResourceType resourceType = preference.getResourceType();
             List<String> taskIdList = new ArrayList<>(createAndSaveIntermediateOutputDataStagingTasks(
                     processModel, gatewayId, parentProcess, resourceType));
             // update process scheduling
@@ -270,7 +265,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private List<String> createAndSaveEnvSetupTask(
-            RegistryService registryService, String gatewayId, ProcessModel processModel, ResourceType resourceType)
+            RegistryService registryService,
+            String gatewayId,
+            ProcessModel processModel,
+            ComputeResourceType resourceType)
             throws RegistryServiceException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
 
@@ -306,7 +304,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public List<String> createAndSaveInputDataStagingTasks(
-            ProcessModel processModel, String gatewayId, ResourceType resourceType) throws AiravataException {
+            ProcessModel processModel, String gatewayId, ComputeResourceType resourceType) throws AiravataException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
@@ -351,7 +349,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public List<String> createAndSaveOutputDataStagingTasks(
-            ProcessModel processModel, String gatewayId, ResourceType resourceType)
+            ProcessModel processModel, String gatewayId, ComputeResourceType resourceType)
             throws AiravataException, RegistryServiceException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
@@ -419,7 +417,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public List<String> createAndSaveIntermediateOutputDataStagingTasks(
-            ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ResourceType resourceType)
+            ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ComputeResourceType resourceType)
             throws AiravataException, RegistryServiceException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
@@ -492,7 +490,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ProcessModel processModel,
             String gatewayId,
             List<String> dataStagingTaskIds,
-            ResourceType resourceType)
+            ComputeResourceType resourceType)
             throws AiravataException, RegistryServiceException, OrchestratorException {
         TaskModel archiveTask;
         try {
@@ -511,7 +509,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             List<String> dataStagingTaskIds,
             OutputDataObjectType processOutput,
-            ResourceType resourceType)
+            ComputeResourceType resourceType)
             throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
@@ -531,7 +529,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ProcessModel parentProcess,
             List<String> dataStagingTaskIds,
             OutputDataObjectType processOutput,
-            ResourceType resourceType)
+            ComputeResourceType resourceType)
             throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(
@@ -650,7 +648,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ProcessModel processModel,
             InputDataObjectType processInput,
             String gatewayId,
-            ResourceType resourceType)
+            ComputeResourceType resourceType)
             throws RegistryServiceException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
@@ -716,7 +714,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             OutputDataObjectType processOutput,
             String gatewayId,
             ProcessModel parentProcess,
-            ResourceType resourceType)
+            ComputeResourceType resourceType)
             throws RegistryServiceException, AiravataException, OrchestratorException {
         try {
             // create new task model for this task

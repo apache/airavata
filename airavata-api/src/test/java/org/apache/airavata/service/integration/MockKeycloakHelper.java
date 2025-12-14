@@ -21,8 +21,8 @@ package org.apache.airavata.service.integration;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.mockito.Mockito;
 

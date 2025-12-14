@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;

@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.credential.impl.store;
 
-import org.apache.airavata.credential.CommunityUser;
 import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.services.CommunityUserEntityService;
 import org.apache.airavata.credential.services.CredentialEntityService;
 import org.apache.airavata.credential.utils.CredentialWriter;

@@ -20,13 +20,13 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.TenantProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  * Created by goshenoy on 3/6/17.
  */
 @Component
-public class TenantProfileServiceHandler implements org.apache.airavata.profile.tenant.cpi.TenantProfileService.Iface {
+public class TenantProfileServiceHandler implements org.apache.airavata.profile.model.TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
@@ -49,7 +49,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.profile.
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.profile.tenant.cpi.profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
+        return org.apache.airavata.profile.model.profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 
     @Override

@@ -22,17 +22,18 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorPK;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentErrorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ExperimentErrorService extends BaseErrorService<ExperimentErrorEntity, ExperimentErrorRepository, ExperimentErrorPK> {
+public class ExperimentErrorService
+        extends BaseErrorService<ExperimentErrorEntity, ExperimentErrorRepository, ExperimentErrorPK> {
 
     public ExperimentErrorService(ExperimentErrorRepository experimentErrorRepository, Mapper mapper) {
         super(experimentErrorRepository, mapper);

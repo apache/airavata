@@ -17,19 +17,20 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.exceptions;
+package org.apache.airavata.registry.exception;
 
-public class ReplicaCatalogException extends RegistryException {
+public class RegistryException extends Exception {
+    private static final long serialVersionUID = -2849422320139467602L;
 
-    public ReplicaCatalogException(Throwable e) {
+    public RegistryException(Throwable e) {
         super(e);
     }
 
-    public ReplicaCatalogException(String message) {
+    public RegistryException(String message) {
         super(message, null);
     }
 
-    public ReplicaCatalogException(String message, Throwable e) {
+    public RegistryException(String message, Throwable e) {
         super(message, e);
     }
 }

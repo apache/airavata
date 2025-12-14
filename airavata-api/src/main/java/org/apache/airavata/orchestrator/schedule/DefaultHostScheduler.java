@@ -20,7 +20,7 @@
 package org.apache.airavata.orchestrator.schedule;
 
 import java.util.List;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceDescription;
 
 public class DefaultHostScheduler implements HostScheduler {
     @Override

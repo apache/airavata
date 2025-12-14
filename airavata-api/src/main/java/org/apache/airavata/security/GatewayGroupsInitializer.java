@@ -19,16 +19,20 @@
 */
 package org.apache.airavata.security;
 
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.sharing.models.*;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.sharing.model.GroupCardinality;
+import org.apache.airavata.sharing.model.GroupType;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

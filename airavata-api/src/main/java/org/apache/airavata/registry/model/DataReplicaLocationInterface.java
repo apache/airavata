@@ -17,20 +17,21 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.exceptions;
+package org.apache.airavata.registry.model;
 
-public class AppCatalogException extends Exception {
-    private static final long serialVersionUID = -2849422320139467602L;
+import java.util.List;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.registry.exception.ReplicaCatalogException;
 
-    public AppCatalogException(Throwable e) {
-        super(e);
-    }
+public interface DataReplicaLocationInterface {
 
-    public AppCatalogException(String message) {
-        super(message, null);
-    }
+    String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException;
 
-    public AppCatalogException(String message, Throwable e) {
-        super(message, e);
-    }
+    boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException;
+
+    DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException;
+
+    List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException;
+
+    boolean removeReplicaLocation(String replicaId) throws ReplicaCatalogException;
 }

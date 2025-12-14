@@ -19,7 +19,7 @@
  */
 
 
-namespace java org.apache.airavata.model.credential.store
+namespace java org.apache.airavata.credential.model
 namespace php Airavata.Model.Credential.Store
 namespace py airavata.model.credential.store
 

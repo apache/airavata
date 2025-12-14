@@ -23,29 +23,26 @@ import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.CommunityUser;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.CredentialOwnerType;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.impl.store.CertificateCredentialWriter;
 import org.apache.airavata.credential.impl.store.CredentialReaderImpl;
 import org.apache.airavata.credential.impl.store.SSHCredentialWriter;
+import org.apache.airavata.credential.model.CertificateCredential;
+import org.apache.airavata.credential.model.CommunityUser;
+import org.apache.airavata.credential.model.CredentialSummary;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.credential.utils.CredentialStoreDBInitConfig;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.apache.airavata.credential.utils.Utility;
-import org.apache.airavata.model.credential.store.CertificateCredential;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +50,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.credentialStoreService.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
-    public class CredentialStoreService {
+@ConditionalOnProperty(name = "services.credentialStoreService.enabled", havingValue = "true", matchIfMissing = true)
+public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
 
     private final AiravataServerProperties properties;
@@ -130,7 +124,9 @@ import org.springframework.stereotype.Service;
                 } catch (Exception ex) {
                     String message = "Error occurred while generating key pair: " + ex.getMessage();
                     logger.error(message, ex);
-                    throw new CredentialStoreException(message, ex);
+                    CredentialStoreException cse = new CredentialStoreException(message);
+                    cse.initCause(ex);
+                    throw cse;
                 }
             }
             credential.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
@@ -139,7 +135,9 @@ import org.springframework.stereotype.Service;
             } catch (CredentialStoreException e) {
                 String message = "Error occurred while saving SSH Credentials: " + e.getMessage();
                 logger.error(message, e);
-                throw new CredentialStoreException(message, e);
+                CredentialStoreException cse = new CredentialStoreException(message);
+                cse.initCause(e);
+                throw cse;
             }
             return token;
         } catch (CredentialStoreException e) {
@@ -176,7 +174,9 @@ import org.springframework.stereotype.Service;
             } catch (CredentialStoreException e) {
                 String message = "Error occurred while saving Certificate Credentials: " + e.getMessage();
                 logger.error(message, e);
-                throw new CredentialStoreException(message, e);
+                CredentialStoreException cse = new CredentialStoreException(message);
+                cse.initCause(e);
+                throw cse;
             }
             return token;
         } catch (CredentialStoreException e) {
@@ -184,7 +184,9 @@ import org.springframework.stereotype.Service;
         } catch (CertificateException e) {
             String message = "Error occurred while processing certificate: " + e.getMessage();
             logger.error(message, e);
-            throw new CredentialStoreException(message, e);
+            CredentialStoreException cse = new CredentialStoreException(message);
+            cse.initCause(e);
+            throw cse;
         }
     }
 
@@ -204,7 +206,9 @@ import org.springframework.stereotype.Service;
             } catch (CredentialStoreException e) {
                 String message = "Error occurred while saving PWD Credentials: " + e.getMessage();
                 logger.error(message, e);
-                throw new CredentialStoreException(message, e);
+                CredentialStoreException cse = new CredentialStoreException(message);
+                cse.initCause(e);
+                throw cse;
             }
             return token;
         } catch (CredentialStoreException e) {
@@ -222,7 +226,9 @@ import org.springframework.stereotype.Service;
                         "Error occurred while retrieving SSH credential for token - %s and gateway id - %s",
                         tokenId, gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             if (credential instanceof org.apache.airavata.credential.impl.ssh.SSHCredential
                     && !(credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential)) {
@@ -259,7 +265,9 @@ import org.springframework.stereotype.Service;
                         "Error occurred while retrieving credential for token - %s and gateway id - %s",
                         tokenId, gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             if (isSSHCredential(credential)) {
                 return convertToCredentialSummary((org.apache.airavata.credential.impl.ssh.SSHCredential) credential);
@@ -278,7 +286,9 @@ import org.springframework.stereotype.Service;
                     "Error occurred while retrieving credential for token - %s and gateway id - %s",
                     tokenId, gatewayId);
             logger.error(msg, e);
-            throw new CredentialStoreException(msg, e);
+            CredentialStoreException cse = new CredentialStoreException(msg);
+            cse.initCause(e);
+            throw cse;
         }
     }
 
@@ -291,7 +301,9 @@ import org.springframework.stereotype.Service;
             } catch (CredentialStoreException e) {
                 String msg = String.format("Error occurred while retrieving credentials for gateway - %s", gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             if (type.equals(SummaryType.SSH)) {
                 return credentials.stream()
@@ -383,10 +395,10 @@ import org.springframework.stereotype.Service;
                 org.apache.airavata.credential.impl.certificate.CertificateCredential credential1 =
                         (org.apache.airavata.credential.impl.certificate.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
-                org.apache.airavata.model.credential.store.CommunityUser communityUser =
-                        new org.apache.airavata.model.credential.store.CommunityUser();
+                org.apache.airavata.credential.model.CommunityUser communityUser =
+                        new org.apache.airavata.credential.model.CommunityUser();
                 communityUser.setGatewayName(credential1.getCommunityUser().getGatewayName());
-                communityUser.setUsername(credential1.getCommunityUser().getUserName());
+                communityUser.setUsername(credential1.getCommunityUser().getUsername());
                 communityUser.setUserEmail(credential1.getCommunityUser().getUserEmail());
                 certificateCredential.setCommunityUser(communityUser);
                 certificateCredential.setToken(credential1.getToken());
@@ -420,7 +432,9 @@ import org.springframework.stereotype.Service;
                         "Error occurred while retrieving PWD credential for token %s and gateway_id=%s",
                         tokenId, gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             if (credential instanceof org.apache.airavata.credential.impl.password.PasswordCredential) {
                 org.apache.airavata.credential.impl.password.PasswordCredential credential1 =
@@ -452,7 +466,9 @@ import org.springframework.stereotype.Service;
                 String msg = String.format(
                         "Error deleting SSH credential for token=%s and gateway_id=%s", tokenId, gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             return true;
         } catch (CredentialStoreException e) {
@@ -468,7 +484,9 @@ import org.springframework.stereotype.Service;
                 String msg = String.format(
                         "Error deleting PWD credential for token=%s and gateway_id=%s", tokenId, gatewayId);
                 logger.error(msg, e);
-                throw new CredentialStoreException(msg, e);
+                CredentialStoreException cse = new CredentialStoreException(msg);
+                cse.initCause(e);
+                throw cse;
             }
             return true;
         } catch (CredentialStoreException e) {

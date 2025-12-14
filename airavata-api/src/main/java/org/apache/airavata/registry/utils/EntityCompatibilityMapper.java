@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Centralized utility for backward compatibility mappings and transformations.
- * 
+ *
  * <p>This class consolidates all backward compatibility logic that was previously
  * scattered across services. It provides methods for:
  * <ul>
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Default value handling for nullable fields</li>
  *   <li>Legacy data migration helpers</li>
  * </ul>
- * 
+ *
  * <p>All compatibility mappings should be documented here and eventually removed
  * once all legacy data has been migrated.
  */
@@ -42,7 +42,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Maps legacy field names to current DDL column names.
-     * 
+     *
      * @param legacyFieldName The old field/column name
      * @return The current column name, or null if no mapping exists
      */
@@ -54,7 +54,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Converts a legacy boolean value stored as smallint to Boolean.
-     * 
+     *
      * @param value The smallint value (0 or 1, or null)
      * @return Boolean value, or null if input is null
      */
@@ -67,7 +67,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Converts a Boolean to smallint for legacy compatibility.
-     * 
+     *
      * @param value The Boolean value
      * @return Short value (0 or 1), or null if input is null
      */
@@ -80,7 +80,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Converts a legacy boolean value stored as tinyint to Boolean.
-     * 
+     *
      * @param value The tinyint value (0 or 1, or null)
      * @return Boolean value, or null if input is null
      */
@@ -93,7 +93,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Converts a Boolean to tinyint for legacy compatibility.
-     * 
+     *
      * @param value The Boolean value
      * @return Byte value (0 or 1), or null if input is null
      */
@@ -106,7 +106,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Provides default value for nullable fields that may be null in legacy data.
-     * 
+     *
      * @param value The current value
      * @param defaultValue The default to use if value is null
      * @param <T> The value type
@@ -118,7 +118,7 @@ public class EntityCompatibilityMapper {
 
     /**
      * Logs a compatibility mapping usage for tracking and eventual removal.
-     * 
+     *
      * @param entityType The entity class name
      * @param fieldName The field being mapped
      * @param mappingType The type of mapping (e.g., "field_name", "type_conversion")
@@ -127,4 +127,3 @@ public class EntityCompatibilityMapper {
         logger.debug("Compatibility mapping applied: {} -> {} ({})", entityType, fieldName, mappingType);
     }
 }
-

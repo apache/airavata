@@ -28,7 +28,7 @@ public class TestAiravataServiceServer {
 
     public static void main(String[] args) {
         throw new UnsupportedOperationException(
-                "AiravataServiceServer must be used within a Spring application context. " +
-                "Use Spring Boot application or provide dependencies manually via constructor.");
+                "AiravataServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

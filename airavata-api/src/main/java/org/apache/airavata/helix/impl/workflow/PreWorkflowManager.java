@@ -27,6 +27,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ProcessSubmitEvent;
+import org.apache.airavata.common.model.ProcessTerminateEvent;
+import org.apache.airavata.common.model.ProcessWorkflow;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
@@ -41,20 +53,8 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.messaging.core.Type;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
-import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.process.ProcessWorkflow;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +136,7 @@ public class PreWorkflowManager extends WorkflowManager {
         try {
             processModel = registryService.getProcess(processId);
             experimentModel = registryService.getExperiment(processModel.getExperimentId());
-            ResourceType resourceType = registryService
+            ComputeResourceType resourceType = registryService
                     .getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
                     .getResourceType();
@@ -282,7 +282,7 @@ public class PreWorkflowManager extends WorkflowManager {
             logger.warn("No workflow registered with process " + processId + " to cancel");
         }
 
-        if (gcrPref.getResourceType() == ResourceType.SLURM) {
+        if (gcrPref.getResourceType() == ComputeResourceType.SLURM) {
             logger.info(
                     "Skipping cancel workflow for process {} as it is not a SLURM process, resource type: {}",
                     processId,

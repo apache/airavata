@@ -27,24 +27,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Common base class for repository implementations across Airavata modules.
- * 
+ *
  * <p>This class provides core CRUD operations that are common across all repository
  * implementations. Module-specific repositories should extend this class and add
  * module-specific query methods and exception handling.
- * 
+ *
  * <p>The class uses a generic type system:
  * <ul>
  *   <li>T - The Thrift model type (e.g., ExperimentModel, ProcessModel)</li>
  *   <li>E - The JPA entity type (e.g., ExperimentEntity, ProcessEntity)</li>
  *   <li>Id - The primary key type (e.g., String, ProcessPK)</li>
  * </ul>
- * 
+ *
  * <p>Subclasses must implement:
  * <ul>
  *   <li>{@link #getMapper()} - Returns the Dozer mapper instance</li>
  *   <li>{@link #getEntityManager()} - Returns the EntityManager for this persistence unit</li>
  * </ul>
- * 
+ *
  * @param <T> The Thrift model type
  * @param <E> The JPA entity type
  * @param <Id> The primary key type
@@ -170,4 +170,3 @@ public abstract class AbstractRepository<T, E, Id> {
         return get(id) != null;
     }
 }
-

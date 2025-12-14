@@ -22,14 +22,14 @@ package org.apache.airavata.service.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
-import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -288,7 +288,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
-                                org.apache.airavata.credential.exceptions.CredentialStoreException.class);
+                                org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
         }
     }

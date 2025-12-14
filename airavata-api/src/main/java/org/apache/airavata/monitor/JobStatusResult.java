@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.monitor;
 
-import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.common.model.JobState;
 
 public class JobStatusResult {
     private JobState state;

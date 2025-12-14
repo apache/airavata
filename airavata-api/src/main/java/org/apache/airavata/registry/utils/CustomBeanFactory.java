@@ -26,8 +26,8 @@ import com.github.dozermapper.core.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.SlurmGroupComputeResourcePrefEntity;
@@ -47,8 +47,8 @@ public class CustomBeanFactory implements BeanFactory {
         Class<?> destClass = MappingUtils.loadClass(targetBeanId, beanContainer);
         if (GroupComputeResourcePrefEntity.class.equals(destClass)
                 && source instanceof GroupComputeResourcePreference pref) {
-            ResourceType resourceType = pref.isSetResourceType() ? pref.getResourceType() : null;
-            if (resourceType == ResourceType.AWS) {
+            ComputeResourceType resourceType = pref.isSetResourceType() ? pref.getResourceType() : null;
+            if (resourceType == ComputeResourceType.AWS) {
                 destClass = AWSGroupComputeResourcePrefEntity.class;
             } else {
                 destClass = SlurmGroupComputeResourcePrefEntity.class;

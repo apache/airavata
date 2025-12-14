@@ -25,39 +25,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.CrudType;
+import org.apache.airavata.common.model.EntityType;
+import org.apache.airavata.common.model.Status;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.model.dbevent.CrudType;
-import org.apache.airavata.model.dbevent.EntityType;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.Status;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.profile.entities.UserProfileEntity;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.UserProfileServiceException;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
-import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.service.security.IamAdminService;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.UserInfo;
+import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.userprofile.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.userprofile.enabled", havingValue = "true", matchIfMissing = true)
 public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 

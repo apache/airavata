@@ -21,6 +21,7 @@ package org.apache.airavata.credential;
 
 import java.io.Serializable;
 import java.util.Date;
+import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Any audit information related to a credential.

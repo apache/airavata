@@ -20,7 +20,7 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.common.model.ApplicationParallelismType;
 
 /**
  * The primary key class for the parallelism_command database table.

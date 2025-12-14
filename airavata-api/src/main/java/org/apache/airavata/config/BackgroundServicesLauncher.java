@@ -51,10 +51,7 @@ import org.springframework.context.annotation.Configuration;
  * Each service can be enabled/disabled via configuration properties.
  */
 @Configuration
-@ConditionalOnProperty(
-        name = "services.background.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
 public class BackgroundServicesLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundServicesLauncher.class);

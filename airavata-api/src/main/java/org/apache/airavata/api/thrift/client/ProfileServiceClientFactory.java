@@ -19,18 +19,18 @@
 */
 package org.apache.airavata.api.thrift.client;
 
-import org.apache.airavata.profile.groupmanager.cpi.GroupManagerService;
-import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.profile.groupmanager.cpi.group_manager_cpiConstants;
-import org.apache.airavata.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
-import org.apache.airavata.profile.tenant.cpi.TenantProfileService;
-import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
-import org.apache.airavata.profile.tenant.cpi.profile_tenant_cpiConstants;
-import org.apache.airavata.profile.user.cpi.UserProfileService;
-import org.apache.airavata.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.profile.user.cpi.profile_user_cpiConstants;
+import org.apache.airavata.profile.exception.GroupManagerServiceException;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.TenantProfileServiceException;
+import org.apache.airavata.profile.exception.UserProfileServiceException;
+import org.apache.airavata.profile.model.GroupManagerService;
+import org.apache.airavata.profile.model.IamAdminServices;
+import org.apache.airavata.profile.model.TenantProfileService;
+import org.apache.airavata.profile.model.UserProfileService;
+import org.apache.airavata.profile.model.group_manager_cpiConstants;
+import org.apache.airavata.profile.model.iam_admin_services_cpiConstants;
+import org.apache.airavata.profile.model.profile_tenant_cpiConstants;
+import org.apache.airavata.profile.model.profile_user_cpiConstants;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;

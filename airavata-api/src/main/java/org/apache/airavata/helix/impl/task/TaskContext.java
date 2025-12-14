@@ -30,48 +30,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceReservation;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskState;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.model.UserResourceProfile;
+import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityManager;
-import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +111,7 @@ public class TaskContext {
     private UserComputeResourcePreference userComputeResourcePreference;
     private UserStoragePreference userStoragePreference;
     private GroupComputeResourcePreference groupComputeResourcePreference;
-    private ResourceType resourceType;
+    private ComputeResourceType resourceType;
 
     private ComputeResourceDescription computeResourceDescription;
     private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -273,7 +273,7 @@ public class TaskContext {
         this.groupComputeResourcePreference = groupComputeResourcePreference;
     }
 
-    public ResourceType getResourceType() throws Exception {
+    public ComputeResourceType getResourceType() throws Exception {
         if (resourceType == null) {
             GroupComputeResourcePreference pref = getGroupComputeResourcePreference();
             resourceType = pref.getResourceType();
@@ -783,7 +783,8 @@ public class TaskContext {
 
     public RegistryService getRegistryService() {
         if (registryService == null) {
-            throw new IllegalStateException("RegistryService not set in TaskContext. It must be set via setRegistryService()");
+            throw new IllegalStateException(
+                    "RegistryService not set in TaskContext. It must be set via setRegistryService()");
         }
         return registryService;
     }
@@ -794,7 +795,8 @@ public class TaskContext {
 
     public UserProfileService getProfileService() {
         if (profileService == null) {
-            throw new IllegalStateException("UserProfileService not set in TaskContext. It must be set via setProfileService()");
+            throw new IllegalStateException(
+                    "UserProfileService not set in TaskContext. It must be set via setProfileService()");
         }
         return profileService;
     }
@@ -1014,7 +1016,7 @@ public class TaskContext {
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.isSetSpecificPreferences()) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
             if (esp.isSetSlurm()) {
                 return esp.getSlurm().getAllocationProjectNumber();
@@ -1024,7 +1026,7 @@ public class TaskContext {
     }
 
     private String extractSlurmQoS(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.isSetSpecificPreferences()) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
             if (esp.isSetSlurm()) {
                 return esp.getSlurm().getQualityOfService();

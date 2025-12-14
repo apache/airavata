@@ -20,17 +20,20 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import java.util.Map;
+import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.model.credential.store.*;
-import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.credential.model.CertificateCredential;
+import org.apache.airavata.credential.model.CredentialSummary;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CredentialServiceHandler implements org.apache.airavata.credential.cpi.CredentialStoreService.Iface {
+public class CredentialServiceHandler implements org.apache.airavata.credential.model.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
 
     private final CredentialStoreService credentialStoreService;
@@ -41,11 +44,11 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.credential.cpi.credential_store_cpiConstants.CS_CPI_VERSION;
+        return org.apache.airavata.credential.model.credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
     private CredentialStoreException wrapException(
-            org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+            org.apache.airavata.credential.exception.CredentialStoreException e) {
         CredentialStoreException thriftException = new CredentialStoreException();
         thriftException.setMessage(e.getMessage());
         return thriftException;
@@ -55,7 +58,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
         try {
             return credentialStoreService.addSSHCredential(sshCredential);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -65,7 +68,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
             throws CredentialStoreException {
         try {
             return credentialStoreService.addCertificateCredential(certificateCredential);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -74,7 +77,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public String addPasswordCredential(PasswordCredential passwordCredential) throws CredentialStoreException {
         try {
             return credentialStoreService.addPasswordCredential(passwordCredential);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -83,7 +86,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.getSSHCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -92,7 +95,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.getCredentialSummary(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -102,7 +105,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
             SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -112,7 +115,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
             throws CredentialStoreException {
         try {
             return credentialStoreService.getCertificateCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -121,7 +124,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.getPasswordCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -130,7 +133,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.deleteSSHCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }
@@ -139,7 +142,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
     public boolean deletePWDCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         try {
             return credentialStoreService.deletePWDCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exceptions.CredentialStoreException e) {
+        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
         }
     }

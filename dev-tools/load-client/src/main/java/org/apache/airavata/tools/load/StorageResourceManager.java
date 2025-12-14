@@ -30,7 +30,6 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.data.replica.*;
 import org.apache.airavata.model.security.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

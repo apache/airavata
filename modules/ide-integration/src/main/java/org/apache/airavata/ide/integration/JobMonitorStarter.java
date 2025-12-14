@@ -23,7 +23,6 @@ public class JobMonitorStarter {
     public static void main(String args[]) throws Exception {
         // Note: EmailBasedMonitor is a Spring component and requires dependencies.
         // This main method should be run within a Spring application context.
-        throw new UnsupportedOperationException(
-                "EmailBasedMonitor must be used within a Spring application context");
+        throw new UnsupportedOperationException("EmailBasedMonitor must be used within a Spring application context");
     }
 }

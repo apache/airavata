@@ -20,9 +20,9 @@
 package org.apache.airavata.api.thrift.client;
 
 import java.io.File;
-import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.model.Airavata;
+import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;

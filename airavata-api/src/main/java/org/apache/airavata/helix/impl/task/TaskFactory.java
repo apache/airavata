@@ -21,21 +21,21 @@ package org.apache.airavata.helix.impl.task;
 
 import java.util.EnumMap;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.common.model.ComputeResourceType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TaskFactory {
 
-    private final Map<ResourceType, HelixTaskFactory> factories;
+    private final Map<ComputeResourceType, HelixTaskFactory> factories;
 
     public TaskFactory(SlurmTaskFactory slurmTaskFactory, AWSTaskFactory awsTaskFactory) {
-        this.factories = new EnumMap<>(ResourceType.class);
-        this.factories.put(ResourceType.SLURM, slurmTaskFactory);
-        this.factories.put(ResourceType.AWS, awsTaskFactory);
+        this.factories = new EnumMap<>(ComputeResourceType.class);
+        this.factories.put(ComputeResourceType.SLURM, slurmTaskFactory);
+        this.factories.put(ComputeResourceType.AWS, awsTaskFactory);
     }
 
-    public HelixTaskFactory getFactory(ResourceType type) {
+    public HelixTaskFactory getFactory(ComputeResourceType type) {
         HelixTaskFactory factory = factories.get(type);
         if (factory == null) {
             throw new IllegalArgumentException("No TaskFactory for " + type);

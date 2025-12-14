@@ -17,17 +17,33 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
-import org.apache.airavata.registry.exceptions.RegistryException;
-
-public interface Registry {
-    public ExperimentCatalog getExperimentCatalog() throws RegistryException;
-
-    public ExperimentCatalog getExperimentCatalog(String gatewayId, String username, String password)
-            throws RegistryException;
-
-    public AppCatalog getAppCatalog() throws RegistryException;
-
-    public ReplicaCatalog getReplicaCatalog() throws RegistryException;
+public enum ExperimentCatalogModelType {
+    APPLiCATION_CATALOG,
+    GROUP,
+    USER,
+    PROJECT,
+    GATEWAY,
+    NOTIFICATION,
+    EXPERIMENT,
+    EXPERIMENT_STATISTICS,
+    EXPERIMENT_INPUT,
+    EXPERIMENT_OUTPUT,
+    EXPERIMENT_STATUS,
+    EXPERIMENT_ERROR,
+    USER_CONFIGURATION_DATA,
+    PROCESS,
+    PROCESS_STATUS,
+    PROCESS_ERROR,
+    PROCESS_INPUT,
+    PROCESS_OUTPUT,
+    PROCESS_RESOURCE_SCHEDULE,
+    TASK,
+    TASK_STATUS,
+    TASK_ERROR,
+    JOB,
+    JOB_STATUS,
+    QUEUE_STATUS,
+    PROCESS_WORKFLOW
 }

@@ -24,7 +24,7 @@ import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -61,7 +61,10 @@ public class ConfigurationReader {
         try {
             loadConfigurations();
         } catch (Exception e) {
-            throw new CredentialStoreException("Unable to read credential store specific configurations.", e);
+            CredentialStoreException cse =
+                    new CredentialStoreException("Unable to read credential store specific configurations.");
+            cse.initCause(e);
+            throw cse;
         }
     }
 

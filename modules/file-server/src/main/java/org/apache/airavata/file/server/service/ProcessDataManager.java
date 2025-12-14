@@ -21,17 +21,17 @@ package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -73,13 +73,13 @@ public class ProcessDataManager extends OutputDataStagingTask {
     }
 
     public AgentAdaptor getAgentAdaptor() throws Exception {
-        if (getTaskContext().getGroupComputeResourcePreference().getResourceType() == ResourceType.AWS) {
+        if (getTaskContext().getGroupComputeResourcePreference().getResourceType() == ComputeResourceType.AWS) {
             logger.info("Using AWS adaptor for process {}", processId);
 
             AWSProcessContextManager awsContext = new AWSProcessContextManager(getRegistryService(), getTaskContext());
             // Use CredentialStoreService from parent class (AiravataTask)
-            SSHCredential sshCredential = getCredentialStoreService()
-                    .getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
+            SSHCredential sshCredential =
+                    getCredentialStoreService().getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
 
             logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);
             logger.info("AWS public ip is {}", awsContext.getPublicIp());

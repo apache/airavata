@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.impl.task.submission.config.app;
 
-import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.common.model.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

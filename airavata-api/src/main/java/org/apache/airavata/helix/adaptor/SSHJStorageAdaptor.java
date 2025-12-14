@@ -23,11 +23,11 @@ import java.util.Optional;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -119,7 +119,7 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
     }
 
     @Override
-    public org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo getStorageVolumeInfo(String location)
+    public org.apache.airavata.common.model.StorageVolumeInfo getStorageVolumeInfo(String location)
             throws AgentException {
         return super.getStorageVolumeInfo(location);
     }

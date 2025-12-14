@@ -19,7 +19,11 @@
 */
 package org.apache.airavata.helix.core.participant;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
@@ -68,7 +72,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
         this.properties = properties;
         this.taskTypeName = taskTypeName;
-        this.taskClasses = taskClasses;  // Can be null for deferred initialization
+        this.taskClasses = taskClasses; // Can be null for deferred initialization
 
         // Property-dependent initialization moved to initialize() method
         // This allows subclasses to set taskClasses before initializing properties
@@ -100,7 +104,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     /**
      * Set task classes after construction. Used for deferred initialization.
-     * 
+     *
      * @param taskClasses the task classes to set
      * @throws IllegalStateException if task classes are already set and not empty
      */
@@ -109,7 +113,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
             throw new IllegalStateException("Task classes already set");
         }
         this.taskClasses = taskClasses;
-        
+
         // Log task classes if they were set
         if (taskClasses != null && !taskClasses.isEmpty()) {
             for (Class<? extends T> taskClass : taskClasses) {
@@ -145,7 +149,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         if (taskClasses == null || taskClasses.isEmpty()) {
             throw new IllegalStateException("Task classes must be set before creating task factory");
         }
-        
+
         Map<String, TaskFactory> taskRegistry = new HashMap<>();
 
         for (Class<? extends T> taskClass : taskClasses) {

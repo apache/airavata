@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,10 +82,7 @@ public class SSHUtilTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.accountprovisioning", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

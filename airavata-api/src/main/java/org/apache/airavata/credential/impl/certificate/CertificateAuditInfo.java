@@ -22,7 +22,7 @@ package org.apache.airavata.credential.impl.certificate;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.airavata.credential.AuditInfo;
-import org.apache.airavata.credential.CommunityUser;
+import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Audit information related to community credential.
@@ -85,7 +85,7 @@ public class CertificateAuditInfo implements AuditInfo {
     }
 
     public CommunityUser getCommunityUser() {
-        return new CommunityUser(gatewayName, communityUserName);
+        return new CommunityUser(gatewayName, communityUserName, "");
     }
 
     public String getPortalUserId() {

@@ -19,9 +19,18 @@
 */
 package org.apache.airavata.registry.entities.appcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.common.model.DataType;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
 

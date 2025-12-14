@@ -19,10 +19,15 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
 
 /**
  * The persistent class for the gateway database table.

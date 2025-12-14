@@ -30,12 +30,16 @@ import jakarta.mail.search.FlagTerm;
 import jakarta.mail.search.SearchTerm;
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.email.parser.EmailParser;
@@ -68,7 +72,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private String publisherId;
 
     public EmailBasedMonitor(
-            org.apache.airavata.service.registry.RegistryService registryService, AiravataServerProperties airavataProperties)
+            org.apache.airavata.service.registry.RegistryService registryService,
+            AiravataServerProperties airavataProperties)
             throws Exception {
         super(registryService, airavataProperties);
         this.registryService = registryService;

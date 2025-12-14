@@ -19,13 +19,32 @@
 */
 package org.apache.airavata.registry.tool;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Calendar;
 import java.util.Date;
-import org.apache.commons.cli.*;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.DefaultParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,7 +346,7 @@ public class DBMigrator {
             options.addOption("user", true, "JDBC Username");
             options.addOption("pwd", true, "JDBC Password");
             options.addOption("v", true, "Airavata Current Version");
-            CommandLineParser parser = new PosixParser();
+            CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
             jdbcURL = cmd.getOptionValue("url");
             if (jdbcURL == null) {

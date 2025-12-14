@@ -20,10 +20,10 @@
 package org.apache.airavata.model.util;
 
 import java.util.List;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
 
 public class AppInterfaceUtil {
     public static ApplicationInterfaceDescription createAppInterface(

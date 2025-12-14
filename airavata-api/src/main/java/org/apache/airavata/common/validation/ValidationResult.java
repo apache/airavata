@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Represents the result of a validation operation.
- * 
+ *
  * <p>Contains information about whether validation passed or failed,
  * and a list of validation errors if any occurred.
  */
@@ -115,8 +115,7 @@ public class ValidationResult {
         private String field;
         private String message;
 
-        public ValidationError() {
-        }
+        public ValidationError() {}
 
         public ValidationError(String field, String message) {
             this.field = field;
@@ -145,4 +144,3 @@ public class ValidationResult {
         }
     }
 }
-

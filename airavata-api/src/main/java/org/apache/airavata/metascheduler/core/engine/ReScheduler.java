@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.metascheduler.core.engine;
 
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
 
 /**
  * This is the interface class for ReScheduling

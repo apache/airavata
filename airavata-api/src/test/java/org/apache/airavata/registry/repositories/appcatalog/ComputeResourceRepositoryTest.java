@@ -19,34 +19,49 @@
 */
 package org.apache.airavata.registry.repositories.appcatalog;
 
-import java.util.*;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import org.apache.airavata.common.model.ApplicationParallelismType;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.FileSystems;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.JobManagerCommand;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.MonitorMode;
+import org.apache.airavata.common.model.ProviderName;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourceJobManagerType;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.SecurityProtocol;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.TestConstructor;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, ComputeResourceRepositoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -85,13 +100,17 @@ public class ComputeResourceRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
@@ -230,7 +249,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<String> allIds = new ArrayList<>();
         List<ComputeResourceDescription> allComputeResources = new ArrayList<>();
-        Map<String, String> allComputeResourceMap = new HashMap<>();
+        var allComputeResourceMap = new HashMap<String, String>();
         for (int i = 0; i < 5; i++) {
             ComputeResourceDescription computeResourceDescription =
                     prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
@@ -250,7 +269,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                     deepCompareComputeResourceDescription(allComputeResources.get(i), allSavedComputeResources.get(i)));
         }
 
-        Map<String, String> allSavedComputeResourceIds = computeResourceService.getAllComputeResourceIdList();
+        var allSavedComputeResourceIds = computeResourceService.getAllComputeResourceIdList();
 
         Assertions.assertEquals(5, allSavedComputeResourceIds.size());
 
@@ -260,7 +279,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
             Assertions.assertEquals(allComputeResourceMap.get(id), host);
         }
 
-        Map<String, String> allAvailableIds = computeResourceService.getAvailableComputeResourceIdList();
+        var allAvailableIds = computeResourceService.getAvailableComputeResourceIdList();
 
         Assertions.assertEquals(3, allAvailableIds.size());
         Assertions.assertNotNull(allAvailableIds.get(allIds.get(0)));
@@ -284,7 +303,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         ComputeResourceDescription computeResourceDescription =
                 prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
 
-        Map<String, String> cfilters = new HashMap<String, String>();
+        var cfilters = new HashMap<String, String>();
         cfilters.put(DBConstants.ComputeResource.HOST_NAME, "localhost");
         List<ComputeResourceDescription> computeResourceList = computeResourceService.getComputeResourceList(cfilters);
 
@@ -531,7 +550,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         }
         description.setBatchQueues(batchQueueList);
 
-        Map<FileSystems, String> fileSysMap = new HashMap<FileSystems, String>();
+        var fileSysMap = new HashMap<FileSystems, String>();
         fileSysMap.put(FileSystems.HOME, "/home");
         fileSysMap.put(FileSystems.SCRATCH, "/tmp");
         description.setFileSystems(fileSysMap);
@@ -548,11 +567,11 @@ public class ComputeResourceRepositoryTest extends TestBase {
         jobManager.setPushMonitoringEndpoint("monitor ep");
         jobManager.setJobManagerBinPath("/usr/bin");
 
-        Map<ApplicationParallelismType, String> parallelismPrefix = new HashMap<>();
+        var parallelismPrefix = new HashMap<ApplicationParallelismType, String>();
         parallelismPrefix.put(ApplicationParallelismType.CCM, "ccm parallel");
         jobManager.setParallelismPrefix(parallelismPrefix);
 
-        Map<JobManagerCommand, String> commands = new HashMap<JobManagerCommand, String>();
+        var commands = new HashMap<JobManagerCommand, String>();
         commands.put(JobManagerCommand.SUBMISSION, "sbatch");
         commands.put(JobManagerCommand.JOB_MONITORING, "squeue");
         commands.put(JobManagerCommand.DELETION, "scancel");

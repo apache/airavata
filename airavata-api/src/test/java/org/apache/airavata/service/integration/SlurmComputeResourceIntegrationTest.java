@@ -23,17 +23,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.data.movement.SecurityProtocol;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.JobManagerCommand;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourceJobManagerType;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.SecurityProtocol;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;
@@ -168,7 +168,7 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
             GroupComputeResourcePreference retrieved =
                     groupResourceProfileService.getGroupComputeResourcePreference(computeResourceId, groupProfileId);
             assertThat(retrieved).isNotNull();
-            assertThat(retrieved.getResourceType()).isEqualTo(ResourceType.SLURM);
+            assertThat(retrieved.getResourceType()).isEqualTo(ComputeResourceType.SLURM);
         }
     }
 

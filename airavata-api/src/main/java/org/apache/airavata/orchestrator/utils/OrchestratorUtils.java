@@ -26,28 +26,28 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.DataMovementProtocol;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.SecurityProtocol;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.utils.CredentialReader;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.SecurityProtocol;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +65,7 @@ public class OrchestratorUtils {
     private final AiravataServerProperties properties;
 
     public OrchestratorUtils(
-            RegistryService registryService,
-            CredentialReader credentialReader,
-            AiravataServerProperties properties) {
+            RegistryService registryService, CredentialReader credentialReader, AiravataServerProperties properties) {
         this.registryService = registryService;
         this.credentialReader = credentialReader;
         this.properties = properties;

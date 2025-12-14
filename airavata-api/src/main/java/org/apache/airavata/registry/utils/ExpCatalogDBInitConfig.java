@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.registry.utils;
 
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.UserService;
 import org.springframework.stereotype.Component;

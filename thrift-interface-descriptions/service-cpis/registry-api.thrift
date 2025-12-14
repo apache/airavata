@@ -48,7 +48,7 @@ include "../data-models/user_resource_profile_model.thrift"
 include "../data-models/data_movement_models.thrift"
 include "../data-models/replica_catalog_models.thrift"
 
-namespace java org.apache.airavata.registry.api
+namespace java org.apache.airavata.registry.model
 
 const string REGISTRY_API_VERSION = "0.18.0"
 

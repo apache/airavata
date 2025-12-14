@@ -20,10 +20,10 @@
 package org.apache.airavata.metascheduler.metadata.analyzer.impl;
 
 import java.util.Map;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.DataAnalyzer;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

@@ -17,10 +17,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
-import org.apache.airavata.model.workflow.AiravataWorkflow;
-import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
+import org.apache.airavata.common.model.AiravataWorkflow;
+import org.apache.airavata.registry.exception.WorkflowCatalogException;
 
 public interface WorkflowCatalog {
 

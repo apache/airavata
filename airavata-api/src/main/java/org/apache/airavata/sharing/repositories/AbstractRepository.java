@@ -26,7 +26,7 @@ import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.utils.Committer;
 import org.apache.airavata.sharing.utils.DBConstants;
 import org.apache.airavata.sharing.utils.JPAUtils;
@@ -79,24 +79,24 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         List<T> result = new ArrayList<>();
         int batchSize = 50; // Process in batches to avoid memory issues
-        
+
         for (int i = 0; i < tList.size(); i++) {
             E entity = getMapper().map(tList.get(i), dbEntityGenericClass);
             em.persist(entity);
             result.add(getMapper().map(entity, thriftGenericClass));
-            
+
             // Flush and clear every batchSize entities to manage memory
             if ((i + 1) % batchSize == 0) {
                 em.flush();
                 em.clear();
             }
         }
-        
+
         // Final flush for remaining entities
         if (tList.size() % batchSize != 0) {
             em.flush();
         }
-        
+
         return result;
     }
 
@@ -123,24 +123,24 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         List<T> result = new ArrayList<>();
         int batchSize = 50; // Process in batches to avoid memory issues
-        
+
         for (int i = 0; i < tList.size(); i++) {
             E entity = getMapper().map(tList.get(i), dbEntityGenericClass);
             E merged = em.merge(entity);
             result.add(getMapper().map(merged, thriftGenericClass));
-            
+
             // Flush and clear every batchSize entities to manage memory
             if ((i + 1) % batchSize == 0) {
                 em.flush();
                 em.clear();
             }
         }
-        
+
         // Final flush for remaining entities
         if (tList.size() % batchSize != 0) {
             em.flush();
         }
-        
+
         return result;
     }
 

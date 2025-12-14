@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.status
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.Status
 namespace cpp apache.airavata.model.status
 namespace py airavata.model.status

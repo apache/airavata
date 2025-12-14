@@ -23,7 +23,7 @@ import org.apache.airavata.common.utils.NameValidator;
 
 /**
  * Service for performing common validation operations.
- * 
+ *
  * <p>This service provides standardized validation methods that can be used
  * across the Airavata API. It centralizes common validation logic and provides
  * a consistent interface for validation operations.
@@ -56,8 +56,11 @@ public class ValidationService {
      */
     public static boolean validateName(String value, String fieldName, ValidationResult result) {
         if (!NameValidator.validate(value)) {
-            result.addError(fieldName, 
-                String.format("%s must start with a letter and contain only letters, numbers, underscores, and dots", fieldName));
+            result.addError(
+                    fieldName,
+                    String.format(
+                            "%s must start with a letter and contain only letters, numbers, underscores, and dots",
+                            fieldName));
             return false;
         }
         return true;
@@ -73,15 +76,17 @@ public class ValidationService {
      * @param result The validation result to add errors to
      * @return true if valid, false otherwise
      */
-    public static boolean validateLength(String value, String fieldName, int minLength, int maxLength, ValidationResult result) {
+    public static boolean validateLength(
+            String value, String fieldName, int minLength, int maxLength, ValidationResult result) {
         if (value == null) {
             result.addError(fieldName, String.format("%s cannot be null", fieldName));
             return false;
         }
         int length = value.length();
         if (length < minLength || length > maxLength) {
-            result.addError(fieldName, 
-                String.format("%s must be between %d and %d characters long", fieldName, minLength, maxLength));
+            result.addError(
+                    fieldName,
+                    String.format("%s must be between %d and %d characters long", fieldName, minLength, maxLength));
             return false;
         }
         return true;
@@ -115,8 +120,7 @@ public class ValidationService {
      */
     public static boolean validateRange(long value, String fieldName, long min, long max, ValidationResult result) {
         if (value < min || value > max) {
-            result.addError(fieldName, 
-                String.format("%s must be between %d and %d", fieldName, min, max));
+            result.addError(fieldName, String.format("%s must be between %d and %d", fieldName, min, max));
             return false;
         }
         return true;
@@ -138,4 +142,3 @@ public class ValidationService {
         return true;
     }
 }
-

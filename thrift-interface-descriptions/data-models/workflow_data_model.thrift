@@ -19,7 +19,7 @@
  */
 
 
-namespace java org.apache.airavata.model
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model
 namespace py airavata.model
 
@@ -45,7 +45,7 @@ struct WorkflowModel {
     9: optional i64 creationTime,
 }
 
-enum WorkflowState {
+enum WorkflowRuntimeState {
     CREATED,
     STARTED,
     EXECUTING,
@@ -72,7 +72,7 @@ struct ComponentStatus {
 }
 
 struct WorkflowStatus {
-    1: required WorkflowState state,
+    1: required WorkflowRuntimeState state,
     2: optional i64 timeOfStateChange,
     3: optional string reason
 }

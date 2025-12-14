@@ -19,23 +19,28 @@
 */
 package org.apache.airavata.helix.impl.task.submission;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.GatewayUsageReportingCommand;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

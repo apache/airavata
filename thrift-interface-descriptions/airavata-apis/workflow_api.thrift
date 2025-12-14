@@ -35,7 +35,7 @@ include "../data-models/application_deployment_model.thrift"
 include "../data-models/application_interface_model.thrift"
 include "../data-models/workflow_data_model.thrift"
 
-namespace java org.apache.airavata.api.workflow
+namespace java org.apache.airavata.api.model
 namespace php Airavata.API.Workflow
 namespace cpp airavata.api.workflow
 namespace perl AiravataWorkflowAPI

@@ -19,12 +19,24 @@
 */
 package org.apache.airavata.registry.entities.replicacatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Map;
-import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
-import org.apache.airavata.model.data.replica.ReplicaPersistentType;
+import org.apache.airavata.common.model.ReplicaLocationCategory;
+import org.apache.airavata.common.model.ReplicaPersistentType;
 
 /**
  * The persistent class for the data_replica_location database table.

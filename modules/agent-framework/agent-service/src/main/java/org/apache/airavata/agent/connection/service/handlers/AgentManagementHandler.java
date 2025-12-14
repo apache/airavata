@@ -29,23 +29,23 @@ import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentStatistics;
-import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.api.model.Airavata;
+import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -290,7 +290,7 @@ public class AgentManagementHandler {
     }
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ResourceType.SLURM && pref.isSetSpecificPreferences()) {
+        if (pref.getResourceType() == ComputeResourceType.SLURM && pref.isSetSpecificPreferences()) {
             EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
             if (esp.isSetSlurm()) {
                 return esp.getSlurm().getAllocationProjectNumber();

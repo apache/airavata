@@ -25,7 +25,7 @@ import org.slf4j.MDC;
 
 /**
  * Utility class for standardized logging patterns across the Airavata API.
- * 
+ *
  * <p>This class provides helper methods to ensure consistent logging:
  * <ul>
  *   <li>Always include exceptions in error logs</li>
@@ -33,11 +33,11 @@ import org.slf4j.MDC;
  *   <li>Standardize log message format: [Operation] failed: [reason]</li>
  *   <li>Provide context-aware logging methods</li>
  * </ul>
- * 
+ *
  * <p>Usage example:
  * <pre>
  *   LoggingUtil.logError(logger, "Experiment launch", "Failed to validate experiment", exception);
- *   LoggingUtil.logErrorWithContext(logger, "Process execution", "Task failed", exception, 
+ *   LoggingUtil.logErrorWithContext(logger, "Process execution", "Task failed", exception,
  *       Map.of("processId", processId, "taskId", taskId));
  * </pre>
  */
@@ -88,19 +88,22 @@ public class LoggingUtil {
      * @param exception The exception that occurred (may be null)
      * @param context Context parameters to include in the log message (key-value pairs)
      */
-    public static void logErrorWithContext(Logger logger, String operation, String reason, 
-            Throwable exception, java.util.Map<String, String> context) {
+    public static void logErrorWithContext(
+            Logger logger,
+            String operation,
+            String reason,
+            Throwable exception,
+            java.util.Map<String, String> context) {
         StringBuilder message = new StringBuilder();
         message.append(String.format("[%s] failed: %s", operation, reason));
-        
+
         if (context != null && !context.isEmpty()) {
             message.append(" | Context: ");
-            context.forEach((key, value) -> 
-                message.append(String.format("%s=%s, ", key, value)));
+            context.forEach((key, value) -> message.append(String.format("%s=%s, ", key, value)));
             // Remove trailing comma and space
             message.setLength(message.length() - 2);
         }
-        
+
         if (exception != null) {
             logger.error(message.toString(), exception);
         } else {
@@ -127,18 +130,17 @@ public class LoggingUtil {
      * @param message The warning message
      * @param context Context parameters to include in the log message
      */
-    public static void logWarningWithContext(Logger logger, String operation, String message,
-            java.util.Map<String, String> context) {
+    public static void logWarningWithContext(
+            Logger logger, String operation, String message, java.util.Map<String, String> context) {
         StringBuilder logMessage = new StringBuilder();
         logMessage.append(String.format("[%s] warning: %s", operation, message));
-        
+
         if (context != null && !context.isEmpty()) {
             logMessage.append(" | Context: ");
-            context.forEach((key, value) -> 
-                logMessage.append(String.format("%s=%s, ", key, value)));
+            context.forEach((key, value) -> logMessage.append(String.format("%s=%s, ", key, value)));
             logMessage.setLength(logMessage.length() - 2);
         }
-        
+
         logger.warn(logMessage.toString());
     }
 
@@ -161,18 +163,17 @@ public class LoggingUtil {
      * @param message The info message
      * @param context Context parameters to include in the log message
      */
-    public static void logInfoWithContext(Logger logger, String operation, String message,
-            java.util.Map<String, String> context) {
+    public static void logInfoWithContext(
+            Logger logger, String operation, String message, java.util.Map<String, String> context) {
         StringBuilder logMessage = new StringBuilder();
         logMessage.append(String.format("[%s]: %s", operation, message));
-        
+
         if (context != null && !context.isEmpty()) {
             logMessage.append(" | Context: ");
-            context.forEach((key, value) -> 
-                logMessage.append(String.format("%s=%s, ", key, value)));
+            context.forEach((key, value) -> logMessage.append(String.format("%s=%s, ", key, value)));
             logMessage.setLength(logMessage.length() - 2);
         }
-        
+
         logger.info(logMessage.toString());
     }
 
@@ -244,4 +245,3 @@ public class LoggingUtil {
         };
     }
 }
-

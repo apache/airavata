@@ -20,7 +20,7 @@
 package org.apache.airavata.security;
 
 import java.util.Map;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.model.AuthzToken;
 
 public interface AiravataSecurityManager {
 

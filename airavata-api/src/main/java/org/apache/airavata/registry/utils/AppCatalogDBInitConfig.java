@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.registry.utils;
 
+import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.registry.services.GwyResourceProfileService;
 import org.springframework.stereotype.Component;
 

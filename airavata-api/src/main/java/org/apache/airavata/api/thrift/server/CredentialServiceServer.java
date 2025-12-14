@@ -22,7 +22,7 @@ package org.apache.airavata.api.thrift.server;
 import org.apache.airavata.api.thrift.handler.CredentialServiceHandler;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.cpi.CredentialStoreService;
+import org.apache.airavata.credential.model.CredentialStoreService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;

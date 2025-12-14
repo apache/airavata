@@ -22,9 +22,9 @@ package org.apache.airavata.registry.repositories.expcatalog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.NotificationPriority;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.common.model.NotificationPriority;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.NotificationService;
 import org.junit.jupiter.api.Test;

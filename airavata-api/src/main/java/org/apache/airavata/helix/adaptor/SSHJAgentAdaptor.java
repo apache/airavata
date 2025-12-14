@@ -19,16 +19,24 @@
 */
 package org.apache.airavata.helix.adaptor;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.sftp.*;
+import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode.Type;
+import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
@@ -42,20 +50,23 @@ import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
-import org.apache.airavata.agents.api.*;
-import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SessionResource;
+import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.StorageDirectoryInfo;
+import org.apache.airavata.common.model.StorageVolumeInfo;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SCPFileTransferResource;
 import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SFTPClientResource;
+import org.apache.airavata.helix.adaptor.PoolingSSHJClient.SessionResource;
 import org.apache.airavata.helix.agent.ssh.StandardOutReader;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
-import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -225,8 +236,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SessionResource sessionResource = null;
         try {
             sessionResource = sshjClient.startSessionResource();
-            Session.Command exec =
-                    sessionResource.getSession().exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
+            Session.Command exec = sessionResource
+                    .getSession()
+                    .exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             StandardOutReader standardOutReader = new StandardOutReader();
 
             try {
@@ -345,60 +357,62 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         try {
             fileTransferResource = sshjClient.newSCPFileTransferResource();
-            fileTransferResource.getFileTransfer().upload(
-                    new LocalSourceFile() {
-                        @Override
-                        public String getName() {
-                            return metadata.getName();
-                        }
+            fileTransferResource
+                    .getFileTransfer()
+                    .upload(
+                            new LocalSourceFile() {
+                                @Override
+                                public String getName() {
+                                    return metadata.getName();
+                                }
 
-                        @Override
-                        public long getLength() {
-                            return metadata.getSize();
-                        }
+                                @Override
+                                public long getLength() {
+                                    return metadata.getSize();
+                                }
 
-                        @Override
-                        public InputStream getInputStream() throws IOException {
-                            return localInStream;
-                        }
+                                @Override
+                                public InputStream getInputStream() throws IOException {
+                                    return localInStream;
+                                }
 
-                        @Override
-                        public int getPermissions() throws IOException {
-                            return 420; // metadata.getPermissions();
-                        }
+                                @Override
+                                public int getPermissions() throws IOException {
+                                    return 420; // metadata.getPermissions();
+                                }
 
-                        @Override
-                        public boolean isFile() {
-                            return true;
-                        }
+                                @Override
+                                public boolean isFile() {
+                                    return true;
+                                }
 
-                        @Override
-                        public boolean isDirectory() {
-                            return false;
-                        }
+                                @Override
+                                public boolean isDirectory() {
+                                    return false;
+                                }
 
-                        @Override
-                        public Iterable<? extends LocalSourceFile> getChildren(LocalFileFilter filter)
-                                throws IOException {
-                            return null;
-                        }
+                                @Override
+                                public Iterable<? extends LocalSourceFile> getChildren(LocalFileFilter filter)
+                                        throws IOException {
+                                    return null;
+                                }
 
-                        @Override
-                        public boolean providesAtimeMtime() {
-                            return false;
-                        }
+                                @Override
+                                public boolean providesAtimeMtime() {
+                                    return false;
+                                }
 
-                        @Override
-                        public long getLastAccessTime() throws IOException {
-                            return 0;
-                        }
+                                @Override
+                                public long getLastAccessTime() throws IOException {
+                                    return 0;
+                                }
 
-                        @Override
-                        public long getLastModifiedTime() throws IOException {
-                            return 0;
-                        }
-                    },
-                    remoteFile);
+                                @Override
+                                public long getLastModifiedTime() throws IOException {
+                                    return 0;
+                                }
+                            },
+                            remoteFile);
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
                 Optional.ofNullable(fileTransferResource).ifPresent(SCPFileTransferResource::markErrored);

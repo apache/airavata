@@ -17,7 +17,7 @@
  * under the License.
  *
  */
-  namespace java org.apache.airavata.model.data.replica
+  namespace java org.apache.airavata.common.model
   namespace php Airavata.Model.Data.Replica
   namespace cpp apache.airavata.model.data.replica
   namespace py airavata.model.data.replica

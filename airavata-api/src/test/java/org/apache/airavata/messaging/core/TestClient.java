@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
+import org.apache.airavata.common.model.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

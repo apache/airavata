@@ -21,10 +21,10 @@ package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import java.io.File;
 import java.util.Map;
+import org.apache.airavata.common.model.JobManagerCommand;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.commons.io.FilenameUtils;
 
 public class UGEJobConfiguration implements JobManagerConfiguration {

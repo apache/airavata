@@ -28,7 +28,7 @@ public class TestCredentialServiceServer {
 
     public static void main(String[] args) {
         throw new UnsupportedOperationException(
-                "CredentialServiceServer must be used within a Spring application context. " +
-                "Use Spring Boot application or provide dependencies manually via constructor.");
+                "CredentialServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 }

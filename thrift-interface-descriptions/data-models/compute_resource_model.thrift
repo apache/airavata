@@ -22,7 +22,7 @@ include "../airavata-apis/airavata_commons.thrift"
 include "parallelism_model.thrift"
 include "data_movement_models.thrift"
 
-namespace java org.apache.airavata.model.appcatalog.computeresource
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.ComputeResource
 namespace cpp apache.airavata.model.appcatalog.computeresource
 namespace py airavata.model.appcatalog.computeresource
@@ -210,11 +210,6 @@ enum MonitorMode {
    XSEDE_AMQP_SUBSCRIBE,
    FORK,
    LOCAL
-}
-
-enum DMType {
-    COMPUTE_RESOURCE,
-    STORAGE_RESOURCE
 }
 
 /**

@@ -21,11 +21,11 @@ package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.JobStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.stereotype.Service;

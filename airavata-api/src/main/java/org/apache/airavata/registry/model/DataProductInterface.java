@@ -17,11 +17,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
 import java.util.List;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.registry.exceptions.ReplicaCatalogException;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.registry.exception.ReplicaCatalogException;
 
 public interface DataProductInterface {
 

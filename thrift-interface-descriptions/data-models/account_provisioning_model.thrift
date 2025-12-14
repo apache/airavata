@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog.accountprovisioning
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.AccountProvisioning
 namespace cpp apache.airavata.model.appcatalog.accountprovisioning
 namespace py airavata.model.appcatalog.accountprovisioning
@@ -36,7 +36,7 @@ struct SSHAccountProvisionerConfigParam {
     4: optional string description;
 }
 
-struct SSHAccountProvisioner {
+struct SSHAccountProvisionerDescription {
     1: required string name;
     2: required bool canCreateAccount;
     3: required bool canInstallSSHKey;

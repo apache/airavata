@@ -19,56 +19,79 @@
 */
 package org.apache.airavata.api.thrift.handler;
 
-import java.util.*;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParserInput;
-import org.apache.airavata.model.appcatalog.parser.ParserOutput;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.process.ProcessWorkflow;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import java.util.List;
+import java.util.Map;
+import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.DuplicateEntryException;
+import org.apache.airavata.common.exception.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GatewayUsageReportingCommand;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParserInput;
+import org.apache.airavata.common.model.ParserOutput;
+import org.apache.airavata.common.model.ParsingTemplate;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.ProcessWorkflow;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.ProjectSearchFields;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskStatus;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.model.UserResourceProfile;
+import org.apache.airavata.common.model.UserStoragePreference;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegistryServiceHandler implements org.apache.airavata.registry.api.RegistryService.Iface {
+public class RegistryServiceHandler implements org.apache.airavata.registry.model.RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceHandler.class);
 
     private final RegistryService registryService;
@@ -90,7 +113,7 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.registry.api.registry_apiConstants.REGISTRY_API_VERSION;
+        return org.apache.airavata.registry.model.registry_apiConstants.REGISTRY_API_VERSION;
     }
 
     /**
@@ -304,13 +327,13 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
      * * @return ExperimentModel
      * *   This method will return the previously stored experiment metadata.
      * *
-     * * @throws org.apache.airavata.model.error.InvalidRequestException
+     * * @throws org.apache.airavata.common.exception.InvalidRequestException
      * *    For any incorrect forming of the request itself.
      * *
-     * * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+     * * @throws org.apache.airavata.common.exception.ExperimentNotFoundException
      * *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * *
-     * * @throws org.apache.airavata.model.error.AiravataClientException
+     * * @throws org.apache.airavata.common.exception.AiravataClientException
      * *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      * *
      * *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -323,7 +346,7 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
      * *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      * *         is implemented, the authorization will be more substantial.
      * *
-     * * @throws org.apache.airavata.model.error.AiravataSystemException
+     * * @throws org.apache.airavata.common.exception.AiravataSystemException
      * *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      * *       rather an Airavata Administrator will be notified to take corrective action.
      * *
@@ -542,7 +565,7 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
 
     @Override
     public int getJobCount(
-            org.apache.airavata.model.status.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
+            org.apache.airavata.common.model.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException {
         return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
     }
@@ -1945,10 +1968,10 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
      * * @return
      * *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
      * *
-     * * @throws org.apache.airavata.model.error.InvalidRequestException
+     * * @throws org.apache.airavata.common.exception.InvalidRequestException
      * *    For any incorrect forming of the request itself.
      * *
-     * * @throws org.apache.airavata.model.error.AiravataClientException
+     * * @throws org.apache.airavata.common.exception.AiravataClientException
      * *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      * *
      * *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -1961,7 +1984,7 @@ public class RegistryServiceHandler implements org.apache.airavata.registry.api.
      * *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      * *         is implemented, the authorization will be more substantial.
      * *
-     * * @throws org.apache.airavata.model.error.AiravataSystemException
+     * * @throws org.apache.airavata.common.exception.AiravataSystemException
      * *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      * *       rather an Airavata Administrator will be notified to take corrective action.
      * *

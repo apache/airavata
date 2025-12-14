@@ -23,10 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.TenantProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

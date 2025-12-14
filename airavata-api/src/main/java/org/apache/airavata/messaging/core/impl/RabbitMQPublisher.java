@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.util.function.Function;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.Message;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.RabbitMQProperties;
-import org.apache.airavata.model.messaging.event.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

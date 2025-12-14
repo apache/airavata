@@ -19,11 +19,27 @@
 */
 package org.apache.airavata.helix.impl.task.submission.config;
 
-import org.apache.airavata.helix.impl.task.submission.config.app.*;
-import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourceJobManagerType;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.helix.impl.task.submission.config.app.CloudJobManagerConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.ForkJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.HTCondorJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.LSFJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.PBSJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.SlurmJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.UGEJobConfiguration;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.ForkOutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.HTCondorOutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.LSFOutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.PBSOutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.SlurmOutputParser;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.UGEOutputParser;
+import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +65,7 @@ public class JobFactory {
             RegistryService registryService,
             JobSubmissionProtocol submissionProtocol,
             JobSubmissionInterface jobSubmissionInterface)
-            throws Exception {
+            throws AppCatalogException {
         try {
             if (submissionProtocol == JobSubmissionProtocol.SSH) {
                 SSHJobSubmission sshJobSubmission =
@@ -70,19 +86,21 @@ public class JobFactory {
                     return sshJobSubmission.getResourceJobManager();
                 }
             }
-        } catch (Exception e) {
+        } catch (AppCatalogException e) {
             logger.error(
-                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
-                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
+                    String.format(
+                            "Failed to fetch a resource job manager for protocol %s and interface %s",
+                            submissionProtocol, jobSubmissionInterface.getJobSubmissionInterfaceId()),
                     e);
-            throw new Exception(
-                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
-                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
+            throw new AppCatalogException(
+                    String.format(
+                            "Failed to fetch a resource job manager for protocol %s and interface %s",
+                            submissionProtocol, jobSubmissionInterface.getJobSubmissionInterfaceId()),
                     e);
         }
 
         // If not resource job manager is found, throw an exception to fail fast
-        throw new Exception("No resource job manager for protocol " + submissionProtocol + " and interface "
+        throw new AppCatalogException("No resource job manager for protocol " + submissionProtocol + " and interface "
                 + jobSubmissionInterface.getJobSubmissionInterfaceId());
     }
 

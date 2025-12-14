@@ -19,12 +19,16 @@
 */
 package org.apache.airavata.api.thrift.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import org.apache.airavata.base.api.BaseAPI;
+import org.apache.airavata.api.model.BaseAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -188,10 +192,7 @@ public class ThriftClientPoolTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.api",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.api", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

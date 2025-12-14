@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.api.thrift.client;
 
-import org.apache.airavata.credential.cpi.CredentialStoreService;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.CredentialStoreService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;

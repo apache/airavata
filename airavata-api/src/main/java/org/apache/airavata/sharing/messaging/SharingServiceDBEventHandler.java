@@ -23,21 +23,21 @@ import org.apache.airavata.api.thrift.util.ThriftDataModelConversion;
 import org.apache.airavata.api.thrift.util.ThriftUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.DBEventMessage;
+import org.apache.airavata.common.model.DBEventMessageContext;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.SharingResourceType;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.model.dbevent.DBEventMessage;
-import org.apache.airavata.model.dbevent.DBEventMessageContext;
-import org.apache.airavata.model.group.ResourceType;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.sharing.models.Domain;
-import org.apache.airavata.sharing.models.Entity;
-import org.apache.airavata.sharing.models.EntityType;
-import org.apache.airavata.sharing.models.PermissionType;
-import org.apache.airavata.sharing.models.SharingRegistryException;
-import org.apache.airavata.sharing.models.User;
+import org.apache.airavata.sharing.model.Domain;
+import org.apache.airavata.sharing.model.Entity;
+import org.apache.airavata.sharing.model.EntityType;
+import org.apache.airavata.sharing.model.PermissionType;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -191,7 +191,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 }
 
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":EXPERIMENT");
-                                entityType = new org.apache.airavata.sharing.models.EntityType();
+                                entityType = new org.apache.airavata.sharing.model.EntityType();
                                 entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
                                 entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("EXPERIMENT");
@@ -208,7 +208,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 }
 
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":FILE");
-                                entityType = new org.apache.airavata.sharing.models.EntityType();
+                                entityType = new org.apache.airavata.sharing.model.EntityType();
                                 entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
                                 entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("FILE");
@@ -225,32 +225,32 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 }
 
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":"
-                                        + ResourceType.APPLICATION_DEPLOYMENT);
-                                entityType = new org.apache.airavata.sharing.models.EntityType();
+                                        + SharingResourceType.APPLICATION_DEPLOYMENT);
+                                entityType = new org.apache.airavata.sharing.model.EntityType();
                                 entityType.setEntityTypeId(
-                                        domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                                        domain.getDomainId() + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
                                 entityType.setDomainId(domain.getDomainId());
                                 entityType.setName("APPLICATION-DEPLOYMENT");
                                 entityType.setDescription("Application Deployment entity type");
                                 sharingRegistryService.createEntityType(entityType);
 
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":"
-                                        + ResourceType.GROUP_RESOURCE_PROFILE);
-                                entityType = new org.apache.airavata.sharing.models.EntityType();
+                                        + SharingResourceType.GROUP_RESOURCE_PROFILE);
+                                entityType = new org.apache.airavata.sharing.model.EntityType();
                                 entityType.setEntityTypeId(
-                                        domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                        domain.getDomainId() + ":" + SharingResourceType.GROUP_RESOURCE_PROFILE.name());
                                 entityType.setDomainId(domain.getDomainId());
-                                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                                entityType.setName(SharingResourceType.GROUP_RESOURCE_PROFILE.name());
                                 entityType.setDescription("Group Resource Profile entity type");
                                 sharingRegistryService.createEntityType(entityType);
 
                                 log.info("Creating entity type. Id : " + domain.getDomainId() + ":"
-                                        + ResourceType.CREDENTIAL_TOKEN);
-                                entityType = new org.apache.airavata.sharing.models.EntityType();
+                                        + SharingResourceType.CREDENTIAL_TOKEN);
+                                entityType = new org.apache.airavata.sharing.model.EntityType();
                                 entityType.setEntityTypeId(
-                                        domain.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+                                        domain.getDomainId() + ":" + SharingResourceType.CREDENTIAL_TOKEN.name());
                                 entityType.setDomainId(domain.getDomainId());
-                                entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+                                entityType.setName(SharingResourceType.CREDENTIAL_TOKEN.name());
                                 entityType.setDescription("Credential Store Token entity type");
                                 sharingRegistryService.createEntityType(entityType);
 
@@ -334,7 +334,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 Entity entity = new Entity();
                                 entity.setEntityId(entityId);
                                 entity.setDomainId(domainId);
-                                entity.setEntityTypeId(domainId + ":" + ResourceType.PROJECT.name());
+                                entity.setEntityTypeId(domainId + ":" + SharingResourceType.PROJECT.name());
                                 entity.setOwnerId(project.getOwner() + "@" + domainId);
                                 entity.setName(project.getName());
                                 entity.setDescription(project.getDescription());

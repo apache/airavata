@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.exceptions;
+package org.apache.airavata.registry.exception;
 
 public class WorkflowCatalogException extends Exception {
     private static final long serialVersionUID = -2849422320139467602L;

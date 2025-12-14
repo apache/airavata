@@ -21,11 +21,11 @@ package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceType;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +109,7 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
             GroupComputeResourcePreference retrieved =
                     groupResourceProfileService.getGroupComputeResourcePreference(computeResourceId, groupProfileId);
             assertThat(retrieved).isNotNull();
-            assertThat(retrieved.getResourceType()).isEqualTo(ResourceType.AWS);
+            assertThat(retrieved.getResourceType()).isEqualTo(ComputeResourceType.AWS);
         }
     }
 }

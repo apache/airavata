@@ -21,8 +21,8 @@ package org.apache.airavata.credential.impl.certificate;
 
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import org.apache.airavata.credential.CommunityUser;
 import org.apache.airavata.credential.Credential;
+import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Represents the certificate credentials.

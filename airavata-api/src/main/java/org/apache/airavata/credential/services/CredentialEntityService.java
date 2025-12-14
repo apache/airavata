@@ -19,7 +19,12 @@
 */
 package org.apache.airavata.credential.services;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,7 +37,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.CredentialOwnerType;
 import org.apache.airavata.credential.entities.CredentialEntity;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +75,8 @@ public class CredentialEntityService {
             String airavataConfigDir = properties.airavataConfigDir;
             String credentialStoreKeyStorePath = properties.services.vault.keystore.url;
             if (airavataConfigDir == null || credentialStoreKeyStorePath == null) {
-                logger.warn("Keystore configuration is missing (airavataConfigDir or keystore.url is null), encryption will be disabled");
+                logger.warn(
+                        "Keystore configuration is missing (airavataConfigDir or keystore.url is null), encryption will be disabled");
                 this.keyStorePath = null;
                 return;
             }
@@ -102,7 +108,9 @@ public class CredentialEntityService {
             credentialRepository.save(entity);
         } catch (Exception e) {
             logger.error("Error saving credential for gateway: {}, token: {}", gatewayId, credential.getToken(), e);
-            throw new CredentialStoreException("Error saving credential", e);
+            CredentialStoreException cse = new CredentialStoreException("Error saving credential");
+            cse.initCause(e);
+            throw cse;
         }
     }
 
@@ -114,7 +122,9 @@ public class CredentialEntityService {
             credentialRepository.deleteByGatewayIdAndTokenId(gatewayId, tokenId);
         } catch (Exception e) {
             logger.error("Error deleting credential for gateway: {}, token: {}", gatewayId, tokenId, e);
-            throw new CredentialStoreException("Error deleting credential", e);
+            CredentialStoreException cse = new CredentialStoreException("Error deleting credential");
+            cse.initCause(e);
+            throw cse;
         }
     }
 
@@ -140,7 +150,9 @@ public class CredentialEntityService {
             return credential;
         } catch (Exception e) {
             logger.error("Error retrieving credential for gateway: {}, token: {}", gatewayId, tokenId, e);
-            throw new CredentialStoreException("Error retrieving credential", e);
+            CredentialStoreException cse = new CredentialStoreException("Error retrieving credential");
+            cse.initCause(e);
+            throw cse;
         }
     }
 
@@ -197,7 +209,9 @@ public class CredentialEntityService {
                         gatewayId,
                         entity.getTokenId(),
                         e);
-                throw new CredentialStoreException("Error converting entity to credential", e);
+                CredentialStoreException cse = new CredentialStoreException("Error converting entity to credential");
+                cse.initCause(e);
+                throw cse;
             }
         }
         return credentials;
@@ -226,7 +240,9 @@ public class CredentialEntityService {
                         entity.getGatewayId(),
                         entity.getTokenId(),
                         e);
-                throw new CredentialStoreException("Error converting entity to credential", e);
+                CredentialStoreException cse = new CredentialStoreException("Error converting entity to credential");
+                cse.initCause(e);
+                throw cse;
             }
         }
         return credentials;
@@ -246,11 +262,17 @@ public class CredentialEntityService {
             objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
             return objectInputStream.readObject();
         } catch (IOException e) {
-            throw new CredentialStoreException("Error de-serializing object", e);
+            CredentialStoreException cse = new CredentialStoreException("Error de-serializing object");
+            cse.initCause(e);
+            throw cse;
         } catch (ClassNotFoundException e) {
-            throw new CredentialStoreException("Error de-serializing object", e);
+            CredentialStoreException cse = new CredentialStoreException("Error de-serializing object");
+            cse.initCause(e);
+            throw cse;
         } catch (GeneralSecurityException e) {
-            throw new CredentialStoreException("Error decrypting data", e);
+            CredentialStoreException cse = new CredentialStoreException("Error decrypting data");
+            cse.initCause(e);
+            throw cse;
         } finally {
             if (objectInputStream != null) {
                 try {
@@ -273,7 +295,9 @@ public class CredentialEntityService {
             objectOutputStream.writeObject(o);
             objectOutputStream.flush();
         } catch (IOException e) {
-            throw new CredentialStoreException("Error serializing object", e);
+            CredentialStoreException cse = new CredentialStoreException("Error serializing object");
+            cse.initCause(e);
+            throw cse;
         } finally {
             if (objectOutputStream != null) {
                 try {
@@ -290,9 +314,13 @@ public class CredentialEntityService {
             try {
                 return SecurityUtil.encrypt(keyStorePath, secretKeyAlias, keyStorePasswordCallback, array);
             } catch (GeneralSecurityException e) {
-                throw new CredentialStoreException("Error encrypting data", e);
+                CredentialStoreException cse = new CredentialStoreException("Error encrypting data");
+                cse.initCause(e);
+                throw cse;
             } catch (IOException e) {
-                throw new CredentialStoreException("Error encrypting data", e);
+                CredentialStoreException cse = new CredentialStoreException("Error encrypting data");
+                cse.initCause(e);
+                throw cse;
             }
         } else {
             return byteArrayOutputStream.toByteArray();

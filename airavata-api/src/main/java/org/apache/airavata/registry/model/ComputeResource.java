@@ -17,14 +17,25 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.registry.model;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.data.movement.*;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataMovementInterface;
+import org.apache.airavata.common.model.GlobusJobSubmission;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.registry.exception.AppCatalogException;
 
 public interface ComputeResource {
     /**

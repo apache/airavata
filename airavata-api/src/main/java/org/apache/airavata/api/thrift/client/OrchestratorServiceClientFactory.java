@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.api.thrift.client;
 
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.orchestrator.model.OrchestratorService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;

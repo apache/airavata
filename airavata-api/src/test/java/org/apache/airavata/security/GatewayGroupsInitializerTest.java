@@ -19,19 +19,23 @@
 */
 package org.apache.airavata.security;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.SharingRegistryService;
-import org.apache.airavata.sharing.models.GroupCardinality;
-import org.apache.airavata.sharing.models.SharingRegistryException;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.sharing.model.GroupCardinality;
+import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

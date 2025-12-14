@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.helix.impl.participant;
 
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PostConstruct;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
@@ -31,10 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(
-        name = "services.helix.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
 public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
@@ -83,7 +80,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
         // All initialization logic here - no exceptions in constructor
         List<Class<? extends AbstractTask>> taskClasses = createTaskClasses();
         setTaskClasses(taskClasses);
-        
+
         // Initialize parent's property-dependent fields
         initialize();
     }

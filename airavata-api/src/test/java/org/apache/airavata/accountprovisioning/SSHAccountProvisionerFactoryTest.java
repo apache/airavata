@@ -33,7 +33,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, SSHAccountProvisionerFactoryTest.TestConfiguration.class},
+        classes = {org.apache.airavata.config.JpaConfig.class, SSHAccountProvisionerFactoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
@@ -99,10 +100,7 @@ public class SSHAccountProvisionerFactoryTest {
 
     @org.springframework.context.annotation.Configuration
     @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.config"
-            },
+            basePackages = {"org.apache.airavata.accountprovisioning", "org.apache.airavata.config"},
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,

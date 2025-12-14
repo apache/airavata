@@ -21,14 +21,14 @@ package org.apache.airavata.helix.impl.task.aws;
 
 import java.security.Security;
 import java.util.UUID;
+import org.apache.airavata.common.model.AwsComputeResourcePreference;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.helix.agent.ssh.SSHUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
-import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.helix.task.TaskResult;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;

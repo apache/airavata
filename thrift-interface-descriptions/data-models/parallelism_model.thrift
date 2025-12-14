@@ -23,7 +23,7 @@
  *
 */
 
-namespace java org.apache.airavata.model.parallelism
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.Parallelism
 namespace cpp apache.airavata.model.appcatalog.parallelism
 namespace py airavata.model.appcatalog.parallelism

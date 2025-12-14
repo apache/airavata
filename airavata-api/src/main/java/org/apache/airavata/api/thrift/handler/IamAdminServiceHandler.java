@@ -20,22 +20,21 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IamAdminServiceHandler implements org.apache.airavata.profile.iam.admin.services.cpi.IamAdminServices.Iface {
+public class IamAdminServiceHandler implements org.apache.airavata.profile.model.IamAdminServices.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(IamAdminServiceHandler.class);
     private final IamAdminService iamAdminService;
@@ -47,7 +46,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.profile.iam.a
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
+        return org.apache.airavata.profile.model.iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
     @Override

@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.api.thrift.client;
 
-import org.apache.airavata.sharing.models.SharingRegistryException;
-import org.apache.airavata.sharing.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingRegistryService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;

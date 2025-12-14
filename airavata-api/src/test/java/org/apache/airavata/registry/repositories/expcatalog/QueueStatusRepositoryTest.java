@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.QueueStatusService;
 import org.junit.jupiter.api.Test;

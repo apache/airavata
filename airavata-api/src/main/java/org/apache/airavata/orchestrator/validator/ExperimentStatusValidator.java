@@ -21,11 +21,11 @@ package org.apache.airavata.orchestrator.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.error.ValidatorResult;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.exception.ValidatorResult;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ProcessModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

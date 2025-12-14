@@ -21,9 +21,9 @@ package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
-import org.apache.airavata.model.workflow.AiravataWorkflow;
+import org.apache.airavata.common.model.AiravataWorkflow;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
-import org.apache.airavata.registry.exceptions.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

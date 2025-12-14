@@ -21,22 +21,22 @@ package org.apache.airavata.service.security;
 
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.CrudType;
+import org.apache.airavata.common.model.EntityType;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.dbevent.CrudType;
-import org.apache.airavata.model.dbevent.EntityType;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -45,10 +45,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.iam.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.iam.enabled", havingValue = "true", matchIfMissing = true)
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 

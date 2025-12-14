@@ -17,11 +17,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.cpi;
+package org.apache.airavata.profile.exception;
 
-/*
-Included for backwards compatibility
-TODO: Remove interface once registry refactoring is complete
-*/
-public interface ReplicaCatalog extends DataProductInterface, DataReplicaLocationInterface {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class UserProfileRegistryException extends Exception {
+    private static final Logger logger = LoggerFactory.getLogger(UserProfileRegistryException.class);
 }

@@ -21,8 +21,8 @@ package org.apache.airavata.helix.impl.task.submission.config.app.parser;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

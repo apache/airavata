@@ -21,9 +21,38 @@ package org.apache.airavata.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
-import org.apache.airavata.sharing.entities.*;
-import org.apache.airavata.sharing.models.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import org.apache.airavata.sharing.entities.EntityPK;
+import org.apache.airavata.sharing.entities.EntityTypePK;
+import org.apache.airavata.sharing.entities.GroupAdminPK;
+import org.apache.airavata.sharing.entities.GroupMembershipPK;
+import org.apache.airavata.sharing.entities.PermissionTypePK;
+import org.apache.airavata.sharing.entities.SharingPK;
+import org.apache.airavata.sharing.entities.UserGroupPK;
+import org.apache.airavata.sharing.entities.UserPK;
+import org.apache.airavata.sharing.model.Domain;
+import org.apache.airavata.sharing.model.DuplicateEntryException;
+import org.apache.airavata.sharing.model.Entity;
+import org.apache.airavata.sharing.model.EntityType;
+import org.apache.airavata.sharing.model.GroupAdmin;
+import org.apache.airavata.sharing.model.GroupCardinality;
+import org.apache.airavata.sharing.model.GroupChildType;
+import org.apache.airavata.sharing.model.GroupMembership;
+import org.apache.airavata.sharing.model.GroupType;
+import org.apache.airavata.sharing.model.PermissionType;
+import org.apache.airavata.sharing.model.SearchCriteria;
+import org.apache.airavata.sharing.model.Sharing;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.SharingType;
+import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.sharing.model.UserGroup;
 import org.apache.airavata.sharing.services.DomainService;
 import org.apache.airavata.sharing.services.EntityService;
 import org.apache.airavata.sharing.services.EntityTypeService;
@@ -41,11 +70,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.sharingRegistryService.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
-    public class SharingRegistryService {
+@ConditionalOnProperty(name = "services.sharingRegistryService.enabled", havingValue = "true", matchIfMissing = true)
+public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
 
     private final EntityService entityService;

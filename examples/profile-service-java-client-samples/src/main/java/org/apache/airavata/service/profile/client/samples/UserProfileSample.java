@@ -22,7 +22,6 @@ package org.apache.airavata.profile.client.samples;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.*;
 import org.apache.airavata.service.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

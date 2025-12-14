@@ -29,19 +29,19 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.CrudType;
+import org.apache.airavata.common.model.EntityType;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.dbevent.CrudType;
-import org.apache.airavata.model.dbevent.EntityType;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.profile.entities.GatewayEntity;
+import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.profile.repositories.TenantProfileRepository;
-import org.apache.airavata.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +51,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.tenantProfileService.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
-    public class TenantProfileService {
+@ConditionalOnProperty(name = "services.tenantProfileService.enabled", havingValue = "true", matchIfMissing = true)
+public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
     private final TenantProfileRepository tenantProfileRepository;

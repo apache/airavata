@@ -20,7 +20,7 @@
 package org.apache.airavata.agent.connection.service;
 
 import java.util.Map;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.model.AuthzToken;
 
 public class UserContext {
 

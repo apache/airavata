@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.model.util;
 
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.common.model.Project;
 
 public class ProjectModelUtil {
     public static Project createProject(String projectName, String owner, String description) {

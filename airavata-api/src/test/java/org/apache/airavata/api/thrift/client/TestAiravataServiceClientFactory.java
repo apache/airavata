@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.model.Airavata;
+import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.model.AuthzToken;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 

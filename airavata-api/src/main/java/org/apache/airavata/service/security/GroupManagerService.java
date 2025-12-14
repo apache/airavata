@@ -23,30 +23,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.model.GroupModel;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.group.GroupModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.profile.groupmanager.cpi.exception.GroupManagerServiceException;
-import org.apache.airavata.sharing.models.DuplicateEntryException;
-import org.apache.airavata.sharing.models.GroupCardinality;
-import org.apache.airavata.sharing.models.GroupType;
-import org.apache.airavata.sharing.models.SharingRegistryException;
-import org.apache.airavata.sharing.models.User;
-import org.apache.airavata.sharing.models.UserGroup;
-import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.profile.exception.GroupManagerServiceException;
+import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.sharing.model.DuplicateEntryException;
+import org.apache.airavata.sharing.model.GroupCardinality;
+import org.apache.airavata.sharing.model.GroupType;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(
-        name = "services.groupmanager.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.groupmanager.enabled", havingValue = "true", matchIfMissing = true)
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 

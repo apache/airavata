@@ -90,16 +90,19 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                         for (jakarta.persistence.metamodel.ManagedType<?> type : metamodel.getManagedTypes()) {
                             // Check if class implements PersistenceCapable
                             Class<?> javaType = type.getJavaType();
-                            if (javaType != null && 
-                                !org.apache.openjpa.enhance.PersistenceCapable.class.isAssignableFrom(javaType) &&
-                                !javaType.getName().contains("$openjpa")) {
-                                
-                                logger.warn("Entity {} in {} is NOT enhanced. This may cause issues.", javaType.getName(), emfName);
+                            if (javaType != null
+                                    && !org.apache.openjpa.enhance.PersistenceCapable.class.isAssignableFrom(javaType)
+                                    && !javaType.getName().contains("$openjpa")) {
+
+                                logger.warn(
+                                        "Entity {} in {} is NOT enhanced. This may cause issues.",
+                                        javaType.getName(),
+                                        emfName);
                                 System.out.println("DEBUG: Entity " + javaType.getName() + " is NOT enhanced");
                                 // We are forcing failure here to ensure we skip unenhanced factories
                                 throw new IllegalStateException("Entity " + javaType.getName() + " is not enhanced");
                             }
-                            
+
                             try {
                                 // Just accessing the type is sometimes enough, but let's try to get attributes
                                 type.getAttributes();
@@ -107,9 +110,11 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                                 throw e;
                             }
                         }
-                        
+
                         workingEmfs.add(emf);
-                        logger.info("Successfully retrieved and validated metamodel from EntityManagerFactory: {}", emfName);
+                        logger.info(
+                                "Successfully retrieved and validated metamodel from EntityManagerFactory: {}",
+                                emfName);
                         System.out.println("DEBUG: Successfully validated " + emfName);
                     } catch (Exception e) {
                         logger.warn(
@@ -131,7 +136,7 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                 if (e.getCause() != null) {
                     errorMsg = e.getCause().getMessage();
                 }
-                
+
                 logger.warn(
                         "Failed to retrieve/validate metamodel from EntityManagerFactory {}: {}. "
                                 + "Skipping this factory to allow application startup.",
@@ -148,9 +153,9 @@ public class OpenJpaMetamodelMappingContextFactoryBean
             logger.error("No working EntityManagerFactory instances found. Creating empty JpaMetamodelMappingContext.");
         } else {
             logger.info(
-                "Creating JpaMetamodelMappingContext with {} working EntityManagerFactory(ies) out of {} total",
-                workingEmfs.size(),
-                entityManagerFactories.size());
+                    "Creating JpaMetamodelMappingContext with {} working EntityManagerFactory(ies) out of {} total",
+                    workingEmfs.size(),
+                    entityManagerFactories.size());
         }
 
         // Create JpaMetamodelMappingContext manually using the working metamodels
@@ -169,7 +174,7 @@ public class OpenJpaMetamodelMappingContextFactoryBean
                     logger.warn("Unexpected error retrieving metamodel during context creation", e);
                 }
             }
-            
+
             JpaMetamodelMappingContext context = new JpaMetamodelMappingContext(metamodels);
             logger.info("Successfully created JpaMetamodelMappingContext with {} metamodels", metamodels.size());
             return context;
@@ -178,7 +183,7 @@ public class OpenJpaMetamodelMappingContextFactoryBean
             // Return empty context as fallback
             return new JpaMetamodelMappingContext(java.util.Collections.emptySet());
         }
-}
+    }
 
     private String getEmfName(EntityManagerFactory emf) {
         try {

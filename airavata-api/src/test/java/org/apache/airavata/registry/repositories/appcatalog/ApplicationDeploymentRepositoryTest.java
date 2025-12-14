@@ -21,15 +21,20 @@ package org.apache.airavata.registry.repositories.appcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.*;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
-import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.ApplicationParallelismType;
+import org.apache.airavata.common.model.CommandObject;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.SetEnvPaths;
+import org.apache.airavata.common.model.airavata_commonsConstants;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
@@ -42,18 +47,19 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, ApplicationDeploymentRepositoryTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            ApplicationDeploymentRepositoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -92,13 +98,17 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;

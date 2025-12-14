@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.profile.utils;
 
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.UserProfile;
 
 /**
  * Created by goshenoy on 03/08/2017.

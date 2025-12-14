@@ -20,13 +20,13 @@
 package org.apache.airavata.registry.repositories.appcatalog;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.junit.jupiter.api.AfterEach;
@@ -37,18 +37,19 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, JobSubmissionInterfaceRepositoryTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            JobSubmissionInterfaceRepositoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -87,13 +88,17 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;

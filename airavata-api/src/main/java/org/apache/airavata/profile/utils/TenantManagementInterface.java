@@ -20,10 +20,10 @@
 package org.apache.airavata.profile.utils;
 
 import java.util.List;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
 
 public interface TenantManagementInterface {
 

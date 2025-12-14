@@ -20,7 +20,7 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
-import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+import org.apache.airavata.common.model.FileSystems;
 
 /**
  * The primary key class for the compute_resource_file_system database table.

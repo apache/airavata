@@ -24,18 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,9 +44,7 @@ public class SSHAccountManager {
     private final RegistryService registryService;
     private final CredentialStoreService credentialStoreService;
 
-    public SSHAccountManager(
-            RegistryService registryService,
-            CredentialStoreService credentialStoreService) {
+    public SSHAccountManager(RegistryService registryService, CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
     }
@@ -272,8 +270,8 @@ public class SSHAccountManager {
         return resolvedConfig;
     }
 
-    private Map<ConfigParam, String> convertConfigParams(
-            String provisionerName, Map<String, String> thriftConfigParams) throws InvalidSetupException {
+    private Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams)
+            throws InvalidSetupException {
         List<ConfigParam> configParams =
                 SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
         Map<String, ConfigParam> configParamMap =

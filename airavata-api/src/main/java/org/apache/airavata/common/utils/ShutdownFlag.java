@@ -36,4 +36,3 @@ public class ShutdownFlag {
         stopAllThreads.set(value);
     }
 }
-

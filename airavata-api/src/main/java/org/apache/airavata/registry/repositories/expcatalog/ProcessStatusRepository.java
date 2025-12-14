@@ -20,7 +20,7 @@
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import java.util.List;
-import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessStatusPK;
 import org.springframework.data.domain.Pageable;

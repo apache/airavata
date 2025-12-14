@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog.userresourceprofile
+namespace java org.apache.airavata.common.model
 namespace php Airavata.Model.AppCatalog.UserResourceProfile
 namespace cpp apache.airavata.model.appcatalog.userresourceprofile
 namespace py airavata.model.appcatalog.userresourceprofile

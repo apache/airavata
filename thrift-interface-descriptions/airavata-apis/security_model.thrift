@@ -18,7 +18,7 @@
  *
  */
 
-namespace java org.apache.airavata.model.security
+namespace java org.apache.airavata.security.model
 namespace php Airavata.Model.Security
 namespace cpp apache.airavata.model.security
 namespace py airavata.model.security

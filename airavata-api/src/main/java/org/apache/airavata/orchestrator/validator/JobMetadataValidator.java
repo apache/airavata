@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.orchestrator.validator;
 
-import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ProcessModel;
 
 /**
  * This is the interface to implement a validation logic, users can implement their validation

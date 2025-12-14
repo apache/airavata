@@ -44,7 +44,9 @@ public class AiravataServerPropertiesPostProcessor implements BeanPostProcessor,
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof AiravataServerProperties) {
-            logger.info("[BEAN-INIT] Setting Environment on AiravataServerProperties (bean: {}) BEFORE initialization", beanName);
+            logger.info(
+                    "[BEAN-INIT] Setting Environment on AiravataServerProperties (bean: {}) BEFORE initialization",
+                    beanName);
             AiravataServerProperties properties = (AiravataServerProperties) bean;
             properties.setEnvironment(environment);
             logger.info("[BEAN-INIT] Environment set on AiravataServerProperties successfully");
@@ -66,4 +68,3 @@ public class AiravataServerPropertiesPostProcessor implements BeanPostProcessor,
         return Ordered.HIGHEST_PRECEDENCE;
     }
 }
-

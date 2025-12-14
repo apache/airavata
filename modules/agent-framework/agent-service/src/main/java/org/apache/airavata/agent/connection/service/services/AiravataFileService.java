@@ -32,7 +32,7 @@ import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
 import org.apache.airavata.agent.connection.service.models.ExperimentStorageResponse;
 import org.apache.airavata.agent.connection.service.models.FileInfo;
-import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.model.Airavata;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.ReadDirReq;
 import org.apache.airavata.fuse.ReadDirRes;

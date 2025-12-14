@@ -26,11 +26,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.airavata.common.model.BatchQueue;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourceReservation;
+import org.apache.airavata.common.model.GroupAccountSSHProvisionerConfig;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
-import org.apache.airavata.registry.exceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
@@ -38,23 +43,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 // FIXME - update the codes changed by GroupComputeResourcePreference -> abstract GroupComputeResourcePreference +
 // SlurmGroupComputeResourcePreference
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, GroupResourceProfileRepositoryTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            GroupResourceProfileRepositoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true"
-        ,
+            "spring.aop.proxy-target-class=true",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -93,13 +98,17 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
             excludeFilters = {
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern =
+                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
                 @org.springframework.context.annotation.ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
                         pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({org.apache.airavata.config.AiravataPropertiesConfiguration.class, org.apache.airavata.config.DozerMapperConfig.class})
+    @Import({
+        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.DozerMapperConfig.class
+    })
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
@@ -187,7 +196,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
-        GroupAccountSSHProvisionerConfig groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
+        var groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
         groupAccountSSHProvisionerConfig.setResourceId(resourceId1);
         groupAccountSSHProvisionerConfig.setConfigName("configName");
         groupAccountSSHProvisionerConfig.setConfigValue("configvalue");

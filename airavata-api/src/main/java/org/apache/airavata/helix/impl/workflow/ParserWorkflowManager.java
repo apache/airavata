@@ -19,26 +19,45 @@
 */
 package org.apache.airavata.helix.impl.workflow;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParserConnector;
+import org.apache.airavata.common.model.ParserConnectorInput;
+import org.apache.airavata.common.model.ParserInput;
+import org.apache.airavata.common.model.ParsingTemplate;
+import org.apache.airavata.common.model.ParsingTemplateInput;
+import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.impl.task.parsing.*;
+import org.apache.airavata.helix.impl.task.parsing.DataParsingTask;
 import org.apache.airavata.helix.impl.task.parsing.ProcessCompletionMessage;
 import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageDeserializer;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.parser.*;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.monitor.platform.CountMonitor;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -467,8 +486,8 @@ public class ParserWorkflowManager extends WorkflowManager {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
 
+        final Consumer<String, ProcessCompletionMessage> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(properties.services.parser.topic));
 
         logger.info("Starting the kafka consumer..");

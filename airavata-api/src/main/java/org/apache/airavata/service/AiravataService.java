@@ -37,115 +37,112 @@ import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.ExceptionHandlerUtil;
+import org.apache.airavata.common.exception.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.ApplicationInterfaceDescription;
+import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.BatchQueueResourcePolicy;
+import org.apache.airavata.common.model.CloudJobSubmission;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourcePolicy;
+import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DMType;
+import org.apache.airavata.common.model.DataProductModel;
+import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.ExperimentIntermediateOutputsEvent;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ExperimentSubmitEvent;
+import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.GatewayGroups;
+import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.GridFTPDataMovement;
+import org.apache.airavata.common.model.GroupComputeResourcePreference;
+import org.apache.airavata.common.model.GroupResourceProfile;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.common.model.LOCALDataMovement;
+import org.apache.airavata.common.model.LOCALSubmission;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.Parser;
+import org.apache.airavata.common.model.ParsingTemplate;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.ProjectSearchFields;
+import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourcePermissionType;
+import org.apache.airavata.common.model.SCPDataMovement;
+import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.SharingResourceType;
+import org.apache.airavata.common.model.StorageDirectoryInfo;
+import org.apache.airavata.common.model.StoragePreference;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.common.model.StorageVolumeInfo;
+import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.common.model.UnicoreDataMovement;
+import org.apache.airavata.common.model.UnicoreJobSubmission;
+import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.model.UserResourceProfile;
+import org.apache.airavata.common.model.UserStoragePreference;
+import org.apache.airavata.common.model.airavata_commonsConstants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.CredentialSummary;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.parser.Parser;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.credential.store.CredentialSummary;
-import org.apache.airavata.model.credential.store.PasswordCredential;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.credential.store.SummaryType;
-import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.LOCALDataMovement;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.UnicoreDataMovement;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.error.ProjectNotFoundException;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.ExperimentSearchFields;
-import org.apache.airavata.model.experiment.ExperimentStatistics;
-import org.apache.airavata.model.experiment.ExperimentSummaryModel;
-import org.apache.airavata.model.experiment.ProjectSearchFields;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.group.ResourcePermissionType;
-import org.apache.airavata.model.group.ResourceType;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
-import org.apache.airavata.sharing.models.Domain;
-import org.apache.airavata.sharing.models.DuplicateEntryException;
-import org.apache.airavata.sharing.models.Entity;
-import org.apache.airavata.sharing.models.EntitySearchField;
-import org.apache.airavata.sharing.models.EntityType;
-import org.apache.airavata.sharing.models.PermissionType;
-import org.apache.airavata.sharing.models.SearchCondition;
-import org.apache.airavata.sharing.models.SearchCriteria;
-import org.apache.airavata.sharing.models.SharingRegistryException;
-import org.apache.airavata.sharing.models.User;
-import org.apache.airavata.sharing.models.UserGroup;
+import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.sharing.model.Domain;
+import org.apache.airavata.sharing.model.DuplicateEntryException;
+import org.apache.airavata.sharing.model.Entity;
+import org.apache.airavata.sharing.model.EntitySearchField;
+import org.apache.airavata.sharing.model.EntityType;
+import org.apache.airavata.sharing.model.PermissionType;
+import org.apache.airavata.sharing.model.SearchCondition;
+import org.apache.airavata.sharing.model.SearchCriteria;
+import org.apache.airavata.sharing.model.SharingRegistryException;
+import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
-@ConditionalOnProperty(
-        name = "services.airavata.enabled",
-        havingValue = "true",
-        matchIfMissing = true)
+@ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = true)
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
@@ -162,8 +159,7 @@ public class AiravataService {
 
     private AiravataSystemException airavataSystemException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
-                errorType, message, cause);
+        return ExceptionHandlerUtil.wrapAsAiravataException(errorType, message, cause);
     }
 
     /**
@@ -210,7 +206,7 @@ public class AiravataService {
     private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
     private final SSHAccountManager sshAccountManager;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
-    
+
     // Domain services
     private final org.apache.airavata.service.experiment.ExperimentService experimentService;
     private final org.apache.airavata.service.project.ProjectService projectService;
@@ -219,7 +215,7 @@ public class AiravataService {
     private final org.apache.airavata.service.application.ApplicationService applicationService;
     private final org.apache.airavata.service.security.AuthorizationService authorizationService;
     private final org.apache.airavata.service.sharing.SharingManager sharingManager;
-    
+
     private Publisher statusPublisher;
     private Publisher experimentPublisher;
 
@@ -388,23 +384,23 @@ public class AiravataService {
             createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
             entityType.setDomainId(domain.getDomainId());
             entityType.setName("APPLICATION-DEPLOYMENT");
             entityType.setDescription("Application Deployment entity type");
             createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.GROUP_RESOURCE_PROFILE.name());
             entityType.setDomainId(domain.getDomainId());
-            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setName(SharingResourceType.GROUP_RESOURCE_PROFILE.name());
             entityType.setDescription("Group Resource Profile entity type");
             createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.CREDENTIAL_TOKEN.name());
             entityType.setDomainId(domain.getDomainId());
-            entityType.setName(ResourceType.CREDENTIAL_TOKEN.name());
+            entityType.setName(SharingResourceType.CREDENTIAL_TOKEN.name());
             entityType.setDescription("Credential Store Token entity type");
             createEntityType(entityType);
 
@@ -713,12 +709,12 @@ public class AiravataService {
         var existingExperiment = getExperiment(airavataExperimentId);
         authorizationService.validateExperimentWriteAccess(
                 authzToken, airavataExperimentId, existingExperiment.getUserName(), existingExperiment.getGatewayId());
-        
+
         // Update sharing entity if enabled
         if (properties.services.sharing.enabled) {
             sharingManager.updateExperimentEntity(airavataExperimentId, experiment);
         }
-        
+
         experimentService.updateExperiment(airavataExperimentId, experiment);
     }
 
@@ -1036,59 +1032,61 @@ public class AiravataService {
     }
 
     public ComputeResourceDescription getComputeResource(String computeResourceId) throws AiravataSystemException {
-        return executeRegistryOperation("retrieving compute resource",
-                () -> registryService.getComputeResource(computeResourceId));
+        return executeRegistryOperation(
+                "retrieving compute resource", () -> registryService.getComputeResource(computeResourceId));
     }
 
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
             throws AiravataSystemException {
-        return executeRegistryOperation("saving compute resource",
-                () -> registryService.registerComputeResource(computeResourceDescription));
+        return executeRegistryOperation(
+                "saving compute resource", () -> registryService.registerComputeResource(computeResourceDescription));
     }
 
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws AiravataSystemException {
-        return executeRegistryOperation("updating compute resource",
+        return executeRegistryOperation(
+                "updating compute resource",
                 () -> registryService.updateComputeResource(computeResourceId, computeResourceDescription));
     }
 
     public boolean deleteComputeResource(String computeResourceId) throws AiravataSystemException {
-        return executeRegistryOperation("deleting compute resource",
-                () -> registryService.deleteComputeResource(computeResourceId));
+        return executeRegistryOperation(
+                "deleting compute resource", () -> registryService.deleteComputeResource(computeResourceId));
     }
 
     public Map<String, String> getAllComputeResourceNames() throws AiravataSystemException {
-        return executeRegistryOperation("retrieving compute resource names",
-                () -> registryService.getAllComputeResourceNames());
+        return executeRegistryOperation(
+                "retrieving compute resource names", () -> registryService.getAllComputeResourceNames());
     }
 
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
             throws AiravataSystemException {
-        return executeRegistryOperation("saving storage resource",
-                () -> registryService.registerStorageResource(storageResourceDescription));
+        return executeRegistryOperation(
+                "saving storage resource", () -> registryService.registerStorageResource(storageResourceDescription));
     }
 
     public StorageResourceDescription getStorageResource(String storageResourceId) throws AiravataSystemException {
-        return executeRegistryOperation("retrieving storage resource",
-                () -> registryService.getStorageResource(storageResourceId));
+        return executeRegistryOperation(
+                "retrieving storage resource", () -> registryService.getStorageResource(storageResourceId));
     }
 
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
             throws AiravataSystemException {
-        return executeRegistryOperation("updating storage resource",
+        return executeRegistryOperation(
+                "updating storage resource",
                 () -> registryService.updateStorageResource(storageResourceId, storageResourceDescription));
     }
 
     public boolean deleteStorageResource(String storageResourceId) throws AiravataSystemException {
-        return executeRegistryOperation("deleting storage resource",
-                () -> registryService.deleteStorageResource(storageResourceId));
+        return executeRegistryOperation(
+                "deleting storage resource", () -> registryService.deleteStorageResource(storageResourceId));
     }
 
     public Map<String, String> getAllStorageResourceNames() throws AiravataSystemException {
-        return executeRegistryOperation("retrieving storage resource names",
-                () -> registryService.getAllStorageResourceNames());
+        return executeRegistryOperation(
+                "retrieving storage resource names", () -> registryService.getAllStorageResourceNames());
     }
 
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
@@ -1260,7 +1258,7 @@ public class AiravataService {
                 entity.setEntityId(result);
                 final String domainId = gatewayId;
                 entity.setDomainId(domainId);
-                entity.setEntityTypeId(domainId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                entity.setEntityTypeId(domainId + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
                 var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 entity.setOwnerId(userName + "@" + domainId);
                 entity.setName(result);
@@ -1533,7 +1531,7 @@ public class AiravataService {
                 var entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
                 entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
-                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityTypeFilter.setValue(gatewayId + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
                 sharingFilters.add(entityTypeFilter);
                 var permissionTypeFilter = new SearchCriteria();
                 permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
@@ -1931,7 +1929,7 @@ public class AiravataService {
                 var entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
                 entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
-                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityTypeFilter.setValue(gatewayId + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
                 sharingFilters.add(entityTypeFilter);
                 var permissionTypeFilter = new SearchCriteria();
                 permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
@@ -2015,7 +2013,7 @@ public class AiravataService {
             var entityTypeFilter = new SearchCriteria();
             entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
             entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
-            entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityTypeFilter.setValue(gatewayId + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
             sharingFilters.add(entityTypeFilter);
             var permissionTypeFilter = new SearchCriteria();
             permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
@@ -2023,7 +2021,8 @@ public class AiravataService {
             permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
             sharingFilters.add(permissionTypeFilter);
             try {
-                sharingRegistryService.searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
+                sharingRegistryService
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
                         .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             } catch (SharingRegistryException e) {
                 String msg = "Error while searching entities: " + e.getMessage();
@@ -2741,11 +2740,11 @@ public class AiravataService {
         final String userId = authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domainId;
         return userHasAccess(domainId, userId, entityId, domainId + ":" + permissionType);
     }
-    
+
     private boolean userHasAccess(String gatewayId, String userId, String entityId, String permissionTypeId) {
         try {
-            final boolean hasOwnerAccess = sharingRegistryService.userHasAccess(
-                    gatewayId, userId, entityId, gatewayId + ":OWNER");
+            final boolean hasOwnerAccess =
+                    sharingRegistryService.userHasAccess(gatewayId, userId, entityId, gatewayId + ":OWNER");
             if (hasOwnerAccess) {
                 return true;
             }
@@ -2771,7 +2770,7 @@ public class AiravataService {
                 var entity = new Entity();
                 entity.setEntityId(key);
                 entity.setDomainId(gatewayId);
-                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
+                entity.setEntityTypeId(gatewayId + ":" + SharingResourceType.CREDENTIAL_TOKEN);
                 entity.setOwnerId(userName + "@" + gatewayId);
                 entity.setName(key);
                 entity.setDescription(description);
@@ -2809,7 +2808,7 @@ public class AiravataService {
                 var entity = new Entity();
                 entity.setEntityId(key);
                 entity.setDomainId(gatewayId);
-                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
+                entity.setEntityTypeId(gatewayId + ":" + SharingResourceType.CREDENTIAL_TOKEN);
                 entity.setOwnerId(userName + "@" + gatewayId);
                 entity.setName(key);
                 entity.setDescription(description);
@@ -2863,7 +2862,7 @@ public class AiravataService {
             SearchCriteria searchCriteria = new SearchCriteria();
             searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
             searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-            searchCriteria.setValue(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
+            searchCriteria.setValue(gatewayId + ":" + SharingResourceType.CREDENTIAL_TOKEN.name());
             filters.add(searchCriteria);
             List<String> accessibleTokenIds =
                     sharingRegistryService
@@ -3103,10 +3102,10 @@ public class AiravataService {
         }
     }
 
-    public ResourceType getResourceType(String domainId, String entityId) throws AiravataSystemException {
+    public SharingResourceType getResourceType(String domainId, String entityId) throws AiravataSystemException {
         try {
             var entity = sharingRegistryService.getEntity(domainId, entityId);
-            for (ResourceType resourceType : ResourceType.values()) {
+            for (SharingResourceType resourceType : SharingResourceType.values()) {
                 if (entity.getEntityTypeId().equals(domainId + ":" + resourceType.name())) {
                     return resourceType;
                 }
@@ -3158,16 +3157,16 @@ public class AiravataService {
             sharingRegistryService.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.APPLICATION_DEPLOYMENT.name());
             entityType.setDomainId(domain.getDomainId());
             entityType.setName("APPLICATION-DEPLOYMENT");
             entityType.setDescription("Application Deployment entity type");
             sharingRegistryService.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.GROUP_RESOURCE_PROFILE.name());
             entityType.setDomainId(domain.getDomainId());
-            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setName(SharingResourceType.GROUP_RESOURCE_PROFILE.name());
             entityType.setDescription("Group Resource Profile entity type");
             sharingRegistryService.createEntityType(entityType);
 
@@ -3672,7 +3671,7 @@ public class AiravataService {
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
                 searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-                searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                searchCriteria.setValue(gatewayId + ":" + SharingResourceType.GROUP_RESOURCE_PROFILE.name());
                 filters.add(searchCriteria);
                 sharingRegistryService
                         .searchEntities(
@@ -3722,7 +3721,6 @@ public class AiravataService {
             throws SharingRegistryException, DuplicateEntryException {
         return sharingRegistryService.createPermissionType(permissionType);
     }
-
 
     public SharingEntity getEntity(String domainId, String entityId) throws SharingRegistryException {
         return new SharingEntity(sharingRegistryService.getEntity(domainId, entityId));
@@ -4351,9 +4349,11 @@ public class AiravataService {
             }
             // For certain resource types, restrict them from being unshared with admin
             // groups
-            ResourceType resourceType = getResourceType(gatewayId, resourceId);
-            Set<ResourceType> adminRestrictedResourceTypes = new HashSet<>(Arrays.asList(
-                    ResourceType.EXPERIMENT, ResourceType.APPLICATION_DEPLOYMENT, ResourceType.GROUP_RESOURCE_PROFILE));
+            SharingResourceType resourceType = getResourceType(gatewayId, resourceId);
+            Set<SharingResourceType> adminRestrictedResourceTypes = new HashSet<>(Arrays.asList(
+                    SharingResourceType.EXPERIMENT,
+                    SharingResourceType.APPLICATION_DEPLOYMENT,
+                    SharingResourceType.GROUP_RESOURCE_PROFILE));
             if (adminRestrictedResourceTypes.contains(resourceType)) {
                 // Prevent removing Admins WRITE/MANAGE_SHARING access and Read Only Admins READ
                 // access

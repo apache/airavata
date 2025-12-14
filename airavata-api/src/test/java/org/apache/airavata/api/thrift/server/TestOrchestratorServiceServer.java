@@ -21,16 +21,16 @@ package org.apache.airavata.api.thrift.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.DataType;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.Assertions;
@@ -62,8 +62,8 @@ public class TestOrchestratorServiceServer {
 
     public static void main(String[] args) {
         throw new UnsupportedOperationException(
-                "OrchestratorServiceServer must be used within a Spring application context. " +
-                "Use Spring Boot application or provide dependencies manually via constructor.");
+                "OrchestratorServiceServer must be used within a Spring application context. "
+                        + "Use Spring Boot application or provide dependencies manually via constructor.");
     }
 
     @Test

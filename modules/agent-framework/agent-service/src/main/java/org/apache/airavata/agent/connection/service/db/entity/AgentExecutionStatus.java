@@ -19,8 +19,16 @@
 */
 package org.apache.airavata.agent.connection.service.db.entity;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity(name = "AGENT_EXECUTION_STATUS")
 public class AgentExecutionStatus {

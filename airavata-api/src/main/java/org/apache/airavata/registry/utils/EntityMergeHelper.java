@@ -19,16 +19,20 @@
 */
 package org.apache.airavata.registry.utils;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.units.qual.K;
 
 /**
  * Utility class for merging entity lists during update operations.
- * 
+ *
  * <p>This class provides standardized methods for merging collections of entities,
  * handling duplicates and ensuring proper synchronization between existing and new entity states.
- * 
+ *
  * <p>Used by services to merge child entity collections when updating parent entities,
  * preventing duplicate entries and maintaining referential integrity.
  */
@@ -36,7 +40,7 @@ public class EntityMergeHelper {
 
     /**
      * Merges two lists of entities, handling duplicates based on an ID extractor function.
-     * 
+     *
      * <p>This method:
      * <ul>
      *   <li>Deduplicates the current list by keeping only the first occurrence of each ID</li>
@@ -44,7 +48,7 @@ public class EntityMergeHelper {
      *   <li>Updates existing items with new data or adds new items</li>
      *   <li>Removes items from current list that are not in new list</li>
      * </ul>
-     * 
+     *
      * @param <T> The entity type
      * @param currentList The existing list of entities (will be modified)
      * @param newList The new list of entities to merge in
@@ -54,7 +58,7 @@ public class EntityMergeHelper {
         if (currentList == null || newList == null) {
             return;
         }
-        
+
         // First, deduplicate currentList by keeping only first occurrence of each ID
         Map<String, T> seen = new LinkedHashMap<>();
         Iterator<T> iterator = currentList.iterator();
@@ -69,7 +73,7 @@ public class EntityMergeHelper {
                 }
             }
         }
-        
+
         // Create map of new items by ID
         Map<String, T> newMap = newList.stream()
                 .filter(item -> idExtractor.apply(item) != null)
@@ -78,7 +82,7 @@ public class EntityMergeHelper {
                         item -> item,
                         (existing, replacement) -> replacement, // Keep last occurrence if duplicates
                         LinkedHashMap::new));
-        
+
         // Update existing items or add new ones
         for (Map.Entry<String, T> entry : newMap.entrySet()) {
             String id = entry.getKey();
@@ -94,7 +98,7 @@ public class EntityMergeHelper {
                 currentList.add(newItem);
             }
         }
-        
+
         // Remove items from current list that are not in new list
         currentList.removeIf(item -> {
             String id = idExtractor.apply(item);
@@ -104,10 +108,10 @@ public class EntityMergeHelper {
 
     /**
      * Merges two lists of entities using a composite key extractor.
-     * 
+     *
      * <p>Useful for entities with composite primary keys where a single ID extractor
      * is not sufficient.
-     * 
+     *
      * @param <T> The entity type
      * @param currentList The existing list of entities (will be modified)
      * @param newList The new list of entities to merge in
@@ -117,7 +121,7 @@ public class EntityMergeHelper {
         if (currentList == null || newList == null) {
             return;
         }
-        
+
         // Deduplicate currentList
         Map<K, T> seen = new LinkedHashMap<>();
         Iterator<T> iterator = currentList.iterator();
@@ -132,16 +136,13 @@ public class EntityMergeHelper {
                 }
             }
         }
-        
+
         // Create map of new items by key
         Map<K, T> newMap = newList.stream()
                 .filter(item -> keyExtractor.apply(item) != null)
                 .collect(Collectors.toMap(
-                        keyExtractor,
-                        item -> item,
-                        (existing, replacement) -> replacement,
-                        LinkedHashMap::new));
-        
+                        keyExtractor, item -> item, (existing, replacement) -> replacement, LinkedHashMap::new));
+
         // Update existing items or add new ones
         for (Map.Entry<K, T> entry : newMap.entrySet()) {
             K key = entry.getKey();
@@ -155,7 +156,7 @@ public class EntityMergeHelper {
                 currentList.add(newItem);
             }
         }
-        
+
         // Remove items not in new list
         currentList.removeIf(item -> {
             K key = keyExtractor.apply(item);
@@ -163,4 +164,3 @@ public class EntityMergeHelper {
         });
     }
 }
-

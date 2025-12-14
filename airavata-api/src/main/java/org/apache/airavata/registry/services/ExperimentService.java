@@ -22,17 +22,23 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
+import org.apache.airavata.registry.utils.EntityMergeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -170,22 +176,34 @@ public class ExperimentService {
             experimentModel.setCreationTime(System.currentTimeMillis());
         }
 
-        ExperimentEntity existingEntity = experimentRepository.findById(experimentId).orElse(null);
+        ExperimentEntity existingEntity =
+                experimentRepository.findById(experimentId).orElse(null);
         ExperimentEntity experimentEntity;
-        
+
         if (existingEntity != null) {
             // Map model to new entity to get the desired state
             ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
             // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(experimentModel, existingEntity);
-            
+
             // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentStatus(), newEntity.getExperimentStatus(), org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity::getStatusId);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentInputs(), newEntity.getExperimentInputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity::getName);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getExperimentOutputs(), newEntity.getExperimentOutputs(), org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity::getName);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getErrors(), newEntity.getErrors(), org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity::getErrorId);
-            org.apache.airavata.registry.utils.EntityMergeHelper.mergeLists(existingEntity.getProcesses(), newEntity.getProcesses(), org.apache.airavata.registry.entities.expcatalog.ProcessEntity::getProcessId);
-            
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getExperimentStatus(),
+                    newEntity.getExperimentStatus(),
+                    ExperimentStatusEntity::getStatusId);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getExperimentInputs(),
+                    newEntity.getExperimentInputs(),
+                    ExperimentInputEntity::getName);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getExperimentOutputs(),
+                    newEntity.getExperimentOutputs(),
+                    ExperimentOutputEntity::getName);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getErrors(), newEntity.getErrors(), ExperimentErrorEntity::getErrorId);
+            EntityMergeHelper.mergeLists(
+                    existingEntity.getProcesses(), newEntity.getProcesses(), ProcessEntity::getProcessId);
+
             experimentEntity = existingEntity;
         } else {
             experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
@@ -244,5 +262,4 @@ public class ExperimentService {
 
         return experimentRepository.save(experimentEntity);
     }
-
 }

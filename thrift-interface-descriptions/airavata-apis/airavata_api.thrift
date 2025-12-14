@@ -50,7 +50,7 @@ include "../data-models/gateway_groups_model.thrift"
 include "../data-models/replica_catalog_models.thrift"
 include "../data-models/group_manager_model.thrift"
 
-namespace java org.apache.airavata.api
+namespace java org.apache.airavata.api.model
 namespace php Airavata.API
 namespace cpp apache.airavata.api
 namespace perl ApacheAiravataAPI
@@ -2938,7 +2938,7 @@ service Airavata extends base_api.BaseAPI {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
-  list<account_provisioning_model.SSHAccountProvisioner> getSSHAccountProvisioners(1: required security_model.AuthzToken authzToken)
+  list<account_provisioning_model.SSHAccountProvisionerDescription> getSSHAccountProvisioners(1: required security_model.AuthzToken authzToken)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,

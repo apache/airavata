@@ -20,7 +20,7 @@
 package org.apache.airavata.messaging.core;
 
 import java.sql.Timestamp;
-import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.common.model.MessageType;
 import org.apache.thrift.TBase;
 
 public class MessageContext {

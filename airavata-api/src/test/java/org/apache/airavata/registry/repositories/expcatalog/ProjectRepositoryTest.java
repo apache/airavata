@@ -19,15 +19,17 @@
 */
 package org.apache.airavata.registry.repositories.expcatalog;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.exceptions.RegistryException;
+import org.apache.airavata.common.model.Gateway;
+import org.apache.airavata.common.model.Project;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;

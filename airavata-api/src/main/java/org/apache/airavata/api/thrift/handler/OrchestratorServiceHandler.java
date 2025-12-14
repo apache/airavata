@@ -20,10 +20,10 @@
 package org.apache.airavata.api.thrift.handler;
 
 import java.util.List;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.common.exception.AiravataErrorType;
+import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.LaunchValidationException;
+import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.orchestrator.utils.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrchestratorServiceHandler implements org.apache.airavata.orchestrator.cpi.OrchestratorService.Iface {
+public class OrchestratorServiceHandler implements org.apache.airavata.orchestrator.model.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
     private final OrchestratorService orchestratorService;
 
@@ -40,7 +40,7 @@ public class OrchestratorServiceHandler implements org.apache.airavata.orchestra
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
+        return org.apache.airavata.orchestrator.model.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
     public OrchestratorServiceHandler(OrchestratorService orchestratorService) {

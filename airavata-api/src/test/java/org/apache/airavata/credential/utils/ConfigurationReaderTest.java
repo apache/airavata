@@ -21,7 +21,7 @@ package org.apache.airavata.credential.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

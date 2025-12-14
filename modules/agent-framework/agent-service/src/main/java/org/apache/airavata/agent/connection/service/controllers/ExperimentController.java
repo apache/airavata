@@ -24,8 +24,8 @@ import org.apache.airavata.agent.connection.service.handlers.AgentManagementHand
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.ProcessModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;

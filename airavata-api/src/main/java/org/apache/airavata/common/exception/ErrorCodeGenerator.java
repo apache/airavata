@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  * Utility class for generating standardized error codes.
- * 
+ *
  * <p>Error codes are used for tracking and correlating errors across the system.
  * They provide a unique identifier for each error occurrence, making it easier
  * to trace errors in logs and support requests.
@@ -62,7 +62,7 @@ public class ErrorCodeGenerator {
      */
     public static String generateErrorCodeWithTimestamp(String prefix) {
         long timestamp = System.currentTimeMillis();
-        return String.format("%s-%d-%s", prefix, timestamp, UUID.randomUUID().toString().substring(0, 8));
+        return String.format(
+                "%s-%d-%s", prefix, timestamp, UUID.randomUUID().toString().substring(0, 8));
     }
 }
-

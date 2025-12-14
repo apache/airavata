@@ -20,7 +20,7 @@
 package org.apache.airavata.monitor.email.parser;
 
 import java.util.List;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.common.model.ResourceJobManagerType;
 
 public class ResourceConfig {
     private ResourceJobManagerType jobManagerType;

@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -31,9 +34,6 @@ import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfigura
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -197,7 +197,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
                             ex);
                 }
 
-                // TODO: Remove this temporary fix once schedulers are configured to notify when a job is externally cancelled
+                // TODO: Remove this temporary fix once schedulers are configured to notify when a job is externally
+                // cancelled
                 // This is a workaround until proper job cancellation notification is implemented
                 // forcefully make the job state as cancelled as some schedulers do not notify when the job is
                 // cancelled.

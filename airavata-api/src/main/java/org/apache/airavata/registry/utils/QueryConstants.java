@@ -19,10 +19,41 @@
 */
 package org.apache.airavata.registry.utils;
 
-import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
-import org.apache.airavata.registry.entities.appcatalog.*;
-import org.apache.airavata.registry.entities.expcatalog.*;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationInputEntity;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationInterfaceEntity;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationModuleEntity;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationOutputEntity;
+import org.apache.airavata.registry.entities.appcatalog.BatchQueueResourcePolicyEntity;
+import org.apache.airavata.registry.entities.appcatalog.ComputeResourceEntity;
+import org.apache.airavata.registry.entities.appcatalog.ComputeResourceFileSystemEntity;
+import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePolicyEntity;
+import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePreferenceEntity;
+import org.apache.airavata.registry.entities.appcatalog.GatewayProfileEntity;
+import org.apache.airavata.registry.entities.appcatalog.GridftpEndpointEntity;
+import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefEntity;
+import org.apache.airavata.registry.entities.appcatalog.GroupResourceProfileEntity;
+import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandEntity;
+import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandEntity;
+import org.apache.airavata.registry.entities.appcatalog.ParserEntity;
+import org.apache.airavata.registry.entities.appcatalog.ParsingTemplateEntity;
+import org.apache.airavata.registry.entities.appcatalog.StoragePreferenceEntity;
+import org.apache.airavata.registry.entities.appcatalog.StorageResourceEntity;
+import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferenceEntity;
+import org.apache.airavata.registry.entities.appcatalog.UserResourceProfileEntity;
+import org.apache.airavata.registry.entities.appcatalog.UserStoragePreferenceEntity;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
+import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
+import org.apache.airavata.registry.entities.expcatalog.JobEntity;
+import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProjectEntity;
+import org.apache.airavata.registry.entities.expcatalog.QueueStatusEntity;
+import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
+import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 
 public interface QueryConstants {

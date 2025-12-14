@@ -30,12 +30,14 @@ public class CommunityUserEntityPK implements Serializable {
 
     private String gatewayId;
     private String communityUserName;
+    private String tokenId;
 
     public CommunityUserEntityPK() {}
 
-    public CommunityUserEntityPK(String gatewayId, String communityUserName) {
+    public CommunityUserEntityPK(String gatewayId, String communityUserName, String tokenId) {
         this.gatewayId = gatewayId;
         this.communityUserName = communityUserName;
+        this.tokenId = tokenId;
     }
 
     public String getGatewayId() {
@@ -54,16 +56,26 @@ public class CommunityUserEntityPK implements Serializable {
         this.communityUserName = communityUserName;
     }
 
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CommunityUserEntityPK that = (CommunityUserEntityPK) o;
-        return Objects.equals(gatewayId, that.gatewayId) && Objects.equals(communityUserName, that.communityUserName);
+        return Objects.equals(gatewayId, that.gatewayId)
+                && Objects.equals(communityUserName, that.communityUserName)
+                && Objects.equals(tokenId, that.tokenId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gatewayId, communityUserName);
+        return Objects.hash(gatewayId, communityUserName, tokenId);
     }
 }

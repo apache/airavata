@@ -20,7 +20,7 @@
 package org.apache.airavata.metascheduler.core.engine;
 
 import java.util.Optional;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 
 /**
  * This interface provides apis to implement for select compute resources

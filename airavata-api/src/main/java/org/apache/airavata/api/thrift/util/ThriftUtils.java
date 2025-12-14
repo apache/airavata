@@ -19,8 +19,16 @@
 */
 package org.apache.airavata.api.thrift.util;
 
-import org.apache.airavata.model.task.*;
-import org.apache.thrift.*;
+import org.apache.airavata.common.model.DataStagingTaskModel;
+import org.apache.airavata.common.model.EnvironmentSetupTaskModel;
+import org.apache.airavata.common.model.JobSubmissionTaskModel;
+import org.apache.airavata.common.model.MonitorTaskModel;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.thrift.TBase;
+import org.apache.thrift.TDeserializer;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
+import org.apache.thrift.TServiceClient;
 
 public class ThriftUtils {
     public static byte[] serializeThriftObject(TBase<?, ?> object) throws TException {

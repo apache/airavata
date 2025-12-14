@@ -21,11 +21,11 @@ package org.apache.airavata.credential.impl.store;
 
 import java.io.Serializable;
 import java.util.List;
-import org.apache.airavata.credential.CommunityUser;
 import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.exceptions.CredentialStoreException;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.impl.certificate.CertificateAuditInfo;
 import org.apache.airavata.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.services.CredentialEntityService;
 import org.apache.airavata.credential.utils.CredentialReader;
 import org.springframework.stereotype.Component;
@@ -86,7 +86,7 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         CertificateAuditInfo certificateAuditInfo = new CertificateAuditInfo();
 
         CommunityUser retrievedUser = certificateCredential.getCommunityUser();
-        certificateAuditInfo.setCommunityUserName(retrievedUser.getUserName());
+        certificateAuditInfo.setCommunityUserName(retrievedUser.getUsername());
         certificateAuditInfo.setCredentialLifeTime(certificateCredential.getLifeTime());
         certificateAuditInfo.setCredentialsRequestedTime(certificateCredential.getCertificateRequestedTime());
         certificateAuditInfo.setGatewayName(gatewayName);

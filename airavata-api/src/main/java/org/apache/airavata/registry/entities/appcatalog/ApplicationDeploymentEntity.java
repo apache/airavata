@@ -19,11 +19,19 @@
 */
 package org.apache.airavata.registry.entities.appcatalog;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.common.model.ApplicationParallelismType;
 
 /**
  * The persistent class for the application_deployment database table.
