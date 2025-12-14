@@ -49,12 +49,12 @@ public class ValidatePersistenceXml {
             try {
                 // Use in-memory H2 database to avoid connection issues
                 Map<String, String> properties = new HashMap<>();
-                properties.put("openjpa.jdbc.Driver", "org.h2.Driver");
-                properties.put("openjpa.jdbc.URL", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-                properties.put("openjpa.jdbc.User", "sa");
-                properties.put("openjpa.jdbc.Password", "");
-                properties.put("openjpa.jdbc.DBDictionary", "h2");
-                properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+                properties.put("jakarta.persistence.jdbc.driver", "org.h2.Driver");
+                properties.put("jakarta.persistence.jdbc.url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+                properties.put("jakarta.persistence.jdbc.user", "sa");
+                properties.put("jakarta.persistence.jdbc.password", "");
+                properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+                properties.put("hibernate.hbm2ddl.auto", "create");
 
                 EntityManagerFactory emf = Persistence.createEntityManagerFactory(puName, properties);
                 if (emf != null) {

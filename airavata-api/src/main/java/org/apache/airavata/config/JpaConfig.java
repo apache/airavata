@@ -54,11 +54,6 @@ public class JpaConfig {
         this.properties = properties;
     }
 
-    @Bean
-    public static OpenJpaEntityManagerFactoryPostProcessor openJpaEntityManagerFactoryPostProcessor() {
-        return new OpenJpaEntityManagerFactoryPostProcessor();
-    }
-
     // Persistence unit names
     public static final String PROFILE_SERVICE_PU = "profile_service";
     public static final String APPCATALOG_PU = "appcatalog_data_new";

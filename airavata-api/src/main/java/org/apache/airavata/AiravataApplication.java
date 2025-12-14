@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableTransactionManagement
 @EnableConfigurationProperties(AiravataServerProperties.class)
-@Import({AiravataPropertiesConfiguration.class, org.apache.airavata.config.JpaMappingContextRegistrar.class})
+@Import({AiravataPropertiesConfiguration.class})
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",

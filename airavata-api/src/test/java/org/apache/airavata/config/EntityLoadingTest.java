@@ -79,7 +79,7 @@ public class EntityLoadingTest {
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
 
             // Check for specific entities
-            // Check that entities are loaded (OpenJPA may use different class names)
+            // Check that entities are loaded
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
             // Verify by checking entity names rather than exact class matches
             boolean hasUserProfile = entities.stream()

@@ -185,7 +185,7 @@ public class SpringContextLoadTest {
 
     @Test
     public void testEntityManagerFactoriesHaveCorrectPersistenceUnits() {
-        // Verify factories are created (OpenJPA uses different property structure than Hibernate)
+        // Verify factories are created and have properties configured
         assertNotNull(profileServiceEntityManagerFactory.getProperties());
         assertNotNull(appCatalogEntityManagerFactory.getProperties());
     }

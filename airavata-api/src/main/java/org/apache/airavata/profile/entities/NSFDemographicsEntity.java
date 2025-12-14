@@ -42,7 +42,7 @@ public class NSFDemographicsEntity {
     private UserProfileEntity userProfile;
 
     public NSFDemographicsEntity() {
-        // Default constructor required by OpenJPA
+        // Default constructor required by JPA
     }
 
     @Id

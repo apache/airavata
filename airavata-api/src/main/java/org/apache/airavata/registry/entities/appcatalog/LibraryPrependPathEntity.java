@@ -28,8 +28,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the library_apend_path database table.
@@ -54,7 +54,7 @@ public class LibraryPrependPathEntity implements Serializable {
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "DEPLOYMENT_ID")
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public LibraryPrependPathEntity() {}

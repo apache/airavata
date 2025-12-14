@@ -28,8 +28,8 @@ import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the grp_ssh_acc_prov_config database table.
@@ -64,7 +64,7 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
                 referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
                 nullable = false)
     })
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {}

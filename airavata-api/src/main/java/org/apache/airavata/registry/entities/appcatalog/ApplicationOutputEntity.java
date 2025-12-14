@@ -30,8 +30,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import org.apache.airavata.common.model.DataType;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the application_output database table.
@@ -83,7 +83,7 @@ public class ApplicationOutputEntity implements Serializable {
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
     @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationInterfaceEntity applicationInterface;
 
     public ApplicationOutputEntity() {}

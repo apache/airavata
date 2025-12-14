@@ -130,10 +130,6 @@ under the License.
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.openjpa</groupId>
-      <artifactId>openjpa</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
@@ -376,13 +372,6 @@ under the License.
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <exclusions>
-        <!-- Exclude Hibernate as we're using OpenJPA -->
-        <exclusion>
-          <groupId>org.hibernate.orm</groupId>
-          <artifactId>hibernate-core</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -479,60 +468,6 @@ under the License.
           <token>, date = ".*"</token>
           <value> </value>
         </configuration>
-      </plugin>
-
-      <!--  Enhance OpenJPA Entities  -->
-      <plugin>
-        <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa-maven-plugin</artifactId>
-        <version>4.0.0</version>
-        <configuration>
-          <includes>**/entities/**/*.class</includes>
-          <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
-          <addDefaultConstructor>false</addDefaultConstructor>
-          <enforcePropertyRestrictions>false</enforcePropertyRestrictions>
-          <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
-        </configuration>
-        <executions>
-          <execution>
-            <id>enhancer</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>enhance</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>test-enhancer</id>
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>enhance</goal>
-            </goals>
-            <configuration>
-              <includes>**/entities/**/*.class</includes>
-              <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
-              <addDefaultConstructor>false</addDefaultConstructor>
-              <enforcePropertyRestrictions>false</enforcePropertyRestrictions>
-              <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>4.1.1</version>
-          </dependency>
-          <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
-          </dependency>
-          <dependency>
-            <groupId>jakarta.transaction</groupId>
-            <artifactId>jakarta.transaction-api</artifactId>
-            <version>2.0.1</version>
-          </dependency>
-        </dependencies>
       </plugin>
 
       <!-- Run Tests  -->

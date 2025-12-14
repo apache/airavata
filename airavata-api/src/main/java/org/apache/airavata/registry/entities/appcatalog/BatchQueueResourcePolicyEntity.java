@@ -26,8 +26,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the batch_queue_resource_policy database table.
@@ -62,7 +62,7 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 
     public BatchQueueResourcePolicyEntity() {}
