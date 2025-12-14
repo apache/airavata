@@ -11,8 +11,7 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* software distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 * KIND, either express or implied. See the License for the
 * specific language governing permissions and limitations
 * under the License.
@@ -24,46 +23,53 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.realm.jdbc.JdbcRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
  * The JDBC user store implementation.
+ * Migrated from Apache Shiro to Spring Security JDBC authentication.
  */
 public class JDBCUserStore extends AbstractJDBCUserStore {
 
     protected static Logger log = LoggerFactory.getLogger(JDBCUserStore.class);
 
-    private JdbcRealm jdbcRealm;
-
+    private DaoAuthenticationProvider authenticationProvider;
     private PasswordDigester passwordDigester;
+    private DataSource dataSource;
 
     public JDBCUserStore() {
-        jdbcRealm = new JdbcRealm();
+        // Constructor
     }
 
     @Override
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
-        AuthenticationToken authenticationToken =
-                new UsernamePasswordToken(userName, passwordDigester.getPasswordHashValue((String) credentials));
-
-        AuthenticationInfo authenticationInfo;
         try {
-
-            authenticationInfo = jdbcRealm.getAuthenticationInfo(authenticationToken);
-            return authenticationInfo != null;
-
-        } catch (AuthenticationException e) {
-            log.debug(e.getLocalizedMessage(), e);
+            String password = passwordDigester.getPasswordHashValue((String) credentials);
+            UsernamePasswordAuthenticationToken authRequest = 
+                new UsernamePasswordAuthenticationToken(userName, password);
+            
+            Authentication authentication = authenticationProvider.authenticate(authRequest);
+            return authentication != null && authentication.isAuthenticated();
+        } catch (BadCredentialsException e) {
+            log.debug("JDBC authentication failed for user: {}", userName, e);
             return false;
+        } catch (Exception e) {
+            log.error("Error during JDBC authentication", e);
+            throw new UserStoreException("Error during JDBC authentication", e);
         }
     }
 
@@ -147,26 +153,96 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     }
 
     protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn)
-            throws ApplicationSettingsException {
-        DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
-        DataSource dataSource = dbUtil.getDataSource();
-        jdbcRealm.setDataSource(dataSource);
+            throws ApplicationSettingsException, UserStoreException {
+        try {
+            DBUtil dbUtil = new DBUtil(getDatabaseURL(), getDatabaseUserName(), getDatabasePassword(), getDatabaseDriver());
+            dataSource = dbUtil.getDataSource();
 
-        StringBuilder stringBuilder = new StringBuilder();
+            // Create user details service
+            UserDetailsService userDetailsService = new JdbcUserDetailsService(
+                dataSource, userTable, userNameColumn, passwordColumn);
 
-        stringBuilder
-                .append("SELECT ")
-                .append(passwordColumn)
-                .append(" FROM ")
-                .append(userTable)
-                .append(" WHERE ")
-                .append(userNameColumn)
-                .append(" = ?");
+            // Create password encoder adapter
+            PasswordEncoder passwordEncoder = new PasswordDigesterEncoder(passwordDigester);
 
-        jdbcRealm.setAuthenticationQuery(stringBuilder.toString());
+            // Create authentication provider
+            // Note: Using deprecated API for compatibility - Spring Security API has changed
+            authenticationProvider = new DaoAuthenticationProvider();
+            authenticationProvider.setUserDetailsService(userDetailsService);
+            authenticationProvider.setPasswordEncoder(passwordEncoder);
+        } catch (Exception e) {
+            throw new UserStoreException("Failed to initialize JDBC authentication", e);
+        }
     }
 
     public PasswordDigester getPasswordDigester() {
         return passwordDigester;
+    }
+
+    /**
+     * UserDetailsService implementation for JDBC authentication
+     */
+    private static class JdbcUserDetailsService implements UserDetailsService {
+        private final JdbcTemplate jdbcTemplate;
+        private final String userTable;
+        private final String userNameColumn;
+        private final String passwordColumn;
+
+        public JdbcUserDetailsService(DataSource dataSource, String userTable, 
+                                     String userNameColumn, String passwordColumn) {
+            this.jdbcTemplate = new JdbcTemplate(dataSource);
+            this.userTable = userTable;
+            this.userNameColumn = userNameColumn;
+            this.passwordColumn = passwordColumn;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+            String sql = String.format("SELECT %s FROM %s WHERE %s = ?", 
+                passwordColumn, userTable, userNameColumn);
+            
+            try {
+                String password = jdbcTemplate.queryForObject(sql, String.class, username);
+                if (password == null) {
+                    throw new UsernameNotFoundException("User not found: " + username);
+                }
+                return User.withUsername(username)
+                    .password(password)
+                    .authorities("ROLE_USER")
+                    .build();
+            } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+                throw new UsernameNotFoundException("User not found: " + username, e);
+            }
+        }
+    }
+
+    /**
+     * Password encoder adapter for PasswordDigester
+     */
+    private static class PasswordDigesterEncoder implements PasswordEncoder {
+        private final PasswordDigester passwordDigester;
+
+        public PasswordDigesterEncoder(PasswordDigester passwordDigester) {
+            this.passwordDigester = passwordDigester;
+        }
+
+        @Override
+        public String encode(CharSequence rawPassword) {
+            try {
+                return passwordDigester.getPasswordHashValue(rawPassword.toString());
+            } catch (UserStoreException e) {
+                throw new RuntimeException("Failed to encode password", e);
+            }
+        }
+
+        @Override
+        public boolean matches(CharSequence rawPassword, String encodedPassword) {
+            try {
+                String hashed = passwordDigester.getPasswordHashValue(rawPassword.toString());
+                return hashed.equals(encodedPassword);
+            } catch (UserStoreException e) {
+                throw new RuntimeException("Failed to match password", e);
+            }
+        }
     }
 }

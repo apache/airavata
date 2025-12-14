@@ -19,71 +19,95 @@
 */
 package org.apache.airavata.common.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Map;
-import java.util.Set;
+import java.util.Iterator;
 
 public class JSONUtil {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void saveJSON(JsonElement jsonElement, File file) throws IOException {
-        IOUtil.writeToFile(jsonElementToString(jsonElement), file);
+    public static void saveJSON(JsonNode jsonNode, File file) throws IOException {
+        IOUtil.writeToFile(jsonNodeToString(jsonNode), file);
     }
 
-    public static JsonObject stringToJSONObject(String workflowString) {
-        return JsonParser.parseString(workflowString).getAsJsonObject();
+    public static ObjectNode stringToJSONObject(String workflowString) {
+        try {
+            JsonNode node = objectMapper.readTree(workflowString);
+            if (node.isObject()) {
+                return (ObjectNode) node;
+            }
+            throw new IllegalArgumentException("String does not represent a JSON object");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON string", e);
+        }
     }
 
-    public static JsonObject loadJSON(File file) throws IOException {
+    public static ObjectNode loadJSON(File file) throws IOException {
         return loadJSON(new FileReader(file));
     }
 
-    public static JsonObject loadJSON(Reader reader) throws IOException {
-        return JsonParser.parseReader(reader).getAsJsonObject();
+    public static ObjectNode loadJSON(Reader reader) throws IOException {
+        try {
+            JsonNode node = objectMapper.readTree(reader);
+            if (node.isObject()) {
+                return (ObjectNode) node;
+            }
+            throw new IllegalArgumentException("File does not contain a JSON object");
+        } catch (JsonProcessingException e) {
+            throw new IOException("Failed to parse JSON from reader", e);
+        }
     }
 
-    public static String jsonElementToString(JsonElement jsonElement) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(jsonElement);
+    public static String jsonNodeToString(JsonNode jsonNode) {
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert JsonNode to string", e);
+        }
     }
 
-    public static boolean isEqual(JsonObject originalJsonObject, JsonObject newJsonObject) {
+    public static boolean isEqual(ObjectNode originalJsonObject, ObjectNode newJsonObject) {
         // TODO - Implement this method
         if (originalJsonObject == null && newJsonObject == null) {
             return true;
         } else if (originalJsonObject == null || newJsonObject == null) {
             return false;
         } else {
-            // check the number of childs
-            Set<Map.Entry<String, JsonElement>> entrySetOfOriginalJson = originalJsonObject.entrySet();
-            Set<Map.Entry<String, JsonElement>> entrySetOfNewJson = newJsonObject.entrySet();
-            if (entrySetOfOriginalJson.size() != entrySetOfNewJson.size()) {
+            // check the number of children
+            if (originalJsonObject.size() != newJsonObject.size()) {
                 return false;
             }
 
-            for (Map.Entry<String, JsonElement> keyString : entrySetOfOriginalJson) {
-                JsonElement valueOrig = keyString.getValue();
-                JsonElement valueNew = newJsonObject.get(keyString.getKey());
-                if (valueOrig instanceof JsonObject
-                        && valueNew instanceof JsonObject
-                        && !isEqual((JsonObject) valueOrig, (JsonObject) valueNew)) {
+            Iterator<String> fieldNames = originalJsonObject.fieldNames();
+            while (fieldNames.hasNext()) {
+                String key = fieldNames.next();
+                JsonNode valueOrig = originalJsonObject.get(key);
+                JsonNode valueNew = newJsonObject.get(key);
+                
+                if (valueNew == null) {
                     return false;
-                } else if (valueOrig instanceof JsonArray
-                        && valueNew instanceof JsonArray
-                        && !isEqual((JsonArray) valueOrig, (JsonArray) valueNew)) {
-                    return false;
-                } else if (valueOrig instanceof JsonPrimitive
-                        && valueNew instanceof JsonPrimitive
-                        && !isEqual((JsonPrimitive) valueOrig, (JsonPrimitive) valueNew)) {
+                }
+                
+                if (valueOrig.isObject() && valueNew.isObject()) {
+                    if (!isEqual((ObjectNode) valueOrig, (ObjectNode) valueNew)) {
+                        return false;
+                    }
+                } else if (valueOrig.isArray() && valueNew.isArray()) {
+                    if (!isEqual((ArrayNode) valueOrig, (ArrayNode) valueNew)) {
+                        return false;
+                    }
+                } else if (valueOrig.isValueNode() && valueNew.isValueNode()) {
+                    if (!isEqual(valueOrig, valueNew)) {
+                        return false;
+                    }
+                } else {
                     return false;
                 }
             }
@@ -91,29 +115,31 @@ public class JSONUtil {
         return true;
     }
 
-    private static boolean isEqual(JsonArray arrayOriginal, JsonArray arrayNew) {
+    private static boolean isEqual(ArrayNode arrayOriginal, ArrayNode arrayNew) {
         if (arrayOriginal == null && arrayNew == null) {
             return true;
         } else if (arrayOriginal == null || arrayNew == null) {
             return false;
         } else {
-            // check the number of element
+            // check the number of elements
             if (arrayOriginal.size() != arrayNew.size()) {
                 return false;
             } else if (arrayOriginal.size() == 0) {
                 return true;
             } else {
                 for (int i = 0; i < arrayOriginal.size(); i++) {
-                    JsonElement valueOrig = arrayOriginal.get(i);
-                    JsonElement valueNew = arrayNew.get(i);
-                    if (valueOrig instanceof JsonObject && valueNew instanceof JsonObject) {
-                        if (!isEqual((JsonObject) valueOrig, (JsonObject) valueNew)) {
+                    JsonNode valueOrig = arrayOriginal.get(i);
+                    JsonNode valueNew = arrayNew.get(i);
+                    if (valueOrig.isObject() && valueNew.isObject()) {
+                        if (!isEqual((ObjectNode) valueOrig, (ObjectNode) valueNew)) {
                             return false;
                         }
-                    } else if (valueOrig instanceof JsonPrimitive && valueNew instanceof JsonPrimitive) {
-                        if (!isEqual((JsonPrimitive) valueOrig, (JsonPrimitive) valueNew)) {
+                    } else if (valueOrig.isValueNode() && valueNew.isValueNode()) {
+                        if (!isEqual(valueOrig, valueNew)) {
                             return false;
                         }
+                    } else {
+                        return false;
                     }
                 }
             }
@@ -121,28 +147,21 @@ public class JSONUtil {
         return true;
     }
 
-    private static boolean isEqual(JsonPrimitive primitiveOrig, JsonPrimitive primitiveNew) {
-        if (primitiveOrig == null && primitiveNew == null) {
+    private static boolean isEqual(JsonNode nodeOrig, JsonNode nodeNew) {
+        if (nodeOrig == null && nodeNew == null) {
             return true;
-        } else if (primitiveOrig == null || primitiveNew == null) {
+        } else if (nodeOrig == null || nodeNew == null) {
             return false;
         } else {
-            if (primitiveOrig.isString() && primitiveNew.isString()) {
-                if (!primitiveOrig.getAsString().equals(primitiveNew.getAsString())) {
-                    return false;
-                }
-            } else if (primitiveOrig.isBoolean() && primitiveNew.isBoolean()) {
-                if ((Boolean.valueOf(primitiveOrig.getAsBoolean()).compareTo(primitiveNew.getAsBoolean()) != 0)) {
-                    return false;
-                }
-            } else if (primitiveOrig.isNumber() && primitiveNew.isNumber()) {
-                if (Double.valueOf(primitiveOrig.getAsDouble()).compareTo(primitiveNew.getAsDouble()) != 0) {
-                    return false;
-                }
+            if (nodeOrig.isTextual() && nodeNew.isTextual()) {
+                return nodeOrig.asText().equals(nodeNew.asText());
+            } else if (nodeOrig.isBoolean() && nodeNew.isBoolean()) {
+                return nodeOrig.asBoolean() == nodeNew.asBoolean();
+            } else if (nodeOrig.isNumber() && nodeNew.isNumber()) {
+                return nodeOrig.asDouble() == nodeNew.asDouble();
             } else {
-                return primitiveOrig.isJsonNull() && primitiveNew.isJsonNull();
+                return nodeOrig.isNull() && nodeNew.isNull();
             }
         }
-        return true;
     }
 }

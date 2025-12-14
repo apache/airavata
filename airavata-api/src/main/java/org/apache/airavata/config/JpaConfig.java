@@ -19,11 +19,12 @@
 */
 package org.apache.airavata.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.apache.airavata.common.utils.JPAUtils;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -97,14 +98,18 @@ public class JpaConfig {
             throw new IllegalStateException(
                     "Database configuration for registry is missing or invalid. Check airavata.properties for database.registry.url");
         }
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(db.driver);
-        dataSource.setUrl(db.url);
-        dataSource.setUsername(db.user);
-        dataSource.setPassword(db.password);
-        dataSource.setValidationQuery(properties.database.validationQuery);
-        dataSource.setTestOnBorrow(true);
-        return dataSource;
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(db.driver);
+        config.setJdbcUrl(db.url);
+        config.setUsername(db.user);
+        config.setPassword(db.password);
+        config.setConnectionTestQuery(properties.database.validationQuery);
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(10);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+        return new HikariDataSource(config);
     }
 
     @Bean(name = "expCatalogEntityManagerFactory")

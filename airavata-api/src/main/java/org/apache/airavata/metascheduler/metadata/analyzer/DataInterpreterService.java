@@ -30,11 +30,10 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -69,8 +68,9 @@ public class DataInterpreterService implements IServer {
     @Override
     public void start() throws Exception {
         jobTriggerMap.clear();
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.afterPropertiesSet();
+        scheduler = schedulerFactoryBean.getScheduler();
 
         final int parallelJobs = properties.services.parser.scanningParallelJobs;
         final double scanningInterval = properties.services.parser.scanningInterval;

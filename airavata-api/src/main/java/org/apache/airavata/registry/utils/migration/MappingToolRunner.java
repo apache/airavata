@@ -48,7 +48,7 @@ public class MappingToolRunner {
                 dbInitConfig.getUser(),
                 dbInitConfig.getPassword(),
                 dbInitConfig.getValidationQuery()));
-        jdbcConfiguration.setConnectionDriverName("org.apache.commons.dbcp2.BasicDataSource");
+        jdbcConfiguration.setConnectionDriverName("com.zaxxer.hikari.HikariDataSource");
 
         Options options = new Options();
         options.put("sqlFile", outputFile);

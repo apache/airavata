@@ -30,11 +30,10 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,8 +69,9 @@ public class ComputationalResourceMonitoringService implements IServer {
     public void start() throws Exception {
 
         jobTriggerMap.clear();
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.afterPropertiesSet();
+        scheduler = schedulerFactoryBean.getScheduler();
 
         // Note: These properties are not in AiravataServerProperties yet, using defaults
         // TODO: Add these to AiravataServerProperties if needed

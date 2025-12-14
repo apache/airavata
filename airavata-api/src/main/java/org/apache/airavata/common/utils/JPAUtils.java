@@ -37,7 +37,7 @@ public class JPAUtils {
 
     static {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp2.BasicDataSource");
+        properties.put("openjpa.ConnectionDriverName", "com.zaxxer.hikari.HikariDataSource");
         // Allow unenhanced classes at runtime - this is needed for Spring Data JPA integration
         // where metamodel is accessed before EntityManagerFactory is fully initialized
         // "supported" allows unenhanced classes but may have performance implications

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.impl.task.parsing.models;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.helix.task.api.TaskParamType;
@@ -42,12 +42,22 @@ public class ParsingTaskInputs implements TaskParamType {
 
     @Override
     public String serialize() {
-        return new Gson().toJson(this);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(this);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize ParsingTaskInputs", e);
+        }
     }
 
     @Override
     public void deserialize(String content) {
-        ParsingTaskInputs parsingTaskInputs = new Gson().fromJson(content, ParsingTaskInputs.class);
-        this.inputs = parsingTaskInputs.getInputs();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ParsingTaskInputs parsingTaskInputs = objectMapper.readValue(content, ParsingTaskInputs.class);
+            this.inputs = parsingTaskInputs.getInputs();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to deserialize ParsingTaskInputs", e);
+        }
     }
 }

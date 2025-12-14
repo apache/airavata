@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.common.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,7 +30,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,18 +217,23 @@ public class DBUtil {
     }
 
     /**
-     * Gets a new DBCP data source.
+     * Gets a new HikariCP data source.
      *
      * @return A new data source.
      */
     public DataSource getDataSource() {
-        BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassName(this.driverName);
-        ds.setUsername(this.databaseUserName);
-        ds.setPassword(this.databasePassword);
-        ds.setUrl(this.jdbcUrl);
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(this.driverName);
+        config.setUsername(this.databaseUserName);
+        config.setPassword(this.databasePassword);
+        config.setJdbcUrl(this.jdbcUrl);
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(10);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
 
-        return ds;
+        return new HikariDataSource(config);
     }
 
     /**

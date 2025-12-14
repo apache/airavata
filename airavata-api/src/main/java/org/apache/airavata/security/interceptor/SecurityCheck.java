@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.security.interceptor;
 
-import com.google.inject.BindingAnnotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,8 +26,8 @@ import java.lang.annotation.Target;
 
 /**
  * This is just the definition of the annotation used to mark the API methods to be intercepted.
+ * Methods annotated with this will be intercepted by Spring AOP for security checks.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-@BindingAnnotation
 public @interface SecurityCheck {}

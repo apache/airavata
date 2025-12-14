@@ -19,8 +19,9 @@
 */
 package org.apache.airavata.monitor.realtime.parser;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +64,8 @@ public class RealtimeJobStatusParser {
     public JobStatusResult parse(String rawMessage, String publisherId, RegistryService registryService) {
 
         try {
-            Map asMap = new Gson().fromJson(rawMessage, Map.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> asMap = objectMapper.readValue(rawMessage, new TypeReference<Map<String, Object>>() {});
             if (asMap.containsKey("jobName") && asMap.containsKey("status")) {
                 String jobName = (String) asMap.get("jobName");
                 String status = (String) asMap.get("status");
@@ -115,7 +117,7 @@ public class RealtimeJobStatusParser {
                 logger.error("Data structure of message {} is not correct", rawMessage);
                 return null;
             }
-        } catch (JsonSyntaxException e) {
+        } catch (JsonProcessingException e) {
             logger.error("Failed to parse raw data {} to type Map", rawMessage, e);
             return null;
         }

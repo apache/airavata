@@ -28,7 +28,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +38,11 @@ public class ClusterStatusMonitorJobScheduler {
     Scheduler scheduler;
     private AiravataServerProperties properties;
 
-    public ClusterStatusMonitorJobScheduler(AiravataServerProperties properties) throws SchedulerException {
+    public ClusterStatusMonitorJobScheduler(AiravataServerProperties properties) throws Exception {
         this.properties = properties;
-        scheduler = StdSchedulerFactory.getDefaultScheduler();
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.afterPropertiesSet();
+        scheduler = schedulerFactoryBean.getScheduler();
         scheduler.start();
     }
 
@@ -62,7 +64,7 @@ public class ClusterStatusMonitorJobScheduler {
         scheduler.scheduleJob(job, trigger);
     }
 
-    public static void main(String[] args) throws SchedulerException {
+    public static void main(String[] args) throws Exception {
         // Note: Properties should be loaded from Spring context in real usage
         // For main method, this is a placeholder
         ClusterStatusMonitorJobScheduler jobScheduler = new ClusterStatusMonitorJobScheduler(null);
