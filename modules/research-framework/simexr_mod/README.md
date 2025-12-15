@@ -12,7 +12,7 @@ SimExR is a FastAPI-based framework that provides a complete pipeline for:
 - **Managing** models, results, and conversations through REST APIs
 
 ## 🏗️ Architecture
-<img width="3840" height="1004" alt="arch" src="https://github.com/user-attachments/assets/cd26cc8e-2b12-40a8-be8b-5213b767d422" />
+<img width="3840" height="1004" alt="SIMEXR architecture diagram showing components and data flow" src="https://github.com/user-attachments/assets/cd26cc8e-2b12-40a8-be8b-5213b767d422" />
 
 
 ### Core Components
@@ -125,7 +125,7 @@ Once the Streamlit app is running, you can:
 3. **📊 View Results**: Use the "View Results" page to explore simulation data
 4. **🤖 AI Analysis**: Use the "AI Analysis" page to ask questions about your results
 5. **🔍 Search Models**: Use the "Model Search" page to find existing models
-<img width="1497" height="743" alt="Screenshot 2025-09-12 at 3 23 13 PM" src="https://github.com/user-attachments/assets/5ff387ad-33b2-4554-8a29-6be7e58b32d3" />
+<img width="1497" height="743" alt="SIMEXR UI screenshot showing experiment configuration and results view" src="https://github.com/user-attachments/assets/5ff387ad-33b2-4554-8a29-6be7e58b32d3" />
 
 
 ## 🔄 End-to-End Flow
