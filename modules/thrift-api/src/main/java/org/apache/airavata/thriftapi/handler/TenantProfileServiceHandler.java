@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  * Created by goshenoy on 3/6/17.
  */
 @Component
-public class TenantProfileServiceHandler implements org.apache.airavata.profile.model.TenantProfileService.Iface {
+public class TenantProfileServiceHandler implements org.apache.airavata.thriftapi.profile.model.TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 

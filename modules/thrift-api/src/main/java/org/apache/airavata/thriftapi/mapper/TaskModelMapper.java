@@ -20,8 +20,8 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.TaskModel;
-import org.apache.airavata.thriftapi.model.TaskModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,10 +35,12 @@ public interface TaskModelMapper extends ModelMapper {
     /**
      * Convert domain model to thrift model.
      */
+    @Mapping(target = "subTaskModel", ignore = true)
     org.apache.airavata.thriftapi.model.TaskModel toThrift(TaskModel domain);
 
     /**
      * Convert thrift model to domain model.
      */
+    @Mapping(target = "subTaskModel", ignore = true)
     TaskModel toDomain(org.apache.airavata.thriftapi.model.TaskModel thrift);
 }

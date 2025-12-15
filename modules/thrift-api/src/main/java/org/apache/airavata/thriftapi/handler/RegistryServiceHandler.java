@@ -91,7 +91,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegistryServiceHandler implements org.apache.airavata.registry.model.RegistryService.Iface {
+public class RegistryServiceHandler implements org.apache.airavata.thriftapi.registry.model.RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceHandler.class);
 
     private final RegistryService registryService;

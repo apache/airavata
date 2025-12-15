@@ -21,7 +21,7 @@ package org.apache.airavata.thriftapi.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.model.CredentialStoreService;
+import org.apache.airavata.thriftapi.credential.model.CredentialStoreService;
 import org.apache.airavata.thriftapi.handler.CredentialServiceHandler;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;

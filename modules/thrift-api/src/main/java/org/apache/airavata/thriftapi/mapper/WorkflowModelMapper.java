@@ -20,8 +20,8 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.WorkflowModel;
-import org.apache.airavata.thriftapi.model.WorkflowModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,10 +35,12 @@ public interface WorkflowModelMapper extends ModelMapper {
     /**
      * Convert domain model to thrift model.
      */
+    @Mapping(target = "image", ignore = true)
     org.apache.airavata.thriftapi.model.WorkflowModel toThrift(WorkflowModel domain);
 
     /**
      * Convert thrift model to domain model.
      */
+    @Mapping(target = "image", ignore = true)
     WorkflowModel toDomain(org.apache.airavata.thriftapi.model.WorkflowModel thrift);
 }

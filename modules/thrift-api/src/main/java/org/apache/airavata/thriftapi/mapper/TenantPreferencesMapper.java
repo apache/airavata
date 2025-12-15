@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.TenantPreferences;
-import org.apache.airavata.thriftapi.model.TenantPreferences;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

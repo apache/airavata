@@ -33,7 +33,7 @@ import org.apache.airavata.sharing.model.UserGroup;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SharingRegistryServerHandler implements org.apache.airavata.sharing.model.SharingRegistryService.Iface {
+public class SharingRegistryServerHandler implements org.apache.airavata.thriftapi.sharing.model.SharingRegistryService.Iface {
     private final SharingRegistryService sharingRegistryService;
 
     public SharingRegistryServerHandler(SharingRegistryService sharingRegistryService) {

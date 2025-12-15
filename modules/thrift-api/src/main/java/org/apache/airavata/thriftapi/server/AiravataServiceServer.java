@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.thriftapi.server;
 
-import org.apache.airavata.api.model.Airavata;
+import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.utils.IServer;

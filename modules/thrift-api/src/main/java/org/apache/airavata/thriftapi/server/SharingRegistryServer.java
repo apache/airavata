@@ -24,7 +24,7 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.sharing.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.model.SharingRegistryException;
-import org.apache.airavata.sharing.model.SharingRegistryService;
+import org.apache.airavata.thriftapi.sharing.model.SharingRegistryService;
 import org.apache.airavata.thriftapi.handler.SharingRegistryServerHandler;
 import org.apache.airavata.thriftapi.util.SharingRegistryConstants;
 import org.apache.thrift.server.TServer;

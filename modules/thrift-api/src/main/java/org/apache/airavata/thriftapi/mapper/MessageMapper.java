@@ -20,8 +20,8 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.Message;
-import org.apache.airavata.thriftapi.model.Message;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,10 +35,12 @@ public interface MessageMapper extends ModelMapper {
     /**
      * Convert domain model to thrift model.
      */
+    @Mapping(target = "event", ignore = true)
     org.apache.airavata.thriftapi.model.Message toThrift(Message domain);
 
     /**
      * Convert thrift model to domain model.
      */
+    @Mapping(target = "event", ignore = true)
     Message toDomain(org.apache.airavata.thriftapi.model.Message thrift);
 }

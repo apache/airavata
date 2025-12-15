@@ -20,14 +20,14 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.thriftapi.model.ProcessModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper for converting between domain ProcessModel and thrift ProcessModel.
  */
-@Mapper
+@Mapper(uses = TaskModelMapper.class)
 public interface ProcessModelMapper extends ModelMapper {
 
     ProcessModelMapper INSTANCE = Mappers.getMapper(ProcessModelMapper.class);

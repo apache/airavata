@@ -30,7 +30,7 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserProfileServiceHandler implements org.apache.airavata.profile.model.UserProfileService.Iface {
+public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.profile.model.UserProfileService.Iface {
 
     private final org.apache.airavata.service.profile.UserProfileService userProfileService;
 

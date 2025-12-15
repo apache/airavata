@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
-import org.apache.airavata.api.model.Airavata;
-import org.apache.airavata.api.thrift.client.AiravataServiceClientFactory;
 import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.AuthorizationException;
@@ -38,6 +36,8 @@ import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.thriftapi.client.AiravataServiceClientFactory;
+import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,13 @@ public class AiravataService {
         this.properties = properties;
     }
 
+    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(org.apache.airavata.security.model.AuthzToken domainToken) {
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken = new org.apache.airavata.thriftapi.security.model.AuthzToken();
+        thriftToken.setAccessToken(domainToken.getAccessToken());
+        thriftToken.setClaimsMap(domainToken.getClaimsMap());
+        return thriftToken;
+    }
+
     public Airavata.Client airavata() {
         try {
             return AiravataServiceClientFactory.createAiravataClient(serverUrl, port, secure, properties);
@@ -81,7 +88,7 @@ public class AiravataService {
             List<Project> userProjects;
             try {
                 userProjects = airavataClient.getUserProjects(
-                        UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+convertAuthzToken(UserContext.authzToken()), UserContext.gatewayId(), UserContext.username(), limit, offset);
             } catch (InvalidRequestException e) {
                 String msg = String.format(
                         "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
@@ -135,7 +142,7 @@ public class AiravataService {
             Airavata.Client airavataClient, String group, String remoteCluster) {
         List<GroupResourceProfile> groupResourceList;
         try {
-            groupResourceList = airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
+            groupResourceList = airavataClient.getGroupResourceList(authzTokenMapper.toThrift(UserContext.authzToken()), UserContext.gatewayId());
         } catch (InvalidRequestException e) {
             String msg = String.format(
                     "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
@@ -185,10 +192,10 @@ public class AiravataService {
                 Map.of(ExperimentSearchFields.PROJECT_ID, getProjectId(airavataClient, "Default Project"));
 
         return Stream.iterate(0, offset -> offset + limit)
-                .map(offset -> {
+                .<List<ExperimentSummaryModel>>map(offset -> {
                     try {
                         return airavataClient.searchExperiments(
-                                UserContext.authzToken(),
+        convertAuthzToken(UserContext.authzToken()),
                                 UserContext.gatewayId(),
                                 UserContext.username(),
                                 filters,

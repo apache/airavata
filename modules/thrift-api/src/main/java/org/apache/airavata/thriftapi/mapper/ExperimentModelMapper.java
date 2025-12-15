@@ -20,14 +20,14 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ExperimentModel;
-import org.apache.airavata.thriftapi.model.ExperimentModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper for converting between domain ExperimentModel and thrift ExperimentModel.
  */
-@Mapper
+@Mapper(uses = {ProcessModelMapper.class, TaskModelMapper.class})
 public interface ExperimentModelMapper extends ModelMapper {
 
     ExperimentModelMapper INSTANCE = Mappers.getMapper(ExperimentModelMapper.class);

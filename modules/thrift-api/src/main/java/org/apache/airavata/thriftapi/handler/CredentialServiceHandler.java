@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CredentialServiceHandler implements org.apache.airavata.credential.model.CredentialStoreService.Iface {
+public class CredentialServiceHandler implements org.apache.airavata.thriftapi.credential.model.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
 
     private final CredentialStoreService credentialStoreService;
@@ -44,7 +44,7 @@ public class CredentialServiceHandler implements org.apache.airavata.credential.
 
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.credential.model.credential_store_cpiConstants.CS_CPI_VERSION;
+        return org.apache.airavata.thriftapi.credential.model.credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
     private CredentialStoreException wrapException(

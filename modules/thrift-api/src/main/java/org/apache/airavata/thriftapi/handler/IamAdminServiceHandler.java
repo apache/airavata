@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IamAdminServiceHandler implements org.apache.airavata.profile.model.IamAdminServices.Iface {
+public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.profile.model.IamAdminServices.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(IamAdminServiceHandler.class);
     private final IamAdminService iamAdminService;

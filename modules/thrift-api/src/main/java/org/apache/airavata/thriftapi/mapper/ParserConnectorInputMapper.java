@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ParserConnectorInput;
-import org.apache.airavata.thriftapi.model.ParserConnectorInput;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

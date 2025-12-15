@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.DataMovementInterface;
-import org.apache.airavata.thriftapi.model.DataMovementInterface;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

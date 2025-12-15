@@ -20,8 +20,8 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.DBEventPublisher;
-import org.apache.airavata.thriftapi.model.DBEventPublisher;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,10 +35,14 @@ public interface DBEventPublisherMapper extends ModelMapper {
     /**
      * Convert domain model to thrift model.
      */
+    @Mapping(target = "publisherContext.entityDataModel", ignore = true)
+    @Mapping(target = "publisherContext.crudType", ignore = true)
     org.apache.airavata.thriftapi.model.DBEventPublisher toThrift(DBEventPublisher domain);
 
     /**
      * Convert thrift model to domain model.
      */
+    @Mapping(target = "publisherContext.entityDataModel", ignore = true)
+    @Mapping(target = "publisherContext.crudType", ignore = true)
     DBEventPublisher toDomain(org.apache.airavata.thriftapi.model.DBEventPublisher thrift);
 }

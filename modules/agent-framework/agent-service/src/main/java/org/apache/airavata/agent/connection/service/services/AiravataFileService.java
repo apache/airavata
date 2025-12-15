@@ -32,10 +32,10 @@ import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
 import org.apache.airavata.agent.connection.service.models.ExperimentStorageResponse;
 import org.apache.airavata.agent.connection.service.models.FileInfo;
-import org.apache.airavata.api.model.Airavata;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.ReadDirReq;
 import org.apache.airavata.fuse.ReadDirRes;
+import org.apache.airavata.thriftapi.service.Airavata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -59,6 +59,13 @@ public class AiravataFileService {
 
     public AiravataFileService(AiravataService airavataService) {
         this.airavataService = airavataService;
+    }
+
+    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(org.apache.airavata.security.model.AuthzToken domainToken) {
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken = new org.apache.airavata.thriftapi.security.model.AuthzToken();
+        thriftToken.setAccessToken(domainToken.getAccessToken());
+        thriftToken.setClaimsMap(domainToken.getClaimsMap());
+        return thriftToken;
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {

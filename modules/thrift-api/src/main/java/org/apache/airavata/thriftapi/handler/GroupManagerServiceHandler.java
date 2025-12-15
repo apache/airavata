@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupManagerServiceHandler implements org.apache.airavata.profile.model.GroupManagerService.Iface {
+public class GroupManagerServiceHandler implements org.apache.airavata.thriftapi.profile.model.GroupManagerService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
     private final GroupManagerService groupManagerService;

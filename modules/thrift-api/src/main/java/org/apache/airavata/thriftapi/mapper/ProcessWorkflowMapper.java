@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ProcessWorkflow;
-import org.apache.airavata.thriftapi.model.ProcessWorkflow;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

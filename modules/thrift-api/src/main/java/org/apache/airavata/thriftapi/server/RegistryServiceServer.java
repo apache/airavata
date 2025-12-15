@@ -27,7 +27,7 @@ import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.registry.messaging.RegistryServiceDBEventMessagingFactory;
-import org.apache.airavata.registry.model.RegistryService;
+import org.apache.airavata.thriftapi.registry.model.RegistryService;
 import org.apache.airavata.registry.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.utils.ReplicaCatalogDBInitConfig;

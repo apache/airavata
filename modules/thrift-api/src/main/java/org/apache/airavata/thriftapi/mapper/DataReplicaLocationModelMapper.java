@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.DataReplicaLocationModel;
-import org.apache.airavata.thriftapi.model.DataReplicaLocationModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

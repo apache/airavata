@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ApplicationStatus;
-import org.apache.airavata.thriftapi.model.ApplicationStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

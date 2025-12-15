@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.PortModel;
-import org.apache.airavata.thriftapi.model.PortModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

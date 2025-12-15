@@ -20,7 +20,6 @@
 package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.SSHAccountProvisionerDescription;
-import org.apache.airavata.thriftapi.model.SSHAccountProvisionerDescription;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

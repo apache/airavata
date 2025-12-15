@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrchestratorServiceHandler implements org.apache.airavata.orchestrator.model.OrchestratorService.Iface {
+public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
     private final OrchestratorService orchestratorService;
 
