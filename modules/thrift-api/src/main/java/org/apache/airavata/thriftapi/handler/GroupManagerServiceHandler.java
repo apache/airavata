@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.security.GroupManagerService;
-import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
 import org.apache.airavata.thriftapi.mapper.GroupModelMapper;
 import org.apache.thrift.TException;
@@ -50,6 +49,36 @@ public class GroupManagerServiceHandler
         return org.apache.airavata.thriftapi.profile.model.group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+
+        if (e instanceof org.apache.airavata.profile.exception.GroupManagerServiceException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.sharing.model.SharingRegistryException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException();
+            ex.setMessage("Error from Sharing Registry: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException();
+            ex.setMessage("Internal Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+        return thriftException;
+    }
+
     @Override
     @SecurityCheck
     public String createGroup(
@@ -58,25 +87,11 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupModel domainGroup = groupModelMapper.toDomain(groupModel);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroup = groupModelMapper.toDomain(groupModel);
             return groupManagerService.createGroup(domainAuthzToken, domainGroup);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error creating group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error creating group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -88,25 +103,11 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupModel domainGroup = groupModelMapper.toDomain(groupModel);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroup = groupModelMapper.toDomain(groupModel);
             return groupManagerService.updateGroup(domainAuthzToken, domainGroup);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error updating group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error updating group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -117,24 +118,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.deleteGroup(domainAuthzToken, groupId, ownerId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error deleting group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error deleting group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -145,26 +132,11 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupModel domainGroup =
-                    groupManagerService.getGroup(domainAuthzToken, groupId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroup = groupManagerService.getGroup(domainAuthzToken, groupId);
             return groupModelMapper.toThrift(domainGroup);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -175,26 +147,11 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.GroupModel> domainGroups =
-                    groupManagerService.getGroups(domainAuthzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroups = groupManagerService.getGroups(domainAuthzToken);
             return domainGroups.stream().map(groupModelMapper::toThrift).collect(Collectors.toList());
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -205,26 +162,11 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.GroupModel> domainGroups =
-                    groupManagerService.getAllGroupsUserBelongs(domainAuthzToken, userName);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroups = groupManagerService.getAllGroupsUserBelongs(domainAuthzToken, userName);
             return domainGroups.stream().map(groupModelMapper::toThrift).collect(Collectors.toList());
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting user groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error getting user groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -234,24 +176,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.addUsersToGroup(domainAuthzToken, userIds, groupId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error adding users to group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error adding users to group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -261,24 +189,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.removeUsersFromGroup(domainAuthzToken, userIds, groupId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error removing users from group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error removing users from group: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -289,24 +203,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.transferGroupOwnership(domainAuthzToken, groupId, newOwnerId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error transferring group ownership: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error transferring group ownership: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -317,24 +217,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.addGroupAdmins(domainAuthzToken, groupId, adminIds);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error adding group admins: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error adding group admins: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -345,24 +231,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.removeGroupAdmins(domainAuthzToken, groupId, adminIds);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error removing group admins: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error removing group admins: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -373,24 +245,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.hasAdminAccess(domainAuthzToken, groupId, adminId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error checking admin access: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error checking admin access: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -401,44 +259,10 @@ public class GroupManagerServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return groupManagerService.hasOwnerAccess(domainAuthzToken, groupId, ownerId);
-        } catch (SharingRegistryException e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error checking owner access: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-            throw convertToThriftGroupManagerServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException(
-                            "Error checking owner access: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
-    }
-
-    // Helper methods for exception conversion
-    private org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException
-            convertToThriftGroupManagerServiceException(
-                    org.apache.airavata.profile.exception.GroupManagerServiceException e) {
-        org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException thriftException =
-                new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AuthorizationException convertToThriftAuthorizationException(
-            org.apache.airavata.common.exception.AuthorizationException e) {
-        org.apache.airavata.thriftapi.exception.AuthorizationException thriftException =
-                new org.apache.airavata.thriftapi.exception.AuthorizationException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
     }
 }

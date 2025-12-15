@@ -21,11 +21,11 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.credential.model.CertificateCredential;
-import org.apache.airavata.credential.model.CredentialSummary;
-import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.thriftapi.mapper.CertificateCredentialMapper;
+import org.apache.airavata.thriftapi.mapper.CredentialSummaryMapper;
+import org.apache.airavata.thriftapi.mapper.PasswordCredentialMapper;
+import org.apache.airavata.thriftapi.mapper.SSHCredentialMapper;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +37,10 @@ public class CredentialServiceHandler
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
 
     private final CredentialStoreService credentialStoreService;
+    private final SSHCredentialMapper sshCredentialMapper = SSHCredentialMapper.INSTANCE;
+    private final CertificateCredentialMapper certificateCredentialMapper = CertificateCredentialMapper.INSTANCE;
+    private final PasswordCredentialMapper passwordCredentialMapper = PasswordCredentialMapper.INSTANCE;
+    private final CredentialSummaryMapper credentialSummaryMapper = CredentialSummaryMapper.INSTANCE;
 
     public CredentialServiceHandler(CredentialStoreService credentialStoreService) {
         this.credentialStoreService = credentialStoreService;
@@ -47,12 +51,32 @@ public class CredentialServiceHandler
         return org.apache.airavata.thriftapi.credential.model.credential_store_cpiConstants.CS_CPI_VERSION;
     }
 
-    private org.apache.airavata.thriftapi.credential.exception.CredentialStoreException wrapException(
-            org.apache.airavata.credential.exception.CredentialStoreException e) {
-        org.apache.airavata.thriftapi.credential.exception.CredentialStoreException thriftException =
-                new org.apache.airavata.thriftapi.credential.exception.CredentialStoreException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+        if (e instanceof org.apache.airavata.credential.exception.CredentialStoreException) {
+            var ex = new org.apache.airavata.thriftapi.credential.exception.CredentialStoreException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AiravataSystemException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        }
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        }
         return thriftException;
     }
 
@@ -60,10 +84,9 @@ public class CredentialServiceHandler
     public String addSSHCredential(org.apache.airavata.thriftapi.credential.model.SSHCredential sshCredential)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            // Convert thrift to domain
-            SSHCredential domainCredential = convertToDomainSSH(sshCredential);
+            var domainCredential = sshCredentialMapper.toDomain(sshCredential);
             return credentialStoreService.addSSHCredential(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -73,10 +96,9 @@ public class CredentialServiceHandler
             org.apache.airavata.thriftapi.credential.model.CertificateCredential certificateCredential)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            // Convert thrift to domain
-            CertificateCredential domainCredential = convertToDomainCertificate(certificateCredential);
+            var domainCredential = certificateCredentialMapper.toDomain(certificateCredential);
             return credentialStoreService.addCertificateCredential(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -86,11 +108,9 @@ public class CredentialServiceHandler
             org.apache.airavata.thriftapi.credential.model.PasswordCredential passwordCredential)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            // Convert thrift to domain
-            org.apache.airavata.credential.model.PasswordCredential domainCredential =
-                    convertToDomainPassword(passwordCredential);
+            var domainCredential = passwordCredentialMapper.toDomain(passwordCredential);
             return credentialStoreService.addPasswordCredential(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -100,9 +120,9 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            SSHCredential domainCredential = credentialStoreService.getSSHCredential(tokenId, gatewayId);
-            return convertToThriftSSH(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+            var domainCredential = credentialStoreService.getSSHCredential(tokenId, gatewayId);
+            return sshCredentialMapper.toThrift(domainCredential);
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -112,10 +132,9 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            org.apache.airavata.credential.model.CredentialSummary domainSummary =
-                    credentialStoreService.getCredentialSummary(tokenId, gatewayId);
-            return convertToThriftSummary(domainSummary);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+            var domainSummary = credentialStoreService.getCredentialSummary(tokenId, gatewayId);
+            return credentialSummaryMapper.toThrift(domainSummary);
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -127,11 +146,13 @@ public class CredentialServiceHandler
             String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            SummaryType domainType = SummaryType.valueOf(type.name());
-            List<CredentialSummary> domainSummaries =
+            var domainType = org.apache.airavata.credential.model.SummaryType.valueOf(type.name());
+            var domainSummaries =
                     credentialStoreService.getAllCredentialSummaries(domainType, accessibleTokenIds, gatewayId);
-            return domainSummaries.stream().map(this::convertToThriftSummary).collect(Collectors.toList());
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+            return domainSummaries.stream()
+                    .map(credentialSummaryMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -141,10 +162,9 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            CertificateCredential domainCredential =
-                    credentialStoreService.getCertificateCredential(tokenId, gatewayId);
-            return convertToThriftCertificate(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+            var domainCredential = credentialStoreService.getCertificateCredential(tokenId, gatewayId);
+            return certificateCredentialMapper.toThrift(domainCredential);
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -154,10 +174,9 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            org.apache.airavata.credential.model.PasswordCredential domainCredential =
-                    credentialStoreService.getPasswordCredential(tokenId, gatewayId);
-            return convertToThriftPassword(domainCredential);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+            var domainCredential = credentialStoreService.getPasswordCredential(tokenId, gatewayId);
+            return passwordCredentialMapper.toThrift(domainCredential);
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -167,7 +186,7 @@ public class CredentialServiceHandler
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
             return credentialStoreService.deleteSSHCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+        } catch (Throwable e) {
             throw wrapException(e);
         }
     }
@@ -177,108 +196,8 @@ public class CredentialServiceHandler
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
             return credentialStoreService.deletePWDCredential(tokenId, gatewayId);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
+        } catch (Throwable e) {
             throw wrapException(e);
         }
-    }
-
-    // Helper methods to convert between domain and thrift models
-    private org.apache.airavata.credential.model.SSHCredential convertToDomainSSH(
-            org.apache.airavata.thriftapi.credential.model.SSHCredential thrift) {
-        org.apache.airavata.credential.model.SSHCredential domain =
-                new org.apache.airavata.credential.model.SSHCredential();
-        domain.setToken(thrift.getToken());
-        domain.setPublicKey(thrift.getPublicKey());
-        domain.setPrivateKey(thrift.getPrivateKey());
-        domain.setPassphrase(thrift.getPassphrase());
-        domain.setGatewayId(thrift.getGatewayId());
-        domain.setUsername(thrift.getUsername());
-        domain.setDescription(thrift.getDescription());
-        domain.setPersistedTime(thrift.getPersistedTime());
-        return domain;
-    }
-
-    private org.apache.airavata.thriftapi.credential.model.SSHCredential convertToThriftSSH(
-            org.apache.airavata.credential.model.SSHCredential domain) {
-        org.apache.airavata.thriftapi.credential.model.SSHCredential thrift =
-                new org.apache.airavata.thriftapi.credential.model.SSHCredential();
-        thrift.setToken(domain.getToken());
-        thrift.setPublicKey(domain.getPublicKey());
-        thrift.setPrivateKey(domain.getPrivateKey());
-        thrift.setPassphrase(domain.getPassphrase());
-        thrift.setGatewayId(domain.getGatewayId());
-        thrift.setUsername(domain.getUsername());
-        thrift.setDescription(domain.getDescription());
-        thrift.setPersistedTime(domain.getPersistedTime());
-        return thrift;
-    }
-
-    private org.apache.airavata.credential.model.CertificateCredential convertToDomainCertificate(
-            org.apache.airavata.thriftapi.credential.model.CertificateCredential thrift) {
-        org.apache.airavata.credential.model.CertificateCredential domain =
-                new org.apache.airavata.credential.model.CertificateCredential();
-        domain.setToken(thrift.getToken());
-        domain.setX509Cert(thrift.getX509Cert());
-        domain.setPrivateKey(thrift.getPrivateKey());
-        domain.setGatewayId(thrift.getGatewayId());
-        return domain;
-    }
-
-    private org.apache.airavata.thriftapi.credential.model.CertificateCredential convertToThriftCertificate(
-            org.apache.airavata.credential.model.CertificateCredential domain) {
-        org.apache.airavata.thriftapi.credential.model.CertificateCredential thrift =
-                new org.apache.airavata.thriftapi.credential.model.CertificateCredential();
-        thrift.setToken(domain.getToken());
-        thrift.setX509Cert(domain.getX509Cert());
-        thrift.setGatewayId(domain.getGatewayId());
-        thrift.setUserName(domain.getUserName());
-        thrift.setDescription(domain.getDescription());
-        thrift.setPersistedTime(domain.getPersistedTime());
-        return thrift;
-    }
-
-    private org.apache.airavata.credential.model.PasswordCredential convertToDomainPassword(
-            org.apache.airavata.thriftapi.credential.model.PasswordCredential thrift) {
-        org.apache.airavata.credential.model.PasswordCredential domain =
-                new org.apache.airavata.credential.model.PasswordCredential();
-        domain.setToken(thrift.getToken());
-        domain.setLoginUserName(thrift.getLoginUserName());
-        domain.setPortalUserName(thrift.getPortalUserName());
-        domain.setPassword(thrift.getPassword());
-        domain.setGatewayId(thrift.getGatewayId());
-        domain.setDescription(thrift.getDescription());
-        domain.setPersistedTime(thrift.getPersistedTime());
-        return domain;
-    }
-
-    private org.apache.airavata.thriftapi.credential.model.PasswordCredential convertToThriftPassword(
-            org.apache.airavata.credential.model.PasswordCredential domain) {
-        org.apache.airavata.thriftapi.credential.model.PasswordCredential thrift =
-                new org.apache.airavata.thriftapi.credential.model.PasswordCredential();
-        thrift.setToken(domain.getToken());
-        thrift.setLoginUserName(domain.getLoginUserName());
-        thrift.setPortalUserName(domain.getPortalUserName());
-        thrift.setPassword(domain.getPassword());
-        thrift.setGatewayId(domain.getGatewayId());
-        thrift.setDescription(domain.getDescription());
-        thrift.setPersistedTime(domain.getPersistedTime());
-        return thrift;
-    }
-
-    private org.apache.airavata.thriftapi.credential.model.CredentialSummary convertToThriftSummary(
-            org.apache.airavata.credential.model.CredentialSummary domain) {
-        org.apache.airavata.thriftapi.credential.model.CredentialSummary thrift =
-                new org.apache.airavata.thriftapi.credential.model.CredentialSummary();
-        thrift.setToken(domain.getToken());
-        thrift.setUsername(domain.getUsername());
-        thrift.setPublicKey(domain.getPublicKey());
-        thrift.setGatewayId(domain.getGatewayId());
-        thrift.setDescription(domain.getDescription());
-        thrift.setPersistedTime(domain.getPersistedTime());
-        if (domain.getType() != null) {
-            thrift.setType(org.apache.airavata.thriftapi.credential.model.SummaryType.valueOf(
-                    domain.getType().name()));
-        }
-        return thrift;
     }
 }

@@ -23,20 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.AiravataService;
-import org.apache.airavata.thriftapi.credential.exception.CredentialStoreException;
 import org.apache.airavata.thriftapi.exception.AiravataClientException;
-import org.apache.airavata.thriftapi.exception.AiravataErrorType;
 import org.apache.airavata.thriftapi.exception.AiravataSystemException;
 import org.apache.airavata.thriftapi.exception.AuthorizationException;
 import org.apache.airavata.thriftapi.exception.InvalidRequestException;
-import org.apache.airavata.thriftapi.exception.ProjectNotFoundException;
 import org.apache.airavata.thriftapi.mapper.ApplicationDeploymentDescriptionMapper;
 import org.apache.airavata.thriftapi.mapper.ApplicationInterfaceDescriptionMapper;
 import org.apache.airavata.thriftapi.mapper.ApplicationModuleMapper;
@@ -61,6 +56,7 @@ import org.apache.airavata.thriftapi.mapper.GroupComputeResourcePreferenceMapper
 import org.apache.airavata.thriftapi.mapper.GroupResourceProfileMapper;
 import org.apache.airavata.thriftapi.mapper.InputDataObjectTypeMapper;
 import org.apache.airavata.thriftapi.mapper.JobModelMapper;
+import org.apache.airavata.thriftapi.mapper.JobStatusMapper;
 import org.apache.airavata.thriftapi.mapper.LOCALDataMovementMapper;
 import org.apache.airavata.thriftapi.mapper.LOCALSubmissionMapper;
 import org.apache.airavata.thriftapi.mapper.NotificationMapper;
@@ -72,7 +68,6 @@ import org.apache.airavata.thriftapi.mapper.ProjectMapper;
 import org.apache.airavata.thriftapi.mapper.QueueStatusModelMapper;
 import org.apache.airavata.thriftapi.mapper.ResourceJobManagerMapper;
 import org.apache.airavata.thriftapi.mapper.SCPDataMovementMapper;
-import org.apache.airavata.thriftapi.mapper.SSHAccountProvisionerDescriptionMapper;
 import org.apache.airavata.thriftapi.mapper.SSHJobSubmissionMapper;
 import org.apache.airavata.thriftapi.mapper.StorageDirectoryInfoMapper;
 import org.apache.airavata.thriftapi.mapper.StoragePreferenceMapper;
@@ -108,7 +103,6 @@ import org.apache.airavata.thriftapi.model.GroupComputeResourcePreference;
 import org.apache.airavata.thriftapi.model.GroupResourceProfile;
 import org.apache.airavata.thriftapi.model.InputDataObjectType;
 import org.apache.airavata.thriftapi.model.JobModel;
-import org.apache.airavata.thriftapi.model.JobState;
 import org.apache.airavata.thriftapi.model.JobStatus;
 import org.apache.airavata.thriftapi.model.LOCALDataMovement;
 import org.apache.airavata.thriftapi.model.LOCALSubmission;
@@ -159,6 +153,7 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
     private final OutputDataObjectTypeMapper outputDataObjectTypeMapper = OutputDataObjectTypeMapper.INSTANCE;
     private final InputDataObjectTypeMapper inputDataObjectTypeMapper = InputDataObjectTypeMapper.INSTANCE;
     private final JobModelMapper jobModelMapper = JobModelMapper.INSTANCE;
+    private final JobStatusMapper jobStatusMapper = JobStatusMapper.INSTANCE;
     private final DataProductModelMapper dataProductModelMapper = DataProductModelMapper.INSTANCE;
     private final CredentialSummaryMapper credentialSummaryMapper = CredentialSummaryMapper.INSTANCE;
     private final AuthzTokenMapper authzTokenMapper = AuthzTokenMapper.INSTANCE;
@@ -186,8 +181,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
     private final UserStoragePreferenceMapper userStoragePreferenceMapper = UserStoragePreferenceMapper.INSTANCE;
     private final DataReplicaLocationModelMapper dataReplicaLocationModelMapper =
             DataReplicaLocationModelMapper.INSTANCE;
-    private final SSHAccountProvisionerDescriptionMapper sshAccountProvisionerDescriptionMapper =
-            SSHAccountProvisionerDescriptionMapper.INSTANCE;
     private final ApplicationModuleMapper applicationModuleMapper = ApplicationModuleMapper.INSTANCE;
     private final ParserMapper parserMapper = ParserMapper.INSTANCE;
     private final ParsingTemplateMapper parsingTemplateMapper = ParsingTemplateMapper.INSTANCE;
@@ -207,69 +200,77 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         this.airavataService.init();
     }
 
-    // Helper method to convert domain exceptions to thrift exceptions
-    private org.apache.airavata.thriftapi.exception.AiravataSystemException convertToThriftSystemException(
-            org.apache.airavata.common.exception.AiravataSystemException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-        thriftException.setMessage(e.getMessage());
-        if (e.getAiravataErrorType() != null) {
-            thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                    e.getAiravataErrorType().name()));
+    /**
+     * Converts any thrown exception from Airavata Services layer to appropriate Thrift API exception type.
+     * The mapping strategy is:
+     *  - If the cause is already a Thrift exception, return as is.
+     *  - If the cause is a known domain exception, map accordingly.
+     *  - If unknown, wrap in a generic AiravataSystemException.
+     *
+     * This merges all domain-to-thrift exception conversions into a single convenient method.
+     */
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+        if (e instanceof org.apache.airavata.common.exception.ApplicationSettingsException
+                || e instanceof org.apache.airavata.common.exception.AiravataSystemException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.credential.exception.CredentialStoreException) {
+            var ex = new org.apache.airavata.thriftapi.credential.exception.CredentialStoreException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.InvalidRequestException) {
+            var ex = new org.apache.airavata.thriftapi.exception.InvalidRequestException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.ExperimentNotFoundException) {
+            var ex = new org.apache.airavata.thriftapi.exception.ExperimentNotFoundException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.ProjectNotFoundException) {
+            var ex = new org.apache.airavata.thriftapi.exception.ProjectNotFoundException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AiravataClientException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AiravataClientException();
+            if (e != null) {
+                ex.setParameter(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
         }
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.InvalidRequestException convertToThriftInvalidRequestException(
-            org.apache.airavata.common.exception.InvalidRequestException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.InvalidRequestException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AiravataClientException convertToThriftAiravataClientException(
-            org.apache.airavata.common.exception.AiravataClientException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.AiravataClientException();
-        thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                e.getAiravataErrorType().name()));
-        if (e.getMessage() != null) {
-            thriftException.setParameter(e.getMessage());
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            if (e != null) {
+                ex.setMessage(e.getMessage());
+                ex.initCause(e);
+            }
+            thriftException = ex;
         }
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AuthorizationException convertToThriftAuthorizationException(
-            org.apache.airavata.common.exception.AuthorizationException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.AuthorizationException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private CredentialStoreException convertToThriftCredentialStoreException(
-            org.apache.airavata.credential.exception.CredentialStoreException e) {
-        var thriftException = new CredentialStoreException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.ExperimentNotFoundException
-            convertToThriftExperimentNotFoundException(
-                    org.apache.airavata.common.exception.ExperimentNotFoundException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.ExperimentNotFoundException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.ProjectNotFoundException convertToThriftProjectNotFoundException(
-            org.apache.airavata.common.exception.ProjectNotFoundException e) {
-        var thriftException = new org.apache.airavata.thriftapi.exception.ProjectNotFoundException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
         return thriftException;
     }
 
@@ -287,18 +288,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            if (false) throw new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.isUserExists(gatewayId, userName);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            var exception = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error checking if user exists: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -312,17 +304,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
             var domainGateway = gatewayMapper.toDomain(gateway);
             return airavataService.addGateway(domainGateway);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            var exception = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error adding gateway: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -336,14 +321,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             return airavataService.getAllUsersInGateway(gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            var exception = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error getting all users in gateway: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -358,23 +337,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(updatedGateway);
             return airavataService.updateGateway(gatewayId, domainGateway);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            AiravataSystemException thriftException = new AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(
-                        AiravataErrorType.valueOf(e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error updating gateway: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -387,18 +353,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = airavataService.getGateway(gatewayId);
-            // Convert domain model to thrift model
             return gatewayMapper.toThrift(domainGateway);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error getting gateway: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -411,15 +369,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             return airavataService.deleteGateway(gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error deleting gateway: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -432,19 +383,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            List<org.apache.airavata.common.model.Gateway> domainGateways = airavataService.getAllGateways();
-            // Convert domain models to thrift models
-            return domainGateways.stream().map(gatewayMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error getting all gateways: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            var gateways = airavataService.getAllGateways();
+            return gateways.stream().map(gatewayMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -457,15 +399,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             return airavataService.isGatewayExist(gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error checking if gateway exists: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -479,19 +414,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.Notification domainNotification =
-                    notificationMapper.toDomain(notification);
+            var domainNotification = notificationMapper.toDomain(notification);
             return airavataService.createNotification(domainNotification);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error creating notification: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -505,19 +431,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.Notification domainNotification =
-                    notificationMapper.toDomain(notification);
+            var domainNotification = notificationMapper.toDomain(notification);
             return airavataService.updateNotification(domainNotification);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating notification: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -531,15 +448,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             return airavataService.deleteNotification(gatewayId, notificationId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting notification: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -552,20 +462,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.common.model.Notification domainNotification =
-                    airavataService.getNotification(gatewayId, notificationId);
-            // Convert domain model to thrift model
+            var domainNotification = airavataService.getNotification(gatewayId, notificationId);
             return notificationMapper.toThrift(domainNotification);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting notification: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -578,22 +478,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            List<org.apache.airavata.common.model.Notification> domainNotifications =
-                    airavataService.getAllNotifications(gatewayId);
-            // Convert domain models to thrift models
-            return domainNotifications.stream()
-                    .map(notificationMapper::toThrift)
-                    .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all notifications: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            var notifications = airavataService.getAllNotifications(gatewayId);
+            return notifications.stream().map(notificationMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -603,25 +491,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            if (false) throw new org.apache.airavata.thriftapi.exception.InvalidRequestException();
-            if (false) throw new org.apache.airavata.thriftapi.exception.AiravataClientException();
-            if (false) throw new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            String userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
             return airavataService.generateAndRegisterSSHKeys(gatewayId, userName, description);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error generating and registering SSH keys: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -634,25 +509,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
             String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            if (false) throw new org.apache.airavata.thriftapi.exception.InvalidRequestException();
-            if (false) throw new org.apache.airavata.thriftapi.exception.AiravataClientException();
-            if (false) throw new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            String userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
             return airavataService.registerPwdCredential(gatewayId, userName, loginUserName, password, description);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error registering password credential: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -665,21 +527,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            org.apache.airavata.credential.model.CredentialSummary domainSummary =
-                    airavataService.getCredentialSummary(tokenId, gatewayId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var domainSummary = airavataService.getCredentialSummary(tokenId, gatewayId);
             return credentialSummaryMapper.toThrift(domainSummary);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
-            throw convertToThriftCredentialStoreException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error getting credential summary: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -692,28 +545,18 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException,
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
-        org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-        org.apache.airavata.credential.model.SummaryType domainType =
-                org.apache.airavata.credential.model.SummaryType.valueOf(type.name());
-        String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
+        var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+        var domainType = org.apache.airavata.credential.model.SummaryType.valueOf(type.name());
+        var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var userName = domainAuthzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
-            List<org.apache.airavata.credential.model.CredentialSummary> domainSummaries =
+            var domainSummaries =
                     airavataService.getAllCredentialSummaries(domainAuthzToken, domainType, gatewayId, userName);
             return domainSummaries.stream()
                     .map(credentialSummaryMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error getting all credential summaries: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -726,17 +569,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             return airavataService.deleteSSHCredential(airavataCredStoreToken, gatewayId);
-        } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
-            throw convertToThriftCredentialStoreException(e);
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error deleting SSH credential: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -749,21 +586,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             return airavataService.deletePWDCredential(domainAuthzToken, airavataCredStoreToken, gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting PWD credential: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -778,18 +605,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.Project domainProject = projectMapper.toDomain(project);
+            var domainProject = projectMapper.toDomain(project);
             return airavataService.createProject(gatewayId, domainProject);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error creating project: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -805,34 +624,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, AuthorizationException,
                     TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.Project domainProject = projectMapper.toDomain(updatedProject);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProject = projectMapper.toDomain(updatedProject);
             airavataService.updateProject(domainAuthzToken, projectId, domainProject);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            AiravataSystemException thriftException = new AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(
-                        AiravataErrorType.valueOf(e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            InvalidRequestException thriftException = new InvalidRequestException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            ProjectNotFoundException thriftException = new ProjectNotFoundException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error updating project: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -845,21 +641,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, AuthorizationException,
                     TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteProject(domainAuthzToken, projectId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            org.apache.airavata.thriftapi.exception.ProjectNotFoundException thriftException =
-                    new org.apache.airavata.thriftapi.exception.ProjectNotFoundException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error deleting project: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -873,31 +658,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, AuthorizationException,
                     TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Get domain model from service
-            org.apache.airavata.common.model.Project domainProject =
-                    airavataService.getProject(domainAuthzToken, projectId);
-            // Convert domain model to thrift model
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProject = airavataService.getProject(domainAuthzToken, projectId);
             return projectMapper.toThrift(domainProject);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            AiravataSystemException thriftException = new AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(
-                        AiravataErrorType.valueOf(e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            ProjectNotFoundException thriftException = new ProjectNotFoundException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error getting project: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -914,21 +679,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.Project> domainProjects =
-                    airavataService.getUserProjects(domainAuthzToken, gatewayId, userName, limit, offset);
-            // Convert domain models to thrift models
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProjects = airavataService.getUserProjects(domainAuthzToken, gatewayId, userName, limit, offset);
             return domainProjects.stream().map(projectMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting user projects: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -946,27 +701,19 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift models to domain models
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            Map<org.apache.airavata.common.model.ProjectSearchFields, String> domainFilters = new java.util.HashMap<>();
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainFilters = new java.util.HashMap<org.apache.airavata.common.model.ProjectSearchFields, String>();
             for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
                 domainFilters.put(
                         org.apache.airavata.common.model.ProjectSearchFields.valueOf(
                                 entry.getKey().name()),
                         entry.getValue());
             }
-            // Get domain models from service
-            List<org.apache.airavata.common.model.Project> domainProjects =
+            var domainProjects =
                     airavataService.searchProjects(domainAuthzToken, gatewayId, userName, domainFilters, limit, offset);
-            // Convert domain models to thrift models
             return domainProjects.stream().map(projectMapper::toThrift).collect(Collectors.toList());
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error searching projects: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -984,8 +731,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         // Convert thrift models to domain models
-        org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-        Map<org.apache.airavata.common.model.ExperimentSearchFields, String> domainFilters = new java.util.HashMap<>();
+        var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+        var domainFilters = new java.util.HashMap<org.apache.airavata.common.model.ExperimentSearchFields, String>();
         for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
             domainFilters.put(
                     org.apache.airavata.common.model.ExperimentSearchFields.valueOf(
@@ -993,23 +740,13 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     entry.getValue());
         }
         try {
-            // Get domain models from service
-            List<org.apache.airavata.common.model.ExperimentSummaryModel> domainSummaries =
-                    airavataService.searchExperiments(
-                            domainAuthzToken, gatewayId, userName, domainFilters, limit, offset);
-            // Convert domain models to thrift models
+            var domainSummaries = airavataService.searchExperiments(
+                    domainAuthzToken, gatewayId, userName, domainFilters, limit, offset);
             return domainSummaries.stream()
                     .map(experimentSummaryModelMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error searching experiments: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1030,9 +767,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<String> accessibleExpIds = null;
-            org.apache.airavata.common.model.ExperimentStatistics domainStats = airavataService.getExperimentStatistics(
+            var accessibleExpIds = new ArrayList<String>();
+            var domainStats = airavataService.getExperimentStatistics(
                     gatewayId,
                     fromTime,
                     toTime,
@@ -1043,24 +779,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     limit,
                     offset);
             return experimentStatisticsMapper.toThrift(domainStats);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting experiment statistics: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1074,30 +794,14 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, AuthorizationException,
                     TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            // Get domain models from service
-            List<org.apache.airavata.common.model.ExperimentModel> domainExperiments =
-                    airavataService.getExperimentsInProject(gatewayId, projectId, limit, offset);
-            // Convert domain models to thrift models
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var domainExperiments = airavataService.getExperimentsInProject(gatewayId, projectId, limit, offset);
             return domainExperiments.stream()
                     .map(experimentModelMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error getting experiments in project: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1114,30 +818,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ExperimentModel> domainExperiments =
-                    airavataService.getUserExperiments(gatewayId, userName, limit, offset);
-            // Convert domain models to thrift models
+            var domainExperiments = airavataService.getUserExperiments(gatewayId, userName, limit, offset);
             return domainExperiments.stream()
                     .map(experimentModelMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setMessage("Error getting user experiments: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1152,17 +838,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.ExperimentModel domainExperiment =
-                    experimentModelMapper.toDomain(experiment);
+            var domainExperiment = experimentModelMapper.toDomain(experiment);
             return airavataService.createExperiment(gatewayId, domainExperiment);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error creating experiment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1175,19 +854,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteExperimentWithAuth(domainAuthzToken, experimentId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error deleting experiment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1200,30 +870,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel domainExperiment =
-                    airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
-            // Convert domain model to thrift model
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainExperiment = airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
             return experimentModelMapper.toThrift(domainExperiment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setMessage("Error getting experiment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1236,27 +887,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel domainExperiment =
-                    airavataService.getExperimentByAdmin(domainAuthzToken, airavataExperimentId);
-            // Convert domain model to thrift model
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainExperiment = airavataService.getExperimentByAdmin(domainAuthzToken, airavataExperimentId);
             return experimentModelMapper.toThrift(domainExperiment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error getting experiment by admin: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1269,27 +904,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel domainExperiment =
-                    airavataService.getDetailedExperimentTree(airavataExperimentId);
-            // Convert domain model to thrift model
+            var domainExperiment = airavataService.getDetailedExperimentTree(airavataExperimentId);
             return experimentModelMapper.toThrift(domainExperiment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage("Error getting detailed experiment tree: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1305,18 +923,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel domainExperiment =
-                    experimentModelMapper.toDomain(experiment);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainExperiment = experimentModelMapper.toDomain(experiment);
             airavataService.updateExperiment(domainAuthzToken, airavataExperimentId, domainExperiment);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error updating experiment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1331,19 +942,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserConfigurationDataModel domainUserConfig =
-                    userConfigurationDataModelMapper.toDomain(userConfiguration);
+            var domainUserConfig = userConfigurationDataModelMapper.toDomain(userConfiguration);
             airavataService.updateExperimentConfiguration(airavataExperimentId, domainUserConfig);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating experiment configuration: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1357,19 +959,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputationalResourceSchedulingModel domainScheduling =
-                    computationalResourceSchedulingModelMapper.toDomain(resourceScheduling);
+            var domainScheduling = computationalResourceSchedulingModelMapper.toDomain(resourceScheduling);
             airavataService.updateResourceScheduleing(airavataExperimentId, domainScheduling);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating resource scheduling: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1382,28 +975,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Validate experiment access first
-            org.apache.airavata.common.model.ExperimentModel experiment =
-                    airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
-            // Basic validation - check if experiment exists and user has access
-            // Full validation would require orchestrator service which is not directly
-            // accessible
-            // For now, return true if experiment exists and is accessible
-            return experiment != null;
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error validating experiment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainExperiment = airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
+            return domainExperiment != null;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1417,24 +993,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.ExperimentStatus domainStatus =
-                    airavataService.getExperimentStatus(airavataExperimentId);
-            ExperimentStatus thriftStatus = new ExperimentStatus();
+            var domainStatus = airavataService.getExperimentStatus(airavataExperimentId);
+            var thriftStatus = new ExperimentStatus();
             thriftStatus.setState(
                     ExperimentState.valueOf(domainStatus.getState().name()));
             thriftStatus.setTimeOfStateChange(domainStatus.getTimeOfStateChange());
             thriftStatus.setReason(domainStatus.getReason());
             thriftStatus.setStatusId(domainStatus.getStatusId());
             return thriftStatus;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting experiment status: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1448,23 +1016,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
-                    airavataService.getExperimentOutputs(airavataExperimentId);
-            // Convert domain models to thrift models
+            var domainOutputs = airavataService.getExperimentOutputs(airavataExperimentId);
             return domainOutputs.stream()
                     .map(outputDataObjectTypeMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting experiment outputs: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1478,30 +1035,13 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // getIntermediateOutputs is not directly available in AiravataService
-            // Using registry service through experiment service
-            // This is a workaround - ideally AiravataService should expose this method
-            org.apache.airavata.common.model.ExperimentModel experiment =
-                    airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
-            // For now, return empty list as getIntermediateOutputs requires registry
-            // service access
-            // TODO: Add getIntermediateOutputs method to AiravataService
-            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs = new java.util.ArrayList<>();
-            return domainOutputs.stream()
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var experiment = airavataService.getExperiment(domainAuthzToken, airavataExperimentId);
+            return experiment.getExperimentOutputs().stream()
                     .map(outputDataObjectTypeMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting intermediate outputs: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1516,21 +1056,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             airavataService.fetchIntermediateOutputs(domainAuthzToken, airavataExperimentId, outputNames);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error fetching intermediate outputs: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1544,28 +1073,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            Map<String, org.apache.airavata.common.model.JobStatus> domainStatuses =
-                    airavataService.getJobStatuses(airavataExperimentId);
-            Map<String, JobStatus> thriftStatuses = new java.util.HashMap<>();
-            for (Map.Entry<String, org.apache.airavata.common.model.JobStatus> entry : domainStatuses.entrySet()) {
-                JobStatus thriftStatus = new JobStatus();
-                thriftStatus.setJobState(
-                        JobState.valueOf(entry.getValue().getJobState().name()));
-                thriftStatus.setTimeOfStateChange(entry.getValue().getTimeOfStateChange());
-                thriftStatus.setReason(entry.getValue().getReason());
-                thriftStatus.setStatusId(entry.getValue().getStatusId());
-                thriftStatuses.put(entry.getKey(), thriftStatus);
-            }
-            return thriftStatuses;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting job statuses: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            var domainStatuses = airavataService.getJobStatuses(airavataExperimentId);
+            return domainStatuses.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> jobStatusMapper.toThrift(entry.getValue())));
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1579,20 +1091,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            List<org.apache.airavata.common.model.JobModel> domainJobs =
-                    airavataService.getJobDetails(airavataExperimentId);
-            // Convert domain models to thrift models
+            var domainJobs = airavataService.getJobDetails(airavataExperimentId);
             return domainJobs.stream().map(jobModelMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting job details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1608,40 +1110,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             airavataService.launchExperiment(domainAuthzToken, gatewayId, airavataExperimentId);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.ExperimentNotFoundException e) {
-            org.apache.airavata.thriftapi.exception.ExperimentNotFoundException thriftException =
-                    new org.apache.airavata.thriftapi.exception.ExperimentNotFoundException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            org.apache.airavata.thriftapi.exception.ProjectNotFoundException thriftException =
-                    new org.apache.airavata.thriftapi.exception.ProjectNotFoundException();
-            thriftException.setMessage(e.getMessage());
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.sharing.model.SharingRegistryException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error launching experiment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error launching experiment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1659,33 +1131,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException,
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, TException {
         try {
-            // getExperiment will apply sharing permissions
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel existingExperiment =
-                    airavataService.getExperiment(domainAuthzToken, existingExperimentID);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var existingExperiment = airavataService.getExperiment(domainAuthzToken, existingExperimentID);
             return airavataService.cloneExperiment(
                     domainAuthzToken,
                     existingExperimentID,
                     newExperimentName,
                     newExperimentProjectId,
                     existingExperiment);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.ExperimentNotFoundException e) {
-            throw convertToThriftExperimentNotFoundException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            throw convertToThriftProjectNotFoundException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error cloning experiment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1703,35 +1158,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException,
                     org.apache.airavata.thriftapi.exception.ProjectNotFoundException, TException {
         try {
-            // get existing experiment by bypassing normal sharing permissions for the admin
-            // user
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ExperimentModel existingExperiment =
-                    airavataService.getExperimentByAdmin(domainAuthzToken, existingExperimentID);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var existingExperiment = airavataService.getExperimentByAdmin(domainAuthzToken, existingExperimentID);
             return airavataService.cloneExperiment(
                     domainAuthzToken,
                     existingExperimentID,
                     newExperimentName,
                     newExperimentProjectId,
                     existingExperiment);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.ExperimentNotFoundException e) {
-            throw convertToThriftExperimentNotFoundException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
-            throw convertToThriftProjectNotFoundException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error cloning experiment by admin: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1746,19 +1182,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             airavataService.terminateExperiment(airavataExperimentId, gatewayId);
-        } catch (org.apache.airavata.common.exception.ExperimentNotFoundException e) {
-            throw convertToThriftExperimentNotFoundException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error terminating experiment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1773,19 +1199,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationModule domainModule =
-                    applicationModuleMapper.toDomain(applicationModule);
+            var domainModule = applicationModuleMapper.toDomain(applicationModule);
+            applicationModuleMapper.toDomain(applicationModule);
             return airavataService.registerApplicationModule(gatewayId, domainModule);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering application module: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1798,19 +1216,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationModule domainModule =
-                    airavataService.getApplicationModule(appModuleId);
+            var domainModule = airavataService.getApplicationModule(appModuleId);
             return applicationModuleMapper.toThrift(domainModule);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application module: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1825,20 +1234,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationModule domainModule =
-                    applicationModuleMapper.toDomain(applicationModule);
+            var domainModule = applicationModuleMapper.toDomain(applicationModule);
             airavataService.updateApplicationModule(appModuleId, domainModule);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating application module: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1851,19 +1251,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ApplicationModule> domainModules =
-                    airavataService.getAllAppModules(gatewayId);
+            var domainModules = airavataService.getAllAppModules(gatewayId);
             return domainModules.stream().map(applicationModuleMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all app modules: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1876,21 +1267,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ApplicationModule> domainModules =
-                    airavataService.getAccessibleAppModules(domainAuthzToken, gatewayId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainModules = airavataService.getAccessibleAppModules(domainAuthzToken, gatewayId);
             return domainModules.stream().map(applicationModuleMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting accessible app modules: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1903,17 +1284,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteApplicationModule(appModuleId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting application module: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1928,21 +1301,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationDeploymentDescription domainDeployment =
-                    applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainDeployment = applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
             return airavataService.registerApplicationDeployment(domainAuthzToken, gatewayId, domainDeployment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error registering application deployment: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1955,23 +1318,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationDeploymentDescription domainDeployment =
-                    airavataService.getApplicationDeployment(domainAuthzToken, appDeploymentId);
-            // Convert domain model to thrift model
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainDeployment = airavataService.getApplicationDeployment(domainAuthzToken, appDeploymentId);
             return applicationDeploymentDescriptionMapper.toThrift(domainDeployment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application deployment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -1986,22 +1337,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationDeploymentDescription domainDeployment =
-                    applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainDeployment = applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
             return airavataService.updateApplicationDeployment(domainAuthzToken, appDeploymentId, domainDeployment);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating application deployment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2014,19 +1354,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteApplicationDeployment(domainAuthzToken, appDeploymentId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting application deployment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2052,30 +1383,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
-            List<org.apache.airavata.common.model.ApplicationDeploymentDescription> domainDeployments =
-                    airavataService.getAccessibleApplicationDeployments(
-                            domainAuthzToken, gatewayId, domainPermissionType);
-            // Convert domain models to thrift models
+            var domainDeployments = airavataService.getAccessibleApplicationDeployments(
+                    domainAuthzToken, gatewayId, domainPermissionType);
             return domainDeployments.stream()
                     .map(applicationDeploymentDescriptionMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting accessible application deployments: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2089,17 +1406,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.getAppModuleDeployedResources(appModuleId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting app module deployed resources: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2114,29 +1423,14 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ApplicationDeploymentDescription> domainDeployments =
-                    airavataService.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
-                            domainAuthzToken, appModuleId, groupResourceProfileId);
-            // Convert domain models to thrift models
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainDeployments = airavataService.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+                    domainAuthzToken, appModuleId, groupResourceProfileId);
             return domainDeployments.stream()
                     .map(applicationDeploymentDescriptionMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application deployments for app module and group resource profile: "
-                    + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2151,20 +1445,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationInterfaceDescription domainInterface =
-                    applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
+            var domainInterface = applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
             return airavataService.registerApplicationInterface(gatewayId, domainInterface);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering application interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2181,19 +1465,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             return airavataService.cloneApplicationInterface(existingAppInterfaceID, newApplicationName, gatewayId);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error cloning application interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2206,19 +1479,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationInterfaceDescription domainInterface =
-                    airavataService.getApplicationInterface(appInterfaceId);
+            var domainInterface = airavataService.getApplicationInterface(appInterfaceId);
             return applicationInterfaceDescriptionMapper.toThrift(domainInterface);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2233,21 +1497,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ApplicationInterfaceDescription domainInterface =
-                    applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
+            var domainInterface = applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
             airavataService.updateApplicationInterface(appInterfaceId, domainInterface);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating application interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2260,17 +1514,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteApplicationInterface(appInterfaceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting application interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2283,17 +1529,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.getAllApplicationInterfaceNames(gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all application interface names: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2306,22 +1544,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            List<org.apache.airavata.common.model.ApplicationInterfaceDescription> domainInterfaces =
-                    airavataService.getAllApplicationInterfaces(gatewayId);
-            // Convert domain models to thrift models
+            var domainInterfaces = airavataService.getAllApplicationInterfaces(gatewayId);
             return domainInterfaces.stream()
                     .map(applicationInterfaceDescriptionMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all application interfaces: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2334,23 +1562,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.InputDataObjectType> domainInputs =
-                    airavataService.getApplicationInputs(appInterfaceId);
-            // Convert domain models to thrift models
+            var domainInputs = airavataService.getApplicationInputs(appInterfaceId);
             return domainInputs.stream()
                     .map(inputDataObjectTypeMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application inputs: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2363,23 +1580,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
-                    airavataService.getApplicationOutputs(appInterfaceId);
-            // Convert domain models to thrift models
+            var domainOutputs = airavataService.getApplicationOutputs(appInterfaceId);
             return domainOutputs.stream()
                     .map(outputDataObjectTypeMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting application outputs: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2393,17 +1599,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.getAvailableAppInterfaceComputeResources(appInterfaceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting available app interface compute resources: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2417,20 +1615,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResource =
-                    computeResourceDescriptionMapper.toDomain(computeResourceDescription);
+            var domainComputeResource = computeResourceDescriptionMapper.toDomain(computeResourceDescription);
             return airavataService.registerComputeResource(domainComputeResource);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering compute resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2443,21 +1631,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Get domain model from service
-            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResource =
-                    airavataService.getComputeResource(computeResourceId);
-            // Convert domain model to thrift model
+            var domainComputeResource = airavataService.getComputeResource(computeResourceId);
             return computeResourceDescriptionMapper.toThrift(domainComputeResource);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting compute resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2470,17 +1647,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.getAllComputeResourceNames();
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all compute resource names: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2495,20 +1664,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResource =
-                    computeResourceDescriptionMapper.toDomain(computeResourceDescription);
+            var domainComputeResource = computeResourceDescriptionMapper.toDomain(computeResourceDescription);
             airavataService.updateComputeResource(computeResourceId, domainComputeResource);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating compute resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2521,17 +1681,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteComputeResource(computeResourceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting compute resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2545,27 +1697,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StorageResourceDescription domainStorage =
-                    storageResourceDescriptionMapper.toDomain(storageResourceDescription);
+            var domainStorage = storageResourceDescriptionMapper.toDomain(storageResourceDescription);
             return airavataService.registerStorageResource(domainStorage);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering storage resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2578,19 +1713,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StorageResourceDescription domainStorage =
-                    airavataService.getStorageResource(storageResourceId);
+            var domainStorage = airavataService.getStorageResource(storageResourceId);
             return storageResourceDescriptionMapper.toThrift(domainStorage);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting storage resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2603,17 +1729,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.getAllStorageResourceNames();
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all storage resource names: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2628,27 +1746,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StorageResourceDescription domainStorage =
-                    storageResourceDescriptionMapper.toDomain(storageResourceDescription);
+            var domainStorage = storageResourceDescriptionMapper.toDomain(storageResourceDescription);
             return airavataService.updateStorageResource(storageResourceId, domainStorage);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating storage resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2661,17 +1762,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteStorageResource(storageResourceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting storage resource: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2684,21 +1777,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StorageVolumeInfo domainInfo =
-                    airavataService.getResourceStorageInfo(domainAuthzToken, resourceId, location);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainInfo = airavataService.getResourceStorageInfo(domainAuthzToken, resourceId, location);
             return storageVolumeInfoMapper.toThrift(domainInfo);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting resource storage info: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2711,21 +1794,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StorageDirectoryInfo domainInfo =
-                    airavataService.getStorageDirectoryInfo(domainAuthzToken, resourceId, location);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainInfo = airavataService.getStorageDirectoryInfo(domainAuthzToken, resourceId, location);
             return storageDirectoryInfoMapper.toThrift(domainInfo);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting storage directory info: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2741,19 +1814,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.LOCALSubmission domainLocal =
-                    localSubmissionMapper.toDomain(localSubmission);
+            var domainLocal = localSubmissionMapper.toDomain(localSubmission);
             return airavataService.addLocalSubmissionDetails(computeResourceId, priorityOrder, domainLocal);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding local submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2768,20 +1832,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.LOCALSubmission domainLocal =
-                    localSubmissionMapper.toDomain(localSubmission);
+            var domainLocal = localSubmissionMapper.toDomain(localSubmission);
             airavataService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, domainLocal);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating local submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2794,18 +1849,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.LOCALSubmission domainLocal =
-                    airavataService.getLocalJobSubmission(jobSubmissionId);
+            var domainLocal = airavataService.getLocalJobSubmission(jobSubmissionId);
             return localSubmissionMapper.toThrift(domainLocal);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting local job submission: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2821,27 +1868,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.SSHJobSubmission domainSSH =
-                    sshJobSubmissionMapper.toDomain(sshJobSubmission);
+            var domainSSH = sshJobSubmissionMapper.toDomain(sshJobSubmission);
             return airavataService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, domainSSH);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding SSH job submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2857,27 +1887,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.SSHJobSubmission domainSSH =
-                    sshJobSubmissionMapper.toDomain(sshJobSubmission);
+            var domainSSH = sshJobSubmissionMapper.toDomain(sshJobSubmission);
             return airavataService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, domainSSH);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding SSH fork job submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2890,19 +1903,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.SSHJobSubmission domainSSH =
-                    airavataService.getSSHJobSubmission(jobSubmissionId);
+            var domainSSH = airavataService.getSSHJobSubmission(jobSubmissionId);
             return sshJobSubmissionMapper.toThrift(domainSSH);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting SSH job submission: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2918,27 +1922,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.CloudJobSubmission domainCloud =
-                    cloudJobSubmissionMapper.toDomain(cloudJobSubmission);
+            var domainCloud = cloudJobSubmissionMapper.toDomain(cloudJobSubmission);
             return airavataService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, domainCloud);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding cloud job submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2951,19 +1938,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.CloudJobSubmission domainCloud =
-                    airavataService.getCloudJobSubmission(jobSubmissionId);
+            var domainCloud = airavataService.getCloudJobSubmission(jobSubmissionId);
             return cloudJobSubmissionMapper.toThrift(domainCloud);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting cloud job submission: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -2979,19 +1957,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UnicoreJobSubmission domainUnicore =
-                    unicoreJobSubmissionMapper.toDomain(unicoreJobSubmission);
+            var domainUnicore = unicoreJobSubmissionMapper.toDomain(unicoreJobSubmission);
             return airavataService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, domainUnicore);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding UNICORE job submission details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3004,19 +1973,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UnicoreJobSubmission domainUnicore =
-                    airavataService.getUnicoreJobSubmission(jobSubmissionId);
+            var domainUnicore = airavataService.getUnicoreJobSubmission(jobSubmissionId);
             return unicoreJobSubmissionMapper.toThrift(domainUnicore);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting Unicore job submission: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3031,7 +1991,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.SSHJobSubmission domainSSH =
                     sshJobSubmissionMapper.toDomain(sshJobSubmission);
             return airavataService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, domainSSH);
@@ -3066,7 +2025,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.CloudJobSubmission domainCloud =
                     cloudJobSubmissionMapper.toDomain(cloudJobSubmission);
             return airavataService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, domainCloud);
@@ -3101,7 +2059,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.UnicoreJobSubmission domainUnicore =
                     unicoreJobSubmissionMapper.toDomain(unicoreJobSubmission);
             return airavataService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, domainUnicore);
@@ -3136,19 +2093,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.LOCALDataMovement domainLocalDataMovement =
-                    localDataMovementMapper.toDomain(localDataMovement);
+            var domainLocalDataMovement = localDataMovementMapper.toDomain(localDataMovement);
             airavataService.updateLocalDataMovementDetails(dataMovementInterfaceId, domainLocalDataMovement);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating local data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3163,26 +2112,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.SCPDataMovement domainSCP =
-                    scpDataMovementMapper.toDomain(scpDataMovement);
+            var domainSCP = scpDataMovementMapper.toDomain(scpDataMovement);
             return airavataService.updateSCPDataMovementDetails(dataMovementInterfaceId, domainSCP);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating SCP data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3195,19 +2128,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.SCPDataMovement domainSCP =
-                    airavataService.getSCPDataMovement(dataMovementId);
+            var domainSCP = airavataService.getSCPDataMovement(dataMovementId);
             return scpDataMovementMapper.toThrift(domainSCP);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting SCP data movement: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3224,22 +2148,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.DMType domainDMType =
-                    org.apache.airavata.common.model.DMType.valueOf(dmType.name());
-            org.apache.airavata.common.model.UnicoreDataMovement domainUnicore =
-                    unicoreDataMovementMapper.toDomain(unicoreDataMovement);
+            var domainDMType = org.apache.airavata.common.model.DMType.valueOf(dmType.name());
+            var domainUnicore = unicoreDataMovementMapper.toDomain(unicoreDataMovement);
             return airavataService.addUnicoreDataMovementDetails(
                     resourceId, domainDMType, priorityOrder, domainUnicore);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding Unicore data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3254,20 +2168,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UnicoreDataMovement domainUnicore =
-                    unicoreDataMovementMapper.toDomain(unicoreDataMovement);
+            var domainUnicore = unicoreDataMovementMapper.toDomain(unicoreDataMovement);
             airavataService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, domainUnicore);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating Unicore data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3280,18 +2185,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.LOCALDataMovement domainLocal =
-                    airavataService.getLocalDataMovement(dataMovementId);
+            var domainLocal = airavataService.getLocalDataMovement(dataMovementId);
             return localDataMovementMapper.toThrift(domainLocal);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting local data movement: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3304,19 +2201,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UnicoreDataMovement domainUnicore =
-                    airavataService.getUnicoreDataMovement(dataMovementId);
+            var domainUnicore = airavataService.getUnicoreDataMovement(dataMovementId);
             return unicoreDataMovementMapper.toThrift(domainUnicore);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting Unicore data movement: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3333,22 +2221,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.DMType domainDMType =
-                    org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
-            org.apache.airavata.common.model.GridFTPDataMovement domainGridFTP =
-                    gridFTPDataMovementMapper.toDomain(gridFTPDataMovement);
+            var domainDMType = org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
+            var domainGridFTP = gridFTPDataMovementMapper.toDomain(gridFTPDataMovement);
             return airavataService.addGridFTPDataMovementDetails(
                     productUri, domainDMType, priorityOrder, domainGridFTP);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding GridFTP data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3363,20 +2241,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GridFTPDataMovement domainGridFTP =
-                    gridFTPDataMovementMapper.toDomain(gridFTPDataMovement);
+            var domainGridFTP = gridFTPDataMovementMapper.toDomain(gridFTPDataMovement);
             airavataService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, domainGridFTP);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating GridFTP data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3389,18 +2258,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.GridFTPDataMovement domainGridFTP =
-                    airavataService.getGridFTPDataMovement(dataMovementId);
+            var domainGridFTP = airavataService.getGridFTPDataMovement(dataMovementId);
             return gridFTPDataMovementMapper.toThrift(domainGridFTP);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting GridFTP data movement: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3463,19 +2324,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourceJobManager domainRJM =
-                    resourceJobManagerMapper.toDomain(resourceJobManager);
+            var domainRJM = resourceJobManagerMapper.toDomain(resourceJobManager);
             return airavataService.registerResourceJobManager(domainRJM);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering resource job manager: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3490,26 +2342,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.ResourceJobManager domainRJM =
-                    resourceJobManagerMapper.toDomain(updatedResourceJobManager);
+            var domainRJM = resourceJobManagerMapper.toDomain(updatedResourceJobManager);
             return airavataService.updateResourceJobManager(resourceJobManagerId, domainRJM);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating resource job manager: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3522,18 +2358,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.ResourceJobManager domainRJM =
-                    airavataService.getResourceJobManager(resourceJobManagerId);
+            var domainRJM = airavataService.getResourceJobManager(resourceJobManagerId);
             return resourceJobManagerMapper.toThrift(domainRJM);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting resource job manager: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3546,17 +2374,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteResourceJobManager(resourceJobManagerId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting resource job manager: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3571,17 +2391,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteBatchQueue(computeResourceId, queueName);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting batch queue: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3595,19 +2407,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.GatewayResourceProfile domainProfile =
-                    gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
+            var domainProfile = gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
             return airavataService.registerGatewayResourceProfile(domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering gateway resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3620,20 +2423,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.common.model.GatewayResourceProfile domainProfile =
-                    airavataService.getGatewayResourceProfile(gatewayID);
-            // Convert domain model to thrift model
+            var domainProfile = airavataService.getGatewayResourceProfile(gatewayID);
             return gatewayResourceProfileMapper.toThrift(domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting gateway resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3648,20 +2441,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.GatewayResourceProfile domainProfile =
-                    gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
+            var domainProfile = gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
             airavataService.updateGatewayResourceProfile(gatewayID, domainProfile);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating gateway resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3674,17 +2458,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteGatewayResourceProfile(gatewayID);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting gateway resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3700,19 +2476,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.ComputeResourcePreference domainPreference =
-                    computeResourcePreferenceMapper.toDomain(computeResourcePreference);
+            var domainPreference = computeResourcePreferenceMapper.toDomain(computeResourcePreference);
             airavataService.addGatewayComputeResourcePreference(gatewayID, computeResourceId, domainPreference);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding gateway compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3728,27 +2496,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StoragePreference domainPreference =
-                    storagePreferenceMapper.toDomain(dataStoragePreference);
+            var domainPreference = storagePreferenceMapper.toDomain(dataStoragePreference);
             return airavataService.addGatewayStoragePreference(gatewayID, storageResourceId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding gateway storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3763,19 +2514,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputeResourcePreference domainPreference =
-                    airavataService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
+            var domainPreference = airavataService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
             return computeResourcePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting gateway compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3788,18 +2530,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.StoragePreference domainPreference =
-                    airavataService.getGatewayStoragePreference(gatewayID, storageId);
+            var domainPreference = airavataService.getGatewayStoragePreference(gatewayID, storageId);
             return storagePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting gateway storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3812,20 +2546,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.StoragePreference> domainPreferences =
-                    airavataService.getAllGatewayStoragePreferences(gatewayID);
+            var domainPreferences = airavataService.getAllGatewayStoragePreferences(gatewayID);
             return domainPreferences.stream()
                     .map(storagePreferenceMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all gateway storage preferences: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3838,23 +2564,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Get domain models from service
-            List<org.apache.airavata.common.model.GatewayResourceProfile> domainProfiles =
-                    airavataService.getAllGatewayResourceProfiles();
-            // Convert domain models to thrift models
+            var domainProfiles = airavataService.getAllGatewayResourceProfiles();
             return domainProfiles.stream()
                     .map(gatewayResourceProfileMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all gateway resource profiles: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3870,20 +2585,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputeResourcePreference domainPreference =
-                    computeResourcePreferenceMapper.toDomain(computeResourcePreference);
+            var domainPreference = computeResourcePreferenceMapper.toDomain(computeResourcePreference);
             return airavataService.updateGatewayComputeResourcePreference(
                     gatewayID, computeResourceId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating gateway compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3899,27 +2605,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.StoragePreference domainPreference =
-                    storagePreferenceMapper.toDomain(dataStoragePreference);
+            var domainPreference = storagePreferenceMapper.toDomain(dataStoragePreference);
             return airavataService.updateGatewayStoragePreference(gatewayID, storageId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating gateway storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3934,17 +2623,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting gateway compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3957,17 +2638,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteGatewayStoragePreference(gatewayID, storageId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting gateway storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -3979,38 +2652,37 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException,
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
-
-        List<SSHAccountProvisionerDescription> domainProvisioners = new ArrayList<>();
-        List<SSHAccountProvisionerProvider> sshAccountProvisionerProviders =
-                SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
-        for (SSHAccountProvisionerProvider provider : sshAccountProvisionerProviders) {
-            SSHAccountProvisionerDescription sshAccountProvisionerStruct = new SSHAccountProvisionerDescription();
-            sshAccountProvisionerStruct.setCanCreateAccount(provider.canCreateAccount());
-            sshAccountProvisionerStruct.setCanInstallSSHKey(provider.canInstallSSHKey());
-            sshAccountProvisionerStruct.setName(provider.getName());
-            List<SSHAccountProvisionerConfigParam> sshAccountProvisionerConfigParams = new ArrayList<>();
-            for (ConfigParam configParam : provider.getConfigParams()) {
-                SSHAccountProvisionerConfigParam sshAccountProvisionerConfigParam =
-                        new SSHAccountProvisionerConfigParam();
-                sshAccountProvisionerConfigParam.setName(configParam.getName());
-                sshAccountProvisionerConfigParam.setDescription(configParam.getDescription());
-                sshAccountProvisionerConfigParam.setIsOptional(configParam.isOptional());
-                switch (configParam.getType()) {
-                    case STRING:
-                        sshAccountProvisionerConfigParam.setType(SSHAccountProvisionerConfigParamType.STRING);
-                        break;
-                    case CRED_STORE_PASSWORD_TOKEN:
-                        sshAccountProvisionerConfigParam.setType(
-                                SSHAccountProvisionerConfigParamType.CRED_STORE_PASSWORD_TOKEN);
-                        break;
+        try {
+            var domainProvisioners = new ArrayList<SSHAccountProvisionerDescription>();
+            var sshAccountProvisionerProviders = SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
+            for (var provider : sshAccountProvisionerProviders) {
+                var pr = new SSHAccountProvisionerDescription();
+                pr.setCanCreateAccount(provider.canCreateAccount());
+                pr.setCanInstallSSHKey(provider.canInstallSSHKey());
+                pr.setName(provider.getName());
+                var cp = new ArrayList<SSHAccountProvisionerConfigParam>();
+                for (var configParam : provider.getConfigParams()) {
+                    var param = new SSHAccountProvisionerConfigParam();
+                    param.setName(configParam.getName());
+                    param.setDescription(configParam.getDescription());
+                    param.setIsOptional(configParam.isOptional());
+                    switch (configParam.getType()) {
+                        case STRING:
+                            param.setType(SSHAccountProvisionerConfigParamType.STRING);
+                            break;
+                        case CRED_STORE_PASSWORD_TOKEN:
+                            param.setType(SSHAccountProvisionerConfigParamType.CRED_STORE_PASSWORD_TOKEN);
+                            break;
+                    }
+                    cp.add(param);
                 }
-                sshAccountProvisionerConfigParams.add(sshAccountProvisionerConfigParam);
+                pr.setConfigParams(cp);
+                domainProvisioners.add(pr);
             }
-            sshAccountProvisionerStruct.setConfigParams(sshAccountProvisionerConfigParams);
-            domainProvisioners.add(sshAccountProvisionerStruct);
+            return domainProvisioners;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
-        // domainProvisioners already contains Thrift objects, return directly
-        return domainProvisioners;
     }
 
     @Override
@@ -4022,22 +2694,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.doesUserHaveSSHAccount(domainAuthzToken, computeResourceId, userId);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error checking if user has SSH account: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4052,18 +2712,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.isSSHAccountSetupComplete(
                     domainAuthzToken, computeResourceId, airavataCredStoreToken);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error checking SSH setup completion: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4079,24 +2732,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserComputeResourcePreference domainPreference =
-                    airavataService.setupSSHAccount(
-                            domainAuthzToken, computeResourceId, userId, airavataCredStoreToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPreference = airavataService.setupSSHAccount(
+                    domainAuthzToken, computeResourceId, userId, airavataCredStoreToken);
             return userComputeResourcePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error setting up user compute resource preferences for SSH: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4109,19 +2750,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserResourceProfile domainProfile =
-                    userResourceProfileMapper.toDomain(userResourceProfile);
+            var domainProfile = userResourceProfileMapper.toDomain(userResourceProfile);
             return airavataService.registerUserResourceProfile(domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering user resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4134,17 +2766,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.isUserResourceProfileExists(userId, gatewayID);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error checking if user resource profile exists: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4157,21 +2781,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Get domain model from service
-            org.apache.airavata.common.model.UserResourceProfile domainProfile =
-                    airavataService.getUserResourceProfile(userId, gatewayID);
-            // Convert domain model to thrift model
+            var domainProfile = airavataService.getUserResourceProfile(userId, gatewayID);
             return userResourceProfileMapper.toThrift(domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting user resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4187,20 +2800,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.UserResourceProfile domainProfile =
-                    userResourceProfileMapper.toDomain(userResourceProfile);
+            var domainProfile = userResourceProfileMapper.toDomain(userResourceProfile);
             return airavataService.updateUserResourceProfile(userId, gatewayID, domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating user resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4213,17 +2816,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteUserResourceProfile(userId, gatewayID);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting user resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4240,28 +2835,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserComputeResourcePreference domainPreference =
-                    userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
+            var domainPreference = userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
             return airavataService.addUserComputeResourcePreference(
                     userId, gatewayID, computeResourceId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding user compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4278,27 +2856,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserStoragePreference domainPreference =
-                    userStoragePreferenceMapper.toDomain(dataStoragePreference);
+            var domainPreference = userStoragePreferenceMapper.toDomain(dataStoragePreference);
             return airavataService.addUserStoragePreference(userId, gatewayID, userStorageResourceId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding user storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4314,18 +2875,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.UserComputeResourcePreference domainPreference =
+            var domainPreference =
                     airavataService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
             return userComputeResourcePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting user compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4341,18 +2895,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.UserStoragePreference domainPreference =
-                    airavataService.getUserStoragePreference(userId, gatewayID, userStorageId);
+            var domainPreference = airavataService.getUserStoragePreference(userId, gatewayID, userStorageId);
             return userStoragePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting user storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4365,20 +2911,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.UserComputeResourcePreference> domainPreferences =
-                    airavataService.getAllUserComputeResourcePreferences(userId, gatewayID);
+            var domainPreferences = airavataService.getAllUserComputeResourcePreferences(userId, gatewayID);
             return domainPreferences.stream()
                     .map(userComputeResourcePreferenceMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all user compute resource preferences: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4391,20 +2929,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.UserStoragePreference> domainPreferences =
-                    airavataService.getAllUserStoragePreferences(userId, gatewayID);
+            var domainPreferences = airavataService.getAllUserStoragePreferences(userId, gatewayID);
             return domainPreferences.stream()
                     .map(userStoragePreferenceMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all user storage preferences: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4417,20 +2947,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.UserResourceProfile> domainProfiles =
-                    airavataService.getAllUserResourceProfiles();
+            var domainProfiles = airavataService.getAllUserResourceProfiles();
             return domainProfiles.stream()
                     .map(userResourceProfileMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all user resource profiles: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4447,21 +2969,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserComputeResourcePreference domainPreference =
-                    userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
+            var domainPreference = userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
             airavataService.updateUserComputeResourcePreference(
                     userId, gatewayID, userComputeResourceId, domainPreference);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating user compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4478,27 +2991,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserStoragePreference domainPreference =
-                    userStoragePreferenceMapper.toDomain(dataStoragePreference);
+            var domainPreference = userStoragePreferenceMapper.toDomain(dataStoragePreference);
             return airavataService.updateUserStoragePreference(userId, gatewayID, userStorageId, domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating user storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4514,17 +3010,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting user compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4540,17 +3028,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteUserStoragePreference(userId, gatewayID, userStorageId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting user storage preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4563,19 +3043,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
             var domainStatuses = airavataService.getLatestQueueStatuses();
-            // Convert domain models to thrift models
             return domainStatuses.stream().map(queueStatusModelMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting latest queue statuses: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4587,20 +3058,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException,
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
-        // Convert thrift model to domain model
-        org.apache.airavata.common.model.DataProductModel domainDataProduct =
-                dataProductModelMapper.toDomain(dataProductModel);
         try {
+            var domainDataProduct = dataProductModelMapper.toDomain(dataProductModel);
             return airavataService.registerDataProduct(domainDataProduct);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering data product: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4613,20 +3075,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.common.model.DataProductModel domainDataProduct =
-                    airavataService.getDataProduct(productUri);
-            // Convert domain model to thrift model
+            var domainDataProduct = airavataService.getDataProduct(productUri);
             return dataProductModelMapper.toThrift(domainDataProduct);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting data product: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4640,19 +3092,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Convert thrift model to domain model
-            org.apache.airavata.common.model.DataReplicaLocationModel domainReplica =
-                    dataReplicaLocationModelMapper.toDomain(replicaLocationModel);
+            var domainReplica = dataReplicaLocationModelMapper.toDomain(replicaLocationModel);
             return airavataService.registerReplicaLocation(domainReplica);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error registering replica location: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4665,20 +3108,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain model from service
-            org.apache.airavata.common.model.DataProductModel domainDataProduct =
-                    airavataService.getParentDataProduct(productUri);
-            // Convert domain model to thrift model
+            var domainDataProduct = airavataService.getParentDataProduct(productUri);
             return dataProductModelMapper.toThrift(domainDataProduct);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting parent data product: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4691,21 +3124,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            // Get domain models from service
             var domainDataProducts = airavataService.getChildDataProducts(productUri);
-            // Convert domain models to thrift models
             return domainDataProducts.stream()
                     .map(dataProductModelMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting child data products: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4720,27 +3144,15 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            Map<String, org.apache.airavata.common.model.ResourcePermissionType> domainUserPermissionList =
-                    new java.util.HashMap<>();
-            for (Map.Entry<String, ResourcePermissionType> entry : userPermissionList.entrySet()) {
-                domainUserPermissionList.put(
-                        entry.getKey(),
-                        org.apache.airavata.common.model.ResourcePermissionType.valueOf(
-                                entry.getValue().name()));
-            }
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainUserPermissionList = userPermissionList.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> org.apache.airavata.common.model.ResourcePermissionType.valueOf(
+                                    entry.getValue().name())));
             return airavataService.shareResourceWithUsers(domainAuthzToken, resourceId, domainUserPermissionList);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error sharing resource with users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4755,27 +3167,15 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            Map<String, org.apache.airavata.common.model.ResourcePermissionType> domainGroupPermissionList =
-                    new java.util.HashMap<>();
-            for (Map.Entry<String, ResourcePermissionType> entry : groupPermissionList.entrySet()) {
-                domainGroupPermissionList.put(
-                        entry.getKey(),
-                        org.apache.airavata.common.model.ResourcePermissionType.valueOf(
-                                entry.getValue().name()));
-            }
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroupPermissionList = groupPermissionList.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> org.apache.airavata.common.model.ResourcePermissionType.valueOf(
+                                    entry.getValue().name())));
             return airavataService.shareResourceWithGroups(domainAuthzToken, resourceId, domainGroupPermissionList);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error sharing resource with groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4790,28 +3190,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            Map<String, org.apache.airavata.common.model.ResourcePermissionType> domainUserPermissionList =
-                    new java.util.HashMap<>();
-            for (Map.Entry<String, ResourcePermissionType> entry : userPermissionList.entrySet()) {
-                domainUserPermissionList.put(
-                        entry.getKey(),
-                        org.apache.airavata.common.model.ResourcePermissionType.valueOf(
-                                entry.getValue().name()));
-            }
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainUserPermissionList = userPermissionList.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> org.apache.airavata.common.model.ResourcePermissionType.valueOf(
+                                    entry.getValue().name())));
             return airavataService.revokeSharingOfResourceFromUsers(
                     domainAuthzToken, resourceId, domainUserPermissionList);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error revoking sharing of resource from users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4826,28 +3214,16 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            Map<String, org.apache.airavata.common.model.ResourcePermissionType> domainGroupPermissionList =
-                    new java.util.HashMap<>();
-            for (Map.Entry<String, ResourcePermissionType> entry : groupPermissionList.entrySet()) {
-                domainGroupPermissionList.put(
-                        entry.getKey(),
-                        org.apache.airavata.common.model.ResourcePermissionType.valueOf(
-                                entry.getValue().name()));
-            }
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroupPermissionList = groupPermissionList.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> org.apache.airavata.common.model.ResourcePermissionType.valueOf(
+                                    entry.getValue().name())));
             return airavataService.revokeSharingOfResourceFromGroups(
                     domainAuthzToken, resourceId, domainGroupPermissionList);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error revoking sharing of resource from groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4862,19 +3238,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
             return airavataService.getAllAccessibleUsers(domainAuthzToken, resourceId, domainPermissionType, false);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all accessible users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4889,19 +3258,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
             return airavataService.getAllAccessibleUsers(domainAuthzToken, resourceId, domainPermissionType, true);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all directly accessible users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4916,19 +3278,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
             return airavataService.getAllAccessibleGroups(domainAuthzToken, resourceId, domainPermissionType, false);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all accessible groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4943,19 +3298,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
             return airavataService.getAllAccessibleGroups(domainAuthzToken, resourceId, domainPermissionType, true);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all directly accessible groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4970,19 +3318,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ResourcePermissionType domainPermissionType =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPermissionType =
                     org.apache.airavata.common.model.ResourcePermissionType.valueOf(permissionType.name());
             return airavataService.userHasAccess(domainAuthzToken, resourceId, domainPermissionType);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error checking user access: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -4996,19 +3337,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupResourceProfile domainGroupResourceProfile =
-                    groupResourceProfileMapper.toDomain(groupResourceProfile);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroupResourceProfile = groupResourceProfileMapper.toDomain(groupResourceProfile);
             return airavataService.createGroupResourceProfile(domainAuthzToken, domainGroupResourceProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error creating group resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5022,19 +3355,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupResourceProfile domainGroupResourceProfile =
-                    groupResourceProfileMapper.toDomain(groupResourceProfile);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGroupResourceProfile = groupResourceProfileMapper.toDomain(groupResourceProfile);
             airavataService.updateGroupResourceProfile(domainAuthzToken, domainGroupResourceProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating group resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5047,19 +3372,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupResourceProfile domainProfile =
-                    airavataService.getGroupResourceProfile(domainAuthzToken, groupResourceProfileId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = airavataService.getGroupResourceProfile(domainAuthzToken, groupResourceProfileId);
             return groupResourceProfileMapper.toThrift(domainProfile);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5072,19 +3389,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.removeGroupResourceProfile(domainAuthzToken, groupResourceProfileId);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing group resource profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5097,21 +3405,13 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.GroupResourceProfile> domainProfiles =
-                    airavataService.getGroupResourceList(domainAuthzToken, gatewayId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfiles = airavataService.getGroupResourceList(domainAuthzToken, gatewayId);
             return domainProfiles.stream()
                     .map(groupResourceProfileMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group resource list: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5126,19 +3426,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.removeGroupComputePrefs(domainAuthzToken, computeResourceId, groupResourceProfileId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing group compute preferences: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5151,19 +3442,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.removeGroupComputeResourcePolicy(domainAuthzToken, resourcePolicyId);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing group compute resource policy: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5176,19 +3458,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.removeGroupBatchQueueResourcePolicy(domainAuthzToken, resourcePolicyId);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing group batch queue resource policy: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5201,21 +3474,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputeResourcePolicy domainPolicy =
-                    airavataService.getGroupComputeResourcePolicy(domainAuthzToken, resourcePolicyId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPolicy = airavataService.getGroupComputeResourcePolicy(domainAuthzToken, resourcePolicyId);
             return computeResourcePolicyMapper.toThrift(domainPolicy);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group compute resource policy: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5228,21 +3491,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.BatchQueueResourcePolicy domainPolicy =
-                    airavataService.getBatchQueueResourcePolicy(domainAuthzToken, resourcePolicyId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPolicy = airavataService.getBatchQueueResourcePolicy(domainAuthzToken, resourcePolicyId);
             return batchQueueResourcePolicyMapper.toThrift(domainPolicy);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting batch queue resource policy: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5255,23 +3508,13 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.GroupComputeResourcePreference> domainPrefs =
-                    airavataService.getGroupComputeResourcePrefList(domainAuthzToken, groupResourceProfileId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPrefs = airavataService.getGroupComputeResourcePrefList(domainAuthzToken, groupResourceProfileId);
             return domainPrefs.stream()
                     .map(groupComputeResourcePreferenceMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group compute resource preference list: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5284,23 +3527,14 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.BatchQueueResourcePolicy> domainPolicies =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPolicies =
                     airavataService.getGroupBatchQueueResourcePolicyList(domainAuthzToken, groupResourceProfileId);
             return domainPolicies.stream()
                     .map(batchQueueResourcePolicyMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group batch queue resource policy list: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5313,23 +3547,14 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ComputeResourcePolicy> domainPolicies =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainPolicies =
                     airavataService.getGroupComputeResourcePolicyList(domainAuthzToken, groupResourceProfileId);
             return domainPolicies.stream()
                     .map(computeResourcePolicyMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group compute resource policy list: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5341,19 +3566,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             String gatewayId = domainAuthzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            org.apache.airavata.common.model.GatewayGroups domainGroups = airavataService.getGatewayGroups(gatewayId);
+            var domainGroups = airavataService.getGatewayGroups(gatewayId);
             return gatewayGroupsMapper.toThrift(domainGroups);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting gateway groups: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5366,17 +3584,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.Parser domainParser = airavataService.getParser(parserId, gatewayId);
+            var domainParser = airavataService.getParser(parserId, gatewayId);
             return parserMapper.toThrift(domainParser);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting parser: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5390,18 +3601,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.Parser domainParser = parserMapper.toDomain(parser);
+            var domainParser = parserMapper.toDomain(parser);
             return airavataService.saveParser(domainParser);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error saving parser: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5414,17 +3617,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.Parser> domainParsers = airavataService.listAllParsers(gatewayId);
+            var domainParsers = airavataService.listAllParsers(gatewayId);
             return domainParsers.stream().map(parserMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error listing parsers: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5439,15 +3635,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         try {
             airavataService.removeParser(parserId, gatewayId);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing parser: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5460,18 +3649,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.common.model.ParsingTemplate domainTemplate =
-                    airavataService.getParsingTemplate(templateId, gatewayId);
+            var domainTemplate = airavataService.getParsingTemplate(templateId, gatewayId);
             return parsingTemplateMapper.toThrift(domainTemplate);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting parsing template: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5484,18 +3665,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.ParsingTemplate> domainTemplates =
-                    airavataService.getParsingTemplatesForExperiment(experimentId, gatewayId);
+            var domainTemplates = airavataService.getParsingTemplatesForExperiment(experimentId, gatewayId);
             return domainTemplates.stream().map(parsingTemplateMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting parsing templates for experiment: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5509,27 +3682,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ParsingTemplate domainTemplate =
-                    parsingTemplateMapper.toDomain(parsingTemplate);
+            var domainTemplate = parsingTemplateMapper.toDomain(parsingTemplate);
             return airavataService.saveParsingTemplate(domainTemplate);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            thriftException.setMessage(e.getMessage());
-            if (e.getAiravataErrorType() != null) {
-                thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
-                        e.getAiravataErrorType().name()));
-            }
-            thriftException.initCause(e);
-            throw thriftException;
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error saving parsing template: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5543,15 +3699,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             airavataService.removeParsingTemplate(templateId, gatewayId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error removing parsing template: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
         return true;
     }
@@ -5565,18 +3714,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            List<org.apache.airavata.common.model.ParsingTemplate> domainTemplates =
-                    airavataService.listAllParsingTemplates(gatewayId);
+            var domainTemplates = airavataService.listAllParsingTemplates(gatewayId);
             return domainTemplates.stream().map(parsingTemplateMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error listing parsing templates: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5594,24 +3735,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataClientException, AiravataSystemException,
                     AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ProcessStatus domainStatus =
-                    airavataService.getIntermediateOutputProcessStatus(
-                            domainAuthzToken, airavataExperimentId, outputNames);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainStatus = airavataService.getIntermediateOutputProcessStatus(
+                    domainAuthzToken, airavataExperimentId, outputNames);
             return processStatusMapper.toThrift(domainStatus);
-        } catch (org.apache.airavata.common.exception.InvalidRequestException e) {
-            throw convertToThriftInvalidRequestException(e);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting intermediate output process status: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5623,19 +3752,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
             org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel resourceScheduling)
             throws AuthorizationException, TException {
         try {
-            if (false) throw new org.apache.airavata.thriftapi.exception.AuthorizationException();
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.ComputationalResourceSchedulingModel domainScheduling =
-                    computationalResourceSchedulingModelMapper.toDomain(resourceScheduling);
+            var domainScheduling = computationalResourceSchedulingModelMapper.toDomain(resourceScheduling);
             airavataService.updateResourceScheduleing(airavataExperimentId, domainScheduling);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error updating resource scheduling: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5648,21 +3768,12 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.ComputeResourcePreference> domainPreferences =
-                    airavataService.getAllGatewayComputeResourcePreferences(gatewayID);
+            var domainPreferences = airavataService.getAllGatewayComputeResourcePreferences(gatewayID);
             return domainPreferences.stream()
                     .map(computeResourcePreferenceMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting all gateway compute resource preferences: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5677,19 +3788,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.GroupComputeResourcePreference domainPreference =
+            var domainPreference =
                     airavataService.getGroupComputeResourcePreference(groupResourceProfileId, computeResourceId);
             return groupComputeResourcePreferenceMapper.toThrift(domainPreference);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error getting group compute resource preference: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5704,17 +3807,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return airavataService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting job submission interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5731,21 +3826,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.DMType domainDMType =
-                    org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
-            org.apache.airavata.common.model.LOCALDataMovement domainLocal =
-                    localDataMovementMapper.toDomain(localDataMovement);
+            var domainDMType = org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
+            var domainLocal = localDataMovementMapper.toDomain(localDataMovement);
             return airavataService.addLocalDataMovementDetails(productUri, domainDMType, priorityOrder, domainLocal);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding local data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5761,19 +3846,10 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.DMType domainDMType =
-                    org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
+            var domainDMType = org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
             return airavataService.deleteDataMovementInterface(productUri, dataMovementInterfaceId, domainDMType);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.exception.AiravataSystemException ex =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            ex.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error deleting data movement interface: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -5790,20 +3866,11 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AiravataSystemException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.DMType domainDMType =
-                    org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
-            org.apache.airavata.common.model.SCPDataMovement domainSCP =
-                    scpDataMovementMapper.toDomain(scpDataMovement);
+            var domainDMType = org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
+            var domainSCP = scpDataMovementMapper.toDomain(scpDataMovement);
             return airavataService.addSCPDataMovementDetails(productUri, domainDMType, priorityOrder, domainSCP);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
-            throw convertToThriftSystemException(e);
-        } catch (Exception e) {
-            var ex = new AiravataSystemException();
-            ex.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            ex.setMessage("Error adding SCP data movement details: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 }

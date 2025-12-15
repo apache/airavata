@@ -53,6 +53,36 @@ public class TenantProfileServiceHandler
         return org.apache.airavata.thriftapi.profile.model.profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+
+        if (e instanceof org.apache.airavata.profile.exception.TenantProfileServiceException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.credential.exception.CredentialStoreException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();
+            ex.setMessage("Credential Store Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();
+            ex.setMessage("Internal Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+        return thriftException;
+    }
+
     @Override
     @SecurityCheck
     public String addGateway(
@@ -61,25 +91,11 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateway = gatewayMapper.toDomain(gateway);
             return tenantProfileService.addGateway(domainAuthzToken, domainGateway);
-        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error adding gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error adding gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -91,25 +107,11 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(updatedGateway);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateway = gatewayMapper.toDomain(updatedGateway);
             return tenantProfileService.updateGateway(domainAuthzToken, domainGateway);
-        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error updating gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error updating gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -120,20 +122,11 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.Gateway domainGateway =
-                    tenantProfileService.getGateway(domainAuthzToken, airavataInternalGatewayId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateway = tenantProfileService.getGateway(domainAuthzToken, airavataInternalGatewayId);
             return gatewayMapper.toThrift(domainGateway);
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error getting gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -146,18 +139,10 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return tenantProfileService.deleteGateway(domainAuthzToken, airavataInternalGatewayId, gatewayId);
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error deleting gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -168,20 +153,11 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.Gateway> domainGateways =
-                    tenantProfileService.getAllGateways(domainAuthzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateways = tenantProfileService.getAllGateways(domainAuthzToken);
             return domainGateways.stream().map(gatewayMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error getting all gateways: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -191,18 +167,10 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return tenantProfileService.isGatewayExist(domainAuthzToken, gatewayId);
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error checking if gateway exists: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -213,40 +181,11 @@ public class TenantProfileServiceHandler
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.Gateway> domainGateways =
-                    tenantProfileService.getAllGatewaysForUser(domainAuthzToken, requesterUsername);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateways = tenantProfileService.getAllGatewaysForUser(domainAuthzToken, requesterUsername);
             return domainGateways.stream().map(gatewayMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-            throw convertToThriftTenantProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
-                            "Error getting gateways for user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
-    }
-
-    // Helper methods for exception conversion
-    private org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException
-            convertToThriftTenantProfileServiceException(
-                    org.apache.airavata.profile.exception.TenantProfileServiceException e) {
-        org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException thriftException =
-                new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AuthorizationException convertToThriftAuthorizationException(
-            org.apache.airavata.common.exception.AuthorizationException e) {
-        org.apache.airavata.thriftapi.exception.AuthorizationException thriftException =
-                new org.apache.airavata.thriftapi.exception.AuthorizationException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
     }
 }

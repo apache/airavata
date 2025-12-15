@@ -21,71 +21,124 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.AiravataClientException;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.DuplicateEntryException;
-import org.apache.airavata.common.exception.ExperimentNotFoundException;
-import org.apache.airavata.common.exception.InvalidRequestException;
-import org.apache.airavata.common.exception.ProjectNotFoundException;
-import org.apache.airavata.common.model.ApplicationDeploymentDescription;
-import org.apache.airavata.common.model.ApplicationInterfaceDescription;
-import org.apache.airavata.common.model.ApplicationModule;
-import org.apache.airavata.common.model.BatchQueueResourcePolicy;
-import org.apache.airavata.common.model.CloudJobSubmission;
-import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
-import org.apache.airavata.common.model.ComputeResourceDescription;
-import org.apache.airavata.common.model.ComputeResourcePolicy;
-import org.apache.airavata.common.model.ComputeResourcePreference;
-import org.apache.airavata.common.model.DMType;
-import org.apache.airavata.common.model.DataProductModel;
-import org.apache.airavata.common.model.DataReplicaLocationModel;
-import org.apache.airavata.common.model.ErrorModel;
-import org.apache.airavata.common.model.ExperimentModel;
-import org.apache.airavata.common.model.ExperimentSearchFields;
-import org.apache.airavata.common.model.ExperimentStatistics;
-import org.apache.airavata.common.model.ExperimentStatus;
-import org.apache.airavata.common.model.ExperimentSummaryModel;
-import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.GatewayGroups;
-import org.apache.airavata.common.model.GatewayResourceProfile;
-import org.apache.airavata.common.model.GatewayUsageReportingCommand;
-import org.apache.airavata.common.model.GridFTPDataMovement;
-import org.apache.airavata.common.model.GroupComputeResourcePreference;
-import org.apache.airavata.common.model.GroupResourceProfile;
-import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.common.model.JobModel;
-import org.apache.airavata.common.model.JobStatus;
-import org.apache.airavata.common.model.LOCALDataMovement;
-import org.apache.airavata.common.model.LOCALSubmission;
-import org.apache.airavata.common.model.Notification;
-import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.common.model.Parser;
-import org.apache.airavata.common.model.ParserInput;
-import org.apache.airavata.common.model.ParserOutput;
-import org.apache.airavata.common.model.ParsingTemplate;
-import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.common.model.ProcessStatus;
-import org.apache.airavata.common.model.ProcessWorkflow;
-import org.apache.airavata.common.model.Project;
-import org.apache.airavata.common.model.ProjectSearchFields;
-import org.apache.airavata.common.model.QueueStatusModel;
-import org.apache.airavata.common.model.ResourceJobManager;
-import org.apache.airavata.common.model.SCPDataMovement;
-import org.apache.airavata.common.model.SSHJobSubmission;
-import org.apache.airavata.common.model.StoragePreference;
-import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.common.model.TaskModel;
-import org.apache.airavata.common.model.TaskStatus;
-import org.apache.airavata.common.model.UnicoreDataMovement;
-import org.apache.airavata.common.model.UnicoreJobSubmission;
-import org.apache.airavata.common.model.UserComputeResourcePreference;
-import org.apache.airavata.common.model.UserConfigurationDataModel;
-import org.apache.airavata.common.model.UserProfile;
-import org.apache.airavata.common.model.UserResourceProfile;
-import org.apache.airavata.common.model.UserStoragePreference;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import java.util.stream.Collectors;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.thriftapi.exception.AiravataClientException;
+import org.apache.airavata.thriftapi.exception.AiravataSystemException;
+import org.apache.airavata.thriftapi.exception.DuplicateEntryException;
+import org.apache.airavata.thriftapi.exception.ExperimentNotFoundException;
+import org.apache.airavata.thriftapi.exception.InvalidRequestException;
+import org.apache.airavata.thriftapi.exception.ProjectNotFoundException;
+import org.apache.airavata.thriftapi.mapper.ApplicationDeploymentDescriptionMapper;
+import org.apache.airavata.thriftapi.mapper.ApplicationInterfaceDescriptionMapper;
+import org.apache.airavata.thriftapi.mapper.ApplicationModuleMapper;
+import org.apache.airavata.thriftapi.mapper.BatchQueueResourcePolicyMapper;
+import org.apache.airavata.thriftapi.mapper.CloudJobSubmissionMapper;
+import org.apache.airavata.thriftapi.mapper.ComputationalResourceSchedulingModelMapper;
+import org.apache.airavata.thriftapi.mapper.ComputeResourceDescriptionMapper;
+import org.apache.airavata.thriftapi.mapper.ComputeResourcePolicyMapper;
+import org.apache.airavata.thriftapi.mapper.ComputeResourcePreferenceMapper;
+import org.apache.airavata.thriftapi.mapper.DataProductModelMapper;
+import org.apache.airavata.thriftapi.mapper.DataReplicaLocationModelMapper;
+import org.apache.airavata.thriftapi.mapper.ErrorModelMapper;
+import org.apache.airavata.thriftapi.mapper.ExperimentModelMapper;
+import org.apache.airavata.thriftapi.mapper.ExperimentStatisticsMapper;
+import org.apache.airavata.thriftapi.mapper.ExperimentStatusMapper;
+import org.apache.airavata.thriftapi.mapper.ExperimentSummaryModelMapper;
+import org.apache.airavata.thriftapi.mapper.GatewayGroupsMapper;
+import org.apache.airavata.thriftapi.mapper.GatewayMapper;
+import org.apache.airavata.thriftapi.mapper.GatewayResourceProfileMapper;
+import org.apache.airavata.thriftapi.mapper.GatewayUsageReportingCommandMapper;
+import org.apache.airavata.thriftapi.mapper.GridFTPDataMovementMapper;
+import org.apache.airavata.thriftapi.mapper.GroupComputeResourcePreferenceMapper;
+import org.apache.airavata.thriftapi.mapper.GroupResourceProfileMapper;
+import org.apache.airavata.thriftapi.mapper.InputDataObjectTypeMapper;
+import org.apache.airavata.thriftapi.mapper.JobModelMapper;
+import org.apache.airavata.thriftapi.mapper.JobStatusMapper;
+import org.apache.airavata.thriftapi.mapper.LOCALDataMovementMapper;
+import org.apache.airavata.thriftapi.mapper.LOCALSubmissionMapper;
+import org.apache.airavata.thriftapi.mapper.NotificationMapper;
+import org.apache.airavata.thriftapi.mapper.OutputDataObjectTypeMapper;
+import org.apache.airavata.thriftapi.mapper.ParserInputMapper;
+import org.apache.airavata.thriftapi.mapper.ParserMapper;
+import org.apache.airavata.thriftapi.mapper.ParserOutputMapper;
+import org.apache.airavata.thriftapi.mapper.ParsingTemplateMapper;
+import org.apache.airavata.thriftapi.mapper.ProcessModelMapper;
+import org.apache.airavata.thriftapi.mapper.ProcessStatusMapper;
+import org.apache.airavata.thriftapi.mapper.ProcessWorkflowMapper;
+import org.apache.airavata.thriftapi.mapper.ProjectMapper;
+import org.apache.airavata.thriftapi.mapper.QueueStatusModelMapper;
+import org.apache.airavata.thriftapi.mapper.ResourceJobManagerMapper;
+import org.apache.airavata.thriftapi.mapper.SCPDataMovementMapper;
+import org.apache.airavata.thriftapi.mapper.SSHJobSubmissionMapper;
+import org.apache.airavata.thriftapi.mapper.StoragePreferenceMapper;
+import org.apache.airavata.thriftapi.mapper.StorageResourceDescriptionMapper;
+import org.apache.airavata.thriftapi.mapper.TaskModelMapper;
+import org.apache.airavata.thriftapi.mapper.TaskStatusMapper;
+import org.apache.airavata.thriftapi.mapper.UnicoreDataMovementMapper;
+import org.apache.airavata.thriftapi.mapper.UnicoreJobSubmissionMapper;
+import org.apache.airavata.thriftapi.mapper.UserComputeResourcePreferenceMapper;
+import org.apache.airavata.thriftapi.mapper.UserConfigurationDataModelMapper;
+import org.apache.airavata.thriftapi.mapper.UserProfileMapper;
+import org.apache.airavata.thriftapi.mapper.UserResourceProfileMapper;
+import org.apache.airavata.thriftapi.mapper.UserStoragePreferenceMapper;
+import org.apache.airavata.thriftapi.model.ApplicationDeploymentDescription;
+import org.apache.airavata.thriftapi.model.ApplicationInterfaceDescription;
+import org.apache.airavata.thriftapi.model.ApplicationModule;
+import org.apache.airavata.thriftapi.model.BatchQueueResourcePolicy;
+import org.apache.airavata.thriftapi.model.CloudJobSubmission;
+import org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.thriftapi.model.ComputeResourceDescription;
+import org.apache.airavata.thriftapi.model.ComputeResourcePolicy;
+import org.apache.airavata.thriftapi.model.ComputeResourcePreference;
+import org.apache.airavata.thriftapi.model.DMType;
+import org.apache.airavata.thriftapi.model.DataProductModel;
+import org.apache.airavata.thriftapi.model.DataReplicaLocationModel;
+import org.apache.airavata.thriftapi.model.ErrorModel;
+import org.apache.airavata.thriftapi.model.ExperimentModel;
+import org.apache.airavata.thriftapi.model.ExperimentSearchFields;
+import org.apache.airavata.thriftapi.model.ExperimentStatistics;
+import org.apache.airavata.thriftapi.model.ExperimentStatus;
+import org.apache.airavata.thriftapi.model.ExperimentSummaryModel;
+import org.apache.airavata.thriftapi.model.Gateway;
+import org.apache.airavata.thriftapi.model.GatewayGroups;
+import org.apache.airavata.thriftapi.model.GatewayResourceProfile;
+import org.apache.airavata.thriftapi.model.GatewayUsageReportingCommand;
+import org.apache.airavata.thriftapi.model.GridFTPDataMovement;
+import org.apache.airavata.thriftapi.model.GroupComputeResourcePreference;
+import org.apache.airavata.thriftapi.model.GroupResourceProfile;
+import org.apache.airavata.thriftapi.model.InputDataObjectType;
+import org.apache.airavata.thriftapi.model.JobModel;
+import org.apache.airavata.thriftapi.model.LOCALDataMovement;
+import org.apache.airavata.thriftapi.model.LOCALSubmission;
+import org.apache.airavata.thriftapi.model.Notification;
+import org.apache.airavata.thriftapi.model.OutputDataObjectType;
+import org.apache.airavata.thriftapi.model.Parser;
+import org.apache.airavata.thriftapi.model.ParserInput;
+import org.apache.airavata.thriftapi.model.ParserOutput;
+import org.apache.airavata.thriftapi.model.ParsingTemplate;
+import org.apache.airavata.thriftapi.model.ProcessModel;
+import org.apache.airavata.thriftapi.model.ProcessState;
+import org.apache.airavata.thriftapi.model.ProcessStatus;
+import org.apache.airavata.thriftapi.model.ProcessWorkflow;
+import org.apache.airavata.thriftapi.model.Project;
+import org.apache.airavata.thriftapi.model.ProjectSearchFields;
+import org.apache.airavata.thriftapi.model.QueueStatusModel;
+import org.apache.airavata.thriftapi.model.ResourceJobManager;
+import org.apache.airavata.thriftapi.model.SCPDataMovement;
+import org.apache.airavata.thriftapi.model.SSHJobSubmission;
+import org.apache.airavata.thriftapi.model.StoragePreference;
+import org.apache.airavata.thriftapi.model.StorageResourceDescription;
+import org.apache.airavata.thriftapi.model.TaskModel;
+import org.apache.airavata.thriftapi.model.TaskStatus;
+import org.apache.airavata.thriftapi.model.UnicoreDataMovement;
+import org.apache.airavata.thriftapi.model.UnicoreJobSubmission;
+import org.apache.airavata.thriftapi.model.UserComputeResourcePreference;
+import org.apache.airavata.thriftapi.model.UserConfigurationDataModel;
+import org.apache.airavata.thriftapi.model.UserProfile;
+import org.apache.airavata.thriftapi.model.UserResourceProfile;
+import org.apache.airavata.thriftapi.model.UserStoragePreference;
+import org.apache.airavata.thriftapi.registry.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -95,6 +148,71 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceHandler.class);
 
     private final RegistryService registryService;
+    private final GatewayMapper gatewayMapper = GatewayMapper.INSTANCE;
+    private final ParserMapper parserMapper = ParserMapper.INSTANCE;
+    private final ParsingTemplateMapper parsingTemplateMapper = ParsingTemplateMapper.INSTANCE;
+    private final ParserInputMapper parserInputMapper = ParserInputMapper.INSTANCE;
+    private final ParserOutputMapper parserOutputMapper = ParserOutputMapper.INSTANCE;
+    private final GatewayGroupsMapper gatewayGroupsMapper = GatewayGroupsMapper.INSTANCE;
+    private final GroupResourceProfileMapper groupResourceProfileMapper = GroupResourceProfileMapper.INSTANCE;
+    private final GroupComputeResourcePreferenceMapper groupComputeResourcePreferenceMapper =
+            GroupComputeResourcePreferenceMapper.INSTANCE;
+    private final ComputeResourcePolicyMapper computeResourcePolicyMapper = ComputeResourcePolicyMapper.INSTANCE;
+    private final BatchQueueResourcePolicyMapper batchQueueResourcePolicyMapper =
+            BatchQueueResourcePolicyMapper.INSTANCE;
+    private final JobStatusMapper jobStatusMapper = JobStatusMapper.INSTANCE;
+    private final GatewayUsageReportingCommandMapper gatewayUsageReportingCommandMapper =
+            GatewayUsageReportingCommandMapper.INSTANCE;
+    private final QueueStatusModelMapper queueStatusModelMapper = QueueStatusModelMapper.INSTANCE;
+    private final NotificationMapper notificationMapper = NotificationMapper.INSTANCE;
+    private final ProjectMapper projectMapper = ProjectMapper.INSTANCE;
+    private final ExperimentModelMapper experimentModelMapper = ExperimentModelMapper.INSTANCE;
+    private final ExperimentSummaryModelMapper experimentSummaryModelMapper = ExperimentSummaryModelMapper.INSTANCE;
+    private final ExperimentStatisticsMapper experimentStatisticsMapper = ExperimentStatisticsMapper.INSTANCE;
+    private final ExperimentStatusMapper experimentStatusMapper = ExperimentStatusMapper.INSTANCE;
+    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper = OutputDataObjectTypeMapper.INSTANCE;
+    private final ErrorModelMapper errorModelMapper = ErrorModelMapper.INSTANCE;
+    private final TaskStatusMapper taskStatusMapper = TaskStatusMapper.INSTANCE;
+    private final ProcessStatusMapper processStatusMapper = ProcessStatusMapper.INSTANCE;
+    private final JobModelMapper jobModelMapper = JobModelMapper.INSTANCE;
+    private final ProcessModelMapper processModelMapper = ProcessModelMapper.INSTANCE;
+    private final TaskModelMapper taskModelMapper = TaskModelMapper.INSTANCE;
+    private final ProcessWorkflowMapper processWorkflowMapper = ProcessWorkflowMapper.INSTANCE;
+    private final UserConfigurationDataModelMapper userConfigurationDataModelMapper =
+            UserConfigurationDataModelMapper.INSTANCE;
+    private final ApplicationModuleMapper applicationModuleMapper = ApplicationModuleMapper.INSTANCE;
+    private final ApplicationDeploymentDescriptionMapper applicationDeploymentDescriptionMapper =
+            ApplicationDeploymentDescriptionMapper.INSTANCE;
+    private final ApplicationInterfaceDescriptionMapper applicationInterfaceDescriptionMapper =
+            ApplicationInterfaceDescriptionMapper.INSTANCE;
+    private final InputDataObjectTypeMapper inputDataObjectTypeMapper = InputDataObjectTypeMapper.INSTANCE;
+    private final ComputeResourceDescriptionMapper computeResourceDescriptionMapper =
+            ComputeResourceDescriptionMapper.INSTANCE;
+    private final StorageResourceDescriptionMapper storageResourceDescriptionMapper =
+            StorageResourceDescriptionMapper.INSTANCE;
+    private final LOCALSubmissionMapper localSubmissionMapper = LOCALSubmissionMapper.INSTANCE;
+    private final SSHJobSubmissionMapper sshJobSubmissionMapper = SSHJobSubmissionMapper.INSTANCE;
+    private final UnicoreJobSubmissionMapper unicoreJobSubmissionMapper = UnicoreJobSubmissionMapper.INSTANCE;
+    private final CloudJobSubmissionMapper cloudJobSubmissionMapper = CloudJobSubmissionMapper.INSTANCE;
+    private final LOCALDataMovementMapper localDataMovementMapper = LOCALDataMovementMapper.INSTANCE;
+    private final SCPDataMovementMapper scpDataMovementMapper = SCPDataMovementMapper.INSTANCE;
+    private final UnicoreDataMovementMapper unicoreDataMovementMapper = UnicoreDataMovementMapper.INSTANCE;
+    private final GridFTPDataMovementMapper gridFTPDataMovementMapper = GridFTPDataMovementMapper.INSTANCE;
+    private final ResourceJobManagerMapper resourceJobManagerMapper = ResourceJobManagerMapper.INSTANCE;
+    private final GatewayResourceProfileMapper gatewayResourceProfileMapper = GatewayResourceProfileMapper.INSTANCE;
+    private final ComputeResourcePreferenceMapper computeResourcePreferenceMapper =
+            ComputeResourcePreferenceMapper.INSTANCE;
+    private final StoragePreferenceMapper storagePreferenceMapper = StoragePreferenceMapper.INSTANCE;
+    private final DataProductModelMapper dataProductModelMapper = DataProductModelMapper.INSTANCE;
+    private final DataReplicaLocationModelMapper dataReplicaLocationModelMapper =
+            DataReplicaLocationModelMapper.INSTANCE;
+    private final ComputationalResourceSchedulingModelMapper computationalResourceSchedulingModelMapper =
+            ComputationalResourceSchedulingModelMapper.INSTANCE;
+    private final UserResourceProfileMapper userResourceProfileMapper = UserResourceProfileMapper.INSTANCE;
+    private final UserProfileMapper userProfileMapper = UserProfileMapper.INSTANCE;
+    private final UserComputeResourcePreferenceMapper userComputeResourcePreferenceMapper =
+            UserComputeResourcePreferenceMapper.INSTANCE;
+    private final UserStoragePreferenceMapper userStoragePreferenceMapper = UserStoragePreferenceMapper.INSTANCE;
 
     public RegistryServiceHandler(RegistryService registryService) {
         this.registryService = registryService;
@@ -108,12 +226,26 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
         return exception;
     }
 
+    private ProjectNotFoundException convertToThriftProjectNotFoundException(
+            org.apache.airavata.common.exception.ProjectNotFoundException e) {
+        ProjectNotFoundException exception = new ProjectNotFoundException();
+        exception.setMessage(e.getMessage());
+        return exception;
+    }
+
+    private DuplicateEntryException convertToThriftDuplicateEntryException(
+            org.apache.airavata.common.exception.DuplicateEntryException e) {
+        DuplicateEntryException exception = new DuplicateEntryException();
+        exception.setMessage(e.getMessage());
+        return exception;
+    }
+
     /**
      * Fetch Apache Registry API version
      */
     @Override
     public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.registry.model.registry_apiConstants.REGISTRY_API_VERSION;
+        return org.apache.airavata.thriftapi.registry.model.registry_apiConstants.REGISTRY_API_VERSION;
     }
 
     /**
@@ -125,7 +257,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean isUserExists(String gatewayId, String userName) throws RegistryServiceException {
-        return registryService.isUserExists(gatewayId, userName);
+        try {
+            return registryService.isUserExists(gatewayId, userName);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if user exists");
+        }
     }
 
     /**
@@ -137,7 +273,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<String> getAllUsersInGateway(String gatewayId) throws RegistryServiceException {
-        return registryService.getAllUsersInGateway(gatewayId);
+        try {
+            return registryService.getAllUsersInGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all users in gateway");
+        }
     }
 
     /**
@@ -149,7 +289,12 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public Gateway getGateway(String gatewayId) throws RegistryServiceException {
-        return registryService.getGateway(gatewayId);
+        try {
+            org.apache.airavata.common.model.Gateway domainGateway = registryService.getGateway(gatewayId);
+            return gatewayMapper.toThrift(domainGateway);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway");
+        }
     }
 
     /**
@@ -161,7 +306,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteGateway(String gatewayId) throws RegistryServiceException {
-        return registryService.deleteGateway(gatewayId);
+        try {
+            return registryService.deleteGateway(gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete gateway");
+        }
     }
 
     /**
@@ -169,7 +318,12 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<Gateway> getAllGateways() throws RegistryServiceException {
-        return registryService.getAllGateways();
+        try {
+            List<org.apache.airavata.common.model.Gateway> domainGateways = registryService.getAllGateways();
+            return domainGateways.stream().map(gatewayMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all gateways");
+        }
     }
 
     /**
@@ -181,22 +335,44 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean isGatewayExist(String gatewayId) throws RegistryServiceException {
-        return registryService.isGatewayExist(gatewayId);
+        try {
+            return registryService.isGatewayExist(gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if gateway exists");
+        }
     }
 
     @Override
     public boolean deleteNotification(String gatewayId, String notificationId) throws RegistryServiceException {
-        return registryService.deleteNotification(gatewayId, notificationId);
+        try {
+            return registryService.deleteNotification(gatewayId, notificationId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete notification");
+        }
     }
 
     @Override
     public Notification getNotification(String gatewayId, String notificationId) throws RegistryServiceException {
-        return registryService.getNotification(gatewayId, notificationId);
+        try {
+            org.apache.airavata.common.model.Notification domainNotification =
+                    registryService.getNotification(gatewayId, notificationId);
+            return notificationMapper.toThrift(domainNotification);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get notification");
+        }
     }
 
     @Override
     public List<Notification> getAllNotifications(String gatewayId) throws RegistryServiceException {
-        return registryService.getAllNotifications(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.Notification> domainNotifications =
+                    registryService.getAllNotifications(gatewayId);
+            return domainNotifications.stream()
+                    .map(notificationMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all notifications");
+        }
     }
 
     /**
@@ -209,7 +385,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public Project getProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
-        return registryService.getProject(projectId);
+        try {
+            org.apache.airavata.common.model.Project domainProject = registryService.getProject(projectId);
+            return projectMapper.toThrift(domainProject);
+        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
+            throw convertToThriftProjectNotFoundException(e);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get project");
+        }
     }
 
     /**
@@ -224,7 +407,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
-        return registryService.deleteProject(projectId);
+        try {
+            return registryService.deleteProject(projectId);
+        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
+            throw convertToThriftProjectNotFoundException(e);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete project");
+        }
     }
 
     /**
@@ -239,7 +428,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<Project> getUserProjects(String gatewayId, String userName, int limit, int offset)
             throws RegistryServiceException {
-        return registryService.getUserProjects(gatewayId, userName, limit, offset);
+        try {
+            List<org.apache.airavata.common.model.Project> domainProjects =
+                    registryService.getUserProjects(gatewayId, userName, limit, offset);
+            return domainProjects.stream().map(projectMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user projects");
+        }
     }
 
     /**
@@ -262,16 +457,22 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             int limit,
             int offset)
             throws RegistryServiceException {
-        return registryService.getExperimentStatistics(
-                gatewayId,
-                fromTime,
-                toTime,
-                userName,
-                applicationName,
-                resourceHostName,
-                accessibleExpIds,
-                limit,
-                offset);
+        try {
+            org.apache.airavata.common.model.ExperimentStatistics domainExperimentStatistics =
+                    registryService.getExperimentStatistics(
+                            gatewayId,
+                            fromTime,
+                            toTime,
+                            userName,
+                            applicationName,
+                            resourceHostName,
+                            accessibleExpIds,
+                            limit,
+                            offset);
+            return experimentStatisticsMapper.toThrift(domainExperimentStatistics);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get experiment statistics");
+        }
     }
 
     /**
@@ -286,7 +487,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
             throws RegistryServiceException {
-        return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
+        try {
+            List<org.apache.airavata.common.model.ExperimentModel> domainExperiments =
+                    registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
+            return domainExperiments.stream()
+                    .map(experimentModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get experiments in project");
+        }
     }
 
     /**
@@ -301,7 +510,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
             throws RegistryServiceException {
-        return registryService.getUserExperiments(gatewayId, userName, limit, offset);
+        try {
+            List<org.apache.airavata.common.model.ExperimentModel> domainExperiments =
+                    registryService.getUserExperiments(gatewayId, userName, limit, offset);
+            return domainExperiments.stream()
+                    .map(experimentModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user experiments");
+        }
     }
 
     /**
@@ -313,7 +530,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteExperiment(String experimentId) throws RegistryServiceException {
-        return registryService.deleteExperiment(experimentId);
+        try {
+            return registryService.deleteExperiment(experimentId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete experiment");
+        }
     }
 
     /**
@@ -357,8 +578,9 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public ExperimentModel getExperiment(String airavataExperimentId)
             throws RegistryServiceException, ExperimentNotFoundException {
-        ExperimentModel experimentModel = getExperimentInternal(airavataExperimentId);
-        return experimentModel;
+        org.apache.airavata.common.model.ExperimentModel domainExperimentModel =
+                getExperimentInternal(airavataExperimentId);
+        return experimentModelMapper.toThrift(domainExperimentModel);
     }
 
     /**
@@ -388,7 +610,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public ExperimentModel getDetailedExperimentTree(String airavataExperimentId) throws RegistryServiceException {
-        return registryService.getDetailedExperimentTree(airavataExperimentId);
+        try {
+            org.apache.airavata.common.model.ExperimentModel domainExperimentModel =
+                    registryService.getDetailedExperimentTree(airavataExperimentId);
+            return experimentModelMapper.toThrift(domainExperimentModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get detailed experiment tree");
+        }
     }
 
     /**
@@ -402,7 +630,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException {
-        return registryService.getExperimentStatus(airavataExperimentId);
+        try {
+            org.apache.airavata.common.model.ExperimentStatus domainExperimentStatus =
+                    registryService.getExperimentStatus(airavataExperimentId);
+            return experimentStatusMapper.toThrift(domainExperimentStatus);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get experiment status");
+        }
     }
 
     /**
@@ -416,7 +650,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId)
             throws RegistryServiceException {
-        return registryService.getExperimentOutputs(airavataExperimentId);
+        try {
+            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
+                    registryService.getExperimentOutputs(airavataExperimentId);
+            return domainOutputs.stream()
+                    .map(outputDataObjectTypeMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get experiment outputs");
+        }
     }
 
     /**
@@ -430,7 +672,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId)
             throws RegistryServiceException {
-        return registryService.getIntermediateOutputs(airavataExperimentId);
+        try {
+            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
+                    registryService.getIntermediateOutputs(airavataExperimentId);
+            return domainOutputs.stream()
+                    .map(outputDataObjectTypeMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get intermediate outputs");
+        }
     }
 
     /**
@@ -441,105 +691,242 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      *                                    Job status (string) for all all the existing jobs for the experiment will be returned in the form of a map
      */
     @Override
-    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws RegistryServiceException {
-        return registryService.getJobStatuses(airavataExperimentId);
+    public Map<String, org.apache.airavata.thriftapi.model.JobStatus> getJobStatuses(String airavataExperimentId)
+            throws RegistryServiceException {
+        try {
+            Map<String, org.apache.airavata.common.model.JobStatus> domainJobStatuses =
+                    registryService.getJobStatuses(airavataExperimentId);
+            Map<String, org.apache.airavata.thriftapi.model.JobStatus> thriftStatuses = new java.util.HashMap<>();
+            for (Map.Entry<String, org.apache.airavata.common.model.JobStatus> entry : domainJobStatuses.entrySet()) {
+                org.apache.airavata.thriftapi.model.JobStatus thriftStatus =
+                        new org.apache.airavata.thriftapi.model.JobStatus();
+                thriftStatus.setJobState(org.apache.airavata.thriftapi.model.JobState.valueOf(
+                        entry.getValue().getJobState().name()));
+                thriftStatus.setTimeOfStateChange(entry.getValue().getTimeOfStateChange());
+                thriftStatus.setReason(entry.getValue().getReason());
+                thriftStatus.setStatusId(entry.getValue().getStatusId());
+                thriftStatuses.put(entry.getKey(), thriftStatus);
+            }
+            return thriftStatuses;
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get job statuses");
+        }
     }
 
     @Override
     public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id)
             throws RegistryServiceException {
-        registryService.addExperimentProcessOutputs(outputType, outputs, id);
+        try {
+            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
+                    outputs.stream().map(outputDataObjectTypeMapper::toDomain).collect(Collectors.toList());
+            registryService.addExperimentProcessOutputs(outputType, domainOutputs, id);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add experiment process outputs");
+        }
     }
 
     @Override
     public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException {
-        registryService.addErrors(errorType, errorModel, id);
+        try {
+            org.apache.airavata.common.model.ErrorModel domainErrorModel = errorModelMapper.toDomain(errorModel);
+            registryService.addErrors(errorType, domainErrorModel, id);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add errors");
+        }
     }
 
     @Override
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException {
-        registryService.addTaskStatus(taskStatus, taskId);
+        try {
+            org.apache.airavata.common.model.TaskStatus domainTaskStatus = taskStatusMapper.toDomain(taskStatus);
+            registryService.addTaskStatus(domainTaskStatus, taskId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add task status");
+        }
     }
 
     @Override
     public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
-        registryService.addProcessStatus(processStatus, processId);
+        try {
+            org.apache.airavata.common.model.ProcessStatus domainProcessStatus =
+                    processStatusMapper.toDomain(processStatus);
+            registryService.addProcessStatus(domainProcessStatus, processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add process status");
+        }
     }
 
     @Override
     public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
-        registryService.updateProcessStatus(processStatus, processId);
+        try {
+            org.apache.airavata.common.model.ProcessStatus domainProcessStatus =
+                    processStatusMapper.toDomain(processStatus);
+            registryService.updateProcessStatus(domainProcessStatus, processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update process status");
+        }
     }
 
     @Override
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
             throws RegistryServiceException {
-        registryService.updateExperimentStatus(experimentStatus, experimentId);
+        try {
+            org.apache.airavata.common.model.ExperimentStatus domainExperimentStatus =
+                    experimentStatusMapper.toDomain(experimentStatus);
+            registryService.updateExperimentStatus(domainExperimentStatus, experimentId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update experiment status");
+        }
     }
 
     @Override
-    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException {
-        registryService.addJobStatus(jobStatus, taskId, jobId);
+    public void addJobStatus(org.apache.airavata.thriftapi.model.JobStatus jobStatus, String taskId, String jobId)
+            throws RegistryServiceException {
+        try {
+            org.apache.airavata.common.model.JobStatus domainJobStatus =
+                    new org.apache.airavata.common.model.JobStatus();
+            domainJobStatus.setJobState(org.apache.airavata.common.model.JobState.valueOf(
+                    jobStatus.getJobState().name()));
+            domainJobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
+            domainJobStatus.setReason(jobStatus.getReason());
+            domainJobStatus.setStatusId(jobStatus.getStatusId());
+            registryService.addJobStatus(domainJobStatus, taskId, jobId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add job status");
+        }
     }
 
     @Override
     public void addJob(JobModel jobModel, String processId) throws RegistryServiceException {
-        registryService.addJob(jobModel, processId);
+        try {
+            org.apache.airavata.common.model.JobModel domainJobModel = jobModelMapper.toDomain(jobModel);
+            registryService.addJob(domainJobModel, processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add job");
+        }
     }
 
     @Override
     public void deleteJobs(String processId) throws RegistryServiceException {
-        registryService.deleteJobs(processId);
+        try {
+            registryService.deleteJobs(processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete jobs");
+        }
     }
 
     @Override
     public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException {
-        return registryService.addProcess(processModel, experimentId);
+        try {
+            org.apache.airavata.common.model.ProcessModel domainProcessModel =
+                    processModelMapper.toDomain(processModel);
+            return registryService.addProcess(domainProcessModel, experimentId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add process");
+        }
     }
 
     @Override
     public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException {
-        registryService.updateProcess(processModel, processId);
+        try {
+            org.apache.airavata.common.model.ProcessModel domainProcessModel =
+                    processModelMapper.toDomain(processModel);
+            registryService.updateProcess(domainProcessModel, processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update process");
+        }
     }
 
     @Override
     public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException {
-        return registryService.addTask(taskModel, processId);
+        try {
+            org.apache.airavata.common.model.TaskModel domainTaskModel = taskModelMapper.toDomain(taskModel);
+            return registryService.addTask(domainTaskModel, processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add task");
+        }
     }
 
     @Override
     public void deleteTasks(String processId) throws RegistryServiceException {
-        registryService.deleteTasks(processId);
+        try {
+            registryService.deleteTasks(processId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete tasks");
+        }
     }
 
     @Override
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException {
-        return registryService.getUserConfigurationData(experimentId);
+        try {
+            org.apache.airavata.common.model.UserConfigurationDataModel domainUserConfigurationDataModel =
+                    registryService.getUserConfigurationData(experimentId);
+            return userConfigurationDataModelMapper.toThrift(domainUserConfigurationDataModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user configuration data");
+        }
     }
 
     @Override
     public ProcessModel getProcess(String processId) throws RegistryServiceException {
-        return registryService.getProcess(processId);
+        try {
+            org.apache.airavata.common.model.ProcessModel domainProcessModel = registryService.getProcess(processId);
+            return processModelMapper.toThrift(domainProcessModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process");
+        }
     }
 
     @Override
     public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException {
-        return registryService.getProcessList(experimentId);
+        try {
+            List<org.apache.airavata.common.model.ProcessModel> domainProcessModels =
+                    registryService.getProcessList(experimentId);
+            return domainProcessModels.stream()
+                    .map(processModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process list");
+        }
     }
 
     @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException {
-        return registryService.getProcessStatus(processId);
+        try {
+            org.apache.airavata.common.model.ProcessStatus domainProcessStatus =
+                    registryService.getProcessStatus(processId);
+            return processStatusMapper.toThrift(domainProcessStatus);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process status");
+        }
     }
 
     @Override
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryServiceException {
-        return registryService.getProcessListInState(processState);
+        try {
+            org.apache.airavata.common.model.ProcessState domainProcessState =
+                    org.apache.airavata.common.model.ProcessState.valueOf(processState.name());
+            List<org.apache.airavata.common.model.ProcessModel> domainProcessModels =
+                    registryService.getProcessListInState(domainProcessState);
+            return domainProcessModels.stream()
+                    .map(processModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process list in state");
+        }
     }
 
     @Override
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryServiceException {
-        return registryService.getProcessStatusList(processId);
+        try {
+            List<org.apache.airavata.common.model.ProcessStatus> domainProcessStatuses =
+                    registryService.getProcessStatusList(processId);
+            return domainProcessStatuses.stream()
+                    .map(processStatusMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process status list");
+        }
     }
 
     /**
@@ -547,7 +934,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean isJobExist(String queryType, String id) throws RegistryServiceException {
-        return registryService.isJobExist(queryType, id);
+        try {
+            return registryService.isJobExist(queryType, id);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if job exists");
+        }
     }
 
     /**
@@ -555,45 +946,96 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public JobModel getJob(String queryType, String id) throws RegistryServiceException {
-        return registryService.getJob(queryType, id);
+        try {
+            org.apache.airavata.common.model.JobModel domainJobModel = registryService.getJob(queryType, id);
+            return jobModelMapper.toThrift(domainJobModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get job");
+        }
     }
 
     @Override
     public List<JobModel> getJobs(String queryType, String id) throws RegistryServiceException {
-        return registryService.getJobs(queryType, id);
+        try {
+            List<org.apache.airavata.common.model.JobModel> domainJobModels = registryService.getJobs(queryType, id);
+            return domainJobModels.stream().map(jobModelMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get jobs");
+        }
     }
 
     @Override
     public int getJobCount(
-            org.apache.airavata.common.model.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
+            org.apache.airavata.thriftapi.model.JobStatus jobStatus, String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException {
-        return registryService.getJobCount(jobStatus, gatewayId, searchBackTimeInMinutes);
+        try {
+            org.apache.airavata.common.model.JobStatus domainJobStatus =
+                    new org.apache.airavata.common.model.JobStatus();
+            domainJobStatus.setJobState(org.apache.airavata.common.model.JobState.valueOf(
+                    jobStatus.getJobState().name()));
+            domainJobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
+            domainJobStatus.setReason(jobStatus.getReason());
+            domainJobStatus.setStatusId(jobStatus.getStatusId());
+            return registryService.getJobCount(domainJobStatus, gatewayId, searchBackTimeInMinutes);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get job count");
+        }
     }
 
     @Override
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchBackTimeInMinutes)
             throws RegistryServiceException {
-        return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
+        try {
+            return registryService.getAVGTimeDistribution(gatewayId, searchBackTimeInMinutes);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get average time distribution");
+        }
     }
 
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException {
-        return registryService.getProcessOutputs(processId);
+        try {
+            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
+                    registryService.getProcessOutputs(processId);
+            return domainOutputs.stream()
+                    .map(outputDataObjectTypeMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process outputs");
+        }
     }
 
     @Override
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryServiceException {
-        return registryService.getProcessWorkflows(processId);
+        try {
+            List<org.apache.airavata.common.model.ProcessWorkflow> domainProcessWorkflows =
+                    registryService.getProcessWorkflows(processId);
+            return domainProcessWorkflows.stream()
+                    .map(processWorkflowMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process workflows");
+        }
     }
 
     @Override
     public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws RegistryServiceException {
-        registryService.addProcessWorkflow(processWorkflow);
+        try {
+            org.apache.airavata.common.model.ProcessWorkflow domainProcessWorkflow =
+                    processWorkflowMapper.toDomain(processWorkflow);
+            registryService.addProcessWorkflow(domainProcessWorkflow);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add process workflow");
+        }
     }
 
     @Override
     public List<String> getProcessIds(String experimentId) throws RegistryServiceException {
-        return registryService.getProcessIds(experimentId);
+        try {
+            return registryService.getProcessIds(experimentId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get process ids");
+        }
     }
 
     /**
@@ -605,7 +1047,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<JobModel> getJobDetails(String airavataExperimentId) throws RegistryServiceException {
-        return registryService.getJobDetails(airavataExperimentId);
+        try {
+            List<org.apache.airavata.common.model.JobModel> domainJobModels =
+                    registryService.getJobDetails(airavataExperimentId);
+            return domainJobModels.stream().map(jobModelMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get job details");
+        }
     }
 
     /**
@@ -617,7 +1065,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException {
-        return registryService.getApplicationModule(appModuleId);
+        try {
+            org.apache.airavata.common.model.ApplicationModule domainApplicationModule =
+                    registryService.getApplicationModule(appModuleId);
+            return applicationModuleMapper.toThrift(domainApplicationModule);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application module");
+        }
     }
 
     /**
@@ -629,7 +1083,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException {
-        return registryService.getAllAppModules(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.ApplicationModule> domainApplicationModules =
+                    registryService.getAllAppModules(gatewayId);
+            return domainApplicationModules.stream()
+                    .map(applicationModuleMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all app modules");
+        }
     }
 
     /**
@@ -644,7 +1106,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public List<ApplicationModule> getAccessibleAppModules(
             String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds)
             throws RegistryServiceException {
-        return registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
+        try {
+            List<org.apache.airavata.common.model.ApplicationModule> domainApplicationModules =
+                    registryService.getAccessibleAppModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
+            return domainApplicationModules.stream()
+                    .map(applicationModuleMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get accessible app modules");
+        }
     }
 
     /**
@@ -656,7 +1126,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException {
-        return registryService.deleteApplicationModule(appModuleId);
+        try {
+            return registryService.deleteApplicationModule(appModuleId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete application module");
+        }
     }
 
     /**
@@ -669,7 +1143,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId)
             throws RegistryServiceException {
-        return registryService.getApplicationDeployment(appDeploymentId);
+        try {
+            org.apache.airavata.common.model.ApplicationDeploymentDescription domainApplicationDeploymentDescription =
+                    registryService.getApplicationDeployment(appDeploymentId);
+            return applicationDeploymentDescriptionMapper.toThrift(domainApplicationDeploymentDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application deployment");
+        }
     }
 
     /**
@@ -681,7 +1161,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException {
-        return registryService.deleteApplicationDeployment(appDeploymentId);
+        try {
+            return registryService.deleteApplicationDeployment(appDeploymentId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete application deployment");
+        }
     }
 
     /**
@@ -695,7 +1179,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId)
             throws RegistryServiceException {
-        return registryService.getAllApplicationDeployments(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.ApplicationDeploymentDescription>
+                    domainApplicationDeploymentDescriptions = registryService.getAllApplicationDeployments(gatewayId);
+            return domainApplicationDeploymentDescriptions.stream()
+                    .map(applicationDeploymentDescriptionMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all application deployments");
+        }
     }
 
     /**
@@ -710,8 +1202,16 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
             String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds)
             throws RegistryServiceException {
-        return registryService.getAccessibleApplicationDeployments(
-                gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        try {
+            List<org.apache.airavata.common.model.ApplicationDeploymentDescription>
+                    domainApplicationDeploymentDescriptions = registryService.getAccessibleApplicationDeployments(
+                            gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            return domainApplicationDeploymentDescriptions.stream()
+                    .map(applicationDeploymentDescriptionMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get accessible application deployments");
+        }
     }
 
     /**
@@ -731,8 +1231,18 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             List<String> accessibleAppDeploymentIds,
             List<String> accessibleComputeResourceIds)
             throws RegistryServiceException {
-        return registryService.getAccessibleApplicationDeploymentsForAppModule(
-                gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        try {
+            List<org.apache.airavata.common.model.ApplicationDeploymentDescription>
+                    domainApplicationDeploymentDescriptions =
+                            registryService.getAccessibleApplicationDeploymentsForAppModule(
+                                    gatewayId, appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            return domainApplicationDeploymentDescriptions.stream()
+                    .map(applicationDeploymentDescriptionMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(
+                    e, "Failed to get accessible application deployments for app module");
+        }
     }
 
     /**
@@ -744,13 +1254,25 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException {
-        return registryService.getAppModuleDeployedResources(appModuleId);
+        try {
+            return registryService.getAppModuleDeployedResources(appModuleId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get app module deployed resources");
+        }
     }
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
             throws RegistryServiceException {
-        return registryService.getApplicationDeployments(appModuleId);
+        try {
+            List<org.apache.airavata.common.model.ApplicationDeploymentDescription>
+                    domainApplicationDeploymentDescriptions = registryService.getApplicationDeployments(appModuleId);
+            return domainApplicationDeploymentDescriptions.stream()
+                    .map(applicationDeploymentDescriptionMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application deployments");
+        }
     }
 
     /**
@@ -763,7 +1285,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
             throws RegistryServiceException {
-        return registryService.getApplicationInterface(appInterfaceId);
+        try {
+            org.apache.airavata.common.model.ApplicationInterfaceDescription domainApplicationInterfaceDescription =
+                    registryService.getApplicationInterface(appInterfaceId);
+            return applicationInterfaceDescriptionMapper.toThrift(domainApplicationInterfaceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application interface");
+        }
     }
 
     /**
@@ -775,7 +1303,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException {
-        return registryService.deleteApplicationInterface(appInterfaceId);
+        try {
+            return registryService.deleteApplicationInterface(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete application interface");
+        }
     }
 
     /**
@@ -787,7 +1319,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws RegistryServiceException {
-        return registryService.getAllApplicationInterfaceNames(gatewayId);
+        try {
+            return registryService.getAllApplicationInterfaceNames(gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all application interface names");
+        }
     }
 
     /**
@@ -800,7 +1336,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
             throws RegistryServiceException {
-        return registryService.getAllApplicationInterfaces(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.ApplicationInterfaceDescription>
+                    domainApplicationInterfaceDescriptions = registryService.getAllApplicationInterfaces(gatewayId);
+            return domainApplicationInterfaceDescriptions.stream()
+                    .map(applicationInterfaceDescriptionMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all application interfaces");
+        }
     }
 
     /**
@@ -812,7 +1356,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryServiceException {
-        return registryService.getApplicationInputs(appInterfaceId);
+        try {
+            List<org.apache.airavata.common.model.InputDataObjectType> domainInputs =
+                    registryService.getApplicationInputs(appInterfaceId);
+            return domainInputs.stream()
+                    .map(inputDataObjectTypeMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application inputs");
+        }
     }
 
     /**
@@ -824,7 +1376,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryServiceException {
-        return registryService.getApplicationOutputs(appInterfaceId);
+        try {
+            List<org.apache.airavata.common.model.OutputDataObjectType> domainOutputs =
+                    registryService.getApplicationOutputs(appInterfaceId);
+            return domainOutputs.stream()
+                    .map(outputDataObjectTypeMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get application outputs");
+        }
     }
 
     /**
@@ -838,7 +1398,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
             throws RegistryServiceException {
-        return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
+        try {
+            return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get available app interface compute resources");
+        }
     }
 
     /**
@@ -850,7 +1414,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException {
-        return registryService.getComputeResource(computeResourceId);
+        try {
+            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResourceDescription =
+                    registryService.getComputeResource(computeResourceId);
+            return computeResourceDescriptionMapper.toThrift(domainComputeResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get compute resource");
+        }
     }
 
     /**
@@ -861,7 +1431,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException {
-        return registryService.getAllComputeResourceNames();
+        try {
+            return registryService.getAllComputeResourceNames();
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all compute resource names");
+        }
     }
 
     /**
@@ -873,7 +1447,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException {
-        return registryService.deleteComputeResource(computeResourceId);
+        try {
+            return registryService.deleteComputeResource(computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete compute resource");
+        }
     }
 
     /**
@@ -885,7 +1463,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public StorageResourceDescription getStorageResource(String storageResourceId) throws RegistryServiceException {
-        return registryService.getStorageResource(storageResourceId);
+        try {
+            org.apache.airavata.common.model.StorageResourceDescription domainStorageResourceDescription =
+                    registryService.getStorageResource(storageResourceId);
+            return storageResourceDescriptionMapper.toThrift(domainStorageResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get storage resource");
+        }
     }
 
     /**
@@ -896,7 +1480,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public Map<String, String> getAllStorageResourceNames() throws RegistryServiceException {
-        return registryService.getAllStorageResourceNames();
+        try {
+            return registryService.getAllStorageResourceNames();
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all storage resource names");
+        }
     }
 
     /**
@@ -908,7 +1496,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteStorageResource(String storageResourceId) throws RegistryServiceException {
-        return registryService.deleteStorageResource(storageResourceId);
+        try {
+            return registryService.deleteStorageResource(storageResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete storage resource");
+        }
     }
 
     /**
@@ -918,7 +1510,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException {
-        return registryService.getLocalJobSubmission(jobSubmissionId);
+        try {
+            org.apache.airavata.common.model.LOCALSubmission domainLocalSubmission =
+                    registryService.getLocalJobSubmission(jobSubmissionId);
+            return localSubmissionMapper.toThrift(domainLocalSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get local job submission");
+        }
     }
 
     /**
@@ -928,7 +1526,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException {
-        return registryService.getSSHJobSubmission(jobSubmissionId);
+        try {
+            org.apache.airavata.common.model.SSHJobSubmission domainSSHJobSubmission =
+                    registryService.getSSHJobSubmission(jobSubmissionId);
+            return sshJobSubmissionMapper.toThrift(domainSSHJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get SSH job submission");
+        }
     }
 
     /**
@@ -945,7 +1549,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws RegistryServiceException {
-        return registryService.getUnicoreJobSubmission(jobSubmissionId);
+        try {
+            org.apache.airavata.common.model.UnicoreJobSubmission domainUnicoreJobSubmission =
+                    registryService.getUnicoreJobSubmission(jobSubmissionId);
+            return unicoreJobSubmissionMapper.toThrift(domainUnicoreJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get Unicore job submission");
+        }
     }
 
     /**
@@ -960,7 +1570,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException {
-        return registryService.getCloudJobSubmission(jobSubmissionId);
+        try {
+            org.apache.airavata.common.model.CloudJobSubmission domainCloudJobSubmission =
+                    registryService.getCloudJobSubmission(jobSubmissionId);
+            return cloudJobSubmissionMapper.toThrift(domainCloudJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get cloud job submission");
+        }
     }
 
     /**
@@ -971,7 +1587,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException {
-        return registryService.getLocalDataMovement(dataMovementId);
+        try {
+            org.apache.airavata.common.model.LOCALDataMovement domainLocalDataMovement =
+                    registryService.getLocalDataMovement(dataMovementId);
+            return localDataMovementMapper.toThrift(domainLocalDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get local data movement");
+        }
     }
 
     /**
@@ -982,7 +1604,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException {
-        return registryService.getSCPDataMovement(dataMovementId);
+        try {
+            org.apache.airavata.common.model.SCPDataMovement domainSCPDataMovement =
+                    registryService.getSCPDataMovement(dataMovementId);
+            return scpDataMovementMapper.toThrift(domainSCPDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get SCP data movement");
+        }
     }
 
     /**
@@ -993,7 +1621,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws RegistryServiceException {
-        return registryService.getUnicoreDataMovement(dataMovementId);
+        try {
+            org.apache.airavata.common.model.UnicoreDataMovement domainUnicoreDataMovement =
+                    registryService.getUnicoreDataMovement(dataMovementId);
+            return unicoreDataMovementMapper.toThrift(domainUnicoreDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get Unicore data movement");
+        }
     }
 
     /**
@@ -1004,7 +1638,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws RegistryServiceException {
-        return registryService.getGridFTPDataMovement(dataMovementId);
+        try {
+            org.apache.airavata.common.model.GridFTPDataMovement domainGridFTPDataMovement =
+                    registryService.getGridFTPDataMovement(dataMovementId);
+            return gridFTPDataMovementMapper.toThrift(domainGridFTPDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get GridFTP data movement");
+        }
     }
 
     /**
@@ -1072,17 +1712,31 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws RegistryServiceException {
-        return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+        try {
+            return registryService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete job submission interface");
+        }
     }
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
-        return registryService.getResourceJobManager(resourceJobManagerId);
+        try {
+            org.apache.airavata.common.model.ResourceJobManager domainResourceJobManager =
+                    registryService.getResourceJobManager(resourceJobManagerId);
+            return resourceJobManagerMapper.toThrift(domainResourceJobManager);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get resource job manager");
+        }
     }
 
     @Override
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException {
-        return registryService.deleteResourceJobManager(resourceJobManagerId);
+        try {
+            return registryService.deleteResourceJobManager(resourceJobManagerId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete resource job manager");
+        }
     }
 
     /**
@@ -1095,7 +1749,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteBatchQueue(String computeResourceId, String queueName) throws RegistryServiceException {
-        return registryService.deleteBatchQueue(computeResourceId, queueName);
+        try {
+            return registryService.deleteBatchQueue(computeResourceId, queueName);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete batch queue");
+        }
     }
 
     /**
@@ -1107,7 +1765,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
-        return registryService.getGatewayResourceProfile(gatewayID);
+        try {
+            org.apache.airavata.common.model.GatewayResourceProfile domainGatewayResourceProfile =
+                    registryService.getGatewayResourceProfile(gatewayID);
+            return gatewayResourceProfileMapper.toThrift(domainGatewayResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway resource profile");
+        }
     }
 
     /**
@@ -1119,7 +1783,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws RegistryServiceException {
-        return registryService.deleteGatewayResourceProfile(gatewayID);
+        try {
+            return registryService.deleteGatewayResourceProfile(gatewayID);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete gateway resource profile");
+        }
     }
 
     /**
@@ -1133,7 +1801,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
+        try {
+            org.apache.airavata.common.model.ComputeResourcePreference domainComputeResourcePreference =
+                    registryService.getGatewayComputeResourcePreference(gatewayID, computeResourceId);
+            return computeResourcePreferenceMapper.toThrift(domainComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway compute resource preference");
+        }
     }
 
     /**
@@ -1147,7 +1821,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public StoragePreference getGatewayStoragePreference(String gatewayID, String storageId)
             throws RegistryServiceException {
-        return registryService.getGatewayStoragePreference(gatewayID, storageId);
+        try {
+            org.apache.airavata.common.model.StoragePreference domainStoragePreference =
+                    registryService.getGatewayStoragePreference(gatewayID, storageId);
+            return storagePreferenceMapper.toThrift(domainStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway storage preference");
+        }
     }
 
     /**
@@ -1160,7 +1840,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID)
             throws RegistryServiceException {
-        return registryService.getAllGatewayComputeResourcePreferences(gatewayID);
+        try {
+            List<org.apache.airavata.common.model.ComputeResourcePreference> domainComputeResourcePreferences =
+                    registryService.getAllGatewayComputeResourcePreferences(gatewayID);
+            return domainComputeResourcePreferences.stream()
+                    .map(computeResourcePreferenceMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all gateway compute resource preferences");
+        }
     }
 
     /**
@@ -1172,7 +1860,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayID) throws RegistryServiceException {
-        return registryService.getAllGatewayStoragePreferences(gatewayID);
+        try {
+            List<org.apache.airavata.common.model.StoragePreference> domainStoragePreferences =
+                    registryService.getAllGatewayStoragePreferences(gatewayID);
+            return domainStoragePreferences.stream()
+                    .map(storagePreferenceMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all gateway storage preferences");
+        }
     }
 
     /**
@@ -1183,7 +1879,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException {
-        return registryService.getAllGatewayResourceProfiles();
+        try {
+            List<org.apache.airavata.common.model.GatewayResourceProfile> domainGatewayResourceProfiles =
+                    registryService.getAllGatewayResourceProfiles();
+            return domainGatewayResourceProfiles.stream()
+                    .map(gatewayResourceProfileMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all gateway resource profiles");
+        }
     }
 
     /**
@@ -1197,7 +1901,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+        try {
+            return registryService.deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete gateway compute resource preference");
+        }
     }
 
     /**
@@ -1210,126 +1918,254 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteGatewayStoragePreference(String gatewayID, String storageId) throws RegistryServiceException {
-        return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
+        try {
+            return registryService.deleteGatewayStoragePreference(gatewayID, storageId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete gateway storage preference");
+        }
     }
 
     @Override
     public DataProductModel getDataProduct(String productUri) throws RegistryServiceException {
-        return registryService.getDataProduct(productUri);
+        try {
+            org.apache.airavata.common.model.DataProductModel domainDataProductModel =
+                    registryService.getDataProduct(productUri);
+            return dataProductModelMapper.toThrift(domainDataProductModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get data product");
+        }
     }
 
     @Override
     public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException {
-        return registryService.getParentDataProduct(productUri);
+        try {
+            org.apache.airavata.common.model.DataProductModel domainDataProductModel =
+                    registryService.getParentDataProduct(productUri);
+            return dataProductModelMapper.toThrift(domainDataProductModel);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parent data product");
+        }
     }
 
     @Override
     public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException {
-        return registryService.getChildDataProducts(productUri);
+        try {
+            List<org.apache.airavata.common.model.DataProductModel> domainDataProductModels =
+                    registryService.getChildDataProducts(productUri);
+            return domainDataProductModels.stream()
+                    .map(dataProductModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(
+                    e, "Failed to get child data products for productUri=" + productUri);
+        }
     }
 
     @Override
     public List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset)
             throws RegistryServiceException {
-        return registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+        try {
+            List<org.apache.airavata.common.model.DataProductModel> domainDataProductModels =
+                    registryService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            return domainDataProductModels.stream()
+                    .map(dataProductModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to search data products by name");
+        }
     }
 
     @Override
     public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile)
             throws RegistryServiceException {
-        return registryService.createGroupResourceProfile(groupResourceProfile);
+        try {
+            org.apache.airavata.common.model.GroupResourceProfile domainGroupResourceProfile =
+                    groupResourceProfileMapper.toDomain(groupResourceProfile);
+            return registryService.createGroupResourceProfile(domainGroupResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to create group resource profile");
+        }
     }
 
     @Override
     public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException {
-        registryService.updateGroupResourceProfile(groupResourceProfile);
+        try {
+            org.apache.airavata.common.model.GroupResourceProfile domainGroupResourceProfile =
+                    groupResourceProfileMapper.toDomain(groupResourceProfile);
+            registryService.updateGroupResourceProfile(domainGroupResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update group resource profile");
+        }
     }
 
     @Override
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
-        return registryService.getGroupResourceProfile(groupResourceProfileId);
+        try {
+            org.apache.airavata.common.model.GroupResourceProfile domainGroupResourceProfile =
+                    registryService.getGroupResourceProfile(groupResourceProfileId);
+            return groupResourceProfileMapper.toThrift(domainGroupResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group resource profile");
+        }
     }
 
     @Override
     public boolean isGroupResourceProfileExists(String groupResourceProfileId) throws RegistryServiceException {
-        return registryService.isGroupResourceProfileExists(groupResourceProfileId);
+        try {
+            return registryService.isGroupResourceProfileExists(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if group resource profile exists");
+        }
     }
 
     @Override
     public boolean removeGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
-        return registryService.removeGroupResourceProfile(groupResourceProfileId);
+        try {
+            return registryService.removeGroupResourceProfile(groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove group resource profile");
+        }
     }
 
     @Override
     public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds)
             throws RegistryServiceException {
-        return registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+        try {
+            List<org.apache.airavata.common.model.GroupResourceProfile> domainGroupResourceProfiles =
+                    registryService.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            return domainGroupResourceProfiles.stream()
+                    .map(groupResourceProfileMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group resource list");
+        }
     }
 
     @Override
     public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId)
             throws RegistryServiceException {
-        return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
+        try {
+            return registryService.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove group compute prefs");
+        }
     }
 
     @Override
     public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
-        return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
+        try {
+            return registryService.removeGroupComputeResourcePolicy(resourcePolicyId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove group compute resource policy");
+        }
     }
 
     @Override
     public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException {
-        return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
+        try {
+            return registryService.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove group batch queue resource policy");
+        }
     }
 
     @Override
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourceId, String groupResourceProfileId) throws RegistryServiceException {
-        return registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+        try {
+            org.apache.airavata.common.model.GroupComputeResourcePreference domainGroupComputeResourcePreference =
+                    registryService.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            return groupComputeResourcePreferenceMapper.toThrift(domainGroupComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group compute resource preference");
+        }
     }
 
     @Override
     public boolean isGroupComputeResourcePreferenceExists(String computeResourceId, String groupResourceProfileId)
             throws RegistryServiceException {
-        return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
+        try {
+            return registryService.isGroupComputeResourcePreferenceExists(computeResourceId, groupResourceProfileId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if group compute resource preference exists");
+        }
     }
 
     @Override
     public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException {
-        return registryService.getGroupComputeResourcePolicy(resourcePolicyId);
+        try {
+            org.apache.airavata.common.model.ComputeResourcePolicy domainComputeResourcePolicy =
+                    registryService.getGroupComputeResourcePolicy(resourcePolicyId);
+            return computeResourcePolicyMapper.toThrift(domainComputeResourcePolicy);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group compute resource policy");
+        }
     }
 
     @Override
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId)
             throws RegistryServiceException {
-        return registryService.getBatchQueueResourcePolicy(resourcePolicyId);
+        try {
+            org.apache.airavata.common.model.BatchQueueResourcePolicy domainBatchQueueResourcePolicy =
+                    registryService.getBatchQueueResourcePolicy(resourcePolicyId);
+            return batchQueueResourcePolicyMapper.toThrift(domainBatchQueueResourcePolicy);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get batch queue resource policy");
+        }
     }
 
     @Override
     public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId)
             throws RegistryServiceException {
-        return registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
+        try {
+            List<org.apache.airavata.common.model.GroupComputeResourcePreference>
+                    domainGroupComputeResourcePreferences =
+                            registryService.getGroupComputeResourcePrefList(groupResourceProfileId);
+            return domainGroupComputeResourcePreferences.stream()
+                    .map(groupComputeResourcePreferenceMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group compute resource pref list");
+        }
     }
 
     @Override
     public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId)
             throws RegistryServiceException {
-        return registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+        try {
+            List<org.apache.airavata.common.model.BatchQueueResourcePolicy> domainBatchQueueResourcePolicies =
+                    registryService.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+            return domainBatchQueueResourcePolicies.stream()
+                    .map(batchQueueResourcePolicyMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group batch queue resource policy list");
+        }
     }
 
     @Override
     public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId)
             throws RegistryServiceException {
-        return registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
+        try {
+            List<org.apache.airavata.common.model.ComputeResourcePolicy> domainComputeResourcePolicies =
+                    registryService.getGroupComputeResourcePolicyList(groupResourceProfileId);
+            return domainComputeResourcePolicies.stream()
+                    .map(computeResourcePolicyMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get group compute resource policy list");
+        }
     }
 
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
             throws RegistryServiceException {
         try {
-            return registryService.registerReplicaLocation(replicaLocationModel);
+            org.apache.airavata.common.model.DataReplicaLocationModel domainReplicaLocationModel =
+                    dataReplicaLocationModelMapper.toDomain(replicaLocationModel);
+            return registryService.registerReplicaLocation(domainReplicaLocationModel);
         } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error in retreiving the replica " + replicaLocationModel.getReplicaName());
@@ -1344,7 +2180,9 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException {
         try {
-            return registryService.registerDataProduct(dataProductModel);
+            org.apache.airavata.common.model.DataProductModel domainDataProductModel =
+                    dataProductModelMapper.toDomain(dataProductModel);
+            return registryService.registerDataProduct(domainDataProductModel);
         } catch (Throwable e) {
             throw convertToRegistryServiceException(
                     e, "Error in registering the data resource" + dataProductModel.getProductName());
@@ -1363,7 +2201,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateGatewayStoragePreference(
             String gatewayID, String storageId, StoragePreference storagePreference) throws RegistryServiceException {
-        return registryService.updateGatewayStoragePreference(gatewayID, storageId, storagePreference);
+        try {
+            org.apache.airavata.common.model.StoragePreference domainStoragePreference =
+                    storagePreferenceMapper.toDomain(storagePreference);
+            return registryService.updateGatewayStoragePreference(gatewayID, storageId, domainStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update gateway storage preference");
+        }
     }
 
     /**
@@ -1379,8 +2223,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
             throws RegistryServiceException {
-        return registryService.updateGatewayComputeResourcePreference(
-                gatewayID, computeResourceId, computeResourcePreference);
+        try {
+            org.apache.airavata.common.model.ComputeResourcePreference domainComputeResourcePreference =
+                    computeResourcePreferenceMapper.toDomain(computeResourcePreference);
+            return registryService.updateGatewayComputeResourcePreference(
+                    gatewayID, computeResourceId, domainComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update gateway compute resource preference");
+        }
     }
 
     /**
@@ -1397,7 +2247,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean addGatewayStoragePreference(
             String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
             throws RegistryServiceException {
-        return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, dataStoragePreference);
+        try {
+            org.apache.airavata.common.model.StoragePreference domainStoragePreference =
+                    storagePreferenceMapper.toDomain(dataStoragePreference);
+            return registryService.addGatewayStoragePreference(gatewayID, storageResourceId, domainStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add gateway storage preference");
+        }
     }
 
     /**
@@ -1414,8 +2270,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean addGatewayComputeResourcePreference(
             String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference)
             throws RegistryServiceException {
-        return registryService.addGatewayComputeResourcePreference(
-                gatewayID, computeResourceId, computeResourcePreference);
+        try {
+            org.apache.airavata.common.model.ComputeResourcePreference domainComputeResourcePreference =
+                    computeResourcePreferenceMapper.toDomain(computeResourcePreference);
+            return registryService.addGatewayComputeResourcePreference(
+                    gatewayID, computeResourceId, domainComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add gateway compute resource preference");
+        }
     }
 
     /**
@@ -1429,7 +2291,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile)
             throws RegistryServiceException {
-        return registryService.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+        try {
+            org.apache.airavata.common.model.GatewayResourceProfile domainGatewayResourceProfile =
+                    gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
+            return registryService.updateGatewayResourceProfile(gatewayID, domainGatewayResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update gateway resource profile");
+        }
     }
 
     /**
@@ -1444,18 +2312,36 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)
             throws RegistryServiceException {
-        return registryService.registerGatewayResourceProfile(gatewayResourceProfile);
+        try {
+            org.apache.airavata.common.model.GatewayResourceProfile domainGatewayResourceProfile =
+                    gatewayResourceProfileMapper.toDomain(gatewayResourceProfile);
+            return registryService.registerGatewayResourceProfile(domainGatewayResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register gateway resource profile");
+        }
     }
 
     @Override
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws RegistryServiceException {
-        return registryService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+        try {
+            org.apache.airavata.common.model.ResourceJobManager domainResourceJobManager =
+                    resourceJobManagerMapper.toDomain(updatedResourceJobManager);
+            return registryService.updateResourceJobManager(resourceJobManagerId, domainResourceJobManager);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update resource job manager");
+        }
     }
 
     @Override
     public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws RegistryServiceException {
-        return registryService.registerResourceJobManager(resourceJobManager);
+        try {
+            org.apache.airavata.common.model.ResourceJobManager domainResourceJobManager =
+                    resourceJobManagerMapper.toDomain(resourceJobManager);
+            return registryService.registerResourceJobManager(domainResourceJobManager);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register resource job manager");
+        }
     }
 
     /**
@@ -1469,7 +2355,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws RegistryServiceException {
-        return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
+        try {
+            org.apache.airavata.common.model.DMType domainDMType =
+                    org.apache.airavata.common.model.DMType.valueOf(dmType.name());
+            return registryService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, domainDMType);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete data movement interface");
+        }
     }
 
     /**
@@ -1503,8 +2395,16 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addGridFTPDataMovementDetails(
             String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
             throws RegistryServiceException {
-        return registryService.addGridFTPDataMovementDetails(
-                computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
+        try {
+            org.apache.airavata.common.model.DMType domainDMType =
+                    org.apache.airavata.common.model.DMType.valueOf(dmType.name());
+            org.apache.airavata.common.model.GridFTPDataMovement domainGridFTPDataMovement =
+                    gridFTPDataMovementMapper.toDomain(gridFTPDataMovement);
+            return registryService.addGridFTPDataMovementDetails(
+                    computeResourceId, domainDMType, priorityOrder, domainGridFTPDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add GridFTP data movement details");
+        }
     }
 
     /**
@@ -1538,7 +2438,16 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addUnicoreDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
             throws RegistryServiceException {
-        return registryService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement);
+        try {
+            org.apache.airavata.common.model.DMType domainDMType =
+                    org.apache.airavata.common.model.DMType.valueOf(dmType.name());
+            org.apache.airavata.common.model.UnicoreDataMovement domainUnicoreDataMovement =
+                    unicoreDataMovementMapper.toDomain(unicoreDataMovement);
+            return registryService.addUnicoreDataMovementDetails(
+                    resourceId, domainDMType, priorityOrder, domainUnicoreDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add Unicore data movement details");
+        }
     }
 
     /**
@@ -1553,7 +2462,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
             throws RegistryServiceException {
-        return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
+        try {
+            org.apache.airavata.common.model.SCPDataMovement domainSCPDataMovement =
+                    scpDataMovementMapper.toDomain(scpDataMovement);
+            return registryService.updateSCPDataMovementDetails(dataMovementInterfaceId, domainSCPDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update SCP data movement details");
+        }
     }
 
     /**
@@ -1572,7 +2487,16 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addSCPDataMovementDetails(
             String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
             throws RegistryServiceException {
-        return registryService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
+        try {
+            org.apache.airavata.common.model.DMType domainDMType =
+                    org.apache.airavata.common.model.DMType.valueOf(dmType.name());
+            org.apache.airavata.common.model.SCPDataMovement domainSCPDataMovement =
+                    scpDataMovementMapper.toDomain(scpDataMovement);
+            return registryService.addSCPDataMovementDetails(
+                    resourceId, domainDMType, priorityOrder, domainSCPDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add SCP data movement details");
+        }
     }
 
     /**
@@ -1586,7 +2510,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
             throws RegistryServiceException {
-        return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
+        try {
+            org.apache.airavata.common.model.LOCALDataMovement domainLocalDataMovement =
+                    localDataMovementMapper.toDomain(localDataMovement);
+            return registryService.updateLocalDataMovementDetails(dataMovementInterfaceId, domainLocalDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update local data movement details");
+        }
     }
 
     /**
@@ -1605,7 +2535,16 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addLocalDataMovementDetails(
             String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
             throws RegistryServiceException {
-        return registryService.addLocalDataMovementDetails(resourceId, dataMoveType, priorityOrder, localDataMovement);
+        try {
+            org.apache.airavata.common.model.DMType domainDMType =
+                    org.apache.airavata.common.model.DMType.valueOf(dataMoveType.name());
+            org.apache.airavata.common.model.LOCALDataMovement domainLocalDataMovement =
+                    localDataMovementMapper.toDomain(localDataMovement);
+            return registryService.addLocalDataMovementDetails(
+                    resourceId, domainDMType, priorityOrder, domainLocalDataMovement);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add local data movement details");
+        }
     }
 
     /**
@@ -1634,7 +2573,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)
             throws RegistryServiceException {
-        return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
+        try {
+            org.apache.airavata.common.model.CloudJobSubmission domainCloudJobSubmission =
+                    cloudJobSubmissionMapper.toDomain(sshJobSubmission);
+            return registryService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, domainCloudJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update cloud job submission details");
+        }
     }
 
     /**
@@ -1648,7 +2593,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException {
-        return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
+        try {
+            org.apache.airavata.common.model.SSHJobSubmission domainSSHJobSubmission =
+                    sshJobSubmissionMapper.toDomain(sshJobSubmission);
+            return registryService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, domainSSHJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update SSH job submission details");
+        }
     }
 
     /**
@@ -1678,7 +2629,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addCloudJobSubmissionDetails(
             String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission)
             throws RegistryServiceException {
-        return registryService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
+        try {
+            org.apache.airavata.common.model.CloudJobSubmission domainCloudJobSubmission =
+                    cloudJobSubmissionMapper.toDomain(cloudSubmission);
+            return registryService.addCloudJobSubmissionDetails(
+                    computeResourceId, priorityOrder, domainCloudJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add cloud job submission details");
+        }
     }
 
     /**
@@ -1695,7 +2653,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addUNICOREJobSubmissionDetails(
             String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
             throws RegistryServiceException {
-        return registryService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
+        try {
+            org.apache.airavata.common.model.UnicoreJobSubmission domainUnicoreJobSubmission =
+                    unicoreJobSubmissionMapper.toDomain(unicoreJobSubmission);
+            return registryService.addUNICOREJobSubmissionDetails(
+                    computeResourceId, priorityOrder, domainUnicoreJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add UNICORE job submission details");
+        }
     }
 
     /**
@@ -1712,7 +2677,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addSSHForkJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException {
-        return registryService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+        try {
+            org.apache.airavata.common.model.SSHJobSubmission domainSSHJobSubmission =
+                    sshJobSubmissionMapper.toDomain(sshJobSubmission);
+            return registryService.addSSHForkJobSubmissionDetails(
+                    computeResourceId, priorityOrder, domainSSHJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add SSH fork job submission details");
+        }
     }
 
     /**
@@ -1729,7 +2701,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addSSHJobSubmissionDetails(
             String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws RegistryServiceException {
-        return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+        try {
+            org.apache.airavata.common.model.SSHJobSubmission domainSSHJobSubmission =
+                    sshJobSubmissionMapper.toDomain(sshJobSubmission);
+            return registryService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, domainSSHJobSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add SSH job submission details");
+        }
     }
 
     /**
@@ -1743,7 +2721,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
             throws RegistryServiceException {
-        return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
+        try {
+            org.apache.airavata.common.model.LOCALSubmission domainLocalSubmission =
+                    localSubmissionMapper.toDomain(localSubmission);
+            return registryService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, domainLocalSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update local submission details");
+        }
     }
 
     /**
@@ -1760,7 +2744,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public String addLocalSubmissionDetails(
             String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
             throws RegistryServiceException {
-        return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
+        try {
+            org.apache.airavata.common.model.LOCALSubmission domainLocalSubmission =
+                    localSubmissionMapper.toDomain(localSubmission);
+            return registryService.addLocalSubmissionDetails(computeResourceId, priorityOrder, domainLocalSubmission);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add local submission details");
+        }
     }
 
     /**
@@ -1775,7 +2765,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription)
             throws RegistryServiceException {
-        return registryService.updateStorageResource(storageResourceId, storageResourceDescription);
+        try {
+            org.apache.airavata.common.model.StorageResourceDescription domainStorageResourceDescription =
+                    storageResourceDescriptionMapper.toDomain(storageResourceDescription);
+            return registryService.updateStorageResource(storageResourceId, domainStorageResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update storage resource");
+        }
     }
 
     /**
@@ -1788,7 +2784,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerStorageResource(StorageResourceDescription storageResourceDescription)
             throws RegistryServiceException {
-        return registryService.registerStorageResource(storageResourceDescription);
+        try {
+            org.apache.airavata.common.model.StorageResourceDescription domainStorageResourceDescription =
+                    storageResourceDescriptionMapper.toDomain(storageResourceDescription);
+            return registryService.registerStorageResource(domainStorageResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register storage resource");
+        }
     }
 
     /**
@@ -1803,7 +2805,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws RegistryServiceException {
-        return registryService.updateComputeResource(computeResourceId, computeResourceDescription);
+        try {
+            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResourceDescription =
+                    computeResourceDescriptionMapper.toDomain(computeResourceDescription);
+            return registryService.updateComputeResource(computeResourceId, domainComputeResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update compute resource");
+        }
     }
 
     /**
@@ -1816,7 +2824,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription)
             throws RegistryServiceException {
-        return registryService.registerComputeResource(computeResourceDescription);
+        try {
+            org.apache.airavata.common.model.ComputeResourceDescription domainComputeResourceDescription =
+                    computeResourceDescriptionMapper.toDomain(computeResourceDescription);
+            return registryService.registerComputeResource(domainComputeResourceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register compute resource");
+        }
     }
 
     /**
@@ -1831,7 +2845,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateApplicationInterface(
             String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
             throws RegistryServiceException {
-        return registryService.updateApplicationInterface(appInterfaceId, applicationInterface);
+        try {
+            org.apache.airavata.common.model.ApplicationInterfaceDescription domainApplicationInterfaceDescription =
+                    applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
+            return registryService.updateApplicationInterface(appInterfaceId, domainApplicationInterfaceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update application interface");
+        }
     }
 
     /**
@@ -1845,7 +2865,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
             throws RegistryServiceException {
-        return registryService.registerApplicationInterface(gatewayId, applicationInterface);
+        try {
+            org.apache.airavata.common.model.ApplicationInterfaceDescription domainApplicationInterfaceDescription =
+                    applicationInterfaceDescriptionMapper.toDomain(applicationInterface);
+            return registryService.registerApplicationInterface(gatewayId, domainApplicationInterfaceDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register application interface");
+        }
     }
 
     /**
@@ -1860,7 +2886,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateApplicationDeployment(
             String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws RegistryServiceException {
-        return registryService.updateApplicationDeployment(appDeploymentId, applicationDeployment);
+        try {
+            org.apache.airavata.common.model.ApplicationDeploymentDescription domainApplicationDeploymentDescription =
+                    applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
+            return registryService.updateApplicationDeployment(appDeploymentId, domainApplicationDeploymentDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update application deployment");
+        }
     }
 
     /**
@@ -1874,7 +2906,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerApplicationDeployment(
             String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException {
-        return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
+        try {
+            org.apache.airavata.common.model.ApplicationDeploymentDescription domainApplicationDeploymentDescription =
+                    applicationDeploymentDescriptionMapper.toDomain(applicationDeployment);
+            return registryService.registerApplicationDeployment(gatewayId, domainApplicationDeploymentDescription);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register application deployment");
+        }
     }
 
     /**
@@ -1888,7 +2926,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule)
             throws RegistryServiceException {
-        return registryService.updateApplicationModule(appModuleId, applicationModule);
+        try {
+            org.apache.airavata.common.model.ApplicationModule domainApplicationModule =
+                    applicationModuleMapper.toDomain(applicationModule);
+            return registryService.updateApplicationModule(appModuleId, domainApplicationModule);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update application module");
+        }
     }
 
     /**
@@ -1903,20 +2947,38 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule)
             throws RegistryServiceException {
-        return registryService.registerApplicationModule(gatewayId, applicationModule);
+        try {
+            org.apache.airavata.common.model.ApplicationModule domainApplicationModule =
+                    applicationModuleMapper.toDomain(applicationModule);
+            return registryService.registerApplicationModule(gatewayId, domainApplicationModule);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register application module");
+        }
     }
 
     @Override
     public void updateResourceScheduleing(
             String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
             throws RegistryServiceException {
-        registryService.updateResourceScheduleing(airavataExperimentId, resourceScheduling);
+        try {
+            org.apache.airavata.common.model.ComputationalResourceSchedulingModel domainResourceScheduling =
+                    computationalResourceSchedulingModelMapper.toDomain(resourceScheduling);
+            registryService.updateResourceScheduleing(airavataExperimentId, domainResourceScheduling);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update resource scheduling");
+        }
     }
 
     @Override
     public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
             throws RegistryServiceException {
-        registryService.updateExperimentConfiguration(airavataExperimentId, userConfiguration);
+        try {
+            org.apache.airavata.common.model.UserConfigurationDataModel domainUserConfiguration =
+                    userConfigurationDataModelMapper.toDomain(userConfiguration);
+            registryService.updateExperimentConfiguration(airavataExperimentId, domainUserConfiguration);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update experiment configuration");
+        }
     }
 
     /**
@@ -1946,7 +3008,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
             throws RegistryServiceException {
-        registryService.updateExperiment(airavataExperimentId, experiment);
+        try {
+            org.apache.airavata.common.model.ExperimentModel domainExperiment =
+                    experimentModelMapper.toDomain(experiment);
+            registryService.updateExperiment(airavataExperimentId, domainExperiment);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update experiment");
+        }
     }
 
     /**
@@ -1995,7 +3063,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public String createExperiment(String gatewayId, ExperimentModel experiment) throws RegistryServiceException {
-        return registryService.createExperiment(gatewayId, experiment);
+        try {
+            org.apache.airavata.common.model.ExperimentModel domainExperiment =
+                    experimentModelMapper.toDomain(experiment);
+            return registryService.createExperiment(gatewayId, domainExperiment);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to create experiment");
+        }
     }
 
     /**
@@ -2019,7 +3093,24 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             int limit,
             int offset)
             throws RegistryServiceException {
-        return registryService.searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
+        try {
+            Map<org.apache.airavata.common.model.ExperimentSearchFields, String> domainFilters =
+                    new java.util.HashMap<>();
+            for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
+                domainFilters.put(
+                        org.apache.airavata.common.model.ExperimentSearchFields.valueOf(
+                                entry.getKey().name()),
+                        entry.getValue());
+            }
+            List<org.apache.airavata.common.model.ExperimentSummaryModel> domainSummaries =
+                    registryService.searchExperiments(
+                            gatewayId, userName, accessibleExpIds, domainFilters, limit, offset);
+            return domainSummaries.stream()
+                    .map(experimentSummaryModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to search experiments");
+        }
     }
 
     /**
@@ -2042,7 +3133,20 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             int limit,
             int offset)
             throws RegistryServiceException {
-        return registryService.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
+        try {
+            Map<org.apache.airavata.common.model.ProjectSearchFields, String> domainFilters = new java.util.HashMap<>();
+            for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
+                domainFilters.put(
+                        org.apache.airavata.common.model.ProjectSearchFields.valueOf(
+                                entry.getKey().name()),
+                        entry.getValue());
+            }
+            List<org.apache.airavata.common.model.Project> domainProjects = registryService.searchProjects(
+                    gatewayId, userName, accessibleProjIds, domainFilters, limit, offset);
+            return domainProjects.stream().map(projectMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to search projects");
+        }
     }
 
     /**
@@ -2055,7 +3159,12 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public void updateProject(String projectId, Project updatedProject) throws RegistryServiceException {
-        registryService.updateProject(projectId, updatedProject);
+        try {
+            org.apache.airavata.common.model.Project domainProject = projectMapper.toDomain(updatedProject);
+            registryService.updateProject(projectId, domainProject);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update project");
+        }
     }
 
     /**
@@ -2067,12 +3176,23 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public String createProject(String gatewayId, Project project) throws RegistryServiceException {
-        return registryService.createProject(gatewayId, project);
+        try {
+            org.apache.airavata.common.model.Project domainProject = projectMapper.toDomain(project);
+            return registryService.createProject(gatewayId, domainProject);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to create project");
+        }
     }
 
     @Override
     public boolean updateNotification(Notification notification) throws RegistryServiceException {
-        return registryService.updateNotification(notification);
+        try {
+            org.apache.airavata.common.model.Notification domainNotification =
+                    notificationMapper.toDomain(notification);
+            return registryService.updateNotification(domainNotification);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update notification");
+        }
     }
 
     /**
@@ -2083,7 +3203,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public String createNotification(Notification notification) throws RegistryServiceException {
-        return registryService.createNotification(notification);
+        try {
+            org.apache.airavata.common.model.Notification domainNotification =
+                    notificationMapper.toDomain(notification);
+            return registryService.createNotification(domainNotification);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to create notification");
+        }
     }
 
     /**
@@ -2097,7 +3223,12 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws RegistryServiceException {
-        return registryService.updateGateway(gatewayId, updatedGateway);
+        try {
+            org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(updatedGateway);
+            return registryService.updateGateway(gatewayId, domainGateway);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update gateway");
+        }
     }
 
     /**
@@ -2109,15 +3240,20 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException {
-        return registryService.addGateway(gateway);
+        try {
+            org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
+            return registryService.addGateway(domainGateway);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add gateway");
+        }
     }
 
     /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
-    private ExperimentModel getExperimentInternal(String airavataExperimentId)
+    private org.apache.airavata.common.model.ExperimentModel getExperimentInternal(String airavataExperimentId)
             throws RegistryServiceException, ExperimentNotFoundException {
         try {
             return registryService.getExperiment(airavataExperimentId);
-        } catch (RegistryServiceException e) {
+        } catch (Throwable e) {
             // Check if this is a "not found" error based on the message
             if (e.getMessage() != null && e.getMessage().contains("does not exist")) {
                 logger.error("Experiment not found: " + airavataExperimentId, e);
@@ -2126,8 +3262,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system.");
                 throw exception;
             }
-            throw e;
-        } catch (Throwable e) {
             logger.error("Error while retrieving the experiment", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving the experiment. More info : " + e.getMessage());
@@ -2146,12 +3280,22 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws RegistryServiceException {
-        return registryService.registerUserResourceProfile(userResourceProfile);
+        try {
+            org.apache.airavata.common.model.UserResourceProfile domainUserResourceProfile =
+                    userResourceProfileMapper.toDomain(userResourceProfile);
+            return registryService.registerUserResourceProfile(domainUserResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register user resource profile");
+        }
     }
 
     @Override
     public boolean isUserResourceProfileExists(String userId, String gatewayId) throws RegistryServiceException {
-        return registryService.isUserResourceProfileExists(userId, gatewayId);
+        try {
+            return registryService.isUserResourceProfileExists(userId, gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if user resource profile exists");
+        }
     }
 
     /**
@@ -2162,7 +3306,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException {
-        return registryService.getUserResourceProfile(userId, gatewayId);
+        try {
+            org.apache.airavata.common.model.UserResourceProfile domainUserResourceProfile =
+                    registryService.getUserResourceProfile(userId, gatewayId);
+            return userResourceProfileMapper.toThrift(domainUserResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user resource profile");
+        }
     }
 
     /**
@@ -2176,7 +3326,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile)
             throws RegistryServiceException {
-        return registryService.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+        try {
+            org.apache.airavata.common.model.UserResourceProfile domainUserResourceProfile =
+                    userResourceProfileMapper.toDomain(userResourceProfile);
+            return registryService.updateUserResourceProfile(userId, gatewayID, domainUserResourceProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update user resource profile");
+        }
     }
 
     /**
@@ -2189,12 +3345,21 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public boolean deleteUserResourceProfile(String userId, String gatewayID) throws RegistryServiceException {
-        return registryService.deleteUserResourceProfile(userId, gatewayID);
+        try {
+            return registryService.deleteUserResourceProfile(userId, gatewayID);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete user resource profile");
+        }
     }
 
     @Override
     public String addUser(UserProfile userProfile) throws RegistryServiceException, DuplicateEntryException {
-        return registryService.addUser(userProfile);
+        try {
+            org.apache.airavata.common.model.UserProfile domainUserProfile = userProfileMapper.toDomain(userProfile);
+            return registryService.addUser(domainUserProfile);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add user");
+        }
     }
 
     /**
@@ -2215,8 +3380,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
             throws RegistryServiceException {
-        return registryService.addUserComputeResourcePreference(
-                userId, gatewayID, computeResourceId, userComputeResourcePreference);
+        try {
+            org.apache.airavata.common.model.UserComputeResourcePreference domainUserComputeResourcePreference =
+                    userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
+            return registryService.addUserComputeResourcePreference(
+                    userId, gatewayID, computeResourceId, domainUserComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add user compute resource preference");
+        }
     }
 
     /**
@@ -2231,7 +3402,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean isUserComputeResourcePreferenceExists(String userId, String gatewayID, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
+        try {
+            return registryService.isUserComputeResourcePreferenceExists(userId, gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if user compute resource preference exists");
+        }
     }
 
     /**
@@ -2248,7 +3423,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean addUserStoragePreference(
             String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference)
             throws RegistryServiceException {
-        return registryService.addUserStoragePreference(userId, gatewayID, storageResourceId, dataStoragePreference);
+        try {
+            org.apache.airavata.common.model.UserStoragePreference domainUserStoragePreference =
+                    userStoragePreferenceMapper.toDomain(dataStoragePreference);
+            return registryService.addUserStoragePreference(
+                    userId, gatewayID, storageResourceId, domainUserStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add user storage preference");
+        }
     }
 
     /**
@@ -2263,7 +3445,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public UserComputeResourcePreference getUserComputeResourcePreference(
             String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException {
-        return registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+        try {
+            org.apache.airavata.common.model.UserComputeResourcePreference domainUserComputeResourcePreference =
+                    registryService.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+            return userComputeResourcePreferenceMapper.toThrift(domainUserComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user compute resource preference");
+        }
     }
 
     /**
@@ -2278,7 +3466,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId)
             throws RegistryServiceException {
-        return registryService.getUserStoragePreference(userId, gatewayID, storageId);
+        try {
+            org.apache.airavata.common.model.UserStoragePreference domainUserStoragePreference =
+                    registryService.getUserStoragePreference(userId, gatewayID, storageId);
+            return userStoragePreferenceMapper.toThrift(domainUserStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get user storage preference");
+        }
     }
 
     /**
@@ -2289,7 +3483,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException {
-        return registryService.getAllUserResourceProfiles();
+        try {
+            List<org.apache.airavata.common.model.UserResourceProfile> domainUserResourceProfiles =
+                    registryService.getAllUserResourceProfiles();
+            return domainUserResourceProfiles.stream()
+                    .map(userResourceProfileMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all user resource profiles");
+        }
     }
 
     /**
@@ -2309,8 +3511,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             String computeResourceId,
             UserComputeResourcePreference userComputeResourcePreference)
             throws RegistryServiceException {
-        return registryService.updateUserComputeResourcePreference(
-                userId, gatewayID, computeResourceId, userComputeResourcePreference);
+        try {
+            org.apache.airavata.common.model.UserComputeResourcePreference domainUserComputeResourcePreference =
+                    userComputeResourcePreferenceMapper.toDomain(userComputeResourcePreference);
+            return registryService.updateUserComputeResourcePreference(
+                    userId, gatewayID, computeResourceId, domainUserComputeResourcePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update user compute resource preference");
+        }
     }
 
     /**
@@ -2327,7 +3535,14 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean updateUserStoragePreference(
             String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference)
             throws RegistryServiceException {
-        return registryService.updateUserStoragePreference(userId, gatewayID, storageId, userStoragePreference);
+        try {
+            org.apache.airavata.common.model.UserStoragePreference domainUserStoragePreference =
+                    userStoragePreferenceMapper.toDomain(userStoragePreference);
+            return registryService.updateUserStoragePreference(
+                    userId, gatewayID, storageId, domainUserStoragePreference);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update user storage preference");
+        }
     }
 
     /**
@@ -2342,7 +3557,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
+        try {
+            return registryService.deleteUserComputeResourcePreference(userId, gatewayID, computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete user compute resource preference");
+        }
     }
 
     /**
@@ -2357,7 +3576,11 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId)
             throws RegistryServiceException {
-        return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
+        try {
+            return registryService.deleteUserStoragePreference(userId, gatewayID, storageId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to delete user storage preference");
+        }
     }
 
     /**
@@ -2366,17 +3589,37 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      */
     @Override
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException {
-        return registryService.getLatestQueueStatuses();
+        try {
+            List<org.apache.airavata.common.model.QueueStatusModel> domainQueueStatuses =
+                    registryService.getLatestQueueStatuses();
+            return domainQueueStatuses.stream()
+                    .map(queueStatusModelMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get latest queue statuses");
+        }
     }
 
     @Override
     public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException {
-        registryService.registerQueueStatuses(queueStatuses);
+        try {
+            List<org.apache.airavata.common.model.QueueStatusModel> domainQueueStatuses =
+                    queueStatuses.stream().map(queueStatusModelMapper::toDomain).collect(Collectors.toList());
+            registryService.registerQueueStatuses(domainQueueStatuses);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to register queue statuses");
+        }
     }
 
     @Override
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryServiceException {
-        return registryService.getQueueStatus(hostName, queueName);
+        try {
+            org.apache.airavata.common.model.QueueStatusModel domainQueueStatus =
+                    registryService.getQueueStatus(hostName, queueName);
+            return queueStatusModelMapper.toThrift(domainQueueStatus);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get queue status");
+        }
     }
 
     /**
@@ -2390,7 +3633,15 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID)
             throws RegistryServiceException {
-        return registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
+        try {
+            List<org.apache.airavata.common.model.UserComputeResourcePreference> domainUserComputeResourcePreferences =
+                    registryService.getAllUserComputeResourcePreferences(userId, gatewayID);
+            return domainUserComputeResourcePreferences.stream()
+                    .map(userComputeResourcePreferenceMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all user compute resource preferences");
+        }
     }
 
     /**
@@ -2404,14 +3655,24 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     @Override
     public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID)
             throws RegistryServiceException {
-        return registryService.getAllUserStoragePreferences(userId, gatewayID);
+        try {
+            List<org.apache.airavata.common.model.UserStoragePreference> domainUserStoragePreferences =
+                    registryService.getAllUserStoragePreferences(userId, gatewayID);
+            return domainUserStoragePreferences.stream()
+                    .map(userStoragePreferenceMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get all user storage preferences");
+        }
     }
 
     @Override
     public void createGatewayGroups(GatewayGroups gatewayGroups)
             throws RegistryServiceException, DuplicateEntryException {
         try {
-            registryService.createGatewayGroups(gatewayGroups);
+            org.apache.airavata.common.model.GatewayGroups domainGatewayGroups =
+                    gatewayGroupsMapper.toDomain(gatewayGroups);
+            registryService.createGatewayGroups(domainGatewayGroups);
         } catch (Throwable e) {
             if (e.getMessage() != null && e.getMessage().contains("already exists")) {
                 throw new DuplicateEntryException(e.getMessage());
@@ -2422,95 +3683,194 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
 
     @Override
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws RegistryServiceException {
-        registryService.updateGatewayGroups(gatewayGroups);
+        try {
+            org.apache.airavata.common.model.GatewayGroups domainGatewayGroups =
+                    gatewayGroupsMapper.toDomain(gatewayGroups);
+            registryService.updateGatewayGroups(domainGatewayGroups);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to update gateway groups");
+        }
     }
 
     @Override
     public boolean isGatewayGroupsExists(String gatewayId) throws RegistryServiceException {
-        return registryService.isGatewayGroupsExists(gatewayId);
+        try {
+            return registryService.isGatewayGroupsExists(gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if gateway groups exists");
+        }
     }
 
     @Override
     public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryServiceException {
-        return registryService.getGatewayGroups(gatewayId);
+        try {
+            org.apache.airavata.common.model.GatewayGroups domainGatewayGroups =
+                    registryService.getGatewayGroups(gatewayId);
+            return gatewayGroupsMapper.toThrift(domainGatewayGroups);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway groups");
+        }
     }
 
     @Override
     public Parser getParser(String parserId, String gatewayId) throws RegistryServiceException {
-        return registryService.getParser(parserId, gatewayId);
+        try {
+            org.apache.airavata.common.model.Parser domainParser = registryService.getParser(parserId, gatewayId);
+            return parserMapper.toThrift(domainParser);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parser");
+        }
     }
 
     @Override
     public String saveParser(Parser parser) throws RegistryServiceException {
-        return registryService.saveParser(parser);
+        try {
+            org.apache.airavata.common.model.Parser domainParser = parserMapper.toDomain(parser);
+            return registryService.saveParser(domainParser);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to save parser");
+        }
     }
 
     @Override
     public List<Parser> listAllParsers(String gatewayId) throws RegistryServiceException {
-        return registryService.listAllParsers(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.Parser> domainParsers = registryService.listAllParsers(gatewayId);
+            return domainParsers.stream().map(parserMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to list all parsers");
+        }
     }
 
     @Override
     public void removeParser(String parserId, String gatewayId) throws RegistryServiceException {
-        registryService.removeParser(parserId, gatewayId);
+        try {
+            registryService.removeParser(parserId, gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove parser");
+        }
     }
 
     @Override
     public ParserInput getParserInput(String parserInputId, String gatewayId) throws RegistryServiceException {
-        return registryService.getParserInput(parserInputId, gatewayId);
+        try {
+            org.apache.airavata.common.model.ParserInput domainParserInput =
+                    registryService.getParserInput(parserInputId, gatewayId);
+            return parserInputMapper.toThrift(domainParserInput);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parser input");
+        }
     }
 
     @Override
     public ParserOutput getParserOutput(String parserOutputId, String gatewayId) throws RegistryServiceException {
-        return registryService.getParserOutput(parserOutputId, gatewayId);
+        try {
+            org.apache.airavata.common.model.ParserOutput domainParserOutput =
+                    registryService.getParserOutput(parserOutputId, gatewayId);
+            return parserOutputMapper.toThrift(domainParserOutput);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parser output");
+        }
     }
 
     @Override
     public ParsingTemplate getParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
-        return registryService.getParsingTemplate(templateId, gatewayId);
+        try {
+            org.apache.airavata.common.model.ParsingTemplate domainParsingTemplate =
+                    registryService.getParsingTemplate(templateId, gatewayId);
+            return parsingTemplateMapper.toThrift(domainParsingTemplate);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parsing template");
+        }
     }
 
     @Override
     public List<ParsingTemplate> getParsingTemplatesForExperiment(String experimentId, String gatewayId)
             throws RegistryServiceException {
-        return registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
+        try {
+            List<org.apache.airavata.common.model.ParsingTemplate> domainParsingTemplates =
+                    registryService.getParsingTemplatesForExperiment(experimentId, gatewayId);
+            return domainParsingTemplates.stream()
+                    .map(parsingTemplateMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get parsing templates for experiment");
+        }
     }
 
     @Override
     public String saveParsingTemplate(ParsingTemplate parsingTemplate) throws RegistryServiceException {
-        return registryService.saveParsingTemplate(parsingTemplate);
+        try {
+            org.apache.airavata.common.model.ParsingTemplate domainParsingTemplate =
+                    parsingTemplateMapper.toDomain(parsingTemplate);
+            return registryService.saveParsingTemplate(domainParsingTemplate);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to save parsing template");
+        }
     }
 
     @Override
     public List<ParsingTemplate> listAllParsingTemplates(String gatewayId) throws RegistryServiceException {
-        return registryService.listAllParsingTemplates(gatewayId);
+        try {
+            List<org.apache.airavata.common.model.ParsingTemplate> domainParsingTemplates =
+                    registryService.listAllParsingTemplates(gatewayId);
+            return domainParsingTemplates.stream()
+                    .map(parsingTemplateMapper::toThrift)
+                    .collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to list all parsing templates");
+        }
     }
 
     @Override
     public void removeParsingTemplate(String templateId, String gatewayId) throws RegistryServiceException {
-        registryService.removeParsingTemplate(templateId, gatewayId);
+        try {
+            registryService.removeParsingTemplate(templateId, gatewayId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove parsing template");
+        }
     }
 
     @Override
     public boolean isGatewayUsageReportingAvailable(String gatewayId, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
+        try {
+            return registryService.isGatewayUsageReportingAvailable(gatewayId, computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to check if gateway usage reporting is available");
+        }
     }
 
     @Override
     public GatewayUsageReportingCommand getGatewayReportingCommand(String gatewayId, String computeResourceId)
             throws RegistryServiceException {
-        return registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
+        try {
+            org.apache.airavata.common.model.GatewayUsageReportingCommand domainCommand =
+                    registryService.getGatewayReportingCommand(gatewayId, computeResourceId);
+            return gatewayUsageReportingCommandMapper.toThrift(domainCommand);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to get gateway reporting command");
+        }
     }
 
     @Override
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryServiceException {
-        registryService.addGatewayUsageReportingCommand(command);
+        try {
+            org.apache.airavata.common.model.GatewayUsageReportingCommand domainCommand =
+                    gatewayUsageReportingCommandMapper.toDomain(command);
+            registryService.addGatewayUsageReportingCommand(domainCommand);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to add gateway usage reporting command");
+        }
     }
 
     @Override
     public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId)
             throws RegistryServiceException {
-        registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
+        try {
+            registryService.removeGatewayUsageReportingCommand(gatewayId, computeResourceId);
+        } catch (Throwable e) {
+            throw convertToRegistryServiceException(e, "Failed to remove gateway usage reporting command");
+        }
     }
 }

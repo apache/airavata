@@ -26,10 +26,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.airavata.agent.connection.service.UserContext;
-import org.apache.airavata.common.exception.AiravataClientException;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.AuthorizationException;
-import org.apache.airavata.common.exception.InvalidRequestException;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
@@ -37,6 +33,10 @@ import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.thriftapi.client.AiravataServiceClientFactory;
+import org.apache.airavata.thriftapi.exception.AiravataClientException;
+import org.apache.airavata.thriftapi.exception.AiravataSystemException;
+import org.apache.airavata.thriftapi.exception.AuthorizationException;
+import org.apache.airavata.thriftapi.exception.InvalidRequestException;
 import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class AiravataService {
     public Airavata.Client airavata() {
         try {
             return AiravataServiceClientFactory.createAiravataClient(serverUrl, port, secure, properties);
-        } catch (AiravataClientException e) {
+        } catch (org.apache.airavata.common.exception.AiravataClientException e) {
             LOGGER.error("Error while creating Airavata client", e);
             throw new RuntimeException("Error while creating Airavata client", e);
         }
@@ -331,8 +331,7 @@ public class AiravataService {
         domainModel.setUserName(thriftModel.getUserName());
         domainModel.setName(thriftModel.getName());
         if (thriftModel.getExperimentStatus() != null) {
-            domainModel.setExperimentStatus(org.apache.airavata.common.model.ExperimentStatus.valueOf(
-                    thriftModel.getExperimentStatus().name()));
+            domainModel.setExperimentStatus(thriftModel.getExperimentStatus());
         }
         return domainModel;
     }

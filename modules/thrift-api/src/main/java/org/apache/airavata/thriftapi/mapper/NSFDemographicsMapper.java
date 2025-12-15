@@ -40,4 +40,34 @@ public interface NSFDemographicsMapper extends ModelMapper {
      * Convert thrift model to domain model.
      */
     NSFDemographics toDomain(org.apache.airavata.thriftapi.model.NSFDemographics thrift);
+
+    default org.apache.airavata.common.model.ethnicity map(org.apache.airavata.thriftapi.model.ethnicity value) {
+        if (value == null) return null;
+        return org.apache.airavata.common.model.ethnicity.valueOf(value.name());
+    }
+
+    default org.apache.airavata.thriftapi.model.ethnicity map(org.apache.airavata.common.model.ethnicity value) {
+        if (value == null) return null;
+        return org.apache.airavata.thriftapi.model.ethnicity.valueOf(value.name());
+    }
+
+    default org.apache.airavata.common.model.race map(org.apache.airavata.thriftapi.model.race value) {
+        if (value == null) return null;
+        return org.apache.airavata.common.model.race.valueOf(value.name());
+    }
+
+    default org.apache.airavata.thriftapi.model.race map(org.apache.airavata.common.model.race value) {
+        if (value == null) return null;
+        return org.apache.airavata.thriftapi.model.race.valueOf(value.name());
+    }
+
+    default org.apache.airavata.common.model.disability map(org.apache.airavata.thriftapi.model.disability value) {
+        if (value == null) return null;
+        return org.apache.airavata.common.model.disability.valueOf(value.name());
+    }
+
+    default org.apache.airavata.thriftapi.model.disability map(org.apache.airavata.common.model.disability value) {
+        if (value == null) return null;
+        return org.apache.airavata.thriftapi.model.disability.valueOf(value.name());
+    }
 }

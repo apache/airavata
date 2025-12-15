@@ -56,6 +56,36 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
                 .IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+
+        if (e instanceof org.apache.airavata.profile.exception.IamAdminServicesException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.credential.exception.CredentialStoreException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();
+            ex.setMessage("Credential Store Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();
+            ex.setMessage("Internal Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+        return thriftException;
+    }
+
     @Override
     @SecurityCheck
     public org.apache.airavata.thriftapi.model.Gateway setUpGateway(
@@ -64,27 +94,12 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
-            org.apache.airavata.common.model.Gateway result =
-                    iamAdminService.setUpGateway(domainAuthzToken, domainGateway);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainGateway = gatewayMapper.toDomain(gateway);
+            var result = iamAdminService.setUpGateway(domainAuthzToken, domainGateway);
             return gatewayMapper.toThrift(result);
-        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error setting up gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error setting up gateway: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -95,18 +110,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUsernameAvailable(domainAuthzToken, username);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error checking username availability: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -122,19 +129,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.registerUser(
                     domainAuthzToken, username, emailAddress, firstName, lastName, newPassword);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error registering user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -144,18 +143,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.enableUser(domainAuthzToken, username);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error enabling user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -165,18 +156,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUserEnabled(domainAuthzToken, username);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error checking if user is enabled: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -186,18 +169,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUserExist(domainAuthzToken, username);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error checking if user exists: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -208,20 +183,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile =
-                    iamAdminService.getUser(domainAuthzToken, username);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = iamAdminService.getUser(domainAuthzToken, username);
             return userProfileMapper.toThrift(domainProfile);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error getting user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -232,20 +198,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.UserProfile> domainProfiles =
-                    iamAdminService.getUsers(domainAuthzToken, offset, limit, search);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfiles = iamAdminService.getUsers(domainAuthzToken, offset, limit, search);
             return domainProfiles.stream().map(userProfileMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error getting users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -256,18 +213,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.resetUserPassword(domainAuthzToken, username, newPassword);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error resetting user password: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -278,20 +227,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            List<org.apache.airavata.common.model.UserProfile> domainProfiles =
-                    iamAdminService.findUsers(domainAuthzToken, email, userId);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfiles = iamAdminService.findUsers(domainAuthzToken, email, userId);
             return domainProfiles.stream().map(userProfileMapper::toThrift).collect(Collectors.toList());
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error finding users: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -303,19 +243,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile = userProfileMapper.toDomain(userDetails);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = userProfileMapper.toDomain(userDetails);
             iamAdminService.updateUserProfile(domainAuthzToken, domainProfile);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error updating user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -325,38 +257,10 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.deleteUser(domainAuthzToken, username);
-        } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
-            throw convertToThriftIamAdminServicesException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
-                            "Error deleting user: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
-    }
-
-    // Helper methods for exception conversion
-    private org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException
-            convertToThriftIamAdminServicesException(
-                    org.apache.airavata.profile.exception.IamAdminServicesException e) {
-        org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException thriftException =
-                new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AuthorizationException convertToThriftAuthorizationException(
-            org.apache.airavata.common.exception.AuthorizationException e) {
-        org.apache.airavata.thriftapi.exception.AuthorizationException thriftException =
-                new org.apache.airavata.thriftapi.exception.AuthorizationException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
     }
 }

@@ -21,8 +21,9 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
+import org.apache.airavata.thriftapi.mapper.UserProfileMapper;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Component;
 public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.profile.model.UserProfileService.Iface {
 
     private final org.apache.airavata.service.profile.UserProfileService userProfileService;
+    private final AuthzTokenMapper authzTokenMapper = AuthzTokenMapper.INSTANCE;
+    private final UserProfileMapper userProfileMapper = UserProfileMapper.INSTANCE;
 
     public UserProfileServiceHandler(org.apache.airavata.service.profile.UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
@@ -40,24 +43,46 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
         return org.apache.airavata.thriftapi.profile.model.profile_user_cpiConstants.USER_PROFILE_CPI_VERSION;
     }
 
+    private org.apache.thrift.TException wrapException(Throwable e) {
+        if (e instanceof org.apache.thrift.TException te) return te;
+        org.apache.thrift.TException thriftException = null;
+
+        if (e instanceof org.apache.airavata.profile.exception.UserProfileServiceException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.profile.exception.IamAdminServicesException) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException();
+            ex.setMessage("IAM Admin Services Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+            var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
+            ex.setMessage(e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+
+        if (thriftException == null) {
+            var ex = new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException();
+            ex.setMessage("Internal Error: " + e.getMessage());
+            ex.initCause(e);
+            thriftException = ex;
+        }
+        return thriftException;
+    }
+
     @Override
     @SecurityCheck
     public String initializeUserProfile(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken)
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return userProfileService.initializeUserProfile(domainAuthzToken);
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error initializing user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -69,25 +94,11 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile = convertToDomainUserProfile(userProfile);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = userProfileMapper.toDomain(userProfile);
             return userProfileService.addUserProfile(domainAuthzToken, domainProfile);
-        } catch (IamAdminServicesException e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error adding user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error adding user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -99,25 +110,11 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile = convertToDomainUserProfile(userProfile);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = userProfileMapper.toDomain(userProfile);
             return userProfileService.updateUserProfile(domainAuthzToken, domainProfile);
-        } catch (IamAdminServicesException e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error updating user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error updating user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -128,20 +125,11 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile =
-                    userProfileService.getUserProfileById(domainAuthzToken, userId, gatewayId);
-            return convertToThriftUserProfile(domainProfile);
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error getting user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfile = userProfileService.getUserProfileById(domainAuthzToken, userId, gatewayId);
+            return userProfileMapper.toThrift(domainProfile);
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -152,18 +140,10 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return userProfileService.deleteUserProfile(domainAuthzToken, userId, gatewayId);
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error deleting user profile: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -174,20 +154,12 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
-            List<org.apache.airavata.common.model.UserProfile> domainProfiles =
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
+            var domainProfiles =
                     userProfileService.getAllUserProfilesInGateway(domainAuthzToken, gatewayId, offset, limit);
-            return domainProfiles.stream().map(this::convertToThriftUserProfile).collect(Collectors.toList());
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error getting all user profiles: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            return domainProfiles.stream().map(userProfileMapper::toThrift).collect(Collectors.toList());
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
     }
 
@@ -197,83 +169,10 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             throws org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException,
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
-            org.apache.airavata.security.model.AuthzToken domainAuthzToken = convertToDomainAuthzToken(authzToken);
+            var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return userProfileService.doesUserExist(domainAuthzToken, userId, gatewayId);
-        } catch (org.apache.airavata.profile.exception.UserProfileServiceException e) {
-            throw convertToThriftUserProfileServiceException(e);
-        } catch (org.apache.airavata.common.exception.AuthorizationException e) {
-            throw convertToThriftAuthorizationException(e);
-        } catch (Exception e) {
-            org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException ex =
-                    new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException(
-                            "Error checking if user exists: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+        } catch (Throwable e) {
+            throw wrapException(e);
         }
-    }
-
-    // Helper methods for conversion
-    private org.apache.airavata.security.model.AuthzToken convertToDomainAuthzToken(
-            org.apache.airavata.thriftapi.security.model.AuthzToken thrift) {
-        org.apache.airavata.security.model.AuthzToken domain = new org.apache.airavata.security.model.AuthzToken();
-        domain.setAccessToken(thrift.getAccessToken());
-        domain.setClaimsMap(thrift.getClaimsMap());
-        return domain;
-    }
-
-    private org.apache.airavata.common.model.UserProfile convertToDomainUserProfile(
-            org.apache.airavata.thriftapi.model.UserProfile thrift) {
-        // Simple conversion - in production, use a mapper
-        org.apache.airavata.common.model.UserProfile domain = new org.apache.airavata.common.model.UserProfile();
-        domain.setUserId(thrift.getUserId());
-        domain.setGatewayId(thrift.getGatewayId());
-        if (thrift.isSetFirstName()) {
-            domain.setFirstName(thrift.getFirstName());
-        }
-        if (thrift.isSetLastName()) {
-            domain.setLastName(thrift.getLastName());
-        }
-        if (thrift.isSetEmail()) {
-            domain.setEmail(thrift.getEmail());
-        }
-        // Add other fields as needed
-        return domain;
-    }
-
-    private org.apache.airavata.thriftapi.model.UserProfile convertToThriftUserProfile(
-            org.apache.airavata.common.model.UserProfile domain) {
-        org.apache.airavata.thriftapi.model.UserProfile thrift = new org.apache.airavata.thriftapi.model.UserProfile();
-        thrift.setUserId(domain.getUserId());
-        thrift.setGatewayId(domain.getGatewayId());
-        if (domain.getFirstName() != null) {
-            thrift.setFirstName(domain.getFirstName());
-        }
-        if (domain.getLastName() != null) {
-            thrift.setLastName(domain.getLastName());
-        }
-        if (domain.getEmail() != null) {
-            thrift.setEmail(domain.getEmail());
-        }
-        // Add other fields as needed
-        return thrift;
-    }
-
-    private org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException
-            convertToThriftUserProfileServiceException(
-                    org.apache.airavata.profile.exception.UserProfileServiceException e) {
-        org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException thriftException =
-                new org.apache.airavata.thriftapi.profile.exception.UserProfileServiceException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
-    }
-
-    private org.apache.airavata.thriftapi.exception.AuthorizationException convertToThriftAuthorizationException(
-            org.apache.airavata.common.exception.AuthorizationException e) {
-        org.apache.airavata.thriftapi.exception.AuthorizationException thriftException =
-                new org.apache.airavata.thriftapi.exception.AuthorizationException();
-        thriftException.setMessage(e.getMessage());
-        thriftException.initCause(e);
-        return thriftException;
     }
 }
