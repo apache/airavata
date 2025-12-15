@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService.Iface {
+public class OrchestratorServiceHandler
+        implements org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
     private final OrchestratorService orchestratorService;
     private final ProcessModelMapper processModelMapper = ProcessModelMapper.INSTANCE;
@@ -69,8 +70,7 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
             log.error("Error launching experiment: " + experimentId, e);
             org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
                     new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(
-                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
+            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error launching experiment: " + experimentId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -142,8 +142,7 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
             log.error("Error terminating experiment: " + experimentId, e);
             org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
                     new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(
-                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
+            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error terminating experiment: " + experimentId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -160,8 +159,7 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
             log.error("Error fetching intermediate outputs for experiment: " + experimentId, e);
             org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
                     new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(
-                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
+            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error fetching intermediate outputs for experiment: " + experimentId + ". More info: "
                     + e.getMessage());
             exception.initCause(e);
@@ -180,8 +178,7 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
             log.error("Error launching process: " + processId, e);
             org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
                     new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(
-                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
+            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error launching process: " + processId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -195,8 +192,8 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
                 new org.apache.airavata.thriftapi.exception.AiravataSystemException();
         thriftException.setMessage(e.getMessage());
         if (e.getAiravataErrorType() != null) {
-            thriftException.setAiravataErrorType(
-                    org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(e.getAiravataErrorType().name()));
+            thriftException.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(
+                    e.getAiravataErrorType().name()));
         }
         thriftException.initCause(e);
         return thriftException;

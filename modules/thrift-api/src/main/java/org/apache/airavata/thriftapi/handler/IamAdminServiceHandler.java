@@ -22,12 +22,11 @@ package org.apache.airavata.thriftapi.handler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.security.IamAdminService;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
 import org.apache.airavata.thriftapi.mapper.GatewayMapper;
 import org.apache.airavata.thriftapi.mapper.UserProfileMapper;
-import org.apache.airavata.service.security.IamAdminService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,13 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
 
     @Override
     public String getAPIVersion() throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
-        return org.apache.airavata.thriftapi.profile.model.iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_VERSION;
+        return org.apache
+                .airavata
+                .thriftapi
+                .profile
+                .model
+                .iam_admin_services_cpiConstants
+                .IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
     @Override
@@ -58,11 +63,12 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken,
             org.apache.airavata.thriftapi.model.Gateway gateway)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
-            org.apache.airavata.common.model.Gateway result = iamAdminService.setUpGateway(domainAuthzToken, domainGateway);
+            org.apache.airavata.common.model.Gateway result =
+                    iamAdminService.setUpGateway(domainAuthzToken, domainGateway);
             return gatewayMapper.toThrift(result);
         } catch (CredentialStoreException e) {
             org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
@@ -88,7 +94,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     public boolean isUsernameAvailable(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUsernameAvailable(domainAuthzToken, username);
@@ -115,10 +121,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             String lastName,
             String newPassword)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            return iamAdminService.registerUser(domainAuthzToken, username, emailAddress, firstName, lastName, newPassword);
+            return iamAdminService.registerUser(
+                    domainAuthzToken, username, emailAddress, firstName, lastName, newPassword);
         } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
             throw convertToThriftIamAdminServicesException(e);
         } catch (org.apache.airavata.common.exception.AuthorizationException e) {
@@ -136,7 +143,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     @SecurityCheck
     public boolean enableUser(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.enableUser(domainAuthzToken, username);
@@ -157,7 +164,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     @SecurityCheck
     public boolean isUserEnabled(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUserEnabled(domainAuthzToken, username);
@@ -178,7 +185,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     @SecurityCheck
     public boolean isUserExist(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.isUserExist(domainAuthzToken, username);
@@ -200,10 +207,11 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     public org.apache.airavata.thriftapi.model.UserProfile getUser(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            org.apache.airavata.common.model.UserProfile domainProfile = iamAdminService.getUser(domainAuthzToken, username);
+            org.apache.airavata.common.model.UserProfile domainProfile =
+                    iamAdminService.getUser(domainAuthzToken, username);
             return userProfileMapper.toThrift(domainProfile);
         } catch (org.apache.airavata.profile.exception.IamAdminServicesException e) {
             throw convertToThriftIamAdminServicesException(e);
@@ -223,7 +231,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     public List<org.apache.airavata.thriftapi.model.UserProfile> getUsers(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, int offset, int limit, String search)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             List<org.apache.airavata.common.model.UserProfile> domainProfiles =
@@ -247,7 +255,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     public boolean resetUserPassword(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username, String newPassword)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.resetUserPassword(domainAuthzToken, username, newPassword);
@@ -269,7 +277,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     public List<org.apache.airavata.thriftapi.model.UserProfile> findUsers(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String email, String userId)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             List<org.apache.airavata.common.model.UserProfile> domainProfiles =
@@ -294,7 +302,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken,
             org.apache.airavata.thriftapi.model.UserProfile userDetails)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.UserProfile domainProfile = userProfileMapper.toDomain(userDetails);
@@ -316,7 +324,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     @SecurityCheck
     public boolean deleteUser(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String username)
             throws org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return iamAdminService.deleteUser(domainAuthzToken, username);
@@ -334,8 +342,9 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
     }
 
     // Helper methods for exception conversion
-    private org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException convertToThriftIamAdminServicesException(
-            org.apache.airavata.profile.exception.IamAdminServicesException e) {
+    private org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException
+            convertToThriftIamAdminServicesException(
+                    org.apache.airavata.profile.exception.IamAdminServicesException e) {
         org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException thriftException =
                 new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();
         thriftException.setMessage(e.getMessage());

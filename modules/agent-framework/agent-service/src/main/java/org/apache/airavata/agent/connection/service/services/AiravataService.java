@@ -31,7 +31,6 @@ import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.exception.InvalidRequestException;
 import org.apache.airavata.common.model.ComputeResourceType;
-import org.apache.airavata.common.model.ExperimentSearchFields;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
@@ -65,8 +64,10 @@ public class AiravataService {
         this.properties = properties;
     }
 
-    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(org.apache.airavata.security.model.AuthzToken domainToken) {
-        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken = new org.apache.airavata.thriftapi.security.model.AuthzToken();
+    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(
+            org.apache.airavata.security.model.AuthzToken domainToken) {
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken =
+                new org.apache.airavata.thriftapi.security.model.AuthzToken();
         thriftToken.setAccessToken(domainToken.getAccessToken());
         thriftToken.setClaimsMap(domainToken.getClaimsMap());
         return thriftToken;
@@ -89,10 +90,13 @@ public class AiravataService {
             List<Project> userProjects;
             try {
                 List<org.apache.airavata.thriftapi.model.Project> thriftUserProjects = airavataClient.getUserProjects(
-                        convertAuthzToken(UserContext.authzToken()), UserContext.gatewayId(), UserContext.username(), limit, offset);
-                userProjects = thriftUserProjects.stream()
-                        .map(this::convertProject)
-                        .collect(Collectors.toList());
+                        convertAuthzToken(UserContext.authzToken()),
+                        UserContext.gatewayId(),
+                        UserContext.username(),
+                        limit,
+                        offset);
+                userProjects =
+                        thriftUserProjects.stream().map(this::convertProject).collect(Collectors.toList());
             } catch (InvalidRequestException e) {
                 String msg = String.format(
                         "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
@@ -146,7 +150,9 @@ public class AiravataService {
             Airavata.Client airavataClient, String group, String remoteCluster) {
         List<GroupResourceProfile> groupResourceList;
         try {
-            List<org.apache.airavata.thriftapi.model.GroupResourceProfile> thriftGroupResourceList = airavataClient.getGroupResourceList(convertAuthzToken(UserContext.authzToken()), UserContext.gatewayId());
+            List<org.apache.airavata.thriftapi.model.GroupResourceProfile> thriftGroupResourceList =
+                    airavataClient.getGroupResourceList(
+                            convertAuthzToken(UserContext.authzToken()), UserContext.gatewayId());
             groupResourceList = thriftGroupResourceList.stream()
                     .map(this::convertGroupResourceProfile)
                     .collect(Collectors.toList());
@@ -195,8 +201,9 @@ public class AiravataService {
 
     public List<String> getUserExperimentIDs(Airavata.Client airavataClient) {
         int limit = 100;
-        Map<org.apache.airavata.thriftapi.model.ExperimentSearchFields, String> filters =
-                Map.of(org.apache.airavata.thriftapi.model.ExperimentSearchFields.PROJECT_ID, getProjectId(airavataClient, "Default Project"));
+        Map<org.apache.airavata.thriftapi.model.ExperimentSearchFields, String> filters = Map.of(
+                org.apache.airavata.thriftapi.model.ExperimentSearchFields.PROJECT_ID,
+                getProjectId(airavataClient, "Default Project"));
 
         return Stream.iterate(0, offset -> offset + limit)
                 .<List<org.apache.airavata.thriftapi.model.ExperimentSummaryModel>>map(offset -> {
@@ -267,29 +274,34 @@ public class AiravataService {
                 })
                 .takeWhile(list -> !list.isEmpty())
                 .flatMap(List::stream)
-                .map(thriftSummary -> convertExperimentSummaryModel(thriftSummary).getExperimentId())
+                .map(thriftSummary ->
+                        convertExperimentSummaryModel(thriftSummary).getExperimentId())
                 .collect(Collectors.toList());
     }
 
-    private GroupResourceProfile convertGroupResourceProfile(org.apache.airavata.thriftapi.model.GroupResourceProfile thriftModel) {
+    private GroupResourceProfile convertGroupResourceProfile(
+            org.apache.airavata.thriftapi.model.GroupResourceProfile thriftModel) {
         if (thriftModel == null) return null;
         GroupResourceProfile domainModel = new GroupResourceProfile();
         domainModel.setGroupResourceProfileId(thriftModel.getGroupResourceProfileId());
         domainModel.setGroupResourceProfileName(thriftModel.getGroupResourceProfileName());
         if (thriftModel.getComputePreferences() != null) {
             domainModel.setComputePreferences(thriftModel.getComputePreferences().stream()
-                    .map(this::convertGroupComputeResourcePreference).collect(Collectors.toList()));
+                    .map(this::convertGroupComputeResourcePreference)
+                    .collect(Collectors.toList()));
         }
         return domainModel;
     }
 
-    private GroupComputeResourcePreference convertGroupComputeResourcePreference(org.apache.airavata.thriftapi.model.GroupComputeResourcePreference thriftModel) {
+    private GroupComputeResourcePreference convertGroupComputeResourcePreference(
+            org.apache.airavata.thriftapi.model.GroupComputeResourcePreference thriftModel) {
         if (thriftModel == null) return null;
         GroupComputeResourcePreference domainModel = new GroupComputeResourcePreference();
         domainModel.setComputeResourceId(thriftModel.getComputeResourceId());
         domainModel.setGroupResourceProfileId(thriftModel.getGroupResourceProfileId());
         if (thriftModel.getResourceType() != null) {
-            domainModel.setResourceType(ComputeResourceType.valueOf(thriftModel.getResourceType().name()));
+            domainModel.setResourceType(
+                    ComputeResourceType.valueOf(thriftModel.getResourceType().name()));
         }
         domainModel.setScratchLocation(thriftModel.getScratchLocation());
         domainModel.setLoginUserName(thriftModel.getLoginUserName());
@@ -308,7 +320,8 @@ public class AiravataService {
         return domainModel;
     }
 
-    private ExperimentSummaryModel convertExperimentSummaryModel(org.apache.airavata.thriftapi.model.ExperimentSummaryModel thriftModel) {
+    private ExperimentSummaryModel convertExperimentSummaryModel(
+            org.apache.airavata.thriftapi.model.ExperimentSummaryModel thriftModel) {
         if (thriftModel == null) return null;
         ExperimentSummaryModel domainModel = new ExperimentSummaryModel();
         domainModel.setExperimentId(thriftModel.getExperimentId());
@@ -318,7 +331,8 @@ public class AiravataService {
         domainModel.setUserName(thriftModel.getUserName());
         domainModel.setName(thriftModel.getName());
         if (thriftModel.getExperimentStatus() != null) {
-            domainModel.setExperimentStatus(org.apache.airavata.common.model.ExperimentStatus.valueOf(thriftModel.getExperimentStatus().name()));
+            domainModel.setExperimentStatus(org.apache.airavata.common.model.ExperimentStatus.valueOf(
+                    thriftModel.getExperimentStatus().name()));
         }
         return domainModel;
     }

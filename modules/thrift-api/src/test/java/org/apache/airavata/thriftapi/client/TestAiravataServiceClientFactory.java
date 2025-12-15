@@ -28,7 +28,7 @@ import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.thriftapi.security.model.AuthzToken;
 import org.apache.airavata.thriftapi.service.Airavata;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;

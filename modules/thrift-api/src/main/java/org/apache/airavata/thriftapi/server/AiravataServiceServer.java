@@ -19,12 +19,10 @@
 */
 package org.apache.airavata.thriftapi.server;
 
-import org.apache.airavata.thriftapi.service.Airavata;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.thriftapi.handler.AiravataServiceHandler;
+import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
@@ -57,7 +55,7 @@ public class AiravataServiceServer implements IServer {
     }
 
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer)
-            throws AiravataSystemException {
+            throws org.apache.airavata.thriftapi.exception.AiravataSystemException {
         try {
             final int serverPort = properties.services.api.port;
 
@@ -123,7 +121,12 @@ public class AiravataServiceServer implements IServer {
         } catch (TTransportException e) {
             logger.error("Failed to start API server ...", e);
             setStatus(ServerStatus.FAILED);
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
+                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Failed to start API server: " + e.getMessage());
+            exception.initCause(e);
+            throw exception;
         }
     }
 

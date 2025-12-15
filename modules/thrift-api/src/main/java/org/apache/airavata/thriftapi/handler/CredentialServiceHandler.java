@@ -21,7 +21,6 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CredentialSummary;
 import org.apache.airavata.credential.model.PasswordCredential;
@@ -34,7 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CredentialServiceHandler implements org.apache.airavata.thriftapi.credential.model.CredentialStoreService.Iface {
+public class CredentialServiceHandler
+        implements org.apache.airavata.thriftapi.credential.model.CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialServiceHandler.class);
 
     private final CredentialStoreService credentialStoreService;
@@ -96,7 +96,8 @@ public class CredentialServiceHandler implements org.apache.airavata.thriftapi.c
     }
 
     @Override
-    public org.apache.airavata.thriftapi.credential.model.SSHCredential getSSHCredential(String tokenId, String gatewayId)
+    public org.apache.airavata.thriftapi.credential.model.SSHCredential getSSHCredential(
+            String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
             SSHCredential domainCredential = credentialStoreService.getSSHCredential(tokenId, gatewayId);
@@ -139,7 +140,8 @@ public class CredentialServiceHandler implements org.apache.airavata.thriftapi.c
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            CertificateCredential domainCredential = credentialStoreService.getCertificateCredential(tokenId, gatewayId);
+            CertificateCredential domainCredential =
+                    credentialStoreService.getCertificateCredential(tokenId, gatewayId);
             return convertToThriftCertificate(domainCredential);
         } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
@@ -268,7 +270,8 @@ public class CredentialServiceHandler implements org.apache.airavata.thriftapi.c
         thrift.setDescription(domain.getDescription());
         thrift.setPersistedTime(domain.getPersistedTime());
         if (domain.getType() != null) {
-            thrift.setType(org.apache.airavata.thriftapi.credential.model.SummaryType.valueOf(domain.getType().name()));
+            thrift.setType(org.apache.airavata.thriftapi.credential.model.SummaryType.valueOf(
+                    domain.getType().name()));
         }
         return thrift;
     }

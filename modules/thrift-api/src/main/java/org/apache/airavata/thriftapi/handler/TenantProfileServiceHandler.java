@@ -22,7 +22,6 @@ package org.apache.airavata.thriftapi.handler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.profile.TenantProfileService;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
@@ -36,7 +35,8 @@ import org.springframework.stereotype.Component;
  * Created by goshenoy on 3/6/17.
  */
 @Component
-public class TenantProfileServiceHandler implements org.apache.airavata.thriftapi.profile.model.TenantProfileService.Iface {
+public class TenantProfileServiceHandler
+        implements org.apache.airavata.thriftapi.profile.model.TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
@@ -60,7 +60,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken,
             org.apache.airavata.thriftapi.model.Gateway gateway)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
@@ -90,7 +90,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken,
             org.apache.airavata.thriftapi.model.Gateway updatedGateway)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(updatedGateway);
@@ -119,7 +119,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
     public org.apache.airavata.thriftapi.model.Gateway getGateway(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String airavataInternalGatewayId)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway =
@@ -145,7 +145,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
             String airavataInternalGatewayId,
             String gatewayId)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return tenantProfileService.deleteGateway(domainAuthzToken, airavataInternalGatewayId, gatewayId);
@@ -167,7 +167,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
     public List<org.apache.airavata.thriftapi.model.Gateway> getAllGateways(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             List<org.apache.airavata.common.model.Gateway> domainGateways =
@@ -188,10 +188,9 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
 
     @Override
     @SecurityCheck
-    public boolean isGatewayExist(
-            org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String gatewayId)
+    public boolean isGatewayExist(org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String gatewayId)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             return tenantProfileService.isGatewayExist(domainAuthzToken, gatewayId);
@@ -213,7 +212,7 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
     public List<org.apache.airavata.thriftapi.model.Gateway> getAllGatewaysForUser(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String requesterUsername)
             throws org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException,
-            org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
+                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             List<org.apache.airavata.common.model.Gateway> domainGateways =
@@ -233,8 +232,9 @@ public class TenantProfileServiceHandler implements org.apache.airavata.thriftap
     }
 
     // Helper methods for exception conversion
-    private org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException convertToThriftTenantProfileServiceException(
-            org.apache.airavata.profile.exception.TenantProfileServiceException e) {
+    private org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException
+            convertToThriftTenantProfileServiceException(
+                    org.apache.airavata.profile.exception.TenantProfileServiceException e) {
         org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException thriftException =
                 new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();
         thriftException.setMessage(e.getMessage());

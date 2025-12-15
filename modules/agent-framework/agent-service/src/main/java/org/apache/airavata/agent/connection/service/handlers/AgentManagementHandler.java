@@ -46,7 +46,6 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
-import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
@@ -76,13 +75,14 @@ public class AgentManagementHandler {
         this.clusterApplicationConfig = clusterApplicationConfig;
     }
 
-    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(org.apache.airavata.security.model.AuthzToken domainToken) {
-        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken = new org.apache.airavata.thriftapi.security.model.AuthzToken();
+    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(
+            org.apache.airavata.security.model.AuthzToken domainToken) {
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken =
+                new org.apache.airavata.thriftapi.security.model.AuthzToken();
         thriftToken.setAccessToken(domainToken.getAccessToken());
         thriftToken.setClaimsMap(domainToken.getClaimsMap());
         return thriftToken;
     }
-
 
     private ExperimentModel convertExperimentModel(org.apache.airavata.thriftapi.model.ExperimentModel thriftModel) {
         if (thriftModel == null) return null;
@@ -93,46 +93,83 @@ public class AgentManagementHandler {
         domainModel.setUserName(thriftModel.getUserName());
         domainModel.setGatewayId(thriftModel.getGatewayId());
         domainModel.setExecutionId(thriftModel.getExecutionId());
-        domainModel.setExperimentType(ExperimentType.valueOf(thriftModel.getExperimentType().name()));
+        domainModel.setExperimentType(
+                ExperimentType.valueOf(thriftModel.getExperimentType().name()));
         if (thriftModel.getUserConfigurationData() != null) {
             UserConfigurationDataModel userConfig = new UserConfigurationDataModel();
-            userConfig.setGroupResourceProfileId(thriftModel.getUserConfigurationData().getGroupResourceProfileId());
-            userConfig.setExperimentDataDir(thriftModel.getUserConfigurationData().getExperimentDataDir());
-            userConfig.setInputStorageResourceId(thriftModel.getUserConfigurationData().getInputStorageResourceId());
-            userConfig.setOutputStorageResourceId(thriftModel.getUserConfigurationData().getOutputStorageResourceId());
+            userConfig.setGroupResourceProfileId(
+                    thriftModel.getUserConfigurationData().getGroupResourceProfileId());
+            userConfig.setExperimentDataDir(
+                    thriftModel.getUserConfigurationData().getExperimentDataDir());
+            userConfig.setInputStorageResourceId(
+                    thriftModel.getUserConfigurationData().getInputStorageResourceId());
+            userConfig.setOutputStorageResourceId(
+                    thriftModel.getUserConfigurationData().getOutputStorageResourceId());
             if (thriftModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
                 ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
-                scheduling.setQueueName(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getQueueName());
-                scheduling.setNodeCount(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getNodeCount());
-                scheduling.setTotalCPUCount(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getTotalCPUCount());
-                scheduling.setWallTimeLimit(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getWallTimeLimit());
-                scheduling.setTotalPhysicalMemory(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getTotalPhysicalMemory());
-                scheduling.setResourceHostId(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-                scheduling.setOverrideScratchLocation(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideScratchLocation());
-                scheduling.setOverrideAllocationProjectNumber(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideAllocationProjectNumber());
-                scheduling.setOverrideLoginUserName(thriftModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideLoginUserName());
+                scheduling.setQueueName(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getQueueName());
+                scheduling.setNodeCount(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getNodeCount());
+                scheduling.setTotalCPUCount(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getTotalCPUCount());
+                scheduling.setWallTimeLimit(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getWallTimeLimit());
+                scheduling.setTotalPhysicalMemory(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getTotalPhysicalMemory());
+                scheduling.setResourceHostId(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId());
+                scheduling.setOverrideScratchLocation(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideScratchLocation());
+                scheduling.setOverrideAllocationProjectNumber(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideAllocationProjectNumber());
+                scheduling.setOverrideLoginUserName(thriftModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideLoginUserName());
                 userConfig.setComputationalResourceScheduling(scheduling);
             }
             domainModel.setUserConfigurationData(userConfig);
         }
         if (thriftModel.getExperimentInputs() != null) {
             domainModel.setExperimentInputs(thriftModel.getExperimentInputs().stream()
-                    .map(this::convertInputDataObjectType).collect(Collectors.toList()));
+                    .map(this::convertInputDataObjectType)
+                    .collect(Collectors.toList()));
         }
         if (thriftModel.getExperimentOutputs() != null) {
             domainModel.setExperimentOutputs(thriftModel.getExperimentOutputs().stream()
-                    .map(this::convertOutputDataObjectType).collect(Collectors.toList()));
+                    .map(this::convertOutputDataObjectType)
+                    .collect(Collectors.toList()));
         }
         if (thriftModel.getProcesses() != null) {
             domainModel.setProcesses(thriftModel.getProcesses().stream()
-                    .map(this::convertProcessModel).collect(Collectors.toList()));
+                    .map(this::convertProcessModel)
+                    .collect(Collectors.toList()));
         }
         return domainModel;
     }
 
-    private org.apache.airavata.thriftapi.model.ExperimentModel convertExperimentModelToThrift(ExperimentModel domainModel) {
+    private org.apache.airavata.thriftapi.model.ExperimentModel convertExperimentModelToThrift(
+            ExperimentModel domainModel) {
         if (domainModel == null) return null;
-        org.apache.airavata.thriftapi.model.ExperimentModel thriftModel = new org.apache.airavata.thriftapi.model.ExperimentModel();
+        org.apache.airavata.thriftapi.model.ExperimentModel thriftModel =
+                new org.apache.airavata.thriftapi.model.ExperimentModel();
         thriftModel.setExperimentId(domainModel.getExperimentId());
         thriftModel.setExperimentName(domainModel.getExperimentName());
         thriftModel.setProjectId(domainModel.getProjectId());
@@ -140,53 +177,92 @@ public class AgentManagementHandler {
         thriftModel.setGatewayId(domainModel.getGatewayId());
         thriftModel.setExecutionId(domainModel.getExecutionId());
         if (domainModel.getExperimentType() != null) {
-            thriftModel.setExperimentType(org.apache.airavata.thriftapi.model.ExperimentType.valueOf(domainModel.getExperimentType().name()));
+            thriftModel.setExperimentType(org.apache.airavata.thriftapi.model.ExperimentType.valueOf(
+                    domainModel.getExperimentType().name()));
         }
         if (domainModel.getUserConfigurationData() != null) {
-            org.apache.airavata.thriftapi.model.UserConfigurationDataModel userConfig = new org.apache.airavata.thriftapi.model.UserConfigurationDataModel();
-            userConfig.setGroupResourceProfileId(domainModel.getUserConfigurationData().getGroupResourceProfileId());
-            userConfig.setExperimentDataDir(domainModel.getUserConfigurationData().getExperimentDataDir());
-            userConfig.setInputStorageResourceId(domainModel.getUserConfigurationData().getInputStorageResourceId());
-            userConfig.setOutputStorageResourceId(domainModel.getUserConfigurationData().getOutputStorageResourceId());
+            org.apache.airavata.thriftapi.model.UserConfigurationDataModel userConfig =
+                    new org.apache.airavata.thriftapi.model.UserConfigurationDataModel();
+            userConfig.setGroupResourceProfileId(
+                    domainModel.getUserConfigurationData().getGroupResourceProfileId());
+            userConfig.setExperimentDataDir(
+                    domainModel.getUserConfigurationData().getExperimentDataDir());
+            userConfig.setInputStorageResourceId(
+                    domainModel.getUserConfigurationData().getInputStorageResourceId());
+            userConfig.setOutputStorageResourceId(
+                    domainModel.getUserConfigurationData().getOutputStorageResourceId());
             if (domainModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
-                org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel scheduling = new org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel();
-                scheduling.setQueueName(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getQueueName());
-                scheduling.setNodeCount(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getNodeCount());
-                scheduling.setTotalCPUCount(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getTotalCPUCount());
-                scheduling.setWallTimeLimit(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getWallTimeLimit());
-                scheduling.setTotalPhysicalMemory(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getTotalPhysicalMemory());
-                scheduling.setResourceHostId(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-                scheduling.setOverrideScratchLocation(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideScratchLocation());
-                scheduling.setOverrideAllocationProjectNumber(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideAllocationProjectNumber());
-                scheduling.setOverrideLoginUserName(domainModel.getUserConfigurationData().getComputationalResourceScheduling().getOverrideLoginUserName());
+                org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel scheduling =
+                        new org.apache.airavata.thriftapi.model.ComputationalResourceSchedulingModel();
+                scheduling.setQueueName(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getQueueName());
+                scheduling.setNodeCount(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getNodeCount());
+                scheduling.setTotalCPUCount(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getTotalCPUCount());
+                scheduling.setWallTimeLimit(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getWallTimeLimit());
+                scheduling.setTotalPhysicalMemory(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getTotalPhysicalMemory());
+                scheduling.setResourceHostId(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getResourceHostId());
+                scheduling.setOverrideScratchLocation(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideScratchLocation());
+                scheduling.setOverrideAllocationProjectNumber(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideAllocationProjectNumber());
+                scheduling.setOverrideLoginUserName(domainModel
+                        .getUserConfigurationData()
+                        .getComputationalResourceScheduling()
+                        .getOverrideLoginUserName());
                 userConfig.setComputationalResourceScheduling(scheduling);
             }
             thriftModel.setUserConfigurationData(userConfig);
         }
         if (domainModel.getExperimentInputs() != null) {
             thriftModel.setExperimentInputs(domainModel.getExperimentInputs().stream()
-                    .map(this::convertInputDataObjectTypeToThrift).collect(Collectors.toList()));
+                    .map(this::convertInputDataObjectTypeToThrift)
+                    .collect(Collectors.toList()));
         }
         if (domainModel.getExperimentOutputs() != null) {
             thriftModel.setExperimentOutputs(domainModel.getExperimentOutputs().stream()
-                    .map(this::convertOutputDataObjectTypeToThrift).collect(Collectors.toList()));
+                    .map(this::convertOutputDataObjectTypeToThrift)
+                    .collect(Collectors.toList()));
         }
         return thriftModel;
     }
 
-    private GroupResourceProfile convertGroupResourceProfile(org.apache.airavata.thriftapi.model.GroupResourceProfile thriftModel) {
+    private GroupResourceProfile convertGroupResourceProfile(
+            org.apache.airavata.thriftapi.model.GroupResourceProfile thriftModel) {
         if (thriftModel == null) return null;
         GroupResourceProfile domainModel = new GroupResourceProfile();
         domainModel.setGroupResourceProfileId(thriftModel.getGroupResourceProfileId());
         domainModel.setGroupResourceProfileName(thriftModel.getGroupResourceProfileName());
         if (thriftModel.getComputePreferences() != null) {
             domainModel.setComputePreferences(thriftModel.getComputePreferences().stream()
-                    .map(this::convertGroupComputeResourcePreference).collect(Collectors.toList()));
+                    .map(this::convertGroupComputeResourcePreference)
+                    .collect(Collectors.toList()));
         }
         return domainModel;
     }
 
-    private ExperimentStatistics convertExperimentStatistics(org.apache.airavata.thriftapi.model.ExperimentStatistics thriftModel) {
+    private ExperimentStatistics convertExperimentStatistics(
+            org.apache.airavata.thriftapi.model.ExperimentStatistics thriftModel) {
         if (thriftModel == null) return null;
         ExperimentStatistics domainModel = new ExperimentStatistics();
         domainModel.setRunningExperimentCount(thriftModel.getRunningExperimentCount());
@@ -194,13 +270,15 @@ public class AgentManagementHandler {
         return domainModel;
     }
 
-    private InputDataObjectType convertInputDataObjectType(org.apache.airavata.thriftapi.model.InputDataObjectType thriftModel) {
+    private InputDataObjectType convertInputDataObjectType(
+            org.apache.airavata.thriftapi.model.InputDataObjectType thriftModel) {
         if (thriftModel == null) return null;
         InputDataObjectType domainModel = new InputDataObjectType();
         domainModel.setName(thriftModel.getName());
         domainModel.setValue(thriftModel.getValue());
         if (thriftModel.getType() != null) {
-            domainModel.setType(org.apache.airavata.common.model.DataType.valueOf(thriftModel.getType().name()));
+            domainModel.setType(org.apache.airavata.common.model.DataType.valueOf(
+                    thriftModel.getType().name()));
         }
         domainModel.setApplicationArgument(thriftModel.getApplicationArgument());
         if (thriftModel.isSetIsRequired()) {
@@ -213,13 +291,16 @@ public class AgentManagementHandler {
         return domainModel;
     }
 
-    private org.apache.airavata.thriftapi.model.InputDataObjectType convertInputDataObjectTypeToThrift(InputDataObjectType domainModel) {
+    private org.apache.airavata.thriftapi.model.InputDataObjectType convertInputDataObjectTypeToThrift(
+            InputDataObjectType domainModel) {
         if (domainModel == null) return null;
-        org.apache.airavata.thriftapi.model.InputDataObjectType thriftModel = new org.apache.airavata.thriftapi.model.InputDataObjectType();
+        org.apache.airavata.thriftapi.model.InputDataObjectType thriftModel =
+                new org.apache.airavata.thriftapi.model.InputDataObjectType();
         thriftModel.setName(domainModel.getName());
         thriftModel.setValue(domainModel.getValue());
         if (domainModel.getType() != null) {
-            thriftModel.setType(org.apache.airavata.thriftapi.model.DataType.valueOf(domainModel.getType().name()));
+            thriftModel.setType(org.apache.airavata.thriftapi.model.DataType.valueOf(
+                    domainModel.getType().name()));
         }
         thriftModel.setApplicationArgument(domainModel.getApplicationArgument());
         // Note: isRequired and requiredToAddedToCommandLine may need to be set differently
@@ -230,24 +311,30 @@ public class AgentManagementHandler {
         return thriftModel;
     }
 
-    private org.apache.airavata.common.model.OutputDataObjectType convertOutputDataObjectType(org.apache.airavata.thriftapi.model.OutputDataObjectType thriftModel) {
+    private org.apache.airavata.common.model.OutputDataObjectType convertOutputDataObjectType(
+            org.apache.airavata.thriftapi.model.OutputDataObjectType thriftModel) {
         if (thriftModel == null) return null;
-        org.apache.airavata.common.model.OutputDataObjectType domainModel = new org.apache.airavata.common.model.OutputDataObjectType();
+        org.apache.airavata.common.model.OutputDataObjectType domainModel =
+                new org.apache.airavata.common.model.OutputDataObjectType();
         domainModel.setName(thriftModel.getName());
         domainModel.setValue(thriftModel.getValue());
         if (thriftModel.getType() != null) {
-            domainModel.setType(org.apache.airavata.common.model.DataType.valueOf(thriftModel.getType().name()));
+            domainModel.setType(org.apache.airavata.common.model.DataType.valueOf(
+                    thriftModel.getType().name()));
         }
         return domainModel;
     }
 
-    private org.apache.airavata.thriftapi.model.OutputDataObjectType convertOutputDataObjectTypeToThrift(org.apache.airavata.common.model.OutputDataObjectType domainModel) {
+    private org.apache.airavata.thriftapi.model.OutputDataObjectType convertOutputDataObjectTypeToThrift(
+            org.apache.airavata.common.model.OutputDataObjectType domainModel) {
         if (domainModel == null) return null;
-        org.apache.airavata.thriftapi.model.OutputDataObjectType thriftModel = new org.apache.airavata.thriftapi.model.OutputDataObjectType();
+        org.apache.airavata.thriftapi.model.OutputDataObjectType thriftModel =
+                new org.apache.airavata.thriftapi.model.OutputDataObjectType();
         thriftModel.setName(domainModel.getName());
         thriftModel.setValue(domainModel.getValue());
         if (domainModel.getType() != null) {
-            thriftModel.setType(org.apache.airavata.thriftapi.model.DataType.valueOf(domainModel.getType().name()));
+            thriftModel.setType(org.apache.airavata.thriftapi.model.DataType.valueOf(
+                    domainModel.getType().name()));
         }
         return thriftModel;
     }
@@ -266,12 +353,14 @@ public class AgentManagementHandler {
         return domainModel;
     }
 
-    private GroupComputeResourcePreference convertGroupComputeResourcePreference(org.apache.airavata.thriftapi.model.GroupComputeResourcePreference thriftModel) {
+    private GroupComputeResourcePreference convertGroupComputeResourcePreference(
+            org.apache.airavata.thriftapi.model.GroupComputeResourcePreference thriftModel) {
         if (thriftModel == null) return null;
         GroupComputeResourcePreference domainModel = new GroupComputeResourcePreference();
         domainModel.setComputeResourceId(thriftModel.getComputeResourceId());
         domainModel.setGroupResourceProfileId(thriftModel.getGroupResourceProfileId());
-        domainModel.setResourceType(ComputeResourceType.valueOf(thriftModel.getResourceType().name()));
+        domainModel.setResourceType(
+                ComputeResourceType.valueOf(thriftModel.getResourceType().name()));
         domainModel.setScratchLocation(thriftModel.getScratchLocation());
         domainModel.setLoginUserName(thriftModel.getLoginUserName());
         return domainModel;
@@ -280,10 +369,13 @@ public class AgentManagementHandler {
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
             Airavata.Client airavata = airavataService.airavata();
-            org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment = airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
+            org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment =
+                    airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
             ExperimentModel experiment = convertExperimentModel(thriftExperiment);
             airavata.terminateExperiment(
-                    convertAuthzToken(UserContext.authzToken()), experiment.getExperimentId(), experiment.getGatewayId());
+                    convertAuthzToken(UserContext.authzToken()),
+                    experiment.getExperimentId(),
+                    experiment.getGatewayId());
             return new AgentTerminateResponse(experimentId, true);
         } catch (Exception e) {
             LOGGER.error("Error terminating experiment {}", experimentId, e);
@@ -294,17 +386,20 @@ public class AgentManagementHandler {
     public ExperimentModel getExperiment(String experimentId) {
         try {
             Airavata.Client airavata = airavataService.airavata();
-            org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment = airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
+            org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment =
+                    airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
             ExperimentModel experiment = convertExperimentModel(thriftExperiment);
-            org.apache.airavata.thriftapi.model.GroupResourceProfile thriftGroupResourceProfile = airavata.getGroupResourceProfile(
-                    convertAuthzToken(UserContext.authzToken()),
-                    experiment.getUserConfigurationData().getGroupResourceProfileId());
+            org.apache.airavata.thriftapi.model.GroupResourceProfile thriftGroupResourceProfile =
+                    airavata.getGroupResourceProfile(
+                            convertAuthzToken(UserContext.authzToken()),
+                            experiment.getUserConfigurationData().getGroupResourceProfileId());
             GroupResourceProfile groupResourceProfile = convertGroupResourceProfile(thriftGroupResourceProfile);
 
             // Always get the Default allocation
             if (!"Default".equalsIgnoreCase(groupResourceProfile.getGroupResourceProfileName())) {
                 List<org.apache.airavata.thriftapi.model.GroupResourceProfile> thriftGroupResourceList =
-                        airavata.getGroupResourceList(convertAuthzToken(UserContext.authzToken()), experiment.getGatewayId());
+                        airavata.getGroupResourceList(
+                                convertAuthzToken(UserContext.authzToken()), experiment.getGatewayId());
                 List<GroupResourceProfile> groupResourceList = thriftGroupResourceList.stream()
                         .map(this::convertGroupResourceProfile)
                         .collect(Collectors.toList());
@@ -380,11 +475,15 @@ public class AgentManagementHandler {
 
             String experimentId = airavataService
                     .airavata()
-                    .createExperiment(convertAuthzToken(UserContext.authzToken()), experiment.getGatewayId(), convertExperimentModelToThrift(experiment));
+                    .createExperiment(
+                            convertAuthzToken(UserContext.authzToken()),
+                            experiment.getGatewayId(),
+                            convertExperimentModelToThrift(experiment));
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService
                     .airavata()
-                    .launchExperiment(convertAuthzToken(UserContext.authzToken()), experimentId, experiment.getGatewayId());
+                    .launchExperiment(
+                            convertAuthzToken(UserContext.authzToken()), experimentId, experiment.getGatewayId());
             return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (Exception e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
@@ -396,7 +495,9 @@ public class AgentManagementHandler {
     public void terminateApplication(String gatewayId, String experimentId) {
         try {
             LOGGER.info("Terminating the application with experiment Id: {}", experimentId);
-            airavataService.airavata().terminateExperiment(convertAuthzToken(UserContext.authzToken()), experimentId, gatewayId);
+            airavataService
+                    .airavata()
+                    .terminateExperiment(convertAuthzToken(UserContext.authzToken()), experimentId, gatewayId);
         } catch (Exception e) {
             LOGGER.error("Error while terminating the application with the experiment Id: {}", experimentId);
             throw new RuntimeException(
@@ -407,8 +508,9 @@ public class AgentManagementHandler {
     public ProcessModel getEnvProcessModel(String expId) {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);
-            org.apache.airavata.thriftapi.model.ExperimentModel thriftExpModel =
-                    airavataService.airavata().getDetailedExperimentTree(convertAuthzToken(UserContext.authzToken()), expId);
+            org.apache.airavata.thriftapi.model.ExperimentModel thriftExpModel = airavataService
+                    .airavata()
+                    .getDetailedExperimentTree(convertAuthzToken(UserContext.authzToken()), expId);
             ExperimentModel expModel = convertExperimentModel(thriftExpModel);
             if (expModel.getProcesses() != null && !expModel.getProcesses().isEmpty()) {
                 return expModel.getProcesses().get(0);
@@ -431,7 +533,8 @@ public class AgentManagementHandler {
         String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
         String projectDir = projectName.replace(" ", "_");
         String projectId = airavataService.getProjectId(airavataClient, projectName);
-        org.apache.airavata.thriftapi.security.model.AuthzToken thriftAuthzToken = convertAuthzToken(UserContext.authzToken());
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftAuthzToken =
+                convertAuthzToken(UserContext.authzToken());
         String userName = UserContext.username();
         String gatewayId = UserContext.gatewayId();
         String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
@@ -473,7 +576,8 @@ public class AgentManagementHandler {
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        List<org.apache.airavata.thriftapi.model.InputDataObjectType> thriftApplicationInputs = airavataClient.getApplicationInputs(thriftAuthzToken, appInterfaceId);
+        List<org.apache.airavata.thriftapi.model.InputDataObjectType> thriftApplicationInputs =
+                airavataClient.getApplicationInputs(thriftAuthzToken, appInterfaceId);
         List<InputDataObjectType> applicationInputs = thriftApplicationInputs.stream()
                 .map(this::convertInputDataObjectType)
                 .collect(Collectors.toList());
@@ -496,10 +600,12 @@ public class AgentManagementHandler {
                 .collect(Collectors.toList());
 
         experimentModel.setExperimentInputs(experimentInputs);
-        List<org.apache.airavata.thriftapi.model.OutputDataObjectType> thriftApplicationOutputs = airavataClient.getApplicationOutputs(thriftAuthzToken, appInterfaceId);
-        List<org.apache.airavata.common.model.OutputDataObjectType> applicationOutputs = thriftApplicationOutputs.stream()
-                .map(this::convertOutputDataObjectType)
-                .collect(Collectors.toList());
+        List<org.apache.airavata.thriftapi.model.OutputDataObjectType> thriftApplicationOutputs =
+                airavataClient.getApplicationOutputs(thriftAuthzToken, appInterfaceId);
+        List<org.apache.airavata.common.model.OutputDataObjectType> applicationOutputs =
+                thriftApplicationOutputs.stream()
+                        .map(this::convertOutputDataObjectType)
+                        .collect(Collectors.toList());
         experimentModel.setExperimentOutputs(applicationOutputs);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());

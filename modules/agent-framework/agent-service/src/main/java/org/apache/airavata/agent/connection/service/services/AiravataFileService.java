@@ -61,8 +61,10 @@ public class AiravataFileService {
         this.airavataService = airavataService;
     }
 
-    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(org.apache.airavata.security.model.AuthzToken domainToken) {
-        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken = new org.apache.airavata.thriftapi.security.model.AuthzToken();
+    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(
+            org.apache.airavata.security.model.AuthzToken domainToken) {
+        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken =
+                new org.apache.airavata.thriftapi.security.model.AuthzToken();
         thriftToken.setAccessToken(domainToken.getAccessToken());
         thriftToken.setClaimsMap(domainToken.getClaimsMap());
         return thriftToken;

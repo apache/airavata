@@ -21,7 +21,6 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ProcessModel;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
