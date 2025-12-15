@@ -20,12 +20,12 @@
 package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.LaunchValidationException;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.orchestrator.utils.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
+import org.apache.airavata.thriftapi.mapper.ProcessModelMapper;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,13 +34,14 @@ import org.springframework.stereotype.Component;
 public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
     private final OrchestratorService orchestratorService;
+    private final ProcessModelMapper processModelMapper = ProcessModelMapper.INSTANCE;
 
     /**
      * Query orchestrator server to fetch the CPI version
      */
     @Override
-    public String getAPIVersion() throws AiravataSystemException {
-        return org.apache.airavata.orchestrator.model.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
+    public String getAPIVersion() throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
+        return org.apache.airavata.thriftapi.orchestrator.model.orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
     }
 
     public OrchestratorServiceHandler(OrchestratorService orchestratorService) {
@@ -57,14 +58,19 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
      * @param experimentId
      */
     @Override
-    public boolean launchExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
+    public boolean launchExperiment(String experimentId, String gatewayId)
+            throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
         var pool = OrchestratorServerThreadPoolExecutor.getCachedThreadPool();
         try {
             return orchestratorService.launchExperiment(experimentId, gatewayId, pool);
+        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+            throw convertToThriftAiravataSystemException(e);
         } catch (Throwable e) {
             log.error("Error launching experiment: " + experimentId, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
+                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            exception.setAiravataErrorType(
+                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error launching experiment: " + experimentId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -80,30 +86,39 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
      * @return
      */
     @Override
-    public boolean validateExperiment(String experimentId) throws LaunchValidationException {
+    public boolean validateExperiment(String experimentId)
+            throws org.apache.airavata.thriftapi.exception.LaunchValidationException, TException {
         try {
             return orchestratorService.validateExperiment(experimentId);
-        } catch (LaunchValidationException e) {
-            throw e;
+        } catch (org.apache.airavata.common.exception.LaunchValidationException e) {
+            throw convertToThriftLaunchValidationException(e);
         } catch (Throwable e) {
             log.error("Error validating experiment: " + experimentId, e);
-            LaunchValidationException exception = new LaunchValidationException();
+            org.apache.airavata.thriftapi.exception.LaunchValidationException exception =
+                    new org.apache.airavata.thriftapi.exception.LaunchValidationException();
             exception.setErrorMessage(
                     "Error validating experiment: " + experimentId + ". More info: " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
 
     @Override
-    public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException {
+    public boolean validateProcess(
+            String experimentId, List<org.apache.airavata.thriftapi.model.ProcessModel> processes)
+            throws org.apache.airavata.thriftapi.exception.LaunchValidationException, TException {
         try {
-            return orchestratorService.validateProcess(experimentId, processes);
-        } catch (LaunchValidationException e) {
-            throw e;
+            List<ProcessModel> domainProcesses =
+                    processes.stream().map(processModelMapper::toDomain).collect(Collectors.toList());
+            return orchestratorService.validateProcess(experimentId, domainProcesses);
+        } catch (org.apache.airavata.common.exception.LaunchValidationException e) {
+            throw convertToThriftLaunchValidationException(e);
         } catch (Throwable e) {
             log.error("Error validating process: " + experimentId, e);
-            LaunchValidationException exception = new LaunchValidationException();
+            org.apache.airavata.thriftapi.exception.LaunchValidationException exception =
+                    new org.apache.airavata.thriftapi.exception.LaunchValidationException();
             exception.setErrorMessage("Error validating process: " + experimentId + ". More info: " + e.getMessage());
+            exception.initCause(e);
             throw exception;
         }
     }
@@ -116,14 +131,19 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
      * @return
      */
     @Override
-    public boolean terminateExperiment(String experimentId, String gatewayId) throws AiravataSystemException {
+    public boolean terminateExperiment(String experimentId, String gatewayId)
+            throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
         log.info("Experiment: {} is cancelling  !!!!!", experimentId);
         try {
             return orchestratorService.terminateExperiment(experimentId, gatewayId);
+        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+            throw convertToThriftAiravataSystemException(e);
         } catch (Throwable e) {
             log.error("Error terminating experiment: " + experimentId, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
+                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            exception.setAiravataErrorType(
+                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error terminating experiment: " + experimentId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
@@ -131,13 +151,17 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
     }
 
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
-            throws AiravataSystemException {
+            throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
         try {
             orchestratorService.fetchIntermediateOutputs(experimentId, gatewayId, outputNames);
+        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+            throw convertToThriftAiravataSystemException(e);
         } catch (Throwable e) {
             log.error("Error fetching intermediate outputs for experiment: " + experimentId, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
+                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            exception.setAiravataErrorType(
+                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error fetching intermediate outputs for experiment: " + experimentId + ". More info: "
                     + e.getMessage());
             exception.initCause(e);
@@ -147,16 +171,43 @@ public class OrchestratorServiceHandler implements org.apache.airavata.thriftapi
 
     @Override
     public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
-            throws AiravataSystemException {
+            throws org.apache.airavata.thriftapi.exception.AiravataSystemException, TException {
         try {
             return orchestratorService.launchProcess(processId, airavataCredStoreToken, gatewayId);
+        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+            throw convertToThriftAiravataSystemException(e);
         } catch (Throwable e) {
             log.error("Error launching process: " + processId, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
+                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+            exception.setAiravataErrorType(
+                    org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error launching process: " + processId + ". More info: " + e.getMessage());
             exception.initCause(e);
             throw exception;
         }
+    }
+
+    // Helper methods for exception conversion
+    private org.apache.airavata.thriftapi.exception.AiravataSystemException convertToThriftAiravataSystemException(
+            org.apache.airavata.common.exception.AiravataSystemException e) {
+        org.apache.airavata.thriftapi.exception.AiravataSystemException thriftException =
+                new org.apache.airavata.thriftapi.exception.AiravataSystemException();
+        thriftException.setMessage(e.getMessage());
+        if (e.getAiravataErrorType() != null) {
+            thriftException.setAiravataErrorType(
+                    org.apache.airavata.thriftapi.exception.AiravataErrorType.valueOf(e.getAiravataErrorType().name()));
+        }
+        thriftException.initCause(e);
+        return thriftException;
+    }
+
+    private org.apache.airavata.thriftapi.exception.LaunchValidationException convertToThriftLaunchValidationException(
+            org.apache.airavata.common.exception.LaunchValidationException e) {
+        org.apache.airavata.thriftapi.exception.LaunchValidationException thriftException =
+                new org.apache.airavata.thriftapi.exception.LaunchValidationException();
+        thriftException.setErrorMessage(e.getErrorMessage());
+        thriftException.initCause(e);
+        return thriftException;
     }
 }
