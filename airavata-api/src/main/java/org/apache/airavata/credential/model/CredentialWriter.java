@@ -17,40 +17,21 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.password;
+package org.apache.airavata.credential.model;
 
-import org.apache.airavata.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.Credential;
+import org.apache.airavata.credential.exception.CredentialStoreException;
 
 /**
- * User name password credentials.
+ * The entity who's writing credentials to DB will use this interface.
  */
-public class PasswordCredential extends SSHCredential {
+public interface CredentialWriter {
 
-    private String userName;
-    private String password;
-    private String description;
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    /**
+     * Writes given credentials to a persistent storage.
+     *
+     * @param credential
+     *            The credentials implementation.
+     */
+    void writeCredentials(Credential credential) throws CredentialStoreException;
 }

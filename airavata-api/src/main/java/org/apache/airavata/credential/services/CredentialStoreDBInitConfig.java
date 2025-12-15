@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.utils;
+package org.apache.airavata.credential.services;
 
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.config.AiravataServerProperties;

@@ -152,9 +152,7 @@ public class EntityService {
             return result;
         } catch (Exception e) {
             logger.error("Error searching entities", e);
-            SharingRegistryException ex = new SharingRegistryException("Error searching entities: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            throw new SharingRegistryException(String.format("Error searching entities: %s", e.getMessage()), e);
         }
     }
 

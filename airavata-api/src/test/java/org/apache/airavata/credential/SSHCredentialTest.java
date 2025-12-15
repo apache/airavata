@@ -17,11 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.store;
+package org.apache.airavata.credential;
 
 import java.io.File;
 import java.io.FileInputStream;
-import org.apache.airavata.credential.impl.ssh.SSHCredential;
+
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.services.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class SSHCredentialTest {
             }
 
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setGateway(gatewayId);
+            sshCredential.setGatewayId(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);
             sshCredential.setToken(token);
             sshCredential.setPortalUserName("test-user");
@@ -81,8 +83,8 @@ public class SSHCredentialTest {
             privateKeyStream.close();
             pubKeyStream.close();
 
-            sshCredential.setPrivateKey(bFilePri);
-            sshCredential.setPublicKey(bFilePub);
+            sshCredential.setPrivateKey(new String(bFilePri));
+            sshCredential.setPublicKey(new String(bFilePub));
             sshCredential.setPassphrase("test-passphrase");
 
             sshCredentialWriter.writeCredentials(sshCredential);

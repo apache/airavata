@@ -17,12 +17,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.certificate;
+package org.apache.airavata.credential.model;
 
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.airavata.credential.AuditInfo;
-import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Audit information related to community credential.

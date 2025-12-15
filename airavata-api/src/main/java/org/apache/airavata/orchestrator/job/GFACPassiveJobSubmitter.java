@@ -26,7 +26,7 @@ import org.apache.airavata.common.model.ProcessSubmitEvent;
 import org.apache.airavata.common.model.ProcessTerminateEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.utils.CredentialReader;
+import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;

@@ -100,17 +100,11 @@ public class CredentialEntityService {
             entity.setPortalUserId(credential.getPortalUserName());
             entity.setTimePersisted(new Timestamp(System.currentTimeMillis()));
             entity.setDescription(credential.getDescription());
-            if (credential.getCredentialOwnerType() != null) {
-                entity.setCredentialOwnerType(
-                        credential.getCredentialOwnerType().toString());
-            }
-
             credentialRepository.save(entity);
         } catch (Exception e) {
-            logger.error("Error saving credential for gateway: {}, token: {}", gatewayId, credential.getToken(), e);
-            CredentialStoreException cse = new CredentialStoreException("Error saving credential");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error saving credential for gateway: %s, token: %s", gatewayId, credential.getToken());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -121,10 +115,9 @@ public class CredentialEntityService {
         try {
             credentialRepository.deleteByGatewayIdAndTokenId(gatewayId, tokenId);
         } catch (Exception e) {
-            logger.error("Error deleting credential for gateway: {}, token: {}", gatewayId, tokenId, e);
-            CredentialStoreException cse = new CredentialStoreException("Error deleting credential");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error deleting credential for gateway: %s, token: %s", gatewayId, tokenId);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -132,27 +125,24 @@ public class CredentialEntityService {
      * Get credential by gateway ID and token ID.
      */
     public Credential getCredential(String gatewayId, String tokenId) throws CredentialStoreException {
-        Optional<CredentialEntity> entityOpt = credentialRepository.findByGatewayIdAndTokenId(gatewayId, tokenId);
+        var entityOpt = credentialRepository.findByGatewayIdAndTokenId(gatewayId, tokenId);
         if (entityOpt.isEmpty()) {
-            return null;
+            var msg = String.format("Credential not found for gateway: %s, token: %s", gatewayId, tokenId);
+            logger.error(msg);
+            throw new CredentialStoreException(msg);
         }
-
-        CredentialEntity entity = entityOpt.get();
+        var entity = entityOpt.get();
         try {
-            Credential credential = (Credential) convertByteArrayToObject(entity.getCredential());
+            var credential = (Credential) convertByteArrayToObject(entity.getCredential());
             credential.setToken(entity.getTokenId());
             credential.setPortalUserName(entity.getPortalUserId());
             credential.setCertificateRequestedTime(entity.getTimePersisted());
             credential.setDescription(entity.getDescription());
-            if (entity.getCredentialOwnerType() != null) {
-                credential.setCredentialOwnerType(CredentialOwnerType.valueOf(entity.getCredentialOwnerType()));
-            }
             return credential;
         } catch (Exception e) {
-            logger.error("Error retrieving credential for gateway: {}, token: {}", gatewayId, tokenId, e);
-            CredentialStoreException cse = new CredentialStoreException("Error retrieving credential");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error retrieving credential for gateway: %s, token: %s", gatewayId, tokenId);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -199,19 +189,11 @@ public class CredentialEntityService {
                 credential.setPortalUserName(entity.getPortalUserId());
                 credential.setCertificateRequestedTime(entity.getTimePersisted());
                 credential.setDescription(entity.getDescription());
-                if (entity.getCredentialOwnerType() != null) {
-                    credential.setCredentialOwnerType(CredentialOwnerType.valueOf(entity.getCredentialOwnerType()));
-                }
                 credentials.add(credential);
             } catch (Exception e) {
-                logger.error(
-                        "Error converting entity to credential for gateway: {}, token: {}",
-                        gatewayId,
-                        entity.getTokenId(),
-                        e);
-                CredentialStoreException cse = new CredentialStoreException("Error converting entity to credential");
-                cse.initCause(e);
-                throw cse;
+                var msg = String.format("Error converting entity to credential for gateway: %s, token: %s", gatewayId, entity.getTokenId());
+                logger.error(msg, e);
+                throw new CredentialStoreException(msg, e);
             }
         }
         return credentials;
@@ -230,19 +212,11 @@ public class CredentialEntityService {
                 credential.setPortalUserName(entity.getPortalUserId());
                 credential.setCertificateRequestedTime(entity.getTimePersisted());
                 credential.setDescription(entity.getDescription());
-                if (entity.getCredentialOwnerType() != null) {
-                    credential.setCredentialOwnerType(CredentialOwnerType.valueOf(entity.getCredentialOwnerType()));
-                }
                 credentials.add(credential);
             } catch (Exception e) {
-                logger.error(
-                        "Error converting entity to credential for gateway: {}, token: {}",
-                        entity.getGatewayId(),
-                        entity.getTokenId(),
-                        e);
-                CredentialStoreException cse = new CredentialStoreException("Error converting entity to credential");
-                cse.initCause(e);
-                throw cse;
+                var msg = String.format("Error converting entity to credential for gateway: %s, token: %s", entity.getGatewayId(), entity.getTokenId());
+                logger.error(msg, e);
+                throw new CredentialStoreException(msg, e);
             }
         }
         return credentials;
@@ -250,6 +224,7 @@ public class CredentialEntityService {
 
     /**
      * Convert byte array to object (with decryption if enabled).
+     * FIXME verify if this works after setting up spring
      */
     private Object convertByteArrayToObject(byte[] data) throws CredentialStoreException {
         ObjectInputStream objectInputStream = null;
@@ -262,17 +237,17 @@ public class CredentialEntityService {
             objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
             return objectInputStream.readObject();
         } catch (IOException e) {
-            CredentialStoreException cse = new CredentialStoreException("Error de-serializing object");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error de-serializing object: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         } catch (ClassNotFoundException e) {
-            CredentialStoreException cse = new CredentialStoreException("Error de-serializing object");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error de-serializing object: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         } catch (GeneralSecurityException e) {
-            CredentialStoreException cse = new CredentialStoreException("Error decrypting data");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error decrypting data: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         } finally {
             if (objectInputStream != null) {
                 try {
@@ -295,9 +270,9 @@ public class CredentialEntityService {
             objectOutputStream.writeObject(o);
             objectOutputStream.flush();
         } catch (IOException e) {
-            CredentialStoreException cse = new CredentialStoreException("Error serializing object");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error serializing object: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         } finally {
             if (objectOutputStream != null) {
                 try {
@@ -314,13 +289,13 @@ public class CredentialEntityService {
             try {
                 return SecurityUtil.encrypt(keyStorePath, secretKeyAlias, keyStorePasswordCallback, array);
             } catch (GeneralSecurityException e) {
-                CredentialStoreException cse = new CredentialStoreException("Error encrypting data");
-                cse.initCause(e);
-                throw cse;
+                var msg = String.format("Error encrypting data: %s", e.getMessage());
+                logger.error(msg, e);
+                throw new CredentialStoreException(msg, e);
             } catch (IOException e) {
-                CredentialStoreException cse = new CredentialStoreException("Error encrypting data");
-                cse.initCause(e);
-                throw cse;
+                var msg = String.format("Error encrypting data: %s", e.getMessage());
+                logger.error(msg, e);
+                throw new CredentialStoreException(msg, e);
             }
         } else {
             return byteArrayOutputStream.toByteArray();

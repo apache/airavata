@@ -44,7 +44,7 @@ import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.model.UnicoreJobSubmission;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.credential.utils.CredentialReader;
+import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.exception.RegistryServiceException;

@@ -285,9 +285,7 @@ public class AiravataService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             String msg = String.format("Error while initializing sharing registry: %s", e.getMessage());
             logger.error(msg, e);
-            var exception = new AiravataException(msg);
-            exception.initCause(e);
-            throw exception;
+            throw new AiravataException(msg, e);
         }
 
         try {
@@ -325,20 +323,10 @@ public class AiravataService {
             passwordCredential.setPassword(properties.services.default_.password);
             passwordCredential.setDescription("Credentials for default gateway=" + defaultGateway);
             String token = null;
-            try {
-                logger.info("Creating password credential for default gateway={}", defaultGateway);
-                token = addPasswordCredential(passwordCredential);
-            } catch (CredentialStoreException ex) {
-                String msg = String.format(
-                        "Failed to create password credential for default gateway=%s: %s",
-                        defaultGateway, ex.getMessage());
-                logger.error(msg, ex);
-                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, ex);
-            }
-
+            logger.info("Creating password credential for default gateway={}", defaultGateway);
+            token = addPasswordCredential(passwordCredential);
             if (token != null) {
-                logger.debug(
-                        "Adding password credential token " + token + " to the default gateway : " + defaultGateway);
+                logger.debug("Adding password credential token=%s to the default gateway=%s", token, defaultGateway);
                 gatewayResourceProfile.setIdentityServerPwdCredToken(token);
                 gatewayResourceProfile.setIdentityServerTenant(defaultGateway);
                 updateGatewayResourceProfile(defaultGateway, gatewayResourceProfile);

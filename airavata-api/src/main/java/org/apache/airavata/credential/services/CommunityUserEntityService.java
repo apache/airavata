@@ -21,7 +21,6 @@ package org.apache.airavata.credential.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.apache.airavata.credential.entities.CommunityUserEntity;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CommunityUser;
@@ -50,28 +49,22 @@ public class CommunityUserEntityService {
      * Add or update community user.
      */
     public void saveCommunityUser(CommunityUser user, String token) throws CredentialStoreException {
+        var gatewayName = user.getGatewayName();
+        var userName = user.getUsername();
+        var userEmail = user.getUserEmail();
         try {
             // Delete existing user with same token if exists
-            communityUserRepository.deleteByGatewayIdAndCommunityUserNameAndTokenId(
-                    user.getGatewayName(), user.getUsername(), token);
-
-            CommunityUserEntity entity = new CommunityUserEntity();
-            entity.setGatewayId(user.getGatewayName());
-            entity.setCommunityUserName(user.getUsername());
+            communityUserRepository.deleteByGatewayIdAndCommunityUserNameAndTokenId(gatewayName, userName, token);
+            var entity = new CommunityUserEntity();
+            entity.setGatewayId(gatewayName);
+            entity.setCommunityUserName(userName);
             entity.setTokenId(token);
-            entity.setCommunityUserEmail(user.getUserEmail());
-
+            entity.setCommunityUserEmail(userEmail);
             communityUserRepository.save(entity);
         } catch (Exception e) {
-            logger.error(
-                    "Error saving community user for gateway: {}, user: {}, token: {}",
-                    user.getGatewayName(),
-                    user.getUsername(),
-                    token,
-                    e);
-            CredentialStoreException cse = new CredentialStoreException("Error saving community user");
-            cse.initCause(e);
-            throw cse;
+            String msg = String.format("Error saving community user for gateway: %s, user: %s, token: %s", gatewayName, userName, token);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -79,17 +72,14 @@ public class CommunityUserEntityService {
      * Delete community user.
      */
     public void deleteCommunityUser(CommunityUser user) throws CredentialStoreException {
+        var gatewayName = user.getGatewayName();
+        var userName = user.getUsername();
         try {
-            communityUserRepository.deleteByGatewayIdAndCommunityUserName(user.getGatewayName(), user.getUsername());
+            communityUserRepository.deleteByGatewayIdAndCommunityUserName(gatewayName, userName);
         } catch (Exception e) {
-            logger.error(
-                    "Error deleting community user for gateway: {}, user: {}",
-                    user.getGatewayName(),
-                    user.getUsername(),
-                    e);
-            CredentialStoreException cse = new CredentialStoreException("Error deleting community user");
-            cse.initCause(e);
-            throw cse;
+            String msg = String.format("Error deleting community user for gateway: %s, user: %s", gatewayName, userName);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
@@ -97,34 +87,28 @@ public class CommunityUserEntityService {
      * Delete community user by token.
      */
     public void deleteCommunityUserByToken(CommunityUser user, String token) throws CredentialStoreException {
+        var gatewayName = user.getGatewayName();
+        var userName = user.getUsername();
         try {
-            communityUserRepository.deleteByGatewayIdAndCommunityUserNameAndTokenId(
-                    user.getGatewayName(), user.getUsername(), token);
+            communityUserRepository.deleteByGatewayIdAndCommunityUserNameAndTokenId(gatewayName, userName, token);
         } catch (Exception e) {
-            logger.error(
-                    "Error deleting community user by token for gateway: {}, user: {}, token: {}",
-                    user.getGatewayName(),
-                    user.getUsername(),
-                    token,
-                    e);
-            CredentialStoreException cse = new CredentialStoreException("Error deleting community user by token");
-            cse.initCause(e);
-            throw cse;
+            String msg = String.format("Error deleting community user by token for gateway: %s, user: %s, token: %s", gatewayName, userName, token);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 
     /**
      * Get community user by gateway ID and community user name.
      */
-    public CommunityUser getCommunityUser(String gatewayName, String communityUserName)
-            throws CredentialStoreException {
-        Optional<CommunityUserEntity> entityOpt =
-                communityUserRepository.findByGatewayIdAndCommunityUserName(gatewayName, communityUserName);
+    public CommunityUser getCommunityUser(String gatewayName, String communityUserName) throws CredentialStoreException {
+        var entityOpt = communityUserRepository.findByGatewayIdAndCommunityUserName(gatewayName, communityUserName);
         if (entityOpt.isEmpty()) {
-            return null;
+            var msg = String.format("Community user not found for gateway: %s, user: %s", gatewayName, communityUserName);
+            logger.error(msg);
+            throw new CredentialStoreException(msg);
         }
-
-        CommunityUserEntity entity = entityOpt.get();
+        var entity = entityOpt.get();
         return new CommunityUser(entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail());
     }
 
@@ -132,13 +116,13 @@ public class CommunityUserEntityService {
      * Get community user by gateway ID and token ID.
      */
     public CommunityUser getCommunityUserByToken(String gatewayName, String tokenId) throws CredentialStoreException {
-        Optional<CommunityUserEntity> entityOpt =
-                communityUserRepository.findByGatewayIdAndTokenId(gatewayName, tokenId);
+        var entityOpt = communityUserRepository.findByGatewayIdAndTokenId(gatewayName, tokenId);
         if (entityOpt.isEmpty()) {
-            return null;
+            var msg = String.format("Community user not found for gateway: %s, token: %s", gatewayName, tokenId);
+            logger.error(msg);
+            throw new CredentialStoreException(msg);
         }
-
-        CommunityUserEntity entity = entityOpt.get();
+        var entity = entityOpt.get();
         return new CommunityUser(entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail());
     }
 
@@ -146,11 +130,10 @@ public class CommunityUserEntityService {
      * Get all community users for a gateway.
      */
     public List<CommunityUser> getCommunityUsers(String gatewayName) throws CredentialStoreException {
-        List<CommunityUserEntity> entities = communityUserRepository.findByGatewayId(gatewayName);
-        List<CommunityUser> users = new ArrayList<>();
-        for (CommunityUserEntity entity : entities) {
-            users.add(new CommunityUser(
-                    entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail()));
+        var entities = communityUserRepository.findByGatewayId(gatewayName);
+        var users = new ArrayList<CommunityUser>();
+        for (var entity : entities) {
+            users.add(new CommunityUser(entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail()));
         }
         return users;
     }

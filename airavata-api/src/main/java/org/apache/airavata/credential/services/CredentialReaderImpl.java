@@ -17,17 +17,16 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.store;
+package org.apache.airavata.credential.services;
 
 import java.io.Serializable;
 import java.util.List;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.credential.impl.certificate.CertificateAuditInfo;
-import org.apache.airavata.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.model.CertificateCredential;
+import org.apache.airavata.credential.model.CertificateAuditInfo;
 import org.apache.airavata.credential.model.CommunityUser;
-import org.apache.airavata.credential.services.CredentialEntityService;
-import org.apache.airavata.credential.utils.CredentialReader;
+import org.apache.airavata.credential.model.CredentialReader;
 import org.springframework.stereotype.Component;
 
 /**

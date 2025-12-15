@@ -33,9 +33,15 @@ public abstract class Credential implements Serializable {
     private String portalUserName;
     private Date persistedTime;
     private String token;
+    private String gatewayId;
 
-    @Deprecated
-    private CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY;
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public String getDescription() {
         return description;
@@ -69,13 +75,5 @@ public abstract class Credential implements Serializable {
 
     public Date getCertificateRequestedTime() {
         return persistedTime;
-    }
-
-    public CredentialOwnerType getCredentialOwnerType() {
-        return credentialOwnerType;
-    }
-
-    public void setCredentialOwnerType(CredentialOwnerType credentialOwnerType) {
-        this.credentialOwnerType = credentialOwnerType;
     }
 }

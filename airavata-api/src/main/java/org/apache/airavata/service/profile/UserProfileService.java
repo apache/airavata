@@ -118,19 +118,13 @@ public class UserProfileService {
                 throw new UserProfileServiceException("User creation failed. Please try again.");
             }
         } catch (AiravataSecurityException e) {
-            String message = "Error while initializing user profile: security error";
+            var message = "Error while initializing user profile: security error";
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         } catch (RuntimeException e) {
-            String message = "Error while initializing user profile: " + e.getMessage();
+            var message = String.format("Error while initializing user profile: %s", e.getMessage());
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         }
     }
 
@@ -155,12 +149,9 @@ public class UserProfileService {
                 throw new UserProfileServiceException("User creation failed. Please try again.");
             }
         } catch (RuntimeException e) {
-            String message = "Error while creating user profile: " + e.getMessage();
+            var message = String.format("Error while creating user profile: %s", e.getMessage());
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         }
     }
 
@@ -190,21 +181,21 @@ public class UserProfileService {
             if (e.getCause() instanceof IamAdminServicesException) {
                 throw (IamAdminServicesException) e.getCause();
             }
-            String msg = String.format(
+            var msg = String.format(
                     "Error while updating user profile: userId=%s, gatewayId=%s, airavataInternalUserId=%s. Reason: %s",
                     userProfile.getUserId(),
                     userProfile.getGatewayId(),
                     userProfile.getAiravataInternalUserId(),
                     e.getMessage());
             logger.error(msg, e);
-            UserProfileServiceException exception = new UserProfileServiceException(msg);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(msg, e);
         }
     }
 
     private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var userId = userProfile.getUserId();
+        var userGatewayId = userProfile.getGatewayId();
         return () -> {
             try {
                 AuthzToken serviceAccountAuthzToken =
@@ -212,25 +203,17 @@ public class UserProfileService {
                 IamAdminService iamAdminService = getIamAdminService();
                 iamAdminService.updateUserProfile(serviceAccountAuthzToken, userProfile);
             } catch (AiravataSecurityException e) {
-                String msg = String.format(
-                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
-                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s", gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
-                UserProfileServiceException exception = new UserProfileServiceException(msg);
-                exception.initCause(e);
-                throw new RuntimeException(exception);
+                throw new RuntimeException(msg, e);
             } catch (IamAdminServicesException e) {
-                String msg = String.format(
-                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
-                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
-                throw new RuntimeException(e);
+                throw new RuntimeException(msg, e);
             } catch (UserProfileServiceException e) {
-                String msg = String.format(
-                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, gatewayIdFromProfile=%s. Reason: %s",
-                        gatewayId, userProfile.getUserId(), userProfile.getGatewayId(), e.getMessage());
+                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
-                throw new RuntimeException(e);
+                throw new RuntimeException(msg, e);
             }
         };
     }
@@ -238,18 +221,15 @@ public class UserProfileService {
     public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {
-            UserProfile userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
+            var userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
             if (userProfile != null) return userProfile;
             else
                 throw new UserProfileServiceException(
                         "User with userId: " + userId + ", in Gateway: " + gatewayId + ", does not exist.");
         } catch (RuntimeException e) {
-            String message = "Error retrieving user profile by ID: " + e.getMessage();
+            var message = String.format("Error retrieving user profile by ID: %s", e.getMessage());
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         }
     }
 
@@ -275,41 +255,26 @@ public class UserProfileService {
         } catch (RuntimeException e) {
             String message = "Error while deleting user profile: " + e.getMessage();
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         }
     }
 
     public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
             throws UserProfileServiceException {
-        try {
-            List<UserProfile> usersInGateway = getAllUserProfilesInGateway(gatewayId, offset, limit);
-            if (usersInGateway != null) return usersInGateway;
-            else throw new UserProfileServiceException("There are no users for the requested gatewayId: " + gatewayId);
-        } catch (RuntimeException e) {
-            String message = "Error while retrieving user profile List: " + e.getMessage();
-            logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
-        }
+        var usersInGateway = getAllUserProfilesInGateway(gatewayId, offset, limit);
+        if (usersInGateway != null) return usersInGateway;
+        else throw new UserProfileServiceException(String.format("No user profiles found for gatewayId=%s", gatewayId));
     }
 
     public boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {
-            UserProfile userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
+            var userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
             return null != userProfile;
         } catch (RuntimeException e) {
-            String message = "Error while finding user profile: " + e.getMessage();
+            var message = String.format("Error finding user profile: userId=%s, gatewayId=%s. Reason: %s", userId, gatewayId, e.getMessage());
             logger.error(message, e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new UserProfileServiceException(message, e);
         }
     }
 

@@ -17,21 +17,29 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.utils;
+package org.apache.airavata.credential;
 
-import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.exception.CredentialStoreException;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.apache.airavata.credential.utils.TokenGenerator;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The entity who's writing credentials to DB will use this interface.
+ * User: AmilaJ (amilaj@apache.org)
+ * Date: 8/5/13
+ * Time: 4:20 PM
  */
-public interface CredentialWriter {
+public class TokenGeneratorTest {
 
-    /**
-     * Writes given credentials to a persistent storage.
-     *
-     * @param credential
-     *            The credentials implementation.
-     */
-    void writeCredentials(Credential credential) throws CredentialStoreException;
+    private static final Logger logger = LoggerFactory.getLogger(TokenGeneratorTest.class);
+
+    @Test
+    public void testGenerateToken() throws Exception {
+
+        String token = TokenGenerator.generateToken("gw1", "admin");
+        assertNotNull(token);
+        logger.info("Token: {}", token);
+    }
 }

@@ -29,7 +29,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.airavata.credential.impl.ssh.SSHCredential;
+
+import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public class Utility {
         return new char[0];
     }
 
-    public static org.apache.airavata.credential.impl.ssh.SSHCredential generateKeyPair(SSHCredential credential)
+    public static SSHCredential generateKeyPair(SSHCredential credential)
             throws Exception {
         JSch jsch = new JSch();
         try {
@@ -92,10 +93,9 @@ public class Utility {
             kpair.writePublicKey(fileName + ".pub", "");
             kpair.dispose();
             byte[] priKey = Files.readAllBytes(new File(fileName).toPath());
-
             byte[] pubKey = Files.readAllBytes(new File(fileName + ".pub").toPath());
-            credential.setPrivateKey(priKey);
-            credential.setPublicKey(pubKey);
+            credential.setPrivateKey(new String(priKey));
+            credential.setPublicKey(new String(pubKey));
             return credential;
         } catch (Exception e) {
             log.error("Error while creating key pair", e);

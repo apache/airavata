@@ -21,10 +21,12 @@ package org.apache.airavata.credential.model;
 
 import java.util.Objects;
 
+import org.apache.airavata.credential.Credential;
+
 /**
  * Domain model: PasswordCredential
  */
-public class PasswordCredential {
+public class PasswordCredential extends Credential {
     private String gatewayId;
     private String portalUserName;
     private String loginUserName;

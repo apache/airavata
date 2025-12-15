@@ -32,11 +32,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.credential.impl.certificate.CertificateCredential;
-import org.apache.airavata.credential.impl.notifier.EmailNotificationMessage;
-import org.apache.airavata.credential.impl.notifier.EmailNotifier;
-import org.apache.airavata.credential.impl.notifier.EmailNotifierConfiguration;
+import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CommunityUser;
+import org.apache.airavata.credential.model.CredentialReader;
+import org.apache.airavata.credential.model.CredentialStoreNotifier;
+import org.apache.airavata.credential.model.EmailNotificationMessage;
+import org.apache.airavata.credential.model.EmailNotifierConfiguration;
+import org.apache.airavata.credential.model.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

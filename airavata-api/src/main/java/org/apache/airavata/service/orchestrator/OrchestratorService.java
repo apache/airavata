@@ -821,15 +821,7 @@ public class OrchestratorService {
                     "Error handling intermediate outputs event: experimentId=%s, gatewayId=%s, outputNames=%s. Reason: %s",
                     event.getExperimentId(), event.getGatewayId(), event.getOutputNames(), e.getMessage());
             logger.error(msg, e);
-            OrchestratorException exception = new OrchestratorException(msg);
-            exception.initCause(e);
-            throw exception;
-        } catch (OrchestratorException e) {
-            String msg = String.format(
-                    "Error handling intermediate outputs event: experimentId=%s, gatewayId=%s, outputNames=%s. Reason: %s",
-                    event.getExperimentId(), event.getGatewayId(), event.getOutputNames(), e.getMessage());
-            logger.error(msg, e);
-            throw e;
+            throw new OrchestratorException(msg, e);
         }
     }
 

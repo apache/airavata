@@ -17,13 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.store;
+package org.apache.airavata.credential.services;
 
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.services.CredentialEntityService;
-import org.apache.airavata.credential.utils.CredentialWriter;
+import org.apache.airavata.credential.model.CredentialWriter;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,7 @@ public class SSHCredentialWriter implements CredentialWriter {
         SSHCredential sshCredential = (SSHCredential) credential;
 
         // Delete existing credentials and add the new one
-        credentialEntityService.deleteCredential(sshCredential.getGateway(), sshCredential.getToken());
-        credentialEntityService.saveCredential(sshCredential.getGateway(), credential);
+        credentialEntityService.deleteCredential(sshCredential.getGatewayId(), sshCredential.getToken());
+        credentialEntityService.saveCredential(sshCredential.getGatewayId(), credential);
     }
 }

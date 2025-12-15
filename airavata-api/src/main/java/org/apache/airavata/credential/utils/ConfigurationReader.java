@@ -30,6 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -42,10 +44,10 @@ import org.xml.sax.SAXException;
  */
 public class ConfigurationReader {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationReader.class);
+
     private String successUrl;
-
     private String errorUrl;
-
     private String portalRedirectUrl;
 
     public String getPortalRedirectUrl() {
@@ -57,14 +59,12 @@ public class ConfigurationReader {
     }
 
     public ConfigurationReader() throws CredentialStoreException {
-
         try {
             loadConfigurations();
         } catch (Exception e) {
-            CredentialStoreException cse =
-                    new CredentialStoreException("Unable to read credential store specific configurations.");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Unable to read credential store specific configurations: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 

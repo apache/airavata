@@ -100,9 +100,7 @@ public class IamAdminService {
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Gateway Setup Failed: %s", ex.getMessage());
             logger.error(msg, ex);
-            IamAdminServicesException exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -135,9 +133,7 @@ public class IamAdminService {
             String msg =
                     String.format("Error while registering user=%s into IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -170,9 +166,7 @@ public class IamAdminService {
         } catch (AiravataException ex) {
             String msg = String.format("Error while enabling user=%s in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -185,9 +179,7 @@ public class IamAdminService {
             String msg = String.format(
                     "Error while checking if user=%s is enabled in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -200,9 +192,7 @@ public class IamAdminService {
             String msg = String.format(
                     "Error while checking if user=%s exists in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -215,9 +205,7 @@ public class IamAdminService {
             String msg = String.format(
                     "Error while retrieving user=%s profile from IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -230,9 +218,7 @@ public class IamAdminService {
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Error while retrieving users from IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -248,9 +234,7 @@ public class IamAdminService {
             String msg = String.format(
                     "Error while resetting user=%s password in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -263,9 +247,7 @@ public class IamAdminService {
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Error while finding users in IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -280,9 +262,7 @@ public class IamAdminService {
                     "Error while updating user=%s profile in IAM backend: %s",
                     userDetails.getUserId(), ex.getMessage());
             logger.error(msg, ex);
-            var exception = new IamAdminServicesException(msg);
-            exception.initCause(ex);
-            throw exception;
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 

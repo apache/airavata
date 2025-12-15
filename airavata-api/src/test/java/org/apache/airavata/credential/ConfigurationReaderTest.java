@@ -17,11 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.utils;
+package org.apache.airavata.credential;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.utils.ConfigurationReader;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -171,10 +171,7 @@ public class GroupManagerService {
         try {
             return getSharingService().transferGroupOwnership(getDomainId(authzToken), groupId, newOwnerId);
         } catch (DuplicateEntryException e) {
-            SharingRegistryException ex = new SharingRegistryException();
-            ex.setMessage("Error transferring group ownership: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            throw new SharingRegistryException(String.format("Error transferring group ownership: %s", e.getMessage()), e);
         }
     }
 
@@ -188,10 +185,7 @@ public class GroupManagerService {
         try {
             return getSharingService().addGroupAdmins(getDomainId(authzToken), groupId, adminIds);
         } catch (DuplicateEntryException e) {
-            SharingRegistryException ex = new SharingRegistryException();
-            ex.setMessage("Error adding group admins: " + e.getMessage());
-            ex.initCause(e);
-            throw ex;
+            throw new SharingRegistryException(String.format("Error adding group admins: %s", e.getMessage()), e);
         }
     }
 

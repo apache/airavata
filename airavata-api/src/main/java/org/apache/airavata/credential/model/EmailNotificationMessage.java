@@ -17,28 +17,37 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.utils;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.apache.airavata.credential.model;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
- * Date: 8/5/13
- * Time: 4:20 PM
+ * Date: 12/3/13
+ * Time: 5:01 PM
  */
-public class TokenGeneratorTest {
+public class EmailNotificationMessage extends NotificationMessage {
 
-    private static final Logger logger = LoggerFactory.getLogger(TokenGeneratorTest.class);
+    public EmailNotificationMessage(String subject, String senderEmail, String msg) {
+        super(msg);
+        this.subject = subject;
+        this.senderEmail = senderEmail;
+    }
 
-    @Test
-    public void testGenerateToken() throws Exception {
+    private String subject;
+    private String senderEmail;
 
-        String token = TokenGenerator.generateToken("gw1", "admin");
-        assertNotNull(token);
-        logger.info("Token: {}", token);
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getSenderEmail() {
+        return senderEmail;
+    }
+
+    public void setSenderEmail(String senderEmail) {
+        this.senderEmail = senderEmail;
     }
 }

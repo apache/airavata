@@ -17,11 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.notifier;
+package org.apache.airavata.credential.utils;
 
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.credential.utils.CredentialStoreNotifier;
-import org.apache.airavata.credential.utils.NotificationMessage;
+import org.apache.airavata.credential.model.CredentialStoreNotifier;
+import org.apache.airavata.credential.model.EmailNotificationMessage;
+import org.apache.airavata.credential.model.EmailNotifierConfiguration;
+import org.apache.airavata.credential.model.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
@@ -35,7 +37,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  */
 public class EmailNotifier implements CredentialStoreNotifier {
 
-    protected static Logger log = LoggerFactory.getLogger(EmailNotifier.class);
+    protected static Logger logger = LoggerFactory.getLogger(EmailNotifier.class);
 
     private EmailNotifierConfiguration emailNotifierConfiguration;
 
@@ -57,10 +59,9 @@ public class EmailNotifier implements CredentialStoreNotifier {
             mailSender.send(email);
 
         } catch (Exception e) {
-            log.error("[CredentialStore]Error sending email notification message.", e);
-            CredentialStoreException cse = new CredentialStoreException("Error sending email notification message");
-            cse.initCause(e);
-            throw cse;
+            var msg = String.format("Error sending email notification message: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
     }
 

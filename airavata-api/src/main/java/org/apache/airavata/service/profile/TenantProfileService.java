@@ -109,19 +109,13 @@ public class TenantProfileService {
         } catch (CredentialStoreException e) {
             throw e;
         } catch (ApplicationSettingsException e) {
-            String message = "Error adding gateway-profile: " + e.getMessage();
+            var message = "Error adding gateway-profile: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         } catch (PersistenceException e) {
-            String message = "Error adding gateway-profile: " + e.getMessage();
+            var message = String.format("Error adding gateway-profile: %s", e.getMessage());
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -137,10 +131,7 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error getting gateway: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
             if (updatedGateway.getIdentityServerPasswordToken() != null
                     && (existingGateway.getIdentityServerPasswordToken() == null
@@ -167,17 +158,11 @@ public class TenantProfileService {
         } catch (ApplicationSettingsException e) {
             String message = "Error updating gateway-profile: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         } catch (PersistenceException e) {
             String message = "Error updating gateway-profile: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -190,10 +175,7 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error getting gateway: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
             if (gateway == null) {
                 throw new TenantProfileServiceException(
@@ -203,10 +185,7 @@ public class TenantProfileService {
         } catch (PersistenceException e) {
             String message = "Error getting gateway-profile: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -236,10 +215,7 @@ public class TenantProfileService {
         } catch (PersistenceException e) {
             String message = "Error deleting gateway-profile: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -250,18 +226,12 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error getting all gateways: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
         } catch (PersistenceException e) {
             String message = "Error getting all gateway-profiles: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -273,19 +243,13 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error checking if gateway exists: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
             return (gateway != null);
         } catch (PersistenceException e) {
             String message = "Error checking if gateway-profile exists: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -297,18 +261,12 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error getting user's gateways: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
         } catch (PersistenceException e) {
             String message = "Error getting user's gateway-profiles: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 
@@ -321,19 +279,13 @@ public class TenantProfileService {
             } catch (Exception e) {
                 String message = "Error checking duplicate gateway: " + e.getMessage();
                 logger.error(message, e);
-                TenantProfileServiceException exception = new TenantProfileServiceException();
-                exception.setMessage(message);
-                exception.initCause(e);
-                throw exception;
+                throw new TenantProfileServiceException(message, e);
             }
             return duplicateGateway != null;
         } catch (PersistenceException e) {
             String message = "Error checking if duplicate gateway-profile exists: " + e.getMessage();
             logger.error(message, e);
-            TenantProfileServiceException exception = new TenantProfileServiceException();
-            exception.setMessage(message);
-            exception.initCause(e);
-            throw exception;
+            throw new TenantProfileServiceException(message, e);
         }
     }
 

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.credential.impl.ssh;
+package org.apache.airavata.credential;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,7 +26,9 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import org.apache.airavata.credential.impl.store.SSHCredentialWriter;
+
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.services.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -113,8 +115,8 @@ public class SSHSummaryTest {
             return;
         }
 
-        SSHCredential sshCredential = new SSHCredential();
-        sshCredential.setGateway(gatewayId);
+        var sshCredential = new SSHCredential();
+        sshCredential.setGatewayId(gatewayId);
         String token = TokenGenerator.generateToken(gatewayId, null);
         sshCredential.setToken(token);
         sshCredential.setPortalUserName("test-user");
@@ -133,8 +135,8 @@ public class SSHSummaryTest {
         privateKeyStream.close();
         pubKeyStream.close();
 
-        sshCredential.setPrivateKey(bFilePri);
-        sshCredential.setPublicKey(bFilePub);
+        sshCredential.setPrivateKey(new String(bFilePri));
+        sshCredential.setPublicKey(new String(bFilePub));
         sshCredential.setPassphrase("test-passphrase");
 
         sshCredentialWriter.writeCredentials(sshCredential);

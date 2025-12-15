@@ -19,12 +19,16 @@
 */
 package org.apache.airavata.credential.model;
 
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
+
+import org.apache.airavata.credential.Credential;
 
 /**
  * Domain model: CertificateCredential
  */
-public class CertificateCredential {
+public class CertificateCredential extends Credential {
     private CommunityUser communityUser;
     private String x509Cert;
     private String notAfter;
@@ -33,6 +37,8 @@ public class CertificateCredential {
     private String notBefore;
     private Long persistedTime;
     private String token;
+    private X509Certificate[] certificates;
+    private PrivateKey privateKeyObject;
 
     public CertificateCredential() {}
 
@@ -98,6 +104,22 @@ public class CertificateCredential {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public X509Certificate[] getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(X509Certificate[] certificates) {
+        this.certificates = certificates;
+    }
+
+    public PrivateKey getPrivateKeyObject() {
+        return privateKeyObject;
+    }
+
+    public void setPrivateKeyObject(PrivateKey privateKeyObject) {
+        this.privateKeyObject = privateKeyObject;
     }
 
     @Override
