@@ -62,7 +62,8 @@ public class CommunityUserEntityService {
             entity.setCommunityUserEmail(userEmail);
             communityUserRepository.save(entity);
         } catch (Exception e) {
-            String msg = String.format("Error saving community user for gateway: %s, user: %s, token: %s", gatewayName, userName, token);
+            String msg = String.format(
+                    "Error saving community user for gateway: %s, user: %s, token: %s", gatewayName, userName, token);
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
@@ -77,7 +78,8 @@ public class CommunityUserEntityService {
         try {
             communityUserRepository.deleteByGatewayIdAndCommunityUserName(gatewayName, userName);
         } catch (Exception e) {
-            String msg = String.format("Error deleting community user for gateway: %s, user: %s", gatewayName, userName);
+            String msg =
+                    String.format("Error deleting community user for gateway: %s, user: %s", gatewayName, userName);
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
@@ -92,7 +94,9 @@ public class CommunityUserEntityService {
         try {
             communityUserRepository.deleteByGatewayIdAndCommunityUserNameAndTokenId(gatewayName, userName, token);
         } catch (Exception e) {
-            String msg = String.format("Error deleting community user by token for gateway: %s, user: %s, token: %s", gatewayName, userName, token);
+            String msg = String.format(
+                    "Error deleting community user by token for gateway: %s, user: %s, token: %s",
+                    gatewayName, userName, token);
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
@@ -101,10 +105,12 @@ public class CommunityUserEntityService {
     /**
      * Get community user by gateway ID and community user name.
      */
-    public CommunityUser getCommunityUser(String gatewayName, String communityUserName) throws CredentialStoreException {
+    public CommunityUser getCommunityUser(String gatewayName, String communityUserName)
+            throws CredentialStoreException {
         var entityOpt = communityUserRepository.findByGatewayIdAndCommunityUserName(gatewayName, communityUserName);
         if (entityOpt.isEmpty()) {
-            var msg = String.format("Community user not found for gateway: %s, user: %s", gatewayName, communityUserName);
+            var msg =
+                    String.format("Community user not found for gateway: %s, user: %s", gatewayName, communityUserName);
             logger.error(msg);
             throw new CredentialStoreException(msg);
         }
@@ -133,7 +139,8 @@ public class CommunityUserEntityService {
         var entities = communityUserRepository.findByGatewayId(gatewayName);
         var users = new ArrayList<CommunityUser>();
         for (var entity : entities) {
-            users.add(new CommunityUser(entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail()));
+            users.add(new CommunityUser(
+                    entity.getGatewayId(), entity.getCommunityUserName(), entity.getCommunityUserEmail()));
         }
         return users;
     }

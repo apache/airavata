@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CredentialSummary;
-import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -88,7 +87,8 @@ public class CredentialServiceHandler
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
             // Convert thrift to domain
-            org.apache.airavata.credential.model.PasswordCredential domainCredential = convertToDomainPassword(passwordCredential);
+            org.apache.airavata.credential.model.PasswordCredential domainCredential =
+                    convertToDomainPassword(passwordCredential);
             return credentialStoreService.addPasswordCredential(domainCredential);
         } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
@@ -112,7 +112,8 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            org.apache.airavata.credential.model.CredentialSummary domainSummary = credentialStoreService.getCredentialSummary(tokenId, gatewayId);
+            org.apache.airavata.credential.model.CredentialSummary domainSummary =
+                    credentialStoreService.getCredentialSummary(tokenId, gatewayId);
             return convertToThriftSummary(domainSummary);
         } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
@@ -153,7 +154,8 @@ public class CredentialServiceHandler
             String tokenId, String gatewayId)
             throws org.apache.airavata.thriftapi.credential.exception.CredentialStoreException, TException {
         try {
-            org.apache.airavata.credential.model.PasswordCredential domainCredential = credentialStoreService.getPasswordCredential(tokenId, gatewayId);
+            org.apache.airavata.credential.model.PasswordCredential domainCredential =
+                    credentialStoreService.getPasswordCredential(tokenId, gatewayId);
             return convertToThriftPassword(domainCredential);
         } catch (org.apache.airavata.credential.exception.CredentialStoreException e) {
             throw wrapException(e);
@@ -181,8 +183,10 @@ public class CredentialServiceHandler
     }
 
     // Helper methods to convert between domain and thrift models
-    private org.apache.airavata.credential.model.SSHCredential convertToDomainSSH(org.apache.airavata.thriftapi.credential.model.SSHCredential thrift) {
-        org.apache.airavata.credential.model.SSHCredential domain = new org.apache.airavata.credential.model.SSHCredential();
+    private org.apache.airavata.credential.model.SSHCredential convertToDomainSSH(
+            org.apache.airavata.thriftapi.credential.model.SSHCredential thrift) {
+        org.apache.airavata.credential.model.SSHCredential domain =
+                new org.apache.airavata.credential.model.SSHCredential();
         domain.setToken(thrift.getToken());
         domain.setPublicKey(thrift.getPublicKey());
         domain.setPrivateKey(thrift.getPrivateKey());
@@ -194,7 +198,8 @@ public class CredentialServiceHandler
         return domain;
     }
 
-    private org.apache.airavata.thriftapi.credential.model.SSHCredential convertToThriftSSH(org.apache.airavata.credential.model.SSHCredential domain) {
+    private org.apache.airavata.thriftapi.credential.model.SSHCredential convertToThriftSSH(
+            org.apache.airavata.credential.model.SSHCredential domain) {
         org.apache.airavata.thriftapi.credential.model.SSHCredential thrift =
                 new org.apache.airavata.thriftapi.credential.model.SSHCredential();
         thrift.setToken(domain.getToken());
@@ -210,7 +215,8 @@ public class CredentialServiceHandler
 
     private org.apache.airavata.credential.model.CertificateCredential convertToDomainCertificate(
             org.apache.airavata.thriftapi.credential.model.CertificateCredential thrift) {
-        org.apache.airavata.credential.model.CertificateCredential domain = new org.apache.airavata.credential.model.CertificateCredential();
+        org.apache.airavata.credential.model.CertificateCredential domain =
+                new org.apache.airavata.credential.model.CertificateCredential();
         domain.setToken(thrift.getToken());
         domain.setX509Cert(thrift.getX509Cert());
         domain.setPrivateKey(thrift.getPrivateKey());
@@ -233,7 +239,8 @@ public class CredentialServiceHandler
 
     private org.apache.airavata.credential.model.PasswordCredential convertToDomainPassword(
             org.apache.airavata.thriftapi.credential.model.PasswordCredential thrift) {
-        org.apache.airavata.credential.model.PasswordCredential domain = new org.apache.airavata.credential.model.PasswordCredential();
+        org.apache.airavata.credential.model.PasswordCredential domain =
+                new org.apache.airavata.credential.model.PasswordCredential();
         domain.setToken(thrift.getToken());
         domain.setLoginUserName(thrift.getLoginUserName());
         domain.setPortalUserName(thrift.getPortalUserName());

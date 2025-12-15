@@ -99,40 +99,41 @@ public class CredentialStoreService {
     }
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
-            SSHCredential credential = new SSHCredential();
-            credential.setGatewayId(sshCredential.getGatewayId());
-            credential.setPortalUserName(sshCredential.getUsername());
-            // only username and gateway id will be sent by client.
-            String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
-            credential.setToken(token);
-            credential.setPassphrase(String.valueOf(UUID.randomUUID()));
-            if (sshCredential.getPrivateKey() != null) {
-                credential.setPrivateKey(sshCredential.getPrivateKey());
+        SSHCredential credential = new SSHCredential();
+        credential.setGatewayId(sshCredential.getGatewayId());
+        credential.setPortalUserName(sshCredential.getUsername());
+        // only username and gateway id will be sent by client.
+        String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
+        credential.setToken(token);
+        credential.setPassphrase(String.valueOf(UUID.randomUUID()));
+        if (sshCredential.getPrivateKey() != null) {
+            credential.setPrivateKey(sshCredential.getPrivateKey());
+        }
+        if (sshCredential.getDescription() != null) {
+            credential.setDescription(sshCredential.getDescription());
+        }
+        if (sshCredential.getPublicKey() != null) {
+            credential.setPublicKey(sshCredential.getPublicKey());
+        }
+        if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
+            try {
+                credential = Utility.generateKeyPair(credential);
+            } catch (Exception ex) {
+                String message = "Error occurred while generating key pair: " + ex.getMessage();
+                logger.error(message, ex);
+                throw new CredentialStoreException(message, ex);
             }
-            if (sshCredential.getDescription() != null) {
-                credential.setDescription(sshCredential.getDescription());
-            }
-            if (sshCredential.getPublicKey() != null) {
-                credential.setPublicKey(sshCredential.getPublicKey());
-            }
-            if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
-                try {
-                    credential = Utility.generateKeyPair(credential);
-                } catch (Exception ex) {
-                    String message = "Error occurred while generating key pair: " + ex.getMessage();
-                    logger.error(message, ex);
-                    throw new CredentialStoreException(message, ex);
-                }
-            }
-            sshCredentialWriter.writeCredentials(credential);
-            return token;
+        }
+        sshCredentialWriter.writeCredentials(credential);
+        return token;
     }
 
     public String addCertificateCredential(CertificateCredential certificateCredential)
             throws CredentialStoreException {
         try {
             CertificateCredential credential = new CertificateCredential();
-            credential.setPortalUserName(certificateCredential.getCommunityUser().getUsername());
+            credential.setPortalUserName(
+                    certificateCredential.getCommunityUser().getUsername());
             credential.setCommunityUser(certificateCredential.getCommunityUser());
             String token = TokenGenerator.generateToken(
                     certificateCredential.getCommunityUser().getGatewayName(), null);
@@ -165,22 +166,23 @@ public class CredentialStoreService {
     }
 
     public String addPasswordCredential(PasswordCredential passwordCredential) throws CredentialStoreException {
-            PasswordCredential credential = new PasswordCredential();
-            credential.setGatewayId(passwordCredential.getGatewayId());
-            credential.setPortalUserName(passwordCredential.getPortalUserName());
-            credential.setLoginUserName(passwordCredential.getLoginUserName());
-            credential.setPassword(passwordCredential.getPassword());
-            credential.setDescription(passwordCredential.getDescription());
-            String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
-            credential.setToken(token);
-            sshCredentialWriter.writeCredentials(credential);
-            return token;
+        PasswordCredential credential = new PasswordCredential();
+        credential.setGatewayId(passwordCredential.getGatewayId());
+        credential.setPortalUserName(passwordCredential.getPortalUserName());
+        credential.setLoginUserName(passwordCredential.getLoginUserName());
+        credential.setPassword(passwordCredential.getPassword());
+        credential.setDescription(passwordCredential.getDescription());
+        String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
+        credential.setToken(token);
+        sshCredentialWriter.writeCredentials(credential);
+        return token;
     }
 
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
         Credential credential = credentialReader.getCredential(gatewayId, tokenId);
         if (credential instanceof SSHCredential c) return c;
-        var msg = String.format("Credential for token=%s and gateway_id=%s is not an SSH credential", tokenId, gatewayId);
+        var msg =
+                String.format("Credential for token=%s and gateway_id=%s is not an SSH credential", tokenId, gatewayId);
         throw new CredentialStoreException(msg);
     }
 
@@ -199,7 +201,7 @@ public class CredentialStoreService {
             if (isSSHCredential(credential)) {
                 return convertToCredentialSummary((SSHCredential) credential);
             } else if (isCertificateCredential(credential)) {
-                return convertToCredentialSummary( (CertificateCredential) credential);
+                return convertToCredentialSummary((CertificateCredential) credential);
             } else if (isPasswordCredential(credential)) {
                 return convertToCredentialSummary((PasswordCredential) credential);
             }
@@ -215,7 +217,8 @@ public class CredentialStoreService {
         }
     }
 
-    public List<CredentialSummary> getAllCredentialSummaries(SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
+    public List<CredentialSummary> getAllCredentialSummaries(
+            SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
         List<Credential> credentials;
         try {
             credentials = credentialReader.getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
@@ -300,7 +303,8 @@ public class CredentialStoreService {
         return credentialSummary;
     }
 
-    public CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws CredentialStoreException {
+    public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
+            throws CredentialStoreException {
         Credential credential = credentialReader.getCredential(gatewayId, tokenId);
         if (credential instanceof CertificateCredential cc) {
             var cred = new CertificateCredential();
@@ -320,29 +324,31 @@ public class CredentialStoreService {
             cred.setX509Cert(cc.getCertificates()[0].toString());
             return cred;
         } else {
-            var msg = String.format("Credential for token=%s and gateway_id=%s is not a CertificateCredential", tokenId, gatewayId);
+            var msg = String.format(
+                    "Credential for token=%s and gateway_id=%s is not a CertificateCredential", tokenId, gatewayId);
             logger.error(msg);
             throw new CredentialStoreException(msg);
         }
     }
 
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential instanceof PasswordCredential pc) {
-                var cred = new PasswordCredential();
-                cred.setGatewayId(pc.getGatewayId());
-                cred.setPortalUserName(pc.getPortalUserName());
-                cred.setLoginUserName(pc.getLoginUserName());
-                cred.setPassword(pc.getPassword());
-                cred.setDescription(pc.getDescription());
-                cred.setToken(pc.getToken());
-                cred.setPersistedTime(pc.getCertificateRequestedTime().getTime());
-                return cred;
-            } else {
-                var msg = String.format("Credential for token=%s and gateway_id=%s is not a PasswordCredential", tokenId, gatewayId);
-                logger.error(msg);
-                throw new CredentialStoreException(msg);
-            }
+        Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+        if (credential instanceof PasswordCredential pc) {
+            var cred = new PasswordCredential();
+            cred.setGatewayId(pc.getGatewayId());
+            cred.setPortalUserName(pc.getPortalUserName());
+            cred.setLoginUserName(pc.getLoginUserName());
+            cred.setPassword(pc.getPassword());
+            cred.setDescription(pc.getDescription());
+            cred.setToken(pc.getToken());
+            cred.setPersistedTime(pc.getCertificateRequestedTime().getTime());
+            return cred;
+        } else {
+            var msg = String.format(
+                    "Credential for token=%s and gateway_id=%s is not a PasswordCredential", tokenId, gatewayId);
+            logger.error(msg);
+            throw new CredentialStoreException(msg);
+        }
     }
 
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {

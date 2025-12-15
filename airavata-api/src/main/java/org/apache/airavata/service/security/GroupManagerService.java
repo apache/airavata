@@ -171,7 +171,8 @@ public class GroupManagerService {
         try {
             return getSharingService().transferGroupOwnership(getDomainId(authzToken), groupId, newOwnerId);
         } catch (DuplicateEntryException e) {
-            throw new SharingRegistryException(String.format("Error transferring group ownership: %s", e.getMessage()), e);
+            throw new SharingRegistryException(
+                    String.format("Error transferring group ownership: %s", e.getMessage()), e);
         }
     }
 

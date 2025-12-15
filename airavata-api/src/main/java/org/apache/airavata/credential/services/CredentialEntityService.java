@@ -35,7 +35,6 @@ import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
-import org.apache.airavata.credential.CredentialOwnerType;
 import org.apache.airavata.credential.entities.CredentialEntity;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.repositories.CredentialRepository;
@@ -102,7 +101,8 @@ public class CredentialEntityService {
             entity.setDescription(credential.getDescription());
             credentialRepository.save(entity);
         } catch (Exception e) {
-            var msg = String.format("Error saving credential for gateway: %s, token: %s", gatewayId, credential.getToken());
+            var msg = String.format(
+                    "Error saving credential for gateway: %s, token: %s", gatewayId, credential.getToken());
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
@@ -191,7 +191,9 @@ public class CredentialEntityService {
                 credential.setDescription(entity.getDescription());
                 credentials.add(credential);
             } catch (Exception e) {
-                var msg = String.format("Error converting entity to credential for gateway: %s, token: %s", gatewayId, entity.getTokenId());
+                var msg = String.format(
+                        "Error converting entity to credential for gateway: %s, token: %s",
+                        gatewayId, entity.getTokenId());
                 logger.error(msg, e);
                 throw new CredentialStoreException(msg, e);
             }
@@ -214,7 +216,9 @@ public class CredentialEntityService {
                 credential.setDescription(entity.getDescription());
                 credentials.add(credential);
             } catch (Exception e) {
-                var msg = String.format("Error converting entity to credential for gateway: %s, token: %s", entity.getGatewayId(), entity.getTokenId());
+                var msg = String.format(
+                        "Error converting entity to credential for gateway: %s, token: %s",
+                        entity.getGatewayId(), entity.getTokenId());
                 logger.error(msg, e);
                 throw new CredentialStoreException(msg, e);
             }

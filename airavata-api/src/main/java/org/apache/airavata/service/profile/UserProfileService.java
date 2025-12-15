@@ -203,15 +203,21 @@ public class UserProfileService {
                 IamAdminService iamAdminService = getIamAdminService();
                 iamAdminService.updateUserProfile(serviceAccountAuthzToken, userProfile);
             } catch (AiravataSecurityException e) {
-                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s", gatewayId, userId, userGatewayId, e.getMessage());
+                var msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",
+                        gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
                 throw new RuntimeException(msg, e);
             } catch (IamAdminServicesException e) {
-                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",gatewayId, userId, userGatewayId, e.getMessage());
+                var msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",
+                        gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
                 throw new RuntimeException(msg, e);
             } catch (UserProfileServiceException e) {
-                var msg = String.format("Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",gatewayId, userId, userGatewayId, e.getMessage());
+                var msg = String.format(
+                        "Failed to update user profile in IAM service: gatewayId=%s, userId=%s, userGatewayId=%s. Reason: %s",
+                        gatewayId, userId, userGatewayId, e.getMessage());
                 logger.error(msg, e);
                 throw new RuntimeException(msg, e);
             }
@@ -272,7 +278,9 @@ public class UserProfileService {
             var userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
             return null != userProfile;
         } catch (RuntimeException e) {
-            var message = String.format("Error finding user profile: userId=%s, gatewayId=%s. Reason: %s", userId, gatewayId, e.getMessage());
+            var message = String.format(
+                    "Error finding user profile: userId=%s, gatewayId=%s. Reason: %s",
+                    userId, gatewayId, e.getMessage());
             logger.error(message, e);
             throw new UserProfileServiceException(message, e);
         }

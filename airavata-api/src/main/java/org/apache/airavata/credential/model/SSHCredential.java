@@ -20,7 +20,6 @@
 package org.apache.airavata.credential.model;
 
 import java.util.Objects;
-
 import org.apache.airavata.credential.Credential;
 
 /**

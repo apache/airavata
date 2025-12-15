@@ -22,7 +22,6 @@ package org.apache.airavata.credential.model;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Objects;
-
 import org.apache.airavata.credential.Credential;
 
 /**

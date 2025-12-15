@@ -21,7 +21,6 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.profile.TenantProfileService;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
@@ -65,7 +64,7 @@ public class TenantProfileServiceHandler
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(gateway);
             return tenantProfileService.addGateway(domainAuthzToken, domainGateway);
-        } catch (CredentialStoreException e) {
+        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
             org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
                     new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
                             "Error adding gateway: " + e.getMessage());
@@ -95,7 +94,7 @@ public class TenantProfileServiceHandler
             org.apache.airavata.security.model.AuthzToken domainAuthzToken = authzTokenMapper.toDomain(authzToken);
             org.apache.airavata.common.model.Gateway domainGateway = gatewayMapper.toDomain(updatedGateway);
             return tenantProfileService.updateGateway(domainAuthzToken, domainGateway);
-        } catch (CredentialStoreException e) {
+        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
             org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException ex =
                     new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException(
                             "Error updating gateway: " + e.getMessage());

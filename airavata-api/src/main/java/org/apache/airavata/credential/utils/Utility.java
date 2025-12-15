@@ -29,7 +29,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,8 +80,7 @@ public class Utility {
         return new char[0];
     }
 
-    public static SSHCredential generateKeyPair(SSHCredential credential)
-            throws Exception {
+    public static SSHCredential generateKeyPair(SSHCredential credential) throws Exception {
         JSch jsch = new JSch();
         try {
             KeyPair kpair = KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);

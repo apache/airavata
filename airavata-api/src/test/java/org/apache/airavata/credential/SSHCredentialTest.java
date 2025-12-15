@@ -21,7 +21,6 @@ package org.apache.airavata.credential;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.services.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;

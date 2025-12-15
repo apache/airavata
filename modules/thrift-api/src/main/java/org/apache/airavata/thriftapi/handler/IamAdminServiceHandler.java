@@ -21,7 +21,6 @@ package org.apache.airavata.thriftapi.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.security.IamAdminService;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
@@ -70,7 +69,7 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
             org.apache.airavata.common.model.Gateway result =
                     iamAdminService.setUpGateway(domainAuthzToken, domainGateway);
             return gatewayMapper.toThrift(result);
-        } catch (CredentialStoreException e) {
+        } catch (org.apache.airavata.common.exception.CredentialStoreException e) {
             org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException ex =
                     new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException(
                             "Error setting up gateway: " + e.getMessage());
