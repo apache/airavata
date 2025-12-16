@@ -9,7 +9,7 @@
     "License"); you may not use this file except in compliance
     with the License.  You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
+      https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on an
@@ -20,53 +20,59 @@
 
 -->
 <html>
+
 <head>
     <title>Airavata Sharing Registry Service</title>
-    <link href="style.css" rel="stylesheet" type="text/css"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
-<div class="container-fluid">
-    <h2>Welcome to Airavata Sharing Registry Service Documentation</h2>
+    <div class="container-fluid">
+        <h2>Welcome to Airavata Sharing Registry Service Documentation</h2>
 
-    <p>Airavata Data Sharing Registry Service is a general purpose <b>Collaborative Workspace Management Component</b>
-        that can solve
-        your Scientific Data Management requirements related to sharing and access controlling.</p>
+        <p>Airavata Data Sharing Registry Service is a general purpose <b>Collaborative Workspace Management
+                Component</b>
+            that can solve
+            your Scientific Data Management requirements related to sharing and access controlling.</p>
 
-    <p><span style="color: red; ">N.B. This component is under active development and this document will keep on evolving. Click <a href="./api-docs/index.html">here</a>
-        to see the API docs</span>
-    </p>
+        <p><span style="color: red; ">N.B. This component is under active development and this document will keep on
+                evolving. Click <a href="./api-docs/index.html">here</a>
+                to see the API docs</span>
+        </p>
 
-        <div id="#concepts">
+        <div id="concepts">
             <h3>Concepts & Terminology</h3>
-            <img src="sharing_overview.png" alt="Sharing Concepts" height="600" width="800">
+            <img src="sharing_overview.png"
+                alt="Diagram of Airavata sharing concepts: domains, users, groups, entities, and permissions"
+                height="600" width="800">
         </div>
-        <br/>
+        <br />
 
-        <div id="#getting-started">
-        <h3>Getting started with the Java client</h3>
+        <div id="getting-started">
+            <h3>Getting started with the Java client</h3>
 
-        <div>
-            <ol start="0">
-                <li><a href="#requirements">Requirements</a></li>
-                <li><a href="#thrift-client">Create a thrift client</a></li>
-                <li><a href="#create-domain">Create a Domain</a></li>
-                <li><a href="#create-users">Create Users</a></li>
-                <li><a href="#create-groups">Create Groups</a></li>
-                <li><a href="#assign-users-to-group">Assign Users to a Group</a></li>
-                <li><a href="#assign-groups-to-group">Assign Groups to a Group</a></li>
-                <li><a href="#create-permission-types">Create Permission Types for your Domain</a></li>
-                <li><a href="#create-entity-types">Create Entity Types for your Domain</a></li>
-                <li><a href="#create-entities">Create Entities</a></li>
-                <li><a href="#sharing-entities">Share Entities</a></li>
-                <li><a href="#checking-user-has-access">Checking User has Permission</a></li>
-                <li><a href="#search-entities">Searching Entities</a></li>
-            </ol>
-        </div>
-        <br/>
+            <div>
+                <ol start="0">
+                    <li><a href="#requirements">Requirements</a></li>
+                    <li><a href="#thrift-client">Create a thrift client</a></li>
+                    <li><a href="#create-domain">Create a Domain</a></li>
+                    <li><a href="#create-users">Create Users</a></li>
+                    <li><a href="#create-groups">Create Groups</a></li>
+                    <li><a href="#assign-users-to-group">Assign Users to a Group</a></li>
+                    <li><a href="#assign-groups-to-group">Assign Groups to a Group</a></li>
+                    <li><a href="#create-permission-types">Create Permission Types for your Domain</a></li>
+                    <li><a href="#create-entity-types">Create Entity Types for your Domain</a></li>
+                    <li><a href="#create-entities">Create Entities</a></li>
+                    <li><a href="#sharing-entities">Share Entities</a></li>
+                    <li><a href="#checking-user-has-access">Checking User has Permission</a></li>
+                    <li><a href="#search-entities">Searching Entities</a></li>
+                </ol>
+            </div>
+            <br />
 
-        <div class="definition" id="requirements">
-            <h4>0. Required maven dependencies</h4>
-            <pre>
+            <div class="definition" id="requirements">
+                <h4>0. Required maven dependencies</h4>
+                <pre>
                 &lt;dependency&gt;
                     &lt;groupId>org.apache.airavata&lt;/groupId&gt;
                     &lt;artifactId>airavata-sharing-registry-stubs&lt;/artifactId&gt;
@@ -79,11 +85,11 @@
                     &lt;version>0.9.3&lt;/version&gt;
                 &lt;/dependency&gt;
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="thrift-client">
-            <h4>1. Creating the thrift client</h4>
-            <pre>
+            <div class="definition" id="thrift-client">
+                <h4>1. Creating the thrift client</h4>
+                <pre>
                 //should use the correct host name and port here
                 String serverHost = "gw56.iu.xsede.org";
                 int serverPort = 7878;
@@ -93,11 +99,11 @@
                 TProtocol protocol = new TBinaryProtocol(transport);
                 SharingRegistryService.Client sharingServiceClient = new SharingRegistryService.Client(protocol);
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-domain">
-            <h4>2. Create a domain</h4>
-            <pre>
+            <div class="definition" id="create-domain">
+                <h4>2. Create a domain</h4>
+                <pre>
                 Domain domain = new Domain();
                 //has to be one word
                 domain.setName("test-domain");
@@ -107,11 +113,11 @@
                 //domain id will be same as domain name
                 String domainId = sharingServiceClient.createDomain(domain);
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-users">
-            <h4>2. Create Users</h4>
-            <pre>
+            <div class="definition" id="create-users">
+                <h4>2. Create Users</h4>
+                <pre>
                 User user1 = new User();
                 String userName = "test-user-1";
                 String userId1 =  "test-user-1";
@@ -138,11 +144,11 @@
                     .
                     .
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-groups">
-            <h4>3. Create User Groups</h4>
-            <pre>
+            <div class="definition" id="create-groups">
+                <h4>3. Create User Groups</h4>
+                <pre>
                 UserGroup userGroup1 = new UserGroup();
                 //required
                 userGroup1.setGroupId("test-group-1");
@@ -164,18 +170,18 @@
                     .
                     .
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="assign-users-to-group">
-            <h4>4. Assign Users to a Group</h4>
-            <pre>
+            <div class="definition" id="assign-users-to-group">
+                <h4>4. Assign Users to a Group</h4>
+                <pre>
                 sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-3"), "test-group-2");
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="assign-groups-to-group">
-            <h4>5. Assign groups to a group</h4>
-            <pre>
+            <div class="definition" id="assign-groups-to-group">
+                <h4>5. Assign groups to a group</h4>
+                <pre>
                 sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
 
                 /********************************************/
@@ -187,11 +193,11 @@
                 /*                 test-user-2  test-user-3 */
                 /********************************************/
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-permission-types">
-            <h4>6. Create Permission types for your Domain</h4>
-            <pre>
+            <div class="definition" id="create-permission-types">
+                <h4>6. Create Permission types for your Domain</h4>
+                <pre>
                 PermissionType permissionType1 = new PermissionType();
                 //required
                 permissionType1.setPermissionTypeId("READ");
@@ -217,11 +223,11 @@
                 permissionType3.setDescription("CLONE description");
                 sharingServiceClient.createPermissionType(permissionType3);
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-entity-types">
-            <h4>7. Create Entity Types for your Domain</h4>
-            <pre>
+            <div class="definition" id="create-entity-types">
+                <h4>7. Create Entity Types for your Domain</h4>
+                <pre>
                 EntityType entityType1 = new EntityType();
                 //required
                 entityType1.setEntityTypeId("PROJECT");
@@ -247,11 +253,11 @@
                 entityType3.setDescription("FILE entity type");
                 sharingServiceClient.createEntityType(entityType3);
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="create-entities">
-            <h4>8. Create Entities</h4>
-            <pre>
+            <div class="definition" id="create-entities">
+                <h4>8. Create Entities</h4>
+                <pre>
                 Entity entity1 = new Entity();
                 //required
                 entity1.setEntityId("test-project-1");
@@ -303,11 +309,11 @@
                 entity4.setFullText("test input file 1 for experiment 2");
                 sharingServiceClient.createEntity(entity4);
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="sharing-entities">
-        <h4>9. Share Entities with Users and Groups</h4>
-            <pre>
+            <div class="definition" id="sharing-entities">
+                <h4>9. Share Entities with Users and Groups</h4>
+                <pre>
                 //shared with cascading permissions
                 sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
                 sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
@@ -325,11 +331,11 @@
                 /*                                        (OWNER:test-user-1, WRITE:test-user-2, READ:test-group-2)         */
                 /************************************************************************************************************/
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="checking-user-has-access">
-            <h4>9. Checking whether a User has Permission to access an Entity with specified Permission</h4>
-            <pre>
+            <div class="definition" id="checking-user-has-access">
+                <h4>9. Checking whether a User has Permission to access an Entity with specified Permission</h4>
+                <pre>
                 //test-project-1 is explicitly shared with test-user-2 with WRITE permission
                 System.out.println(sharingServiceClient.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
 
@@ -355,11 +361,11 @@
                 //test-user-3 does not have CLONE permission to test-file-1
                 System.out.println((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
             </pre>
-        </div>
+            </div>
 
-        <div class="definition" id="search-entities">
-            <h4>10. Searching Entities</h4>
-            <pre>
+            <div class="definition" id="search-entities">
+                <h4>10. Searching Entities</h4>
+                <pre>
                 ArrayList&lt;SearchCriteria&gt; filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
@@ -381,9 +387,10 @@
 
                 System.out.println(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size());
             </pre>
-        </div>
+            </div>
 
+        </div>
     </div>
-</div>
 </body>
+
 </html>
