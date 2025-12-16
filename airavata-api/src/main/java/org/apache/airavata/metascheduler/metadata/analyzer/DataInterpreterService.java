@@ -53,8 +53,7 @@ public class DataInterpreterService implements IServer {
     private final AiravataServerProperties properties;
     private final ApplicationContext applicationContext;
 
-    public DataInterpreterService(
-            AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public DataInterpreterService(AiravataServerProperties properties, ApplicationContext applicationContext) {
         this.properties = properties;
         this.applicationContext = applicationContext;
     }

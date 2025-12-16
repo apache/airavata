@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
-import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.InstanceType;
 import org.apache.helix.examples.OnlineOfflineStateModelFactory;
@@ -65,6 +64,7 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private List<Class<? extends T>> taskClasses;
     private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
     private AiravataServerProperties properties;
+    private org.springframework.context.ApplicationContext applicationContext;
 
     public HelixParticipant(
             List<Class<? extends T>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
@@ -76,6 +76,10 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
         // Property-dependent initialization moved to initialize() method
         // This allows subclasses to set taskClasses before initializing properties
+    }
+
+    public void setApplicationContext(org.springframework.context.ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -155,12 +159,46 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         for (Class<? extends T> taskClass : taskClasses) {
             TaskFactory taskFac = context -> {
                 try {
-                    return AbstractTask.class
-                            .cast(taskClass.newInstance())
-                            .setParticipant(HelixParticipant.this)
+                    org.apache.airavata.helix.core.support.TaskHelperImpl taskHelper = null;
+                    AbstractTask task = null;
+                    if (applicationContext != null) {
+                        taskHelper =
+                                applicationContext.getBean(org.apache.airavata.helix.core.support.TaskHelperImpl.class);
+                        // Try to get task as Spring bean first
+                        try {
+                            task = applicationContext.getBean(taskClass);
+                        } catch (Exception e) {
+                            // If not a Spring bean, create via reflection with dependencies from ApplicationContext
+                            java.lang.reflect.Constructor<?>[] constructors = taskClass.getConstructors();
+                            java.lang.reflect.Constructor<?> constructor = null;
+                            for (java.lang.reflect.Constructor<?> c : constructors) {
+                                if (c.getParameterCount() > 0) {
+                                    constructor = c;
+                                    break;
+                                }
+                            }
+                            if (constructor != null) {
+                                java.lang.Class<?>[] paramTypes = constructor.getParameterTypes();
+                                Object[] args = new Object[paramTypes.length];
+                                for (int i = 0; i < paramTypes.length; i++) {
+                                    args[i] = applicationContext.getBean(paramTypes[i]);
+                                }
+                                task = (AbstractTask) constructor.newInstance(args);
+                            } else {
+                                task = (AbstractTask)
+                                        taskClass.getDeclaredConstructor().newInstance();
+                            }
+                        }
+                    } else {
+                        // Fallback: get AdaptorSupport from ApplicationContext if available
+                        // This is a workaround for non-Spring contexts
+                        throw new IllegalStateException(
+                                "ApplicationContext must be set on HelixParticipant to create tasks");
+                    }
+                    return task.setParticipant(HelixParticipant.this)
                             .setCallbackContext(context)
-                            .setTaskHelper(new TaskHelperImpl());
-                } catch (InstantiationException | IllegalAccessException e) {
+                            .setTaskHelper(taskHelper);
+                } catch (Exception e) {
                     logger.error(
                             "Failed to initialize the task: "
                                     + context.getTaskConfig().getId(),

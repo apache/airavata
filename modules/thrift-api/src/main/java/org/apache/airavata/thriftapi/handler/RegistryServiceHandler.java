@@ -54,7 +54,6 @@ import org.apache.airavata.thriftapi.mapper.GroupComputeResourcePreferenceMapper
 import org.apache.airavata.thriftapi.mapper.GroupResourceProfileMapper;
 import org.apache.airavata.thriftapi.mapper.InputDataObjectTypeMapper;
 import org.apache.airavata.thriftapi.mapper.JobModelMapper;
-import org.apache.airavata.thriftapi.mapper.JobStatusMapper;
 import org.apache.airavata.thriftapi.mapper.LOCALDataMovementMapper;
 import org.apache.airavata.thriftapi.mapper.LOCALSubmissionMapper;
 import org.apache.airavata.thriftapi.mapper.NotificationMapper;

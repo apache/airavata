@@ -40,8 +40,9 @@ public class AWSCompletingTask extends AiravataTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             AWSTaskUtil awsTaskUtil) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService);
+        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
         this.awsTaskUtil = awsTaskUtil;
     }
 

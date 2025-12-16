@@ -105,7 +105,7 @@ public class SharingServiceDBEventMessagingFactory {
      * @return
      * @throws AiravataException
      */
-    public static boolean registerSharingServiceWithPublishers(List<String> publishers) throws AiravataException {
+    public boolean registerSharingServiceWithPublishers(List<String> publishers) throws AiravataException {
 
         for (String publisher : publishers) {
 

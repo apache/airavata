@@ -53,8 +53,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
     private final SharingServiceDBEventMessagingFactory messagingFactory;
 
     public SharingServiceDBEventHandler(
-            SharingRegistryService sharingRegistryService,
-            SharingServiceDBEventMessagingFactory messagingFactory) {
+            SharingRegistryService sharingRegistryService, SharingServiceDBEventMessagingFactory messagingFactory) {
         this.sharingRegistryService = sharingRegistryService;
         this.messagingFactory = messagingFactory;
     }

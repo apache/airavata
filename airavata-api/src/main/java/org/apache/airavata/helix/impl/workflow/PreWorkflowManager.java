@@ -92,6 +92,7 @@ public class PreWorkflowManager extends WorkflowManager {
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
+        this.messagingFactory = messagingFactory;
     }
 
     @jakarta.annotation.PostConstruct
@@ -215,8 +216,8 @@ public class PreWorkflowManager extends WorkflowManager {
 
         // For intermediate transfers add a final CompletingTask
         if (intermediateTransfer) {
-            CompletingTask completingTask =
-                    new CompletingTask(applicationContext, registryService, userProfileService, credentialStoreService);
+            CompletingTask completingTask = new CompletingTask(
+                    applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
             completingTask.setGatewayId(experimentModel.getGatewayId());
             completingTask.setExperimentId(experimentModel.getExperimentId());
             completingTask.setProcessId(processModel.getProcessId());
@@ -290,7 +291,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     gcrPref.getResourceType());
 
             RemoteJobCancellationTask rjct = new RemoteJobCancellationTask(
-                    applicationContext, registryService, userProfileService, credentialStoreService);
+                    applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
             rjct.setTaskId(UUID.randomUUID().toString());
             rjct.setExperimentId(experimentId);
             rjct.setProcessId(processId);
@@ -304,7 +305,7 @@ public class PreWorkflowManager extends WorkflowManager {
         }
 
         CancelCompletingTask cct = new CancelCompletingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService);
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
         cct.setTaskId(UUID.randomUUID().toString());
         cct.setExperimentId(experimentId);
         cct.setProcessId(processId);

@@ -49,9 +49,7 @@ public class Utils {
     private static ApplicationContext staticApplicationContext;
 
     public Utils(
-            RegistryService registryService,
-            ApplicationContext applicationContext,
-            MessagingFactory messagingFactory) {
+            RegistryService registryService, ApplicationContext applicationContext, MessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.applicationContext = applicationContext;
         this.messagingFactory = messagingFactory;

@@ -83,9 +83,10 @@ public class ParserWorkflowManager extends WorkflowManager {
     public ParserWorkflowManager(
             AiravataServerProperties properties,
             org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService) {
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
         // Default values, will be updated in @PostConstruct
-        super("parser-workflow-manager", false, registryService, properties);
+        super("parser-workflow-manager", false, registryService, properties, messagingFactory);
         this.properties = properties;
         this.applicationContext = applicationContext;
         this.registryService = registryService;

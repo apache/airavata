@@ -125,7 +125,7 @@ public class SharingRegistryServer implements IServer {
 
                             try {
                                 logger.info("Register sharing service with DB Event publishers");
-                                SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(
+                                messagingFactory.registerSharingServiceWithPublishers(
                                         SharingRegistryConstants.PUBLISHERS);
 
                                 logger.info("Start sharing service DB Event subscriber");

@@ -29,6 +29,7 @@ import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -51,10 +52,11 @@ public class ProcessDataManager extends OutputDataStagingTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
+            MessagingFactory messagingFactory,
             String processId,
             AdaptorSupport adaptorSupport)
             throws Exception {
-        super(applicationContext, registryService, userProfileService, credentialStoreService);
+        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
         this.adaptorSupport = adaptorSupport;
         try {
             process = registryService.getProcess(processId);

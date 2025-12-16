@@ -39,10 +39,12 @@ public class DBEventManagerRunner implements IServer {
     private static final String SERVER_VERSION = "1.0";
 
     private final AiravataServerProperties properties;
+    private final DBEventManagerMessagingFactory messagingFactory;
     private ServerStatus status;
 
-    public DBEventManagerRunner(AiravataServerProperties properties) {
+    public DBEventManagerRunner(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
         this.properties = properties;
+        this.messagingFactory = messagingFactory;
     }
 
     /**
@@ -52,12 +54,12 @@ public class DBEventManagerRunner implements IServer {
         try {
             log.info("Starting DB Event manager publisher");
 
-            DBEventManagerMessagingFactory.getDBEventPublisher();
+            messagingFactory.getDBEventPublisher();
             log.debug("DB Event manager publisher is running");
 
             log.info("Starting DB Event manager subscriber");
 
-            DBEventManagerMessagingFactory.getDBEventSubscriber(properties);
+            messagingFactory.getDBEventSubscriber(properties);
             log.debug("DB Event manager subscriber is listening");
         } catch (AiravataException e) {
             log.error("Error starting DB Event Manager.", e);

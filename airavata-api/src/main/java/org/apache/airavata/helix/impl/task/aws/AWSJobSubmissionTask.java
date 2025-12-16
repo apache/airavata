@@ -68,9 +68,16 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
             AWSTaskUtil awsTaskUtil) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
+        super(
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory,
+                groovyMapBuilder);
         this.awsTaskUtil = awsTaskUtil;
     }
 

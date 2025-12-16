@@ -52,8 +52,9 @@ public class ProcessScannerImpl implements ProcessScanner {
             List<ProcessModel> processModelList = registryService.getProcessListInState(state);
 
             String reSchedulerPolicyClass = properties.services.scheduler.computeResourceReschedulerPolicyClass;
-            ReScheduler reScheduler =
-                    (ReScheduler) Class.forName(reSchedulerPolicyClass).getDeclaredConstructor().newInstance();
+            ReScheduler reScheduler = (ReScheduler) Class.forName(reSchedulerPolicyClass)
+                    .getDeclaredConstructor()
+                    .newInstance();
 
             for (ProcessModel processModel : processModelList) {
                 reScheduler.reschedule(processModel, state);

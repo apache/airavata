@@ -56,8 +56,15 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, groovyMapBuilder);
+        super(
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory,
+                groovyMapBuilder);
     }
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";

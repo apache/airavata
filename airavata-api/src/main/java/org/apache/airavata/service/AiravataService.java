@@ -3882,8 +3882,8 @@ public class AiravataService {
             }
         }
 
-        AgentAdaptor adaptor = adaptorSupport.fetchComputeSSHAdaptor(
-                gatewayId, resourceId, credentialToken, userId, loginUserName);
+        AgentAdaptor adaptor =
+                adaptorSupport.fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
         logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
 
         return new StorageInfoContext(loginUserName, credentialToken, adaptor);
@@ -3991,8 +3991,8 @@ public class AiravataService {
             }
         }
 
-        AgentAdaptor adaptor = adaptorSupport.fetchStorageSSHAdaptor(
-                gatewayId, resourceId, credentialToken, userId, loginUserName);
+        AgentAdaptor adaptor =
+                adaptorSupport.fetchStorageSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
         logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
 
         return new StorageInfoContext(loginUserName, credentialToken, adaptor);

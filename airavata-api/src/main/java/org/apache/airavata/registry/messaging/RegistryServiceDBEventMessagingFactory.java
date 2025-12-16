@@ -55,10 +55,13 @@ public class RegistryServiceDBEventMessagingFactory {
     private final RegistryService registryService;
     private final MessagingFactory messagingFactory;
 
-    public RegistryServiceDBEventMessagingFactory(
-            RegistryService registryService, MessagingFactory messagingFactory) {
+    public RegistryServiceDBEventMessagingFactory(RegistryService registryService, MessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.messagingFactory = messagingFactory;
+    }
+
+    public MessagingFactory getMessagingFactory() {
+        return messagingFactory;
     }
 
     public Publisher getDBEventPublisher() throws AiravataException {
@@ -95,7 +98,7 @@ public class RegistryServiceDBEventMessagingFactory {
         return registryServiceDBEventSubscriber;
     }
 
-    public static boolean registerRegistryServiceWithPublishers(List<String> publisherList) throws AiravataException {
+    public boolean registerRegistryServiceWithPublishers(List<String> publisherList) throws AiravataException {
         for (String publisher : publisherList) {
             logger.info("Sending service discovery message. Publisher: " + publisher + ", Subscriber: "
                     + DBEventService.REGISTRY.toString());

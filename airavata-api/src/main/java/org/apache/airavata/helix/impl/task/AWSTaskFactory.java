@@ -42,6 +42,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder;
     private final org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil awsTaskUtil;
+    private final org.apache.airavata.messaging.core.MessagingFactory messagingFactory;
 
     public AWSTaskFactory(
             ApplicationContext applicationContext,
@@ -49,25 +50,33 @@ public class AWSTaskFactory implements HelixTaskFactory {
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
-            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil awsTaskUtil) {
+            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil awsTaskUtil,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
         this.groovyMapBuilder = groovyMapBuilder;
         this.awsTaskUtil = awsTaskUtil;
+        this.messagingFactory = messagingFactory;
     }
 
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
         LOGGER.info("Creating AWS CreateEc2InstanceTask for process {}...", processId);
         return new CreateEC2InstanceTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory,
+                awsTaskUtil);
     }
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
-        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new NoOperationTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 
     @Override
@@ -77,33 +86,43 @@ public class AWSTaskFactory implements HelixTaskFactory {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 groovyMapBuilder,
                 awsTaskUtil);
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
-        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new NoOperationTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
-        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new NoOperationTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
-        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new NoOperationTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
         return new AWSCompletingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, awsTaskUtil);
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory,
+                awsTaskUtil);
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
-        return new NoOperationTask(applicationContext, registryService, userProfileService, credentialStoreService);
+        return new NoOperationTask(
+                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 }

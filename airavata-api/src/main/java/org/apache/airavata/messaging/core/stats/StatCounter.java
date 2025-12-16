@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.messaging.core.stats;
 
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Timer;
 import org.apache.airavata.common.model.Message;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class StatCounter {

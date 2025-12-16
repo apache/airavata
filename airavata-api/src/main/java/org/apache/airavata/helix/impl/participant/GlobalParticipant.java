@@ -69,10 +69,12 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     // Constructor for Spring - uses constructor injection for properties
     // No checked exceptions - initialization happens in @PostConstruct
     @org.springframework.beans.factory.annotation.Autowired
-    public GlobalParticipant(AiravataServerProperties properties) {
+    public GlobalParticipant(
+            AiravataServerProperties properties, org.springframework.context.ApplicationContext applicationContext) {
         // Pass empty list for taskClasses - will be set in @PostConstruct
         // Using Collections.emptyList() to avoid ambiguity with Class<T> constructor
         super(new ArrayList<>(), null, properties);
+        setApplicationContext(applicationContext);
     }
 
     @PostConstruct

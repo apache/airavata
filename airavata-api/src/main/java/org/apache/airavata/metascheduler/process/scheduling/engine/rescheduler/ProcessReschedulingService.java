@@ -55,8 +55,7 @@ public class ProcessReschedulingService implements IServer {
     private final AiravataServerProperties properties;
     private final ApplicationContext applicationContext;
 
-    public ProcessReschedulingService(
-            AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public ProcessReschedulingService(AiravataServerProperties properties, ApplicationContext applicationContext) {
         this.properties = properties;
         this.applicationContext = applicationContext;
     }

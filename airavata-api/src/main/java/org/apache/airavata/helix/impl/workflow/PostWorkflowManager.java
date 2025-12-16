@@ -85,9 +85,10 @@ public class PostWorkflowManager extends WorkflowManager {
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
         // Default values, will be updated in @PostConstruct
-        super("post-workflow-manager", false, registryService, properties);
+        super("post-workflow-manager", false, registryService, properties, messagingFactory);
         this.properties = properties;
         this.taskFactory = taskFactory;
         this.applicationContext = applicationContext;

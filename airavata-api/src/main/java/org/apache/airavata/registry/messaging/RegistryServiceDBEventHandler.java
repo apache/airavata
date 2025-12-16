@@ -58,9 +58,11 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             RegistryService registryService, RegistryServiceDBEventMessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.messagingFactory = messagingFactory;
+        this.dbEventPublisherUtils =
+                new DBEventPublisherUtils(DBEventService.REGISTRY, messagingFactory.getMessagingFactory());
     }
 
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
+    private final DBEventPublisherUtils dbEventPublisherUtils;
 
     @Override
     public void onMessage(MessageContext messageContext) {

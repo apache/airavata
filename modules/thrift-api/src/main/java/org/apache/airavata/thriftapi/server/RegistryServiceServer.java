@@ -140,8 +140,7 @@ public class RegistryServiceServer implements IServer {
         try {
             // db-event handlers
             logger.info("Registring registry service with publishers for db-events.");
-            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(
-                    RegistryServiceConstants.DB_EVENT_SUBSCRIBERS);
+            messagingFactory.registerRegistryServiceWithPublishers(RegistryServiceConstants.DB_EVENT_SUBSCRIBERS);
 
             logger.info("Starting registry service db-event-handler subscriber.");
             messagingFactory.getDBEventSubscriber();

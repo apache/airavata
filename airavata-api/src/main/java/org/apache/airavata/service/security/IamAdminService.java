@@ -32,6 +32,7 @@ import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
@@ -54,17 +55,19 @@ public class IamAdminService {
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
 
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN);
+    private final DBEventPublisherUtils dbEventPublisherUtils;
 
     public IamAdminService(
             AiravataServerProperties properties,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            RegistryService registryService) {
+            RegistryService registryService,
+            MessagingFactory messagingFactory) {
         this.properties = properties;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
+        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN, messagingFactory);
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)

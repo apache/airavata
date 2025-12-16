@@ -28,30 +28,38 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/1/17.
  */
+@Component
 public class DBEventManagerMessagingFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DBEventManagerMessagingFactory.class);
 
-    private static Subscriber dbEventSubscriber;
+    private Subscriber dbEventSubscriber;
 
-    private static Publisher dbEventPublisher;
+    private Publisher dbEventPublisher;
+
+    private final MessagingFactory messagingFactory;
+
+    public DBEventManagerMessagingFactory(MessagingFactory messagingFactory) {
+        this.messagingFactory = messagingFactory;
+    }
 
     /**
      * Get DB Event subscriber
      * @return
      * @throws AiravataException
      */
-    public static Subscriber getDBEventSubscriber(AiravataServerProperties properties) throws AiravataException {
+    public Subscriber getDBEventSubscriber(AiravataServerProperties properties) throws AiravataException {
         if (null == dbEventSubscriber) {
-            synchronized (DBEventManagerMessagingFactory.class) {
+            synchronized (this) {
                 if (null == dbEventSubscriber) {
                     log.info("Creating DB Event subscriber.....");
-                    dbEventSubscriber = MessagingFactory.getDBEventSubscriber(
-                            new DBEventMessageHandler(properties), DBEventService.DB_EVENT.toString());
+                    dbEventSubscriber = messagingFactory.getDBEventSubscriber(
+                            new DBEventMessageHandler(properties, this), DBEventService.DB_EVENT.toString());
                     log.info("DB Event subscriber created");
                 }
             }
@@ -59,12 +67,12 @@ public class DBEventManagerMessagingFactory {
         return dbEventSubscriber;
     }
 
-    public static Publisher getDBEventPublisher() throws AiravataException {
+    public Publisher getDBEventPublisher() throws AiravataException {
         if (null == dbEventPublisher) {
-            synchronized (DBEventManagerMessagingFactory.class) {
+            synchronized (this) {
                 if (null == dbEventPublisher) {
                     log.info("Creating DB Event publisher.....");
-                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    dbEventPublisher = messagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
                 }
             }

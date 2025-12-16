@@ -32,6 +32,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
@@ -66,21 +67,22 @@ public class UserProfileService {
     private final Mapper mapper;
     private final AiravataSecurityManager securityManager;
     private final EntityManager entityManager;
+    private final DBEventPublisherUtils dbEventPublisherUtils;
 
     public UserProfileService(
             UserProfileRepository userProfileRepository,
             @Lazy org.apache.airavata.service.security.IamAdminService iamAdminService,
             Mapper mapper,
             AiravataSecurityManager securityManager,
-            @Qualifier("profileServiceEntityManager") EntityManager entityManager) {
+            @Qualifier("profileServiceEntityManager") EntityManager entityManager,
+            MessagingFactory messagingFactory) {
         this.userProfileRepository = userProfileRepository;
         this.iamAdminService = iamAdminService;
         this.mapper = mapper;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
+        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE, messagingFactory);
     }
-
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE);
 
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);

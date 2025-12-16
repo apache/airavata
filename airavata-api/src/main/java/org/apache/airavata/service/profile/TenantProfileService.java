@@ -37,6 +37,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
@@ -60,17 +61,19 @@ public class TenantProfileService {
     private final Mapper mapper;
     private final EntityManager entityManager;
 
-    private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT);
+    private final DBEventPublisherUtils dbEventPublisherUtils;
 
     public TenantProfileService(
             TenantProfileRepository tenantProfileRepository,
             CredentialStoreService credentialStoreService,
             Mapper mapper,
-            @Qualifier("profileServiceEntityManager") EntityManager entityManager) {
+            @Qualifier("profileServiceEntityManager") EntityManager entityManager,
+            MessagingFactory messagingFactory) {
         this.tenantProfileRepository = tenantProfileRepository;
         this.credentialStoreService = credentialStoreService;
         this.mapper = mapper;
         this.entityManager = entityManager;
+        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT, messagingFactory);
     }
 
     public String addGateway(AuthzToken authzToken, Gateway gateway)

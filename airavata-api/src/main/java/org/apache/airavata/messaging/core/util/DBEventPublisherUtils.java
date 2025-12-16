@@ -46,9 +46,11 @@ public class DBEventPublisherUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private Publisher dbEventPublisher = null;
     private DBEventService publisherService;
+    private final MessagingFactory messagingFactory;
 
-    public DBEventPublisherUtils(DBEventService dbEventService) {
+    public DBEventPublisherUtils(DBEventService dbEventService, MessagingFactory messagingFactory) {
         this.publisherService = dbEventService;
+        this.messagingFactory = messagingFactory;
     }
 
     /**
@@ -75,7 +77,7 @@ public class DBEventPublisherUtils {
             synchronized (this) {
                 if (null == dbEventPublisher) {
                     logger.info("Creating DB Event publisher.....");
-                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    dbEventPublisher = messagingFactory.getDBEventPublisher();
                     logger.info("DB Event publisher created");
                 }
             }

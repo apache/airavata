@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +36,12 @@ public class TestClient {
 
     public static void main(String[] args) {
         try {
+            AiravataServerProperties properties = new AiravataServerProperties();
+            MessagingFactory messagingFactory = new MessagingFactory(properties);
             List<String> routingKeys = new ArrayList<>();
             routingKeys.add(experimentId);
             routingKeys.add(experimentId + ".*");
-            MessagingFactory.getSubscriber(getMessageHandler(), routingKeys, Type.STATUS);
+            messagingFactory.getSubscriber(getMessageHandler(), routingKeys, Type.STATUS);
         } catch (ApplicationSettingsException e) {
             logger.error("Error reading airavata server properties", e);
         } catch (Exception e) {

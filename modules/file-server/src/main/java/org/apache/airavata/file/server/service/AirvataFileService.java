@@ -29,6 +29,7 @@ import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -48,18 +49,21 @@ public class AirvataFileService {
     private final ApplicationContext applicationContext;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
+    private final MessagingFactory messagingFactory;
 
     public AirvataFileService(
             AdaptorSupport adaptorSupport,
             RegistryService registryService,
             ApplicationContext applicationContext,
             UserProfileService userProfileService,
-            CredentialStoreService credentialStoreService) {
+            CredentialStoreService credentialStoreService,
+            MessagingFactory messagingFactory) {
         this.adaptorSupport = adaptorSupport;
         this.registryService = registryService;
         this.applicationContext = applicationContext;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
+        this.messagingFactory = messagingFactory;
     }
 
     private AgentAdaptor getAgentAdaptor(ProcessDataManager dataManager, String processId) throws Exception {
@@ -79,6 +83,7 @@ public class AirvataFileService {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 processId,
                 adaptorSupport);
         var agentAdaptor = getAgentAdaptor(dataManager, processId);
@@ -94,6 +99,7 @@ public class AirvataFileService {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 processId,
                 adaptorSupport);
         var agentAdaptor = getAgentAdaptor(dataManager, processId);
@@ -127,6 +133,7 @@ public class AirvataFileService {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 processId,
                 adaptorSupport);
         var agentAdaptor = getAgentAdaptor(dataManager, processId);
@@ -150,6 +157,7 @@ public class AirvataFileService {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 processId,
                 adaptorSupport);
         var agentAdaptor = getAgentAdaptor(dataManager, processId);
@@ -176,6 +184,7 @@ public class AirvataFileService {
                 registryService,
                 userProfileService,
                 credentialStoreService,
+                messagingFactory,
                 processId,
                 adaptorSupport);
         var agentAdaptor = getAgentAdaptor(dataManager, processId);

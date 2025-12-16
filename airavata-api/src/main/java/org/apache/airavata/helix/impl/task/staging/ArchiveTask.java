@@ -50,8 +50,9 @@ public class ArchiveTask extends DataStagingTask {
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService);
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
     }
 
     @Override

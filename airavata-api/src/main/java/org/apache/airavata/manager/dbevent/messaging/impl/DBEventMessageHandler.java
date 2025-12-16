@@ -44,6 +44,7 @@ public class DBEventMessageHandler implements MessageHandler {
     private static final Logger log = LoggerFactory.getLogger(DBEventMessageHandler.class);
     private CuratorFramework curatorClient;
     private AiravataServerProperties properties;
+    private DBEventManagerMessagingFactory messagingFactory;
 
     public DBEventMessageHandler() {
         // Properties should be set via setter
@@ -51,6 +52,12 @@ public class DBEventMessageHandler implements MessageHandler {
 
     public DBEventMessageHandler(AiravataServerProperties properties) {
         this.properties = properties;
+        startCuratorClient();
+    }
+
+    public DBEventMessageHandler(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
+        this.properties = properties;
+        this.messagingFactory = messagingFactory;
         startCuratorClient();
     }
 
@@ -107,14 +114,17 @@ public class DBEventMessageHandler implements MessageHandler {
                             + subscribers.toString());
                     MessageContext messageCtx = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
                     messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                    DBEventManagerMessagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
+                    if (messagingFactory == null) {
+                        throw new IllegalStateException(
+                                "DBEventManagerMessagingFactory must be set on DBEventMessageHandler");
+                    }
+                    messagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
                     break;
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
-            if (properties != null) {
-                DBEventManagerMessagingFactory.getDBEventSubscriber(properties)
-                        .sendAck(messageContext.getDeliveryTag());
+            if (properties != null && messagingFactory != null) {
+                messagingFactory.getDBEventSubscriber(properties).sendAck(messageContext.getDeliveryTag());
             }
 
         } catch (Exception e) {

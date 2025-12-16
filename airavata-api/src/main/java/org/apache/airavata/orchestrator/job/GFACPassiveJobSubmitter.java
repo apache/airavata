@@ -55,8 +55,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
             this.publisher = orchestratorContext.getPublisher();
         } else {
             if (messagingFactory == null) {
-                throw new OrchestratorException("MessagingFactory must be set before initializing "
-                        + GFACPassiveJobSubmitter.class);
+                throw new OrchestratorException(
+                        "MessagingFactory must be set before initializing " + GFACPassiveJobSubmitter.class);
             }
             try {
                 this.publisher = messagingFactory.getPublisher(Type.PROCESS_LAUNCH);
