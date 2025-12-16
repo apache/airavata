@@ -130,14 +130,10 @@ public abstract class AbstractJDBCUserStore implements UserStore {
                 log.warn("Database configurations not specified in XML and properties not available.");
             }
 
-            StringBuilder stringBuilder = new StringBuilder("User store configurations - dbDriver - ");
-            stringBuilder.append(databaseDriver);
-            stringBuilder
-                    .append(" URL - ")
-                    .append(databaseURL)
-                    .append(" DB user - ")
-                    .append(databaseUserName);
-            log.info(stringBuilder.toString());
+            var message = String.format(
+                    "User store configurations - dbDriver - %s URL - %s DB user - %s",
+                    databaseDriver, databaseURL, databaseUserName);
+            log.info(message);
         }
     }
 }

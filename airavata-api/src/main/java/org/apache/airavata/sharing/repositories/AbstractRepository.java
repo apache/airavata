@@ -22,7 +22,6 @@ package org.apache.airavata.sharing.repositories;
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -161,69 +160,62 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     @Transactional(readOnly = true)
-    public T get(Id id) throws SharingRegistryException {
+    public T get(Id id) {
         EntityManager em = getEntityManager();
         E entity = em.find(dbEntityGenericClass, id);
         if (entity == null) return null;
         return getMapper().map(entity, thriftGenericClass);
     }
 
-    public boolean isExists(Id id) throws SharingRegistryException {
+    public boolean isExists(Id id) {
         return get(id) != null;
     }
 
-    public List<T> get(List<Id> idList) throws SharingRegistryException {
-        List<T> returnList = new ArrayList<>();
-        for (Id id : idList) returnList.add(get(id));
-        return returnList;
+    public List<T> get(List<Id> idList) {
+        return idList.stream().map(this::get).toList();
     }
 
     @Transactional(readOnly = true)
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
-        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
-        ArrayList<String> parameters = new ArrayList<>();
-        int parameterCount = 1;
-        if (filters != null && filters.size() != 0) {
+        var query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
+        var parameters = new ArrayList<String>();
+        var parameterCount = 1;
+        if (filters != null && !filters.isEmpty()) {
             query += " WHERE ";
-            for (String k : filters.keySet()) {
-                query += "p." + k + " = ?" + parameterCount + " AND ";
-                parameters.add(filters.get(k));
+            for (var entry : filters.entrySet()) {
+                query += "p." + entry.getKey() + " = ?" + parameterCount + " AND ";
+                parameters.add(entry.getValue());
                 parameterCount++;
             }
             query = query.substring(0, query.length() - 5);
         }
 
         query += " ORDER BY p.createdTime DESC";
-        String queryString = query;
-        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
-        EntityManager em = getEntityManager();
-        jakarta.persistence.Query q = em.createQuery(queryString);
-        for (int i = 0; i < parameters.size(); i++) {
+        var newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
+        var em = getEntityManager();
+        var q = em.createQuery(query);
+        for (var i = 0; i < parameters.size(); i++) {
             q.setParameter(i + 1, parameters.get(i));
         }
-        List<?> resultSet = q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-        List<T> gatewayList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            gatewayList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return gatewayList;
+        var resultSet = q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public List<T> select(String queryString, Map<String, Object> queryParameters, int offset, int limit)
             throws SharingRegistryException {
-        int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
-        EntityManager em = getEntityManager();
-        Query q = em.createQuery(queryString);
-        for (Map.Entry<String, Object> queryParam : queryParameters.entrySet()) {
+        var newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
+        var em = getEntityManager();
+        var q = em.createQuery(queryString);
+        for (var queryParam : queryParameters.entrySet()) {
             q.setParameter(queryParam.getKey(), queryParam.getValue());
         }
-        List<?> resultSet = q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-        List<T> gatewayList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            gatewayList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return gatewayList;
+        var resultSet = q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 
     @Transactional

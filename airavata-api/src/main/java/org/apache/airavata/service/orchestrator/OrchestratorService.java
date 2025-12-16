@@ -353,33 +353,31 @@ public class OrchestratorService {
 
     private boolean validateStatesAndCancel(String experimentId, String gatewayId)
             throws RegistryServiceException, OrchestratorException {
-        ExperimentStatus experimentStatus = orchestratorRegistryService.getExperimentStatus(experimentId);
-        switch (experimentStatus.getState()) {
-            case COMPLETED:
-            case CANCELED:
-            case FAILED:
-            case CANCELING:
+        var experimentStatus = orchestratorRegistryService.getExperimentStatus(experimentId);
+        return switch (experimentStatus.getState()) {
+            case COMPLETED, CANCELED, FAILED, CANCELING -> {
                 logger.warn(
                         "Can't terminate already {} experiment",
                         experimentStatus.getState().name());
-                return false;
-            case CREATED:
+                yield false;
+            }
+            case CREATED -> {
                 logger.warn("Experiment termination is only allowed for launched experiments.");
-                return false;
-            default:
-                ExperimentModel experimentModel = orchestratorRegistryService.getExperiment(experimentId);
-                final UserConfigurationDataModel userConfigurationData = experimentModel.getUserConfigurationData();
-                final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
+                yield false;
+            }
+            default -> {
+                var experimentModel = orchestratorRegistryService.getExperiment(experimentId);
+                final var userConfigurationData = experimentModel.getUserConfigurationData();
+                final var groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
 
-                GroupComputeResourcePreference groupComputeResourcePreference =
-                        orchestratorRegistryService.getGroupComputeResourcePreference(
-                                userConfigurationData
-                                        .getComputationalResourceScheduling()
-                                        .getResourceHostId(),
-                                groupResourceProfileId);
-                String token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+                var groupComputeResourcePreference = orchestratorRegistryService.getGroupComputeResourcePreference(
+                        userConfigurationData
+                                .getComputationalResourceScheduling()
+                                .getResourceHostId(),
+                        groupResourceProfileId);
+                var token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
                 if (token == null || token.isEmpty()) {
-                    GroupResourceProfile groupResourceProfile =
+                    var groupResourceProfile =
                             orchestratorRegistryService.getGroupResourceProfile(groupResourceProfileId);
                     token = groupResourceProfile.getDefaultCredentialStoreToken();
                 }
@@ -387,11 +385,11 @@ public class OrchestratorService {
                     logger.error(
                             "You have not configured credential store token at group resource profile or compute resource preference."
                                     + " Please provide the correct token at group resource profile or compute resource preference.");
-                    return false;
+                    yield false;
                 }
 
                 orchestrator.cancelExperiment(experimentModel, token);
-                String expCancelNodePath = ZKPaths.makePath(
+                var expCancelNodePath = ZKPaths.makePath(
                         ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId),
                         ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
                 Stat stat;
@@ -421,7 +419,7 @@ public class OrchestratorService {
                         throw new OrchestratorException(
                                 "Error setting data for Zookeeper node: " + expCancelNodePath, e);
                     }
-                    ExperimentStatus status = new ExperimentStatus();
+                    var status = new ExperimentStatus();
                     status.setState(ExperimentState.CANCELING);
                     status.setReason("Experiment cancel request processed");
                     status.setTimeOfStateChange(
@@ -429,8 +427,9 @@ public class OrchestratorService {
                     updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                     logger.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
                 }
-                return true;
-        }
+                yield true;
+            }
+        };
     }
 
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
@@ -489,21 +488,18 @@ public class OrchestratorService {
 
     public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
             throws RegistryServiceException, OrchestratorException {
-        ProcessStatus processStatus = orchestratorRegistryService.getProcessStatus(processId);
+        var processStatus = orchestratorRegistryService.getProcessStatus(processId);
 
-        switch (processStatus.getState()) {
-            case CREATED:
-            case VALIDATED:
-            case DEQUEUING:
-                ProcessModel processModel = orchestratorRegistryService.getProcess(processId);
-                String applicationId = processModel.getApplicationInterfaceId();
+        return switch (processStatus.getState()) {
+            case CREATED, VALIDATED, DEQUEUING -> {
+                var processModel = orchestratorRegistryService.getProcess(processId);
+                var applicationId = processModel.getApplicationInterfaceId();
                 if (applicationId == null) {
                     logger.error(processId, "Application interface id shouldn't be null.");
                     throw new OrchestratorException(
                             "Error executing the job, application interface id shouldn't be null.");
                 }
-                ApplicationDeploymentDescription applicationDeploymentDescription =
-                        getAppDeployment(processModel, applicationId);
+                var applicationDeploymentDescription = getAppDeployment(processModel, applicationId);
                 if (applicationDeploymentDescription == null) {
                     logger.error("Could not find an application deployment for " + processModel.getComputeResourceId()
                             + " and application " + applicationId);
@@ -514,12 +510,13 @@ public class OrchestratorService {
                 processModel.setComputeResourceId(
                         processModel.getProcessResourceSchedule().getResourceHostId());
                 orchestratorRegistryService.updateProcess(processModel, processModel.getProcessId());
-                return orchestrator.launchProcess(processModel, airavataCredStoreToken);
-
-            default:
+                yield orchestrator.launchProcess(processModel, airavataCredStoreToken);
+            }
+            default -> {
                 logger.warn("Process " + processId + " is already launched. So it can not be relaunched");
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     private ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
@@ -676,9 +673,8 @@ public class OrchestratorService {
         }
 
         switch (processStatusChangeEvent.getState()) {
-            case STARTED:
-                ExperimentStatus stat =
-                        orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
+            case STARTED -> {
+                var stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
                 if (stat.getState() == ExperimentState.CANCELING) {
                     status.setState(ExperimentState.CANCELING);
                     status.setReason("Process started but experiment cancelling is triggered");
@@ -686,9 +682,9 @@ public class OrchestratorService {
                     status.setState(ExperimentState.EXECUTING);
                     status.setReason("process  started");
                 }
-                break;
-            case COMPLETED:
-                stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
+            }
+            case COMPLETED -> {
+                var stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
                 if (stat.getState() == ExperimentState.CANCELING) {
                     status.setState(ExperimentState.CANCELED);
                     status.setReason("Process competed but experiment cancelling is triggered");
@@ -696,9 +692,9 @@ public class OrchestratorService {
                     status.setState(ExperimentState.COMPLETED);
                     status.setReason("process  completed");
                 }
-                break;
-            case FAILED:
-                stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
+            }
+            case FAILED -> {
+                var stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
                 if (stat.getState() == ExperimentState.CANCELING) {
                     status.setState(ExperimentState.CANCELED);
                     status.setReason("Process failed but experiment cancelling is triggered");
@@ -706,32 +702,33 @@ public class OrchestratorService {
                     status.setState(ExperimentState.FAILED);
                     status.setReason("process  failed");
                 }
-                break;
-            case CANCELED:
+            }
+            case CANCELED -> {
                 status.setState(ExperimentState.CANCELED);
                 status.setReason("process  cancelled");
-                break;
-            case QUEUED:
+            }
+            case QUEUED -> {
                 status.setState(ExperimentState.SCHEDULED);
                 status.setReason("Process started but compute resource not avaialable");
-                break;
-            case REQUEUED:
+            }
+            case REQUEUED -> {
                 status.setState(ExperimentState.SCHEDULED);
                 status.setReason("Job submission failed,  requeued to resubmit");
                 registerQueueStatusForRequeue(processIdentity.getExperimentId());
-                break;
-            case DEQUEUING:
-                stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
+            }
+            case DEQUEUING -> {
+                var stat = orchestratorRegistryService.getExperimentStatus(processIdentity.getExperimentId());
                 if (stat.getState() == ExperimentState.CANCELING) {
                     status.setState(ExperimentState.CANCELING);
                     status.setReason("Process started but experiment cancelling is triggered");
                 } else {
                     launchQueuedExperiment(processIdentity.getExperimentId());
                 }
-                break;
-            default:
+            }
+            default -> {
                 // ignore other status changes
                 return;
+            }
         }
 
         if (status.getState() != null) {
@@ -934,19 +931,13 @@ public class OrchestratorService {
         public void onMessage(MessageContext messageContext) {
             MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
             switch (messageContext.getType()) {
-                case EXPERIMENT:
-                    launchExperiment(messageContext);
-                    break;
-                case EXPERIMENT_CANCEL:
-                    cancelExperiment(messageContext);
-                    break;
-                case INTERMEDIATE_OUTPUTS:
-                    handleIntermediateOutputsEvent(messageContext);
-                    break;
-                default:
+                case EXPERIMENT -> launchExperiment(messageContext);
+                case EXPERIMENT_CANCEL -> cancelExperiment(messageContext);
+                case INTERMEDIATE_OUTPUTS -> handleIntermediateOutputsEvent(messageContext);
+                default -> {
                     experimentSubscriber.sendAck(messageContext.getDeliveryTag());
                     logger.error("Orchestrator got un-support message type : " + messageContext.getType());
-                    break;
+                }
             }
             MDC.clear();
         }

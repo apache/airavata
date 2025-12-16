@@ -60,15 +60,7 @@ public class WorkflowOperator {
                 helixClusterName, instanceName, InstanceType.SPECTATOR, zkConnectionString);
         helixManager.connect();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (helixManager != null && helixManager.isConnected()) {
-                    helixManager.disconnect();
-                }
-            }
-        });
-
+        Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
         taskDriver = new TaskDriver(helixManager);
     }
 

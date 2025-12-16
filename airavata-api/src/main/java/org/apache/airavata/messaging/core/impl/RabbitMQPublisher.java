@@ -24,8 +24,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.function.Function;
 import org.apache.airavata.common.exception.AiravataException;
@@ -63,8 +61,12 @@ public class RabbitMQPublisher implements Publisher {
             connectionFactory.setUri(properties.getBrokerUrl());
             connectionFactory.setAutomaticRecoveryEnabled(properties.isAutoRecoveryEnable());
             connection = connectionFactory.newConnection();
-            connection.addShutdownListener(new ShutdownListener() {
-                public void shutdownCompleted(ShutdownSignalException cause) {}
+            connection.addShutdownListener(cause -> {
+                log.warn(
+                        "RabbitMQ connection {} for exchange={} is now shutdown. cause={}",
+                        connection.getId(),
+                        properties.getExchangeName(),
+                        cause);
             });
             log.info("connected to rabbitmq: " + connection + " for " + properties.getExchangeName());
         } catch (Exception e) {

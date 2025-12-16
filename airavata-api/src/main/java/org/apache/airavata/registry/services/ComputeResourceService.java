@@ -395,13 +395,13 @@ public class ComputeResourceService {
         ResourceJobManagerEntity resourceJobManagerEntity =
                 mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
-        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-        if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
+        var jobManagerCommands = resourceJobManager.getJobManagerCommands();
+        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
             createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
         }
 
-        Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
-        if (parallelismPrefix != null && parallelismPrefix.size() != 0) {
+        var parallelismPrefix = resourceJobManager.getParallelismPrefix();
+        if (parallelismPrefix != null && !parallelismPrefix.isEmpty()) {
             createParallesimPrefix(parallelismPrefix, resourceJobManagerEntity);
         }
         return resourceJobManager.getResourceJobManagerId();

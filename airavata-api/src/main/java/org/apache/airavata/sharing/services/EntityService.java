@@ -21,9 +21,7 @@ package org.apache.airavata.sharing.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -98,12 +96,12 @@ public class EntityService {
             String domainId, List<String> groupIds, List<SearchCriteria> filters, int offset, int limit)
             throws SharingRegistryException {
         try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaQuery<EntityEntity> query = cb.createQuery(EntityEntity.class);
-            Root<EntityEntity> entityRoot = query.from(EntityEntity.class);
-            Root<SharingEntity> sharingRoot = query.from(SharingEntity.class);
+            var cb = entityManager.getCriteriaBuilder();
+            var query = cb.createQuery(EntityEntity.class);
+            var entityRoot = query.from(EntityEntity.class);
+            var sharingRoot = query.from(SharingEntity.class);
 
-            List<Predicate> predicates = new ArrayList<>();
+            var predicates = new ArrayList<Predicate>();
 
             // Domain filter
             predicates.add(cb.equal(entityRoot.get("domainId"), domainId));
@@ -118,14 +116,14 @@ public class EntityService {
 
             // Apply search criteria filters
             if (filters != null && !filters.isEmpty()) {
-                for (SearchCriteria criteria : filters) {
+                for (var criteria : filters) {
                     if (criteria.getSearchField() == null
                             || criteria.getValue() == null
                             || criteria.getSearchCondition() == null) {
                         continue;
                     }
 
-                    Predicate filterPredicate = buildPredicate(cb, entityRoot, criteria);
+                    var filterPredicate = buildPredicate(cb, entityRoot, criteria);
                     if (filterPredicate != null) {
                         predicates.add(filterPredicate);
                     }
@@ -136,7 +134,7 @@ public class EntityService {
             query.distinct(true);
             query.orderBy(cb.desc(entityRoot.get("originalEntityCreationTime")));
 
-            TypedQuery<EntityEntity> typedQuery = entityManager.createQuery(query);
+            var typedQuery = entityManager.createQuery(query);
             if (offset > 0) {
                 typedQuery.setFirstResult(offset);
             }
@@ -144,12 +142,10 @@ public class EntityService {
                 typedQuery.setMaxResults(limit);
             }
 
-            List<EntityEntity> entities = typedQuery.getResultList();
-            List<Entity> result = new ArrayList<>();
-            for (EntityEntity entity : entities) {
-                result.add(mapper.map(entity, Entity.class));
-            }
-            return result;
+            var entities = typedQuery.getResultList();
+            return entities.stream()
+                    .map(entity -> mapper.map(entity, Entity.class))
+                    .toList();
         } catch (Exception e) {
             logger.error("Error searching entities", e);
             throw new SharingRegistryException(String.format("Error searching entities: %s", e.getMessage()), e);
@@ -170,72 +166,58 @@ public class EntityService {
             return null;
         }
 
-        switch (condition) {
-            case EQUAL:
-                return cb.equal(fieldPath, value);
-            case LIKE:
-                return cb.like(cb.lower(fieldPath.as(String.class)), "%" + value.toLowerCase() + "%");
-            case FULL_TEXT:
+        return switch (condition) {
+            case EQUAL -> cb.equal(fieldPath, value);
+            case LIKE -> cb.like(cb.lower(fieldPath.as(String.class)), "%" + value.toLowerCase() + "%");
+            case FULL_TEXT -> {
                 // Full text search on fullText field
                 if (field == EntitySearchField.FULL_TEXT) {
-                    return cb.like(cb.lower(root.get("fullText").as(String.class)), "%" + value.toLowerCase() + "%");
+                    yield cb.like(cb.lower(root.get("fullText").as(String.class)), "%" + value.toLowerCase() + "%");
                 }
-                return null;
-            case GTE:
+                yield null;
+            }
+            case GTE -> {
                 if (fieldPath.getJavaType() == Long.class || fieldPath.getJavaType() == long.class) {
                     try {
-                        Long longValue = Long.parseLong(value);
-                        return cb.greaterThanOrEqualTo(fieldPath.as(Long.class), longValue);
+                        var longValue = Long.parseLong(value);
+                        yield cb.greaterThanOrEqualTo(fieldPath.as(Long.class), longValue);
                     } catch (NumberFormatException e) {
                         logger.warn("Invalid number format for GTE condition: " + value);
-                        return null;
+                        yield null;
                     }
                 }
-                return null;
-            case LTE:
+                yield null;
+            }
+            case LTE -> {
                 if (fieldPath.getJavaType() == Long.class || fieldPath.getJavaType() == long.class) {
                     try {
-                        Long longValue = Long.parseLong(value);
-                        return cb.lessThanOrEqualTo(fieldPath.as(Long.class), longValue);
+                        var longValue = Long.parseLong(value);
+                        yield cb.lessThanOrEqualTo(fieldPath.as(Long.class), longValue);
                     } catch (NumberFormatException e) {
                         logger.warn("Invalid number format for LTE condition: " + value);
-                        return null;
+                        yield null;
                     }
                 }
-                return null;
-            case NOT:
-                return cb.notEqual(fieldPath, value);
-            default:
-                return null;
-        }
+                yield null;
+            }
+            case NOT -> cb.notEqual(fieldPath, value);
+            default -> null;
+        };
     }
 
     private Path<?> getFieldPath(Root<EntityEntity> root, EntitySearchField field) {
-        switch (field) {
-            case NAME:
-                return root.get("name");
-            case DESCRIPTION:
-                return root.get("description");
-            case FULL_TEXT:
-                return root.get("fullText");
-            case PARRENT_ENTITY_ID:
-                return root.get("parentEntityId");
-            case OWNER_ID:
-                return root.get("ownerId");
-            case PERMISSION_TYPE_ID:
-                // This needs to be handled via join with SharingEntity
-                return null; // Will be handled separately
-            case CREATED_TIME:
-                return root.get("originalEntityCreationTime");
-            case UPDATED_TIME:
-                return root.get("updatedTime");
-            case ENTITY_TYPE_ID:
-                return root.get("entityTypeId");
-            case SHARED_COUNT:
-                // This requires a subquery to count sharings
-                return null; // Will be handled separately
-            default:
-                return null;
-        }
+        return switch (field) {
+            case NAME -> root.get("name");
+            case DESCRIPTION -> root.get("description");
+            case FULL_TEXT -> root.get("fullText");
+            case PARRENT_ENTITY_ID -> root.get("parentEntityId");
+            case OWNER_ID -> root.get("ownerId");
+            case PERMISSION_TYPE_ID -> null; // Will be handled separately via join with SharingEntity
+            case CREATED_TIME -> root.get("originalEntityCreationTime");
+            case UPDATED_TIME -> root.get("updatedTime");
+            case ENTITY_TYPE_ID -> root.get("entityTypeId");
+            case SHARED_COUNT -> null; // Will be handled separately - requires a subquery to count sharings
+            default -> null;
+        };
     }
 }

@@ -96,15 +96,13 @@ public abstract class AbstractRepository<T, E, Id> {
     @Transactional(readOnly = true)
     public List<T> select(String query, int limit, int offset) {
         EntityManager em = getEntityManager();
-        List<?> resultSet = em.createQuery(query)
+        var resultSet = em.createQuery(query)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
-        List<T> resultList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            resultList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return resultList;
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -112,16 +110,14 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         Query jpaQuery = em.createQuery(query);
 
-        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+        for (var entry : queryParams.entrySet()) {
             jpaQuery.setParameter(entry.getKey(), entry.getValue());
         }
 
-        List<?> resultSet = jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
-        List<T> resultList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            resultList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return resultList;
+        var resultSet = jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -129,15 +125,13 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         Query jpaQuery = em.createQuery(query);
 
-        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+        for (var entry : queryParams.entrySet()) {
             jpaQuery.setParameter(entry.getKey(), entry.getValue());
         }
 
-        List<?> resultSet = jpaQuery.getResultList();
-        List<T> resultList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            resultList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return resultList;
+        var resultSet = jpaQuery.getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 }

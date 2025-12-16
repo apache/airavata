@@ -154,7 +154,7 @@ public class AiravataService {
     private record SharingEntity(Entity delegate) {}
 
     private boolean validateString(String name) {
-        return name != null && !name.trim().isEmpty();
+        return name != null && !name.isBlank();
     }
 
     private AiravataSystemException airavataSystemException(
@@ -836,10 +836,7 @@ public class AiravataService {
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             switch (experimentLastStatus.getState()) {
-                case COMPLETED:
-                case CANCELED:
-                case FAILED:
-                case CANCELING:
+                case COMPLETED, CANCELED, FAILED, CANCELING ->
                     logger.warn(
                             "Can't terminate already {} experiment",
                             existingExperiment
@@ -847,14 +844,11 @@ public class AiravataService {
                                     .get(0)
                                     .getState()
                                     .name());
-                    break;
-                case CREATED:
-                    logger.warn("Experiment termination is only allowed for launched experiments.");
-                    break;
-                default:
+                case CREATED -> logger.warn("Experiment termination is only allowed for launched experiments.");
+                default -> {
                     publishExperimentCancelEvent(experimentPublisher, gatewayId, airavataExperimentId);
                     logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
-                    break;
+                }
             }
         } catch (ExperimentNotFoundException e) {
             throw e;
@@ -1993,7 +1987,7 @@ public class AiravataService {
             var groupResourceProfile = getGroupResourceProfile(groupResourceProfileId);
             var accessibleComputeResourceIds = groupResourceProfile.getComputePreferences().stream()
                     .map(compPref -> compPref.getComputeResourceId())
-                    .collect(Collectors.toList());
+                    .toList();
 
             // Get list of accessible Application Deployments
             var accessibleAppDeploymentIds = new ArrayList<String>();
@@ -2857,7 +2851,7 @@ public class AiravataService {
                             .searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1)
                             .stream()
                             .map(p -> p.getEntityId())
-                            .collect(Collectors.toList());
+                            .toList();
             List<CredentialSummary> credentialSummaries =
                     getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
             logger.debug("Successfully retrieved credential summaries of type: " + type + ", GatewayId: " + gatewayId);
@@ -3262,7 +3256,7 @@ public class AiravataService {
             ExperimentModel existingExperiment = getExperiment(airavataExperimentId);
             var jobs = getJobDetails(airavataExperimentId);
             boolean anyJobIsActive = jobs.stream().anyMatch(j -> {
-                if (j.getJobStatuses().size() > 0) {
+                if (!j.getJobStatuses().isEmpty()) {
                     return j.getJobStatuses().get(j.getJobStatuses().size() - 1).getJobState() == JobState.ACTIVE;
                 } else {
                     return false;
@@ -3281,7 +3275,7 @@ public class AiravataService {
                     .filter(p -> {
                         // Filter out completed or failed processes
                         var statuses = p.getProcessStatuses();
-                        if (statuses.size() > 0) {
+                        if (!statuses.isEmpty()) {
                             var latestState = statuses.get(statuses.size() - 1).getState();
                             if (latestState == ProcessState.COMPLETED || latestState == ProcessState.FAILED) {
                                 return false;
@@ -3295,7 +3289,7 @@ public class AiravataService {
                     .filter(p -> {
                         return p.getProcessOutputs().stream().anyMatch(o -> outputNames.contains(o.getName()));
                     })
-                    .collect(Collectors.toList());
+                    .toList();
             if (!intermediateOutputFetchProcesses.isEmpty()) {
                 var msg = "There are already intermediate output fetching tasks running for those outputs.";
                 logger.error(msg);
@@ -3336,7 +3330,7 @@ public class AiravataService {
                     .filter(p -> {
                         List<String> names = p.getProcessOutputs().stream()
                                 .map(o -> o.getName())
-                                .collect(Collectors.toList());
+                                .toList();
                         return new HashSet<>(names).equals(new HashSet<>(outputNames));
                     })
                     .sorted(Comparator.comparing(ProcessModel::getLastUpdateTime)
@@ -3353,7 +3347,7 @@ public class AiravataService {
             // Determine the most recent status for the most recent process
             ProcessModel process = mostRecentOutputFetchProcess.get();
             var statuses = process.getProcessStatuses();
-            if (statuses.size() > 0) {
+            if (!statuses.isEmpty()) {
                 result = statuses.get(statuses.size() - 1);
             } else {
                 // Process has no statuses so it must be created but not yet running

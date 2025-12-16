@@ -175,11 +175,11 @@ public class UserProfileService {
             return false;
         } catch (RuntimeException e) {
             // Check if the RuntimeException wraps a UserProfileServiceException or IamAdminServicesException
-            if (e.getCause() instanceof UserProfileServiceException) {
-                throw (UserProfileServiceException) e.getCause();
+            if (e.getCause() instanceof UserProfileServiceException userProfileEx) {
+                throw userProfileEx;
             }
-            if (e.getCause() instanceof IamAdminServicesException) {
-                throw (IamAdminServicesException) e.getCause();
+            if (e.getCause() instanceof IamAdminServicesException iamAdminEx) {
+                throw iamAdminEx;
             }
             var msg = String.format(
                     "Error while updating user profile: userId=%s, gatewayId=%s, airavataInternalUserId=%s. Reason: %s",

@@ -22,15 +22,11 @@ package org.apache.airavata.sharing.services;
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.entities.UserGroupEntity;
 import org.apache.airavata.sharing.entities.UserGroupPK;
@@ -90,15 +86,14 @@ public class UserGroupService {
     public List<UserGroup> select(String queryString, Map<String, String> filters, int offset, int limit)
             throws SharingRegistryException {
         // Build query with filters using Criteria API
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserGroupEntity> query = cb.createQuery(UserGroupEntity.class);
-        Root<UserGroupEntity> root = query.from(UserGroupEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(UserGroupEntity.class);
+        var root = query.from(UserGroupEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         if (filters != null) {
-            for (String key : filters.keySet()) {
-                String value = filters.get(key);
-                predicates.add(cb.equal(root.get(key), value));
+            for (var entry : filters.entrySet()) {
+                predicates.add(cb.equal(root.get(entry.getKey()), entry.getValue()));
             }
         }
         if (!predicates.isEmpty()) {
@@ -113,7 +108,7 @@ public class UserGroupService {
             typedQuery.setMaxResults(limit);
         }
 
-        List<UserGroupEntity> entities = typedQuery.getResultList();
+        var entities = typedQuery.getResultList();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 
@@ -131,12 +126,12 @@ public class UserGroupService {
     private List<UserGroup> getAccessibleGroupsInternal(
             String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes)
             throws SharingRegistryException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserGroupEntity> query = cb.createQuery(UserGroupEntity.class);
-        Root<UserGroupEntity> groupRoot = query.from(UserGroupEntity.class);
-        Root<SharingEntity> sharingRoot = query.from(SharingEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(UserGroupEntity.class);
+        var groupRoot = query.from(UserGroupEntity.class);
+        var sharingRoot = query.from(SharingEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(groupRoot.get("groupId"), sharingRoot.get("groupId")));
         predicates.add(cb.equal(groupRoot.get("domainId"), sharingRoot.get("domainId")));
         predicates.add(cb.equal(groupRoot.get("domainId"), domainId));
@@ -146,7 +141,7 @@ public class UserGroupService {
 
         if (!Arrays.asList(sharingTypes).isEmpty()) {
             List<String> sharingTypeNames =
-                    Arrays.asList(sharingTypes).stream().map(SharingType::name).collect(Collectors.toList());
+                    Arrays.stream(sharingTypes).map(SharingType::name).toList();
             predicates.add(sharingRoot.get("sharingType").in(sharingTypeNames));
         }
 
@@ -160,12 +155,12 @@ public class UserGroupService {
 
     public boolean isShared(String domainId, String entityId) throws SharingRegistryException {
         String ownerPermissionTypeId = permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId);
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> query = cb.createQuery(Long.class);
-        Root<UserGroupEntity> groupRoot = query.from(UserGroupEntity.class);
-        Root<SharingEntity> sharingRoot = query.from(SharingEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(Long.class);
+        var groupRoot = query.from(UserGroupEntity.class);
+        var sharingRoot = query.from(SharingEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(groupRoot.get("groupId"), sharingRoot.get("groupId")));
         predicates.add(cb.equal(groupRoot.get("domainId"), sharingRoot.get("domainId")));
         predicates.add(cb.equal(groupRoot.get("domainId"), domainId));

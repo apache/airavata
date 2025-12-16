@@ -22,7 +22,6 @@ package org.apache.airavata.registry.repositories;
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.registry.utils.Committer;
@@ -91,7 +90,7 @@ public abstract class AbstractRepository<T, E, Id> {
         List<?> resultSet = em.createQuery(query).setFirstResult(offset).getResultList();
         return resultSet.stream()
                 .map(rs -> getMapper().map(rs, thriftGenericClass))
-                .collect(java.util.stream.Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -100,17 +99,14 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         Query jpaQuery = em.createQuery(query);
 
-        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+        for (var entry : queryParams.entrySet()) {
             jpaQuery.setParameter(entry.getKey(), entry.getValue());
         }
 
-        List<?> resultSet =
-                jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-        List<T> gatewayList = new ArrayList<>();
-        for (Object rs : resultSet) {
-            gatewayList.add(getMapper().map(rs, thriftGenericClass));
-        }
-        return gatewayList;
+        var resultSet = jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        return resultSet.stream()
+                .map(rs -> getMapper().map(rs, thriftGenericClass))
+                .toList();
     }
 
     public boolean isExists(Id id) {

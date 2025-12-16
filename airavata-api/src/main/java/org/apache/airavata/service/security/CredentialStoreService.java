@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
@@ -198,12 +197,12 @@ public class CredentialStoreService {
                 logger.error(msg, e);
                 throw new CredentialStoreException(msg, e);
             }
-            if (isSSHCredential(credential)) {
-                return convertToCredentialSummary((SSHCredential) credential);
-            } else if (isCertificateCredential(credential)) {
-                return convertToCredentialSummary((CertificateCredential) credential);
-            } else if (isPasswordCredential(credential)) {
-                return convertToCredentialSummary((PasswordCredential) credential);
+            if (credential instanceof SSHCredential sshCred && !(credential instanceof PasswordCredential)) {
+                return convertToCredentialSummary(sshCred);
+            } else if (credential instanceof CertificateCredential certCred) {
+                return convertToCredentialSummary(certCred);
+            } else if (credential instanceof PasswordCredential passCred) {
+                return convertToCredentialSummary(passCred);
             }
             String msg = String.format("Unrecognized type of credential for token: %s", tokenId);
             logger.error(msg);
@@ -227,30 +226,31 @@ public class CredentialStoreService {
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
-        switch (type) {
-            case SSH:
-                return credentials.stream()
+        return switch (type) {
+            case SSH ->
+                credentials.stream()
                         .filter(this::isSSHCredential)
                         .map(SSHCredential.class::cast)
                         .map(this::convertToCredentialSummary)
-                        .collect(Collectors.toList());
-            case CERT:
-                return credentials.stream()
+                        .toList();
+            case CERT ->
+                credentials.stream()
                         .filter(this::isCertificateCredential)
                         .map(CertificateCredential.class::cast)
                         .map(this::convertToCredentialSummary)
-                        .collect(Collectors.toList());
-            case PASSWD:
-                return credentials.stream()
+                        .toList();
+            case PASSWD ->
+                credentials.stream()
                         .filter(this::isPasswordCredential)
                         .map(PasswordCredential.class::cast)
                         .map(this::convertToCredentialSummary)
-                        .collect(Collectors.toList());
-            default:
+                        .toList();
+            default -> {
                 var msg = String.format("Summary type=%s unsupported for gateway_id=%s", type, gatewayId);
                 logger.error(msg);
                 throw new CredentialStoreException(msg);
-        }
+            }
+        };
     }
 
     private boolean isSSHCredential(Credential cred) {

@@ -141,16 +141,10 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
             throw new UserStoreException("Error while initializing database configurations.", e);
         }
 
-        StringBuilder stringBuilder =
-                new StringBuilder("Configuring DB parameters for authenticator with User name Table - ");
-        stringBuilder
-                .append(userTable)
-                .append(" User name column - ")
-                .append(userNameColumn)
-                .append(" Password column - ")
-                .append(passwordColumn);
-
-        log.debug(stringBuilder.toString());
+        var message = String.format(
+                "Configuring DB parameters for authenticator with User name Table - %s User name column - %s Password column - %s",
+                userTable, userNameColumn, passwordColumn);
+        log.debug(message);
     }
 
     protected void initializeDatabaseLookup(String passwordColumn, String userTable, String userNameColumn)

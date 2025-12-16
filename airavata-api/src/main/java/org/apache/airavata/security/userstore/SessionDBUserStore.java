@@ -105,16 +105,10 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
 
         initializeDatabaseLookup();
 
-        StringBuilder stringBuilder =
-                new StringBuilder("Configuring DB parameters for authenticator with Session Table - ");
-        stringBuilder
-                .append(sessionTable)
-                .append(" Session column - ")
-                .append(sessionColumn)
-                .append(" Comparing column - ")
-                .append(comparingColumn);
-
-        log.debug(stringBuilder.toString());
+        var message = String.format(
+                "Configuring DB parameters for authenticator with Session Table - %s Session column - %s Comparing column - %s",
+                sessionTable, sessionColumn, comparingColumn);
+        log.debug(message);
     }
 
     private void initializeDatabaseLookup() throws UserStoreException {

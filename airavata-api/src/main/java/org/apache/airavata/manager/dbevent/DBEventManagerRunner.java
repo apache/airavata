@@ -78,16 +78,8 @@ public class DBEventManagerRunner implements IServer {
     public void start() throws Exception {
 
         try {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    DBEventManagerRunner.this.startDBEventManagerRunner(properties);
-                }
-            };
-
-            // start the worker thread
             log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
+            new Thread(() -> this.startDBEventManagerRunner(properties)).start();
             setStatus(ServerStatus.STARTED);
         } catch (Exception ex) {
             log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);

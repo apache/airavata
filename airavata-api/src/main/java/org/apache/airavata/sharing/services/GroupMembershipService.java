@@ -21,11 +21,7 @@ package org.apache.airavata.sharing.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -95,22 +91,21 @@ public class GroupMembershipService {
 
     public List<GroupMembership> select(Map<String, String> filters, int offset, int limit)
             throws SharingRegistryException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GroupMembershipEntity> query = cb.createQuery(GroupMembershipEntity.class);
-        Root<GroupMembershipEntity> root = query.from(GroupMembershipEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(GroupMembershipEntity.class);
+        var root = query.from(GroupMembershipEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         if (filters != null) {
-            for (String key : filters.keySet()) {
-                String value = filters.get(key);
-                predicates.add(cb.equal(root.get(key), value));
+            for (var entry : filters.entrySet()) {
+                predicates.add(cb.equal(root.get(entry.getKey()), entry.getValue()));
             }
         }
         if (!predicates.isEmpty()) {
             query.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        TypedQuery<GroupMembershipEntity> typedQuery = entityManager.createQuery(query);
+        var typedQuery = entityManager.createQuery(query);
         if (offset > 0) {
             typedQuery.setFirstResult(offset);
         }
@@ -118,17 +113,17 @@ public class GroupMembershipService {
             typedQuery.setMaxResults(limit);
         }
 
-        List<GroupMembershipEntity> entities = typedQuery.getResultList();
+        var entities = typedQuery.getResultList();
         return entities.stream().map(e -> mapper.map(e, GroupMembership.class)).toList();
     }
 
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserEntity> query = cb.createQuery(UserEntity.class);
-        Root<UserEntity> userRoot = query.from(UserEntity.class);
-        Root<GroupMembershipEntity> membershipRoot = query.from(GroupMembershipEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(UserEntity.class);
+        var userRoot = query.from(UserEntity.class);
+        var membershipRoot = query.from(GroupMembershipEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(membershipRoot.get("childId"), userRoot.get("userId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), userRoot.get("domainId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));
@@ -143,12 +138,12 @@ public class GroupMembershipService {
     }
 
     public List<UserGroup> getAllChildGroups(String domainId, String groupId) throws SharingRegistryException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserGroupEntity> query = cb.createQuery(UserGroupEntity.class);
-        Root<UserGroupEntity> groupRoot = query.from(UserGroupEntity.class);
-        Root<GroupMembershipEntity> membershipRoot = query.from(GroupMembershipEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(UserGroupEntity.class);
+        var groupRoot = query.from(UserGroupEntity.class);
+        var membershipRoot = query.from(GroupMembershipEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(membershipRoot.get("childId"), groupRoot.get("groupId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), groupRoot.get("domainId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));
@@ -163,12 +158,12 @@ public class GroupMembershipService {
     }
 
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserGroupEntity> query = cb.createQuery(UserGroupEntity.class);
-        Root<UserGroupEntity> groupRoot = query.from(UserGroupEntity.class);
-        Root<GroupMembershipEntity> membershipRoot = query.from(GroupMembershipEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(UserGroupEntity.class);
+        var groupRoot = query.from(UserGroupEntity.class);
+        var membershipRoot = query.from(GroupMembershipEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(membershipRoot.get("parentId"), groupRoot.get("groupId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), groupRoot.get("domainId")));
         predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));

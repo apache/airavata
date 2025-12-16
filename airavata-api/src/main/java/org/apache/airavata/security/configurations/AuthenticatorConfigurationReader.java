@@ -126,17 +126,11 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
 
                 Collections.sort(authenticatorList, new AuthenticatorComparator());
 
-                StringBuilder stringBuilder = new StringBuilder("Successfully initialized authenticator ");
-                stringBuilder
-                        .append(name)
-                        .append(" with class ")
-                        .append(className)
-                        .append(" enabled? ")
-                        .append(enabled)
-                        .append(" priority = ")
-                        .append(priority);
+                var message = String.format(
+                        "Successfully initialized authenticator %s with class %s enabled? %s priority = %s",
+                        name, className, enabled, priority);
 
-                log.debug(stringBuilder.toString());
+                log.debug(message);
             }
         }
     }

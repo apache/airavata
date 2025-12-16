@@ -21,11 +21,7 @@ package org.apache.airavata.sharing.services;
 
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,22 +90,21 @@ public class PermissionTypeService {
     public List<PermissionType> select(HashMap<String, String> filters, int offset, int limit)
             throws SharingRegistryException {
         // Use Criteria API for dynamic filtering
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PermissionTypeEntity> query = cb.createQuery(PermissionTypeEntity.class);
-        Root<PermissionTypeEntity> root = query.from(PermissionTypeEntity.class);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(PermissionTypeEntity.class);
+        var root = query.from(PermissionTypeEntity.class);
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         if (filters != null) {
-            for (String key : filters.keySet()) {
-                String value = filters.get(key);
-                predicates.add(cb.equal(root.get(key), value));
+            for (var entry : filters.entrySet()) {
+                predicates.add(cb.equal(root.get(entry.getKey()), entry.getValue()));
             }
         }
         if (!predicates.isEmpty()) {
             query.where(cb.and(predicates.toArray(new Predicate[0])));
         }
 
-        TypedQuery<PermissionTypeEntity> typedQuery = entityManager.createQuery(query);
+        var typedQuery = entityManager.createQuery(query);
         if (offset > 0) {
             typedQuery.setFirstResult(offset);
         }
@@ -117,7 +112,7 @@ public class PermissionTypeService {
             typedQuery.setMaxResults(limit);
         }
 
-        List<PermissionTypeEntity> entities = typedQuery.getResultList();
+        var entities = typedQuery.getResultList();
         return entities.stream().map(e -> mapper.map(e, PermissionType.class)).toList();
     }
 }

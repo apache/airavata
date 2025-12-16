@@ -441,7 +441,7 @@ public class RegistryService {
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return projects;
             }
-            Map<String, String> filters = new HashMap<>();
+            var filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             projects = projectService.searchProjects(
@@ -476,7 +476,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            Map<String, String> filters = new HashMap<>();
+            var filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime + "");
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime + "");
@@ -548,7 +548,7 @@ public class RegistryService {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+            List<ExperimentModel> experiments = new ArrayList<>();
             if (!userService.isUserExists(gatewayId, userName)) {
                 logger.warn("User does not exist in the system. Please provide a valid user..");
                 return experiments;
@@ -813,7 +813,7 @@ public class RegistryService {
                 var processStatusList = processStatusService.getProcessStatusList(processState, offset, limit);
                 offset += processStatusList.size();
                 count = processStatusList.size();
-                for (ProcessStatus processStatus : processStatusList) {
+                for (var processStatus : processStatusList) {
                     var latestStatus = processStatusService.getProcessStatus(processStatus.getProcessId());
                     if (latestStatus.getState().name().equals(processState.name())) {
                         finalProcessList.add(processService.getProcess(latestStatus.getProcessId()));
@@ -843,23 +843,15 @@ public class RegistryService {
     private JobModel fetchJobModel(String queryType, String id) throws RegistryServiceException {
         try {
             if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
-                var jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
-                if (jobs != null) {
-                    for (JobModel jobModel : jobs) {
-                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                            return jobModel;
-                        }
-                    }
-                }
+                return jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id).stream()
+                        .filter(job -> job.getJobId() != null && !job.getJobId().isEmpty())
+                        .findFirst()
+                        .orElse(null);
             } else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
-                var jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-                if (jobs != null) {
-                    for (JobModel jobModel : jobs) {
-                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                            return jobModel;
-                        }
-                    }
-                }
+                return jobService.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id).stream()
+                        .filter(job -> job.getJobId() != null && !job.getJobId().isEmpty())
+                        .findFirst()
+                        .orElse(null);
             }
             return null;
         } catch (RegistryException e) {
@@ -871,21 +863,16 @@ public class RegistryService {
 
     private List<JobModel> fetchJobModels(String queryType, String id) throws RegistryServiceException {
         try {
-            List<JobModel> jobs;
-            switch (queryType) {
-                case Constants.FieldConstants.JobConstants.TASK_ID:
-                    jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
-                    break;
-                case Constants.FieldConstants.JobConstants.PROCESS_ID:
-                    jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-                    break;
-                case Constants.FieldConstants.JobConstants.JOB_ID:
-                    jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.JOB_ID, id);
-                    break;
-                default:
-                    jobs = new ArrayList<>();
-                    break;
-            }
+            var jobs =
+                    switch (queryType) {
+                        case Constants.FieldConstants.JobConstants.TASK_ID ->
+                            jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, id);
+                        case Constants.FieldConstants.JobConstants.PROCESS_ID ->
+                            jobService.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+                        case Constants.FieldConstants.JobConstants.JOB_ID ->
+                            jobService.getJobList(Constants.FieldConstants.JobConstants.JOB_ID, id);
+                        default -> new ArrayList<JobModel>();
+                    };
             return jobs;
         } catch (RegistryException e) {
             String message = String.format("Error while fetching job models: queryType=%s, id=%s", queryType, id);
@@ -989,10 +976,10 @@ public class RegistryService {
                     Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, airavataExperimentId);
             var jobList = new ArrayList<JobModel>();
             if (processModels != null && !processModels.isEmpty()) {
-                for (ProcessModel processModel : processModels) {
+                for (var processModel : processModels) {
                     var tasks = processModel.getTasks();
                     if (tasks != null && !tasks.isEmpty()) {
-                        for (TaskModel taskModel : tasks) {
+                        for (var taskModel : tasks) {
                             var taskId = taskModel.getTaskId();
                             var taskJobs = jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
                             jobList.addAll(taskJobs);
@@ -1178,7 +1165,7 @@ public class RegistryService {
             var filters = new HashMap<String, String>();
             filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
             var applicationDeployments = applicationDeploymentService.getApplicationDeployments(filters);
-            for (ApplicationDeploymentDescription description : applicationDeployments) {
+            for (var description : applicationDeployments) {
                 appDeployments.add(description.getAppDeploymentId());
             }
             logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
@@ -1240,9 +1227,9 @@ public class RegistryService {
             }
             List<ApplicationInterfaceDescription> allApplicationInterfaces =
                     applicationInterfaceService.getAllApplicationInterfaces(gatewayId);
-            Map<String, String> allApplicationInterfacesMap = new HashMap<>();
+            var allApplicationInterfacesMap = new HashMap<String, String>();
             if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()) {
-                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
+                for (var interfaceDescription : allApplicationInterfaces) {
                     allApplicationInterfacesMap.put(
                             interfaceDescription.getApplicationInterfaceId(),
                             interfaceDescription.getApplicationName());
@@ -1320,21 +1307,19 @@ public class RegistryService {
             throws RegistryServiceException {
         try {
             Map<String, String> allComputeResources = computeResourceService.getAvailableComputeResourceIdList();
-            Map<String, String> availableComputeResources = new HashMap<String, String>();
+            var availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     applicationInterfaceService.getApplicationInterface(appInterfaceId);
-            HashMap<String, String> filters = new HashMap<>();
+            var filters = new HashMap<String, String>();
             List<String> applicationModules = applicationInterface.getApplicationModules();
             if (applicationModules != null && !applicationModules.isEmpty()) {
-                for (String moduleId : applicationModules) {
+                for (var moduleId : applicationModules) {
                     filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
-                    List<ApplicationDeploymentDescription> applicationDeployments =
-                            applicationDeploymentService.getApplicationDeployments(filters);
-                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
-                        if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null) {
-                            availableComputeResources.put(
-                                    deploymentDescription.getComputeHostId(),
-                                    allComputeResources.get(deploymentDescription.getComputeHostId()));
+                    var applicationDeployments = applicationDeploymentService.getApplicationDeployments(filters);
+                    for (var deploymentDescription : applicationDeployments) {
+                        var computeHostId = deploymentDescription.getComputeHostId();
+                        if (allComputeResources.get(computeHostId) != null) {
+                            availableComputeResources.put(computeHostId, allComputeResources.get(computeHostId));
                         }
                     }
                 }
@@ -2116,10 +2101,10 @@ public class RegistryService {
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 throw new RegistryException("User does not exist in the system. Please provide a valid user..");
             }
-            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
-            Map<String, String> regFilters = new HashMap<String, String>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<>();
+            Map<String, String> regFilters = new HashMap<>();
             regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
-            for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
+            for (var entry : filters.entrySet()) {
                 if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)) {
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
                 } else if (entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)) {
@@ -2181,11 +2166,9 @@ public class RegistryService {
 
             ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null) {
-                ExperimentState experimentState = experimentStatus.getState();
+                var experimentState = experimentStatus.getState();
                 switch (experimentState) {
-                    case CREATED:
-                    case SCHEDULED:
-                    case VALIDATED:
+                    case CREATED, SCHEDULED, VALIDATED -> {
                         if (experiment.getUserConfigurationData() != null
                                 && experiment.getUserConfigurationData().getComputationalResourceScheduling() != null
                                 && experiment
@@ -2193,12 +2176,12 @@ public class RegistryService {
                                                 .getComputationalResourceScheduling()
                                                 .getResourceHostId()
                                         != null) {
-                            String compResourceId = experiment
+                            var compResourceId = experiment
                                     .getUserConfigurationData()
                                     .getComputationalResourceScheduling()
                                     .getResourceHostId();
                             try {
-                                ComputeResourceDescription computeResourceDescription =
+                                var computeResourceDescription =
                                         computeResourceService.getComputeResource(compResourceId);
                                 if (!computeResourceDescription.getEnabled()) {
                                     logger.error("Compute Resource is not enabled by the Admin!");
@@ -2213,8 +2196,8 @@ public class RegistryService {
                                 airavataExperimentId,
                                 "Successfully updated experiment {} ",
                                 experiment.getExperimentName());
-                        break;
-                    default:
+                    }
+                    default -> {
                         logger.error(
                                 airavataExperimentId,
                                 "Error while updating experiment. Update experiment is only valid for experiments "
@@ -2224,6 +2207,7 @@ public class RegistryService {
                                 "Error while updating experiment. Update experiment is only valid for experiments "
                                         + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
                                         + "experiment is in one of above statuses... ");
+                    }
                 }
             }
         } catch (RegistryException e) {
@@ -2248,29 +2232,22 @@ public class RegistryService {
             }
             ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null) {
-                ExperimentState experimentState = experimentStatus.getState();
+                var experimentState = experimentStatus.getState();
                 switch (experimentState) {
-                    case CREATED:
-                    case VALIDATED:
-                    case CANCELED:
-                    case FAILED:
+                    case CREATED, VALIDATED, CANCELED, FAILED -> {
                         experimentService.addUserConfigurationData(userConfiguration, airavataExperimentId);
                         logger.debug(
                                 airavataExperimentId,
                                 "Successfully updated experiment configuration for experiment {}.",
                                 airavataExperimentId);
-                        break;
-                    default:
-                        logger.error(
-                                airavataExperimentId,
-                                "Error while updating experiment {}. Update experiment is only valid for experiments "
-                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                        + "experiment is in one of above statuses... ",
+                    }
+                    default -> {
+                        String msg = String.format(
+                                "Error while updating experiment configuration: experimentId=%s. Operation is valid only for experiments in CREATED, VALIDATED, CANCELLED, FAILED or UNKNOWN state.",
                                 airavataExperimentId);
-                        throw new RegistryException(
-                                "Error while updating experiment. Update experiment is only valid for experiments "
-                                        + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
-                                        + "experiment is in one of above statuses... ");
+                        logger.error(msg);
+                        throw new RegistryException(msg);
+                    }
                 }
             }
         } catch (RegistryException e) {
@@ -2287,33 +2264,30 @@ public class RegistryService {
             throws RegistryServiceException {
         try {
             if (!experimentService.isExperimentExist(airavataExperimentId)) {
-                logger.error(
-                        airavataExperimentId,
-                        "Error while retrieving intermediate outputs, experiment {} doesn't exist.",
+                String msg = String.format(
+                        "Error while retrieving intermediate outputs: experimentId=%s. Experiment does not exist.",
                         airavataExperimentId);
-                throw new RegistryException(
-                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+                logger.error(msg);
+                throw new RegistryException(msg);
             }
-            List<ProcessModel> processModels = processService.getProcessList(
+            var processModels = processService.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
-            List<OutputDataObjectType> intermediateOutputs = new ArrayList<>();
+            var intermediateOutputs = new ArrayList<OutputDataObjectType>();
             if (processModels != null && !processModels.isEmpty()) {
-                for (ProcessModel processModel : processModels) {
-                    List<OutputDataObjectType> processOutputs =
-                            processOutputService.getProcessOutputs(processModel.getProcessId());
+                for (var processModel : processModels) {
+                    var processOutputs = processOutputService.getProcessOutputs(processModel.getProcessId());
                     if (processOutputs != null && !processOutputs.isEmpty()) {
                         intermediateOutputs.addAll(processOutputs);
                     }
                 }
             }
-            logger.debug("Airavata retrieved intermediate outputs for experiment with experiment id : "
-                    + airavataExperimentId);
+            logger.debug("Intermediate outputs retrieved for experiment=%s", airavataExperimentId);
             return intermediateOutputs;
         } catch (RegistryException e) {
             String message =
-                    String.format("Error while retrieving intermediate outputs: experimentId=%s", airavataExperimentId);
+                    String.format("Error retrieving intermediate outputs for experimentId=%s", airavataExperimentId);
             logger.error(message, e);
-            throw new RegistryServiceException(message);
+            throw new RegistryServiceException(message, e);
         }
     }
 
@@ -2327,23 +2301,22 @@ public class RegistryService {
                 throw new RegistryException(
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            Map<String, JobStatus> jobStatus = new HashMap<>();
-            List<ProcessModel> processModels = processService.getProcessList(
+            var jobStatus = new HashMap<String, JobStatus>();
+            var processModels = processService.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, airavataExperimentId);
             if (processModels != null && !processModels.isEmpty()) {
-                for (ProcessModel processModel : processModels) {
-                    List<TaskModel> tasks = processModel.getTasks();
+                for (var processModel : processModels) {
+                    var tasks = processModel.getTasks();
                     if (tasks != null && !tasks.isEmpty()) {
-                        for (TaskModel taskModel : tasks) {
-                            String taskId = taskModel.getTaskId();
-                            List<JobModel> taskJobs =
-                                    jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
+                        for (var taskModel : tasks) {
+                            var taskId = taskModel.getTaskId();
+                            var taskJobs = jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, taskId);
                             if (taskJobs != null && !taskJobs.isEmpty()) {
-                                for (JobModel jobModel : taskJobs) {
-                                    JobPK jobPK = new JobPK();
+                                for (var jobModel : taskJobs) {
+                                    var jobPK = new JobPK();
                                     jobPK.setJobId(jobModel.getJobId());
                                     jobPK.setTaskId(taskId);
-                                    JobStatus status = jobStatusService.getJobStatus(jobPK);
+                                    var status = jobStatusService.getJobStatus(jobPK);
                                     if (status != null) {
                                         jobStatus.put(jobModel.getJobId(), status);
                                     }
@@ -2353,13 +2326,12 @@ public class RegistryService {
                     }
                 }
             }
-            logger.debug("Airavata retrieved job statuses for experiment with experiment id : " + airavataExperimentId);
+            logger.debug("Job statuses retrieved for experiment=%s", airavataExperimentId);
             return jobStatus;
         } catch (RegistryException e) {
-            String message =
-                    String.format("Error while retrieving the job statuses: experimentId=%s", airavataExperimentId);
-            logger.error(message, e);
-            throw new RegistryServiceException(message);
+            var msg = String.format("Error retrieving job statuses for experimentId=%s", airavataExperimentId);
+            logger.error(msg, e);
+            throw new RegistryServiceException(msg, e);
         }
     }
 
@@ -2451,7 +2423,7 @@ public class RegistryService {
     public void deleteJobs(String processId) throws RegistryServiceException {
         try {
             List<JobModel> jobs = jobService.getJobList(Constants.FieldConstants.JobConstants.PROCESS_ID, processId);
-            for (JobModel jobModel : jobs) {
+            for (var jobModel : jobs) {
                 jobService.removeJob(jobModel);
             }
         } catch (RegistryException e) {
@@ -2529,7 +2501,7 @@ public class RegistryService {
             List<Project> projects = new ArrayList<>();
             Map<String, String> regFilters = new HashMap<>();
             regFilters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
+            for (var entry : filters.entrySet()) {
                 if (entry.getKey().equals(ProjectSearchFields.PROJECT_NAME)) {
                     regFilters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, entry.getValue());
                 } else if (entry.getKey().equals(ProjectSearchFields.PROJECT_DESCRIPTION)) {
@@ -2646,7 +2618,7 @@ public class RegistryService {
             GatewayResourceProfile profile = gwyResourceProfileService.getGatewayProfile(gatewayID);
             List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
             ComputeResourcePreference preferenceToRemove = null;
-            for (ComputeResourcePreference preference : computeResourcePreferences) {
+            for (var preference : computeResourcePreferences) {
                 if (preference.getComputeResourceId().equals(computeResourceId)) {
                     preferenceToRemove = preference;
                     break;
@@ -2709,7 +2681,7 @@ public class RegistryService {
             GatewayResourceProfile profile = gwyResourceProfileService.getGatewayProfile(gatewayID);
             List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
             StoragePreference preferenceToRemove = null;
-            for (StoragePreference preference : dataStoragePreferences) {
+            for (var preference : dataStoragePreferences) {
                 if (preference.getStorageResourceId().equals(storageId)) {
                     preferenceToRemove = preference;
                     break;
@@ -2787,22 +2759,25 @@ public class RegistryService {
     public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws RegistryServiceException {
         try {
-            switch (dmType) {
-                case COMPUTE_RESOURCE:
+            return switch (dmType) {
+                case COMPUTE_RESOURCE -> {
                     computeResourceService.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
                     logger.debug(
                             "Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-                    return true;
-                case STORAGE_RESOURCE:
+                    yield true;
+                }
+                case STORAGE_RESOURCE -> {
                     storageResourceService.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
                     logger.debug(
                             "Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
-                    return true;
-                default:
+                    yield true;
+                }
+                default -> {
                     logger.error(
                             "Unsupported data movement type specifies.. Please provide the correct data movement type... ");
-                    return false;
-            }
+                    yield false;
+                }
+            };
         } catch (AppCatalogException e) {
             String message = String.format(
                     "Error while deleting data movement interface: resourceId=%s, dataMovementInterfaceId=%s",
@@ -3371,19 +3346,16 @@ public class RegistryService {
             }
             ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null) {
-                ExperimentState experimentState = experimentStatus.getState();
+                var experimentState = experimentStatus.getState();
                 switch (experimentState) {
-                    case CREATED:
-                    case VALIDATED:
-                    case CANCELED:
-                    case FAILED:
+                    case CREATED, VALIDATED, CANCELED, FAILED -> {
                         processService.addProcessResourceSchedule(resourceScheduling, airavataExperimentId);
                         logger.debug(
                                 airavataExperimentId,
                                 "Successfully updated resource scheduling for the experiment {}.",
                                 airavataExperimentId);
-                        break;
-                    default:
+                    }
+                    default -> {
                         logger.error(
                                 airavataExperimentId,
                                 "Error while updating scheduling info. Update experiment is only valid for experiments "
@@ -3393,6 +3365,7 @@ public class RegistryService {
                                 "Error while updating experiment. Update experiment is only valid for experiments "
                                         + "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given "
                                         + "experiment is in one of above statuses... ");
+                    }
                 }
             }
         } catch (RegistryException e) {
@@ -3540,7 +3513,7 @@ public class RegistryService {
             List<UserComputeResourcePreference> userComputeResourcePreferences =
                     profile.getUserComputeResourcePreferences();
             UserComputeResourcePreference preferenceToRemove = null;
-            for (UserComputeResourcePreference preference : userComputeResourcePreferences) {
+            for (var preference : userComputeResourcePreferences) {
                 if (preference.getComputeResourceId().equals(computeResourceId)) {
                     preferenceToRemove = preference;
                     break;
@@ -4028,7 +4001,7 @@ public class RegistryService {
             UserResourceProfile profile = userResourceProfileService.getUserResourceProfile(userId, gatewayID);
             List<UserStoragePreference> userStoragePreferences = profile.getUserStoragePreferences();
             UserStoragePreference preferenceToRemove = null;
-            for (UserStoragePreference preference : userStoragePreferences) {
+            for (var preference : userStoragePreferences) {
                 if (preference.getStorageResourceId().equals(storageId)) {
                     preferenceToRemove = preference;
                     break;
@@ -4199,7 +4172,7 @@ public class RegistryService {
         try {
             ExperimentModel experiment = experimentService.getExperiment(experimentId);
             List<ProcessModel> processes = experiment.getProcesses();
-            if (processes != null && processes.size() > 0) {
+            if (processes != null && !processes.isEmpty()) {
                 return parsingTemplateService.getParsingTemplatesForApplication(
                         processes.get(processes.size() - 1).getApplicationInterfaceId());
             }

@@ -23,8 +23,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -144,13 +142,12 @@ public class RabbitMQSubscriber implements Subscriber {
     }
 
     private void addShutdownListener() {
-        connection.addShutdownListener(new ShutdownListener() {
-            public void shutdownCompleted(ShutdownSignalException cause) {
-                log.error(
-                        "RabbitMQ connection " + connection + " for " + properties.getExchangeName()
-                                + " has been shut down",
-                        cause);
-            }
+        connection.addShutdownListener(cause -> {
+            log.warn(
+                    "RabbitMQ connection {} for exchange={} is now shutdown. cause={}",
+                    connection.getId(),
+                    properties.getExchangeName(),
+                    cause);
         });
     }
 

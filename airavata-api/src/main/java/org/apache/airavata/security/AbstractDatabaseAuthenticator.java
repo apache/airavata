@@ -93,15 +93,11 @@ public abstract class AbstractDatabaseAuthenticator extends AbstractAuthenticato
             }
         }
 
-        StringBuilder stringBuilder = new StringBuilder("Configuring DB parameters for authenticator with JDBC URL - ");
-        stringBuilder
-                .append(databaseURL)
-                .append(" DB driver - ")
-                .append(" DB user - ")
-                .append(databaseUserName)
-                .append(" DB password - xxxxxx");
+        var message = String.format(
+                "Configuring DB parameters for authenticator with JDBC URL - %s DB driver - %s DB user - %s DB password - xxxxxx",
+                databaseURL, databaseDriver, databaseUserName);
 
-        log.debug(stringBuilder.toString());
+        log.debug(message);
 
         try {
             getUserStore().configure(node);

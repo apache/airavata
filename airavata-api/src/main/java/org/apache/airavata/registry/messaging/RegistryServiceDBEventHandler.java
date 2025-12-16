@@ -77,23 +77,22 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             // check type of entity-type
             switch (publisherContext.getEntityType()) {
                 // Gateway related operations
-                case TENANT: {
+                case TENANT -> {
                     // Deserialize JSON to domain model
-                    java.nio.ByteBuffer entityDataBuffer = publisherContext.getEntityDataModel();
-                    byte[] entityDataBytes = new byte[entityDataBuffer.remaining()];
+                    var entityDataBuffer = publisherContext.getEntityDataModel();
+                    var entityDataBytes = new byte[entityDataBuffer.remaining()];
                     entityDataBuffer.duplicate().get(entityDataBytes);
 
-                    Gateway gateway = objectMapper.readValue(entityDataBytes, Gateway.class);
+                    var gateway = objectMapper.readValue(entityDataBytes, Gateway.class);
 
                     // call service-methods based on CRUD type
                     switch (publisherContext.getCrudType()) {
-                        case CREATE: {
+                        case CREATE -> {
                             logger.info("Replicating addGateway in Registry.");
                             registryService.addGateway(gateway);
                             logger.info("addGateway Replication Success!");
-                            break;
                         }
-                        case UPDATE: {
+                        case UPDATE -> {
                             logger.info("Replicating updateGateway in Registry.");
                             if (!registryService.isGatewayExist(gateway.getGatewayId())) {
                                 logger.info("Gateway doesn't exist so adding instead of updating.");
@@ -102,36 +101,32 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 registryService.updateGateway(gateway.getGatewayId(), gateway);
                             }
                             logger.info("updateGateway Replication Success!");
-                            break;
                         }
-                        case DELETE: {
+                        case DELETE -> {
                             logger.info("Replicating deleteGateway in Registry.");
                             registryService.deleteGateway(gateway.getGatewayId());
                             logger.info("deleteGateway Replication Success!");
-                            break;
                         }
                     }
-                    // break entity: gateway
-                    break;
                 }
 
                 // UserProfile related operations
-                case USER_PROFILE: {
+                case USER_PROFILE -> {
                     // Deserialize JSON to domain model
-                    java.nio.ByteBuffer entityDataBuffer = publisherContext.getEntityDataModel();
-                    byte[] entityDataBytes = new byte[entityDataBuffer.remaining()];
+                    var entityDataBuffer = publisherContext.getEntityDataModel();
+                    var entityDataBytes = new byte[entityDataBuffer.remaining()];
                     entityDataBuffer.duplicate().get(entityDataBytes);
 
-                    UserProfile userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
+                    var userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
 
                     // call service-methods based on CRUD type
                     switch (publisherContext.getCrudType()) {
-                        case CREATE: {
+                        case CREATE -> {
                             logger.info("Replicating addUser in Registry.");
                             if (!registryService.isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
                                 registryService.addUser(userProfile);
                             }
-                            Project defaultProject = createDefaultProject(registryService, userProfile);
+                            var defaultProject = createDefaultProject(registryService, userProfile);
                             if (defaultProject != null) {
 
                                 // Publish new PROJECT event (sharing service will listen for it and register this
@@ -139,29 +134,22 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                                 dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
                             }
                             logger.info("addUser Replication Success!");
-                            break;
                         }
-                        case UPDATE: {
+                        case UPDATE -> {
                             logger.info(
                                     "Replicating updateGateway in Registry.", publisherContext.getEntityDataModel());
                             // TODO: find appropriate method
-                            break;
                         }
-                        case DELETE: {
+                        case DELETE -> {
                             logger.info(
                                     "Replicating deleteGateway in Registry.", publisherContext.getEntityDataModel());
                             // TODO: find appropriate method
-                            break;
                         }
                     }
-                    // break entity: userprofile
-                    break;
                 }
 
                 // no handler for entity
-                default: {
-                    logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
-                }
+                default -> logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
             }
             // send ack for received message
             logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: "
