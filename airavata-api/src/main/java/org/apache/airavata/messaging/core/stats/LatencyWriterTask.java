@@ -35,6 +35,11 @@ public class LatencyWriterTask extends TimerTask {
     private File file;
     private FileOutputStream fos;
     private BufferedWriter bw;
+    private final StatCounter statCounter;
+
+    public LatencyWriterTask(StatCounter statCounter) {
+        this.statCounter = statCounter;
+    }
 
     public void setFile(File file) {
         this.file = file;
@@ -44,7 +49,6 @@ public class LatencyWriterTask extends TimerTask {
     public void run() {
         try {
             logger.info("########### Latency Write Task ############");
-            StatCounter statCounter = StatCounter.getInstance();
             Map<String, Long> messageTimeStamp = statCounter.getMessageTimeStamp();
             fos = new FileOutputStream(file, false);
             bw = new BufferedWriter(new OutputStreamWriter(fos));

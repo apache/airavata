@@ -105,6 +105,7 @@ public class OrchestratorService {
     private final AiravataServerProperties properties;
     private final ProcessScheduler processScheduler;
     private final SimpleOrchestratorImpl orchestrator;
+    private final MessagingFactory messagingFactory;
 
     private CuratorFramework curatorClient;
     private Publisher publisher;
@@ -115,12 +116,14 @@ public class OrchestratorService {
             RegistryService registryService,
             AiravataServerProperties properties,
             SimpleOrchestratorImpl orchestrator,
-            ProcessScheduler processScheduler) {
+            ProcessScheduler processScheduler,
+            MessagingFactory messagingFactory) {
         this.orchestratorRegistryService = orchestratorRegistryService;
         this.registryService = registryService;
         this.properties = properties;
         this.orchestrator = orchestrator;
         this.processScheduler = processScheduler;
+        this.messagingFactory = messagingFactory;
     }
 
     @PostConstruct
@@ -137,7 +140,7 @@ public class OrchestratorService {
 
     private void initializeInternal() throws OrchestratorException {
         try {
-            this.publisher = MessagingFactory.getPublisher(Type.STATUS);
+            this.publisher = messagingFactory.getPublisher(Type.STATUS);
         } catch (AiravataException e) {
             logger.warn(
                     "Failed to initialize StatusPublisher for OrchestratorService: {}. Publisher will be unavailable.",
@@ -922,7 +925,7 @@ public class OrchestratorService {
     private Subscriber getExperimentSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(properties.rabbitmq.experimentLaunchQueueName);
-        return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+        return messagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
     }
 
     private class ExperimentHandler implements MessageHandler {

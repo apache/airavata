@@ -46,6 +46,11 @@ public class JPAUtils {
         logger.info("[BEAN-INIT] SharingRegistry JPAUtils static instance set successfully");
     }
 
+    /**
+     * @deprecated Use dependency injection to inject the JPAUtils bean instead of calling static methods.
+     *             This method is kept for backward compatibility only.
+     */
+    @Deprecated
     public static EntityManager getEntityManager() {
         if (instance == null || instance.factory == null) {
             throw new IllegalStateException("SharingRegistry JPAUtils not initialized. Make sure it's a Spring bean.");
@@ -53,6 +58,11 @@ public class JPAUtils {
         return instance.factory.createEntityManager();
     }
 
+    /**
+     * @deprecated Use dependency injection to inject the JPAUtils bean instead of calling static methods.
+     *             This method is kept for backward compatibility only.
+     */
+    @Deprecated
     public static EntityManagerFactory getEntityManagerFactory() {
         if (instance == null || instance.factory == null) {
             throw new IllegalStateException("SharingRegistry JPAUtils not initialized. Make sure it's a Spring bean.");

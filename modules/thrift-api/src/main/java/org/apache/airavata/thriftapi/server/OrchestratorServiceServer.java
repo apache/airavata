@@ -48,7 +48,7 @@ public class OrchestratorServiceServer implements IServer {
 
     private TServer server;
 
-    private static ComputationalResourceMonitoringService monitoringService;
+    private final ComputationalResourceMonitoringService monitoringService;
 
     private final ProcessReschedulingService metaschedulerService;
     private final DataInterpreterService dataInterpreterService;
@@ -62,11 +62,13 @@ public class OrchestratorServiceServer implements IServer {
             ApplicationContext applicationContext,
             AiravataServerProperties properties,
             ProcessReschedulingService metaschedulerService,
-            DataInterpreterService dataInterpreterService) {
+            DataInterpreterService dataInterpreterService,
+            ComputationalResourceMonitoringService monitoringService) {
         this.applicationContext = applicationContext;
         this.properties = properties;
         this.metaschedulerService = metaschedulerService;
         this.dataInterpreterService = dataInterpreterService;
+        this.monitoringService = monitoringService;
         setStatus(ServerStatus.STOPPED);
     }
 
@@ -115,11 +117,8 @@ public class OrchestratorServiceServer implements IServer {
         //        clusterStatusMonitorJobScheduler.scheduleClusterStatusMonitoring();
 
         try {
-            if (monitoringService == null) {
-                monitoringService = new ComputationalResourceMonitoringService(properties);
-                monitoringService.setServerStatus(ServerStatus.STARTING);
-            }
             if (monitoringService != null && !monitoringService.getStatus().equals(ServerStatus.STARTED)) {
+                monitoringService.setServerStatus(ServerStatus.STARTING);
                 monitoringService.start();
                 monitoringService.setServerStatus(ServerStatus.STARTED);
                 logger.info("Airavata compute resource monitoring service started ....");

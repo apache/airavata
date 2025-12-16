@@ -73,6 +73,7 @@ public class PreWorkflowManager extends WorkflowManager {
     private final org.apache.airavata.service.registry.RegistryService registryService;
     private final org.apache.airavata.service.profile.UserProfileService userProfileService;
     private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
+    private final MessagingFactory messagingFactory;
     private Subscriber subscriber;
 
     public PreWorkflowManager(
@@ -81,9 +82,10 @@ public class PreWorkflowManager extends WorkflowManager {
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+            MessagingFactory messagingFactory) {
         // Default values, will be updated in @PostConstruct
-        super("pre-workflow-manager", false, registryService, properties);
+        super("pre-workflow-manager", false, registryService, properties, messagingFactory);
         this.properties = properties;
         this.taskFactory = taskFactory;
         this.applicationContext = applicationContext;
@@ -121,7 +123,7 @@ public class PreWorkflowManager extends WorkflowManager {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(properties.rabbitmq.processExchangeName);
         this.subscriber =
-                MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
+                messagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {

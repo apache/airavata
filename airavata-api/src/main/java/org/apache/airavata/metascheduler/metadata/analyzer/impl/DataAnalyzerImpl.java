@@ -29,29 +29,25 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataAnalyzerImpl implements DataAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataAnalyzerImpl.class);
-    private static ApplicationContext applicationContext;
 
     private final AiravataServerProperties properties;
-    private final ApplicationContext applicationContextInstance;
+    private final RegistryService registryService;
 
-    public DataAnalyzerImpl(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public DataAnalyzerImpl(AiravataServerProperties properties, RegistryService registryService) {
         this.properties = properties;
-        this.applicationContextInstance = applicationContext;
-        DataAnalyzerImpl.applicationContext = applicationContext;
+        this.registryService = registryService;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Data Analyzer ....... ");
-            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
 
             // TODO: handle multiple gateways
             String gateway = properties.services.parser.enabledGateways;

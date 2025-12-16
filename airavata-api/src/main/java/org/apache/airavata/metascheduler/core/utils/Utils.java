@@ -42,19 +42,27 @@ import org.springframework.stereotype.Component;
 public class Utils {
 
     private final RegistryService registryService;
+    private final MessagingFactory messagingFactory;
+    private final ApplicationContext applicationContext;
 
-    private static Publisher statusPublisher;
-    private static ApplicationContext applicationContext;
+    private Publisher statusPublisher;
+    private static ApplicationContext staticApplicationContext;
 
-    public Utils(RegistryService registryService, ApplicationContext applicationContext) {
+    public Utils(
+            RegistryService registryService,
+            ApplicationContext applicationContext,
+            MessagingFactory messagingFactory) {
         this.registryService = registryService;
-        Utils.applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
+        this.messagingFactory = messagingFactory;
+        Utils.staticApplicationContext = applicationContext;
     }
 
     public static void saveAndPublishProcessStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
             throws RegistryServiceException, AiravataException {
-        RegistryService registryService = getRegistryService();
+        Utils instance = getInstance();
+        RegistryService registryService = instance.registryService;
         ProcessStatus processStatus = new ProcessStatus(processState);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
@@ -67,13 +75,14 @@ public class Utils {
                 AiravataUtils.getId(MessageType.PROCESS.name()),
                 gatewayId);
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
+        instance.getStatusPublisher().publish(msgCtx);
     }
 
     public static void updateProcessStatusAndPublishStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
             throws RegistryServiceException, AiravataException {
-        RegistryService registryService = getRegistryService();
+        Utils instance = getInstance();
+        RegistryService registryService = instance.registryService;
         ProcessStatus processStatus = new ProcessStatus(processState);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
@@ -86,26 +95,21 @@ public class Utils {
                 AiravataUtils.getId(MessageType.PROCESS.name()),
                 gatewayId);
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
+        instance.getStatusPublisher().publish(msgCtx);
     }
 
-    public static synchronized Publisher getStatusPublisher() throws AiravataException {
+    public synchronized Publisher getStatusPublisher() throws AiravataException {
         if (statusPublisher == null) {
-            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+            statusPublisher = messagingFactory.getPublisher(Type.STATUS);
         }
         return statusPublisher;
     }
 
-    // Instance method for Spring DI
-    protected RegistryService getRegistryServiceInstance() {
-        return registryService;
-    }
-
     // Static method for backward compatibility - delegates to Spring-managed instance
-    private static RegistryService getRegistryService() {
-        if (applicationContext != null) {
-            return applicationContext.getBean(Utils.class).getRegistryServiceInstance();
+    private static Utils getInstance() {
+        if (staticApplicationContext != null) {
+            return staticApplicationContext.getBean("metaschedulerUtils", Utils.class);
         }
-        throw new RuntimeException("ApplicationContext not available. RegistryService cannot be retrieved.");
+        throw new RuntimeException("ApplicationContext not available. Utils cannot be retrieved.");
     }
 }

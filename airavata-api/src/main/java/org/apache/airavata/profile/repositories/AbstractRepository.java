@@ -31,6 +31,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.SharedEntityManagerCreator;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @deprecated This class is legacy and unused. All repositories now use Spring Data JPA interfaces.
+ *             This class should not be extended. Use JpaRepository interfaces instead.
+ */
+@Deprecated
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 

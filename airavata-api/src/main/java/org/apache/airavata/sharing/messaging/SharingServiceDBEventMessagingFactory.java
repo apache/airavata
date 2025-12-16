@@ -46,16 +46,17 @@ public class SharingServiceDBEventMessagingFactory {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventMessagingFactory.class);
 
-    private static Publisher dbEventPublisher;
+    private Publisher dbEventPublisher;
 
-    private static Subscriber sharingServiceDBEventSubscriber;
-    private static SharingServiceDBEventMessagingFactory instance;
+    private Subscriber sharingServiceDBEventSubscriber;
 
     private final SharingRegistryService sharingRegistryService;
+    private final MessagingFactory messagingFactory;
 
-    public SharingServiceDBEventMessagingFactory(SharingRegistryService sharingRegistryService) {
+    public SharingServiceDBEventMessagingFactory(
+            SharingRegistryService sharingRegistryService, MessagingFactory messagingFactory) {
         this.sharingRegistryService = sharingRegistryService;
-        instance = this;
+        this.messagingFactory = messagingFactory;
     }
 
     /**
@@ -64,12 +65,12 @@ public class SharingServiceDBEventMessagingFactory {
      * @return
      * @throws AiravataException
      */
-    private static Publisher getDBEventPublisher() throws AiravataException {
+    public Publisher getDBEventPublisher() throws AiravataException {
         if (null == dbEventPublisher) {
-            synchronized (SharingServiceDBEventMessagingFactory.class) {
+            synchronized (this) {
                 if (null == dbEventPublisher) {
                     log.info("Creating DB Event publisher.....");
-                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    dbEventPublisher = messagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
                 }
             }
@@ -77,25 +78,20 @@ public class SharingServiceDBEventMessagingFactory {
         return dbEventPublisher;
     }
 
-    public static Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException {
+    public Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException {
         if (null == sharingServiceDBEventSubscriber) {
-            synchronized (SharingServiceDBEventMessagingFactory.class) {
+            synchronized (this) {
                 if (null == sharingServiceDBEventSubscriber) {
                     SharingServiceDBEventHandler handler;
                     String serviceName = DBEventService.SHARING.toString();
                     log.info("Creating DB Event subscriber for service: " + serviceName);
                     try {
-                        SharingRegistryService service = instance != null ? instance.sharingRegistryService : null;
-                        if (service == null) {
-                            throw new IllegalStateException(
-                                    "SharingServiceDBEventMessagingFactory not initialized via Spring");
-                        }
-                        handler = new SharingServiceDBEventHandler(service);
+                        handler = new SharingServiceDBEventHandler(sharingRegistryService, this);
                     } catch (Exception e) {
                         throw new AiravataException(
                                 "Failed to create sharing service DB event handler for service: " + serviceName, e);
                     }
-                    sharingServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(handler, serviceName);
+                    sharingServiceDBEventSubscriber = messagingFactory.getDBEventSubscriber(handler, serviceName);
                     log.info("DB Event subscriber created for service: " + serviceName);
                 }
             }

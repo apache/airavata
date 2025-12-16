@@ -50,9 +50,13 @@ public class SharingServiceDBEventHandler implements MessageHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final SharingRegistryService sharingRegistryService;
+    private final SharingServiceDBEventMessagingFactory messagingFactory;
 
-    public SharingServiceDBEventHandler(SharingRegistryService sharingRegistryService) {
+    public SharingServiceDBEventHandler(
+            SharingRegistryService sharingRegistryService,
+            SharingServiceDBEventMessagingFactory messagingFactory) {
         this.sharingRegistryService = sharingRegistryService;
+        this.messagingFactory = messagingFactory;
     }
 
     @Override
@@ -371,7 +375,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
-            SharingServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+            messagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
 
         } catch (SharingRegistryException e) {
             log.error("Error processing message.", e);

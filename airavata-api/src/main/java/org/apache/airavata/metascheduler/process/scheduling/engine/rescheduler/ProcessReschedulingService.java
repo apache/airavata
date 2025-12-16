@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.utils.IServer;
@@ -34,7 +33,9 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,14 +48,17 @@ public class ProcessReschedulingService implements IServer {
     private static final String SERVER_NAME = "Airavata Process Rescheduling Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private static ServerStatus status;
-    private static Scheduler scheduler;
-    private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
+    private ServerStatus status;
+    private Scheduler scheduler;
+    private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
 
     private final AiravataServerProperties properties;
+    private final ApplicationContext applicationContext;
 
-    public ProcessReschedulingService(AiravataServerProperties properties) {
+    public ProcessReschedulingService(
+            AiravataServerProperties properties, ApplicationContext applicationContext) {
         this.properties = properties;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -72,6 +76,10 @@ public class ProcessReschedulingService implements IServer {
 
         jobTriggerMap.clear();
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        // Use SpringBeanJobFactory to enable Spring DI for Quartz jobs
+        SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
+        jobFactory.setApplicationContext(applicationContext);
+        schedulerFactoryBean.setJobFactory(jobFactory);
         schedulerFactoryBean.afterPropertiesSet();
         scheduler = schedulerFactoryBean.getScheduler();
 
@@ -108,7 +116,9 @@ public class ProcessReschedulingService implements IServer {
 
     @Override
     public void stop() throws Exception {
-        scheduler.unscheduleJobs(new ArrayList(jobTriggerMap.values()));
+        scheduler.unscheduleJobs(jobTriggerMap.values().stream()
+                .map(trigger -> trigger.getKey())
+                .collect(java.util.stream.Collectors.toList()));
     }
 
     @Override

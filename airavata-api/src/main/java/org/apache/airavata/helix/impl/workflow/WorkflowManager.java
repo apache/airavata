@@ -52,10 +52,13 @@ public class WorkflowManager {
 
     protected final RegistryService registryService;
     private final AiravataServerProperties properties;
+    private final MessagingFactory messagingFactory;
 
-    public WorkflowManager(RegistryService registryService, AiravataServerProperties properties) {
+    public WorkflowManager(
+            RegistryService registryService, AiravataServerProperties properties, MessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.properties = properties;
+        this.messagingFactory = messagingFactory;
     }
 
     protected String workflowManagerName;
@@ -68,11 +71,13 @@ public class WorkflowManager {
             String workflowManagerName,
             boolean loadBalanceClusters,
             RegistryService registryService,
-            AiravataServerProperties properties) {
+            AiravataServerProperties properties,
+            MessagingFactory messagingFactory) {
         this.workflowManagerName = workflowManagerName;
         this.loadBalanceClusters = loadBalanceClusters;
         this.registryService = registryService;
         this.properties = properties;
+        this.messagingFactory = messagingFactory;
     }
 
     protected void initComponents() throws Exception {
@@ -100,7 +105,7 @@ public class WorkflowManager {
     }
 
     private void initStatusPublisher() throws AiravataException {
-        this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+        this.statusPublisher = messagingFactory.getPublisher(Type.STATUS);
     }
 
     private void initHelixAdmin() {

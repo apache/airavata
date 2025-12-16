@@ -114,7 +114,7 @@ import org.apache.airavata.credential.model.CredentialSummary;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.model.SummaryType;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
+import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -215,6 +215,8 @@ public class AiravataService {
     private final org.apache.airavata.service.application.ApplicationService applicationService;
     private final org.apache.airavata.service.security.AuthorizationService authorizationService;
     private final org.apache.airavata.service.sharing.SharingManager sharingManager;
+    private final AdaptorSupport adaptorSupport;
+    private final MessagingFactory messagingFactory;
 
     private Publisher statusPublisher;
     private Publisher experimentPublisher;
@@ -232,7 +234,9 @@ public class AiravataService {
             org.apache.airavata.service.data.DataProductService dataProductService,
             org.apache.airavata.service.application.ApplicationService applicationService,
             org.apache.airavata.service.security.AuthorizationService authorizationService,
-            org.apache.airavata.service.sharing.SharingManager sharingManager) {
+            org.apache.airavata.service.sharing.SharingManager sharingManager,
+            AdaptorSupport adaptorSupport,
+            MessagingFactory messagingFactory) {
         this.properties = properties;
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
@@ -246,6 +250,8 @@ public class AiravataService {
         this.applicationService = applicationService;
         this.authorizationService = authorizationService;
         this.sharingManager = sharingManager;
+        this.adaptorSupport = adaptorSupport;
+        this.messagingFactory = messagingFactory;
 
         logger.info("Initialized RegistryService");
         logger.info("Initialized SharingRegistryService");
@@ -257,7 +263,7 @@ public class AiravataService {
     public void initializePublishers() throws AiravataException {
         logger.info("[BEAN-INIT] AiravataService.initializePublishers() called");
         try {
-            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+            statusPublisher = messagingFactory.getPublisher(Type.STATUS);
             logger.info("[BEAN-INIT] Initialized StatusPublisher");
         } catch (AiravataException e) {
             String msg = String.format(
@@ -267,7 +273,7 @@ public class AiravataService {
         }
 
         try {
-            experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
+            experimentPublisher = messagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
             logger.info("[BEAN-INIT] Initialized ExperimentPublisher");
         } catch (AiravataException e) {
             String msg = String.format(
@@ -3876,8 +3882,8 @@ public class AiravataService {
             }
         }
 
-        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
-                .fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+        AgentAdaptor adaptor = adaptorSupport.fetchComputeSSHAdaptor(
+                gatewayId, resourceId, credentialToken, userId, loginUserName);
         logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
 
         return new StorageInfoContext(loginUserName, credentialToken, adaptor);
@@ -3985,8 +3991,8 @@ public class AiravataService {
             }
         }
 
-        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
-                .fetchStorageSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+        AgentAdaptor adaptor = adaptorSupport.fetchStorageSSHAdaptor(
+                gatewayId, resourceId, credentialToken, userId, loginUserName);
         logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
 
         return new StorageInfoContext(loginUserName, credentialToken, adaptor);

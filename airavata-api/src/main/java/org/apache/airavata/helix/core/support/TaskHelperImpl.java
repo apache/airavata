@@ -19,8 +19,9 @@
 */
 package org.apache.airavata.helix.core.support;
 
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.task.api.TaskHelper;
+import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.springframework.stereotype.Component;
 
 /**
  * TODO: Class level comments please
@@ -28,9 +29,17 @@ import org.apache.airavata.helix.task.api.TaskHelper;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class TaskHelperImpl implements TaskHelper {
 
-    public AdaptorSupportImpl getAdaptorSupport() {
-        return AdaptorSupportImpl.getInstance();
+    private final AdaptorSupport adaptorSupport;
+
+    public TaskHelperImpl(AdaptorSupport adaptorSupport) {
+        this.adaptorSupport = adaptorSupport;
+    }
+
+    @Override
+    public AdaptorSupport getAdaptorSupport() {
+        return adaptorSupport;
     }
 }

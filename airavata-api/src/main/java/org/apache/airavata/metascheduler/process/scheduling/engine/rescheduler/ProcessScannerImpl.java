@@ -30,34 +30,30 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
-    private static ApplicationContext applicationContext;
 
     private final AiravataServerProperties properties;
-    private final ApplicationContext applicationContextInstance;
+    private final RegistryService registryService;
 
-    public ProcessScannerImpl(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public ProcessScannerImpl(AiravataServerProperties properties, RegistryService registryService) {
         this.properties = properties;
-        this.applicationContextInstance = applicationContext;
-        ProcessScannerImpl.applicationContext = applicationContext;
+        this.registryService = registryService;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Process scanner ....... ");
-            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
             ProcessState state = ProcessState.QUEUED;
             List<ProcessModel> processModelList = registryService.getProcessListInState(state);
 
             String reSchedulerPolicyClass = properties.services.scheduler.computeResourceReschedulerPolicyClass;
             ReScheduler reScheduler =
-                    (ReScheduler) Class.forName(reSchedulerPolicyClass).newInstance();
+                    (ReScheduler) Class.forName(reSchedulerPolicyClass).getDeclaredConstructor().newInstance();
 
             for (ProcessModel processModel : processModelList) {
                 reScheduler.reschedule(processModel, state);

@@ -48,13 +48,18 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
     private Publisher publisher;
     private AiravataServerProperties properties;
     private OrchestratorUtils orchestratorUtils;
+    private MessagingFactory messagingFactory;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         if (orchestratorContext.getPublisher() != null) {
             this.publisher = orchestratorContext.getPublisher();
         } else {
+            if (messagingFactory == null) {
+                throw new OrchestratorException("MessagingFactory must be set before initializing "
+                        + GFACPassiveJobSubmitter.class);
+            }
             try {
-                this.publisher = MessagingFactory.getPublisher(Type.PROCESS_LAUNCH);
+                this.publisher = messagingFactory.getPublisher(Type.PROCESS_LAUNCH);
             } catch (AiravataException e) {
                 logger.error(e.getMessage(), e);
                 throw new OrchestratorException("Cannot initialize " + GFACPassiveJobSubmitter.class
@@ -66,6 +71,10 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
 
     public void setProperties(AiravataServerProperties properties) {
         this.properties = properties;
+    }
+
+    public void setMessagingFactory(MessagingFactory messagingFactory) {
+        this.messagingFactory = messagingFactory;
     }
 
     public void setOrchestratorUtils(OrchestratorUtils orchestratorUtils) {

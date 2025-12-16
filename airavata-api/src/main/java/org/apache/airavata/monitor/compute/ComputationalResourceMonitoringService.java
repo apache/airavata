@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.compute.job.MonitoringJob;
 import org.apache.airavata.monitor.compute.utils.Constants;
+import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -35,24 +36,35 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Computational Resource Monitoring Service
  */
+@Service
 public class ComputationalResourceMonitoringService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private static ServerStatus status;
-    private static Scheduler scheduler;
-    private static Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
-    private AiravataServerProperties properties;
+    private ServerStatus status;
+    private Scheduler scheduler;
+    private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
+    private final AiravataServerProperties properties;
+    private final RegistryService registryService;
+    private final ApplicationContext applicationContext;
 
-    public ComputationalResourceMonitoringService(AiravataServerProperties properties) {
+    public ComputationalResourceMonitoringService(
+            AiravataServerProperties properties,
+            RegistryService registryService,
+            ApplicationContext applicationContext) {
         this.properties = properties;
+        this.registryService = registryService;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -70,6 +82,10 @@ public class ComputationalResourceMonitoringService implements IServer {
 
         jobTriggerMap.clear();
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        // Use SpringBeanJobFactory to enable Spring DI for Quartz jobs
+        SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
+        jobFactory.setApplicationContext(applicationContext);
+        schedulerFactoryBean.setJobFactory(jobFactory);
         schedulerFactoryBean.afterPropertiesSet();
         scheduler = schedulerFactoryBean.getScheduler();
 

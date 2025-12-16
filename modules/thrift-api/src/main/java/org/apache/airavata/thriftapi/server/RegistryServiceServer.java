@@ -59,6 +59,7 @@ public class RegistryServiceServer implements IServer {
     private final ExpCatalogDBInitConfig expCatalogDBInitConfig;
     private final AppCatalogDBInitConfig appCatalogDBInitConfig;
     private final ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig;
+    private final RegistryServiceDBEventMessagingFactory messagingFactory;
 
     private List<DBInitConfig> dbInitConfigs;
 
@@ -67,12 +68,14 @@ public class RegistryServiceServer implements IServer {
             AiravataServerProperties properties,
             ExpCatalogDBInitConfig expCatalogDBInitConfig,
             AppCatalogDBInitConfig appCatalogDBInitConfig,
-            ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig) {
+            ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig,
+            RegistryServiceDBEventMessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.properties = properties;
         this.expCatalogDBInitConfig = expCatalogDBInitConfig;
         this.appCatalogDBInitConfig = appCatalogDBInitConfig;
         this.replicaCatalogDBInitConfig = replicaCatalogDBInitConfig;
+        this.messagingFactory = messagingFactory;
         setStatus(ServerStatus.STOPPED);
     }
 
@@ -141,7 +144,7 @@ public class RegistryServiceServer implements IServer {
                     RegistryServiceConstants.DB_EVENT_SUBSCRIBERS);
 
             logger.info("Starting registry service db-event-handler subscriber.");
-            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
+            messagingFactory.getDBEventSubscriber();
         } catch (Exception ex) {
             logger.error("Failed to start database event handlers, reason: " + ex.getMessage(), ex);
             return false;

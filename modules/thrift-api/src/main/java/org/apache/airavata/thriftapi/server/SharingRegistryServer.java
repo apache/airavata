@@ -55,10 +55,15 @@ public class SharingRegistryServer implements IServer {
 
     private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
+    private final SharingServiceDBEventMessagingFactory messagingFactory;
 
-    public SharingRegistryServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
+    public SharingRegistryServer(
+            ApplicationContext applicationContext,
+            AiravataServerProperties properties,
+            SharingServiceDBEventMessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.properties = properties;
+        this.messagingFactory = messagingFactory;
         setStatus(IServer.ServerStatus.STOPPED);
     }
 
@@ -124,7 +129,7 @@ public class SharingRegistryServer implements IServer {
                                         SharingRegistryConstants.PUBLISHERS);
 
                                 logger.info("Start sharing service DB Event subscriber");
-                                SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+                                messagingFactory.getDBEventSubscriber();
                             } catch (AiravataException | SharingRegistryException e) {
                                 logger.error("Error starting sharing service. Error setting up DB event services.");
                                 server.stop();

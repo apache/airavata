@@ -160,7 +160,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     private final ComputeResourcePolicyMapper computeResourcePolicyMapper = ComputeResourcePolicyMapper.INSTANCE;
     private final BatchQueueResourcePolicyMapper batchQueueResourcePolicyMapper =
             BatchQueueResourcePolicyMapper.INSTANCE;
-    private final JobStatusMapper jobStatusMapper = JobStatusMapper.INSTANCE;
     private final GatewayUsageReportingCommandMapper gatewayUsageReportingCommandMapper =
             GatewayUsageReportingCommandMapper.INSTANCE;
     private final QueueStatusModelMapper queueStatusModelMapper = QueueStatusModelMapper.INSTANCE;
@@ -229,13 +228,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     private ProjectNotFoundException convertToThriftProjectNotFoundException(
             org.apache.airavata.common.exception.ProjectNotFoundException e) {
         ProjectNotFoundException exception = new ProjectNotFoundException();
-        exception.setMessage(e.getMessage());
-        return exception;
-    }
-
-    private DuplicateEntryException convertToThriftDuplicateEntryException(
-            org.apache.airavata.common.exception.DuplicateEntryException e) {
-        DuplicateEntryException exception = new DuplicateEntryException();
         exception.setMessage(e.getMessage());
         return exception;
     }

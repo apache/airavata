@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import org.apache.airavata.common.model.Message;
+import org.springframework.stereotype.Component;
+import jakarta.annotation.PostConstruct;
 
+@Component
 public class StatCounter {
-    private static StatCounter ourInstance = new StatCounter();
     private long msgCount;
     private long period = 10 * 1000;
     private long msgCountForPeriod;
@@ -40,9 +42,8 @@ public class StatCounter {
     private List<Long> messageContPer10S = new ArrayList<Long>();
     private Map<String, Long> messageTimeStamp = new HashMap<String, Long>();
 
-    public static StatCounter getInstance() {
-        return ourInstance;
-    }
+    private Timer counterTimer;
+    private Timer latencyTimer;
 
     public long getMsgCount() {
         return msgCount;
@@ -60,14 +61,19 @@ public class StatCounter {
         this.messageContPer10S = messageContPer10S;
     }
 
-    private StatCounter() {
+    public StatCounter() {
+        // Default constructor for Spring DI
+    }
+
+    @PostConstruct
+    public void init() {
         file1 = new File("/tmp/results");
         file2 = new File("/tmp/latency");
-        Timer counterTimer = new Timer();
-        Timer latencyTimer = new Timer();
-        CountWriterTask writerTask = new CountWriterTask();
+        counterTimer = new Timer();
+        latencyTimer = new Timer();
+        CountWriterTask writerTask = new CountWriterTask(this);
         writerTask.setFile(file1);
-        LatencyWriterTask latencyWriterTask = new LatencyWriterTask();
+        LatencyWriterTask latencyWriterTask = new LatencyWriterTask(this);
         latencyWriterTask.setFile(file2);
         counterTimer.scheduleAtFixedRate(writerTask, 0, 60 * 1000);
         latencyTimer.scheduleAtFixedRate(latencyWriterTask, 0, 60 * 1000);

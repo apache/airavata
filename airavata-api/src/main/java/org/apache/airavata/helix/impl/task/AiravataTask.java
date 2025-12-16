@@ -86,17 +86,20 @@ public abstract class AiravataTask extends AbstractTask {
     protected final RegistryService registryService;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
+    private final MessagingFactory messagingFactory;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AiravataTask(
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
-            CredentialStoreService credentialStoreService) {
+            CredentialStoreService credentialStoreService,
+            MessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
+        this.messagingFactory = messagingFactory;
     }
 
     protected ApplicationContext getApplicationContext() {
@@ -502,7 +505,7 @@ public abstract class AiravataTask extends AbstractTask {
         if (statusPublisher == null) {
             synchronized (RabbitMQPublisher.class) {
                 if (statusPublisher == null) {
-                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+                    statusPublisher = messagingFactory.getPublisher(Type.STATUS);
                 }
             }
         }

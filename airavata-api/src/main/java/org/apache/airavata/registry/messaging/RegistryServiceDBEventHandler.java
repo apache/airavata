@@ -52,9 +52,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final RegistryService registryService;
+    private final RegistryServiceDBEventMessagingFactory messagingFactory;
 
-    public RegistryServiceDBEventHandler(RegistryService registryService) {
+    public RegistryServiceDBEventHandler(
+            RegistryService registryService, RegistryServiceDBEventMessagingFactory messagingFactory) {
         this.registryService = registryService;
+        this.messagingFactory = messagingFactory;
     }
 
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
@@ -154,7 +157,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             // send ack for received message
             logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: "
                     + messageContext.getDeliveryTag());
-            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+            messagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
         } catch (RegistryServiceException ex) {
             logger.error("Error processing message: " + ex, ex);
         } catch (ApplicationSettingsException ex) {

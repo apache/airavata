@@ -33,7 +33,6 @@ import org.apache.airavata.common.model.JobSubmissionInterface;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.common.model.QueueStatusModel;
 import org.apache.airavata.common.model.ResourceJobManager;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.monitor.compute.job.output.OutputParser;
@@ -46,6 +45,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is responsible to execute CR monitoring code
@@ -53,8 +53,16 @@ import org.slf4j.LoggerFactory;
 public class MonitoringJob extends ComputeResourceMonitor implements Job {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringJob.class);
 
-    public MonitoringJob(RegistryService registryService) {
+    @Autowired
+    private AdaptorSupport adaptorSupport;
+
+    public MonitoringJob() {
+        // No-arg constructor for Spring DI
+    }
+
+    public MonitoringJob(RegistryService registryService, AdaptorSupport adaptorSupport) {
         super(registryService);
+        this.adaptorSupport = adaptorSupport;
     }
 
     @Override
@@ -96,7 +104,10 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
             int parallelJobs,
             int jobId)
             throws Exception {
-        AdaptorSupportImpl adaptorSupport = AdaptorSupportImpl.getInstance();
+        if (this.adaptorSupport == null) {
+            throw new IllegalStateException("AdaptorSupport not injected. This class must be managed by Spring.");
+        }
+        AdaptorSupport adaptorSupport = this.adaptorSupport;
         GroupResourceProfile groupResourceProfile = getGroupResourceProfile(metaSchedulerGRP);
         //        List<GroupComputeResourcePreference> computeResourcePreferenceList =
         // groupResourceProfile.getComputePreferences();

@@ -32,6 +32,11 @@ public class CountWriterTask extends TimerTask {
     private File file;
     private FileOutputStream fos;
     private BufferedWriter bw;
+    private final StatCounter statCounter;
+
+    public CountWriterTask(StatCounter statCounter) {
+        this.statCounter = statCounter;
+    }
 
     public void setFile(File file) {
         this.file = file;
@@ -40,7 +45,6 @@ public class CountWriterTask extends TimerTask {
     @Override
     public void run() {
         try {
-            StatCounter statCounter = StatCounter.getInstance();
             List<Long> contPer10S = statCounter.getMessageContPer10S();
             fos = new FileOutputStream(file, false);
             bw = new BufferedWriter(new OutputStreamWriter(fos));

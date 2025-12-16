@@ -50,12 +50,14 @@ public class ExperimentServiceImpl implements ExperimentService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
 
     private final RegistryService registryService;
+    private final MessagingFactory messagingFactory;
     private Publisher statusPublisher;
 
-    public ExperimentServiceImpl(RegistryService registryService) {
+    public ExperimentServiceImpl(RegistryService registryService, MessagingFactory messagingFactory) {
         this.registryService = registryService;
+        this.messagingFactory = messagingFactory;
         try {
-            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+            statusPublisher = messagingFactory.getPublisher(Type.STATUS);
         } catch (Exception e) {
             logger.warn("StatusPublisher unavailable: " + e.getMessage());
         }

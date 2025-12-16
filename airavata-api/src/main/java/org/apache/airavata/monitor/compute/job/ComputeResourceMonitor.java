@@ -25,10 +25,16 @@ import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class ComputeResourceMonitor {
 
-    protected final RegistryService registryService;
+    @Autowired
+    protected RegistryService registryService;
+
+    protected ComputeResourceMonitor() {
+        // No-arg constructor for Spring DI
+    }
 
     protected ComputeResourceMonitor(RegistryService registryService) {
         this.registryService = registryService;

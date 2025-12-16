@@ -48,24 +48,25 @@ public class RegistryServiceDBEventMessagingFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventMessagingFactory.class);
 
-    private static Publisher dbEventPublisher;
+    private Publisher dbEventPublisher;
 
-    private static Subscriber registryServiceDBEventSubscriber;
-    private static RegistryServiceDBEventMessagingFactory instance;
+    private Subscriber registryServiceDBEventSubscriber;
 
     private final RegistryService registryService;
+    private final MessagingFactory messagingFactory;
 
-    public RegistryServiceDBEventMessagingFactory(RegistryService registryService) {
+    public RegistryServiceDBEventMessagingFactory(
+            RegistryService registryService, MessagingFactory messagingFactory) {
         this.registryService = registryService;
-        instance = this;
+        this.messagingFactory = messagingFactory;
     }
 
-    private static Publisher getDBEventPublisher() throws AiravataException {
+    public Publisher getDBEventPublisher() throws AiravataException {
         if (null == dbEventPublisher) {
-            synchronized (RegistryServiceDBEventMessagingFactory.class) {
+            synchronized (this) {
                 if (null == dbEventPublisher) {
                     logger.info("Creating DB Event publisher.....");
-                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    dbEventPublisher = messagingFactory.getDBEventPublisher();
                     logger.info("DB Event publisher created");
                 }
             }
@@ -73,25 +74,20 @@ public class RegistryServiceDBEventMessagingFactory {
         return dbEventPublisher;
     }
 
-    public static Subscriber getDBEventSubscriber() throws AiravataException, RegistryServiceException {
+    public Subscriber getDBEventSubscriber() throws AiravataException, RegistryServiceException {
         if (null == registryServiceDBEventSubscriber) {
-            synchronized (RegistryServiceDBEventMessagingFactory.class) {
+            synchronized (this) {
                 if (null == registryServiceDBEventSubscriber) {
-                    logger.info("Creating DB Event publisher.....");
+                    logger.info("Creating DB Event subscriber.....");
                     RegistryServiceDBEventHandler handler;
                     String serviceName = DBEventService.REGISTRY.toString();
                     try {
-                        RegistryService service = instance != null ? instance.registryService : null;
-                        if (service == null) {
-                            throw new IllegalStateException(
-                                    "RegistryServiceDBEventMessagingFactory not initialized via Spring");
-                        }
-                        handler = new RegistryServiceDBEventHandler(service);
+                        handler = new RegistryServiceDBEventHandler(registryService, this);
                     } catch (Exception e) {
                         throw new AiravataException(
                                 "Failed to create registry service DB event handler for service: " + serviceName, e);
                     }
-                    registryServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(handler, serviceName);
+                    registryServiceDBEventSubscriber = messagingFactory.getDBEventSubscriber(handler, serviceName);
                     logger.info("DB Event subscriber created for service: " + serviceName);
                 }
             }
