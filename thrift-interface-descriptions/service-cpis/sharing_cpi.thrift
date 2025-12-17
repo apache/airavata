@@ -105,7 +105,7 @@ service SharingRegistryService extends base_api.BaseAPI {
     /**
      <p>API method to get groups in a domainId.</p>
     */
-    list<sharing_models.UserGroup> getGroups(1: required string domainId, 2: required i32 offset, 3: required i32 limit)
+    list<sharing_models.UserGroup> getGroups(1: required string domainId, 2: required i32 offset, 3: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
 
     /**
      <p>API method to add list of users to a group</p>

@@ -42,7 +42,7 @@ service OrchestratorService extends base_api.BaseAPI {
      * @return sucess/failure
      *
     **/
-  bool launchExperiment (1: required string experimentId, 2: required string gatewayId),
+  bool launchExperiment (1: required string experimentId, 2: required string gatewayId) throws (1: airavata_errors.AiravataSystemException ase),
 
     /**
      * In order to run single applications users should create an associating 
@@ -54,7 +54,7 @@ service OrchestratorService extends base_api.BaseAPI {
      * @return sucess/failure
      *
     **/
-  bool launchProcess (1: required string processId, 2: required string airavataCredStoreToken, 3: required string gatewayId),
+  bool launchProcess (1: required string processId, 2: required string airavataCredStoreToken, 3: required string gatewayId) throws (1: airavata_errors.AiravataSystemException ase),
 
     /**
      *
@@ -75,5 +75,5 @@ service OrchestratorService extends base_api.BaseAPI {
      * @return sucess/failure
      *
     **/
-  bool terminateExperiment (1: required string experimentId, 2: required string gatewayId)
+  bool terminateExperiment (1: required string experimentId, 2: required string gatewayId) throws (1: airavata_errors.AiravataSystemException ase)
 }
