@@ -99,6 +99,10 @@ public class CredentialEntityService {
             entity.setPortalUserId(credential.getPortalUserName());
             entity.setTimePersisted(new Timestamp(System.currentTimeMillis()));
             entity.setDescription(credential.getDescription());
+            // Set default owner type if not specified
+            if (entity.getCredentialOwnerType() == null) {
+                entity.setCredentialOwnerType("GATEWAY");
+            }
             credentialRepository.save(entity);
         } catch (Exception e) {
             var msg = String.format(
@@ -113,7 +117,13 @@ public class CredentialEntityService {
      */
     public void deleteCredential(String gatewayId, String tokenId) throws CredentialStoreException {
         try {
+            var pkExists = credentialRepository.findByGatewayIdAndTokenId(gatewayId, tokenId).isPresent();
+            if (!pkExists) {
+                throw new CredentialStoreException(
+                        String.format("Credential not found for gateway: %s, token: %s", gatewayId, tokenId));
+            }
             credentialRepository.deleteByGatewayIdAndTokenId(gatewayId, tokenId);
+            credentialRepository.flush();
         } catch (Exception e) {
             var msg = String.format("Error deleting credential for gateway: %s, token: %s", gatewayId, tokenId);
             logger.error(msg, e);

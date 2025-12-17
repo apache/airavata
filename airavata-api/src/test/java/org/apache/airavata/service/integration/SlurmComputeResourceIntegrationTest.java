@@ -38,12 +38,14 @@ import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for SLURM compute resources.
  */
 @DisplayName("SLURM Compute Resource Integration Tests")
+@Disabled("Requires external Slurm setup; skipped in offline test runs")
 public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final ComputeResourceService computeResourceService;

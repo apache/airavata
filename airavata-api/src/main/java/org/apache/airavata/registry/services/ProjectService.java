@@ -47,6 +47,10 @@ public class ProjectService {
     }
 
     public String addProject(Project project, String gatewayId) throws RegistryException {
+        // Generate project ID if not already set
+        if (project.getProjectID() == null || project.getProjectID().isEmpty()) {
+            project.setProjectID(org.apache.airavata.common.utils.AiravataUtils.getId(project.getName()));
+        }
         ProjectEntity entity = mapper.map(project, ProjectEntity.class);
         entity.setGatewayId(gatewayId);
         ProjectEntity saved = projectRepository.save(entity);

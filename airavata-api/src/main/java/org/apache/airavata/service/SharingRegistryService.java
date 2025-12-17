@@ -343,7 +343,11 @@ public class SharingRegistryService {
             group.setCreatedTime(System.currentTimeMillis());
             group.setUpdatedTime(System.currentTimeMillis());
             // Add group admins once the group is created
-            group.getGroupAdmins().clear();
+            if (group.getGroupAdmins() == null) {
+                group.setGroupAdmins(new java.util.ArrayList<>());
+            } else {
+                group.getGroupAdmins().clear();
+            }
             userGroupService.create(group);
 
             addUsersToGroup(group.getDomainId(), Arrays.asList(group.getOwnerId()), group.getGroupId());

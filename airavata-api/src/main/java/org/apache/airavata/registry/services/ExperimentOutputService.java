@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class ExperimentOutputService {
     private final ExperimentOutputRepository experimentOutputRepository;
     private final Mapper mapper;

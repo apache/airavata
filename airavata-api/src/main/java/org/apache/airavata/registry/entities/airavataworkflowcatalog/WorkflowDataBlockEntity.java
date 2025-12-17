@@ -44,7 +44,7 @@ public class WorkflowDataBlockEntity implements Serializable {
     @Column(name = "WORKFLOW_ID", nullable = false, insertable = false, updatable = false)
     private String workflowId;
 
-    @Column(name = "VALUE")
+    @Column(name = "`VALUE`")
     private String value;
 
     @Column(name = "DATA_TYPE")

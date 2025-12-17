@@ -78,6 +78,9 @@ public class TestDataFactory {
         userProfile.setAiravataInternalUserId(userId + "@" + gatewayId);
         userProfile.setFirstName("Test");
         userProfile.setLastName("User");
+        if (userProfile.getEmails() == null) {
+            userProfile.setEmails(new java.util.ArrayList<>());
+        }
         userProfile.getEmails().add(userId + "@example.com");
         userProfile.setState(Status.ACTIVE);
         userProfile.setCreationTime(System.currentTimeMillis());

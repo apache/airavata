@@ -31,6 +31,7 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
@@ -40,6 +41,7 @@ import org.springframework.test.context.TestPropertySource;
  * Note: These tests require proper Keycloak configuration or mocking.
  * Some tests may be skipped if Keycloak is not available.
  */
+@Disabled("Requires external IAM/Keycloak; skipped for offline test runs")
 @DisplayName("IamAdminService Integration Tests")
 @TestPropertySource(
         properties = {

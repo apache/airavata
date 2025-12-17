@@ -27,6 +27,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -63,7 +65,13 @@ public class ExperimentStatusEntity implements Serializable {
     private String reason;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(
+            name = "EXPERIMENT_ID",
+            referencedColumnName = "EXPERIMENT_ID",
+            nullable = false,
+            updatable = false,
+            insertable = false,
+            foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private ExperimentEntity experiment;
 
     public ExperimentStatusEntity() {}

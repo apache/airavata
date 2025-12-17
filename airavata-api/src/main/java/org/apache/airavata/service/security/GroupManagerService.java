@@ -238,9 +238,11 @@ public class GroupManagerService {
         groupModel.setName(userGroup.getName());
         groupModel.setDescription(userGroup.getDescription());
         groupModel.setOwnerId(userGroup.getOwnerId());
-        final List<String> admins = userGroup.getGroupAdmins().stream()
-                .map(groupAdmin -> groupAdmin.getAdminId())
-                .collect(Collectors.toList());
+        final List<String> admins = (userGroup.getGroupAdmins() != null)
+                ? userGroup.getGroupAdmins().stream()
+                        .map(groupAdmin -> groupAdmin.getAdminId())
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
         groupModel.setAdmins(admins);
 
         sharingService.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream()

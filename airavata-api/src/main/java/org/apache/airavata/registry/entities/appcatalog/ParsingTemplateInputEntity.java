@@ -43,7 +43,7 @@ public class ParsingTemplateInputEntity implements Serializable {
     @Column(name = "APPLICATION_OUTPUT_NAME")
     private String applicationOutputName;
 
-    @Column(name = "VALUE")
+    @Column(name = "`VALUE`")
     private String value;
 
     @Column(name = "PARSING_TEMPLATE_ID", nullable = false, insertable = false, updatable = false)

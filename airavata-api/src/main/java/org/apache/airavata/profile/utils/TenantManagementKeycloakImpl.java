@@ -65,6 +65,13 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         this.properties = properties;
     }
 
+    private String getIamServerUrl() throws IamAdminServicesException {
+        if (properties == null || properties.security == null || properties.security.iam == null || properties.security.iam.serverUrl == null) {
+            throw new IamAdminServicesException("IAM server URL is not configured. Check airavata.properties for security.iam.server-url");
+        }
+        return properties.security.iam.serverUrl;
+    }
+
     private Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
         Client resteasyClient = getResteasyClient();
         return KeycloakBuilder.builder()
@@ -90,7 +97,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     private Client getResteasyClient() {
         var builder = ClientBuilder.newBuilder();
         try {
-            if (properties != null && properties.security.tls.enabled) {
+            if (properties != null && properties.security != null && properties.security.tls != null && properties.security.tls.enabled) {
                 String airavataConfigDir = properties.airavataConfigDir;
                 String keystorePath = properties.security.keystore.path;
                 String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
@@ -126,7 +133,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try {
             // get client
-            client = getClient(properties.security.iam.serverUrl, this.superAdminRealmId, isSuperAdminPasswordCreds);
+            client = getClient(getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             // create realm
             RealmRepresentation newRealmDetails = new RealmRepresentation();
             newRealmDetails.setEnabled(true);
@@ -189,7 +196,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, this.superAdminRealmId, isSuperAdminPasswordCreds);
+            client = getClient(getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             UserRepresentation user = new UserRepresentation();
             user.setUsername(gatewayDetails.getIdentityServerUserName());
             user.setFirstName(gatewayDetails.getGatewayAdminFirstName());
@@ -258,7 +265,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, this.superAdminRealmId, isSuperAdminPasswordCreds);
+            client = getClient(getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             ClientRepresentation pgaClient = new ClientRepresentation();
             pgaClient.setName("pga");
             pgaClient.setClientId("pga");
@@ -356,7 +363,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             return userRepresentation == null;
         } finally {
@@ -378,7 +385,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation user = new UserRepresentation();
             user.setUsername(username);
             user.setFirstName(firstName);
@@ -416,7 +423,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             UserResource userResource = client.realm(tenantId).users().get(userRepresentation.getId());
             UserRepresentation profile = userResource.toRepresentation();
@@ -437,7 +444,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             return userRepresentation != null && userRepresentation.isEnabled();
         } finally {
@@ -451,7 +458,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     public boolean isUserExist(String accessToken, String tenantId, String username) throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             return userRepresentation != null;
         } finally {
@@ -465,7 +472,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     public UserProfile getUser(String accessToken, String tenantId, String username) throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             return userRepresentation != null
                     ? convertUserRepresentationToUserProfile(userRepresentation, tenantId)
@@ -482,7 +489,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> userRepresentationList =
                     client.realm(tenantId).users().search(search, offset, limit);
             return userRepresentationList.stream()
@@ -500,7 +507,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             if (userRepresentation != null) {
                 UserResource retrievedUser = client.realm(tenantId).users().get(userRepresentation.getId());
@@ -535,7 +542,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             List<UserRepresentation> retrieveUserList =
                     client.realm(tenantId).users().search(userName, null, null, email, 0, 1);
             if (!retrieveUserList.isEmpty()) {
@@ -571,7 +578,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             if (userRepresentation != null) {
                 userRepresentation.setFirstName(userDetails.getFirstName());
@@ -598,7 +605,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     public boolean deleteUser(String accessToken, String tenantId, String username) throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, accessToken);
+            client = getClient(getIamServerUrl(), tenantId, accessToken);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             if (userRepresentation != null) {
                 client.realm(tenantId).users().delete(userRepresentation.getId());
@@ -624,7 +631,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, realmAdminCreds);
+            client = getClient(getIamServerUrl(), tenantId, realmAdminCreds);
             List<UserRepresentation> retrieveCreatedUserList =
                     client.realm(tenantId).users().search(username, null, null, null, 0, 1);
             UserResource retrievedUser = client.realm(tenantId)
@@ -649,7 +656,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, realmAdminCreds);
+            client = getClient(getIamServerUrl(), tenantId, realmAdminCreds);
             List<UserRepresentation> retrieveCreatedUserList =
                     client.realm(tenantId).users().search(username, null, null, null, 0, 1);
             UserResource retrievedUser = client.realm(tenantId)
@@ -674,7 +681,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, realmAdminCreds);
+            client = getClient(getIamServerUrl(), tenantId, realmAdminCreds);
             // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no
             // more than 10,000 users in the gateway)
             int totalUserCount = client.realm(tenantId).users().count();
@@ -721,7 +728,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throws IamAdminServicesException {
         Keycloak client = null;
         try {
-            client = getClient(properties.security.iam.serverUrl, tenantId, realmAdminCreds);
+            client = getClient(getIamServerUrl(), tenantId, realmAdminCreds);
             UserRepresentation userRepresentation = getUserByUsername(client, tenantId, username);
             if (userRepresentation == null) {
                 logger.warn("No Keycloak user found for username [" + username + "] in tenant [" + tenantId + "].");

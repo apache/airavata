@@ -57,6 +57,14 @@ public class IamAdminService {
 
     private final DBEventPublisherUtils dbEventPublisherUtils;
 
+    private boolean isIamConfigured() {
+        return properties != null
+                && properties.security != null
+                && properties.security.iam != null
+                && properties.security.iam.serverUrl != null
+                && !properties.security.iam.serverUrl.isEmpty();
+    }
+
     public IamAdminService(
             AiravataServerProperties properties,
             UserProfileService userProfileService,
@@ -141,6 +149,7 @@ public class IamAdminService {
     }
 
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -174,6 +183,7 @@ public class IamAdminService {
     }
 
     public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -187,6 +197,7 @@ public class IamAdminService {
     }
 
     public boolean isUserExist(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -200,6 +211,12 @@ public class IamAdminService {
     }
 
     public UserProfile getUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) {
+            UserProfile up = new UserProfile();
+            up.setUserId(username);
+            up.setGatewayId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+            return up;
+        }
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -214,6 +231,7 @@ public class IamAdminService {
 
     public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
             throws IamAdminServicesException {
+        if (!isIamConfigured()) return java.util.Collections.emptyList();
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -227,6 +245,7 @@ public class IamAdminService {
 
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword)
             throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {

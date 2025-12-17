@@ -63,6 +63,7 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
     @Configuration

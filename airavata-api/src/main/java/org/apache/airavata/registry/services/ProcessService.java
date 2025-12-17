@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional("expCatalogTransactionManager")
 public class ProcessService {
     private static final Logger logger = LoggerFactory.getLogger(ProcessService.class);
 

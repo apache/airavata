@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class ExperimentSummaryService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryService.class);
     private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;

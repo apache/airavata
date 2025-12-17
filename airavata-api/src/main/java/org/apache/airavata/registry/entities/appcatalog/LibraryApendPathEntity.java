@@ -44,7 +44,7 @@ public class LibraryApendPathEntity implements Serializable {
     @Column(name = "DEPLOYMENT_ID", nullable = false)
     private String deploymentId;
 
-    @Column(name = "VALUE")
+    @Column(name = "`VALUE`")
     private String value;
 
     @Id

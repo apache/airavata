@@ -119,62 +119,101 @@ public class GroupMembershipService {
 
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
         var cb = entityManager.getCriteriaBuilder();
-        var query = cb.createQuery(UserEntity.class);
-        var userRoot = query.from(UserEntity.class);
-        var membershipRoot = query.from(GroupMembershipEntity.class);
-
-        var predicates = new ArrayList<Predicate>();
-        predicates.add(cb.equal(membershipRoot.get("childId"), userRoot.get("userId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), userRoot.get("domainId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));
-        predicates.add(cb.equal(membershipRoot.get("parentId"), groupId));
-        predicates.add(cb.equal(membershipRoot.get("childType"), GroupChildType.USER.toString()));
-
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.distinct(true);
-
-        List<UserEntity> entities = entityManager.createQuery(query).getResultList();
+        // Query GroupMembership first to get child user IDs
+        var membershipQuery = cb.createQuery(GroupMembershipEntity.class);
+        var membershipQueryRoot = membershipQuery.from(GroupMembershipEntity.class);
+        var membershipPredicates = new ArrayList<Predicate>();
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("domainId"), domainId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("parentId"), groupId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.USER.toString()));
+        membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
+        
+        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
+        List<String> userIds = memberships.stream()
+                .map(m -> m.getChildId())
+                .distinct()
+                .toList();
+        
+        if (userIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Then query User entities for those IDs
+        var userQuery = cb.createQuery(UserEntity.class);
+        var userQueryRoot = userQuery.from(UserEntity.class);
+        var userPredicates = new ArrayList<Predicate>();
+        userPredicates.add(cb.equal(userQueryRoot.get("domainId"), domainId));
+        userPredicates.add(userQueryRoot.get("userId").in(userIds));
+        userQuery.where(cb.and(userPredicates.toArray(new Predicate[0])));
+        
+        List<UserEntity> entities = entityManager.createQuery(userQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, User.class)).toList();
     }
 
     public List<UserGroup> getAllChildGroups(String domainId, String groupId) throws SharingRegistryException {
         var cb = entityManager.getCriteriaBuilder();
-        var query = cb.createQuery(UserGroupEntity.class);
-        var groupRoot = query.from(UserGroupEntity.class);
-        var membershipRoot = query.from(GroupMembershipEntity.class);
-
-        var predicates = new ArrayList<Predicate>();
-        predicates.add(cb.equal(membershipRoot.get("childId"), groupRoot.get("groupId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), groupRoot.get("domainId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));
-        predicates.add(cb.equal(membershipRoot.get("parentId"), groupId));
-        predicates.add(cb.equal(membershipRoot.get("childType"), GroupChildType.GROUP.toString()));
-
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.distinct(true);
-
-        List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
+        // Query GroupMembership first to get child group IDs
+        var membershipQuery = cb.createQuery(GroupMembershipEntity.class);
+        var membershipQueryRoot = membershipQuery.from(GroupMembershipEntity.class);
+        var membershipPredicates = new ArrayList<Predicate>();
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("domainId"), domainId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("parentId"), groupId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.GROUP.toString()));
+        membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
+        
+        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
+        List<String> groupIds = memberships.stream()
+                .map(m -> m.getChildId())
+                .distinct()
+                .toList();
+        
+        if (groupIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Then query UserGroup entities for those IDs
+        var groupQuery = cb.createQuery(UserGroupEntity.class);
+        var groupQueryRoot = groupQuery.from(UserGroupEntity.class);
+        var groupPredicates = new ArrayList<Predicate>();
+        groupPredicates.add(cb.equal(groupQueryRoot.get("domainId"), domainId));
+        groupPredicates.add(groupQueryRoot.get("groupId").in(groupIds));
+        groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
+        
+        List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
         var cb = entityManager.getCriteriaBuilder();
-        var query = cb.createQuery(UserGroupEntity.class);
-        var groupRoot = query.from(UserGroupEntity.class);
-        var membershipRoot = query.from(GroupMembershipEntity.class);
-
-        var predicates = new ArrayList<Predicate>();
-        predicates.add(cb.equal(membershipRoot.get("parentId"), groupRoot.get("groupId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), groupRoot.get("domainId")));
-        predicates.add(cb.equal(membershipRoot.get("domainId"), domainId));
-        predicates.add(cb.equal(membershipRoot.get("childId"), userId));
-        predicates.add(cb.equal(membershipRoot.get("childType"), GroupChildType.USER.toString()));
-        predicates.add(cb.equal(groupRoot.get("groupCardinality"), "MULTI_USER"));
-
-        query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.distinct(true);
-
-        List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
+        // Query GroupMembership first to get parent group IDs
+        var membershipQuery = cb.createQuery(GroupMembershipEntity.class);
+        var membershipQueryRoot = membershipQuery.from(GroupMembershipEntity.class);
+        var membershipPredicates = new ArrayList<Predicate>();
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("domainId"), domainId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("childId"), userId));
+        membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.USER.toString()));
+        membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
+        
+        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
+        List<String> groupIds = memberships.stream()
+                .map(m -> m.getParentId())
+                .distinct()
+                .toList();
+        
+        if (groupIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Then query UserGroup entities for those IDs
+        var groupQuery = cb.createQuery(UserGroupEntity.class);
+        var groupQueryRoot = groupQuery.from(UserGroupEntity.class);
+        var groupPredicates = new ArrayList<Predicate>();
+        groupPredicates.add(cb.equal(groupQueryRoot.get("domainId"), domainId));
+        groupPredicates.add(groupQueryRoot.get("groupId").in(groupIds));
+        groupPredicates.add(cb.equal(groupQueryRoot.get("groupCardinality"), "MULTI_USER"));
+        groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
+        
+        List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
 

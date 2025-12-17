@@ -50,7 +50,7 @@ public class HandlerOutputEntity implements Serializable {
     private String name;
 
     @Lob
-    @Column(name = "VALUE")
+    @Column(name = "`VALUE`")
     private String value;
 
     @Column(name = "TYPE")

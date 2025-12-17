@@ -120,7 +120,8 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.credential",
                 "org.apache.airavata.messaging",
                 "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
+                "org.apache.airavata.common.utils",
+                "org.apache.airavata.security"
             },
             useDefaultFilters = false,
             includeFilters = {

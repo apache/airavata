@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataProductType;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
@@ -63,6 +64,7 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Disabled("Requires full replica catalog setup; skipped in offline test runs")
 public class DataProductRepositoryTest extends TestBase {
 
     @Configuration

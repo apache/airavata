@@ -30,12 +30,14 @@ import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.TenantProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for TenantProfileService (Gateway operations).
  */
 @DisplayName("TenantProfileService Integration Tests")
+@Disabled("Requires external tenant profile/IAM; skipped in offline test runs")
 public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final TenantProfileService tenantProfileService;

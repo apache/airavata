@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class ExperimentStatusService {
     private final ExperimentStatusRepository experimentStatusRepository;
     private final Mapper mapper;

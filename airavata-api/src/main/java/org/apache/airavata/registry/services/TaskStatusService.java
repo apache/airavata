@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class TaskStatusService {
     private final TaskStatusRepository taskStatusRepository;
     private final Mapper mapper;

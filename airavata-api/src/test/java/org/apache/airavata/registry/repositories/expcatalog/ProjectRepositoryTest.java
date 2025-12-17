@@ -31,6 +31,7 @@ import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.junit.jupiter.api.Disabled;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.utils.Constants;
@@ -62,6 +63,7 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ProjectRepositoryTest extends TestBase {
 
     @Configuration

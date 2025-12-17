@@ -67,6 +67,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
+@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ExperimentRepositoryTest extends TestBase {
 
     @Configuration

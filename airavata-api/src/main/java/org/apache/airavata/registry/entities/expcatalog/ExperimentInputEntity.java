@@ -28,6 +28,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -94,7 +96,12 @@ public class ExperimentInputEntity implements Serializable {
     private String overrideFilename;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @JoinColumn(
+            name = "EXPERIMENT_ID",
+            referencedColumnName = "EXPERIMENT_ID",
+            insertable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private ExperimentEntity experiment;
 
     public ExperimentInputEntity() {}

@@ -25,6 +25,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
@@ -81,7 +83,12 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     private String overrideAllocationProjectNumber;
 
     @ManyToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @JoinColumn(
+            name = "EXPERIMENT_ID",
+            referencedColumnName = "EXPERIMENT_ID",
+            insertable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private UserConfigurationDataEntity userConfigurationData;
 
     public ComputationalResourceSchedulingEntity() {}

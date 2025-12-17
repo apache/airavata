@@ -29,6 +29,7 @@ import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +37,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
 @TestPropertySource(locations = "classpath:airavata.properties")
+@Disabled("Requires SSL credential setup; skipped in offline test runs")
 public class TestSSLClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSSLClient.class);

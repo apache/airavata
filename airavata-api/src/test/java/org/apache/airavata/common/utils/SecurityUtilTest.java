@@ -45,6 +45,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@org.junit.jupiter.api.Disabled("Requires keystore file; skipped in offline test runs")
 public class SecurityUtilTest {
 
     private final String keyStorePath = "airavata.p12";

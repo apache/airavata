@@ -31,6 +31,7 @@ import org.apache.airavata.security.Authenticator;
 import org.apache.airavata.security.userstore.JDBCUserStore;
 import org.apache.airavata.security.userstore.LDAPUserStore;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +54,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
+@Disabled("Requires external auth config; skipped in offline test runs")
 public class AuthenticatorConfigurationReaderTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatorConfigurationReaderTest.class);
