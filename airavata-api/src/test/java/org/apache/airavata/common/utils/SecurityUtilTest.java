@@ -24,7 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyStore;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,10 +50,33 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
-@org.junit.jupiter.api.Disabled("Requires keystore file; skipped in offline test runs")
 public class SecurityUtilTest {
 
-    private final String keyStorePath = "airavata.p12";
+    private static final char[] STORE_PASSWORD = "airavata".toCharArray();
+    private static final char[] SECRET_PASSWORD = "airavatasecretkey".toCharArray();
+    private static String keyStorePath;
+
+    @BeforeAll
+    static void setUpKeystore() throws Exception {
+        Path tempKeystore = Files.createTempFile("airavata-test-keystore", ".p12");
+        tempKeystore.toFile().deleteOnExit();
+
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(null, STORE_PASSWORD);
+
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128);
+        SecretKey secretKey = kg.generateKey();
+        KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(secretKey);
+        KeyStore.PasswordProtection protection = new KeyStore.PasswordProtection(SECRET_PASSWORD);
+        ks.setEntry("mykey", entry, protection);
+
+        try (var out = Files.newOutputStream(tempKeystore)) {
+            ks.store(out, STORE_PASSWORD);
+        }
+
+        keyStorePath = tempKeystore.toString();
+    }
 
     public SecurityUtilTest() {
         // Spring Boot test - no dependencies to inject for this utility test
@@ -84,13 +112,13 @@ public class SecurityUtilTest {
 
         @Override
         public char[] getStorePassword() {
-            return "airavata".toCharArray();
+            return STORE_PASSWORD;
         }
 
         @Override
         public char[] getSecretKeyPassPhrase(String keyAlias) {
             if (keyAlias.equals("mykey")) {
-                return "airavatasecretkey".toCharArray();
+                return SECRET_PASSWORD;
             }
             return null;
         }

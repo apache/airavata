@@ -86,8 +86,8 @@ public class ProcessOutputEntity implements Serializable {
     @Column(name = "METADATA", length = 4096)
     private String metaData;
 
-    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
     private ProcessEntity process;
 
     public ProcessOutputEntity() {}

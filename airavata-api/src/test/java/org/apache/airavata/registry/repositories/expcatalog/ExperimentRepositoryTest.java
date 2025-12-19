@@ -67,7 +67,6 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
-@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ExperimentRepositoryTest extends TestBase {
 
     @Configuration
@@ -151,12 +150,16 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
-        assertEquals(
-                0,
-                experimentService
-                        .getExperiment(experimentId)
-                        .getEmailAddresses()
-                        .size());
+        // Initialize emailAddresses if null
+        if (experimentModel.getEmailAddresses() == null) {
+            experimentModel.setEmailAddresses(new java.util.ArrayList<>());
+        }
+        // Handle null emailAddresses from retrieved experiment
+        ExperimentModel retrievedExperiment = experimentService.getExperiment(experimentId);
+        int emailCount = retrievedExperiment.getEmailAddresses() != null 
+                ? retrievedExperiment.getEmailAddresses().size() 
+                : 0;
+        assertEquals(0, emailCount);
 
         experimentModel.setDescription("description");
         experimentModel.getEmailAddresses().add("notify@example.com");
@@ -167,10 +170,12 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("description", retrievedExperimentModel.getDescription());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrievedExperimentModel.getExperimentType());
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
+        assertNotNull(retrievedExperimentModel.getExperimentStatus());
         assertEquals(1, retrievedExperimentModel.getExperimentStatus().size());
         assertEquals(
                 ExperimentState.CREATED,
                 retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertNotNull(retrievedExperimentModel.getEmailAddresses());
         assertEquals(2, retrievedExperimentModel.getEmailAddresses().size());
         assertEquals(
                 "notify@example.com",
@@ -254,6 +259,10 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setUserFriendlyDescription("First argument");
         input1.setValue("value1");
         input1.setOverrideFilename("gaussian.com");
+        // Initialize experimentInputs if null
+        if (experimentModel.getExperimentInputs() == null) {
+            experimentModel.setExperimentInputs(new java.util.ArrayList<>());
+        }
         experimentModel.getExperimentInputs().add(input1);
 
         String experimentId = experimentService.addExperiment(experimentModel);

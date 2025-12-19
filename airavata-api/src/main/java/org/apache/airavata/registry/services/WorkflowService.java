@@ -22,7 +22,11 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataWorkflow;
+import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowApplicationEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowConnectionEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowHandlerEntity;
 import org.apache.airavata.registry.exception.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
 import org.springframework.stereotype.Service;
@@ -42,6 +46,49 @@ public class WorkflowService {
     public void registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException {
         AiravataWorkflowEntity entity = mapper.map(workflow, AiravataWorkflowEntity.class);
         entity.setExperimentId(experimentId);
+        // Generate workflow ID if not already set
+        if (entity.getId() == null || entity.getId().isEmpty()) {
+            String workflowId = org.apache.airavata.common.utils.AiravataUtils.getId(
+                    workflow.getDescription() != null ? workflow.getDescription() : "workflow");
+            entity.setId(workflowId);
+        }
+        final String workflowId = entity.getId();
+        // Set workflowId on all applications and generate IDs if needed
+        if (entity.getApplications() != null) {
+            for (WorkflowApplicationEntity application : entity.getApplications()) {
+                // Generate application ID if not set
+                if (application.getId() == null || application.getId().isEmpty()) {
+                    String applicationId = org.apache.airavata.common.utils.AiravataUtils.getId("application");
+                    application.setId(applicationId);
+                }
+                // Set workflowId to match the workflow's ID (required for composite key)
+                application.setWorkflowId(workflowId);
+            }
+        }
+        // Set workflowId on all handlers and generate IDs if needed
+        if (entity.getHandlers() != null) {
+            for (WorkflowHandlerEntity handler : entity.getHandlers()) {
+                // Generate handler ID if not set
+                if (handler.getId() == null || handler.getId().isEmpty()) {
+                    String handlerId = org.apache.airavata.common.utils.AiravataUtils.getId("handler");
+                    handler.setId(handlerId);
+                }
+                // Set workflowId to match the workflow's ID (required for composite key)
+                handler.setWorkflowId(workflowId);
+            }
+        }
+        // Set workflowId on all connections and generate IDs if needed
+        if (entity.getConnections() != null) {
+            for (WorkflowConnectionEntity connection : entity.getConnections()) {
+                // Generate connection ID if not set
+                if (connection.getId() == null || connection.getId().isEmpty()) {
+                    String connectionId = org.apache.airavata.common.utils.AiravataUtils.getId("connection");
+                    connection.setId(connectionId);
+                }
+                // Set workflowId to match the workflow's ID (required for composite key)
+                connection.setWorkflowId(workflowId);
+            }
+        }
         workflowRepository.save(entity);
     }
 

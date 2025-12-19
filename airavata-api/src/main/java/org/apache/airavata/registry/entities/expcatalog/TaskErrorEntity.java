@@ -67,8 +67,8 @@ public class TaskErrorEntity implements Serializable {
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private String rootCauseErrorIdList;
 
-    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+    @ManyToOne(targetEntity = TaskEntity.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     private TaskEntity task;
 
     public TaskErrorEntity() {}

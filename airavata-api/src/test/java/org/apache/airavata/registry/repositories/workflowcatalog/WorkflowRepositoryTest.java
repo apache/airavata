@@ -30,7 +30,6 @@ import org.apache.airavata.common.model.WorkflowHandler;
 import org.apache.airavata.registry.exception.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.WorkflowService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,8 +39,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
-// TODO: fix derby initialization script so that this test can be re-enabled
-@Disabled
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, WorkflowRepositoryTest.TestConfiguration.class},
         properties = {
@@ -163,6 +160,17 @@ public class WorkflowRepositoryTest extends TestBase {
     private AiravataWorkflow getSimpleWorkflow() {
 
         AiravataWorkflow workflow = new AiravataWorkflow();
+
+        // Initialize lists if null
+        if (workflow.getApplications() == null) {
+            workflow.setApplications(new java.util.ArrayList<>());
+        }
+        if (workflow.getHandlers() == null) {
+            workflow.setHandlers(new java.util.ArrayList<>());
+        }
+        if (workflow.getConnections() == null) {
+            workflow.setConnections(new java.util.ArrayList<>());
+        }
 
         // Adding basic workflow parameters
         workflow.setDescription(SAMPLE_DESCRIPTION);

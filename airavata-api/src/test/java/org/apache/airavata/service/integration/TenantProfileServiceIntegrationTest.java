@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
  * Integration tests for TenantProfileService (Gateway operations).
  */
 @DisplayName("TenantProfileService Integration Tests")
-@Disabled("Requires external tenant profile/IAM; skipped in offline test runs")
 public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final TenantProfileService tenantProfileService;

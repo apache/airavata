@@ -40,7 +40,6 @@
         <include>NOTICE</include>
         <include>RELEASE_NOTES</include>
         <include>README.md</include>
-        <include>logo.txt</include>
       </includes>
     </fileSet>
 

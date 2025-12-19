@@ -37,6 +37,7 @@ import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentSummaryEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.common.TestBase;
@@ -74,7 +75,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ExperimentSummaryRepositoryTest extends TestBase {
 
     @Configuration
@@ -118,19 +118,47 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
     private final ExperimentService experimentService;
     private final ExperimentStatusService experimentStatusService;
     private final ExperimentSummaryService experimentSummaryService;
+    private final ExperimentSummaryRepository experimentSummaryRepository;
 
     public ExperimentSummaryRepositoryTest(
             GatewayService gatewayService,
             ProjectService projectService,
             ExperimentService experimentService,
             ExperimentStatusService experimentStatusService,
-            ExperimentSummaryService experimentSummaryService) {
+            ExperimentSummaryService experimentSummaryService,
+            ExperimentSummaryRepository experimentSummaryRepository) {
         super(Database.EXP_CATALOG);
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.experimentStatusService = experimentStatusService;
         this.experimentSummaryService = experimentSummaryService;
+        this.experimentSummaryRepository = experimentSummaryRepository;
+    }
+
+    private void saveExperimentSummary(ExperimentModel experimentModel, String status) {
+        ExperimentSummaryEntity summary = new ExperimentSummaryEntity();
+        summary.setExperimentId(experimentModel.getExperimentId());
+        summary.setProjectId(experimentModel.getProjectId());
+        summary.setGatewayId(experimentModel.getGatewayId());
+        summary.setCreationTime(new Timestamp(experimentModel.getCreationTime()));
+        summary.setUserName(experimentModel.getUserName());
+        summary.setName(experimentModel.getExperimentName());
+        summary.setDescription(experimentModel.getDescription());
+        summary.setExecutionId(experimentModel.getExecutionId());
+        if (status != null) {
+            summary.setExperimentStatus(status);
+        } else if (experimentModel.getExperimentStatus() != null && !experimentModel.getExperimentStatus().isEmpty()) {
+            summary.setExperimentStatus(experimentModel.getExperimentStatus().get(experimentModel.getExperimentStatus().size() - 1).getState().name());
+        }
+        
+        // Populate resourceHostId if available in UserConfigurationData
+        if (experimentModel.getUserConfigurationData() != null && 
+            experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
+            summary.setResourceHostId(experimentModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+        }
+
+        experimentSummaryRepository.save(summary);
     }
 
     @Test
@@ -178,28 +206,34 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         assertTrue(experimentIdOne != null);
         // Reload experiment to get its status' identifier
         experimentModelOne = experimentService.getExperiment(experimentIdOne);
+        saveExperimentSummary(experimentModelOne, null);
 
         String experimentIdTwo = experimentService.addExperiment(experimentModelTwo);
         assertTrue(experimentIdTwo != null);
         // Reload experiment to get its status' identifier
         experimentModelTwo = experimentService.getExperiment(experimentIdTwo);
+        saveExperimentSummary(experimentModelTwo, null);
 
         String experimentIdThree = experimentService.addExperiment(experimentModelThree);
         assertTrue(experimentIdThree != null);
         // Reload experiment to get its status' identifier
         experimentModelThree = experimentService.getExperiment(experimentIdThree);
+        saveExperimentSummary(experimentModelThree, null);
 
         Timestamp timeOne = Timestamp.valueOf("2010-01-01 09:00:00");
         experimentModelOne.setCreationTime(timeOne.getTime());
         experimentService.updateExperiment(experimentModelOne, experimentIdOne);
+        saveExperimentSummary(experimentModelOne, null);
 
         Timestamp timeTwo = Timestamp.valueOf("2018-01-01 09:00:00");
         experimentModelTwo.setCreationTime(timeTwo.getTime());
         experimentService.updateExperiment(experimentModelTwo, experimentIdTwo);
+        saveExperimentSummary(experimentModelTwo, null);
 
         Timestamp timeThree = Timestamp.valueOf("2020-01-01 09:00:00");
         experimentModelThree.setCreationTime(timeThree.getTime());
         experimentService.updateExperiment(experimentModelThree, experimentIdThree);
+        saveExperimentSummary(experimentModelThree, null);
 
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
@@ -316,16 +350,19 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         experimentStatusOne.setState(ExperimentState.CREATED);
         String statusIdOne = experimentStatusService.addExperimentStatus(experimentStatusOne, experimentIdOne);
         assertTrue(statusIdOne != null);
+        saveExperimentSummary(experimentModelOne, ExperimentState.CREATED.name());
 
         ExperimentStatus experimentStatusTwo = new ExperimentStatus();
         experimentStatusTwo.setState(ExperimentState.EXECUTING);
         String statusIdTwo = experimentStatusService.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
         assertTrue(statusIdTwo != null);
+        saveExperimentSummary(experimentModelTwo, ExperimentState.EXECUTING.name());
 
         ExperimentStatus experimentStatusThree = new ExperimentStatus();
         experimentStatusThree.setState(ExperimentState.CANCELED);
         String statusIdThree = experimentStatusService.addExperimentStatus(experimentStatusThree, experimentIdThree);
         assertTrue(statusIdThree != null);
+        saveExperimentSummary(experimentModelThree, ExperimentState.CANCELED.name());
 
         experimentStatistics =
                 experimentSummaryService.getAccessibleExperimentStatistics(allExperimentIds, filters, 10, 0);

@@ -21,15 +21,11 @@ package org.apache.airavata.credential;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.services.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,71 +45,29 @@ import org.springframework.transaction.annotation.Transactional;
         properties = {"spring.main.allow-bean-definition-overriding=true", "security.manager.enabled=false"})
 @TestPropertySource(locations = "classpath:airavata.properties")
 @Transactional
-@org.junit.jupiter.api.Disabled("Requires credential backend; skipped in offline test runs")
 public class SSHSummaryTest {
     private static final Logger logger = LoggerFactory.getLogger(SSHSummaryTest.class);
 
     @Autowired
     private SSHCredentialWriter sshCredentialWriter;
 
-    private X509Certificate[] x509Certificates;
-    private PrivateKey privateKey;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        x509Certificates = new X509Certificate[1];
-        initializeKeys();
-    }
-
-    private void initializeKeys() throws Exception {
-        KeyStore ks = KeyStore.getInstance("JKS");
-        char[] password = "password".toCharArray();
-
-        String baseDirectory = System.getProperty("credential.module.directory");
-
-        String keyStorePath =
-                "src" + File.separator + "test" + File.separator + "resources" + File.separator + "airavata.p12";
-
-        if (baseDirectory != null) {
-            keyStorePath = baseDirectory + File.separator + keyStorePath;
-        } else {
-            keyStorePath = "modules" + File.separator + "credential-store" + File.separator + keyStorePath;
-        }
-
-        File keyStoreFile = new File(keyStorePath);
-        if (!keyStoreFile.exists()) {
-            logger.warn("Keystore file not found at {}. Test will skip keystore initialization.", keyStoreFile);
-            // Don't throw - allow test to continue without keystore
-            return;
-        }
-
-        java.io.FileInputStream fis = null;
-        try {
-            fis = new java.io.FileInputStream(keyStorePath);
-            ks.load(fis, password);
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-
-        privateKey = (PrivateKey) ks.getKey("selfsigned", password);
-        x509Certificates[0] = (X509Certificate) ks.getCertificate("selfsigned");
-    }
+    // Removed keystore initialization - not needed for SSH credential test
 
     @Test
     public void testSSHSummary() throws Exception {
         String gatewayId = "test-gateway";
-        String privateKeyPath = System.getProperty("user.home") + "/.ssh/id_rsa";
-        String pubKeyPath = System.getProperty("user.home") + "/.ssh/id_rsa.pub";
 
-        File privateKeyFile = new File(privateKeyPath);
-        File pubKeyFile = new File(pubKeyPath);
+        // Generate RSA key pair for testing
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048);
+        KeyPair keyPair = keyGen.generateKeyPair();
 
-        if (!privateKeyFile.exists() || !pubKeyFile.exists()) {
-            logger.warn("SSH key files not found at {} and {}. Skipping test.", privateKeyPath, pubKeyPath);
-            return;
-        }
+        // Convert to PEM-like format (simplified for testing)
+        String privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n" +
+                java.util.Base64.getMimeEncoder(64, "\n".getBytes()).encodeToString(keyPair.getPrivate().getEncoded()) +
+                "\n-----END PRIVATE KEY-----";
+        String publicKeyPEM = "ssh-rsa " +
+                java.util.Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
 
         var sshCredential = new SSHCredential();
         sshCredential.setGatewayId(gatewayId);
@@ -121,22 +75,8 @@ public class SSHSummaryTest {
         sshCredential.setToken(token);
         sshCredential.setPortalUserName("test-user");
         sshCredential.setDescription("Test SSH credential");
-
-        FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
-        File filePri = new File(privateKeyPath);
-        byte[] bFilePri = new byte[(int) filePri.length()];
-        privateKeyStream.read(bFilePri);
-
-        FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
-        File filePub = new File(pubKeyPath);
-        byte[] bFilePub = new byte[(int) filePub.length()];
-        pubKeyStream.read(bFilePub);
-
-        privateKeyStream.close();
-        pubKeyStream.close();
-
-        sshCredential.setPrivateKey(new String(bFilePri));
-        sshCredential.setPublicKey(new String(bFilePub));
+        sshCredential.setPrivateKey(privateKeyPEM);
+        sshCredential.setPublicKey(publicKeyPEM);
         sshCredential.setPassphrase("test-passphrase");
 
         sshCredentialWriter.writeCredentials(sshCredential);

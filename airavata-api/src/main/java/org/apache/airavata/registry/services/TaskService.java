@@ -25,8 +25,10 @@ import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.repositories.expcatalog.TaskRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
@@ -41,11 +43,13 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     private final TaskRepository taskRepository;
+    private final ProcessRepository processRepository;
     private final JobService jobService;
     private final Mapper mapper;
 
-    public TaskService(TaskRepository taskRepository, JobService jobService, Mapper mapper) {
+    public TaskService(TaskRepository taskRepository, ProcessRepository processRepository, JobService jobService, Mapper mapper) {
         this.taskRepository = taskRepository;
+        this.processRepository = processRepository;
         this.jobService = jobService;
         this.mapper = mapper;
     }
@@ -163,6 +167,22 @@ public class TaskService {
         taskModel.setLastUpdateTime(System.currentTimeMillis());
 
         TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
+        
+        // Set process relationship to ensure PARENT_PROCESS_ID is set via @JoinColumn
+        // (parentProcessId field is marked as insertable=false, updatable=false)
+        if (taskModel.getParentProcessId() != null) {
+            ProcessEntity processEntity = processRepository.findById(taskModel.getParentProcessId()).orElse(null);
+            if (processEntity != null) {
+                taskEntity.setProcess(processEntity);
+            } else {
+                // If process doesn't exist, create a reference with just the ID
+                processEntity = new ProcessEntity();
+                processEntity.setProcessId(taskModel.getParentProcessId());
+                taskEntity.setProcess(processEntity);
+            }
+            // Also set parentProcessId field directly for consistency
+            taskEntity.setParentProcessId(taskModel.getParentProcessId());
+        }
 
         populateParentIds(taskEntity);
 

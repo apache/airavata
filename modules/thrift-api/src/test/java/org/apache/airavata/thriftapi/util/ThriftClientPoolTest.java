@@ -30,7 +30,6 @@ import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TTransport;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ThriftClientPoolTest {
@@ -73,14 +72,13 @@ public class ThriftClientPoolTest {
     }
 
     /**
-     * Just like #{@link #testWithAbandonConfigAndAbandoned()} but using default
-     * configuration.
+     * Test pool with eviction configuration enabled.
+     * Uses fast eviction timing to avoid long waits in tests.
      *
      * @throws TException
      * @throws ApplicationSettingsException
      */
     @Test
-    @Disabled("Test requires long wait time to account for default removeAbandonedTimeout")
     public void testWithDefaultAbandonedRemovalEnabled() throws TException, ApplicationSettingsException {
         when(mockClient.getAPIVersion()).thenReturn("0.19");
 
@@ -88,10 +86,13 @@ public class ThriftClientPoolTest {
         poolConfig.setTimeBetweenEvictionRunsMillis(1);
         var mockProtocol = mock(TProtocol.class);
         var thriftClientPool = new ThriftClientPool<>((protocol) -> mockClient, () -> mockProtocol, poolConfig);
-        thriftClientPool.getResource();
+        var client = thriftClientPool.getResource();
+        // Return the resource properly
+        thriftClientPool.returnResource(client);
+        // Close the pool
         thriftClientPool.close();
 
-        // Verify client is destroyed when pool is closed
+        // Verify client transports are closed when pool is closed
         verify(mockInputTransport, times(1)).close();
         verify(mockOutputTransport, times(1)).close();
     }

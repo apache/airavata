@@ -45,7 +45,6 @@ import org.junit.jupiter.api.Test;
  * Integration tests for SLURM compute resources.
  */
 @DisplayName("SLURM Compute Resource Integration Tests")
-@Disabled("Requires external Slurm setup; skipped in offline test runs")
 public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final ComputeResourceService computeResourceService;

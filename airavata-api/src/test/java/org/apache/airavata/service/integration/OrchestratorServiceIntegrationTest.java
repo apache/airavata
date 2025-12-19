@@ -37,14 +37,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.junit.jupiter.api.Disabled;
+import org.springframework.test.context.TestConstructor;
 
-@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:airavata.properties")
-@Disabled("Depends on orchestrator stack; skipped in offline test runs")
-public class OrchestratorServiceIntegrationTest {
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final OrchestratorService orchestratorService;
     private final RegistryService registryService;

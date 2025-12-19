@@ -22,6 +22,7 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
@@ -29,6 +30,7 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
+import org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
@@ -85,7 +87,55 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ExperimentModel.class);
+        
+        // Temporarily null emailAddresses to avoid Dozer mapping issues
+        String emailAddressesStr = entity.getEmailAddresses();
+        entity.setEmailAddresses(null);
+        
+        ExperimentModel model = mapper.map(entity, ExperimentModel.class);
+        
+        // Restore emailAddresses on entity
+        entity.setEmailAddresses(emailAddressesStr);
+        
+        // Manually convert emailAddresses from String (CSV) to List<String>
+        if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
+            model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+        } else {
+            model.setEmailAddresses(new java.util.ArrayList<>());
+        }
+        // Initialize empty lists if null to prevent NullPointerException
+        if (model.getExperimentInputs() == null) {
+            model.setExperimentInputs(new java.util.ArrayList<>());
+        }
+        if (model.getExperimentOutputs() == null) {
+            model.setExperimentOutputs(new java.util.ArrayList<>());
+        }
+        if (model.getErrors() == null) {
+            model.setErrors(new java.util.ArrayList<>());
+        }
+        if (model.getProcesses() == null) {
+            model.setProcesses(new java.util.ArrayList<>());
+        }
+        // Manually map computationalResourceScheduling from UserConfigurationDataEntity fields
+        if (model.getUserConfigurationData() != null && entity.getUserConfigurationData() != null) {
+            UserConfigurationDataEntity ucdEntity = entity.getUserConfigurationData();
+            // Always create ComputationalResourceSchedulingModel from entity fields
+            // (entity stores scheduling fields directly, model has them in a nested object)
+            ComputationalResourceSchedulingModel crsModel = new ComputationalResourceSchedulingModel();
+            crsModel.setResourceHostId(ucdEntity.getResourceHostId());
+            crsModel.setTotalCPUCount(ucdEntity.getTotalCPUCount());
+            crsModel.setNodeCount(ucdEntity.getNodeCount());
+            crsModel.setNumberOfThreads(ucdEntity.getNumberOfThreads());
+            crsModel.setQueueName(ucdEntity.getQueueName());
+            crsModel.setWallTimeLimit(ucdEntity.getWallTimeLimit());
+            crsModel.setTotalPhysicalMemory(ucdEntity.getTotalPhysicalMemory());
+            crsModel.setStaticWorkingDir(ucdEntity.getStaticWorkingDir());
+            crsModel.setOverrideLoginUserName(ucdEntity.getOverrideLoginUserName());
+            crsModel.setOverrideScratchLocation(ucdEntity.getOverrideScratchLocation());
+            crsModel.setOverrideAllocationProjectNumber(ucdEntity.getOverrideAllocationProjectNumber());
+            model.getUserConfigurationData().setComputationalResourceScheduling(crsModel);
+        }
+        return model;
     }
 
     @Transactional("expCatalogTransactionManager")
@@ -188,6 +238,13 @@ public class ExperimentService {
             ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
             // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(experimentModel, existingEntity);
+            
+            // Manually set emailAddresses on both entities (excluded from Dozer mapping)
+            java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
+            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty()) 
+                    ? String.join(",", emailAddressesList) : null;
+            newEntity.setEmailAddresses(emailAddressesStr);
+            existingEntity.setEmailAddresses(emailAddressesStr);
 
             // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
             EntityMergeHelper.mergeLists(
@@ -210,11 +267,34 @@ public class ExperimentService {
             experimentEntity = existingEntity;
         } else {
             experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
+            // Manually convert emailAddresses from List<String> to String (CSV) - excluded from Dozer mapping
+            java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
+            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty()) 
+                    ? String.join(",", emailAddressesList) : null;
+            experimentEntity.setEmailAddresses(emailAddressesStr);
         }
 
         if (experimentEntity.getUserConfigurationData() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");
-            experimentEntity.getUserConfigurationData().setExperimentId(experimentId);
+            UserConfigurationDataEntity ucdEntity = experimentEntity.getUserConfigurationData();
+            ucdEntity.setExperimentId(experimentId);
+            // Copy fields from ComputationalResourceSchedulingModel to entity fields if present
+            if (experimentModel.getUserConfigurationData() != null 
+                    && experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
+                ComputationalResourceSchedulingModel crsModel = 
+                        experimentModel.getUserConfigurationData().getComputationalResourceScheduling();
+                ucdEntity.setResourceHostId(crsModel.getResourceHostId());
+                ucdEntity.setTotalCPUCount(crsModel.getTotalCPUCount());
+                ucdEntity.setNodeCount(crsModel.getNodeCount());
+                ucdEntity.setNumberOfThreads(crsModel.getNumberOfThreads());
+                ucdEntity.setQueueName(crsModel.getQueueName());
+                ucdEntity.setWallTimeLimit(crsModel.getWallTimeLimit());
+                ucdEntity.setTotalPhysicalMemory(crsModel.getTotalPhysicalMemory());
+                ucdEntity.setStaticWorkingDir(crsModel.getStaticWorkingDir());
+                ucdEntity.setOverrideLoginUserName(crsModel.getOverrideLoginUserName());
+                ucdEntity.setOverrideScratchLocation(crsModel.getOverrideScratchLocation());
+                ucdEntity.setOverrideAllocationProjectNumber(crsModel.getOverrideAllocationProjectNumber());
+            }
         }
 
         if (experimentEntity.getUserConfigurationData() != null

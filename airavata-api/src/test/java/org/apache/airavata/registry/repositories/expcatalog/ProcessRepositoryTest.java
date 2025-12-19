@@ -73,7 +73,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ProcessRepositoryTest extends TestBase {
 
     @Configuration
@@ -155,12 +154,21 @@ public class ProcessRepositoryTest extends TestBase {
 
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
+        
+        // Initialize tasks list if null
+        if (processModel.getTasks() == null) {
+            processModel.setTasks(new java.util.ArrayList<>());
+        }
 
         TaskModel task = new TaskModel();
         task.setTaskId("task-id");
         task.setTaskType(TaskTypes.ENV_SETUP);
         processModel.getTasks().add(task);
 
+        // Initialize taskStatuses if null
+        if (task.getTaskStatuses() == null) {
+            task.setTaskStatuses(new java.util.ArrayList<>());
+        }
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.CREATED);
         taskStatus.setStatusId("task-status-id");
@@ -172,6 +180,10 @@ public class ProcessRepositoryTest extends TestBase {
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
+        // Initialize emailAddresses if null
+        if (processModel.getEmailAddresses() == null) {
+            processModel.setEmailAddresses(new java.util.ArrayList<>());
+        }
         processModel.getEmailAddresses().add("notify@example.com");
         processModel.getEmailAddresses().add("notify1@example.com");
 
@@ -182,9 +194,17 @@ public class ProcessRepositoryTest extends TestBase {
         job.setProcessId(processId);
         job.setJobId("job-id");
         job.setJobDescription("job-description");
+        // Initialize jobStatuses if null
+        if (job.getJobStatuses() == null) {
+            job.setJobStatuses(new java.util.ArrayList<>());
+        }
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
         jobStatus.setStatusId("submitted-job-status-id");
         job.getJobStatuses().add(jobStatus);
+        // Initialize jobs if null
+        if (jobSubmissionTask.getJobs() == null) {
+            jobSubmissionTask.setJobs(new java.util.ArrayList<>());
+        }
         jobSubmissionTask.getJobs().add(job);
         processModel.getTasks().add(jobSubmissionTask);
         processService.updateProcess(processModel, processId);

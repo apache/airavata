@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration tests for AiravataService (Main service operations).
  */
-@Disabled("Depends on full service stack; skipped in offline test runs")
 @DisplayName("AiravataService Integration Tests")
 public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 

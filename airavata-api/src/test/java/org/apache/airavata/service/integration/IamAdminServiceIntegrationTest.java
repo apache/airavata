@@ -41,7 +41,6 @@ import org.springframework.test.context.TestPropertySource;
  * Note: These tests require proper Keycloak configuration or mocking.
  * Some tests may be skipped if Keycloak is not available.
  */
-@Disabled("Requires external IAM/Keycloak; skipped for offline test runs")
 @DisplayName("IamAdminService Integration Tests")
 @TestPropertySource(
         properties = {

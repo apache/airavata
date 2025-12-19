@@ -23,9 +23,12 @@ import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.InputDataObjectType;
+import jakarta.persistence.EntityManager;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessInputRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,17 +36,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessInputService {
     private final ProcessInputRepository processInputRepository;
+    private final EntityManager entityManager;
     private final Mapper mapper;
 
-    public ProcessInputService(ProcessInputRepository processInputRepository, Mapper mapper) {
+    public ProcessInputService(ProcessInputRepository processInputRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
         this.processInputRepository = processInputRepository;
+        this.entityManager = entityManager;
         this.mapper = mapper;
     }
 
     public String addProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
+        // Get a reference to the process entity (proxy, doesn't fetch from DB)
+        ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         for (InputDataObjectType input : inputs) {
             ProcessInputEntity entity = mapper.map(input, ProcessInputEntity.class);
             entity.setProcessId(processId);
+            // Set process relationship to ensure PROCESS_ID is set via @JoinColumn
+            entity.setProcess(processEntity);
             processInputRepository.save(entity);
         }
         return processId;
@@ -52,7 +61,10 @@ public class ProcessInputService {
     public void updateProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
         // Delete existing inputs and add new ones
         List<ProcessInputEntity> existing = processInputRepository.findByProcessId(processId);
-        processInputRepository.deleteAll(existing);
+        if (!existing.isEmpty()) {
+            processInputRepository.deleteAll(existing);
+            processInputRepository.flush(); // Ensure deletes are executed before inserting new ones with same IDs
+        }
         addProcessInputs(inputs, processId);
     }
 

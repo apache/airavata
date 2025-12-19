@@ -60,9 +60,11 @@ public class StorageResourceService {
 
     public String addStorageResource(StorageResourceDescription description) throws AppCatalogException {
         try {
-            final String storageResourceId = AppCatalogUtils.getID(description.getHostName());
-            if ("".equals(description.getStorageResourceId())
-                    || AiravataCommonsConstants.DEFAULT_ID.equals(description.getStorageResourceId())) {
+            // Generate storageResourceId if not set
+            String storageResourceId = description.getStorageResourceId();
+            if (storageResourceId == null || storageResourceId.isEmpty()
+                    || AiravataCommonsConstants.DEFAULT_ID.equals(storageResourceId)) {
+                storageResourceId = AppCatalogUtils.getID(description.getHostName());
                 description.setStorageResourceId(storageResourceId);
             }
             description.setCreationTime(System.currentTimeMillis());
@@ -71,6 +73,15 @@ public class StorageResourceService {
                         .forEach(dm -> dm.setStorageResourceId(description.getStorageResourceId()));
             }
             StorageResourceEntity entity = mapper.map(description, StorageResourceEntity.class);
+            // Ensure storageResourceId is set on entity (Dozer might not map it correctly)
+            entity.setStorageResourceId(storageResourceId);
+            // Ensure creationTime and updateTime are set
+            if (entity.getCreationTime() == null) {
+                entity.setCreationTime(new java.sql.Timestamp(description.getCreationTime()));
+            }
+            if (entity.getUpdateTime() == null) {
+                entity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
             StorageResourceEntity saved = storageResourceRepository.save(entity);
             return saved.getStorageResourceId();
         } catch (Exception e) {
@@ -97,10 +108,68 @@ public class StorageResourceService {
             StorageResourceEntity existingEntity =
                     storageResourceRepository.findById(storageResourceId).orElse(null);
             if (existingEntity != null) {
+                // Preserve existing dataMovementInterfaces to avoid duplicate entity issues
+                List<StorageInterfaceEntity> existingInterfaces = existingEntity.getDataMovementInterfaces();
+                // Temporarily null out to prevent Dozer from merging incorrectly
+                existingEntity.setDataMovementInterfaces(null);
                 mapper.map(updatedStorageResource, existingEntity);
+                // Manually handle dataMovementInterfaces to avoid duplicate entity issues
+                if (updatedStorageResource.getDataMovementInterfaces() != null) {
+                    List<StorageInterfaceEntity> newInterfaces = new java.util.ArrayList<>();
+                    Map<String, StorageInterfaceEntity> existingMap = new java.util.HashMap<>();
+                    if (existingInterfaces != null) {
+                        existingInterfaces.forEach(iface -> existingMap.put(iface.getDataMovementInterfaceId(), iface));
+                    }
+                    for (DataMovementInterface dmInterface : updatedStorageResource.getDataMovementInterfaces()) {
+                        StorageInterfaceEntity ifaceEntity = existingMap.get(dmInterface.getDataMovementInterfaceId());
+                        if (ifaceEntity == null) {
+                            ifaceEntity = mapper.map(dmInterface, StorageInterfaceEntity.class);
+                            ifaceEntity.setStorageResourceId(storageResourceId);
+                            ifaceEntity.setStorageResource(existingEntity);
+                            // Ensure creationTime and updateTime are set
+                            if (ifaceEntity.getCreationTime() == null) {
+                                ifaceEntity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                            }
+                            if (ifaceEntity.getUpdateTime() == null) {
+                                ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                            }
+                        } else {
+                            mapper.map(dmInterface, ifaceEntity);
+                            ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                        }
+                        newInterfaces.add(ifaceEntity);
+                    }
+                    existingEntity.setDataMovementInterfaces(newInterfaces);
+                } else {
+                    existingEntity.setDataMovementInterfaces(new java.util.ArrayList<>());
+                }
+                // Ensure updateTime is set
+                existingEntity.setUpdateTime(new java.sql.Timestamp(updatedStorageResource.getUpdateTime()));
                 storageResourceRepository.save(existingEntity);
             } else {
                 StorageResourceEntity entity = mapper.map(updatedStorageResource, StorageResourceEntity.class);
+                // Ensure storageResourceId is set
+                entity.setStorageResourceId(storageResourceId);
+                // Ensure creationTime and updateTime are set
+                if (entity.getCreationTime() == null) {
+                    entity.setCreationTime(new java.sql.Timestamp(updatedStorageResource.getCreationTime()));
+                }
+                if (entity.getUpdateTime() == null) {
+                    entity.setUpdateTime(new java.sql.Timestamp(updatedStorageResource.getUpdateTime()));
+                }
+                // Ensure dataMovementInterfaces have storageResourceId and timestamps set
+                if (entity.getDataMovementInterfaces() != null) {
+                    for (StorageInterfaceEntity iface : entity.getDataMovementInterfaces()) {
+                        iface.setStorageResourceId(storageResourceId);
+                        iface.setStorageResource(entity);
+                        if (iface.getCreationTime() == null) {
+                            iface.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                        }
+                        if (iface.getUpdateTime() == null) {
+                            iface.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                        }
+                    }
+                }
                 storageResourceRepository.save(entity);
             }
         } catch (Exception e) {

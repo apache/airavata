@@ -23,9 +23,12 @@ import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.OutputDataObjectType;
+import jakarta.persistence.EntityManager;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessOutputService {
     private final ProcessOutputRepository processOutputRepository;
+    private final EntityManager entityManager;
     private final Mapper mapper;
 
-    public ProcessOutputService(ProcessOutputRepository processOutputRepository, Mapper mapper) {
+    public ProcessOutputService(ProcessOutputRepository processOutputRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
         this.processOutputRepository = processOutputRepository;
+        this.entityManager = entityManager;
         this.mapper = mapper;
     }
 
@@ -48,9 +53,13 @@ public class ProcessOutputService {
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
+        // Get a reference to the process entity (proxy, doesn't fetch from DB)
+        ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         for (OutputDataObjectType output : outputs) {
             ProcessOutputEntity entity = mapper.map(output, ProcessOutputEntity.class);
             entity.setProcessId(processId);
+            // Set process relationship to ensure PROCESS_ID is set via @JoinColumn
+            entity.setProcess(processEntity);
             processOutputRepository.save(entity);
         }
     }
@@ -58,7 +67,10 @@ public class ProcessOutputService {
     public void updateProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
         // Delete existing outputs and add new ones
         List<ProcessOutputEntity> existing = processOutputRepository.findByProcessId(processId);
-        processOutputRepository.deleteAll(existing);
+        if (!existing.isEmpty()) {
+            processOutputRepository.deleteAll(existing);
+            processOutputRepository.flush(); // Ensure deletes are executed before inserting new ones with same IDs
+        }
         addProcessOutputs(outputs, processId);
     }
 }

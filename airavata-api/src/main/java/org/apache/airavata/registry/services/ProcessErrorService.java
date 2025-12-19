@@ -22,11 +22,14 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import jakarta.persistence.EntityManager;
 import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, ProcessErrorRepository, ProcessErrorPK> {
 
-    public ProcessErrorService(ProcessErrorRepository processErrorRepository, Mapper mapper) {
+    private final EntityManager entityManager;
+
+    public ProcessErrorService(ProcessErrorRepository processErrorRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
         super(processErrorRepository, mapper);
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -67,7 +73,13 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
      * @throws RegistryException if the operation fails
      */
     public String addProcessError(ErrorModel error, String processId) throws RegistryException {
-        return addError(error, processId);
+        ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
+        getParentIdSetter().accept(entity, processId);
+        // Get a reference to the process entity (proxy, doesn't fetch from DB)
+        ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
+        entity.setProcess(processEntity);
+        ProcessErrorEntity saved = repository.save(entity);
+        return getErrorIdExtractor().apply(saved);
     }
 
     /**

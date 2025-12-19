@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
  * Integration tests for UserProfileService.
  */
 @DisplayName("UserProfileService Integration Tests")
-@Disabled("Requires external IAM/user profile backend; skipped in offline test runs")
 public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final UserProfileService userProfileService;

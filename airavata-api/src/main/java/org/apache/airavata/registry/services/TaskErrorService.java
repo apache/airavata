@@ -22,11 +22,14 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import jakarta.persistence.EntityManager;
 import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErrorRepository, TaskErrorPK> {
 
-    public TaskErrorService(TaskErrorRepository taskErrorRepository, Mapper mapper) {
+    private final EntityManager entityManager;
+
+    public TaskErrorService(TaskErrorRepository taskErrorRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
         super(taskErrorRepository, mapper);
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -67,7 +73,13 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
      * @throws RegistryException if the operation fails
      */
     public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
-        return addError(error, taskId);
+        TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
+        getParentIdSetter().accept(entity, taskId);
+        // Get a reference to the task entity (proxy, doesn't fetch from DB)
+        TaskEntity taskEntity = entityManager.getReference(TaskEntity.class, taskId);
+        entity.setTask(taskEntity);
+        TaskErrorEntity saved = repository.save(entity);
+        return getErrorIdExtractor().apply(saved);
     }
 
     /**

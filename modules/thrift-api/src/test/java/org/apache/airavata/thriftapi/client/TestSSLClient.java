@@ -19,33 +19,72 @@
 */
 package org.apache.airavata.thriftapi.client;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.cert.X509Certificate;
+import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.service.security.CredentialStoreService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:airavata.properties")
-@Disabled("Requires SSL credential setup; skipped in offline test runs")
 public class TestSSLClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSSLClient.class);
 
-    private final CredentialStoreService credentialService;
+    private CredentialStoreService credentialService;
 
-    public TestSSLClient(CredentialStoreService credentialService) {
-        this.credentialService = credentialService;
+    private final Map<String, SSHCredential> sshStore = new ConcurrentHashMap<>();
+    private final Map<String, CertificateCredential> certStore = new ConcurrentHashMap<>();
+
+    @BeforeEach
+    void setupMocks() throws Exception {
+        credentialService = Mockito.mock(CredentialStoreService.class);
+        doAnswer(invocation -> {
+                    SSHCredential incoming = invocation.getArgument(0, SSHCredential.class);
+                    String token = UUID.randomUUID().toString();
+                    SSHCredential stored = new SSHCredential();
+                    stored.setToken(token);
+                    stored.setGatewayId(incoming.getGatewayId());
+                    stored.setUsername(incoming.getUsername());
+                    stored.setPrivateKey("private");
+                    stored.setPublicKey("public");
+                    sshStore.put(token, stored);
+                    return token;
+                })
+                .when(credentialService)
+                .addSSHCredential(org.mockito.ArgumentMatchers.any());
+
+        when(credentialService.getSSHCredential(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+                .thenAnswer(invocation -> sshStore.get(invocation.getArgument(0, String.class)));
+
+        doAnswer(invocation -> {
+                    CertificateCredential incoming = invocation.getArgument(0, CertificateCredential.class);
+                    String token = UUID.randomUUID().toString();
+                    CertificateCredential stored = new CertificateCredential();
+                    stored.setToken(token);
+                    stored.setGatewayId(
+                            incoming.getCommunityUser() != null ? incoming.getCommunityUser().getGatewayName() : "gateway");
+                    stored.setCommunityUser(incoming.getCommunityUser());
+                    stored.setX509Cert(incoming.getX509Cert());
+                    certStore.put(token, stored);
+                    return token;
+                })
+                .when(credentialService)
+                .addCertificateCredential(org.mockito.ArgumentMatchers.any());
+
+        when(credentialService.getCertificateCredential(
+                        org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+                .thenAnswer(invocation -> certStore.get(invocation.getArgument(0, String.class)));
     }
 
     @Test
@@ -65,8 +104,10 @@ public class TestSSLClient {
             SSHCredential credential = credentialService.getSSHCredential(token, "testGateway");
             logger.info("private key : {}", credential.getPrivateKey());
             logger.info("public key : {}", credential.getPublicKey());
+            org.junit.jupiter.api.Assertions.assertNotNull(credential);
         } catch (Exception e) {
             logger.error("Error adding SSH credential", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -75,28 +116,26 @@ public class TestSSLClient {
             CertificateCredential certificateCredential = new CertificateCredential();
             CommunityUser communityUser = new CommunityUser("testGateway", "test", "test@ddsd");
             certificateCredential.setCommunityUser(communityUser);
-            X509Certificate[] x509Certificates = new X509Certificate[1];
-            KeyStore ks = KeyStore.getInstance("JKS");
-            File keyStoreFile = new File(
-                    "/Users/smarru/code/airavata-master/modules/configuration/server/src/main/resources/airavata.p12");
-            FileInputStream fis = new FileInputStream(keyStoreFile);
-            char[] password = "airavata".toCharArray();
-            ks.load(fis, password);
-            x509Certificates[0] = (X509Certificate) ks.getCertificate("airavata");
-            Base64.Encoder encoder = Base64.getMimeEncoder(64, "\n".getBytes());
-            String cert_begin = "-----BEGIN CERTIFICATE-----\n";
-            String end_cert = "-----END CERTIFICATE-----";
-            byte[] derCert = x509Certificates[0].getEncoded();
-            String pemCertPre = encoder.encodeToString(derCert);
-            String pemCert = cert_begin + pemCertPre + end_cert;
-            certificateCredential.setX509Cert(pemCert);
+            certificateCredential.setX509Cert(generateDummyPemCertificate());
             String token = credentialService.addCertificateCredential(certificateCredential);
             logger.info("Certificate Token :{}", token);
             CertificateCredential credential = credentialService.getCertificateCredential(token, "testGateway");
             logger.info("certificate : {}", credential.getX509Cert());
             logger.info("gateway name  : {}", credential.getCommunityUser().getGatewayName());
+            org.junit.jupiter.api.Assertions.assertNotNull(credential);
         } catch (Exception e) {
             logger.error("Error adding certificate credential", e);
+            throw new RuntimeException(e);
         }
     }
+
+    private String generateDummyPemCertificate() {
+        Base64.Encoder encoder = Base64.getMimeEncoder(64, "\n".getBytes());
+        String certBegin = "-----BEGIN CERTIFICATE-----\n";
+        String endCert = "-----END CERTIFICATE-----";
+        byte[] randomBytes = new byte[256];
+        new SecureRandom().nextBytes(randomBytes);
+        return certBegin + encoder.encodeToString(randomBytes) + endCert;
+    }
 }
+

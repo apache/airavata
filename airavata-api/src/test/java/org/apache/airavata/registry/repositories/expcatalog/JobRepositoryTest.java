@@ -72,7 +72,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class JobRepositoryTest extends TestBase {
 
     @Configuration
@@ -177,6 +176,10 @@ public class JobRepositoryTest extends TestBase {
         jobModel.setTaskId(taskId);
         jobModel.setJobDescription("jobDescription");
 
+        // Initialize jobStatuses if null
+        if (jobModel.getJobStatuses() == null) {
+            jobModel.setJobStatuses(new java.util.ArrayList<>());
+        }
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
         jobModel.getJobStatuses().add(jobStatus);
 

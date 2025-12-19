@@ -46,7 +46,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "RESOURCE_POLICY_ID", nullable = false)
     private String resourcePolicyId;
 
-    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false, insertable = false, updatable = false)
+    @Column(name = "COMPUTE_RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
     @Column(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, insertable = false, updatable = false)

@@ -24,10 +24,10 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                    enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql1</jdbcUrl>
-                <userName>mysql1</userName>
+                <jdbcUrl>jdbc:h2:mem:testdb1;DB_CLOSE_DELAY=-1</jdbcUrl>
+                <userName>sa</userName>
                 <password>secret1</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.h2.Driver</databaseDriver>
                 <sessionTable>Session1</sessionTable>
                 <sessionColumn>sessioncolumn</sessionColumn>
                 <comparingColumn>comparecolumn</comparingColumn>
@@ -40,10 +40,10 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                    enabled="true" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
-                <userName>mysql2</userName>
+                <jdbcUrl>jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1</jdbcUrl>
+                <userName>sa</userName>
                 <password>secret2</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.h2.Driver</databaseDriver>
                 <sessionTable>Session2</sessionTable>
                 <sessionColumn>sessioncolumn2</sessionColumn>
                 <comparingColumn>comparecolumn2</comparingColumn>
@@ -55,10 +55,10 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                    enabled="false" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql2</jdbcUrl>
-                <userName>mysql2</userName>
+                <jdbcUrl>jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1</jdbcUrl>
+                <userName>sa</userName>
                 <password>secret2</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.h2.Driver</databaseDriver>
                 <sessionTable>Session2</sessionTable>
                 <sessionColumn>sessioncolumn2</sessionColumn>
                 <comparingColumn>comparecolumn2</comparingColumn>
@@ -70,10 +70,10 @@ Those configurations are reside inside &lt;specificConfigurations&gt; tags.
                    enabled="true" priority="8" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
         <specificConfigurations>
             <database>
-                <jdbcUrl>jdbc:sql:thin:@//myhost:1521/mysql3</jdbcUrl>
-                <userName>mysql3</userName>
+                <jdbcUrl>jdbc:h2:mem:testdb3;DB_CLOSE_DELAY=-1</jdbcUrl>
+                <userName>sa</userName>
                 <password>secret3</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.h2.Driver</databaseDriver>
                 <sessionTable>Session3</sessionTable>
                 <sessionColumn>sessioncolumn3</sessionColumn>
                 <comparingColumn>comparecolumn3</comparingColumn>

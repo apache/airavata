@@ -76,7 +76,7 @@ public class UserEntity {
     }
 
     @ManyToOne(targetEntity = GatewayEntity.class)
-    @JoinColumn(name = "GATEWAY_ID")
+    @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false, insertable = false, updatable = false)
     public GatewayEntity getGateway() {
         return gateway;
     }

@@ -73,7 +73,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class GroupResourceProfileRepositoryTest extends TestBase {
 
     @Configuration
@@ -195,6 +194,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
         var groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
@@ -206,6 +206,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         reservation1.setReservationName("test-reservation1");
         reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
         reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.setQueueNames(new ArrayList<>());
         reservation1.getQueueNames().add(QUEUE1_NAME);
         reservation1.getQueueNames().add(QUEUE2_NAME);
 
@@ -213,6 +214,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         reservation2.setReservationName("test-reservation2");
         reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
         reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.setQueueNames(new ArrayList<>());
         reservation2.getQueueNames().add(QUEUE1_NAME);
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
@@ -233,10 +235,12 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(resourceId1);
+        computeResourcePolicy.setAllowedBatchQueues(new ArrayList<>());
         computeResourcePolicy.getAllowedBatchQueues().add("queue1");
 
         ComputeResourcePolicy computeResourcePolicy2 = new ComputeResourcePolicy();
         computeResourcePolicy2.setComputeResourceId(resourceId2);
+        computeResourcePolicy2.setAllowedBatchQueues(new ArrayList<>());
         computeResourcePolicy2.getAllowedBatchQueues().add("cmqueue1");
 
         List<ComputeResourcePolicy> computeResourcePolicyList = new ArrayList<>();
@@ -393,6 +397,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
         // Simulate what is like for a client that only gets back the id from
@@ -420,11 +425,13 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
         reservation1.setReservationName("test-reservation1");
         reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
         reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.setQueueNames(new ArrayList<>());
         reservation1.getQueueNames().add(QUEUE1_NAME);
         reservation1.getQueueNames().add(QUEUE2_NAME);
 
@@ -432,6 +439,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         reservation2.setReservationName("test-reservation2");
         reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
         reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.setQueueNames(new ArrayList<>());
         reservation2.getQueueNames().add(QUEUE1_NAME);
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
@@ -472,11 +480,13 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
         reservation1.setReservationName("test-reservation1");
         reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
         reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.setQueueNames(new ArrayList<>());
         reservation1.getQueueNames().add(QUEUE1_NAME);
         reservation1.getQueueNames().add(QUEUE2_NAME);
 
@@ -484,6 +494,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         reservation2.setReservationName("test-reservation2");
         reservation2.setStartTime(AiravataUtils.getCurrentTimestamp().getTime() + 200000);
         reservation2.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 300000);
+        reservation2.setQueueNames(new ArrayList<>());
         reservation2.getQueueNames().add(QUEUE1_NAME);
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
@@ -527,11 +538,14 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
         reservation1.setReservationName("test-reservation1");
         reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
         reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.setQueueNames(new ArrayList<>());
         reservation1.getQueueNames().add(QUEUE1_NAME);
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
@@ -574,11 +588,13 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
         reservation1.setReservationName("test-reservation1");
         reservation1.setStartTime(AiravataUtils.getCurrentTimestamp().getTime());
         reservation1.setEndTime(AiravataUtils.getCurrentTimestamp().getTime() + 100000);
+        reservation1.setQueueNames(new ArrayList<>());
         reservation1.getQueueNames().add(QUEUE1_NAME);
         reservation1.getQueueNames().add(QUEUE2_NAME);
 

@@ -54,7 +54,7 @@ public class GridftpEndpointEntity implements Serializable {
     private Timestamp updateTime;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID", insertable = false, updatable = false)
     private GridftpDataMovementEntity gridftpDataMovement;
 
     public GridftpEndpointEntity() {}

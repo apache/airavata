@@ -119,8 +119,9 @@ public class CredentialEntityService {
         try {
             var pkExists = credentialRepository.findByGatewayIdAndTokenId(gatewayId, tokenId).isPresent();
             if (!pkExists) {
-                throw new CredentialStoreException(
-                        String.format("Credential not found for gateway: %s, token: %s", gatewayId, tokenId));
+                // Credential doesn't exist - this is fine, make delete idempotent
+                logger.debug("Credential not found for gateway: {}, token: {}, skipping delete", gatewayId, tokenId);
+                return;
             }
             credentialRepository.deleteByGatewayIdAndTokenId(gatewayId, tokenId);
             credentialRepository.flush();

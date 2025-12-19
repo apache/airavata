@@ -70,8 +70,8 @@ public class JobStatusEntity implements Serializable {
 
     @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID"),
-        @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
+        @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     })
     private JobEntity job;
 

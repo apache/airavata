@@ -32,17 +32,18 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
-import org.junit.jupiter.api.Disabled;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, CustomBeanFactoryTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "security.manager.enabled=false"
+            "security.manager.enabled=false",
+            "services.registryService.enabled=false",
+            "services.background.enabled=false",
+            "services.thrift.enabled=false"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
-@Disabled("Requires full Spring context; skipped in offline test runs")
 public class CustomBeanFactoryTest {
 
     public CustomBeanFactoryTest() {
@@ -118,7 +119,10 @@ public class CustomBeanFactoryTest {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
                             org.apache.airavata.config.ThriftServerLauncher.class,
                             org.apache.airavata.config.DozerMapperConfig.class
-                        })
+                        }),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.registry\\.messaging\\..*")
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {}

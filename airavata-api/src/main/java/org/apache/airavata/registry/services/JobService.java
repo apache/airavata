@@ -29,6 +29,7 @@ import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
+import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,11 +82,11 @@ public class JobService {
 
     public List<JobModel> getJobList(String fieldName, Object value) throws RegistryException {
         List<JobEntity> entities;
-        if (fieldName.equals("PROCESS_ID")) {
+        if (fieldName.equals("PROCESS_ID") || fieldName.equals(DBConstants.Job.PROCESS_ID)) {
             entities = jobRepository.findByProcessId((String) value);
-        } else if (fieldName.equals("TASK_ID")) {
+        } else if (fieldName.equals("TASK_ID") || fieldName.equals(DBConstants.Job.TASK_ID)) {
             entities = jobRepository.findByTaskId((String) value);
-        } else if (fieldName.equals("JOB_ID")) {
+        } else if (fieldName.equals("JOB_ID") || fieldName.equals(DBConstants.Job.JOB_ID)) {
             entities = jobRepository.findByJobId((String) value);
         } else {
             logger.error("Unsupported field name for Job module.");

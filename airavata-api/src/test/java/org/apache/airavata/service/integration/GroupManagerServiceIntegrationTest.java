@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Disabled;
 /**
  * Integration tests for GroupManagerService.
  */
-@Disabled("Requires sharing registry backend; skipped in offline test runs")
 @DisplayName("GroupManagerService Integration Tests")
 public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBase {
 

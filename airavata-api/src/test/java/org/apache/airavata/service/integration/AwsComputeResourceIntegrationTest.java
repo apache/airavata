@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
  * Integration tests for AWS compute resources.
  */
 @DisplayName("AWS Compute Resource Integration Tests")
-@Disabled("Requires external AWS setup; skipped in offline test runs")
 public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final ComputeResourceService computeResourceService;

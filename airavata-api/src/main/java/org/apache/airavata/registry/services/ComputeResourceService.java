@@ -148,7 +148,7 @@ public class ComputeResourceService {
     }
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
-        if (description.getComputeResourceId().equals("")
+        if (description.getComputeResourceId() == null || description.getComputeResourceId().equals("")
                 || description.getComputeResourceId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
         }
@@ -176,6 +176,14 @@ public class ComputeResourceService {
             // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(description, existingEntity);
 
+            // For ElementCollections (ipAddresses, hostAliases), replace the list to avoid duplicates
+            if (description.getIpAddresses() != null) {
+                existingEntity.setIpAddresses(new java.util.ArrayList<>(description.getIpAddresses()));
+            }
+            if (description.getHostAliases() != null) {
+                existingEntity.setHostAliases(new java.util.ArrayList<>(description.getHostAliases()));
+            }
+
             // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
             EntityMergeHelper.mergeLists(
                     existingEntity.getBatchQueues(), newEntity.getBatchQueues(), BatchQueueEntity::getQueueName);
@@ -191,6 +199,14 @@ public class ComputeResourceService {
             computeResourceEntity = existingEntity;
         } else {
             computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
+            // Ensure creationTime is set for new entities
+            if (computeResourceEntity.getCreationTime() == null) {
+                computeResourceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+            }
+        }
+        // Ensure updateTime is set
+        if (computeResourceEntity.getUpdateTime() == null) {
+            computeResourceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         }
 
         if (computeResourceEntity.getBatchQueues() != null) {
@@ -207,8 +223,30 @@ public class ComputeResourceService {
         if (computeResourceEntity.getJobSubmissionInterfaces() != null) {
             computeResourceEntity
                     .getJobSubmissionInterfaces()
-                    .forEach(jobSubmissionInterfaceEntity ->
-                            jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId));
+                    .forEach(jobSubmissionInterfaceEntity -> {
+                        jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
+                        // Ensure creationTime and updateTime are set
+                        if (jobSubmissionInterfaceEntity.getCreationTime() == null) {
+                            jobSubmissionInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                        }
+                        if (jobSubmissionInterfaceEntity.getUpdateTime() == null) {
+                            jobSubmissionInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                        }
+                    });
+        }
+        if (computeResourceEntity.getDataMovementInterfaces() != null) {
+            computeResourceEntity
+                    .getDataMovementInterfaces()
+                    .forEach(dataMovementInterfaceEntity -> {
+                        dataMovementInterfaceEntity.setComputeResourceId(computeResourceId);
+                        // Ensure creationTime and updateTime are set
+                        if (dataMovementInterfaceEntity.getCreationTime() == null) {
+                            dataMovementInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                        }
+                        if (dataMovementInterfaceEntity.getUpdateTime() == null) {
+                            dataMovementInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                        }
+                    });
         }
         return computeResourceRepository.save(computeResourceEntity);
     }
@@ -334,6 +372,14 @@ public class ComputeResourceService {
 
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
         sshJobSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
+        // Ensure updateTime is set
+        if (sshJobSubmissionEntity.getUpdateTime() == null) {
+            sshJobSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
+        // Ensure resourceJobManager updateTime is preserved (cascade MERGE might reset it)
+        if (resourceJobManagerEntity.getUpdateTime() == null) {
+            resourceJobManagerEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
 
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
@@ -394,6 +440,10 @@ public class ComputeResourceService {
         resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
         ResourceJobManagerEntity resourceJobManagerEntity =
                 mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
+        // Set updateTime if not already set
+        if (resourceJobManagerEntity.getUpdateTime() == null) {
+            resourceJobManagerEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
         var jobManagerCommands = resourceJobManager.getJobManagerCommands();
         if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
@@ -420,6 +470,8 @@ public class ComputeResourceService {
         } else {
             resourceJobManagerEntity = mapper.map(updatedResourceJobManager, ResourceJobManagerEntity.class);
         }
+        // Always update the updateTime
+        resourceJobManagerEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 
         resourceJobManagerEntity = resourceJobManagerRepository.save(resourceJobManagerEntity);
         Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
@@ -463,6 +515,18 @@ public class ComputeResourceService {
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         localSubmissionEntity.setResourceJobManager(resourceJobManagerEntity);
+        // Ensure updateTime is set
+        if (localSubmissionEntity.getUpdateTime() == null) {
+            localSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
+        // Ensure creationTime is set
+        if (localSubmissionEntity.getCreationTime() == null) {
+            localSubmissionEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        // Ensure resourceJobManager updateTime is preserved (cascade MERGE might reset it)
+        if (resourceJobManagerEntity.getUpdateTime() == null) {
+            resourceJobManagerEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
 
         if (localSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             createParallesimPrefix(
@@ -552,6 +616,13 @@ public class ComputeResourceService {
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
         ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        // Ensure creationTime and updateTime are set
+        if (scpDataMovementEntity.getCreationTime() == null) {
+            scpDataMovementEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        if (scpDataMovementEntity.getUpdateTime() == null) {
+            scpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
         scpDataMovementRepository.save(scpDataMovementEntity);
         return scpDataMovementEntity.getDataMovementInterfaceId();
     }
@@ -588,6 +659,13 @@ public class ComputeResourceService {
         gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"));
         GridftpDataMovementEntity gridftpDataMovementEntity =
                 mapper.map(gridFTPDataMovement, GridftpDataMovementEntity.class);
+        // Ensure creationTime and updateTime are set
+        if (gridftpDataMovementEntity.getCreationTime() == null) {
+            gridftpDataMovementEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        if (gridftpDataMovementEntity.getUpdateTime() == null) {
+            gridftpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
         gridftpDataMovementRepository.save(gridftpDataMovementEntity);
         List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoints();
         if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
@@ -596,6 +674,13 @@ public class ComputeResourceService {
                 gridftpEndpointEntity.setGridftpDataMovement(gridftpDataMovementEntity);
                 gridftpEndpointEntity.setDataMovementInterfaceId(gridFTPDataMovement.getDataMovementInterfaceId());
                 gridftpEndpointEntity.setEndpoint(endpoint);
+                // Ensure creationTime and updateTime are set
+                if (gridftpEndpointEntity.getCreationTime() == null) {
+                    gridftpEndpointEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                }
+                if (gridftpEndpointEntity.getUpdateTime() == null) {
+                    gridftpEndpointEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                }
                 gridftpEndpointRepository.save(gridftpEndpointEntity);
             }
         }
@@ -791,6 +876,13 @@ public class ComputeResourceService {
             throws AppCatalogException {
         JobSubmissionInterfaceEntity entity = mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
         entity.setComputeResourceId(computeResourceId);
+        // Ensure creationTime and updateTime are set
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        if (entity.getUpdateTime() == null) {
+            entity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
         JobSubmissionInterfaceEntity saved = jobSubmissionInterfaceRepository.save(entity);
         return saved.getJobSubmissionInterfaceId();
     }
@@ -799,6 +891,13 @@ public class ComputeResourceService {
             throws AppCatalogException {
         DataMovementInterfaceEntity entity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
         entity.setComputeResourceId(resourceId);
+        // Ensure creationTime and updateTime are set
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        if (entity.getUpdateTime() == null) {
+            entity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
         DataMovementInterfaceEntity saved = dataMovementRepository.save(entity);
         return saved.getDataMovementInterfaceId();
     }

@@ -42,7 +42,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-@org.junit.jupiter.api.Disabled("Requires SSH provisioning backend; skipped in offline test runs")
 public class SSHAccountProvisionerFactoryTest {
 
     public SSHAccountProvisionerFactoryTest() {

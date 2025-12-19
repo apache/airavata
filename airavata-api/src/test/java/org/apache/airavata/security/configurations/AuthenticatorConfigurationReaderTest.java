@@ -31,39 +31,17 @@ import org.apache.airavata.security.Authenticator;
 import org.apache.airavata.security.userstore.JDBCUserStore;
 import org.apache.airavata.security.userstore.LDAPUserStore;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
  */
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            AuthenticatorConfigurationReaderTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "security.manager.enabled=false"
-        })
-@TestPropertySource(locations = "classpath:airavata.properties")
-@Disabled("Requires external auth config; skipped in offline test runs")
 public class AuthenticatorConfigurationReaderTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatorConfigurationReaderTest.class);
     private String configurationFile = URLDecoder.decode(
             this.getClass().getClassLoader().getResource("authenticators.xml").getFile());
-
-    public AuthenticatorConfigurationReaderTest() {
-        // Spring Boot test - no dependencies to inject for this utility test
-    }
 
     @Test
     public void testInit() throws Exception {
@@ -84,11 +62,11 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(6, authenticator.getPriority());
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
-                        "jdbc:sql:thin:@//myhost:1521/mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
+                        "jdbc:h2:mem:testdb1;DB_CLOSE_DELAY=-1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
                 assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
+                        "org.h2.Driver",
                         ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
-                assertEquals("mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
+                assertEquals("sa", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof JDBCUserStore);
@@ -104,11 +82,11 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(8, authenticator.getPriority());
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
-                        "jdbc:sql:thin:@//myhost:1521/mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
+                        "jdbc:h2:mem:testdb3;DB_CLOSE_DELAY=-1", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
                 assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
+                        "org.h2.Driver",
                         ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
-                assertEquals("mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
+                assertEquals("sa", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
                 assertTrue(authenticator.getUserStore() instanceof JDBCUserStore);
@@ -129,23 +107,4 @@ public class AuthenticatorConfigurationReaderTest {
         authenticatorConfigurationReader.init(disabledConfiguration);
         assertFalse(AuthenticatorConfigurationReader.isAuthenticationEnabled());
     }
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.security",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            },
-            excludeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class,
-                            org.apache.airavata.config.DozerMapperConfig.class
-                        })
-            })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
-    static class TestConfiguration {}
 }

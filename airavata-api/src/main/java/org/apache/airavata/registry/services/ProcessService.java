@@ -30,8 +30,10 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
@@ -46,11 +48,13 @@ public class ProcessService {
     private static final Logger logger = LoggerFactory.getLogger(ProcessService.class);
 
     private final ProcessRepository processRepository;
+    private final ExperimentRepository experimentRepository;
     private final TaskService taskService;
     private final Mapper mapper;
 
-    public ProcessService(ProcessRepository processRepository, TaskService taskService, Mapper mapper) {
+    public ProcessService(ProcessRepository processRepository, ExperimentRepository experimentRepository, TaskService taskService, Mapper mapper) {
         this.processRepository = processRepository;
+        this.experimentRepository = experimentRepository;
         this.taskService = taskService;
         this.mapper = mapper;
     }
@@ -90,7 +94,10 @@ public class ProcessService {
         if (processEntity.getTasks() != null) {
             logger.debug("Populating the Primary Key of Task objects for the Process");
             processEntity.getTasks().forEach(taskEntity -> {
+                // Set parentProcessId for consistency (even though it's insertable=false)
                 taskEntity.setParentProcessId(processId);
+                // Set process relationship to ensure PARENT_PROCESS_ID is inserted via @JoinColumn
+                taskEntity.setProcess(processEntity);
                 taskEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 taskService.populateParentIds(taskEntity);
             });
@@ -119,7 +126,23 @@ public class ProcessService {
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ProcessModel.class);
+        
+        // Temporarily null emailAddresses to avoid Dozer mapping issues
+        String emailAddressesStr = entity.getEmailAddresses();
+        entity.setEmailAddresses(null);
+        
+        ProcessModel model = mapper.map(entity, ProcessModel.class);
+        
+        // Restore emailAddresses on entity
+        entity.setEmailAddresses(emailAddressesStr);
+        
+        // Manually convert emailAddresses from String (CSV) to List<String>
+        if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
+            model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+        } else {
+            model.setEmailAddresses(new java.util.ArrayList<>());
+        }
+        return model;
     }
 
     @Transactional
@@ -153,7 +176,21 @@ public class ProcessService {
             logger.debug("Search criteria is ExperimentId");
             List<ProcessEntity> entities = processRepository.findByExperimentId((String) value);
             processModelList = new ArrayList<>();
-            entities.forEach(e -> processModelList.add(mapper.map(e, ProcessModel.class)));
+            entities.forEach(e -> {
+                // Temporarily null emailAddresses to avoid Dozer mapping issues
+                String emailAddressesStr = e.getEmailAddresses();
+                e.setEmailAddresses(null);
+                ProcessModel model = mapper.map(e, ProcessModel.class);
+                // Restore emailAddresses on entity
+                e.setEmailAddresses(emailAddressesStr);
+                // Manually convert emailAddresses from String (CSV) to List<String>
+                if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
+                    model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+                } else {
+                    model.setEmailAddresses(new java.util.ArrayList<>());
+                }
+                processModelList.add(model);
+            });
         } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
@@ -228,6 +265,28 @@ public class ProcessService {
         processModel.setLastUpdateTime(System.currentTimeMillis());
 
         ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
+        
+        // Manually convert emailAddresses from List<String> to String (CSV) - excluded from Dozer mapping
+        java.util.List<String> emailAddressesList = processModel.getEmailAddresses();
+        String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty()) 
+                ? String.join(",", emailAddressesList) : null;
+        processEntity.setEmailAddresses(emailAddressesStr);
+        
+        // Set experiment relationship to ensure EXPERIMENT_ID is set via @JoinColumn
+        // (experimentId field is marked as insertable=false, updatable=false)
+        if (processModel.getExperimentId() != null) {
+            ExperimentEntity experimentEntity = experimentRepository.findById(processModel.getExperimentId()).orElse(null);
+            if (experimentEntity != null) {
+                processEntity.setExperiment(experimentEntity);
+            } else {
+                // If experiment doesn't exist, create a reference with just the ID
+                experimentEntity = new ExperimentEntity();
+                experimentEntity.setExperimentId(processModel.getExperimentId());
+                processEntity.setExperiment(experimentEntity);
+            }
+            // Also set experimentId field directly for consistency
+            processEntity.setExperimentId(processModel.getExperimentId());
+        }
 
         populateParentIds(processEntity);
 

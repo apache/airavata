@@ -71,7 +71,6 @@ import org.springframework.test.context.TestPropertySource;
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class TaskRepositoryTest extends TestBase {
 
     @Configuration
@@ -163,6 +162,10 @@ public class TaskRepositoryTest extends TestBase {
         taskModel.setParentProcessId(processId);
         taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
 
+        // Initialize taskStatuses if null
+        if (taskModel.getTaskStatuses() == null) {
+            taskModel.setTaskStatuses(new java.util.ArrayList<>());
+        }
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());

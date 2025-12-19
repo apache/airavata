@@ -43,26 +43,42 @@
     </mapping>
     <mapping>
         <class-a>org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity</class-a>
-        <class-b>org.apache.airavata.model.experiment.UserConfigurationDataModel</class-b>
+        <class-b>org.apache.airavata.common.model.UserConfigurationDataModel</class-b>
         <field>
             <a>this</a>
             <b>computationalResourceScheduling</b>
         </field>
     </mapping>
     <mapping>
-        <class-a>org.apache.airavata.model.experiment.ExperimentModel</class-a>
+        <class-a>org.apache.airavata.common.model.ExperimentModel</class-a>
         <class-b>org.apache.airavata.registry.entities.expcatalog.ExperimentEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.CsvStringConverter">
+        <field-exclude>
             <a>emailAddresses</a>
             <b>emailAddresses</b>
+        </field-exclude>
+    </mapping>
+    <mapping>
+        <class-a>org.apache.airavata.common.model.ProcessModel</class-a>
+        <class-b>org.apache.airavata.registry.entities.expcatalog.ProcessEntity</class-b>
+        <field-exclude>
+            <a>emailAddresses</a>
+            <b>emailAddresses</b>
+        </field-exclude>
+    </mapping>
+    <mapping>
+        <class-a>org.apache.airavata.common.model.BatchQueue</class-a>
+        <class-b>org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity</class-b>
+        <field>
+            <a>maxRunTime</a>
+            <b>maxRuntime</b>
         </field>
     </mapping>
     <mapping>
-        <class-a>org.apache.airavata.model.process.ProcessModel</class-a>
-        <class-b>org.apache.airavata.registry.entities.expcatalog.ProcessEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.utils.DozerConverter.CsvStringConverter">
-            <a>emailAddresses</a>
-            <b>emailAddresses</b>
-        </field>
+        <class-a>org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity</class-a>
+        <class-b>org.apache.airavata.common.model.DataReplicaLocationModel</class-b>
+        <field-exclude>
+            <a>replicaMetadata</a>
+            <b>replicaMetadata</b>
+        </field-exclude>
     </mapping>
 </mappings>
