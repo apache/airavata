@@ -75,8 +75,6 @@ under the License.
         <module>modules/research-framework/research-service</module>
         <module>modules/restproxy</module>
         <module>modules/distribution</module>
-        <module>modules/registry-db-migrator</module>
-        <module>modules/registry-jpa-generator</module>
         <module>modules/ide-integration</module>
     </modules>
 

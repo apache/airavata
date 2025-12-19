@@ -76,7 +76,7 @@ on. Notably, any removals from the schema will have to be manually managed.
 
    Copy the contents of the migration script that are relevant to the Entity
    classes changes that you made into the respective migration schema scripts in
-   `../release-migration-scripts/next/DeltaScripts/`. All statements should have
+   `../../dev-tools/db-migration/next/DeltaScripts/`. All statements should have
    `IF NOT EXISTS` (if adding) or `IF EXISTS` (if dropping) added so that they
    can be reapplied and only change the schema when it hasn't already been
    updated. For example:
@@ -95,7 +95,7 @@ on. Notably, any removals from the schema will have to be manually managed.
 6. Next, you'll also copy this MariaDB migration script to the corresponding
    `0*-migrations.sql` file in ide-integration. Here it should also have
    `IF NOT EXISTS`/`IF EXISTS` added. Essentially you just need to take the
-   lines you added in `release-migration-scripts` and add them to the
+   lines you added in `dev-tools/db-migration` and add them to the
    corresponding `0*-migrations.sql` script.
 
 ## Known Issues
