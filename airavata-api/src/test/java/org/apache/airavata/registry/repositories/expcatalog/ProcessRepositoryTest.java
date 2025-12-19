@@ -154,7 +154,7 @@ public class ProcessRepositoryTest extends TestBase {
 
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
-        
+
         // Initialize tasks list if null
         if (processModel.getTasks() == null) {
             processModel.setTasks(new java.util.ArrayList<>());

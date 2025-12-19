@@ -113,7 +113,8 @@ public class GroupResourceProfileService {
         }
         if (groupResourceProfile.getBatchQueueResourcePolicies() != null) {
             groupResourceProfile.getBatchQueueResourcePolicies().forEach(bq -> {
-                if (bq.getResourcePolicyId() == null || bq.getResourcePolicyId().trim().isEmpty()
+                if (bq.getResourcePolicyId() == null
+                        || bq.getResourcePolicyId().trim().isEmpty()
                         || bq.getResourcePolicyId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
                     bq.setResourcePolicyId(UUID.randomUUID().toString());
                 }
@@ -122,7 +123,8 @@ public class GroupResourceProfileService {
         }
         if (groupResourceProfile.getComputeResourcePolicies() != null) {
             groupResourceProfile.getComputeResourcePolicies().forEach(cr -> {
-                if (cr.getResourcePolicyId() == null || cr.getResourcePolicyId().trim().isEmpty()
+                if (cr.getResourcePolicyId() == null
+                        || cr.getResourcePolicyId().trim().isEmpty()
                         || cr.getResourcePolicyId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
                     cr.setResourcePolicyId(UUID.randomUUID().toString());
                 }
@@ -146,7 +148,8 @@ public class GroupResourceProfileService {
         // Temporarily remove computePreferences and policies to avoid Dozer trying to instantiate abstract class
         // and to prevent duplicate entity issues
         List<GroupComputeResourcePreference> computePreferences = updatedGroupResourceProfile.getComputePreferences();
-        List<BatchQueueResourcePolicy> batchQueueResourcePolicies = updatedGroupResourceProfile.getBatchQueueResourcePolicies();
+        List<BatchQueueResourcePolicy> batchQueueResourcePolicies =
+                updatedGroupResourceProfile.getBatchQueueResourcePolicies();
         List<ComputeResourcePolicy> computeResourcePolicies = updatedGroupResourceProfile.getComputeResourcePolicies();
         updatedGroupResourceProfile.setComputePreferences(null);
         updatedGroupResourceProfile.setBatchQueueResourcePolicies(null);

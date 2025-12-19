@@ -62,7 +62,8 @@ public class StorageResourceService {
         try {
             // Generate storageResourceId if not set
             String storageResourceId = description.getStorageResourceId();
-            if (storageResourceId == null || storageResourceId.isEmpty()
+            if (storageResourceId == null
+                    || storageResourceId.isEmpty()
                     || AiravataCommonsConstants.DEFAULT_ID.equals(storageResourceId)) {
                 storageResourceId = AppCatalogUtils.getID(description.getHostName());
                 description.setStorageResourceId(storageResourceId);

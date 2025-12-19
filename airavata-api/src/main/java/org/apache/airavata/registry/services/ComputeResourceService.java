@@ -148,7 +148,8 @@ public class ComputeResourceService {
     }
 
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
-        if (description.getComputeResourceId() == null || description.getComputeResourceId().equals("")
+        if (description.getComputeResourceId() == null
+                || description.getComputeResourceId().equals("")
                 || description.getComputeResourceId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
         }
@@ -221,32 +222,28 @@ public class ComputeResourceService {
                             dataMovementInterfaceEntity.setComputeResourceId(computeResourceId));
         }
         if (computeResourceEntity.getJobSubmissionInterfaces() != null) {
-            computeResourceEntity
-                    .getJobSubmissionInterfaces()
-                    .forEach(jobSubmissionInterfaceEntity -> {
-                        jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
-                        // Ensure creationTime and updateTime are set
-                        if (jobSubmissionInterfaceEntity.getCreationTime() == null) {
-                            jobSubmissionInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
-                        }
-                        if (jobSubmissionInterfaceEntity.getUpdateTime() == null) {
-                            jobSubmissionInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-                        }
-                    });
+            computeResourceEntity.getJobSubmissionInterfaces().forEach(jobSubmissionInterfaceEntity -> {
+                jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
+                // Ensure creationTime and updateTime are set
+                if (jobSubmissionInterfaceEntity.getCreationTime() == null) {
+                    jobSubmissionInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                }
+                if (jobSubmissionInterfaceEntity.getUpdateTime() == null) {
+                    jobSubmissionInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                }
+            });
         }
         if (computeResourceEntity.getDataMovementInterfaces() != null) {
-            computeResourceEntity
-                    .getDataMovementInterfaces()
-                    .forEach(dataMovementInterfaceEntity -> {
-                        dataMovementInterfaceEntity.setComputeResourceId(computeResourceId);
-                        // Ensure creationTime and updateTime are set
-                        if (dataMovementInterfaceEntity.getCreationTime() == null) {
-                            dataMovementInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
-                        }
-                        if (dataMovementInterfaceEntity.getUpdateTime() == null) {
-                            dataMovementInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-                        }
-                    });
+            computeResourceEntity.getDataMovementInterfaces().forEach(dataMovementInterfaceEntity -> {
+                dataMovementInterfaceEntity.setComputeResourceId(computeResourceId);
+                // Ensure creationTime and updateTime are set
+                if (dataMovementInterfaceEntity.getCreationTime() == null) {
+                    dataMovementInterfaceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                }
+                if (dataMovementInterfaceEntity.getUpdateTime() == null) {
+                    dataMovementInterfaceEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                }
+            });
         }
         return computeResourceRepository.save(computeResourceEntity);
     }

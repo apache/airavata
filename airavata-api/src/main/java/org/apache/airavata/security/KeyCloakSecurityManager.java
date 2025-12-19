@@ -318,8 +318,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
     private void validateToken(String username, String token, String gatewayId) throws Exception {
         // Skip token validation if IAM is not configured (e.g., in test environments)
-        if (properties.security == null || properties.security.iam == null 
-                || properties.security.iam.serverUrl == null 
+        if (properties.security == null
+                || properties.security.iam == null
+                || properties.security.iam.serverUrl == null
                 || properties.security.iam.serverUrl.isEmpty()) {
             logger.debug("IAM server URL not configured, skipping token validation for username: {}", username);
             return;
@@ -331,11 +332,14 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             }
         } catch (Exception e) {
             // In test environments, if HTTP calls fail, log and skip validation
-            if (e.getMessage() != null && (e.getMessage().contains("Connection refused") 
-                    || e.getMessage().contains("UnknownHostException")
-                    || e.getMessage().contains("ConnectException")
-                    || e.getMessage().contains("java.net"))) {
-                logger.debug("Unable to connect to IAM server for token validation, skipping validation in test mode: {}", e.getMessage());
+            if (e.getMessage() != null
+                    && (e.getMessage().contains("Connection refused")
+                            || e.getMessage().contains("UnknownHostException")
+                            || e.getMessage().contains("ConnectException")
+                            || e.getMessage().contains("java.net"))) {
+                logger.debug(
+                        "Unable to connect to IAM server for token validation, skipping validation in test mode: {}",
+                        e.getMessage());
                 return;
             }
             throw e;

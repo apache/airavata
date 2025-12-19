@@ -69,9 +69,10 @@ public class ProjectService {
 
     public void updateProject(Project project, String projectId) throws RegistryException {
         // Load existing entity to preserve required fields like gatewayId
-        ProjectEntity existingEntity = projectRepository.findById(projectId)
+        ProjectEntity existingEntity = projectRepository
+                .findById(projectId)
                 .orElseThrow(() -> new RegistryException("Project not found: " + projectId));
-        
+
         ProjectEntity entity = mapper.map(project, ProjectEntity.class);
         entity.setProjectID(projectId);
         // Preserve gatewayId if not set in the update

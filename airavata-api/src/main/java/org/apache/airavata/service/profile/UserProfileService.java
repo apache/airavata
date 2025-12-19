@@ -202,7 +202,8 @@ public class UserProfileService {
             try {
                 // Skip IAM update if IAM service is not available
                 if (iamAdminService == null) {
-                    logger.debug("IAM Admin Service not available, skipping IAM user profile update for userId: {}", userId);
+                    logger.debug(
+                            "IAM Admin Service not available, skipping IAM user profile update for userId: {}", userId);
                     return;
                 }
                 AuthzToken serviceAccountAuthzToken =
@@ -221,7 +222,10 @@ public class UserProfileService {
                 throw new RuntimeException(msg, e);
             } catch (IamAdminServicesException e) {
                 // In test environments, IAM might not be configured - log and continue
-                if (e.getMessage() != null && (e.getMessage().contains("not configured") || e.getMessage().contains("server URL") || e.getMessage().contains("IAM server URL"))) {
+                if (e.getMessage() != null
+                        && (e.getMessage().contains("not configured")
+                                || e.getMessage().contains("server URL")
+                                || e.getMessage().contains("IAM server URL"))) {
                     logger.debug("IAM not configured, skipping IAM user profile update for userId: {}", userId);
                     return;
                 }

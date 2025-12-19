@@ -22,7 +22,6 @@ package org.apache.airavata.registry.services;
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataWorkflow;
-import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowApplicationEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowConnectionEntity;

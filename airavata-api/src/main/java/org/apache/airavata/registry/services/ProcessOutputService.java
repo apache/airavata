@@ -20,10 +20,10 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import jakarta.persistence.EntityManager;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -39,7 +39,10 @@ public class ProcessOutputService {
     private final EntityManager entityManager;
     private final Mapper mapper;
 
-    public ProcessOutputService(ProcessOutputRepository processOutputRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
+    public ProcessOutputService(
+            ProcessOutputRepository processOutputRepository,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
+            Mapper mapper) {
         this.processOutputRepository = processOutputRepository;
         this.entityManager = entityManager;
         this.mapper = mapper;

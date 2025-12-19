@@ -47,7 +47,8 @@ public class TaskService {
     private final JobService jobService;
     private final Mapper mapper;
 
-    public TaskService(TaskRepository taskRepository, ProcessRepository processRepository, JobService jobService, Mapper mapper) {
+    public TaskService(
+            TaskRepository taskRepository, ProcessRepository processRepository, JobService jobService, Mapper mapper) {
         this.taskRepository = taskRepository;
         this.processRepository = processRepository;
         this.jobService = jobService;
@@ -167,11 +168,12 @@ public class TaskService {
         taskModel.setLastUpdateTime(System.currentTimeMillis());
 
         TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
-        
+
         // Set process relationship to ensure PARENT_PROCESS_ID is set via @JoinColumn
         // (parentProcessId field is marked as insertable=false, updatable=false)
         if (taskModel.getParentProcessId() != null) {
-            ProcessEntity processEntity = processRepository.findById(taskModel.getParentProcessId()).orElse(null);
+            ProcessEntity processEntity =
+                    processRepository.findById(taskModel.getParentProcessId()).orElse(null);
             if (processEntity != null) {
                 taskEntity.setProcess(processEntity);
             } else {

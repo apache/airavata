@@ -30,11 +30,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableConfigurationProperties(RestProxyConfiguration.class)
 @ComponentScan(
-        basePackages = {
-            "org.apache.airavata.registry",
-            "org.apache.airavata.service",
-            "org.apache.airavata.restproxy"
-        },
+        basePackages = {"org.apache.airavata.registry", "org.apache.airavata.service", "org.apache.airavata.restproxy"},
         excludeFilters = {
             @ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
@@ -49,20 +45,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
                     pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
                     )
         })
-@EntityScan(
-        basePackages = {
-            "org.apache.airavata.registry.entities"
-        })
-@EnableJpaRepositories(
-        basePackages = {
-            "org.apache.airavata.registry.repositories"
-        })
+@EntityScan(basePackages = {"org.apache.airavata.registry.entities"})
+@EnableJpaRepositories(basePackages = {"org.apache.airavata.registry.repositories"})
 public class RestProxyApplication {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(RestProxyApplication.class);
-        app.setDefaultProperties(java.util.Map.of(
-                "spring.main.allow-bean-definition-overriding", "true"
-                ));
+        app.setDefaultProperties(java.util.Map.of("spring.main.allow-bean-definition-overriding", "true"));
         app.run(args);
     }
 }

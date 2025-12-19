@@ -35,4 +35,3 @@ public class OpenApiConfig {
                         .version("0.21-SNAPSHOT"));
     }
 }
-

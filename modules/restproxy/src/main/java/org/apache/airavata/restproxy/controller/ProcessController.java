@@ -60,8 +60,7 @@ public class ProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProcess(
-            @RequestParam String experimentId, @RequestBody ProcessModel process) {
+    public ResponseEntity<?> createProcess(@RequestParam String experimentId, @RequestBody ProcessModel process) {
         try {
             String processId = processService.addProcess(process, experimentId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("processId", processId));
@@ -71,8 +70,7 @@ public class ProcessController {
     }
 
     @PutMapping("/{processId}")
-    public ResponseEntity<?> updateProcess(
-            @PathVariable String processId, @RequestBody ProcessModel process) {
+    public ResponseEntity<?> updateProcess(@PathVariable String processId, @RequestBody ProcessModel process) {
         try {
             process.setProcessId(processId);
             processService.updateProcess(process, processId);
@@ -105,8 +103,7 @@ public class ProcessController {
 
     @PostMapping("/{processId}/resource-schedule")
     public ResponseEntity<?> createProcessResourceSchedule(
-            @PathVariable String processId,
-            @RequestBody ComputationalResourceSchedulingModel schedule) {
+            @PathVariable String processId, @RequestBody ComputationalResourceSchedulingModel schedule) {
         try {
             String result = processService.addProcessResourceSchedule(schedule, processId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("processId", result));
@@ -117,8 +114,7 @@ public class ProcessController {
 
     @PutMapping("/{processId}/resource-schedule")
     public ResponseEntity<?> updateProcessResourceSchedule(
-            @PathVariable String processId,
-            @RequestBody ComputationalResourceSchedulingModel schedule) {
+            @PathVariable String processId, @RequestBody ComputationalResourceSchedulingModel schedule) {
         try {
             String result = processService.updateProcessResourceSchedule(schedule, processId);
             return ResponseEntity.ok(Map.of("processId", result));
@@ -127,5 +123,3 @@ public class ProcessController {
         }
     }
 }
-
-

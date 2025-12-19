@@ -198,6 +198,5 @@ public abstract class ServiceIntegrationTestBase {
                 }
             };
         }
-
     }
 }

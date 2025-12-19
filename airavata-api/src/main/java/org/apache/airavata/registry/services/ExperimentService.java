@@ -30,12 +30,12 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
-import org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
@@ -87,16 +87,16 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
-        
+
         // Temporarily null emailAddresses to avoid Dozer mapping issues
         String emailAddressesStr = entity.getEmailAddresses();
         entity.setEmailAddresses(null);
-        
+
         ExperimentModel model = mapper.map(entity, ExperimentModel.class);
-        
+
         // Restore emailAddresses on entity
         entity.setEmailAddresses(emailAddressesStr);
-        
+
         // Manually convert emailAddresses from String (CSV) to List<String>
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
             model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
@@ -238,11 +238,12 @@ public class ExperimentService {
             ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
             // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
             mapper.map(experimentModel, existingEntity);
-            
+
             // Manually set emailAddresses on both entities (excluded from Dozer mapping)
             java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
-            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty()) 
-                    ? String.join(",", emailAddressesList) : null;
+            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
+                    ? String.join(",", emailAddressesList)
+                    : null;
             newEntity.setEmailAddresses(emailAddressesStr);
             existingEntity.setEmailAddresses(emailAddressesStr);
 
@@ -269,8 +270,9 @@ public class ExperimentService {
             experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
             // Manually convert emailAddresses from List<String> to String (CSV) - excluded from Dozer mapping
             java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
-            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty()) 
-                    ? String.join(",", emailAddressesList) : null;
+            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
+                    ? String.join(",", emailAddressesList)
+                    : null;
             experimentEntity.setEmailAddresses(emailAddressesStr);
         }
 
@@ -279,9 +281,9 @@ public class ExperimentService {
             UserConfigurationDataEntity ucdEntity = experimentEntity.getUserConfigurationData();
             ucdEntity.setExperimentId(experimentId);
             // Copy fields from ComputationalResourceSchedulingModel to entity fields if present
-            if (experimentModel.getUserConfigurationData() != null 
+            if (experimentModel.getUserConfigurationData() != null
                     && experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
-                ComputationalResourceSchedulingModel crsModel = 
+                ComputationalResourceSchedulingModel crsModel =
                         experimentModel.getUserConfigurationData().getComputationalResourceScheduling();
                 ucdEntity.setResourceHostId(crsModel.getResourceHostId());
                 ucdEntity.setTotalCPUCount(crsModel.getTotalCPUCount());

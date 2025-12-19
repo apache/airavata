@@ -47,8 +47,7 @@ public class JobController {
     }
 
     @GetMapping("/{jobId}")
-    public ResponseEntity<?> getJob(
-            @PathVariable String jobId, @RequestParam(required = false) String taskId) {
+    public ResponseEntity<?> getJob(@PathVariable String jobId, @RequestParam(required = false) String taskId) {
         try {
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
@@ -77,9 +76,7 @@ public class JobController {
 
     @PutMapping("/{jobId}")
     public ResponseEntity<?> updateJob(
-            @PathVariable String jobId,
-            @RequestParam(required = false) String taskId,
-            @RequestBody JobModel job) {
+            @PathVariable String jobId, @RequestParam(required = false) String taskId, @RequestBody JobModel job) {
         try {
             JobPK jobPK = new JobPK();
             jobPK.setJobId(jobId);
@@ -119,5 +116,3 @@ public class JobController {
         }
     }
 }
-
-

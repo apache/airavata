@@ -54,7 +54,7 @@ public class DataProductService {
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductEntity entity = dataProductRepository.findById(productUri).orElse(null);
         if (entity == null) return null;
-        
+
         // Process replica locations to convert PersistentMap to regular HashMap
         if (entity.getReplicaLocations() != null) {
             for (DataReplicaLocationEntity replicaEntity : entity.getReplicaLocations()) {
@@ -63,25 +63,26 @@ public class DataProductService {
                 if (replicaEntity.getReplicaMetadata() != null) {
                     try {
                         // Iterate over the map to force loading of all entries
-                        for (Map.Entry<String, String> entry : replicaEntity.getReplicaMetadata().entrySet()) {
+                        for (Map.Entry<String, String> entry :
+                                replicaEntity.getReplicaMetadata().entrySet()) {
                             metadataCopy.put(entry.getKey(), entry.getValue());
                         }
                     } catch (Exception e) {
                         metadataCopy = new HashMap<>();
                     }
                 }
-                
+
                 // Detach the replica entity to convert PersistentMap to regular HashMap
                 entityManager.detach(replicaEntity);
-                
+
                 // Replace PersistentMap with regular HashMap
                 replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
             }
         }
-        
+
         // Detach the main entity as well
         entityManager.detach(entity);
-        
+
         return mapper.map(entity, DataProductModel.class);
     }
 
@@ -92,14 +93,15 @@ public class DataProductService {
         DataProductEntity parentEntity =
                 dataProductRepository.findById(entity.getParentProductUri()).orElse(null);
         if (parentEntity == null) return null;
-        
+
         // Process replica locations if any
         if (parentEntity.getReplicaLocations() != null) {
             for (DataReplicaLocationEntity replicaEntity : parentEntity.getReplicaLocations()) {
                 Map<String, String> metadataCopy = new HashMap<>();
                 if (replicaEntity.getReplicaMetadata() != null) {
                     try {
-                        for (Map.Entry<String, String> entry : replicaEntity.getReplicaMetadata().entrySet()) {
+                        for (Map.Entry<String, String> entry :
+                                replicaEntity.getReplicaMetadata().entrySet()) {
                             metadataCopy.put(entry.getKey(), entry.getValue());
                         }
                     } catch (Exception e) {
@@ -111,34 +113,37 @@ public class DataProductService {
             }
         }
         entityManager.detach(parentEntity);
-        
+
         return mapper.map(parentEntity, DataProductModel.class);
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
     public List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException {
         List<DataProductEntity> entities = dataProductRepository.findByParentProductUri(productUri);
-        return entities.stream().map(e -> {
-            // Process replica locations if any
-            if (e.getReplicaLocations() != null) {
-                for (DataReplicaLocationEntity replicaEntity : e.getReplicaLocations()) {
-                    Map<String, String> metadataCopy = new HashMap<>();
-                    if (replicaEntity.getReplicaMetadata() != null) {
-                        try {
-                            for (Map.Entry<String, String> entry : replicaEntity.getReplicaMetadata().entrySet()) {
-                                metadataCopy.put(entry.getKey(), entry.getValue());
+        return entities.stream()
+                .map(e -> {
+                    // Process replica locations if any
+                    if (e.getReplicaLocations() != null) {
+                        for (DataReplicaLocationEntity replicaEntity : e.getReplicaLocations()) {
+                            Map<String, String> metadataCopy = new HashMap<>();
+                            if (replicaEntity.getReplicaMetadata() != null) {
+                                try {
+                                    for (Map.Entry<String, String> entry :
+                                            replicaEntity.getReplicaMetadata().entrySet()) {
+                                        metadataCopy.put(entry.getKey(), entry.getValue());
+                                    }
+                                } catch (Exception ex) {
+                                    metadataCopy = new HashMap<>();
+                                }
                             }
-                        } catch (Exception ex) {
-                            metadataCopy = new HashMap<>();
+                            entityManager.detach(replicaEntity);
+                            replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
                         }
                     }
-                    entityManager.detach(replicaEntity);
-                    replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
-                }
-            }
-            entityManager.detach(e);
-            return mapper.map(e, DataProductModel.class);
-        }).collect(Collectors.toList());
+                    entityManager.detach(e);
+                    return mapper.map(e, DataProductModel.class);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
@@ -147,39 +152,44 @@ public class DataProductService {
         String searchPattern = "%" + productName + "%";
         List<DataProductEntity> entities =
                 dataProductRepository.findByGatewayIdAndOwnerNameAndProductNameLike(gatewayId, userId, searchPattern);
-        return entities.stream().map(e -> {
-            // Process replica locations if any
-            if (e.getReplicaLocations() != null) {
-                for (DataReplicaLocationEntity replicaEntity : e.getReplicaLocations()) {
-                    Map<String, String> metadataCopy = new HashMap<>();
-                    if (replicaEntity.getReplicaMetadata() != null) {
-                        try {
-                            for (Map.Entry<String, String> entry : replicaEntity.getReplicaMetadata().entrySet()) {
-                                metadataCopy.put(entry.getKey(), entry.getValue());
+        return entities.stream()
+                .map(e -> {
+                    // Process replica locations if any
+                    if (e.getReplicaLocations() != null) {
+                        for (DataReplicaLocationEntity replicaEntity : e.getReplicaLocations()) {
+                            Map<String, String> metadataCopy = new HashMap<>();
+                            if (replicaEntity.getReplicaMetadata() != null) {
+                                try {
+                                    for (Map.Entry<String, String> entry :
+                                            replicaEntity.getReplicaMetadata().entrySet()) {
+                                        metadataCopy.put(entry.getKey(), entry.getValue());
+                                    }
+                                } catch (Exception ex) {
+                                    metadataCopy = new HashMap<>();
+                                }
                             }
-                        } catch (Exception ex) {
-                            metadataCopy = new HashMap<>();
+                            entityManager.detach(replicaEntity);
+                            replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
                         }
                     }
-                    entityManager.detach(replicaEntity);
-                    replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
-                }
-            }
-            entityManager.detach(e);
-            return mapper.map(e, DataProductModel.class);
-        }).collect(Collectors.toList());
+                    entityManager.detach(e);
+                    return mapper.map(e, DataProductModel.class);
+                })
+                .collect(Collectors.toList());
     }
 
     public String registerDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
         // Generate productUri if not set
-        if (dataProductModel.getProductUri() == null || dataProductModel.getProductUri().isEmpty()) {
+        if (dataProductModel.getProductUri() == null
+                || dataProductModel.getProductUri().isEmpty()) {
             String productUri = org.apache.airavata.common.utils.AiravataUtils.getId(
                     dataProductModel.getProductName() != null ? dataProductModel.getProductName() : "dataProduct");
             dataProductModel.setProductUri(productUri);
         }
         // Generate replicaIds for replicaLocations if not set
         if (dataProductModel.getReplicaLocations() != null) {
-            for (org.apache.airavata.common.model.DataReplicaLocationModel replica : dataProductModel.getReplicaLocations()) {
+            for (org.apache.airavata.common.model.DataReplicaLocationModel replica :
+                    dataProductModel.getReplicaLocations()) {
                 if (replica.getReplicaId() == null || replica.getReplicaId().isEmpty()) {
                     String replicaId = org.apache.airavata.common.utils.AiravataUtils.getId(
                             replica.getReplicaName() != null ? replica.getReplicaName() : "replica");
@@ -196,8 +206,10 @@ public class DataProductService {
         entity.setProductUri(dataProductModel.getProductUri());
         // Ensure dataProduct relationship is set on replica locations
         if (entity.getReplicaLocations() != null) {
-            for (org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity replicaEntity : entity.getReplicaLocations()) {
-                if (replicaEntity.getProductUri() == null || replicaEntity.getProductUri().isEmpty()) {
+            for (org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity replicaEntity :
+                    entity.getReplicaLocations()) {
+                if (replicaEntity.getProductUri() == null
+                        || replicaEntity.getProductUri().isEmpty()) {
                     replicaEntity.setProductUri(dataProductModel.getProductUri());
                 }
                 // Set the dataProduct relationship (productUri is insertable=false, updatable=false)

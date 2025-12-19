@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.thriftapi.client;
 
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Map;
@@ -30,12 +33,9 @@ import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
 
 public class TestSSLClient {
 
@@ -64,7 +64,8 @@ public class TestSSLClient {
                 .when(credentialService)
                 .addSSHCredential(org.mockito.ArgumentMatchers.any());
 
-        when(credentialService.getSSHCredential(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+        when(credentialService.getSSHCredential(
+                        org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
                 .thenAnswer(invocation -> sshStore.get(invocation.getArgument(0, String.class)));
 
         doAnswer(invocation -> {
@@ -73,7 +74,9 @@ public class TestSSLClient {
                     CertificateCredential stored = new CertificateCredential();
                     stored.setToken(token);
                     stored.setGatewayId(
-                            incoming.getCommunityUser() != null ? incoming.getCommunityUser().getGatewayName() : "gateway");
+                            incoming.getCommunityUser() != null
+                                    ? incoming.getCommunityUser().getGatewayName()
+                                    : "gateway");
                     stored.setCommunityUser(incoming.getCommunityUser());
                     stored.setX509Cert(incoming.getX509Cert());
                     certStore.put(token, stored);
@@ -138,4 +141,3 @@ public class TestSSLClient {
         return certBegin + encoder.encodeToString(randomBytes) + endCert;
     }
 }
-

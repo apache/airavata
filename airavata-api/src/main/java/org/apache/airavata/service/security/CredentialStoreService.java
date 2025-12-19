@@ -19,11 +19,6 @@
 */
 package org.apache.airavata.service.security;
 
-import java.io.ByteArrayInputStream;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.utils.DBInitializer;
@@ -137,7 +132,8 @@ public class CredentialStoreService {
             throws CredentialStoreException {
         CertificateCredential credential = new CertificateCredential();
         if (certificateCredential.getCommunityUser() != null) {
-            credential.setPortalUserName(certificateCredential.getCommunityUser().getUsername());
+            credential.setPortalUserName(
+                    certificateCredential.getCommunityUser().getUsername());
             credential.setCommunityUser(certificateCredential.getCommunityUser());
             credential.setGatewayId(certificateCredential.getCommunityUser().getGatewayName());
         }

@@ -156,8 +156,8 @@ public class ExperimentRepositoryTest extends TestBase {
         }
         // Handle null emailAddresses from retrieved experiment
         ExperimentModel retrievedExperiment = experimentService.getExperiment(experimentId);
-        int emailCount = retrievedExperiment.getEmailAddresses() != null 
-                ? retrievedExperiment.getEmailAddresses().size() 
+        int emailCount = retrievedExperiment.getEmailAddresses() != null
+                ? retrievedExperiment.getEmailAddresses().size()
                 : 0;
         assertEquals(0, emailCount);
 

@@ -63,9 +63,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "security.tls.enabled=true",
-            "security.iam.server-url=",  // Empty to skip IAM HTTP calls in tests
+            "security.iam.server-url=", // Empty to skip IAM HTTP calls in tests
             "security.manager.enabled=true",
-            "security.authzCache.enabled=true",  // Enable cache - tests will mock cache behavior
+            "security.authzCache.enabled=true", // Enable cache - tests will mock cache behavior
             "services.registryService.enabled=false",
             "services.background.enabled=false",
             "services.thrift.enabled=false"
@@ -124,7 +124,7 @@ public class KeyCloakSecurityManagerTest {
             properties.security.tls.enabled = true;
             // Leave IAM server URL empty to skip HTTP calls in tests
             properties.security.iam.serverUrl = "";
-            properties.security.authzCache.enabled = true;  // Enable cache - tests will mock it
+            properties.security.authzCache.enabled = true; // Enable cache - tests will mock it
             return properties;
         }
     }
@@ -134,7 +134,7 @@ public class KeyCloakSecurityManagerTest {
         reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManagerFactory, mockAuthzCacheManager);
         // Configure the factory to return the mock cache manager
         when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
-        
+
         // Mock GatewayResourceProfile for tests that need it (when token validation is attempted)
         GatewayResourceProfile mockGwrp = new GatewayResourceProfile();
         mockGwrp.setGatewayID(TEST_GATEWAY);
@@ -330,7 +330,7 @@ public class KeyCloakSecurityManagerTest {
                     .thenReturn(authzCachedStatus);
             // Mock addToAuthzCache for cache updates (needed for NOT_CACHED status)
             doNothing().when(mockAuthzCacheManager).addToAuthzCache(any(AuthzCacheIndex.class), any());
-            
+
             // For NOT_CACHED status, gateway groups should already be set up by the test
             // Don't overwrite them here
         } else if (cacheEnabled && authzCachedStatus != null) {

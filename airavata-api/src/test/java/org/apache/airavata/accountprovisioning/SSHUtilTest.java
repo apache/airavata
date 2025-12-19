@@ -64,11 +64,13 @@ public class SSHUtilTest {
             java.security.KeyPair keyPair = keyGen.generateKeyPair();
 
             // Convert to PEM-like format
-            String privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n" +
-                    java.util.Base64.getMimeEncoder(64, "\n".getBytes()).encodeToString(keyPair.getPrivate().getEncoded()) +
-                    "\n-----END PRIVATE KEY-----";
-            String publicKeyPEM = "ssh-rsa " +
-                    java.util.Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
+            String privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n"
+                    + java.util.Base64.getMimeEncoder(64, "\n".getBytes())
+                            .encodeToString(keyPair.getPrivate().getEncoded())
+                    + "\n-----END PRIVATE KEY-----";
+            String publicKeyPEM = "ssh-rsa "
+                    + java.util.Base64.getEncoder()
+                            .encodeToString(keyPair.getPublic().getEncoded());
 
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setPassphrase(passphrase);

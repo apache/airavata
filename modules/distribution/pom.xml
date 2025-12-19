@@ -1,0 +1,163 @@
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements. See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership. The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>airavata</artifactId>
+        <version>
+        0.21-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <artifactId>distribution</artifactId>
+    <name>Airavata Distribution</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <distribution.name>apache-airavata-all-${project.version}</distribution.name>
+    </properties>
+
+    <dependencies>
+        <!-- API Server distribution -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <classifier>bin</classifier>
+        </dependency>
+        <!-- Agent Service distribution -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>agent-service</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <classifier>bin</classifier>
+        </dependency>
+        <!-- File Server distribution -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>file-server</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <classifier>bin</classifier>
+        </dependency>
+        <!-- Research Service distribution -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>research-service</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <classifier>bin</classifier>
+        </dependency>
+        <!-- REST Proxy distribution -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>restproxy</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <classifier>bin</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>all-in-one-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${distribution.name}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/all-in-one-bin-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-api-server</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>airavata-api</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>agent-service</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>file-server</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>research-service</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>restproxy</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

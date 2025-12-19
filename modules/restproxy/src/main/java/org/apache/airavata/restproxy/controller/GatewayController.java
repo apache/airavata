@@ -78,8 +78,7 @@ public class GatewayController {
     }
 
     @PutMapping("/{gatewayId}")
-    public ResponseEntity<?> updateGateway(
-            @PathVariable String gatewayId, @RequestBody Gateway gateway) {
+    public ResponseEntity<?> updateGateway(@PathVariable String gatewayId, @RequestBody Gateway gateway) {
         try {
             gateway.setGatewayId(gatewayId);
             gatewayService.updateGateway(gatewayId, gateway);
@@ -99,5 +98,3 @@ public class GatewayController {
         }
     }
 }
-
-

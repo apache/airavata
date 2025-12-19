@@ -148,14 +148,22 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         summary.setExecutionId(experimentModel.getExecutionId());
         if (status != null) {
             summary.setExperimentStatus(status);
-        } else if (experimentModel.getExperimentStatus() != null && !experimentModel.getExperimentStatus().isEmpty()) {
-            summary.setExperimentStatus(experimentModel.getExperimentStatus().get(experimentModel.getExperimentStatus().size() - 1).getState().name());
+        } else if (experimentModel.getExperimentStatus() != null
+                && !experimentModel.getExperimentStatus().isEmpty()) {
+            summary.setExperimentStatus(experimentModel
+                    .getExperimentStatus()
+                    .get(experimentModel.getExperimentStatus().size() - 1)
+                    .getState()
+                    .name());
         }
-        
+
         // Populate resourceHostId if available in UserConfigurationData
-        if (experimentModel.getUserConfigurationData() != null && 
-            experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
-            summary.setResourceHostId(experimentModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+        if (experimentModel.getUserConfigurationData() != null
+                && experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
+            summary.setResourceHostId(experimentModel
+                    .getUserConfigurationData()
+                    .getComputationalResourceScheduling()
+                    .getResourceHostId());
         }
 
         experimentSummaryRepository.save(summary);

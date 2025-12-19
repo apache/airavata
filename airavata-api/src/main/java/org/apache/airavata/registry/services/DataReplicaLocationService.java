@@ -57,14 +57,16 @@ public class DataReplicaLocationService {
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
             throws ReplicaCatalogException {
         // Generate replicaId if not set
-        if (replicaLocationModel.getReplicaId() == null || replicaLocationModel.getReplicaId().isEmpty()) {
+        if (replicaLocationModel.getReplicaId() == null
+                || replicaLocationModel.getReplicaId().isEmpty()) {
             String replicaId = org.apache.airavata.common.utils.AiravataUtils.getId(
                     replicaLocationModel.getReplicaName() != null ? replicaLocationModel.getReplicaName() : "replica");
             replicaLocationModel.setReplicaId(replicaId);
         }
         DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
         // Set the dataProduct relationship if productUri is provided
-        if (replicaLocationModel.getProductUri() != null && !replicaLocationModel.getProductUri().isEmpty()) {
+        if (replicaLocationModel.getProductUri() != null
+                && !replicaLocationModel.getProductUri().isEmpty()) {
             DataProductEntity dataProduct = dataProductRepository
                     .findById(replicaLocationModel.getProductUri())
                     .orElseThrow(() -> new ReplicaCatalogException(
@@ -80,14 +82,15 @@ public class DataReplicaLocationService {
         DataReplicaLocationEntity entity =
                 dataReplicaLocationRepository.findById(replicaId).orElse(null);
         if (entity == null) return null;
-        
+
         // Force initialization of replicaMetadata by iterating over it
         // This ensures the metadata is fully loaded within the transaction
         Map<String, String> metadataCopy = new HashMap<>();
         if (entity.getReplicaMetadata() != null) {
             try {
                 // Iterate over the map to force loading of all entries
-                for (Map.Entry<String, String> entry : entity.getReplicaMetadata().entrySet()) {
+                for (Map.Entry<String, String> entry :
+                        entity.getReplicaMetadata().entrySet()) {
                     metadataCopy.put(entry.getKey(), entry.getValue());
                 }
             } catch (Exception e) {
@@ -95,17 +98,17 @@ public class DataReplicaLocationService {
                 metadataCopy = new HashMap<>();
             }
         }
-        
+
         // Detach the entity to convert PersistentMap to regular HashMap
         // This prevents Dozer from accessing the lazy collection
         entityManager.detach(entity);
-        
+
         // Replace PersistentMap with regular HashMap
         entity.setReplicaMetadata(new HashMap<>(metadataCopy));
-        
+
         // Now perform Dozer mapping - the metadata is a regular HashMap, not a PersistentMap
         DataReplicaLocationModel model = mapper.map(entity, DataReplicaLocationModel.class);
-        
+
         // Always set the metadata copy on the model to ensure it's available after transaction ends
         model.setReplicaMetadata(metadataCopy);
         return model;
@@ -121,23 +124,24 @@ public class DataReplicaLocationService {
                     if (e.getReplicaMetadata() != null) {
                         try {
                             // Iterate over the map to force loading of all entries
-                            for (Map.Entry<String, String> entry : e.getReplicaMetadata().entrySet()) {
+                            for (Map.Entry<String, String> entry :
+                                    e.getReplicaMetadata().entrySet()) {
                                 metadataCopy.put(entry.getKey(), entry.getValue());
                             }
                         } catch (Exception ex) {
                             metadataCopy = new HashMap<>();
                         }
                     }
-                    
+
                     // Detach the entity to convert PersistentMap to regular HashMap
                     entityManager.detach(e);
-                    
+
                     // Replace PersistentMap with regular HashMap
                     e.setReplicaMetadata(new HashMap<>(metadataCopy));
-                    
+
                     // Now perform Dozer mapping
                     DataReplicaLocationModel model = mapper.map(e, DataReplicaLocationModel.class);
-                    
+
                     // Always set the metadata copy on the model
                     model.setReplicaMetadata(metadataCopy);
                     return model;
@@ -148,7 +152,8 @@ public class DataReplicaLocationService {
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {
         DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
         // Set the dataProduct relationship if productUri is provided
-        if (replicaLocationModel.getProductUri() != null && !replicaLocationModel.getProductUri().isEmpty()) {
+        if (replicaLocationModel.getProductUri() != null
+                && !replicaLocationModel.getProductUri().isEmpty()) {
             DataProductEntity dataProduct = dataProductRepository
                     .findById(replicaLocationModel.getProductUri())
                     .orElseThrow(() -> new ReplicaCatalogException(

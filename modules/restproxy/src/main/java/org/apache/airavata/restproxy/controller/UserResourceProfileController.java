@@ -48,8 +48,7 @@ public class UserResourceProfileController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserResourceProfile(
-            @PathVariable String userId, @RequestParam String gatewayId) {
+    public ResponseEntity<?> getUserResourceProfile(@PathVariable String userId, @RequestParam String gatewayId) {
         try {
             UserResourceProfile profile = userResourceProfileService.getUserResourceProfile(userId, gatewayId);
             if (profile == null) {
@@ -85,8 +84,7 @@ public class UserResourceProfileController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUserResourceProfile(
-            @PathVariable String userId, @RequestParam String gatewayId) {
+    public ResponseEntity<?> deleteUserResourceProfile(@PathVariable String userId, @RequestParam String gatewayId) {
         try {
             boolean deleted = userResourceProfileService.removeUserResourceProfile(userId, gatewayId);
             if (!deleted) {
@@ -121,8 +119,7 @@ public class UserResourceProfileController {
     }
 
     @GetMapping("/{userId}/storage-preferences")
-    public ResponseEntity<?> getUserStoragePreferences(
-            @PathVariable String userId, @RequestParam String gatewayId) {
+    public ResponseEntity<?> getUserStoragePreferences(@PathVariable String userId, @RequestParam String gatewayId) {
         try {
             List<UserStoragePreference> preferences =
                     userResourceProfileService.getAllUserStoragePreferences(userId, gatewayId);
@@ -132,5 +129,3 @@ public class UserResourceProfileController {
         }
     }
 }
-
-

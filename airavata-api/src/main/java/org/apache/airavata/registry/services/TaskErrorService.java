@@ -20,9 +20,9 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import jakarta.persistence.EntityManager;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
@@ -39,7 +39,10 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
 
     private final EntityManager entityManager;
 
-    public TaskErrorService(TaskErrorRepository taskErrorRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
+    public TaskErrorService(
+            TaskErrorRepository taskErrorRepository,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
+            Mapper mapper) {
         super(taskErrorRepository, mapper);
         this.entityManager = entityManager;
     }

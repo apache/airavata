@@ -127,17 +127,16 @@ public class GroupMembershipService {
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("parentId"), groupId));
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.USER.toString()));
         membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
-        
-        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
-        List<String> userIds = memberships.stream()
-                .map(m -> m.getChildId())
-                .distinct()
-                .toList();
-        
+
+        List<GroupMembershipEntity> memberships =
+                entityManager.createQuery(membershipQuery).getResultList();
+        List<String> userIds =
+                memberships.stream().map(m -> m.getChildId()).distinct().toList();
+
         if (userIds.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         // Then query User entities for those IDs
         var userQuery = cb.createQuery(UserEntity.class);
         var userQueryRoot = userQuery.from(UserEntity.class);
@@ -145,7 +144,7 @@ public class GroupMembershipService {
         userPredicates.add(cb.equal(userQueryRoot.get("domainId"), domainId));
         userPredicates.add(userQueryRoot.get("userId").in(userIds));
         userQuery.where(cb.and(userPredicates.toArray(new Predicate[0])));
-        
+
         List<UserEntity> entities = entityManager.createQuery(userQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, User.class)).toList();
     }
@@ -160,17 +159,16 @@ public class GroupMembershipService {
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("parentId"), groupId));
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.GROUP.toString()));
         membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
-        
-        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
-        List<String> groupIds = memberships.stream()
-                .map(m -> m.getChildId())
-                .distinct()
-                .toList();
-        
+
+        List<GroupMembershipEntity> memberships =
+                entityManager.createQuery(membershipQuery).getResultList();
+        List<String> groupIds =
+                memberships.stream().map(m -> m.getChildId()).distinct().toList();
+
         if (groupIds.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         // Then query UserGroup entities for those IDs
         var groupQuery = cb.createQuery(UserGroupEntity.class);
         var groupQueryRoot = groupQuery.from(UserGroupEntity.class);
@@ -178,7 +176,7 @@ public class GroupMembershipService {
         groupPredicates.add(cb.equal(groupQueryRoot.get("domainId"), domainId));
         groupPredicates.add(groupQueryRoot.get("groupId").in(groupIds));
         groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
-        
+
         List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }
@@ -193,17 +191,16 @@ public class GroupMembershipService {
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("childId"), userId));
         membershipPredicates.add(cb.equal(membershipQueryRoot.get("childType"), GroupChildType.USER.toString()));
         membershipQuery.where(cb.and(membershipPredicates.toArray(new Predicate[0])));
-        
-        List<GroupMembershipEntity> memberships = entityManager.createQuery(membershipQuery).getResultList();
-        List<String> groupIds = memberships.stream()
-                .map(m -> m.getParentId())
-                .distinct()
-                .toList();
-        
+
+        List<GroupMembershipEntity> memberships =
+                entityManager.createQuery(membershipQuery).getResultList();
+        List<String> groupIds =
+                memberships.stream().map(m -> m.getParentId()).distinct().toList();
+
         if (groupIds.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         // Then query UserGroup entities for those IDs
         var groupQuery = cb.createQuery(UserGroupEntity.class);
         var groupQueryRoot = groupQuery.from(UserGroupEntity.class);
@@ -212,7 +209,7 @@ public class GroupMembershipService {
         groupPredicates.add(groupQueryRoot.get("groupId").in(groupIds));
         groupPredicates.add(cb.equal(groupQueryRoot.get("groupCardinality"), "MULTI_USER"));
         groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
-        
+
         List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
         return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
     }

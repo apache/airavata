@@ -137,5 +137,3 @@ public class GroupResourceProfileController {
         }
     }
 }
-
-

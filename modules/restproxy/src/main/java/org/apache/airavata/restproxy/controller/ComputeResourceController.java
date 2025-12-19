@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.restproxy.controller;
 
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.registry.exception.AppCatalogException;
@@ -99,4 +98,3 @@ public class ComputeResourceController {
         }
     }
 }
-

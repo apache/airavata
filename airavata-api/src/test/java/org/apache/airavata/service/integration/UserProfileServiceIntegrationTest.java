@@ -29,18 +29,18 @@ import org.apache.airavata.profile.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for UserProfileService.
  */
 @DisplayName("UserProfileService Integration Tests")
-@org.springframework.test.context.TestPropertySource(properties = {
-    "security.iam.server-url=http://localhost:18080",
-    "security.iam.super-admin-username=admin",
-    "security.iam.super-admin-password=admin"
-})
+@org.springframework.test.context.TestPropertySource(
+        properties = {
+            "security.iam.server-url=http://localhost:18080",
+            "security.iam.super-admin-username=admin",
+            "security.iam.super-admin-password=admin"
+        })
 public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final UserProfileService userProfileService;

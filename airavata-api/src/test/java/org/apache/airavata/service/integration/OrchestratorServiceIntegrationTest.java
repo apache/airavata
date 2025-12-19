@@ -35,9 +35,9 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.util.ExperimentModelUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestConstructor;
 
@@ -50,9 +50,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
-    public OrchestratorServiceIntegrationTest(
-            RegistryService registryService,
-            AiravataServerProperties properties) {
+    public OrchestratorServiceIntegrationTest(RegistryService registryService, AiravataServerProperties properties) {
         this.registryService = registryService;
         this.properties = properties;
     }
@@ -60,8 +58,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     @org.junit.jupiter.api.BeforeEach
     void setUpOrchestratorMock() throws OrchestratorException {
         // Configure mock to return true when launchExperiment is called
-        Mockito.when(orchestratorService.launchExperiment(
-                Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+        Mockito.when(orchestratorService.launchExperiment(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(true);
     }
 

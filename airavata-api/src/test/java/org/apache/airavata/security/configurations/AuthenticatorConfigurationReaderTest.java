@@ -62,10 +62,9 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(6, authenticator.getPriority());
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
-                        "jdbc:h2:mem:testdb1;DB_CLOSE_DELAY=-1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.h2.Driver",
-                        ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
+                        "jdbc:h2:mem:testdb1;DB_CLOSE_DELAY=-1",
+                        ((TestDBAuthenticator1) authenticator).getDatabaseURL());
+                assertEquals("org.h2.Driver", ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
                 assertEquals("sa", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
@@ -82,10 +81,9 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(8, authenticator.getPriority());
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
-                        "jdbc:h2:mem:testdb3;DB_CLOSE_DELAY=-1", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.h2.Driver",
-                        ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
+                        "jdbc:h2:mem:testdb3;DB_CLOSE_DELAY=-1",
+                        ((TestDBAuthenticator3) authenticator).getDatabaseURL());
+                assertEquals("org.h2.Driver", ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
                 assertEquals("sa", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());

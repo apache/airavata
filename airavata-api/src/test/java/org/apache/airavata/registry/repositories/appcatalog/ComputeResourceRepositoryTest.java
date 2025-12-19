@@ -667,8 +667,9 @@ public class ComputeResourceRepositoryTest extends TestBase {
             }
 
             // Determine which fields to exclude based on the type of objects in the list
-            String[] excludeFields = new String[]{"__isset_bitfield", "creationTime", "updateTime", "storageResourceId"};
-            
+            String[] excludeFields =
+                    new String[] {"__isset_bitfield", "creationTime", "updateTime", "storageResourceId"};
+
             boolean equals = true;
             if (preferOrder) {
                 for (int i = 0; i < expected.size(); i++) {
@@ -679,9 +680,12 @@ public class ComputeResourceRepositoryTest extends TestBase {
                         // BatchQueue.equals() compares all fields including maxRunTime
                         // If Dozer mapping isn't working, maxRunTime might be 0 in actual
                         // So we do a more lenient comparison
-                        org.apache.airavata.common.model.BatchQueue expectedBq = (org.apache.airavata.common.model.BatchQueue) expectedItem;
-                        org.apache.airavata.common.model.BatchQueue actualBq = (org.apache.airavata.common.model.BatchQueue) actualItem;
-                        // Compare all fields except maxRunTime (which has a Dozer mapping issue: maxRuntime vs maxRunTime)
+                        org.apache.airavata.common.model.BatchQueue expectedBq =
+                                (org.apache.airavata.common.model.BatchQueue) expectedItem;
+                        org.apache.airavata.common.model.BatchQueue actualBq =
+                                (org.apache.airavata.common.model.BatchQueue) actualItem;
+                        // Compare all fields except maxRunTime (which has a Dozer mapping issue: maxRuntime vs
+                        // maxRunTime)
                         // The Dozer mapping might not be working correctly, so we exclude maxRunTime from comparison
                         boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                 && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
@@ -693,13 +697,14 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                 && Objects.equals(expectedBq.getDefaultNodeCount(), actualBq.getDefaultNodeCount())
                                 && Objects.equals(expectedBq.getDefaultCPUCount(), actualBq.getDefaultCPUCount())
                                 && Objects.equals(expectedBq.getDefaultWalltime(), actualBq.getDefaultWalltime())
-                                && Objects.equals(expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
+                                && Objects.equals(
+                                        expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                 && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-                        // Note: maxRunTime is excluded from comparison due to Dozer mapping issue (maxRuntime vs maxRunTime)
+                        // Note: maxRunTime is excluded from comparison due to Dozer mapping issue (maxRuntime vs
+                        // maxRunTime)
                         equals = equals & bqEquals;
                     } else {
-                        equals = equals & EqualsBuilder.reflectionEquals(
-                                expectedItem, actualItem, excludeFields);
+                        equals = equals & EqualsBuilder.reflectionEquals(expectedItem, actualItem, excludeFields);
                     }
                 }
             } else {
@@ -717,10 +722,14 @@ public class ComputeResourceRepositoryTest extends TestBase {
                             // BatchQueue.equals() compares all fields including maxRunTime
                             // If Dozer mapping isn't working, maxRunTime might be 0 in actual
                             // So we do a more lenient comparison
-                            org.apache.airavata.common.model.BatchQueue expectedBq = (org.apache.airavata.common.model.BatchQueue) expectedItem;
-                            org.apache.airavata.common.model.BatchQueue actualBq = (org.apache.airavata.common.model.BatchQueue) actualItem;
-                            // Compare all fields except maxRunTime (which has a Dozer mapping issue: maxRuntime vs maxRunTime)
-                            // The Dozer mapping might not be working correctly, so we exclude maxRunTime from comparison
+                            org.apache.airavata.common.model.BatchQueue expectedBq =
+                                    (org.apache.airavata.common.model.BatchQueue) expectedItem;
+                            org.apache.airavata.common.model.BatchQueue actualBq =
+                                    (org.apache.airavata.common.model.BatchQueue) actualItem;
+                            // Compare all fields except maxRunTime (which has a Dozer mapping issue: maxRuntime vs
+                            // maxRunTime)
+                            // The Dozer mapping might not be working correctly, so we exclude maxRunTime from
+                            // comparison
                             boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                     && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
                                     && Objects.equals(expectedBq.getMaxNodes(), actualBq.getMaxNodes())
@@ -731,13 +740,14 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                     && Objects.equals(expectedBq.getDefaultNodeCount(), actualBq.getDefaultNodeCount())
                                     && Objects.equals(expectedBq.getDefaultCPUCount(), actualBq.getDefaultCPUCount())
                                     && Objects.equals(expectedBq.getDefaultWalltime(), actualBq.getDefaultWalltime())
-                                    && Objects.equals(expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
+                                    && Objects.equals(
+                                            expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                     && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-                            // Note: maxRunTime is excluded from comparison due to Dozer mapping issue (maxRuntime vs maxRunTime)
+                            // Note: maxRunTime is excluded from comparison due to Dozer mapping issue (maxRuntime vs
+                            // maxRunTime)
                             equals = bqEquals;
                         } else {
-                            equals = EqualsBuilder.reflectionEquals(
-                                    expectedItem, actualItem, excludeFields);
+                            equals = EqualsBuilder.reflectionEquals(expectedItem, actualItem, excludeFields);
                         }
                         if (equals) {
                             checked[j] = true;

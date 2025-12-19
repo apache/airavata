@@ -43,7 +43,7 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     @MockBean
     private AiravataService airavataService;
-    
+
     private final RegistryService registryService;
 
     public AiravataServiceIntegrationTest(RegistryService registryService) {
@@ -61,7 +61,7 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
         } catch (Exception e) {
             // Gateway might already exist, ignore
         }
-        
+
         // Configure mock to return experiment IDs and models when methods are called
         Mockito.when(airavataService.createExperiment(Mockito.anyString(), Mockito.any()))
                 .thenAnswer(invocation -> {
@@ -74,21 +74,37 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
         Mockito.when(airavataService.getExperiment(Mockito.any(), Mockito.anyString()))
                 .thenAnswer(invocation -> {
                     String expId = invocation.getArgument(1);
-                    org.apache.airavata.common.model.ExperimentModel exp = new org.apache.airavata.common.model.ExperimentModel();
+                    org.apache.airavata.common.model.ExperimentModel exp =
+                            new org.apache.airavata.common.model.ExperimentModel();
                     exp.setExperimentId(expId);
                     return exp;
                 });
         Mockito.when(airavataService.getExperimentStatus(Mockito.anyString()))
                 .thenReturn(new org.apache.airavata.common.model.ExperimentStatus());
-        Mockito.when(airavataService.deleteExperiment(Mockito.anyString()))
-                .thenReturn(true);
-        Mockito.when(airavataService.searchExperiments(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()))
+        Mockito.when(airavataService.deleteExperiment(Mockito.anyString())).thenReturn(true);
+        Mockito.when(airavataService.searchExperiments(
+                        Mockito.any(),
+                        Mockito.anyString(),
+                        Mockito.anyString(),
+                        Mockito.any(),
+                        Mockito.anyInt(),
+                        Mockito.anyInt()))
                 .thenReturn(new java.util.ArrayList<>());
-        Mockito.when(airavataService.getExperimentOutputs(Mockito.anyString()))
-                .thenReturn(new java.util.ArrayList<>());
-        Mockito.when(airavataService.cloneExperiment(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
-                .thenAnswer(invocation -> "cloned-exp-" + java.util.UUID.randomUUID().toString());
-        Mockito.when(airavataService.getExperimentStatistics(Mockito.anyString(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.anyInt()))
+        Mockito.when(airavataService.getExperimentOutputs(Mockito.anyString())).thenReturn(new java.util.ArrayList<>());
+        Mockito.when(airavataService.cloneExperiment(
+                        Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenAnswer(invocation ->
+                        "cloned-exp-" + java.util.UUID.randomUUID().toString());
+        Mockito.when(airavataService.getExperimentStatistics(
+                        Mockito.anyString(),
+                        Mockito.anyLong(),
+                        Mockito.anyLong(),
+                        Mockito.anyString(),
+                        Mockito.any(),
+                        Mockito.any(),
+                        Mockito.any(),
+                        Mockito.anyInt(),
+                        Mockito.anyInt()))
                 .thenReturn(new org.apache.airavata.common.model.ExperimentStatistics());
     }
 

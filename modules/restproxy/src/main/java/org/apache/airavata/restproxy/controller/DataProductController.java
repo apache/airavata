@@ -82,8 +82,7 @@ public class DataProductController {
     }
 
     @PutMapping("/{productUri}")
-    public ResponseEntity<?> updateDataProduct(
-            @PathVariable String productUri, @RequestBody DataProductModel product) {
+    public ResponseEntity<?> updateDataProduct(@PathVariable String productUri, @RequestBody DataProductModel product) {
         try {
             product.setProductUri(productUri);
             boolean updated = dataProductService.updateDataProduct(product);
@@ -132,4 +131,3 @@ public class DataProductController {
         }
     }
 }
-

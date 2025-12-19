@@ -20,10 +20,10 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.InputDataObjectType;
-import jakarta.persistence.EntityManager;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -39,7 +39,10 @@ public class ProcessInputService {
     private final EntityManager entityManager;
     private final Mapper mapper;
 
-    public ProcessInputService(ProcessInputRepository processInputRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
+    public ProcessInputService(
+            ProcessInputRepository processInputRepository,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
+            Mapper mapper) {
         this.processInputRepository = processInputRepository;
         this.entityManager = entityManager;
         this.mapper = mapper;

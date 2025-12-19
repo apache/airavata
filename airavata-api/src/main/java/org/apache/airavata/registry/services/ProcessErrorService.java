@@ -20,9 +20,9 @@
 package org.apache.airavata.registry.services;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import jakarta.persistence.EntityManager;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
@@ -39,7 +39,10 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
 
     private final EntityManager entityManager;
 
-    public ProcessErrorService(ProcessErrorRepository processErrorRepository, @Qualifier("expCatalogEntityManager") EntityManager entityManager, Mapper mapper) {
+    public ProcessErrorService(
+            ProcessErrorRepository processErrorRepository,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
+            Mapper mapper) {
         super(processErrorRepository, mapper);
         this.entityManager = entityManager;
     }

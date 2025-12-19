@@ -66,8 +66,12 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     private String getIamServerUrl() throws IamAdminServicesException {
-        if (properties == null || properties.security == null || properties.security.iam == null || properties.security.iam.serverUrl == null) {
-            throw new IamAdminServicesException("IAM server URL is not configured. Check airavata.properties for security.iam.server-url");
+        if (properties == null
+                || properties.security == null
+                || properties.security.iam == null
+                || properties.security.iam.serverUrl == null) {
+            throw new IamAdminServicesException(
+                    "IAM server URL is not configured. Check airavata.properties for security.iam.server-url");
         }
         return properties.security.iam.serverUrl;
     }
@@ -97,7 +101,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     private Client getResteasyClient() {
         var builder = ClientBuilder.newBuilder();
         try {
-            if (properties != null && properties.security != null && properties.security.tls != null && properties.security.tls.enabled) {
+            if (properties != null
+                    && properties.security != null
+                    && properties.security.tls != null
+                    && properties.security.tls.enabled) {
                 String airavataConfigDir = properties.airavataConfigDir;
                 String keystorePath = properties.security.keystore.path;
                 String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();

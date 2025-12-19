@@ -83,8 +83,7 @@ public class ApplicationDeploymentController {
 
     @GetMapping
     public ResponseEntity<?> getApplicationDeployments(
-            @RequestParam(required = false) String appModuleId,
-            @RequestParam(required = false) String computeHostId) {
+            @RequestParam(required = false) String appModuleId, @RequestParam(required = false) String computeHostId) {
         try {
             Map<String, String> filters = new java.util.HashMap<>();
             if (appModuleId != null) {
@@ -101,5 +100,3 @@ public class ApplicationDeploymentController {
         }
     }
 }
-
-

@@ -60,8 +60,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProject(
-            @RequestParam String gatewayId, @RequestBody Project project) {
+    public ResponseEntity<?> createProject(@RequestParam String gatewayId, @RequestBody Project project) {
         try {
             String projectId = projectService.addProject(project, gatewayId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("projectId", projectId));
@@ -71,8 +70,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}")
-    public ResponseEntity<?> updateProject(
-            @PathVariable String projectId, @RequestBody Project project) {
+    public ResponseEntity<?> updateProject(@PathVariable String projectId, @RequestBody Project project) {
         try {
             project.setProjectID(projectId);
             projectService.updateProject(project, projectId);
@@ -101,16 +99,12 @@ public class ProjectController {
             @RequestParam(required = false) String orderType) {
         try {
             Map<String, String> filters = gatewayId != null ? Map.of("GATEWAY_ID", gatewayId) : null;
-            ResultOrderType resultOrderType = orderType != null
-                    ? ResultOrderType.valueOf(orderType.toUpperCase())
-                    : null;
-            List<Project> projects = projectService.searchProjects(
-                    filters, limit, offset, orderBy, resultOrderType);
+            ResultOrderType resultOrderType =
+                    orderType != null ? ResultOrderType.valueOf(orderType.toUpperCase()) : null;
+            List<Project> projects = projectService.searchProjects(filters, limit, offset, orderBy, resultOrderType);
             return ResponseEntity.ok(projects);
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }
-
-
