@@ -274,8 +274,14 @@ public class IamAdminService {
     }
 
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException {
+        if (!isIamConfigured()) {
+            // IAM not configured - skip update (similar to other methods)
+            logger.debug("IAM not configured, skipping user profile update for userId: {}", userDetails.getUserId());
+            return;
+        }
         try {
             TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+            keycloakclient.setProperties(properties);
             String username = userDetails.getUserId();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);

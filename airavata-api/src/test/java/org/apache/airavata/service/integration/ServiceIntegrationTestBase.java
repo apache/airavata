@@ -191,9 +191,13 @@ public abstract class ServiceIntegrationTestBase {
                     org.apache.airavata.security.UserInfo userInfo = new org.apache.airavata.security.UserInfo();
                     userInfo.setUsername(userId);
                     userInfo.setSub(gatewayId + "@" + userId);
+                    userInfo.setEmailAddress(userId + "@example.com");
+                    userInfo.setFirstName("Test");
+                    userInfo.setLastName("User");
                     return userInfo;
                 }
             };
         }
+
     }
 }

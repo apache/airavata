@@ -98,6 +98,10 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
             String computeResourceId = computeResourceService.addComputeResource(computeResource);
 
             GroupResourceProfile groupProfile = TestDataFactory.createGroupResourceProfile(TEST_GATEWAY_ID);
+            // Initialize computePreferences if null
+            if (groupProfile.getComputePreferences() == null) {
+                groupProfile.setComputePreferences(new java.util.ArrayList<>());
+            }
             GroupComputeResourcePreference preference = TestDataFactory.createAwsGroupComputeResourcePreference(
                     computeResourceId, groupProfile.getGroupResourceProfileId());
             groupProfile.getComputePreferences().add(preference);

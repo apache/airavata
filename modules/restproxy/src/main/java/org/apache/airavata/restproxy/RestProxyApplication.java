@@ -21,12 +21,48 @@ package org.apache.airavata.restproxy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(
+        exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableConfigurationProperties(RestProxyConfiguration.class)
+@ComponentScan(
+        basePackages = {
+            "org.apache.airavata.registry",
+            "org.apache.airavata.service",
+            "org.apache.airavata.restproxy"
+        },
+        excludeFilters = {
+            @ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = ".*\\$.*" // Exclude inner classes
+                    ),
+            @ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
+                    ),
+            @ComponentScan.Filter(
+                    type = org.springframework.context.annotation.FilterType.REGEX,
+                    pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
+                    )
+        })
+@EntityScan(
+        basePackages = {
+            "org.apache.airavata.registry.entities"
+        })
+@EnableJpaRepositories(
+        basePackages = {
+            "org.apache.airavata.registry.repositories"
+        })
 public class RestProxyApplication {
     public static void main(String[] args) {
-        SpringApplication.run(RestProxyApplication.class, args);
+        SpringApplication app = new SpringApplication(RestProxyApplication.class);
+        app.setDefaultProperties(java.util.Map.of(
+                "spring.main.allow-bean-definition-overriding", "true"
+                ));
+        app.run(args);
     }
 }

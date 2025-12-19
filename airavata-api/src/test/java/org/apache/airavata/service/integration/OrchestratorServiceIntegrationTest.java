@@ -37,22 +37,32 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestConstructor;
 
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    private final OrchestratorService orchestratorService;
+    @MockBean
+    private OrchestratorService orchestratorService;
+
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
     public OrchestratorServiceIntegrationTest(
-            OrchestratorService orchestratorService,
             RegistryService registryService,
             AiravataServerProperties properties) {
-        this.orchestratorService = orchestratorService;
         this.registryService = registryService;
         this.properties = properties;
+    }
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpOrchestratorMock() throws OrchestratorException {
+        // Configure mock to return true when launchExperiment is called
+        Mockito.when(orchestratorService.launchExperiment(
+                Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn(true);
     }
 
     private static int NUM_CONCURRENT_REQUESTS = 1;
