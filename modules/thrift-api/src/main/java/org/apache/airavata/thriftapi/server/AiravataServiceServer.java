@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.thriftapi.server;
 
-import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.thriftapi.handler.AiravataServiceHandler;
 import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.thrift.server.TServer;
@@ -29,19 +29,18 @@ import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AiravataServiceServer implements IServer {
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "services.thrift.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+public class AiravataServiceServer extends ServerLifecycle {
 
-    private static final Logger logger = LoggerFactory.getLogger(AiravataServiceServer.class);
     private static final String SERVER_NAME = "Airavata API Server";
     private static final String SERVER_VERSION = "1.0";
-
-    private ServerStatus status;
 
     private TServer server, TLSServer;
 
@@ -51,7 +50,31 @@ public class AiravataServiceServer implements IServer {
     public AiravataServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
         this.applicationContext = applicationContext;
         this.properties = properties;
-        setStatus(ServerStatus.STOPPED);
+    }
+
+    @Override
+    public String getServerName() {
+        return SERVER_NAME;
+    }
+
+    @Override
+    public String getServerVersion() {
+        return SERVER_VERSION;
+    }
+
+    @Override
+    public int getPhase() {
+        // API Server starts after Registry, Credential, and Sharing
+        return 50;
+    }
+
+    @Override
+    public boolean isRunning() {
+        if (!properties.security.tls.enabled) {
+            return server != null && server.isServing();
+        } else {
+            return TLSServer != null && TLSServer.isServing();
+        }
     }
 
     public void startAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer)
@@ -66,7 +89,6 @@ public class AiravataServiceServer implements IServer {
                 server = new TThreadPoolServer(options.processor(airavataAPIServer));
                 new Thread(() -> {
                             server.serve();
-                            setStatus(ServerStatus.STOPPED);
                             logger.info("Airavata API Server Stopped.");
                         })
                         .start();
@@ -79,7 +101,6 @@ public class AiravataServiceServer implements IServer {
                                 }
                             }
                             if (server.isServing()) {
-                                setStatus(ServerStatus.STARTED);
                                 logger.info("Starting Airavata API Server on Port " + serverPort);
                                 logger.info("Listening to Airavata Clients ....");
                             }
@@ -98,7 +119,6 @@ public class AiravataServiceServer implements IServer {
                 TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
                 new Thread(() -> {
                             TLSServer.serve();
-                            setStatus(ServerStatus.STOPPED);
                             logger.info("Airavata API Server over TLS Stopped.");
                         })
                         .start();
@@ -111,7 +131,7 @@ public class AiravataServiceServer implements IServer {
                                 }
                             }
                             if (TLSServer.isServing()) {
-                                setStatus(ServerStatus.STARTED);
+                                logger.info("Airavata API Server over TLS started on Port " + serverPort);
                             }
                         })
                         .start();
@@ -120,68 +140,29 @@ public class AiravataServiceServer implements IServer {
 
         } catch (TTransportException e) {
             logger.error("Failed to start API server ...", e);
-            setStatus(ServerStatus.FAILED);
-            org.apache.airavata.thriftapi.exception.AiravataSystemException exception =
-                    new org.apache.airavata.thriftapi.exception.AiravataSystemException();
-            exception.setAiravataErrorType(org.apache.airavata.thriftapi.exception.AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Failed to start API server: " + e.getMessage());
-            exception.initCause(e);
-            throw exception;
+            throw new RuntimeException("Failed to start API server: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public void start() throws Exception {
-        setStatus(ServerStatus.STARTING);
+    protected void doStart() throws Exception {
         // Get AiravataServiceHandler from Spring context
         AiravataServiceHandler handler = applicationContext.getBean(AiravataServiceHandler.class);
         // TODO: Migrate SecurityModule to Spring AOP for security interception
-        // For now, we use the handler directly. Security checks are still applied via @SecurityCheck annotations
+        // For now, we use the handler directly. Security checks are still applied via
+        // @SecurityCheck annotations
         Airavata.Processor<Airavata.Iface> airavataAPIServer = new Airavata.Processor<Airavata.Iface>(handler);
         startAiravataServer(airavataAPIServer);
     }
 
     @Override
-    public void stop() throws Exception {
+    protected void doStop() throws Exception {
         if ((!properties.security.tls.enabled) && server != null && server.isServing()) {
-            setStatus(ServerStatus.STOPING);
             server.stop();
         }
         // stop the Airavata API server hosted over TLS.
         if ((properties.security.tls.enabled) && TLSServer != null && TLSServer.isServing()) {
             TLSServer.stop();
         }
-    }
-
-    @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
-        return status;
-    }
-
-    private void setStatus(ServerStatus stat) {
-        status = stat;
-        status.updateTime();
-    }
-
-    @Override
-    public String getName() {
-        return SERVER_NAME;
-    }
-
-    @Override
-    public String getVersion() {
-        return SERVER_VERSION;
     }
 }

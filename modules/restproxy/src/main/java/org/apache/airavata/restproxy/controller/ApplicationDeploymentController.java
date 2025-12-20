@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/application-deployments")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ApplicationDeploymentController {
     private final ApplicationDeploymentService applicationDeploymentService;
 

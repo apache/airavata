@@ -22,11 +22,10 @@ package org.apache.airavata.monitor.compute;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.common.utils.IServer.ServerStatus;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.compute.job.MonitoringJob;
 import org.apache.airavata.monitor.compute.utils.Constants;
-import org.apache.airavata.service.registry.RegistryService;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -34,8 +33,6 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
@@ -45,40 +42,37 @@ import org.springframework.stereotype.Service;
  * Computational Resource Monitoring Service
  */
 @Service
-public class ComputationalResourceMonitoringService implements IServer {
+public class ComputationalResourceMonitoringService extends ServerLifecycle {
 
-    private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private ServerStatus status;
     private Scheduler scheduler;
     private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
-    private final AiravataServerProperties properties;
-    private final RegistryService registryService;
     private final ApplicationContext applicationContext;
 
-    public ComputationalResourceMonitoringService(
-            AiravataServerProperties properties,
-            RegistryService registryService,
-            ApplicationContext applicationContext) {
-        this.properties = properties;
-        this.registryService = registryService;
+    public ComputationalResourceMonitoringService(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     @Override
-    public String getName() {
-        return null;
+    public String getServerName() {
+        return SERVER_NAME;
     }
 
     @Override
-    public String getVersion() {
-        return null;
+    public String getServerVersion() {
+        return SERVER_VERSION;
     }
 
     @Override
-    public void start() throws Exception {
+    public int getPhase() {
+        // Start before Thrift servers
+        return 5;
+    }
+
+    @Override
+    protected void doStart() throws Exception {
 
         jobTriggerMap.clear();
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
@@ -131,29 +125,21 @@ public class ComputationalResourceMonitoringService implements IServer {
     }
 
     @Override
-    public void stop() throws Exception {
-        scheduler.unscheduleJobs(jobTriggerMap.values().stream()
-                .map(trigger -> {
-                    return trigger.getKey();
-                })
-                .collect(Collectors.toList()));
+    protected void doStop() throws Exception {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.unscheduleJobs(jobTriggerMap.values().stream()
+                    .map(trigger -> trigger.getKey())
+                    .collect(Collectors.toList()));
+            scheduler.shutdown();
+        }
     }
 
-    @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
-        return status;
+    public ServerStatus getStatus() {
+        return isRunning() ? ServerStatus.STARTED : ServerStatus.STOPPED;
     }
 
     public void setServerStatus(ServerStatus status) {
-        this.status = status;
+        // Status is now managed by SmartLifecycle.isRunning()
+        // This method is kept for backward compatibility with OrchestratorServiceServer
     }
 }

@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/application-interfaces")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ApplicationInterfaceController {
     private final ApplicationInterfaceService applicationInterfaceService;
 
@@ -137,6 +139,7 @@ public class ApplicationInterfaceController {
 
 @RestController
 @RequestMapping("/api/v1/application-modules")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 class ApplicationModuleController {
     private final ApplicationInterfaceService applicationInterfaceService;
 

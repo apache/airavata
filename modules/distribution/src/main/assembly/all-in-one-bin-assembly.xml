@@ -27,58 +27,107 @@ under the License.
   </formats>
 
   <fileSets>
-    <!-- Master startup script -->
+    <!-- Root metadata files -->
+    <fileSet>
+      <directory>../../..</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>INSTALL</include>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+        <include>RELEASE_NOTES</include>
+        <include>README.md</include>
+      </includes>
+    </fileSet>
+
+    <!-- Startup script -->
     <fileSet>
       <directory>src/main/resources/bin</directory>
       <outputDirectory>bin</outputDirectory>
-      <fileMode>777</fileMode>
+      <fileMode>755</fileMode>
       <includes>
         <include>*.sh</include>
       </includes>
     </fileSet>
 
-    <!-- API Server distribution -->
+    <!-- Executable JAR -->
     <fileSet>
-      <directory>${project.build.directory}/unpacked-services/apache-airavata-api-server-${project.version}</directory>
-      <outputDirectory>services/api-server</outputDirectory>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>**/*</include>
+        <include>${project.build.finalName}.jar</include>
       </includes>
     </fileSet>
 
-    <!-- Agent Service distribution -->
+    <!-- Keystores -->
     <fileSet>
-      <directory>${project.build.directory}/unpacked-services/apache-airavata-agent-service-${project.version}</directory>
-      <outputDirectory>services/agent-service</outputDirectory>
+      <directory>../../../keystores</directory>
+      <outputDirectory>conf/keystores</outputDirectory>
       <includes>
-        <include>**/*</include>
+        <include>*.jks</include>
+        <include>*.p12</include>
       </includes>
     </fileSet>
 
-    <!-- File Server distribution -->
+    <!-- Config files from airavata-api -->
     <fileSet>
-      <directory>${project.build.directory}/unpacked-services/apache-airavata-file-server-${project.version}</directory>
-      <outputDirectory>services/file-server</outputDirectory>
+      <directory>../../../airavata-api/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
       <includes>
-        <include>**/*</include>
+        <include>META-INF/persistence.xml</include>
+        <include>templates/*.template</include>
+        <include>*.properties</include>
+        <include>*.xml</include>
+        <include>log4j2.xml</include>
       </includes>
     </fileSet>
 
-    <!-- Research Service distribution -->
+    <!-- Database scripts -->
     <fileSet>
-      <directory>${project.build.directory}/unpacked-services/apache-airavata-research-service-${project.version}</directory>
-      <outputDirectory>services/research-service</outputDirectory>
+      <directory>../../../airavata-api/src/main/resources/database_scripts</directory>
+      <outputDirectory>database_scripts</outputDirectory>
       <includes>
-        <include>**/*</include>
+        <include>*.sql</include>
       </includes>
     </fileSet>
 
-    <!-- REST Proxy distribution -->
+    <!-- Config files from agent-service -->
     <fileSet>
-      <directory>${project.build.directory}/unpacked-services/apache-airavata-restproxy-${project.version}</directory>
-      <outputDirectory>services/restproxy</outputDirectory>
+      <directory>../agent-framework/agent-service/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
       <includes>
-        <include>**/*</include>
+        <include>application.yml</include>
+        <include>log4j2.xml</include>
+      </includes>
+    </fileSet>
+
+    <!-- Config files from research-service -->
+    <fileSet>
+      <directory>../research-framework/research-service/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>application.yml</include>
+        <include>log4j2.xml</include>
+      </includes>
+    </fileSet>
+
+    <!-- Config files from file-server -->
+    <fileSet>
+      <directory>../file-server/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>application.properties</include>
+        <include>log4j2.xml</include>
+      </includes>
+    </fileSet>
+
+    <!-- Config files from restproxy -->
+    <fileSet>
+      <directory>../restproxy/src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>application.properties</include>
+        <include>log4j2.xml</include>
       </includes>
     </fileSet>
 

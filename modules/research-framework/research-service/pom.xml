@@ -31,9 +31,6 @@ under the License.
   <artifactId>research-service</artifactId>
   <name>Airavata Research Service</name>
 
-  <properties>
-    <research.service.dist.name>apache-airavata-research-service-${project.version}</research.service.dist.name>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -178,27 +175,6 @@ under the License.
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>research-service-distribution-package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <finalName>${research.service.dist.name}</finalName>
-              <descriptors>
-                <descriptor>src/main/assembly/research-service-bin-assembly.xml</descriptor>
-              </descriptors>
-              <attach>false</attach>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>io.github.ascopes</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <configuration>
@@ -231,10 +207,13 @@ under the License.
           <release>17</release>
         </configuration>
       </plugin>
+      <!-- Spring Boot plugin DISABLED: Repackaging disabled to produce standard JAR for distribution module -->
+      <!--
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
-import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.registry.messaging.RegistryServiceDBEventMessagingFactory;
 import org.apache.airavata.registry.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.utils.ExpCatalogDBInitConfig;
@@ -38,19 +38,17 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegistryServiceServer implements IServer {
-    private static final Logger logger = LoggerFactory.getLogger(RegistryServiceServer.class);
-
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "services.thrift.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+public class RegistryServiceServer extends ServerLifecycle {
     private static final String SERVER_NAME = "Registry API Server";
     private static final String SERVER_VERSION = "1.0";
-
-    private ServerStatus status;
 
     private TServer server;
 
@@ -76,7 +74,27 @@ public class RegistryServiceServer implements IServer {
         this.appCatalogDBInitConfig = appCatalogDBInitConfig;
         this.replicaCatalogDBInitConfig = replicaCatalogDBInitConfig;
         this.messagingFactory = messagingFactory;
-        setStatus(ServerStatus.STOPPED);
+    }
+
+    @Override
+    public String getServerName() {
+        return SERVER_NAME;
+    }
+
+    @Override
+    public String getServerVersion() {
+        return SERVER_VERSION;
+    }
+
+    @Override
+    public int getPhase() {
+        // Registry Server starts after DB Event Manager
+        return 20;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return server != null && server.isServing();
     }
 
     @PostConstruct
@@ -104,7 +122,6 @@ public class RegistryServiceServer implements IServer {
             new Thread() {
                 public void run() {
                     server.serve();
-                    setStatus(ServerStatus.STOPPED);
                     logger.info("Registry Server Stopped.");
                 }
             }.start();
@@ -118,7 +135,6 @@ public class RegistryServiceServer implements IServer {
                         }
                     }
                     if (server.isServing()) {
-                        setStatus(ServerStatus.STARTED);
                         logger.info("Started Registry Server on Port " + serverPort + " ...");
 
                         // start db event handlers
@@ -131,8 +147,8 @@ public class RegistryServiceServer implements IServer {
             }.start();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
-            setStatus(ServerStatus.FAILED);
             logger.error("Failed to start Registry server on port " + serverPort + " ...");
+            throw e;
         }
     }
 
@@ -152,8 +168,7 @@ public class RegistryServiceServer implements IServer {
     }
 
     @Override
-    public void start() throws Exception {
-        setStatus(ServerStatus.STARTING);
+    protected void doStart() throws Exception {
         RegistryServiceHandler handler = applicationContext.getBean(RegistryServiceHandler.class);
         RegistryService.Processor<RegistryServiceHandler> orchestratorService =
                 new RegistryService.Processor<RegistryServiceHandler>(handler);
@@ -161,42 +176,9 @@ public class RegistryServiceServer implements IServer {
     }
 
     @Override
-    public void stop() throws Exception {
+    protected void doStop() throws Exception {
         if (server != null && server.isServing()) {
-            setStatus(ServerStatus.STOPING);
             server.stop();
         }
-    }
-
-    @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
-        return status;
-    }
-
-    private void setStatus(ServerStatus stat) {
-        status = stat;
-        status.updateTime();
-    }
-
-    @Override
-    public String getName() {
-        return SERVER_NAME;
-    }
-
-    @Override
-    public String getVersion() {
-        return SERVER_VERSION;
     }
 }

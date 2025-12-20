@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.thriftapi.server;
 
-import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.thriftapi.credential.model.CredentialStoreService;
 import org.apache.airavata.thriftapi.handler.CredentialServiceHandler;
 import org.apache.thrift.server.TServer;
@@ -28,18 +28,18 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CredentialServiceServer implements IServer {
-    private static final Logger logger = LoggerFactory.getLogger(CredentialServiceServer.class);
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "services.thrift.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
+public class CredentialServiceServer extends ServerLifecycle {
     private static final String SERVER_NAME = "Credential Store Server";
     private static final String SERVER_VERSION = "1.0";
 
-    private IServer.ServerStatus status;
     private TServer server;
 
     private final ApplicationContext applicationContext;
@@ -48,23 +48,32 @@ public class CredentialServiceServer implements IServer {
     public CredentialServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
         this.applicationContext = applicationContext;
         this.properties = properties;
-        setStatus(IServer.ServerStatus.STOPPED);
     }
 
     @Override
-    public String getName() {
+    public String getServerName() {
         return SERVER_NAME;
     }
 
     @Override
-    public String getVersion() {
+    public String getServerVersion() {
         return SERVER_VERSION;
     }
 
     @Override
-    public void start() throws Exception {
+    public int getPhase() {
+        // Credential Store starts after Registry
+        return 30;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return server != null && server.isServing();
+    }
+
+    @Override
+    protected void doStart() throws Exception {
         try {
-            setStatus(ServerStatus.STARTING);
             final int serverPort = properties.services.vault.server.port;
             CredentialServiceHandler handler = applicationContext.getBean(CredentialServiceHandler.class);
             CredentialStoreService.Processor<CredentialServiceHandler> processor =
@@ -78,7 +87,6 @@ public class CredentialServiceServer implements IServer {
             new Thread() {
                 public void run() {
                     server.serve();
-                    setStatus(ServerStatus.STOPPED);
                     logger.info("Credential store Server Stopped.");
                 }
             }.start();
@@ -92,43 +100,21 @@ public class CredentialServiceServer implements IServer {
                         }
                     }
                     if (server.isServing()) {
-                        setStatus(ServerStatus.STARTED);
                         logger.info("Starting Credential store Server on Port " + serverPort);
                         logger.info("Listening to Credential store clients ....");
                     }
                 }
             }.start();
         } catch (TTransportException e) {
-            setStatus(ServerStatus.FAILED);
             throw new Exception("Error while starting the credential store service", e);
         }
     }
 
     @Override
-    public void stop() throws Exception {
+    protected void doStop() throws Exception {
         if (server != null && server.isServing()) {
-            setStatus(ServerStatus.STOPING);
             server.stop();
         }
-    }
-
-    @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
-        return status;
-    }
-
-    private void setStatus(IServer.ServerStatus stat) {
-        status = stat;
-        status.updateTime();
     }
 
     public TServer getServer() {

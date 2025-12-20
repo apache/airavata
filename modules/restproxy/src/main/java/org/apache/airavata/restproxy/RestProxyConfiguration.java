@@ -25,6 +25,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+        name = "services.rest.enabled",
+        havingValue = "true",
+        matchIfMissing = false)
 public class RestProxyConfiguration {
 
     @Value("${restproxy.broker.url:airavata.host:9092}")

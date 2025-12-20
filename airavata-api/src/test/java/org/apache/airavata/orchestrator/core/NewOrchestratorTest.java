@@ -126,8 +126,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class
+                            org.apache.airavata.config.BackgroundServicesLauncher.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

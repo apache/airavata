@@ -26,6 +26,7 @@ import org.apache.airavata.common.model.ComputeResourcePolicy;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,10 +36,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/group-resource-profiles")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class GroupResourceProfileController {
     private final GroupResourceProfileService groupResourceProfileService;
 
@@ -97,7 +100,10 @@ public class GroupResourceProfileController {
     @GetMapping
     public ResponseEntity<?> getAllGroupResourceProfiles(@RequestParam(required = false) String gatewayId) {
         try {
-            List<GroupResourceProfile> profiles = groupResourceProfileService.getAllGroupResourceProfiles(gatewayId);
+            // The service method requires gatewayId and accessibleGroupResProfileIds
+            // Passing null for accessibleGroupResProfileIds to get all profiles
+            List<GroupResourceProfile> profiles =
+                    groupResourceProfileService.getAllGroupResourceProfiles(gatewayId, null);
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

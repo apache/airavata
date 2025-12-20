@@ -20,98 +20,75 @@
 package org.apache.airavata.manager.dbevent;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by Ajinkya on 3/29/17.
+ * DB Event Manager service that handles database event publishing and subscription.
+ *
+ * <p>This service starts messaging utilities for database events when enabled.
  */
 @Component
-public class DBEventManagerRunner implements IServer {
-
-    private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
+@ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true", matchIfMissing = true)
+public class DBEventManagerRunner extends ServerLifecycle {
 
     private static final String SERVER_NAME = "DB Event Manager";
     private static final String SERVER_VERSION = "1.0";
 
     private final AiravataServerProperties properties;
     private final DBEventManagerMessagingFactory messagingFactory;
-    private ServerStatus status;
 
     public DBEventManagerRunner(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
         this.properties = properties;
         this.messagingFactory = messagingFactory;
     }
 
-    /**
-     * Start required messaging utilities
-     */
-    private void startDBEventManagerRunner(AiravataServerProperties properties) {
-        try {
-            log.info("Starting DB Event manager publisher");
-
-            messagingFactory.getDBEventPublisher();
-            log.debug("DB Event manager publisher is running");
-
-            log.info("Starting DB Event manager subscriber");
-
-            messagingFactory.getDBEventSubscriber(properties);
-            log.debug("DB Event manager subscriber is listening");
-        } catch (AiravataException e) {
-            log.error("Error starting DB Event Manager.", e);
-        }
-    }
-
     @Override
-    public String getName() {
+    public String getServerName() {
         return SERVER_NAME;
     }
 
     @Override
-    public String getVersion() {
+    public String getServerVersion() {
         return SERVER_VERSION;
     }
 
     @Override
-    public void start() throws Exception {
+    public int getPhase() {
+        // Start before other Thrift servers
+        return 10;
+    }
 
+    /**
+     * Start required messaging utilities
+     */
+    private void startDBEventManagerRunner() {
         try {
-            log.info("Starting the DB Event Manager runner.");
-            new Thread(() -> this.startDBEventManagerRunner(properties)).start();
-            setStatus(ServerStatus.STARTED);
-        } catch (Exception ex) {
-            log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
-            setStatus(ServerStatus.FAILED);
+            logger.info("Starting DB Event manager publisher");
+            messagingFactory.getDBEventPublisher();
+            logger.debug("DB Event manager publisher is running");
+
+            logger.info("Starting DB Event manager subscriber");
+            messagingFactory.getDBEventSubscriber(properties);
+            logger.debug("DB Event manager subscriber is listening");
+        } catch (AiravataException e) {
+            logger.error("Error starting DB Event Manager.", e);
+            throw new RuntimeException("Failed to start DB Event Manager", e);
         }
     }
 
     @Override
-    public void stop() throws Exception {
+    protected void doStart() throws Exception {
+        logger.info("Starting the DB Event Manager runner.");
+        new Thread(() -> this.startDBEventManagerRunner()).start();
+    }
 
+    @Override
+    protected void doStop() throws Exception {
         // TODO: implement stopping the DBEventManager
-    }
-
-    @Override
-    public void restart() throws Exception {
-
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
-        return status;
-    }
-
-    private void setStatus(ServerStatus stat) {
-        status = stat;
-        status.updateTime();
+        logger.info("Stopping DB Event Manager (shutdown not yet implemented)");
     }
 }

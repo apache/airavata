@@ -1,0 +1,75 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.ide.integration;
+
+import java.util.ArrayList;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.helix.manager.zk.ZKHelixAdmin;
+import org.apache.helix.manager.zk.ZNRecordSerializer;
+import org.apache.helix.manager.zk.ZkClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class JobEngineStarter {
+
+    // Note: This static field cannot be injected by Spring.
+    // This class needs to be refactored to use Spring ApplicationContext
+    // or convert to a Spring component with instance-based injection.
+    private static GlobalParticipant globalParticipant;
+
+    private static final Logger logger = LoggerFactory.getLogger(JobEngineStarter.class);
+
+    public static void main(String args[]) throws Exception {
+
+        ZkClient zkClient = new ZkClient(
+                ApplicationSettings.getSetting("zookeeper.server-connection", "localhost:2181"),
+                ZkClient.DEFAULT_SESSION_TIMEOUT,
+                ZkClient.DEFAULT_CONNECTION_TIMEOUT,
+                new ZNRecordSerializer());
+        ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
+
+        zkHelixAdmin.addCluster(ApplicationSettings.getSetting("helix.cluster-name"), true);
+
+        logger.info("Starting Helix Controller .......");
+        // Note: HelixController is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        logger.warn("HelixController requires Spring context - skipping in standalone mode");
+
+        ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+
+        for (String taskClassName : GlobalParticipant.TASK_CLASS_NAMES) {
+            taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+        }
+
+        logger.info("Starting Helix Participant .......");
+        // Note: GlobalParticipant is a Spring component and requires AiravataServerProperties.
+        // This main method should be run within a Spring application context.
+        logger.warn("GlobalParticipant requires Spring context - skipping in standalone mode");
+
+        logger.info("Starting Pre Workflow Manager .......");
+        // Note: PreWorkflowManager and PostWorkflowManager are Spring components
+        // and require dependency injection. This main method should be run within
+        // a Spring application context or these should be obtained from the context.
+        logger.warn("PreWorkflowManager and PostWorkflowManager require Spring context - skipping in standalone mode");
+    }
+}
+

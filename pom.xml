@@ -75,7 +75,6 @@ under the License.
         <module>modules/research-framework/research-service</module>
         <module>modules/restproxy</module>
         <module>modules/distribution</module>
-        <module>modules/ide-integration</module>
     </modules>
 
     <properties>

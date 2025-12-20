@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.airavata.common.model.StorageResourceDescription;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.StorageResourceService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/storage-resources")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class StorageResourceController {
     private final StorageResourceService storageResourceService;
 

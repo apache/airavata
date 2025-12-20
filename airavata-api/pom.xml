@@ -494,28 +494,6 @@ under the License.
         </executions>
       </plugin>
 
-      <!-- Package distribution (tarball) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>api-server-distribution-package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <finalName>${api.server.dist.name}</finalName>
-              <descriptors>
-                <descriptor>src/main/assembly/api-server-bin-assembly.xml</descriptor>
-              </descriptors>
-              <attach>false</attach>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
       <!-- Package distribution (docker) preparation -->
       <plugin>

@@ -28,134 +28,113 @@ under the License.
     </parent>
     <artifactId>distribution</artifactId>
     <name>Airavata Distribution</name>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <distribution.name>apache-airavata-all-${project.version}</distribution.name>
+        <distribution.name>airavata-${project.version}</distribution.name>
     </properties>
 
     <dependencies>
-        <!-- API Server distribution -->
+        <!-- Core API module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
-            <classifier>bin</classifier>
         </dependency>
-        <!-- Agent Service distribution -->
+        <!-- Agent Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>agent-service</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
-            <classifier>bin</classifier>
         </dependency>
-        <!-- File Server distribution -->
+        <!-- File Server module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>file-server</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
-            <classifier>bin</classifier>
         </dependency>
-        <!-- Research Service distribution -->
+        <!-- Research Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>research-service</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
-            <classifier>bin</classifier>
         </dependency>
-        <!-- REST Proxy distribution -->
+        <!-- REST Proxy module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>restproxy</artifactId>
             <version>${project.version}</version>
-            <type>tar.gz</type>
-            <classifier>bin</classifier>
+        </dependency>
+        <!-- Thrift API module -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>thrift-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>airavata-${project.version}</finalName>
         <plugins>
+            <!-- Spring Boot plugin to create executable uber-jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>org.apache.airavata.server.UnifiedApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Assembly plugin to create ZIP distribution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>all-in-one-distribution-package</id>
+                        <id>unified-distribution-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${distribution.name}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/all-in-one-bin-assembly.xml</descriptor>
                             </descriptors>
                             <attach>false</attach>
+                            <outputDirectory>${project.basedir}/../../distribution</outputDirectory>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!-- Exec plugin for running the application -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-api-server</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>airavata-api</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>agent-service</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>file-server</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>research-service</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>restproxy</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                    <outputDirectory>${project.build.directory}/unpacked-services</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>org.apache.airavata.server.UnifiedApplication</mainClass>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>airavata.config.dir</key>
+                            <value>${project.basedir}/../../../airavata-api/src/main/resources</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>airavata.home</key>
+                            <value>${project.basedir}/../../../</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>log4j.configurationFile</key>
+                            <value>file:${project.basedir}/../../../airavata-api/src/main/resources/log4j2.xml</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
             </plugin>
         </plugins>
     </build>

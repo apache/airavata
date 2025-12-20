@@ -107,7 +107,6 @@ public class KeyCloakSecurityManagerTest {
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.ThriftServerLauncher.class,
                             org.apache.airavata.config.DozerMapperConfig.class
                         }),
                 @ComponentScan.Filter(
