@@ -34,7 +34,7 @@ public class StorageInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "STORAGE_RESOURCE_ID")
+    @Column(name = "STORAGE_RESOURCE_ID", insertable = false, updatable = false)
     private String storageResourceId;
 
     @Id
