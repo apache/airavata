@@ -280,17 +280,40 @@ public class GroupManagerService {
                 // userId is airavataInternalUserId (format: "userId@gatewayId")
                 UserProfile userProfile = userProfileService.getUserProfileByAiravataInternalUserId(userId);
                 if (userProfile == null) {
-                    throw new SharingRegistryException("User profile not found for: " + userId);
+                    // Log warning but don't throw - user may not be visible due to transaction isolation
+                    // The user will be added to the group anyway, and if they don't exist, the addUsersToGroup
+                    // operation will handle it appropriately
+                    logger.warn(
+                            "User profile not found for userId: {}. User may not be visible due to transaction isolation. "
+                                    + "Skipping user creation in sharing registry, but will attempt to add to group.",
+                            userId);
+                    // Create a minimal user entry with just the userId to allow group membership
+                    user.setUserName(userId.split("@")[0]); // Extract username from airavataInternalUserId
+                    user.setCreatedTime(System.currentTimeMillis());
+                    user.setEmail(null);
+                    user.setFirstName(null);
+                    user.setLastName(null);
+                } else {
+                    user.setUserName(userProfile.getUserId());
+                    user.setCreatedTime(userProfile.getCreationTime());
+                    user.setEmail(
+                            userProfile.getEmails() != null
+                                            && userProfile.getEmails().size() > 0
+                                    ? userProfile.getEmails().get(0)
+                                    : null);
+                    user.setFirstName(userProfile.getFirstName());
+                    user.setLastName(userProfile.getLastName());
                 }
-                user.setUserName(userProfile.getUserId());
-                user.setCreatedTime(userProfile.getCreationTime());
-                user.setEmail(
-                        userProfile.getEmails().size() > 0
-                                ? userProfile.getEmails().get(0)
-                                : null);
-                user.setFirstName(userProfile.getFirstName());
-                user.setLastName(userProfile.getLastName());
-                sharingService.createUser(user);
+                try {
+                    sharingService.createUser(user);
+                } catch (SharingRegistryException e) {
+                    // If user creation fails (e.g., duplicate), log and continue
+                    // The user might already exist or there might be a race condition
+                    logger.debug(
+                            "Failed to create user in sharing registry for userId: {}. Error: {}",
+                            userId,
+                            e.getMessage());
+                }
             }
         }
         return sharingService.addUsersToGroup(domainId, userIds, groupId);

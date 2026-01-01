@@ -27,7 +27,7 @@ import org.mapstruct.Mapping;
 
 /**
  * MapStruct mapper for converting between ProcessEntity and ProcessModel.
- * Note: emailAddresses is excluded per dozer_mapping.xml configuration.
+ * Note: emailAddresses is excluded as it's handled separately.
  */
 @Mapper(
         componentModel = "spring",
@@ -49,7 +49,7 @@ public interface ProcessMapper {
     @Mapping(
             target = "lastUpdateTime",
             expression = "java(entity.getLastUpdateTime() != null ? entity.getLastUpdateTime().getTime() : 0L)")
-    @Mapping(target = "emailAddresses", ignore = true) // Excluded per dozer_mapping.xml
+    @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     ProcessModel toModel(ProcessEntity entity);
 
     @Mapping(
@@ -59,7 +59,7 @@ public interface ProcessMapper {
             target = "lastUpdateTime",
             expression =
                     "java(model.getLastUpdateTime() > 0 ? new java.sql.Timestamp(model.getLastUpdateTime()) : null)")
-    @Mapping(target = "emailAddresses", ignore = true) // Excluded per dozer_mapping.xml
+    @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     @Mapping(target = "experiment", ignore = true) // Set by service layer
     ProcessEntity toEntity(ProcessModel model);
 

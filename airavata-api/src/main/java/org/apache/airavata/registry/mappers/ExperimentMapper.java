@@ -27,7 +27,7 @@ import org.mapstruct.Mapping;
 
 /**
  * MapStruct mapper for converting between ExperimentEntity and ExperimentModel.
- * Note: emailAddresses is excluded per dozer_mapping.xml configuration.
+ * Note: emailAddresses is excluded as it's handled separately.
  */
 @Mapper(
         componentModel = "spring",
@@ -45,7 +45,7 @@ public interface ExperimentMapper {
     @Mapping(
             target = "creationTime",
             expression = "java(entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L)")
-    @Mapping(target = "emailAddresses", ignore = true) // Excluded per dozer_mapping.xml
+    @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     @Mapping(target = "workflow", ignore = true) // Not mapped from entity
     @Mapping(target = "cleanUpStrategy", ignore = true) // Not mapped from entity
     ExperimentModel toModel(ExperimentEntity entity);
@@ -53,7 +53,7 @@ public interface ExperimentMapper {
     @Mapping(
             target = "creationTime",
             expression = "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : null)")
-    @Mapping(target = "emailAddresses", ignore = true) // Excluded per dozer_mapping.xml
+    @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     ExperimentEntity toEntity(ExperimentModel model);
 
     List<ExperimentModel> toModelList(List<ExperimentEntity> entities);

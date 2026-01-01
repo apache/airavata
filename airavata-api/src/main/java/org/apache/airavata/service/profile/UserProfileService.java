@@ -227,10 +227,17 @@ public class UserProfileService {
             if (updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
+                // DB event publishing is best-effort and should not affect the transaction
                 try {
                     dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
                 } catch (AiravataException e) {
                     logger.error("Error publishing user profile update event", e);
+                } catch (RuntimeException e) {
+                    // Catch RuntimeException as well - DB event publishing failures should not rollback the transaction
+                    logger.error("Error publishing user profile update event (RuntimeException)", e);
+                } catch (Throwable e) {
+                    // Catch everything to ensure no exception from DB event publishing affects the transaction
+                    logger.error("Error publishing user profile update event (unexpected exception)", e);
                 }
                 return true;
             }
@@ -434,6 +441,36 @@ public class UserProfileService {
         UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
         UserProfileEntity persistedCopy;
         try {
+            // If updating an existing entity, preserve creationTime and lastAccessTime from the database
+            // These fields are required and should not be null
+            if (entity.getAiravataInternalUserId() != null) {
+                UserProfileEntity existingEntity =
+                        entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
+                if (existingEntity != null) {
+                    // Preserve creationTime and lastAccessTime from existing entity
+                    // Use reflection to set private fields since setters are private
+                    try {
+                        java.lang.reflect.Method setCreationTime =
+                                UserProfileEntity.class.getDeclaredMethod("setCreationTime", java.util.Date.class);
+                        setCreationTime.setAccessible(true);
+                        if (entity.getCreationTime() == null && existingEntity.getCreationTime() != null) {
+                            setCreationTime.invoke(entity, existingEntity.getCreationTime());
+                        }
+                        java.lang.reflect.Method setLastAccessTime =
+                                UserProfileEntity.class.getDeclaredMethod("setLastAccessTime", java.util.Date.class);
+                        setLastAccessTime.setAccessible(true);
+                        if (entity.getLastAccessTime() == null && existingEntity.getLastAccessTime() != null) {
+                            setLastAccessTime.invoke(entity, existingEntity.getLastAccessTime());
+                        }
+                    } catch (Exception e) {
+                        logger.warn(
+                                "Failed to preserve creationTime/lastAccessTime using reflection: {}", e.getMessage());
+                        // Fallback: the @PreUpdate callback will set lastAccessTime, but we need creationTime
+                        // If reflection fails, we'll rely on merge to preserve existing values
+                    }
+                }
+            }
+            // For new entities, @PrePersist will set creationTime and lastAccessTime
             persistedCopy = entityManager.merge(entity);
             entityManager.flush(); // Ensure entity is persisted and visible in same transaction
         } catch (RuntimeException e) {

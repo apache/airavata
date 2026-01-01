@@ -445,14 +445,23 @@ public class SharingRegistryService {
             throws SharingRegistryException {
         try {
             for (int i = 0; i < userIds.size(); i++) {
-                GroupMembership groupMembership = new GroupMembership();
-                groupMembership.setParentId(groupId);
-                groupMembership.setChildId(userIds.get(i));
-                groupMembership.setChildType(GroupChildType.USER);
-                groupMembership.setDomainId(domainId);
-                groupMembership.setCreatedTime(System.currentTimeMillis());
-                groupMembership.setUpdatedTime(System.currentTimeMillis());
-                groupMembershipService.create(groupMembership);
+                // Check if membership already exists to avoid duplicate key exceptions
+                GroupMembershipPK membershipPK = new GroupMembershipPK();
+                membershipPK.setParentId(groupId);
+                membershipPK.setChildId(userIds.get(i));
+                membershipPK.setDomainId(domainId);
+                GroupMembership existing = groupMembershipService.get(membershipPK);
+                if (existing == null) {
+                    // Only create if it doesn't exist
+                    GroupMembership groupMembership = new GroupMembership();
+                    groupMembership.setParentId(groupId);
+                    groupMembership.setChildId(userIds.get(i));
+                    groupMembership.setChildType(GroupChildType.USER);
+                    groupMembership.setDomainId(domainId);
+                    groupMembership.setCreatedTime(System.currentTimeMillis());
+                    groupMembership.setUpdatedTime(System.currentTimeMillis());
+                    groupMembershipService.create(groupMembership);
+                }
             }
             return true;
         } catch (SharingRegistryException e) {

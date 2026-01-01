@@ -27,8 +27,8 @@ import org.mapstruct.Mapping;
 
 /**
  * MapStruct mapper for converting between ComputeResourceEntity and ComputeResourceDescription.
- * Note: Nested lists (batchQueues, jobSubmissionInterfaces, dataMovementInterfaces) are handled
- * manually in the service layer due to polymorphic types and complex merging logic.
+ * batchQueues and dataMovementInterfaces are fully mapped. jobSubmissionInterfaces require
+ * manual handling due to polymorphic types (SSHJobSubmission, CloudJobSubmission, etc.).
  */
 @Mapper(
         componentModel = "spring",
@@ -37,16 +37,12 @@ import org.mapstruct.Mapping;
 public interface ComputeResourceMapper {
 
     @Mapping(target = "enabled", expression = "java(entity.getEnabled() != 0)")
-    @Mapping(target = "batchQueues", ignore = true) // Handled by service layer
-    @Mapping(target = "jobSubmissionInterfaces", ignore = true) // Handled by service layer (polymorphic)
-    @Mapping(target = "dataMovementInterfaces", ignore = true) // Handled by service layer
-    @Mapping(target = "fileSystems", ignore = true) // Handled by service layer
+    @Mapping(target = "jobSubmissionInterfaces", ignore = true) // Handled manually due to polymorphism
+    @Mapping(target = "fileSystems", ignore = true) // Not stored in entity, loaded separately
     ComputeResourceDescription toModel(ComputeResourceEntity entity);
 
     @Mapping(target = "enabled", expression = "java(model.getEnabled() ? (short)1 : (short)0)")
-    @Mapping(target = "batchQueues", ignore = true) // Handled by service layer
-    @Mapping(target = "jobSubmissionInterfaces", ignore = true) // Handled by service layer (polymorphic)
-    @Mapping(target = "dataMovementInterfaces", ignore = true) // Handled by service layer
+    @Mapping(target = "jobSubmissionInterfaces", ignore = true) // Handled manually due to polymorphism
     ComputeResourceEntity toEntity(ComputeResourceDescription model);
 
     List<ComputeResourceDescription> toModelList(List<ComputeResourceEntity> entities);

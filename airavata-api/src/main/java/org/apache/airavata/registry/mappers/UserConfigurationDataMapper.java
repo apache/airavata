@@ -30,7 +30,7 @@ import org.mapstruct.MappingTarget;
 
 /**
  * MapStruct mapper for converting between UserConfigurationDataEntity and UserConfigurationDataModel.
- * Note: computationalResourceScheduling is mapped from entity fields per dozer_mapping.xml.
+ * Note: computationalResourceScheduling is mapped from entity fields using @AfterMapping.
  */
 @Mapper(
         componentModel = "spring",

@@ -77,7 +77,7 @@ public class StorageResourceService {
                         .forEach(dm -> dm.setStorageResourceId(description.getStorageResourceId()));
             }
             StorageResourceEntity entity = storageResourceMapper.toEntity(description);
-            // Ensure storageResourceId is set on entity (Dozer might not map it correctly)
+            // Ensure storageResourceId is set on entity
             entity.setStorageResourceId(storageResourceId);
             // Ensure creationTime and updateTime are set
             if (entity.getCreationTime() == null) {

@@ -94,7 +94,6 @@ import org.apache.airavata.registry.repositories.appcatalog.UnicoreDatamovementR
 import org.apache.airavata.registry.repositories.appcatalog.UnicoreSubmissionRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.airavata.registry.utils.EntityMergeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -249,17 +248,18 @@ public class ComputeResourceService {
                 existingEntity.setHostAliases(new java.util.ArrayList<>(description.getHostAliases()));
             }
 
-            // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
-            EntityMergeHelper.mergeLists(
-                    existingEntity.getBatchQueues(), newEntity.getBatchQueues(), BatchQueueEntity::getQueueName);
-            EntityMergeHelper.mergeLists(
+            // Merge batchQueues - update existing entities in place to avoid JPA conflicts
+            mergeBatchQueues(existingEntity.getBatchQueues(), newEntity.getBatchQueues(), computeResourceId);
+            // Merge dataMovementInterfaces - update existing entities in place
+            mergeDataMovementInterfaces(
                     existingEntity.getDataMovementInterfaces(),
                     newEntity.getDataMovementInterfaces(),
-                    DataMovementInterfaceEntity::getDataMovementInterfaceId);
-            EntityMergeHelper.mergeLists(
+                    computeResourceId);
+            // Merge jobSubmissionInterfaces - update existing entities in place
+            mergeJobSubmissionInterfaces(
                     existingEntity.getJobSubmissionInterfaces(),
                     newEntity.getJobSubmissionInterfaces(),
-                    JobSubmissionInterfaceEntity::getJobSubmissionInterfaceId);
+                    computeResourceId);
 
             computeResourceEntity = existingEntity;
         } else {
@@ -267,6 +267,53 @@ public class ComputeResourceService {
             // Ensure creationTime is set for new entities
             if (computeResourceEntity.getCreationTime() == null) {
                 computeResourceEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+            }
+            // Ensure lists are initialized for new entities
+            if (computeResourceEntity.getBatchQueues() == null) {
+                computeResourceEntity.setBatchQueues(new java.util.ArrayList<>());
+            }
+            if (computeResourceEntity.getDataMovementInterfaces() == null) {
+                computeResourceEntity.setDataMovementInterfaces(new java.util.ArrayList<>());
+            }
+            if (computeResourceEntity.getJobSubmissionInterfaces() == null) {
+                computeResourceEntity.setJobSubmissionInterfaces(new java.util.ArrayList<>());
+            }
+            // Manually link JobSubmissionInterfaces from description (mapper ignores them due to polymorphism)
+            if (description.getJobSubmissionInterfaces() != null
+                    && !description.getJobSubmissionInterfaces().isEmpty()) {
+                for (JobSubmissionInterface jsi : description.getJobSubmissionInterfaces()) {
+                    if (jsi.getJobSubmissionInterfaceId() != null) {
+                        JobSubmissionInterfaceEntity jsiEntity = new JobSubmissionInterfaceEntity();
+                        jsiEntity.setJobSubmissionInterfaceId(jsi.getJobSubmissionInterfaceId());
+                        jsiEntity.setComputeResourceId(computeResourceId);
+                        jsiEntity.setJobSubmissionProtocol(jsi.getJobSubmissionProtocol());
+                        jsiEntity.setPriorityOrder(jsi.getPriorityOrder());
+                        jsiEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                        jsiEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                        computeResourceEntity.getJobSubmissionInterfaces().add(jsiEntity);
+                    }
+                }
+            }
+            // Manually link DataMovementInterfaces from description (mapper might not handle them correctly)
+            if (description.getDataMovementInterfaces() != null
+                    && !description.getDataMovementInterfaces().isEmpty()) {
+                for (DataMovementInterface dmi : description.getDataMovementInterfaces()) {
+                    if (dmi.getDataMovementInterfaceId() != null) {
+                        // Check if already in list (from mapper)
+                        boolean exists = computeResourceEntity.getDataMovementInterfaces().stream()
+                                .anyMatch(e -> dmi.getDataMovementInterfaceId().equals(e.getDataMovementInterfaceId()));
+                        if (!exists) {
+                            DataMovementInterfaceEntity dmiEntity = new DataMovementInterfaceEntity();
+                            dmiEntity.setDataMovementInterfaceId(dmi.getDataMovementInterfaceId());
+                            dmiEntity.setComputeResourceId(computeResourceId);
+                            dmiEntity.setDataMovementProtocol(dmi.getDataMovementProtocol());
+                            dmiEntity.setPriorityOrder(dmi.getPriorityOrder());
+                            dmiEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                            dmiEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                            computeResourceEntity.getDataMovementInterfaces().add(dmiEntity);
+                        }
+                    }
+                }
             }
         }
         // Ensure updateTime is set
@@ -346,21 +393,17 @@ public class ComputeResourceService {
         ComputeResourceEntity entity =
                 computeResourceRepository.findById(resourceId).orElse(null);
         if (entity == null) return null;
+        // Mapper now handles batchQueues and dataMovementInterfaces automatically
         ComputeResourceDescription computeResourceDescription = computeResourceMapper.toModel(entity);
         computeResourceDescription.setFileSystems(getFileSystems(resourceId));
-        // Manually map nested lists - ensure they're never null
-        if (entity.getBatchQueues() != null) {
-            computeResourceDescription.setBatchQueues(batchQueueMapper.toModelList(entity.getBatchQueues()));
-        } else {
+        // Ensure lists are never null
+        if (computeResourceDescription.getBatchQueues() == null) {
             computeResourceDescription.setBatchQueues(new java.util.ArrayList<>());
         }
-        if (entity.getDataMovementInterfaces() != null) {
-            computeResourceDescription.setDataMovementInterfaces(
-                    computeResourceDataMovementInterfaceMapper.toModelList(entity.getDataMovementInterfaces()));
-        } else {
+        if (computeResourceDescription.getDataMovementInterfaces() == null) {
             computeResourceDescription.setDataMovementInterfaces(new java.util.ArrayList<>());
         }
-        // Load JobSubmissionInterfaces - they are polymorphic but need to be loaded
+        // Load JobSubmissionInterfaces - they are polymorphic and need manual handling
         if (entity.getJobSubmissionInterfaces() != null
                 && !entity.getJobSubmissionInterfaces().isEmpty()) {
             List<JobSubmissionInterface> jobSubmissionInterfaces = new java.util.ArrayList<>();
@@ -371,6 +414,8 @@ public class ComputeResourceService {
                 }
             }
             computeResourceDescription.setJobSubmissionInterfaces(jobSubmissionInterfaces);
+        } else {
+            computeResourceDescription.setJobSubmissionInterfaces(new java.util.ArrayList<>());
         }
         return computeResourceDescription;
     }
@@ -392,12 +437,26 @@ public class ComputeResourceService {
                     .map(e -> {
                         ComputeResourceDescription desc = computeResourceMapper.toModel(e);
                         desc.setFileSystems(getFileSystems(desc.getComputeResourceId()));
-                        if (e.getBatchQueues() != null) {
-                            desc.setBatchQueues(batchQueueMapper.toModelList(e.getBatchQueues()));
+                        // Ensure lists are never null
+                        if (desc.getBatchQueues() == null) {
+                            desc.setBatchQueues(new java.util.ArrayList<>());
                         }
-                        if (e.getDataMovementInterfaces() != null) {
-                            desc.setDataMovementInterfaces(computeResourceDataMovementInterfaceMapper.toModelList(
-                                    e.getDataMovementInterfaces()));
+                        if (desc.getDataMovementInterfaces() == null) {
+                            desc.setDataMovementInterfaces(new java.util.ArrayList<>());
+                        }
+                        // Load JobSubmissionInterfaces - they are polymorphic and need manual handling
+                        if (e.getJobSubmissionInterfaces() != null
+                                && !e.getJobSubmissionInterfaces().isEmpty()) {
+                            List<JobSubmissionInterface> jobSubmissionInterfaces = new java.util.ArrayList<>();
+                            for (JobSubmissionInterfaceEntity jsiEntity : e.getJobSubmissionInterfaces()) {
+                                JobSubmissionInterface jsi = jobSubmissionInterfaceMapper.toModel(jsiEntity);
+                                if (jsi != null) {
+                                    jobSubmissionInterfaces.add(jsi);
+                                }
+                            }
+                            desc.setJobSubmissionInterfaces(jobSubmissionInterfaces);
+                        } else {
+                            desc.setJobSubmissionInterfaces(new java.util.ArrayList<>());
                         }
                         return desc;
                     })
@@ -418,12 +477,26 @@ public class ComputeResourceService {
                 .map(e -> {
                     ComputeResourceDescription desc = computeResourceMapper.toModel(e);
                     desc.setFileSystems(getFileSystems(desc.getComputeResourceId()));
-                    if (e.getBatchQueues() != null) {
-                        desc.setBatchQueues(batchQueueMapper.toModelList(e.getBatchQueues()));
+                    // Ensure lists are never null
+                    if (desc.getBatchQueues() == null) {
+                        desc.setBatchQueues(new java.util.ArrayList<>());
                     }
-                    if (e.getDataMovementInterfaces() != null) {
-                        desc.setDataMovementInterfaces(
-                                computeResourceDataMovementInterfaceMapper.toModelList(e.getDataMovementInterfaces()));
+                    if (desc.getDataMovementInterfaces() == null) {
+                        desc.setDataMovementInterfaces(new java.util.ArrayList<>());
+                    }
+                    // Load JobSubmissionInterfaces - they are polymorphic and need manual handling
+                    if (e.getJobSubmissionInterfaces() != null
+                            && !e.getJobSubmissionInterfaces().isEmpty()) {
+                        List<JobSubmissionInterface> jobSubmissionInterfaces = new java.util.ArrayList<>();
+                        for (JobSubmissionInterfaceEntity jsiEntity : e.getJobSubmissionInterfaces()) {
+                            JobSubmissionInterface jsi = jobSubmissionInterfaceMapper.toModel(jsiEntity);
+                            if (jsi != null) {
+                                jobSubmissionInterfaces.add(jsi);
+                            }
+                        }
+                        desc.setJobSubmissionInterfaces(jobSubmissionInterfaces);
+                    } else {
+                        desc.setJobSubmissionInterfaces(new java.util.ArrayList<>());
                     }
                     return desc;
                 })
@@ -564,7 +637,11 @@ public class ComputeResourceService {
                 resourceJobManagerRepository.findById(resourceJobManagerId).orElse(null);
         ResourceJobManagerEntity resourceJobManagerEntity;
         if (existingEntity != null) {
-            resourceJobManagerMapper.toEntity(updatedResourceJobManager);
+            // Map to get desired state, then copy fields to existing entity
+            ResourceJobManagerEntity newEntity = resourceJobManagerMapper.toEntity(updatedResourceJobManager);
+            existingEntity.setJobManagerBinPath(newEntity.getJobManagerBinPath());
+            existingEntity.setPushMonitoringEndpoint(newEntity.getPushMonitoringEndpoint());
+            existingEntity.setResourceJobManagerType(newEntity.getResourceJobManagerType());
             resourceJobManagerEntity = existingEntity;
         } else {
             resourceJobManagerEntity = resourceJobManagerMapper.toEntity(updatedResourceJobManager);
@@ -1005,5 +1082,211 @@ public class ComputeResourceService {
         }
         DataMovementInterfaceEntity saved = dataMovementRepository.save(entity);
         return saved.getDataMovementInterfaceId();
+    }
+
+    /**
+     * Merge batch queues by updating existing entities in place to avoid JPA conflicts.
+     */
+    private void mergeBatchQueues(
+            List<BatchQueueEntity> existingList, List<BatchQueueEntity> newList, String computeResourceId) {
+        if (newList == null) {
+            return;
+        }
+        if (existingList == null) {
+            return; // Should not happen if entity exists, but handle gracefully
+        }
+        // Create map of existing entities by queue name
+        Map<String, BatchQueueEntity> existingMap = new HashMap<>();
+        for (BatchQueueEntity existing : existingList) {
+            if (existing.getQueueName() != null) {
+                existingMap.put(existing.getQueueName(), existing);
+            }
+        }
+        // Create map of new entities by queue name
+        Map<String, BatchQueueEntity> newMap = new HashMap<>();
+        for (BatchQueueEntity newEntity : newList) {
+            if (newEntity.getQueueName() != null) {
+                newMap.put(newEntity.getQueueName(), newEntity);
+            }
+        }
+        // Update existing entities or add new ones
+        for (Map.Entry<String, BatchQueueEntity> entry : newMap.entrySet()) {
+            String queueName = entry.getKey();
+            BatchQueueEntity newEntity = entry.getValue();
+            BatchQueueEntity existing = existingMap.get(queueName);
+            if (existing != null) {
+                // Update existing entity in place
+                existing.setMaxJobsInQueue(newEntity.getMaxJobsInQueue());
+                existing.setMaxMemory(newEntity.getMaxMemory());
+                existing.setMaxNodes(newEntity.getMaxNodes());
+                existing.setMaxProcessors(newEntity.getMaxProcessors());
+                existing.setMaxRuntime(newEntity.getMaxRuntime());
+                existing.setQueueDescription(newEntity.getQueueDescription());
+                existing.setCpuPerNode(newEntity.getCpuPerNode());
+                existing.setDefaultNodeCount(newEntity.getDefaultNodeCount());
+                existing.setDefaultCPUCount(newEntity.getDefaultCPUCount());
+                existing.setDefaultWalltime(newEntity.getDefaultWalltime());
+                existing.setQueueSpecificMacros(newEntity.getQueueSpecificMacros());
+                existing.setIsDefaultQueue(newEntity.getIsDefaultQueue());
+                existing.setComputeResourceId(computeResourceId);
+            } else {
+                // Create a fresh entity to avoid JPA conflicts with detached entities
+                BatchQueueEntity freshEntity = new BatchQueueEntity();
+                freshEntity.setComputeResourceId(computeResourceId);
+                freshEntity.setQueueName(newEntity.getQueueName());
+                freshEntity.setMaxJobsInQueue(newEntity.getMaxJobsInQueue());
+                freshEntity.setMaxMemory(newEntity.getMaxMemory());
+                freshEntity.setMaxNodes(newEntity.getMaxNodes());
+                freshEntity.setMaxProcessors(newEntity.getMaxProcessors());
+                freshEntity.setMaxRuntime(newEntity.getMaxRuntime());
+                freshEntity.setQueueDescription(newEntity.getQueueDescription());
+                freshEntity.setCpuPerNode(newEntity.getCpuPerNode());
+                freshEntity.setDefaultNodeCount(newEntity.getDefaultNodeCount());
+                freshEntity.setDefaultCPUCount(newEntity.getDefaultCPUCount());
+                freshEntity.setDefaultWalltime(newEntity.getDefaultWalltime());
+                freshEntity.setQueueSpecificMacros(newEntity.getQueueSpecificMacros());
+                freshEntity.setIsDefaultQueue(newEntity.getIsDefaultQueue());
+                existingList.add(freshEntity);
+            }
+        }
+        // Remove entities not in new list
+        existingList.removeIf(entity -> {
+            String queueName = entity.getQueueName();
+            return queueName != null && !newMap.containsKey(queueName);
+        });
+    }
+
+    /**
+     * Merge data movement interfaces by updating existing entities in place to avoid JPA conflicts.
+     */
+    private void mergeDataMovementInterfaces(
+            List<DataMovementInterfaceEntity> existingList,
+            List<DataMovementInterfaceEntity> newList,
+            String computeResourceId) {
+        if (newList == null) {
+            return;
+        }
+        if (existingList == null) {
+            return; // Should not happen if entity exists, but handle gracefully
+        }
+        // Create map of existing entities by interface ID
+        Map<String, DataMovementInterfaceEntity> existingMap = new HashMap<>();
+        for (DataMovementInterfaceEntity existing : existingList) {
+            if (existing.getDataMovementInterfaceId() != null) {
+                existingMap.put(existing.getDataMovementInterfaceId(), existing);
+            }
+        }
+        // Create map of new entities by interface ID
+        Map<String, DataMovementInterfaceEntity> newMap = new HashMap<>();
+        for (DataMovementInterfaceEntity newEntity : newList) {
+            if (newEntity.getDataMovementInterfaceId() != null) {
+                newMap.put(newEntity.getDataMovementInterfaceId(), newEntity);
+            }
+        }
+        // Update existing entities or add new ones
+        for (Map.Entry<String, DataMovementInterfaceEntity> entry : newMap.entrySet()) {
+            String interfaceId = entry.getKey();
+            DataMovementInterfaceEntity newEntity = entry.getValue();
+            DataMovementInterfaceEntity existing = existingMap.get(interfaceId);
+            if (existing != null) {
+                // Update existing entity in place
+                existing.setDataMovementProtocol(newEntity.getDataMovementProtocol());
+                existing.setPriorityOrder(newEntity.getPriorityOrder());
+                existing.setComputeResourceId(computeResourceId);
+                if (newEntity.getUpdateTime() != null) {
+                    existing.setUpdateTime(newEntity.getUpdateTime());
+                } else {
+                    existing.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                }
+            } else {
+                // Create a fresh entity to avoid JPA conflicts with detached entities
+                DataMovementInterfaceEntity freshEntity = new DataMovementInterfaceEntity();
+                freshEntity.setDataMovementInterfaceId(newEntity.getDataMovementInterfaceId());
+                freshEntity.setComputeResourceId(computeResourceId);
+                freshEntity.setDataMovementProtocol(newEntity.getDataMovementProtocol());
+                freshEntity.setPriorityOrder(newEntity.getPriorityOrder());
+                freshEntity.setCreationTime(
+                        newEntity.getCreationTime() != null
+                                ? newEntity.getCreationTime()
+                                : AiravataUtils.getCurrentTimestamp());
+                freshEntity.setUpdateTime(
+                        newEntity.getUpdateTime() != null
+                                ? newEntity.getUpdateTime()
+                                : AiravataUtils.getCurrentTimestamp());
+                existingList.add(freshEntity);
+            }
+        }
+        // Remove entities not in new list
+        existingList.removeIf(entity -> {
+            String interfaceId = entity.getDataMovementInterfaceId();
+            return interfaceId != null && !newMap.containsKey(interfaceId);
+        });
+    }
+
+    /**
+     * Merge job submission interfaces by updating existing entities in place to avoid JPA conflicts.
+     */
+    private void mergeJobSubmissionInterfaces(
+            List<JobSubmissionInterfaceEntity> existingList,
+            List<JobSubmissionInterfaceEntity> newList,
+            String computeResourceId) {
+        if (newList == null) {
+            return;
+        }
+        if (existingList == null) {
+            return; // Should not happen if entity exists, but handle gracefully
+        }
+        // Create map of existing entities by interface ID
+        Map<String, JobSubmissionInterfaceEntity> existingMap = new HashMap<>();
+        for (JobSubmissionInterfaceEntity existing : existingList) {
+            if (existing.getJobSubmissionInterfaceId() != null) {
+                existingMap.put(existing.getJobSubmissionInterfaceId(), existing);
+            }
+        }
+        // Create map of new entities by interface ID
+        Map<String, JobSubmissionInterfaceEntity> newMap = new HashMap<>();
+        for (JobSubmissionInterfaceEntity newEntity : newList) {
+            if (newEntity.getJobSubmissionInterfaceId() != null) {
+                newMap.put(newEntity.getJobSubmissionInterfaceId(), newEntity);
+            }
+        }
+        // Update existing entities or add new ones
+        for (Map.Entry<String, JobSubmissionInterfaceEntity> entry : newMap.entrySet()) {
+            String interfaceId = entry.getKey();
+            JobSubmissionInterfaceEntity newEntity = entry.getValue();
+            JobSubmissionInterfaceEntity existing = existingMap.get(interfaceId);
+            if (existing != null) {
+                // Update existing entity in place
+                existing.setJobSubmissionProtocol(newEntity.getJobSubmissionProtocol());
+                existing.setPriorityOrder(newEntity.getPriorityOrder());
+                existing.setComputeResourceId(computeResourceId);
+                if (newEntity.getUpdateTime() != null) {
+                    existing.setUpdateTime(newEntity.getUpdateTime());
+                } else {
+                    existing.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                }
+            } else {
+                // Create a fresh entity to avoid JPA conflicts with detached entities
+                JobSubmissionInterfaceEntity freshEntity = new JobSubmissionInterfaceEntity();
+                freshEntity.setJobSubmissionInterfaceId(newEntity.getJobSubmissionInterfaceId());
+                freshEntity.setComputeResourceId(computeResourceId);
+                freshEntity.setJobSubmissionProtocol(newEntity.getJobSubmissionProtocol());
+                freshEntity.setPriorityOrder(newEntity.getPriorityOrder());
+                freshEntity.setCreationTime(
+                        newEntity.getCreationTime() != null
+                                ? newEntity.getCreationTime()
+                                : AiravataUtils.getCurrentTimestamp());
+                freshEntity.setUpdateTime(
+                        newEntity.getUpdateTime() != null
+                                ? newEntity.getUpdateTime()
+                                : AiravataUtils.getCurrentTimestamp());
+                existingList.add(freshEntity);
+            }
+        }
+        // Remove entities not in new list
+        existingList.removeIf(entity -> {
+            String interfaceId = entity.getJobSubmissionInterfaceId();
+            return interfaceId != null && !newMap.containsKey(interfaceId);
+        });
     }
 }

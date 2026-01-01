@@ -336,8 +336,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         input.setValue("113");
         input.setMetaData("Metadata");
         input.setStandardInput(true);
-        // TODO missing field
-        // input.setStorageResourceId("Storage resource id");
+        input.setStorageResourceId("test-storage-resource-id");
 
         OutputDataObjectType output = new OutputDataObjectType();
         output.setName("output1");
@@ -351,8 +350,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         output.setRequiredToAddedToCommandLine(true);
         output.setOutputStreaming(true);
         output.setMetaData("outputMetaData");
-        // TODO missing field
-        // output.setStorageResourceId("Storage resource id");
+        output.setStorageResourceId("test-storage-resource-id");
 
         applicationInterfaceDescription.setApplicationInputs(Collections.singletonList(input));
         applicationInterfaceDescription.setApplicationOutputs(Collections.singletonList(output));

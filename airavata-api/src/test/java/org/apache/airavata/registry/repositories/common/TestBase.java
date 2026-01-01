@@ -43,6 +43,19 @@ public class TestBase {
 
     private Database[] databases;
 
+    /**
+     * No-arg constructor for tests that use @TestConstructor autowiring.
+     * Database setup is handled by Spring Boot configuration, so this parameter is optional.
+     */
+    public TestBase() {
+        this.databases = new Database[0];
+    }
+
+    /**
+     * Constructor with database specification (for backward compatibility).
+     * Database setup is now handled by Spring Boot configuration via airavata.properties.
+     * This parameter is kept for compatibility but is not actively used.
+     */
     public TestBase(Database... databases) {
         if (databases == null) {
             throw new IllegalArgumentException("Databases can not be null");

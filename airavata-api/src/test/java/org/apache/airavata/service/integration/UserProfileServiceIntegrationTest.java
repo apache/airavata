@@ -76,6 +76,7 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-update-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
+            commitTransaction(); // Commit to ensure user profile is fully persisted
 
             // Act
             UserProfile toUpdate = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);

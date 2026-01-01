@@ -83,7 +83,16 @@ public class DataProductService {
         // Detach the main entity as well
         entityManager.detach(entity);
 
-        return dataProductMapper.toModel(entity);
+        DataProductModel model = dataProductMapper.toModel(entity);
+        // Set productUri on replica locations (mapper ignores it)
+        if (model.getReplicaLocations() != null && entity.getReplicaLocations() != null) {
+            for (int i = 0; i < model.getReplicaLocations().size(); i++) {
+                if (i < entity.getReplicaLocations().size()) {
+                    model.getReplicaLocations().get(i).setProductUri(productUri);
+                }
+            }
+        }
+        return model;
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)

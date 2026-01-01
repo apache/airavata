@@ -103,7 +103,12 @@ public class TaskService {
     public TaskModel getTask(String taskId) throws RegistryException {
         TaskEntity entity = taskRepository.findById(taskId).orElse(null);
         if (entity == null) return null;
-        return taskModelMapper.toModel(entity);
+        TaskModel taskModel = taskModelMapper.toModel(entity);
+        // Handle subTaskModel conversion: byte[] to Object
+        if (entity.getSubTaskModel() != null) {
+            taskModel.setSubTaskModel(entity.getSubTaskModel());
+        }
+        return taskModel;
     }
 
     public List<TaskModel> getTaskList(String fieldName, Object value) throws RegistryException {
@@ -113,6 +118,12 @@ public class TaskService {
             logger.debug("Search criteria is ParentProcessId");
             List<TaskEntity> entities = taskRepository.findByParentProcessId((String) value);
             taskModelList = taskModelMapper.toModelList(entities);
+            // Handle subTaskModel conversion for each task
+            for (int i = 0; i < taskModelList.size(); i++) {
+                if (entities.get(i).getSubTaskModel() != null) {
+                    taskModelList.get(i).setSubTaskModel(entities.get(i).getSubTaskModel());
+                }
+            }
         } else {
             logger.error("Unsupported field name for Task module.");
             throw new IllegalArgumentException("Unsupported field name for Task module.");
@@ -182,6 +193,15 @@ public class TaskService {
         }
 
         TaskEntity taskEntity = taskModelMapper.toEntity(taskModel);
+
+        // Handle subTaskModel conversion: Object (byte[]) to byte[]
+        if (taskModel.getSubTaskModel() != null) {
+            if (taskModel.getSubTaskModel() instanceof byte[]) {
+                taskEntity.setSubTaskModel((byte[]) taskModel.getSubTaskModel());
+            } else {
+                logger.warn("SubTaskModel is not a byte array, skipping");
+            }
+        }
 
         // Ensure timestamps are set if mapper didn't set them (mapper returns null if model time is 0)
         if (taskEntity.getCreationTime() == null) {

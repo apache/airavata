@@ -272,6 +272,46 @@ public class ExperimentService {
             EntityMergeHelper.mergeLists(
                     existingEntity.getProcesses(), newEntity.getProcesses(), ProcessEntity::getProcessId);
 
+            // Merge UserConfigurationData
+            if (newEntity.getUserConfigurationData() != null) {
+                if (existingEntity.getUserConfigurationData() == null) {
+                    // Create new UserConfigurationData if it doesn't exist
+                    existingEntity.setUserConfigurationData(newEntity.getUserConfigurationData());
+                } else {
+                    // Update existing UserConfigurationData
+                    UserConfigurationDataEntity existingUcd = existingEntity.getUserConfigurationData();
+                    UserConfigurationDataEntity newUcd = newEntity.getUserConfigurationData();
+                    // Copy all fields from new to existing
+                    existingUcd.setAiravataAutoSchedule(newUcd.isAiravataAutoSchedule());
+                    existingUcd.setOverrideManualScheduledParams(newUcd.isOverrideManualScheduledParams());
+                    existingUcd.setShareExperimentPublicly(newUcd.isShareExperimentPublicly());
+                    existingUcd.setThrottleResources(newUcd.isThrottleResources());
+                    existingUcd.setUserDN(newUcd.getUserDN());
+                    existingUcd.setGenerateCert(newUcd.isGenerateCert());
+                    existingUcd.setInputStorageResourceId(newUcd.getInputStorageResourceId());
+                    existingUcd.setOutputStorageResourceId(newUcd.getOutputStorageResourceId());
+                    existingUcd.setExperimentDataDir(newUcd.getExperimentDataDir());
+                    existingUcd.setGroupResourceProfileId(newUcd.getGroupResourceProfileId());
+                    existingUcd.setUseUserCRPref(newUcd.isUseUserCRPref());
+                    // Copy scheduling fields (these are set from computationalResourceScheduling below)
+                    existingUcd.setResourceHostId(newUcd.getResourceHostId());
+                    existingUcd.setTotalCPUCount(newUcd.getTotalCPUCount());
+                    existingUcd.setNodeCount(newUcd.getNodeCount());
+                    existingUcd.setNumberOfThreads(newUcd.getNumberOfThreads());
+                    existingUcd.setQueueName(newUcd.getQueueName());
+                    existingUcd.setWallTimeLimit(newUcd.getWallTimeLimit());
+                    existingUcd.setTotalPhysicalMemory(newUcd.getTotalPhysicalMemory());
+                    existingUcd.setStaticWorkingDir(newUcd.getStaticWorkingDir());
+                    existingUcd.setOverrideLoginUserName(newUcd.getOverrideLoginUserName());
+                    existingUcd.setOverrideScratchLocation(newUcd.getOverrideScratchLocation());
+                    existingUcd.setOverrideAllocationProjectNumber(newUcd.getOverrideAllocationProjectNumber());
+                }
+            } else if (experimentModel.getUserConfigurationData() == null
+                    && existingEntity.getUserConfigurationData() != null) {
+                // If model has no UserConfigurationData but entity does, remove it
+                existingEntity.setUserConfigurationData(null);
+            }
+
             experimentEntity = existingEntity;
         } else {
             experimentEntity = experimentMapper.toEntity(experimentModel);

@@ -21,6 +21,7 @@ package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -93,21 +94,59 @@ public class TaskRepositoryTest extends TestBase {
             },
             excludeFilters = {
                 // Exclude infrastructure components - use DI instead of property flags
+                // Helix components
                 @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.helix\\.\\.*"),
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
+                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
+                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
+                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
+                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
+                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
+                            org.apache.airavata.helix.impl.controller.HelixController.class,
+                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
+                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
+                            org.apache.airavata.helix.impl.task.AiravataTask.class,
+                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
+                            org.apache.airavata.helix.impl.task.TaskFactory.class,
+                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
+                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
+                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
+                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
+                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
+                        }),
+                // Monitor components
                 @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.monitor\\.\\.*"),
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.monitor.AbstractMonitor.class,
+                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
+                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
+                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
+                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
+                        }),
+                // DB Event Manager components
                 @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.manager\\.dbevent\\.\\.*"),
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
+                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
+                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
+                        }),
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
+                // Orchestrator components
                 @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.orchestrator\\.\\.*")
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
+                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
+                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
+                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
+                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
+                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
@@ -186,8 +225,14 @@ public class TaskRepositoryTest extends TestBase {
         TaskModel retrievedTask = taskService.getTask(taskId);
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
         assertEquals(1, retrievedTask.getTaskStatuses().size());
-        // TODO make sure the subtask is the same as expected
         assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
+        // Verify the subtask model bytes match
+        assertNotNull(retrievedTask.getSubTaskModel(), "SubTask model should not be null");
+        assertTrue(retrievedTask.getSubTaskModel() instanceof byte[], "SubTask model should be byte array");
+        assertEquals(
+                "subtask model",
+                new String((byte[]) retrievedTask.getSubTaskModel(), StandardCharsets.UTF_8),
+                "SubTask model content should match");
 
         List<String> taskIdList = taskService.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
         assertTrue(taskIdList.size() == 1);

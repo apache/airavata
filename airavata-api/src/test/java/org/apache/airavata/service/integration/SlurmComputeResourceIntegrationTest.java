@@ -188,20 +188,28 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
 
     private ComputeResourceDescription createSlurmComputeResourceWithQueues() {
         ComputeResourceDescription computeResource = TestDataFactory.createSlurmComputeResource("slurm-host");
-        BatchQueue queue = new BatchQueue();
-        queue.setQueueName("normal");
-        queue.setQueueDescription("Normal queue");
-        queue.setMaxRunTime(4320);
-        queue.setMaxNodes(8);
-        queue.setMaxProcessors(64);
-        queue.setMaxJobsInQueue(100);
-        queue.setMaxMemory(512000);
-        queue.setCpuPerNode(8);
-        queue.setDefaultNodeCount(1);
-        queue.setDefaultCPUCount(1);
-        queue.setDefaultWalltime(30);
-        queue.setIsDefaultQueue(true);
-        computeResource.getBatchQueues().add(queue);
+        // TestDataFactory already creates a "normal" queue, so we just use it
+        // Ensure batchQueues list is initialized
+        if (computeResource.getBatchQueues() == null) {
+            computeResource.setBatchQueues(new java.util.ArrayList<>());
+        }
+        // If no queues exist, add one
+        if (computeResource.getBatchQueues().isEmpty()) {
+            BatchQueue queue = new BatchQueue();
+            queue.setQueueName("normal");
+            queue.setQueueDescription("Normal queue");
+            queue.setMaxRunTime(4320);
+            queue.setMaxNodes(8);
+            queue.setMaxProcessors(64);
+            queue.setMaxJobsInQueue(100);
+            queue.setMaxMemory(512000);
+            queue.setCpuPerNode(8);
+            queue.setDefaultNodeCount(1);
+            queue.setDefaultCPUCount(1);
+            queue.setDefaultWalltime(30);
+            queue.setIsDefaultQueue(true);
+            computeResource.getBatchQueues().add(queue);
+        }
         return computeResource;
     }
 }

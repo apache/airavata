@@ -100,7 +100,7 @@ public class DataReplicaLocationService {
         }
 
         // Detach the entity to convert PersistentMap to regular HashMap
-        // This prevents Dozer from accessing the lazy collection
+        // This prevents mapper from accessing the lazy collection
         entityManager.detach(entity);
 
         // Replace PersistentMap with regular HashMap
