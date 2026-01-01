@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.model.ParserInput;
 import org.apache.airavata.registry.entities.appcatalog.ParserInputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ParserInputMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ParserInputRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ParserInputService {
     private final ParserInputRepository parserInputRepository;
-    private final Mapper mapper;
+    private final ParserInputMapper parserInputMapper;
 
-    public ParserInputService(ParserInputRepository parserInputRepository, Mapper mapper) {
+    public ParserInputService(ParserInputRepository parserInputRepository, ParserInputMapper parserInputMapper) {
         this.parserInputRepository = parserInputRepository;
-        this.mapper = mapper;
+        this.parserInputMapper = parserInputMapper;
     }
 
     public boolean isExists(String parserInputId) throws RegistryException {
@@ -45,13 +45,13 @@ public class ParserInputService {
     public ParserInput get(String parserInputId) throws RegistryException {
         ParserInputEntity entity = parserInputRepository.findById(parserInputId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ParserInput.class);
+        return parserInputMapper.toModel(entity);
     }
 
     public ParserInput create(ParserInput parserInput) throws RegistryException {
-        ParserInputEntity entity = mapper.map(parserInput, ParserInputEntity.class);
+        ParserInputEntity entity = parserInputMapper.toEntity(parserInput);
         ParserInputEntity saved = parserInputRepository.save(entity);
-        return mapper.map(saved, ParserInput.class);
+        return parserInputMapper.toModel(saved);
     }
 
     public void delete(String parserInputId) throws RegistryException {

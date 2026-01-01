@@ -28,7 +28,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,14 +41,14 @@ public class OrchestratorServiceServer extends ServerLifecycle {
     private static final String SERVER_VERSION = "1.0";
     private TServer server;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
+    private final OrchestratorServiceHandler handler;
 
     // private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
-    public OrchestratorServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
-        this.applicationContext = applicationContext;
+    public OrchestratorServiceServer(AiravataServerProperties properties, OrchestratorServiceHandler handler) {
         this.properties = properties;
+        this.handler = handler;
     }
 
     @Override
@@ -118,7 +117,6 @@ public class OrchestratorServiceServer extends ServerLifecycle {
         // are now SmartLifecycle components and will be started automatically by Spring
         // based on their phase values. We only need to start the orchestrator server
         // itself.
-        OrchestratorServiceHandler handler = applicationContext.getBean(OrchestratorServiceHandler.class);
         OrchestratorService.Processor<OrchestratorServiceHandler> orchestratorService =
                 new OrchestratorService.Processor<OrchestratorServiceHandler>(handler);
         StartOrchestratorServer(orchestratorService);

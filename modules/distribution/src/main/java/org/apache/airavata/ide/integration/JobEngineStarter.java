@@ -72,4 +72,3 @@ public class JobEngineStarter {
         logger.warn("PreWorkflowManager and PostWorkflowManager require Spring context - skipping in standalone mode");
     }
 }
-

@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 @Component("profileUtils")
 public class Utils {
-    private static Utils instance;
 
     private final AiravataServerProperties properties;
 
@@ -33,18 +32,13 @@ public class Utils {
         this.properties = properties;
     }
 
-    @jakarta.annotation.PostConstruct
-    public void init() {
-        instance = this;
-    }
-
-    private String getJDBCURLImpl() {
+    public String getJDBCURL() {
         return properties.database.profile.url;
     }
 
-    private String getHostImpl() {
+    public String getHost() {
         try {
-            String jdbcURL = getJDBCURLImpl();
+            String jdbcURL = getJDBCURL();
             if (jdbcURL != null && jdbcURL.length() > 5) {
                 String cleanURI = jdbcURL.substring(5);
                 URI uri = URI.create(cleanURI);
@@ -56,9 +50,9 @@ public class Utils {
         return null;
     }
 
-    private int getPortImpl() {
+    public int getPort() {
         try {
-            String jdbcURL = getJDBCURLImpl();
+            String jdbcURL = getJDBCURL();
             if (jdbcURL != null && jdbcURL.length() > 5) {
                 String cleanURI = jdbcURL.substring(5);
                 URI uri = URI.create(cleanURI);
@@ -70,48 +64,19 @@ public class Utils {
         return -1;
     }
 
-    private String getJDBCUserImpl() {
+    public String getJDBCUser() {
         return properties.database.profile.user;
     }
 
-    private String getValidationQueryImpl() {
+    public String getValidationQuery() {
         return properties.database.profile.validationQuery;
     }
 
-    private String getJDBCPasswordImpl() {
+    public String getJDBCPassword() {
         return properties.database.profile.password;
     }
 
-    private String getJDBCDriverImpl() {
+    public String getJDBCDriver() {
         return properties.database.profile.driver;
-    }
-
-    // Static methods for backward compatibility
-    public static String getJDBCURL() {
-        return instance != null ? instance.getJDBCURLImpl() : null;
-    }
-
-    public static String getHost() {
-        return instance != null ? instance.getHostImpl() : null;
-    }
-
-    public static int getPort() {
-        return instance != null ? instance.getPortImpl() : -1;
-    }
-
-    public static String getJDBCUser() {
-        return instance != null ? instance.getJDBCUserImpl() : null;
-    }
-
-    public static String getValidationQuery() {
-        return instance != null ? instance.getValidationQueryImpl() : null;
-    }
-
-    public static String getJDBCPassword() {
-        return instance != null ? instance.getJDBCPasswordImpl() : null;
-    }
-
-    public static String getJDBCDriver() {
-        return instance != null ? instance.getJDBCDriverImpl() : null;
     }
 }

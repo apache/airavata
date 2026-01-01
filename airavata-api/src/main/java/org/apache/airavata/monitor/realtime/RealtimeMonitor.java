@@ -35,9 +35,12 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class RealtimeMonitor extends AbstractMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);

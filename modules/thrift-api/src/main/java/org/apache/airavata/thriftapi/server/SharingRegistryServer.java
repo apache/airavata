@@ -33,7 +33,6 @@ import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -53,17 +52,17 @@ public class SharingRegistryServer extends ServerLifecycle {
     // Unused field - commented out
     // private boolean testMode = false;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
     private final SharingServiceDBEventMessagingFactory messagingFactory;
+    private final SharingRegistryServerHandler handler;
 
     public SharingRegistryServer(
-            ApplicationContext applicationContext,
             AiravataServerProperties properties,
-            SharingServiceDBEventMessagingFactory messagingFactory) {
-        this.applicationContext = applicationContext;
+            SharingServiceDBEventMessagingFactory messagingFactory,
+            SharingRegistryServerHandler handler) {
         this.properties = properties;
         this.messagingFactory = messagingFactory;
+        this.handler = handler;
     }
 
     @Override
@@ -92,9 +91,6 @@ public class SharingRegistryServer extends ServerLifecycle {
         try {
 
             final int serverPort = properties.services.sharing.serverPort;
-            // SharingRegistryServerHandler doesn't need DBInitConfig anymore - it's a
-            // Spring bean
-            SharingRegistryServerHandler handler = applicationContext.getBean(SharingRegistryServerHandler.class);
             var processor = new SharingRegistryService.Processor<>(handler);
 
             TServerTransport serverTransport;

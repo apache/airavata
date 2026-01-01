@@ -72,7 +72,7 @@ public class DBEventManagerRunner extends ServerLifecycle {
             logger.debug("DB Event manager publisher is running");
 
             logger.info("Starting DB Event manager subscriber");
-            messagingFactory.getDBEventSubscriber(properties);
+            messagingFactory.getDBEventSubscriber();
             logger.debug("DB Event manager subscriber is listening");
         } catch (AiravataException e) {
             logger.error("Error starting DB Event Manager.", e);

@@ -21,6 +21,7 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -33,11 +34,16 @@ public interface UserComputeResourcePreferenceMapper extends ModelMapper {
 
     /**
      * Convert domain model to thrift model.
+     *
+     * Note: sshAccountProvisioner is automatically skipped as it is not present in the Thrift IDL definition.
      */
     org.apache.airavata.thriftapi.model.UserComputeResourcePreference toThrift(UserComputeResourcePreference domain);
 
     /**
      * Convert thrift model to domain model.
+     *
+     * Note: sshAccountProvisioner is ignored as it is not present in the Thrift IDL definition.
      */
+    @Mapping(target = "sshAccountProvisioner", ignore = true)
     UserComputeResourcePreference toDomain(org.apache.airavata.thriftapi.model.UserComputeResourcePreference thrift);
 }

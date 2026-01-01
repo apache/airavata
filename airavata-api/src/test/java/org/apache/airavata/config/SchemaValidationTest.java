@@ -23,107 +23,89 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * Test to validate that Hibernate entities match the database schema defined in ddl.sql.
  *
  * This test:
- * 1. Loads the DDL SQL file
- * 2. Creates an in-memory H2 database with the schema from DDL
- * 3. Uses Hibernate's schema validation to verify entities match the schema
- * 4. Validates all 7 persistence units
+ * 1. Uses Spring Boot test context to inject EntityManagerFactory beans
+ * 2. Validates that entities can be loaded and metamodel is accessible
+ * 3. Validates all 7 persistence units
  */
+@SpringBootTest(
+        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
+            "spring.main.banner-mode=off",
+            "spring.main.log-startup-info=false"
+        })
+@TestPropertySource(
+        properties = {
+            // Configure all persistence units to use H2 in-memory database
+            "database.profile.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.profile.driver=org.h2.Driver",
+            "database.profile.user=sa",
+            "database.profile.password=",
+            "database.catalog.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.catalog.driver=org.h2.Driver",
+            "database.catalog.user=sa",
+            "database.catalog.password=",
+            "database.registry.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.registry.driver=org.h2.Driver",
+            "database.registry.user=sa",
+            "database.registry.password=",
+            "database.replica.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.replica.driver=org.h2.Driver",
+            "database.replica.user=sa",
+            "database.replica.password=",
+            "database.workflow.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.workflow.driver=org.h2.Driver",
+            "database.workflow.user=sa",
+            "database.workflow.password=",
+            "database.sharing.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.sharing.driver=org.h2.Driver",
+            "database.sharing.user=sa",
+            "database.sharing.password=",
+            "database.vault.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
+            "database.vault.driver=org.h2.Driver",
+            "database.vault.user=sa",
+            "database.vault.password=",
+            "database.validation-query=SELECT 1"
+        })
 public class SchemaValidationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaValidationTest.class);
 
-    private static final String[] PERSISTENCE_UNITS = {
-        "profile_service",
-        "appcatalog_data_new",
-        "experiment_data_new",
-        "replicacatalog_data_new",
-        "workflowcatalog_data_new",
-        "airavata-sharing-registry",
-        "credential_store"
-    };
+    // Map persistence unit names to EntityManagerFactory beans
+    private final Map<String, EntityManagerFactory> emfMap;
 
-    private Connection h2Connection;
-    private String jdbcUrl;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        // Load H2 driver explicitly
-        try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("H2 database driver not found. Ensure h2 dependency is in test scope.", e);
-        }
-
-        // Create in-memory H2 database
-        // Note: Hibernate validate mode will check entity mappings against the database schema.
-        // For this test, we're primarily validating that:
-        // 1. Entity classes are correctly annotated
-        // 2. Entity mappings are syntactically correct
-        // 3. Hibernate can process the entities without errors
-        //
-        // For full schema validation against ddl.sql, the actual database should be
-        // set up with the schema from ddl.sql, and this test will validate entities match.
-        jdbcUrl = "jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL";
-        h2Connection = DriverManager.getConnection(jdbcUrl, "sa", "");
-
-        loadAndExecuteDDL(h2Connection);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        if (h2Connection != null && !h2Connection.isClosed()) {
-            h2Connection.close();
-        }
-    }
-
-    /**
-     * Set up database connection for schema validation.
-     *
-     * Note: Hibernate's validate mode (hibernate.hbm2ddl.auto=validate) will:
-     * - Check that tables exist (if schema is present)
-     * - Validate column types match entity field types
-     * - Verify foreign key constraints
-     * - Check that required columns are not null
-     *
-     * For full validation against ddl.sql:
-     * 1. Set up a test database with the schema from ddl.sql
-     * 2. Configure the test to use that database connection
-     * 3. Hibernate validate mode will then check entities against the actual schema
-     *
-     * This test validates entity structure and mapping correctness.
-     * To validate against the full ddl.sql, ensure the database schema is set up first.
-     */
-    private void loadAndExecuteDDL(Connection connection) throws SQLException {
-        // For this test, we're primarily validating that:
-        // 1. Entity classes are correctly annotated
-        // 2. Entity mappings are syntactically correct
-        // 3. Hibernate can process entities without mapping errors
-        //
-        // Hibernate validate mode requires the schema to exist.
-        // If you want to validate against the full ddl.sql:
-        // - Set up a test database with the schema from ddl.sql
-        // - Update the jdbcUrl to point to that database
-        // - Hibernate will then validate entities against the actual schema
-
-        logger.info("Schema validation test initialized");
-        logger.info("Using Hibernate validate mode - entities will be validated against database schema");
-        logger.info("For full ddl.sql validation, ensure database schema matches ddl.sql");
+    @Autowired
+    public SchemaValidationTest(
+            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory profileServiceEmf,
+            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory appCatalogEmf,
+            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory expCatalogEmf,
+            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory replicaCatalogEmf,
+            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory workflowCatalogEmf,
+            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory sharingRegistryEmf,
+            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory credentialStoreEmf) {
+        this.emfMap = new HashMap<>();
+        this.emfMap.put(JpaConfig.PROFILE_SERVICE_PU, profileServiceEmf);
+        this.emfMap.put(JpaConfig.APPCATALOG_PU, appCatalogEmf);
+        this.emfMap.put(JpaConfig.EXPCATALOG_PU, expCatalogEmf);
+        this.emfMap.put(JpaConfig.REPLICACATALOG_PU, replicaCatalogEmf);
+        this.emfMap.put(JpaConfig.WORKFLOWCATALOG_PU, workflowCatalogEmf);
+        this.emfMap.put(JpaConfig.SHARING_REGISTRY_PU, sharingRegistryEmf);
+        this.emfMap.put(JpaConfig.CREDENTIAL_STORE_PU, credentialStoreEmf);
     }
 
     @Test
@@ -164,7 +146,7 @@ public class SchemaValidationTest {
     @Test
     public void testAllPersistenceUnitsSchemaValidation() {
         int failures = 0;
-        for (String puName : PERSISTENCE_UNITS) {
+        for (String puName : emfMap.keySet()) {
             try {
                 validatePersistenceUnit(puName);
                 logger.info("✓ Persistence unit '{}' validated successfully", puName);
@@ -182,48 +164,22 @@ public class SchemaValidationTest {
     /**
      * Validate a persistence unit against the database schema.
      *
-     * Hibernate's validate mode checks:
+     * This test validates that:
+     * - EntityManagerFactory can be created and initialized
      * - Entity mappings are syntactically correct
-     * - Tables exist (if schema is present)
-     * - Column types match
-     * - Foreign keys are correctly defined
+     * - Metamodel is accessible and contains entities
      *
-     * Note: For full validation against ddl.sql, ensure the database schema
+     * Note: For full schema validation against ddl.sql, ensure the database schema
      * matches the DDL. This test validates entity structure and mapping correctness.
      */
     private void validatePersistenceUnit(String persistenceUnitName) {
-        EntityManagerFactory emf = null;
+        EntityManagerFactory emf = emfMap.get(persistenceUnitName);
+        if (emf == null) {
+            fail("EntityManagerFactory not found for persistence unit: " + persistenceUnitName);
+        }
+
         try {
-            Map<String, String> properties = new HashMap<>();
-            properties.put("jakarta.persistence.jdbc.driver", "org.h2.Driver");
-            properties.put("jakarta.persistence.jdbc.url", jdbcUrl);
-            properties.put("jakarta.persistence.jdbc.user", "sa");
-            properties.put("jakarta.persistence.jdbc.password", "");
-            properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-
-            // Use update mode to create schema from entities
-            // This validates that:
-            // 1. Entity mappings are syntactically correct
-            // 2. Entity structure is valid
-            // 3. Hibernate can generate schema from entities
-            //
-            // For full validation against ddl.sql:
-            // 1. Set up a test database with schema from ddl.sql
-            // 2. Change hbm2ddl.auto to "validate"
-            // 3. Hibernate will then check entities match the actual schema
-            properties.put("hibernate.hbm2ddl.auto", "update");
-
-            // For better error messages
-            properties.put("hibernate.show_sql", "false");
-            properties.put("hibernate.format_sql", "false");
-
             logger.info("Validating persistence unit: {}", persistenceUnitName);
-
-            // This will throw an exception if:
-            // - Entity mappings are invalid
-            // - Schema validation fails (tables/columns don't match)
-            // - Entity classes have errors
-            emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
 
             assertNotNull(emf, "EntityManagerFactory should be created");
             assertNotNull(emf.getMetamodel(), "Metamodel should be available");
@@ -251,10 +207,7 @@ public class SchemaValidationTest {
                     "Unexpected error validating persistence unit '%s': %s", persistenceUnitName, e.getMessage());
             logger.error(errorMsg, e);
             fail(errorMsg, e);
-        } finally {
-            if (emf != null) {
-                emf.close();
-            }
         }
+        // Note: We don't close the EntityManagerFactory here as it's managed by Spring
     }
 }

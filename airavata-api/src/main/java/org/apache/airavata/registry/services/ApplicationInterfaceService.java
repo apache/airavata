@@ -19,13 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
@@ -38,6 +36,10 @@ import org.apache.airavata.registry.entities.appcatalog.ApplicationInterfaceEnti
 import org.apache.airavata.registry.entities.appcatalog.ApplicationModuleEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationOutputEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.mappers.ApplicationInterfaceMapper;
+import org.apache.airavata.registry.mappers.ApplicationModuleMapper;
+import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
+import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.model.ApplicationInterface;
 import org.apache.airavata.registry.repositories.appcatalog.AppModuleMappingRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationInputRepository;
@@ -60,7 +62,10 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     private final ApplicationInputRepository applicationInputRepository;
     private final ApplicationOutputRepository applicationOutputRepository;
     private final AppModuleMappingRepository appModuleMappingRepository;
-    private final Mapper mapper;
+    private final ApplicationInterfaceMapper applicationInterfaceMapper;
+    private final ApplicationModuleMapper applicationModuleMapper;
+    private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
+    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ApplicationInterfaceService(
             ApplicationInterfaceRepository applicationInterfaceRepository,
@@ -68,13 +73,19 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             ApplicationInputRepository applicationInputRepository,
             ApplicationOutputRepository applicationOutputRepository,
             AppModuleMappingRepository appModuleMappingRepository,
-            Mapper mapper) {
+            ApplicationInterfaceMapper applicationInterfaceMapper,
+            ApplicationModuleMapper applicationModuleMapper,
+            InputDataObjectTypeMapper inputDataObjectTypeMapper,
+            OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.applicationInterfaceRepository = applicationInterfaceRepository;
         this.applicationModuleRepository = applicationModuleRepository;
         this.applicationInputRepository = applicationInputRepository;
         this.applicationOutputRepository = applicationOutputRepository;
         this.appModuleMappingRepository = appModuleMappingRepository;
-        this.mapper = mapper;
+        this.applicationInterfaceMapper = applicationInterfaceMapper;
+        this.applicationModuleMapper = applicationModuleMapper;
+        this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
+        this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     @Override
@@ -94,9 +105,9 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
         ApplicationModule applicationModule = getApplicationModule(moduleId);
         ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
-        ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
+        ApplicationModuleEntity applicationModuleEntity = applicationModuleMapper.toEntity(applicationModule);
         ApplicationInterfaceEntity applicationInterfaceEntity =
-                mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+                applicationInterfaceMapper.toEntity(applicationInterfaceDescription);
         AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
         appModuleMappingEntity.setModuleId(moduleId);
         appModuleMappingEntity.setInterfaceId(interfaceId);
@@ -123,7 +134,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         ApplicationModuleEntity entity =
                 applicationModuleRepository.findById(moduleId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ApplicationModule.class);
+        return applicationModuleMapper.toModel(entity);
     }
 
     @Override
@@ -131,7 +142,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         ApplicationInterfaceEntity entity =
                 applicationInterfaceRepository.findById(interfaceId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ApplicationInterfaceDescription.class);
+        return applicationInterfaceMapper.toModel(entity);
     }
 
     @Override
@@ -140,9 +151,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             logger.debug("Fetching Application Modules for given Application Module Name");
             String appModuleName = filters.get(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME);
             List<ApplicationModuleEntity> entities = applicationModuleRepository.findByAppModuleName(appModuleName);
-            return entities.stream()
-                    .map(e -> mapper.map(e, ApplicationModule.class))
-                    .collect(Collectors.toList());
+            return applicationModuleMapper.toModelList(entities);
         } else {
             logger.error("Unsupported field name for app module.");
             throw new IllegalArgumentException("Unsupported field name for app module.");
@@ -152,9 +161,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Override
     public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
         List<ApplicationModuleEntity> entities = applicationModuleRepository.findByGatewayId(gatewayId);
-        return entities.stream()
-                .map(e -> mapper.map(e, ApplicationModule.class))
-                .collect(Collectors.toList());
+        return applicationModuleMapper.toModelList(entities);
     }
 
     @Override
@@ -166,9 +173,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         }
         List<ApplicationModuleEntity> entities = applicationModuleRepository.findAccessibleApplicationModules(
                 gatewayId, accessibleAppIds, accessibleCompHostIds);
-        return entities.stream()
-                .map(e -> mapper.map(e, ApplicationModule.class))
-                .collect(Collectors.toList());
+        return applicationModuleMapper.toModelList(entities);
     }
 
     @Override
@@ -179,9 +184,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             String applicationName = filters.get(DBConstants.ApplicationInterface.APPLICATION_NAME);
             List<ApplicationInterfaceEntity> entities =
                     applicationInterfaceRepository.findByApplicationName(applicationName);
-            return entities.stream()
-                    .map(e -> mapper.map(e, ApplicationInterfaceDescription.class))
-                    .collect(Collectors.toList());
+            return applicationInterfaceMapper.toModelList(entities);
         } else {
             logger.error("Unsupported field name for app interface.");
             throw new IllegalArgumentException("Unsupported field name for app interface.");
@@ -192,9 +195,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
             throws AppCatalogException {
         List<ApplicationInterfaceEntity> entities = applicationInterfaceRepository.findByGatewayId(gatewayId);
-        return entities.stream()
-                .map(e -> mapper.map(e, ApplicationInterfaceDescription.class))
-                .collect(Collectors.toList());
+        return applicationInterfaceMapper.toModelList(entities);
     }
 
     @Override
@@ -215,17 +216,13 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     @Override
     public List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException {
         List<ApplicationInputEntity> entities = applicationInputRepository.findByInterfaceId(interfaceId);
-        return entities.stream()
-                .map(e -> mapper.map(e, InputDataObjectType.class))
-                .collect(Collectors.toList());
+        return inputDataObjectTypeMapper.toModelListFromApplication(entities);
     }
 
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException {
         List<ApplicationOutputEntity> entities = applicationOutputRepository.findByInterfaceId(interfaceId);
-        return entities.stream()
-                .map(e -> mapper.map(e, OutputDataObjectType.class))
-                .collect(Collectors.toList());
+        return outputDataObjectTypeMapper.toModelListFromApplication(entities);
     }
 
     @Override
@@ -280,7 +277,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
         ApplicationInterfaceEntity applicationInterfaceEntity =
-                mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+                applicationInterfaceMapper.toEntity(applicationInterfaceDescription);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Interface");
@@ -327,7 +324,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         }
 
         String applicationModuleId = applicationModule.getAppModuleId();
-        ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
+        ApplicationModuleEntity applicationModuleEntity = applicationModuleMapper.toEntity(applicationModule);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Module");

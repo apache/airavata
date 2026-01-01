@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.model.ParserOutput;
 import org.apache.airavata.registry.entities.appcatalog.ParserOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ParserOutputMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ParserOutputRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ParserOutputService {
     private final ParserOutputRepository parserOutputRepository;
-    private final Mapper mapper;
+    private final ParserOutputMapper parserOutputMapper;
 
-    public ParserOutputService(ParserOutputRepository parserOutputRepository, Mapper mapper) {
+    public ParserOutputService(ParserOutputRepository parserOutputRepository, ParserOutputMapper parserOutputMapper) {
         this.parserOutputRepository = parserOutputRepository;
-        this.mapper = mapper;
+        this.parserOutputMapper = parserOutputMapper;
     }
 
     public boolean isExists(String parserOutputId) throws RegistryException {
@@ -46,13 +46,13 @@ public class ParserOutputService {
         ParserOutputEntity entity =
                 parserOutputRepository.findById(parserOutputId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ParserOutput.class);
+        return parserOutputMapper.toModel(entity);
     }
 
     public ParserOutput create(ParserOutput parserOutput) throws RegistryException {
-        ParserOutputEntity entity = mapper.map(parserOutput, ParserOutputEntity.class);
+        ParserOutputEntity entity = parserOutputMapper.toEntity(parserOutput);
         ParserOutputEntity saved = parserOutputRepository.save(entity);
-        return mapper.map(saved, ParserOutput.class);
+        return parserOutputMapper.toModel(saved);
     }
 
     public void delete(String parserOutputId) throws RegistryException {

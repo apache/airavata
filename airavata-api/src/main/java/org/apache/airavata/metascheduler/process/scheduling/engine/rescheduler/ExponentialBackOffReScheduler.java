@@ -39,36 +39,41 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnBean(RegistryService.class)
 public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
-    private static ApplicationContext applicationContext;
 
     private final AiravataServerProperties properties;
-    private final ApplicationContext applicationContextInstance;
+    private final RegistryService registryService;
+    private final ApplicationContext applicationContext;
 
-    public ExponentialBackOffReScheduler(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public ExponentialBackOffReScheduler(
+            AiravataServerProperties properties,
+            RegistryService registryService,
+            ApplicationContext applicationContext) {
         this.properties = properties;
-        this.applicationContextInstance = applicationContext;
-        ExponentialBackOffReScheduler.applicationContext = applicationContext;
+        this.registryService = registryService;
+        this.applicationContext = applicationContext;
     }
 
     @Override
     public void reschedule(ProcessModel processModel, ProcessState processState) {
         try {
-            RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
             int maxReschedulingCount = properties.services.scheduler.maximumReschedulerThreshold;
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());
             LOGGER.info("Rescheduling process with Id " + processModel.getProcessId() + " experimentId "
                     + processModel.getExperimentId());
             String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
-            ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
-                    Class.forName(selectionPolicyClass).newInstance();
+            // Get policy bean from Spring context instead of manual instantiation
+            ComputeResourceSelectionPolicy policy = applicationContext.getBean(
+                    Class.forName(selectionPolicyClass).asSubclass(ComputeResourceSelectionPolicy.class));
             if (processState.equals(ProcessState.QUEUED)) {
                 Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel =
                         policy.selectComputeResource(processModel.getProcessId());
@@ -137,10 +142,11 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     private void updateResourceSchedulingModel(
             ProcessModel processModel, ExperimentModel experimentModel, RegistryService registryService)
             throws ExperimentNotFoundException, ApplicationSettingsException, ClassNotFoundException,
-                    IllegalAccessException, InstantiationException, RegistryServiceException {
+                    RegistryServiceException {
         String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
-        ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
-                Class.forName(selectionPolicyClass).newInstance();
+        // Get policy bean from Spring context instead of manual instantiation
+        ComputeResourceSelectionPolicy policy = applicationContext.getBean(
+                Class.forName(selectionPolicyClass).asSubclass(ComputeResourceSelectionPolicy.class));
 
         Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel =
                 policy.selectComputeResource(processModel.getProcessId());

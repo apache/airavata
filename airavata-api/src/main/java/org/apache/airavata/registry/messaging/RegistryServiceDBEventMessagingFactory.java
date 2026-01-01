@@ -54,10 +54,13 @@ public class RegistryServiceDBEventMessagingFactory {
 
     private final RegistryService registryService;
     private final MessagingFactory messagingFactory;
+    private final RegistryServiceDBEventHandler handler;
 
-    public RegistryServiceDBEventMessagingFactory(RegistryService registryService, MessagingFactory messagingFactory) {
+    public RegistryServiceDBEventMessagingFactory(
+            RegistryService registryService, MessagingFactory messagingFactory, RegistryServiceDBEventHandler handler) {
         this.registryService = registryService;
         this.messagingFactory = messagingFactory;
+        this.handler = handler;
     }
 
     public MessagingFactory getMessagingFactory() {
@@ -82,14 +85,8 @@ public class RegistryServiceDBEventMessagingFactory {
             synchronized (this) {
                 if (null == registryServiceDBEventSubscriber) {
                     logger.info("Creating DB Event subscriber.....");
-                    RegistryServiceDBEventHandler handler;
                     String serviceName = DBEventService.REGISTRY.toString();
-                    try {
-                        handler = new RegistryServiceDBEventHandler(registryService, this);
-                    } catch (Exception e) {
-                        throw new AiravataException(
-                                "Failed to create registry service DB event handler for service: " + serviceName, e);
-                    }
+                    // Handler is injected as a Spring bean, no need to instantiate
                     registryServiceDBEventSubscriber = messagingFactory.getDBEventSubscriber(handler, serviceName);
                     logger.info("DB Event subscriber created for service: " + serviceName);
                 }

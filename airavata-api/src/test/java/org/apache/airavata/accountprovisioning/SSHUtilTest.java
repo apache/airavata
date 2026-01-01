@@ -32,9 +32,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, SSHUtilTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            SSHUtilTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")

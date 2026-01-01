@@ -20,20 +20,83 @@
 package org.apache.airavata.service.notification;
 
 import java.util.List;
+import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.model.Notification;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.stereotype.Service;
 
 /**
- * Service interface for notification management operations.
+ * Service for notification management operations.
  */
-public interface NotificationService {
-    String createNotification(Notification notification) throws AiravataSystemException;
+@Service("notificationServiceFacade")
+@ConditionalOnBean(RegistryService.class)
+public class NotificationService {
+    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
-    boolean updateNotification(Notification notification) throws AiravataSystemException;
+    private final RegistryService registryService;
 
-    boolean deleteNotification(String gatewayId, String notificationId) throws AiravataSystemException;
+    public NotificationService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
-    Notification getNotification(String gatewayId, String notificationId) throws AiravataSystemException;
+    private AiravataSystemException airavataSystemException(
+            AiravataErrorType errorType, String message, Throwable cause) {
+        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+                errorType, message, cause);
+    }
 
-    List<Notification> getAllNotifications(String gatewayId) throws AiravataSystemException;
+    public String createNotification(Notification notification) throws AiravataSystemException {
+        try {
+            return registryService.createNotification(notification);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while creating notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public boolean updateNotification(Notification notification) throws AiravataSystemException {
+        try {
+            return registryService.updateNotification(notification);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while updating notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public boolean deleteNotification(String gatewayId, String notificationId) throws AiravataSystemException {
+        try {
+            return registryService.deleteNotification(gatewayId, notificationId);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while deleting notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public Notification getNotification(String gatewayId, String notificationId) throws AiravataSystemException {
+        try {
+            return registryService.getNotification(gatewayId, notificationId);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while retrieving notification: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public List<Notification> getAllNotifications(String gatewayId) throws AiravataSystemException {
+        try {
+            return registryService.getAllNotifications(gatewayId);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while getting all notifications: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 }

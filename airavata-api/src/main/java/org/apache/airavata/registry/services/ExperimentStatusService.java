@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.common.model.ExperimentStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ExperimentStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.stereotype.Service;
@@ -34,11 +34,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ExperimentStatusService {
     private final ExperimentStatusRepository experimentStatusRepository;
-    private final Mapper mapper;
+    private final ExperimentStatusMapper experimentStatusMapper;
 
-    public ExperimentStatusService(ExperimentStatusRepository experimentStatusRepository, Mapper mapper) {
+    public ExperimentStatusService(
+            ExperimentStatusRepository experimentStatusRepository, ExperimentStatusMapper experimentStatusMapper) {
         this.experimentStatusRepository = experimentStatusRepository;
-        this.mapper = mapper;
+        this.experimentStatusMapper = experimentStatusMapper;
     }
 
     public String addExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryException {
@@ -49,7 +50,7 @@ public class ExperimentStatusService {
             experimentStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        ExperimentStatusEntity entity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
+        ExperimentStatusEntity entity = experimentStatusMapper.toEntity(experimentStatus);
         entity.setExperimentId(experimentId);
         ExperimentStatusEntity saved = experimentStatusRepository.save(entity);
         return saved.getStatusId();
@@ -59,7 +60,7 @@ public class ExperimentStatusService {
         List<ExperimentStatusEntity> entities =
                 experimentStatusRepository.findByExperimentIdOrderByTimeOfStateChangeDesc(experimentId);
         if (entities.isEmpty()) return null;
-        return mapper.map(entities.get(0), ExperimentStatus.class);
+        return experimentStatusMapper.toModel(entities.get(0));
     }
 
     public String updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
@@ -71,7 +72,7 @@ public class ExperimentStatusService {
             experimentStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        ExperimentStatusEntity entity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
+        ExperimentStatusEntity entity = experimentStatusMapper.toEntity(experimentStatus);
         entity.setExperimentId(experimentId);
         ExperimentStatusEntity saved = experimentStatusRepository.save(entity);
         return saved.getStatusId();

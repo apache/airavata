@@ -52,11 +52,15 @@ public class SharingServiceDBEventMessagingFactory {
 
     private final SharingRegistryService sharingRegistryService;
     private final MessagingFactory messagingFactory;
+    private final SharingServiceDBEventHandler handler;
 
     public SharingServiceDBEventMessagingFactory(
-            SharingRegistryService sharingRegistryService, MessagingFactory messagingFactory) {
+            SharingRegistryService sharingRegistryService,
+            MessagingFactory messagingFactory,
+            SharingServiceDBEventHandler handler) {
         this.sharingRegistryService = sharingRegistryService;
         this.messagingFactory = messagingFactory;
+        this.handler = handler;
     }
 
     /**
@@ -82,15 +86,9 @@ public class SharingServiceDBEventMessagingFactory {
         if (null == sharingServiceDBEventSubscriber) {
             synchronized (this) {
                 if (null == sharingServiceDBEventSubscriber) {
-                    SharingServiceDBEventHandler handler;
                     String serviceName = DBEventService.SHARING.toString();
                     log.info("Creating DB Event subscriber for service: " + serviceName);
-                    try {
-                        handler = new SharingServiceDBEventHandler(sharingRegistryService, this);
-                    } catch (Exception e) {
-                        throw new AiravataException(
-                                "Failed to create sharing service DB event handler for service: " + serviceName, e);
-                    }
+                    // Handler is injected as a Spring bean, no need to instantiate
                     sharingServiceDBEventSubscriber = messagingFactory.getDBEventSubscriber(handler, serviceName);
                     log.info("DB Event subscriber created for service: " + serviceName);
                 }

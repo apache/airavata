@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -37,6 +35,7 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ExperimentMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
@@ -53,12 +52,15 @@ public class ExperimentService {
 
     private final ExperimentRepository experimentRepository;
     private final ProcessService processService;
-    private final Mapper mapper;
+    private final ExperimentMapper experimentMapper;
 
-    public ExperimentService(ExperimentRepository experimentRepository, ProcessService processService, Mapper mapper) {
+    public ExperimentService(
+            ExperimentRepository experimentRepository,
+            ProcessService processService,
+            ExperimentMapper experimentMapper) {
         this.experimentRepository = experimentRepository;
         this.processService = processService;
-        this.mapper = mapper;
+        this.experimentMapper = experimentMapper;
     }
 
     @Transactional("expCatalogTransactionManager")
@@ -88,16 +90,10 @@ public class ExperimentService {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
 
-        // Temporarily null emailAddresses to avoid Dozer mapping issues
-        String emailAddressesStr = entity.getEmailAddresses();
-        entity.setEmailAddresses(null);
-
-        ExperimentModel model = mapper.map(entity, ExperimentModel.class);
-
-        // Restore emailAddresses on entity
-        entity.setEmailAddresses(emailAddressesStr);
+        ExperimentModel model = experimentMapper.toModel(entity);
 
         // Manually convert emailAddresses from String (CSV) to List<String>
+        String emailAddressesStr = entity.getEmailAddresses();
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
             model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
         } else {
@@ -176,14 +172,12 @@ public class ExperimentService {
             logger.debug("Search criteria is Username");
             List<ExperimentEntity> entities =
                     experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
-            experimentModelList = new ArrayList<>();
-            entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
+            experimentModelList = experimentMapper.toModelList(entities);
         } else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is ProjectId");
             List<ExperimentEntity> entities =
                     experimentRepository.findByGatewayIdAndProjectId(gatewayId, (String) value);
-            experimentModelList = new ArrayList<>();
-            entities.forEach(e -> experimentModelList.add(mapper.map(e, ExperimentModel.class)));
+            experimentModelList = experimentMapper.toModelList(entities);
         } else {
             logger.error("Unsupported field name for Experiment module.");
             throw new IllegalArgumentException("Unsupported field name for Experiment module.");
@@ -235,11 +229,24 @@ public class ExperimentService {
 
         if (existingEntity != null) {
             // Map model to new entity to get the desired state
-            ExperimentEntity newEntity = mapper.map(experimentModel, ExperimentEntity.class);
-            // Map simple fields to existing entity (Dozer may merge lists, creating duplicates)
-            mapper.map(experimentModel, existingEntity);
+            ExperimentEntity newEntity = experimentMapper.toEntity(experimentModel);
+            // Copy simple fields to existing entity manually (MapStruct doesn't support updating existing entities)
+            existingEntity.setProjectId(experimentModel.getProjectId());
+            existingEntity.setGatewayId(experimentModel.getGatewayId());
+            existingEntity.setExperimentType(experimentModel.getExperimentType());
+            existingEntity.setUserName(experimentModel.getUserName());
+            existingEntity.setExperimentName(experimentModel.getExperimentName());
+            existingEntity.setCreationTime(
+                    experimentModel.getCreationTime() > 0
+                            ? new java.sql.Timestamp(experimentModel.getCreationTime())
+                            : null);
+            existingEntity.setDescription(experimentModel.getDescription());
+            existingEntity.setExecutionId(experimentModel.getExecutionId());
+            existingEntity.setGatewayExecutionId(experimentModel.getGatewayExecutionId());
+            existingEntity.setGatewayInstanceId(experimentModel.getGatewayInstanceId());
+            existingEntity.setEnableEmailNotification(experimentModel.getEnableEmailNotification());
 
-            // Manually set emailAddresses on both entities (excluded from Dozer mapping)
+            // Manually set emailAddresses on both entities (excluded from mapping)
             java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
             String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
                     ? String.join(",", emailAddressesList)
@@ -267,8 +274,8 @@ public class ExperimentService {
 
             experimentEntity = existingEntity;
         } else {
-            experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
-            // Manually convert emailAddresses from List<String> to String (CSV) - excluded from Dozer mapping
+            experimentEntity = experimentMapper.toEntity(experimentModel);
+            // Manually convert emailAddresses from List<String> to String (CSV) - excluded from mapping
             java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
             String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
                     ? String.join(",", emailAddressesList)

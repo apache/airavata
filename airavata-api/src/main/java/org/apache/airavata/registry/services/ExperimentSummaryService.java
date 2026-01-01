@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -39,6 +38,7 @@ import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentSummaryEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ExperimentSummaryMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
@@ -53,11 +53,13 @@ public class ExperimentSummaryService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryService.class);
     private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
 
-    private final Mapper mapper;
+    private final ExperimentSummaryMapper experimentSummaryMapper;
     private final EntityManager entityManager;
 
-    public ExperimentSummaryService(Mapper mapper, @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
-        this.mapper = mapper;
+    public ExperimentSummaryService(
+            ExperimentSummaryMapper experimentSummaryMapper,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+        this.experimentSummaryMapper = experimentSummaryMapper;
         this.entityManager = entityManager;
     }
 
@@ -181,7 +183,7 @@ public class ExperimentSummaryService {
             }
 
             List<ExperimentSummaryEntity> entities = typedQuery.getResultList();
-            entities.forEach(e -> allExperimentSummaryModels.add(mapper.map(e, ExperimentSummaryModel.class)));
+            allExperimentSummaryModels.addAll(experimentSummaryMapper.toModelList(entities));
 
             if (allExperimentSummaryModels.size() == limit) {
                 break;
@@ -461,9 +463,7 @@ public class ExperimentSummaryService {
         }
 
         List<ExperimentSummaryEntity> entities = typedQuery.getResultList();
-        return entities.stream()
-                .map(e -> mapper.map(e, ExperimentSummaryModel.class))
-                .toList();
+        return experimentSummaryMapper.toModelList(entities);
     }
 
     private List<Predicate> buildStatisticsPredicates(

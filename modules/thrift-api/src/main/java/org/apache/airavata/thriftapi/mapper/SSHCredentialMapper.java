@@ -21,6 +21,7 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.credential.model.SSHCredential;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -38,6 +39,11 @@ public interface SSHCredentialMapper extends ModelMapper {
 
     /**
      * Convert thrift model to domain model.
+     *
+     * Note: The following properties are ignored as they are not present in the Thrift IDL definition:
+     * portalUserName, certificateRequestedTime
      */
+    @Mapping(target = "portalUserName", ignore = true)
+    @Mapping(target = "certificateRequestedTime", ignore = true)
     SSHCredential toDomain(org.apache.airavata.thriftapi.credential.model.SSHCredential thrift);
 }

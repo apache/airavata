@@ -47,9 +47,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, GatewayGroupsInitializerTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            GatewayGroupsInitializerTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "security.tls.enabled=true",
             "security.manager.enabled=false"
         })
@@ -139,7 +144,6 @@ public class GatewayGroupsInitializerTest {
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

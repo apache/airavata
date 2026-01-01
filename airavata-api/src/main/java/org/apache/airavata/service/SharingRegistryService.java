@@ -66,11 +66,9 @@ import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "services.sharingRegistryService.enabled", havingValue = "true", matchIfMissing = true)
 public class SharingRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryService.class);
 
@@ -221,6 +219,8 @@ public class SharingRegistryService {
             userGroup.setOwnerId(user.getUserId());
             userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
+            userGroup.setCreatedTime(System.currentTimeMillis());
+            userGroup.setUpdatedTime(System.currentTimeMillis());
             userGroupService.create(userGroup);
 
             Domain domain = domainService.get(user.getDomainId());

@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.UserMapper;
 import org.apache.airavata.registry.repositories.expcatalog.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
-    private final Mapper mapper;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, Mapper mapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.mapper = mapper;
+        this.userMapper = userMapper;
     }
 
     public boolean isUserExists(String gatewayId, String userName) throws RegistryException {
@@ -54,15 +54,15 @@ public class UserService {
     }
 
     public UserProfile addUser(UserProfile userProfile) throws RegistryException {
-        UserEntity entity = mapper.map(userProfile, UserEntity.class);
+        UserEntity entity = userMapper.toEntity(userProfile);
         UserEntity saved = userRepository.save(entity);
-        return mapper.map(saved, UserProfile.class);
+        return userMapper.toModel(saved);
     }
 
     public UserProfile get(UserPK userPK) throws RegistryException {
         UserEntity entity = userRepository.findById(userPK).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, UserProfile.class);
+        return userMapper.toModel(entity);
     }
 
     public void delete(UserPK userPK) throws RegistryException {

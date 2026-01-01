@@ -44,7 +44,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -63,12 +62,23 @@ public class ProfileServiceServer extends ServerLifecycle {
     private TServer server;
     private List<DBInitConfig> dbInitConfigs;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
+    private final UserProfileServiceHandler userProfileHandler;
+    private final TenantProfileServiceHandler tenantProfileHandler;
+    private final IamAdminServiceHandler iamAdminHandler;
+    private final GroupManagerServiceHandler groupManagerHandler;
 
-    public ProfileServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
-        this.applicationContext = applicationContext;
+    public ProfileServiceServer(
+            AiravataServerProperties properties,
+            UserProfileServiceHandler userProfileHandler,
+            TenantProfileServiceHandler tenantProfileHandler,
+            IamAdminServiceHandler iamAdminHandler,
+            GroupManagerServiceHandler groupManagerHandler) {
         this.properties = properties;
+        this.userProfileHandler = userProfileHandler;
+        this.tenantProfileHandler = tenantProfileHandler;
+        this.iamAdminHandler = iamAdminHandler;
+        this.groupManagerHandler = groupManagerHandler;
         this.dbInitConfigs = Arrays.asList(new UserProfileCatalogDBInitConfig(properties));
     }
 
@@ -104,14 +114,6 @@ public class ProfileServiceServer extends ServerLifecycle {
             logger.info("Profile service databases initialized successfully");
 
             final int serverPort = properties.services.api.profile.server.port;
-
-            // Get handlers from Spring context
-            UserProfileServiceHandler userProfileHandler = applicationContext.getBean(UserProfileServiceHandler.class);
-            TenantProfileServiceHandler tenantProfileHandler =
-                    applicationContext.getBean(TenantProfileServiceHandler.class);
-            IamAdminServiceHandler iamAdminHandler = applicationContext.getBean(IamAdminServiceHandler.class);
-            GroupManagerServiceHandler groupManagerHandler =
-                    applicationContext.getBean(GroupManagerServiceHandler.class);
 
             // create multiple processors for each profile-service
             var userProfileProcessor = new UserProfileService.Processor<>(userProfileHandler);

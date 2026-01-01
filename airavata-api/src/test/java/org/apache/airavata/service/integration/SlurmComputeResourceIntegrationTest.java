@@ -97,7 +97,17 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
             String submissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
 
             ComputeResourceDescription computeResource = TestDataFactory.createSlurmComputeResource("slurm-host");
-            computeResource.getJobSubmissionInterfaces().get(0).setJobSubmissionInterfaceId(submissionId);
+            if (computeResource.getJobSubmissionInterfaces() == null) {
+                computeResource.setJobSubmissionInterfaces(new java.util.ArrayList<>());
+            }
+            if (computeResource.getJobSubmissionInterfaces().isEmpty()) {
+                org.apache.airavata.common.model.JobSubmissionInterface jobSubmissionInterface =
+                        new org.apache.airavata.common.model.JobSubmissionInterface();
+                jobSubmissionInterface.setJobSubmissionInterfaceId(submissionId);
+                computeResource.getJobSubmissionInterfaces().add(jobSubmissionInterface);
+            } else {
+                computeResource.getJobSubmissionInterfaces().get(0).setJobSubmissionInterfaceId(submissionId);
+            }
 
             // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);

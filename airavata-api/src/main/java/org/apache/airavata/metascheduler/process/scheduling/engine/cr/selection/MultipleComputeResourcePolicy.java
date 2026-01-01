@@ -32,7 +32,6 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,16 +42,15 @@ import org.springframework.stereotype.Component;
 public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);
-    private static ApplicationContext applicationContext;
+    private final RegistryService registryService;
 
-    public MultipleComputeResourcePolicy(ApplicationContext applicationContext) {
-        super(applicationContext);
-        MultipleComputeResourcePolicy.applicationContext = applicationContext;
+    public MultipleComputeResourcePolicy(RegistryService registryService) {
+        super(registryService);
+        this.registryService = registryService;
     }
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService registryService = applicationContext.getBean(RegistryService.class);
         try {
 
             ProcessModel processModel = registryService.getProcess(processId);

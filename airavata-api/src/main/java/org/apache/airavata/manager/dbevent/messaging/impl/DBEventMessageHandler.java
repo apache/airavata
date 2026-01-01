@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.manager.dbevent.messaging.impl;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.common.model.DBEventMessage;
@@ -35,43 +36,26 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/14/17.
  */
+@Component
 public class DBEventMessageHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DBEventMessageHandler.class);
     private CuratorFramework curatorClient;
-    private AiravataServerProperties properties;
-    private DBEventManagerMessagingFactory messagingFactory;
-
-    public DBEventMessageHandler() {
-        // Properties should be set via setter
-    }
-
-    public DBEventMessageHandler(AiravataServerProperties properties) {
-        this.properties = properties;
-        startCuratorClient();
-    }
+    private final AiravataServerProperties properties;
+    private final DBEventManagerMessagingFactory messagingFactory;
 
     public DBEventMessageHandler(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
         this.properties = properties;
         this.messagingFactory = messagingFactory;
-        startCuratorClient();
     }
 
-    public void setProperties(AiravataServerProperties properties) {
-        this.properties = properties;
-        if (curatorClient == null) {
-            startCuratorClient();
-        }
-    }
-
+    @PostConstruct
     private void startCuratorClient() {
-        if (properties == null) {
-            throw new IllegalStateException("Properties must be set before starting curator client");
-        }
         curatorClient = DbEventManagerZkUtils.getCuratorClient(properties);
         curatorClient.start();
     }
@@ -123,8 +107,8 @@ public class DBEventMessageHandler implements MessageHandler {
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
-            if (properties != null && messagingFactory != null) {
-                messagingFactory.getDBEventSubscriber(properties).sendAck(messageContext.getDeliveryTag());
+            if (messagingFactory != null) {
+                messagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
             }
 
         } catch (Exception e) {

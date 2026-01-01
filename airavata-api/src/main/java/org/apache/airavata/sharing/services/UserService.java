@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -30,6 +29,7 @@ import java.util.Map;
 import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.entities.UserEntity;
 import org.apache.airavata.sharing.entities.UserPK;
+import org.apache.airavata.sharing.mappers.UserMapper;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.SharingType;
 import org.apache.airavata.sharing.model.User;
@@ -43,24 +43,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final PermissionTypeService permissionTypeService;
-    private final Mapper mapper;
+    private final UserMapper userMapper;
     private final EntityManager entityManager;
 
     public UserService(
             @Qualifier("sharingUserRepository") UserRepository userRepository,
             PermissionTypeService permissionTypeService,
-            Mapper mapper,
+            UserMapper userMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.userRepository = userRepository;
         this.permissionTypeService = permissionTypeService;
-        this.mapper = mapper;
+        this.userMapper = userMapper;
         this.entityManager = entityManager;
     }
 
     public User get(UserPK pk) throws SharingRegistryException {
         UserEntity entity = userRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, User.class);
+        return userMapper.toModel(entity);
     }
 
     public User create(User user) throws SharingRegistryException {
@@ -68,9 +68,9 @@ public class UserService {
     }
 
     public User update(User user) throws SharingRegistryException {
-        UserEntity entity = mapper.map(user, UserEntity.class);
+        UserEntity entity = userMapper.toEntity(user);
         UserEntity saved = userRepository.save(entity);
-        return mapper.map(saved, User.class);
+        return userMapper.toModel(saved);
     }
 
     public boolean delete(UserPK pk) throws SharingRegistryException {
@@ -108,7 +108,7 @@ public class UserService {
         }
 
         var entities = typedQuery.getResultList();
-        return entities.stream().map(e -> mapper.map(e, User.class)).toList();
+        return userMapper.toModelList(entities);
     }
 
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId)
@@ -157,6 +157,6 @@ public class UserService {
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
         List<UserEntity> entities = entityManager.createQuery(query).getResultList();
-        return entities.stream().map(e -> mapper.map(e, User.class)).toList();
+        return userMapper.toModelList(entities);
     }
 }

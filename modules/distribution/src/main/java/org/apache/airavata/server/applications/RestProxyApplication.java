@@ -38,20 +38,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableConfigurationProperties(RestProxyConfiguration.class)
 @ComponentScan(
-        basePackages = {"org.apache.airavata.registry", "org.apache.airavata.service", "org.apache.airavata.restproxy"},
-        excludeFilters = {
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\$.*" // Exclude inner classes
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
-                    )
+        basePackages = {
+            "org.apache.airavata.registry.services",
+            "org.apache.airavata.registry.repositories",
+            "org.apache.airavata.registry.mappers",
+            "org.apache.airavata.registry.utils",
+            "org.apache.airavata.service",
+            "org.apache.airavata.restproxy"
         })
 @EntityScan(basePackages = {"org.apache.airavata.registry.entities"})
 @EnableJpaRepositories(basePackages = {"org.apache.airavata.registry.repositories"})

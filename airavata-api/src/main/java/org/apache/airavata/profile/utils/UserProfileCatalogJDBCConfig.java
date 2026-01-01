@@ -20,31 +20,41 @@
 package org.apache.airavata.profile.utils;
 
 import org.apache.airavata.common.utils.JDBCConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProfileCatalogJDBCConfig implements JDBCConfig {
+
+    private final Utils utils;
+
+    @Autowired
+    public UserProfileCatalogJDBCConfig(Utils utils) {
+        this.utils = utils;
+    }
 
     @Override
     public String getURL() {
-        return Utils.getJDBCURL();
+        return utils.getJDBCURL();
     }
 
     @Override
     public String getDriver() {
-        return Utils.getJDBCDriver();
+        return utils.getJDBCDriver();
     }
 
     @Override
     public String getUser() {
-        return Utils.getJDBCUser();
+        return utils.getJDBCUser();
     }
 
     @Override
     public String getPassword() {
-        return Utils.getJDBCPassword();
+        return utils.getJDBCPassword();
     }
 
     @Override
     public String getValidationQuery() {
-        return Utils.getValidationQuery();
+        return utils.getValidationQuery();
     }
 }

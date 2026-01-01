@@ -26,4 +26,3 @@ public class JobMonitorStarter {
         throw new UnsupportedOperationException("EmailBasedMonitor must be used within a Spring application context");
     }
 }
-

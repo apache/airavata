@@ -39,11 +39,9 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "services.groupmanager.enabled", havingValue = "true", matchIfMissing = true)
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 
@@ -220,19 +218,27 @@ public class GroupManagerService {
 
     private List<GroupModel> convertToGroupModels(List<UserGroup> userGroups, SharingRegistryService sharingService)
             throws SharingRegistryException {
+        if (userGroups == null) {
+            return new ArrayList<>();
+        }
 
         List<GroupModel> groupModels = new ArrayList<>();
 
         for (UserGroup userGroup : userGroups) {
-            GroupModel groupModel = convertToGroupModel(userGroup, sharingService);
-
-            groupModels.add(groupModel);
+            if (userGroup != null) {
+                GroupModel groupModel = convertToGroupModel(userGroup, sharingService);
+                groupModels.add(groupModel);
+            }
         }
         return groupModels;
     }
 
     private GroupModel convertToGroupModel(UserGroup userGroup, SharingRegistryService sharingService)
             throws SharingRegistryException {
+        if (userGroup == null) {
+            throw new SharingRegistryException("UserGroup cannot be null");
+        }
+
         GroupModel groupModel = new GroupModel();
         groupModel.setId(userGroup.getGroupId());
         groupModel.setName(userGroup.getName());
@@ -245,8 +251,18 @@ public class GroupManagerService {
                 : new ArrayList<>();
         groupModel.setAdmins(admins);
 
-        sharingService.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream()
-                .forEach(user -> groupModel.getMembers().add(user.getUserId()));
+        // Initialize members list if null
+        if (groupModel.getMembers() == null) {
+            groupModel.setMembers(new ArrayList<>());
+        }
+
+        List<User> groupMembers =
+                sharingService.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1);
+        if (groupMembers != null) {
+            groupMembers.stream()
+                    .filter(user -> user != null && user.getUserId() != null)
+                    .forEach(user -> groupModel.getMembers().add(user.getUserId()));
+        }
         return groupModel;
     }
 

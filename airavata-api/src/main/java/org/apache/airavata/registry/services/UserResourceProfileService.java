@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,9 @@ import org.apache.airavata.registry.entities.appcatalog.UserResourceProfilePK;
 import org.apache.airavata.registry.entities.appcatalog.UserStoragePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.UserStoragePreferencePK;
 import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.mappers.UserComputeResourcePreferenceMapper;
+import org.apache.airavata.registry.mappers.UserResourceProfileMapper;
+import org.apache.airavata.registry.mappers.UserStoragePreferenceMapper;
 import org.apache.airavata.registry.repositories.appcatalog.UserComputeResourcePreferenceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.UserStoragePreferenceRepository;
@@ -48,17 +50,23 @@ public class UserResourceProfileService {
     private final UserResourceProfileRepository userResourceProfileRepository;
     private final UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository;
     private final UserStoragePreferenceRepository userStoragePreferenceRepository;
-    private final Mapper mapper;
+    private final UserResourceProfileMapper userResourceProfileMapper;
+    private final UserComputeResourcePreferenceMapper userComputeResourcePreferenceMapper;
+    private final UserStoragePreferenceMapper userStoragePreferenceMapper;
 
     public UserResourceProfileService(
             UserResourceProfileRepository userResourceProfileRepository,
             UserComputeResourcePreferenceRepository userComputeResourcePreferenceRepository,
             UserStoragePreferenceRepository userStoragePreferenceRepository,
-            Mapper mapper) {
+            UserResourceProfileMapper userResourceProfileMapper,
+            UserComputeResourcePreferenceMapper userComputeResourcePreferenceMapper,
+            UserStoragePreferenceMapper userStoragePreferenceMapper) {
         this.userResourceProfileRepository = userResourceProfileRepository;
         this.userComputeResourcePreferenceRepository = userComputeResourcePreferenceRepository;
         this.userStoragePreferenceRepository = userStoragePreferenceRepository;
-        this.mapper = mapper;
+        this.userResourceProfileMapper = userResourceProfileMapper;
+        this.userComputeResourcePreferenceMapper = userComputeResourcePreferenceMapper;
+        this.userStoragePreferenceMapper = userStoragePreferenceMapper;
     }
 
     @Transactional
@@ -81,8 +89,7 @@ public class UserResourceProfileService {
             throws AppCatalogException {
         String userId = userResourceProfile.getUserId();
         String gatewayId = userResourceProfile.getGatewayID();
-        UserResourceProfileEntity userResourceProfileEntity =
-                mapper.map(userResourceProfile, UserResourceProfileEntity.class);
+        UserResourceProfileEntity userResourceProfileEntity = userResourceProfileMapper.toEntity(userResourceProfile);
 
         if (userResourceProfileEntity.getUserComputeResourcePreferences() != null) {
             logger.debug(
@@ -120,7 +127,7 @@ public class UserResourceProfileService {
         UserResourceProfileEntity entity =
                 userResourceProfileRepository.findById(userResourceProfilePK).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, UserResourceProfile.class);
+        return userResourceProfileMapper.toModel(entity);
     }
 
     @Transactional(readOnly = true)
@@ -132,7 +139,7 @@ public class UserResourceProfileService {
         userComputeResourcePreferencePK.setComputeResourceId(hostId);
         return userComputeResourcePreferenceRepository
                 .findById(userComputeResourcePreferencePK)
-                .map(entity -> mapper.map(entity, UserComputeResourcePreference.class))
+                .map(entity -> userComputeResourcePreferenceMapper.toModel(entity))
                 .orElse(null);
     }
 
@@ -145,16 +152,14 @@ public class UserResourceProfileService {
         userStoragePreferencePK.setStorageResourceId(storageId);
         return userStoragePreferenceRepository
                 .findById(userStoragePreferencePK)
-                .map(entity -> mapper.map(entity, UserStoragePreference.class))
+                .map(entity -> userStoragePreferenceMapper.toModel(entity))
                 .orElse(null);
     }
 
     @Transactional(readOnly = true)
     public List<UserResourceProfile> getAllUserResourceProfiles() throws AppCatalogException {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
-        List<UserResourceProfile> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, UserResourceProfile.class)));
-        return result;
+        return userResourceProfileMapper.toModelList(entities);
     }
 
     @Transactional(readOnly = true)
@@ -162,9 +167,7 @@ public class UserResourceProfileService {
             throws AppCatalogException {
         List<UserComputeResourcePreferenceEntity> entities =
                 userComputeResourcePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
-        return entities.stream()
-                .map(entity -> mapper.map(entity, UserComputeResourcePreference.class))
-                .collect(java.util.stream.Collectors.toList());
+        return userComputeResourcePreferenceMapper.toModelList(entities);
     }
 
     @Transactional(readOnly = true)
@@ -172,9 +175,7 @@ public class UserResourceProfileService {
             throws AppCatalogException {
         List<UserStoragePreferenceEntity> entities =
                 userStoragePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
-        return entities.stream()
-                .map(entity -> mapper.map(entity, UserStoragePreference.class))
-                .collect(java.util.stream.Collectors.toList());
+        return userStoragePreferenceMapper.toModelList(entities);
     }
 
     @Transactional(readOnly = true)
@@ -182,7 +183,7 @@ public class UserResourceProfileService {
         List<UserResourceProfileEntity> entities = userResourceProfileRepository.findAll();
         List<String> gatewayIdList = new ArrayList<>();
         for (UserResourceProfileEntity entity : entities) {
-            UserResourceProfile profile = mapper.map(entity, UserResourceProfile.class);
+            UserResourceProfile profile = userResourceProfileMapper.toModel(entity);
             if (gatewayName == null || profile.getGatewayID().equals(gatewayName)) {
                 gatewayIdList.add(profile.getGatewayID());
             }

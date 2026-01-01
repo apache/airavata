@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ProcessMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.utils.DBConstants;
@@ -50,17 +50,17 @@ public class ProcessService {
     private final ProcessRepository processRepository;
     private final ExperimentRepository experimentRepository;
     private final TaskService taskService;
-    private final Mapper mapper;
+    private final ProcessMapper processMapper;
 
     public ProcessService(
             ProcessRepository processRepository,
             ExperimentRepository experimentRepository,
             TaskService taskService,
-            Mapper mapper) {
+            ProcessMapper processMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
-        this.mapper = mapper;
+        this.processMapper = processMapper;
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
@@ -97,12 +97,19 @@ public class ProcessService {
 
         if (processEntity.getTasks() != null) {
             logger.debug("Populating the Primary Key of Task objects for the Process");
+            java.sql.Timestamp currentTimestamp = AiravataUtils.getCurrentTimestamp();
             processEntity.getTasks().forEach(taskEntity -> {
                 // Set parentProcessId for consistency (even though it's insertable=false)
                 taskEntity.setParentProcessId(processId);
                 // Set process relationship to ensure PARENT_PROCESS_ID is inserted via @JoinColumn
                 taskEntity.setProcess(processEntity);
-                taskEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                // Ensure required timestamps are set
+                if (taskEntity.getCreationTime() == null) {
+                    taskEntity.setCreationTime(currentTimestamp);
+                }
+                if (taskEntity.getLastUpdateTime() == null) {
+                    taskEntity.setLastUpdateTime(currentTimestamp);
+                }
                 taskService.populateParentIds(taskEntity);
             });
         }
@@ -131,16 +138,10 @@ public class ProcessService {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
 
-        // Temporarily null emailAddresses to avoid Dozer mapping issues
-        String emailAddressesStr = entity.getEmailAddresses();
-        entity.setEmailAddresses(null);
-
-        ProcessModel model = mapper.map(entity, ProcessModel.class);
-
-        // Restore emailAddresses on entity
-        entity.setEmailAddresses(emailAddressesStr);
+        ProcessModel model = processMapper.toModel(entity);
 
         // Manually convert emailAddresses from String (CSV) to List<String>
+        String emailAddressesStr = entity.getEmailAddresses();
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
             model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
         } else {
@@ -179,22 +180,18 @@ public class ProcessService {
         if (fieldName.equals(DBConstants.Process.EXPERIMENT_ID)) {
             logger.debug("Search criteria is ExperimentId");
             List<ProcessEntity> entities = processRepository.findByExperimentId((String) value);
-            processModelList = new ArrayList<>();
-            entities.forEach(e -> {
-                // Temporarily null emailAddresses to avoid Dozer mapping issues
-                String emailAddressesStr = e.getEmailAddresses();
-                e.setEmailAddresses(null);
-                ProcessModel model = mapper.map(e, ProcessModel.class);
-                // Restore emailAddresses on entity
-                e.setEmailAddresses(emailAddressesStr);
-                // Manually convert emailAddresses from String (CSV) to List<String>
+            processModelList = processMapper.toModelList(entities);
+            // Manually convert emailAddresses from String (CSV) to List<String> for each model
+            for (int i = 0; i < processModelList.size(); i++) {
+                ProcessEntity entity = entities.get(i);
+                ProcessModel model = processModelList.get(i);
+                String emailAddressesStr = entity.getEmailAddresses();
                 if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
                     model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
                 } else {
                     model.setEmailAddresses(new java.util.ArrayList<>());
                 }
-                processModelList.add(model);
-            });
+            }
         } else {
             logger.error("Unsupported field name for Process module.");
             throw new IllegalArgumentException("Unsupported field name for Process module.");
@@ -226,9 +223,7 @@ public class ProcessService {
     @Transactional(readOnly = true)
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         List<ProcessEntity> entities = processRepository.findAll();
-        List<ProcessModel> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ProcessModel.class)));
-        return result;
+        return processMapper.toModelList(entities);
     }
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {
@@ -268,9 +263,9 @@ public class ProcessService {
         }
         processModel.setLastUpdateTime(System.currentTimeMillis());
 
-        ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
+        ProcessEntity processEntity = processMapper.toEntity(processModel);
 
-        // Manually convert emailAddresses from List<String> to String (CSV) - excluded from Dozer mapping
+        // Manually convert emailAddresses from List<String> to String (CSV) - excluded from mapping
         java.util.List<String> emailAddressesList = processModel.getEmailAddresses();
         String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
                 ? String.join(",", emailAddressesList)

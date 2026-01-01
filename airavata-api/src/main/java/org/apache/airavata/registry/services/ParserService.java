@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.Parser;
 import org.apache.airavata.registry.entities.appcatalog.ParserEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ParserMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ParserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ParserService {
     private final ParserRepository parserRepository;
-    private final Mapper mapper;
+    private final ParserMapper parserMapper;
 
-    public ParserService(ParserRepository parserRepository, Mapper mapper) {
+    public ParserService(ParserRepository parserRepository, ParserMapper parserMapper) {
         this.parserRepository = parserRepository;
-        this.mapper = mapper;
+        this.parserMapper = parserMapper;
     }
 
     public boolean isExists(String parserId) throws RegistryException {
@@ -48,18 +47,18 @@ public class ParserService {
     public Parser get(String parserId) throws RegistryException {
         ParserEntity entity = parserRepository.findById(parserId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Parser.class);
+        return parserMapper.toModel(entity);
     }
 
     public Parser saveParser(Parser parser) throws AppCatalogException {
-        ParserEntity entity = mapper.map(parser, ParserEntity.class);
+        ParserEntity entity = parserMapper.toEntity(parser);
         ParserEntity saved = parserRepository.save(entity);
-        return mapper.map(saved, Parser.class);
+        return parserMapper.toModel(saved);
     }
 
     public List<Parser> getAllParsers(String gatewayId) throws RegistryException {
         List<ParserEntity> entities = parserRepository.findByGatewayId(gatewayId);
-        return entities.stream().map(e -> mapper.map(e, Parser.class)).collect(Collectors.toList());
+        return parserMapper.toModelList(entities);
     }
 
     public void delete(String parserId) throws RegistryException {

@@ -65,6 +65,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
     private AiravataServerProperties properties;
     private org.springframework.context.ApplicationContext applicationContext;
+    private org.springframework.beans.factory.ObjectProvider<org.apache.airavata.helix.core.support.TaskHelperImpl>
+            taskHelperProvider;
 
     public HelixParticipant(
             List<Class<? extends T>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
@@ -80,6 +82,12 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     public void setApplicationContext(org.springframework.context.ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    public void setTaskHelperProvider(
+            org.springframework.beans.factory.ObjectProvider<org.apache.airavata.helix.core.support.TaskHelperImpl>
+                    taskHelperProvider) {
+        this.taskHelperProvider = taskHelperProvider;
     }
 
     /**
@@ -162,13 +170,18 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                     org.apache.airavata.helix.core.support.TaskHelperImpl taskHelper = null;
                     AbstractTask task = null;
                     if (applicationContext != null) {
-                        taskHelper =
-                                applicationContext.getBean(org.apache.airavata.helix.core.support.TaskHelperImpl.class);
+                        // Use ObjectProvider for TaskHelper if available, otherwise fall back to ApplicationContext
+                        taskHelper = (taskHelperProvider != null)
+                                ? taskHelperProvider.getIfAvailable()
+                                : applicationContext.getBean(
+                                        org.apache.airavata.helix.core.support.TaskHelperImpl.class);
+
                         // Try to get task as Spring bean first
                         try {
                             task = applicationContext.getBean(taskClass);
                         } catch (Exception e) {
                             // If not a Spring bean, create via reflection with dependencies from ApplicationContext
+                            // This is necessary for dynamically loaded task classes that may not be Spring beans
                             java.lang.reflect.Constructor<?>[] constructors = taskClass.getConstructors();
                             java.lang.reflect.Constructor<?> constructor = null;
                             for (java.lang.reflect.Constructor<?> c : constructors) {
@@ -190,8 +203,6 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                             }
                         }
                     } else {
-                        // Fallback: get AdaptorSupport from ApplicationContext if available
-                        // This is a workaround for non-Spring contexts
                         throw new IllegalStateException(
                                 "ApplicationContext must be set on HelixParticipant to create tasks");
                     }

@@ -21,6 +21,7 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -38,6 +39,9 @@ public interface PasswordCredentialMapper extends ModelMapper {
 
     /**
      * Convert thrift model to domain model.
+     *
+     * Note: certificateRequestedTime is ignored as it is not present in the Thrift IDL definition.
      */
+    @Mapping(target = "certificateRequestedTime", ignore = true)
     PasswordCredential toDomain(org.apache.airavata.thriftapi.credential.model.PasswordCredential thrift);
 }

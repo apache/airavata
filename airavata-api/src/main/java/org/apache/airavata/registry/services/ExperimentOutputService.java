@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentOutputRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,23 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ExperimentOutputService {
     private final ExperimentOutputRepository experimentOutputRepository;
-    private final Mapper mapper;
+    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
-    public ExperimentOutputService(ExperimentOutputRepository experimentOutputRepository, Mapper mapper) {
+    public ExperimentOutputService(
+            ExperimentOutputRepository experimentOutputRepository,
+            OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.experimentOutputRepository = experimentOutputRepository;
-        this.mapper = mapper;
+        this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     public List<OutputDataObjectType> getExperimentOutputs(String experimentId) throws RegistryException {
         List<ExperimentOutputEntity> entities = experimentOutputRepository.findByExperimentId(experimentId);
-        List<OutputDataObjectType> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, OutputDataObjectType.class)));
-        return result;
+        return outputDataObjectTypeMapper.toModelListFromExperiment(entities);
     }
 
     public void addExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId) throws RegistryException {
         for (OutputDataObjectType output : outputs) {
-            ExperimentOutputEntity entity = mapper.map(output, ExperimentOutputEntity.class);
+            ExperimentOutputEntity entity = outputDataObjectTypeMapper.toEntity(output);
             entity.setExperimentId(experimentId);
             experimentOutputRepository.save(entity);
         }

@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -37,29 +36,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProcessOutputService {
     private final ProcessOutputRepository processOutputRepository;
     private final EntityManager entityManager;
-    private final Mapper mapper;
+    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ProcessOutputService(
             ProcessOutputRepository processOutputRepository,
             @Qualifier("expCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
+            OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.processOutputRepository = processOutputRepository;
         this.entityManager = entityManager;
-        this.mapper = mapper;
+        this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
         List<ProcessOutputEntity> entities = processOutputRepository.findByProcessId(processId);
-        List<OutputDataObjectType> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, OutputDataObjectType.class)));
-        return result;
+        return outputDataObjectTypeMapper.toModelListFromProcess(entities);
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
         // Get a reference to the process entity (proxy, doesn't fetch from DB)
         ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         for (OutputDataObjectType output : outputs) {
-            ProcessOutputEntity entity = mapper.map(output, ProcessOutputEntity.class);
+            ProcessOutputEntity entity = outputDataObjectTypeMapper.toEntityFromProcess(output);
             entity.setProcessId(processId);
             // Set process relationship to ensure PROCESS_ID is set via @JoinColumn
             entity.setProcess(processEntity);

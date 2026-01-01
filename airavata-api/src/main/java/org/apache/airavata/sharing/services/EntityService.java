@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
@@ -30,6 +29,7 @@ import java.util.List;
 import org.apache.airavata.sharing.entities.EntityEntity;
 import org.apache.airavata.sharing.entities.EntityPK;
 import org.apache.airavata.sharing.entities.SharingEntity;
+import org.apache.airavata.sharing.mappers.EntityMapper;
 import org.apache.airavata.sharing.model.Entity;
 import org.apache.airavata.sharing.model.EntitySearchField;
 import org.apache.airavata.sharing.model.SearchCondition;
@@ -48,22 +48,22 @@ public class EntityService {
     private static final Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     private final EntityRepository entityRepository;
-    private final Mapper mapper;
+    private final EntityMapper entityMapper;
     private final EntityManager entityManager;
 
     public EntityService(
             EntityRepository entityRepository,
-            Mapper mapper,
+            EntityMapper entityMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.entityRepository = entityRepository;
-        this.mapper = mapper;
+        this.entityMapper = entityMapper;
         this.entityManager = entityManager;
     }
 
     public Entity get(EntityPK pk) throws SharingRegistryException {
         EntityEntity entity = entityRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Entity.class);
+        return entityMapper.toModel(entity);
     }
 
     public Entity create(Entity entity) throws SharingRegistryException {
@@ -71,9 +71,9 @@ public class EntityService {
     }
 
     public Entity update(Entity entity) throws SharingRegistryException {
-        EntityEntity entityEntity = mapper.map(entity, EntityEntity.class);
+        EntityEntity entityEntity = entityMapper.toEntity(entity);
         EntityEntity saved = entityRepository.save(entityEntity);
-        return mapper.map(saved, Entity.class);
+        return entityMapper.toModel(saved);
     }
 
     public boolean delete(EntityPK pk) throws SharingRegistryException {
@@ -89,7 +89,7 @@ public class EntityService {
         List<EntityEntity> entities =
                 entityRepository.findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
                         domainId, parentId);
-        return entities.stream().map(e -> mapper.map(e, Entity.class)).toList();
+        return entityMapper.toModelList(entities);
     }
 
     public List<Entity> searchEntities(
@@ -143,9 +143,7 @@ public class EntityService {
             }
 
             var entities = typedQuery.getResultList();
-            return entities.stream()
-                    .map(entity -> mapper.map(entity, Entity.class))
-                    .toList();
+            return entities.stream().map(entity -> entityMapper.toModel(entity)).toList();
         } catch (Exception e) {
             logger.error("Error searching entities", e);
             throw new SharingRegistryException(String.format("Error searching entities: %s", e.getMessage()), e);

@@ -42,11 +42,13 @@ import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "services.iam.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean({RegistryService.class, UserProfileService.class})
+@ConditionalOnMissingBean(name = "testIamAdminService")
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 

@@ -96,10 +96,10 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.exception.WorkflowCatalogException;
-import org.apache.airavata.registry.model.ApplicationDeployment;
-import org.apache.airavata.registry.model.ApplicationInterface;
 import org.apache.airavata.registry.model.ExpCatChildDataType;
 import org.apache.airavata.registry.model.ResultOrderType;
+import org.apache.airavata.registry.services.ApplicationDeploymentService;
+import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
@@ -138,18 +138,16 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
     private final AiravataServerProperties properties;
     // Note: ApplicationDeploymentRepository removed - now accessed through ApplicationDeploymentService
     // Note: ApplicationInterfaceRepository removed - now accessed through ApplicationInterfaceService
-    private final ApplicationDeployment applicationDeploymentService;
+    private final ApplicationDeploymentService applicationDeploymentService;
     private final StorageResourceService storageResourceService;
     private final GwyResourceProfileService gwyResourceProfileService;
     private final UserResourceProfileService userResourceProfileService;
@@ -185,25 +183,25 @@ public class RegistryService {
     private final ParsingTemplateService parsingTemplateService;
     private final GatewayGroupsService gatewayGroupsService;
     private final GatewayUsageReportingCommandService gatewayUsageReportingCommandService;
-    private final ApplicationInterface applicationInterfaceService;
+    private final ApplicationInterfaceService applicationInterfaceService;
 
     public RegistryService(
             AiravataServerProperties properties,
-            ApplicationDeployment applicationDeploymentService,
+            ApplicationDeploymentService applicationDeploymentService,
             StorageResourceService storageResourceService,
             GwyResourceProfileService gwyResourceProfileService,
             UserResourceProfileService userResourceProfileService,
             GroupResourceProfileService groupResourceProfileService,
             ComputeResourceService computeResourceService,
-            ExperimentService experimentService,
+            org.apache.airavata.registry.services.ExperimentService experimentService,
             ProcessService processService,
             TaskService taskService,
             JobService jobService,
             ExperimentSummaryService experimentSummaryService,
             UserService userService,
             GatewayService gatewayService,
-            ProjectService projectService,
-            NotificationService notificationService,
+            org.apache.airavata.registry.services.ProjectService projectService,
+            org.apache.airavata.registry.services.NotificationService notificationService,
             ProcessStatusService processStatusService,
             TaskStatusService taskStatusService,
             ExperimentStatusService experimentStatusService,
@@ -215,7 +213,7 @@ public class RegistryService {
             QueueStatusService queueStatusService,
             TaskErrorService taskErrorService,
             ProcessErrorService processErrorService,
-            DataProductService dataProductService,
+            org.apache.airavata.registry.services.DataProductService dataProductService,
             DataReplicaLocationService dataReplicaLocationService,
             WorkflowService workflowService,
             ParserService parserService,
@@ -224,7 +222,7 @@ public class RegistryService {
             ParsingTemplateService parsingTemplateService,
             GatewayGroupsService gatewayGroupsService,
             GatewayUsageReportingCommandService gatewayUsageReportingCommandService,
-            ApplicationInterface applicationInterfaceService) {
+            ApplicationInterfaceService applicationInterfaceService) {
         this.properties = properties;
         this.applicationDeploymentService = applicationDeploymentService;
         this.storageResourceService = storageResourceService;

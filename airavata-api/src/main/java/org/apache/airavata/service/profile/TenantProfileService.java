@@ -19,10 +19,8 @@
 */
 package org.apache.airavata.service.profile;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,24 +39,23 @@ import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
+import org.apache.airavata.profile.mappers.GatewayMapper;
 import org.apache.airavata.profile.repositories.TenantProfileRepository;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@ConditionalOnProperty(name = "services.tenantProfileService.enabled", havingValue = "true", matchIfMissing = true)
 public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
     private final TenantProfileRepository tenantProfileRepository;
     private final CredentialStoreService credentialStoreService;
-    private final Mapper mapper;
+    private final GatewayMapper gatewayMapper;
     private final EntityManager entityManager;
 
     private final DBEventPublisherUtils dbEventPublisherUtils;
@@ -66,16 +63,17 @@ public class TenantProfileService {
     public TenantProfileService(
             TenantProfileRepository tenantProfileRepository,
             CredentialStoreService credentialStoreService,
-            Mapper mapper,
+            GatewayMapper gatewayMapper,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
             MessagingFactory messagingFactory) {
         this.tenantProfileRepository = tenantProfileRepository;
         this.credentialStoreService = credentialStoreService;
-        this.mapper = mapper;
+        this.gatewayMapper = gatewayMapper;
         this.entityManager = entityManager;
         this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT, messagingFactory);
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager")
     public String addGateway(AuthzToken authzToken, Gateway gateway)
             throws TenantProfileServiceException, CredentialStoreException {
         try {
@@ -122,6 +120,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager")
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
             throws TenantProfileServiceException, CredentialStoreException {
         try {
@@ -169,6 +168,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId)
             throws TenantProfileServiceException {
         try {
@@ -192,6 +192,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager")
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId)
             throws TenantProfileServiceException {
         try {
@@ -222,6 +223,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException {
         try {
             try {
@@ -238,6 +240,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException {
         try {
             Gateway gateway;
@@ -256,6 +259,7 @@ public class TenantProfileService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername)
             throws TenantProfileServiceException {
         try {
@@ -311,7 +315,7 @@ public class TenantProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        return mapper.map(entityOpt.get(), Gateway.class);
+        return gatewayMapper.toModel(entityOpt.get());
     }
 
     private Gateway getGatewayByGatewayId(String gatewayId) throws Exception {
@@ -319,21 +323,17 @@ public class TenantProfileService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        return mapper.map(entityOpt.get(), Gateway.class);
+        return gatewayMapper.toModel(entityOpt.get());
     }
 
     private List<Gateway> getAllGateways() throws Exception {
         List<GatewayEntity> entities = tenantProfileRepository.findAllGateways();
-        List<Gateway> result = new ArrayList<>();
-        entities.forEach(entity -> result.add(mapper.map(entity, Gateway.class)));
-        return result;
+        return gatewayMapper.toModelList(entities);
     }
 
     private List<Gateway> getAllGatewaysForUser(String requesterUsername) throws Exception {
         List<GatewayEntity> entities = tenantProfileRepository.findByRequesterUsername(requesterUsername);
-        List<Gateway> result = new ArrayList<>();
-        entities.forEach(entity -> result.add(mapper.map(entity, Gateway.class)));
-        return result;
+        return gatewayMapper.toModelList(entities);
     }
 
     private Gateway getDuplicateGateway(String gatewayId, String gatewayName, String gatewayURL) throws Exception {
@@ -346,24 +346,22 @@ public class TenantProfileService {
         if (entities.isEmpty()) {
             return null;
         }
-        return mapper.map(entities.get(0), Gateway.class);
+        return gatewayMapper.toModel(entities.get(0));
     }
 
-    @Transactional
     private Gateway createGateway(Gateway gateway) {
-        GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
         GatewayEntity persistedCopy = entityManager.merge(entity);
-        return mapper.map(persistedCopy, Gateway.class);
+        entityManager.flush(); // Ensure entity is persisted and visible in same transaction
+        return gatewayMapper.toModel(persistedCopy);
     }
 
-    @Transactional
     private Gateway updateGateway(Gateway gateway) {
-        GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
         GatewayEntity persistedCopy = entityManager.merge(entity);
-        return mapper.map(persistedCopy, Gateway.class);
+        return gatewayMapper.toModel(persistedCopy);
     }
 
-    @Transactional
     private boolean deleteGateway(String airavataInternalGatewayId) {
         if (tenantProfileRepository.existsById(airavataInternalGatewayId)) {
             tenantProfileRepository.deleteById(airavataInternalGatewayId);

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -30,6 +29,7 @@ import java.util.Map;
 import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.entities.UserGroupEntity;
 import org.apache.airavata.sharing.entities.UserGroupPK;
+import org.apache.airavata.sharing.mappers.UserGroupMapper;
 import org.apache.airavata.sharing.model.GroupCardinality;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.SharingType;
@@ -44,24 +44,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserGroupService {
     private final UserGroupRepository userGroupRepository;
     private final PermissionTypeService permissionTypeService;
-    private final Mapper mapper;
+    private final UserGroupMapper userGroupMapper;
     private final EntityManager entityManager;
 
     public UserGroupService(
             UserGroupRepository userGroupRepository,
             PermissionTypeService permissionTypeService,
-            Mapper mapper,
+            UserGroupMapper userGroupMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.userGroupRepository = userGroupRepository;
         this.permissionTypeService = permissionTypeService;
-        this.mapper = mapper;
+        this.userGroupMapper = userGroupMapper;
         this.entityManager = entityManager;
     }
 
     public UserGroup get(UserGroupPK pk) throws SharingRegistryException {
         UserGroupEntity entity = userGroupRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, UserGroup.class);
+        return userGroupMapper.toModel(entity);
     }
 
     public UserGroup create(UserGroup userGroup) throws SharingRegistryException {
@@ -69,9 +69,9 @@ public class UserGroupService {
     }
 
     public UserGroup update(UserGroup userGroup) throws SharingRegistryException {
-        UserGroupEntity entity = mapper.map(userGroup, UserGroupEntity.class);
+        UserGroupEntity entity = userGroupMapper.toEntity(userGroup);
         UserGroupEntity saved = userGroupRepository.save(entity);
-        return mapper.map(saved, UserGroup.class);
+        return userGroupMapper.toModel(saved);
     }
 
     public boolean delete(UserGroupPK pk) throws SharingRegistryException {
@@ -109,7 +109,7 @@ public class UserGroupService {
         }
 
         var entities = typedQuery.getResultList();
-        return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
+        return userGroupMapper.toModelList(entities);
     }
 
     public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId)
@@ -150,7 +150,7 @@ public class UserGroupService {
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
         List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
-        return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
+        return userGroupMapper.toModelList(entities);
     }
 
     public boolean isShared(String domainId, String entityId) throws SharingRegistryException {

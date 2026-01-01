@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {org.apache.airavata.config.JpaConfig.class, NewOrchestratorTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
@@ -125,9 +126,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
             excludeFilters = {
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class
-                        })
+                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class})
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {}

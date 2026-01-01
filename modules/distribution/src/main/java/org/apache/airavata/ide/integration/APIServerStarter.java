@@ -28,4 +28,3 @@ public class APIServerStarter {
         throw new UnsupportedOperationException("APIServerStarter must be used within a Spring application context");
     }
 }
-

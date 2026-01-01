@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.registry.entities.appcatalog.GatewayGroupsEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.GatewayGroupsMapper;
 import org.apache.airavata.registry.repositories.appcatalog.GatewayGroupsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class GatewayGroupsService {
     private final GatewayGroupsRepository gatewayGroupsRepository;
-    private final Mapper mapper;
+    private final GatewayGroupsMapper gatewayGroupsMapper;
 
-    public GatewayGroupsService(GatewayGroupsRepository gatewayGroupsRepository, Mapper mapper) {
+    public GatewayGroupsService(
+            GatewayGroupsRepository gatewayGroupsRepository, GatewayGroupsMapper gatewayGroupsMapper) {
         this.gatewayGroupsRepository = gatewayGroupsRepository;
-        this.mapper = mapper;
+        this.gatewayGroupsMapper = gatewayGroupsMapper;
     }
 
     public boolean isExists(String gatewayId) throws RegistryException {
@@ -45,19 +46,19 @@ public class GatewayGroupsService {
     public GatewayGroups get(String gatewayId) throws RegistryException {
         GatewayGroupsEntity entity = gatewayGroupsRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, GatewayGroups.class);
+        return gatewayGroupsMapper.toModel(entity);
     }
 
     public GatewayGroups create(GatewayGroups gatewayGroups) throws RegistryException {
-        GatewayGroupsEntity entity = mapper.map(gatewayGroups, GatewayGroupsEntity.class);
+        GatewayGroupsEntity entity = gatewayGroupsMapper.toEntity(gatewayGroups);
         GatewayGroupsEntity saved = gatewayGroupsRepository.save(entity);
-        return mapper.map(saved, GatewayGroups.class);
+        return gatewayGroupsMapper.toModel(saved);
     }
 
     public GatewayGroups update(GatewayGroups gatewayGroups) throws RegistryException {
-        GatewayGroupsEntity entity = mapper.map(gatewayGroups, GatewayGroupsEntity.class);
+        GatewayGroupsEntity entity = gatewayGroupsMapper.toEntity(gatewayGroups);
         GatewayGroupsEntity saved = gatewayGroupsRepository.save(entity);
-        return mapper.map(saved, GatewayGroups.class);
+        return gatewayGroupsMapper.toModel(saved);
     }
 
     public void delete(String gatewayId) throws RegistryException {

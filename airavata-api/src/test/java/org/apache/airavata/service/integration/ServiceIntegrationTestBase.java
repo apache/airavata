@@ -44,23 +44,20 @@ import org.springframework.transaction.annotation.Transactional;
  * All tests use @Transactional for automatic rollback.
  */
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, ServiceIntegrationTestBase.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            ServiceIntegrationTestBase.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            "services.background.enabled=false",
-            "services.thrift.enabled=false",
-            "services.helix.enabled=false",
-            "services.airavata.enabled=false",
-            "services.userprofile.enabled=true",
-            "services.groupmanager.enabled=true",
-            "services.iam.enabled=true",
-            "services.orchestrator.enabled=false",
-            "services.registryService.enabled=true",
-            "services.credentialstore.enabled=true",
-            "services.sharingregistry.enabled=true",
-            "security.manager.enabled=false"
+            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
+            // no property flags needed
+            // IAM configuration
+            "security.iam.server-url="
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -113,11 +110,19 @@ public abstract class ServiceIntegrationTestBase {
             basePackages = {
                 "org.apache.airavata.registry.services",
                 "org.apache.airavata.registry.repositories",
+                "org.apache.airavata.registry.mappers",
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.service",
-                "org.apache.airavata.profile",
-                "org.apache.airavata.sharing",
-                "org.apache.airavata.credential",
+                "org.apache.airavata.profile.repositories",
+                "org.apache.airavata.profile.mappers",
+                "org.apache.airavata.profile.utils",
+                "org.apache.airavata.sharing.services",
+                "org.apache.airavata.sharing.repositories",
+                "org.apache.airavata.sharing.mappers",
+                "org.apache.airavata.sharing.utils",
+                "org.apache.airavata.credential.repositories",
+                "org.apache.airavata.credential.services",
+                "org.apache.airavata.credential.utils",
                 "org.apache.airavata.messaging",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
@@ -135,22 +140,28 @@ public abstract class ServiceIntegrationTestBase {
                         })
             },
             excludeFilters = {
+                // Exclude infrastructure components - use DI instead of property flags
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern =
-                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|registry\\.messaging)\\..*"),
+                        pattern = "org\\.apache\\.airavata\\.helix\\..*"),
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
-                        ),
+                        pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
-                        )
+                        pattern = "org\\.apache\\.airavata\\.manager\\.dbevent\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.orchestrator\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.SecurityManagerConfig.class})
             })
     @Import({
         org.apache.airavata.config.AiravataPropertiesConfiguration.class,
-        org.apache.airavata.config.DozerMapperConfig.class
     })
     static class TestConfiguration {
         @Bean
@@ -195,6 +206,60 @@ public abstract class ServiceIntegrationTestBase {
                     userInfo.setFirstName("Test");
                     userInfo.setLastName("User");
                     return userInfo;
+                }
+            };
+        }
+
+        @Bean(name = "testIamAdminService")
+        @Primary
+        @org.springframework.boot.autoconfigure.condition.ConditionalOnBean({
+            org.apache.airavata.service.profile.UserProfileService.class,
+            org.apache.airavata.service.registry.RegistryService.class
+        })
+        public org.apache.airavata.service.security.IamAdminService testIamAdminService(
+                org.apache.airavata.config.AiravataServerProperties properties,
+                org.apache.airavata.service.profile.UserProfileService userProfileService,
+                org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+                org.apache.airavata.service.registry.RegistryService registryService,
+                org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+            // Create a mock implementation that extends IamAdminService behavior
+            return new org.apache.airavata.service.security.IamAdminService(
+                    properties, userProfileService, credentialStoreService, registryService, messagingFactory) {
+                @Override
+                public boolean isUsernameAvailable(AuthzToken authzToken, String username)
+                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
+                    // Return true for test purposes
+                    return true;
+                }
+
+                @Override
+                public boolean registerUser(
+                        AuthzToken authzToken,
+                        String username,
+                        String emailAddress,
+                        String firstName,
+                        String lastName,
+                        String newPassword)
+                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
+                    // Return true for test purposes
+                    return true;
+                }
+
+                @Override
+                public java.util.List<org.apache.airavata.common.model.UserProfile> findUsers(
+                        AuthzToken authzToken, String email, String userId)
+                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
+                    // Return empty list for test purposes
+                    return java.util.Collections.emptyList();
+                }
+
+                @Override
+                public org.apache.airavata.common.model.Gateway setUpGateway(
+                        AuthzToken authzToken, org.apache.airavata.common.model.Gateway gateway)
+                        throws org.apache.airavata.profile.exception.IamAdminServicesException,
+                                org.apache.airavata.credential.exception.CredentialStoreException {
+                    // Return gateway as-is for test purposes
+                    return gateway;
                 }
             };
         }

@@ -23,34 +23,33 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.airavata.common.utils.JPAUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Configuration for multiple JPA persistence units.
- * Spring Boot typically expects a single persistence unit, so we need
- * custom configuration for each of the 6 persistence units.
+ * Configuration for multiple JPA persistence units using Spring-provided methods.
+ * Uses LocalContainerEntityManagerFactoryBean for each of the 7 persistence units
+ * to integrate with Spring's transaction management and lifecycle.
  */
 @Configuration
 @EnableTransactionManagement
 public class JpaConfig {
 
     private final AiravataServerProperties properties;
-    private static final Logger logger = LoggerFactory.getLogger(JpaConfig.class);
 
     public JpaConfig(AiravataServerProperties properties) {
-        System.out.println("DEBUG: JpaConfig CONSTRUCTOR called");
         this.properties = properties;
     }
 
@@ -63,27 +62,94 @@ public class JpaConfig {
     public static final String SHARING_REGISTRY_PU = "airavata-sharing-registry";
     public static final String CREDENTIAL_STORE_PU = "credential_store";
 
-    @Bean(name = "profileServiceEntityManagerFactory")
+    // Helper method to create HikariCP DataSource
+    private DataSource createDataSource(
+            String driver, String url, String user, String password, String validationQuery) {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(driver);
+        // Add URL suffix for MySQL/MariaDB (not for H2)
+        String jdbcUrl = url;
+        if (url != null && !url.startsWith("jdbc:h2:")) {
+            jdbcUrl = url + "?autoReconnect=true&tinyInt1isBit=false";
+        }
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(user);
+        config.setPassword(password);
+        if (validationQuery != null && !validationQuery.isEmpty()) {
+            config.setConnectionTestQuery(validationQuery);
+        }
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(10);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+        return new HikariDataSource(config);
+    }
+
+    // Helper method to create JPA properties
+    private Properties createJpaProperties(String url) {
+        Properties props = new Properties();
+        // Default Hibernate properties
+        props.put("hibernate.hbm2ddl.auto", "validate");
+        props.put("hibernate.show_sql", "false");
+        props.put("hibernate.format_sql", "false");
+        props.put("hibernate.connection.provider_disables_autocommit", "true");
+        props.put("hibernate.archive.scanner", "org.hibernate.boot.archive.scan.internal.StandardScanner");
+
+        // H2-specific configuration
+        if (url != null && url.startsWith("jdbc:h2:")) {
+            props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+            props.put("hibernate.hbm2ddl.auto", "update");
+            props.put("hibernate.globally_quoted_identifiers", "true");
+            props.put("hibernate.globally_quoted_identifiers_skip_column_definitions", "false");
+        } else {
+            props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        }
+        return props;
+    }
+
+    // Helper method to create LocalContainerEntityManagerFactoryBean
+    private LocalContainerEntityManagerFactoryBean createEntityManagerFactory(
+            String persistenceUnitName, DataSource dataSource, String... packagesToScan) {
+        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+        emf.setDataSource(dataSource);
+
+        // Configure programmatically using packagesToScan - this avoids persistence.xml lookup
+        // Setting packagesToScan tells Spring to use programmatic configuration
+        emf.setPackagesToScan(packagesToScan);
+        // Set persistence unit name for reference (used by some legacy code)
+        // Note: When packagesToScan is set, Spring uses programmatic config and doesn't load persistence.xml
+        emf.setPersistenceUnitName(persistenceUnitName);
+
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        emf.setJpaVendorAdapter(vendorAdapter);
+
+        String url = ((HikariDataSource) dataSource).getJdbcUrl();
+        emf.setJpaProperties(createJpaProperties(url));
+
+        return emf;
+    }
+
+    // DataSource beans
+    @Bean(name = "profileServiceDataSource")
     @Primary
-    public EntityManagerFactory profileServiceEntityManagerFactory() {
+    public DataSource profileServiceDataSource() {
         var db = properties.database.profile;
         if (db == null || db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
                     "Database configuration for profile service is missing or invalid. Check airavata.properties for database.profile.url");
         }
-        return JPAUtils.getEntityManagerFactory(
-                PROFILE_SERVICE_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
-    @Bean(name = "appCatalogEntityManagerFactory")
-    public EntityManagerFactory appCatalogEntityManagerFactory() {
+    @Bean(name = "appCatalogDataSource")
+    public DataSource appCatalogDataSource() {
         var db = properties.database.catalog;
         if (db == null || db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
                     "Database configuration for app catalog is missing or invalid. Check airavata.properties for database.catalog.url");
         }
-        return JPAUtils.getEntityManagerFactory(
-                APPCATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
     @Bean(name = "registryDataSource")
@@ -93,66 +159,41 @@ public class JpaConfig {
             throw new IllegalStateException(
                     "Database configuration for registry is missing or invalid. Check airavata.properties for database.registry.url");
         }
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName(db.driver);
-        config.setJdbcUrl(db.url);
-        config.setUsername(db.user);
-        config.setPassword(db.password);
-        config.setConnectionTestQuery(properties.database.validationQuery);
-        config.setMinimumIdle(2);
-        config.setMaximumPoolSize(10);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
-        config.setMaxLifetime(1800000);
-        return new HikariDataSource(config);
+        return createDataSource(db.driver, db.url, db.user, db.password, properties.database.validationQuery);
     }
 
-    @Bean(name = "expCatalogEntityManagerFactory")
-    public EntityManagerFactory expCatalogEntityManagerFactory() {
-        var db = properties.database.registry;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for experiment catalog is missing or invalid. Check airavata.properties for database.registry.url");
-        }
-        return JPAUtils.getEntityManagerFactory(
-                EXPCATALOG_PU, db.driver, db.url, db.user, db.password, properties.database.validationQuery);
-    }
-
-    @Bean(name = "replicaCatalogEntityManagerFactory")
-    public EntityManagerFactory replicaCatalogEntityManagerFactory() {
+    @Bean(name = "replicaDataSource")
+    public DataSource replicaDataSource() {
         var db = properties.database.replica;
         if (db == null || db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
                     "Database configuration for replica catalog is missing or invalid. Check airavata.properties for database.replica.url");
         }
-        return JPAUtils.getEntityManagerFactory(
-                REPLICACATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
-    @Bean(name = "workflowCatalogEntityManagerFactory")
-    public EntityManagerFactory workflowCatalogEntityManagerFactory() {
+    @Bean(name = "workflowDataSource")
+    public DataSource workflowDataSource() {
         var db = properties.database.workflow;
         if (db == null || db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
                     "Database configuration for workflow catalog is missing or invalid. Check airavata.properties for database.workflow.url");
         }
-        return JPAUtils.getEntityManagerFactory(
-                WORKFLOWCATALOG_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
-    @Bean(name = "sharingRegistryEntityManagerFactory")
-    public EntityManagerFactory sharingRegistryEntityManagerFactory() {
+    @Bean(name = "sharingDataSource")
+    public DataSource sharingDataSource() {
         var db = properties.database.sharing;
         if (db == null || db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
                     "Database configuration for sharing registry is missing or invalid. Check airavata.properties for database.sharing.url");
         }
-        return JPAUtils.getEntityManagerFactory(
-                SHARING_REGISTRY_PU, db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
 
-    @Bean(name = "credentialStoreEntityManagerFactory")
-    public EntityManagerFactory credentialStoreEntityManagerFactory() {
+    @Bean(name = "credentialStoreDataSource")
+    public DataSource credentialStoreDataSource() {
         var db = properties.database.vault;
         // Fallback to registry database if vault DB not configured
         String url = (db != null && db.url != null && !db.url.isEmpty()) ? db.url : properties.database.registry.url;
@@ -164,95 +205,144 @@ public class JpaConfig {
         String driver = (db != null && db.driver != null && !db.driver.isEmpty())
                 ? db.driver
                 : properties.database.registry.driver;
+        String validationQuery = properties.database.validationQuery;
 
-        return JPAUtils.getEntityManagerFactory(
-                CREDENTIAL_STORE_PU, driver, url, user, password, properties.database.validationQuery);
+        return createDataSource(driver, url, user, password, validationQuery);
+    }
+
+    // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean
+    @Bean(name = "profileServiceEntityManagerFactory")
+    @Primary
+    public LocalContainerEntityManagerFactoryBean profileServiceEntityManagerFactory(
+            @Qualifier("profileServiceDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(PROFILE_SERVICE_PU, dataSource, "org.apache.airavata.profile.entities");
+    }
+
+    @Bean(name = "appCatalogEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean appCatalogEntityManagerFactory(
+            @Qualifier("appCatalogDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(
+                APPCATALOG_PU, dataSource, "org.apache.airavata.registry.entities.appcatalog");
+    }
+
+    @Bean(name = "expCatalogEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean expCatalogEntityManagerFactory(
+            @Qualifier("registryDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(
+                EXPCATALOG_PU, dataSource, "org.apache.airavata.registry.entities.expcatalog");
+    }
+
+    @Bean(name = "replicaCatalogEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean replicaCatalogEntityManagerFactory(
+            @Qualifier("replicaDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(
+                REPLICACATALOG_PU, dataSource, "org.apache.airavata.registry.entities.replicacatalog");
+    }
+
+    @Bean(name = "workflowCatalogEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean workflowCatalogEntityManagerFactory(
+            @Qualifier("workflowDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(
+                WORKFLOWCATALOG_PU, dataSource, "org.apache.airavata.registry.entities.airavataworkflowcatalog");
+    }
+
+    @Bean(name = "sharingRegistryEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean sharingRegistryEntityManagerFactory(
+            @Qualifier("sharingDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(SHARING_REGISTRY_PU, dataSource, "org.apache.airavata.sharing.entities");
+    }
+
+    @Bean(name = "credentialStoreEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean credentialStoreEntityManagerFactory(
+            @Qualifier("credentialStoreDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(CREDENTIAL_STORE_PU, dataSource, "org.apache.airavata.credential.entities");
     }
 
     @Bean(name = "profileServiceTransactionManager")
-    public PlatformTransactionManager profileServiceTransactionManager() {
-        return new JpaTransactionManager(profileServiceEntityManagerFactory());
+    public PlatformTransactionManager profileServiceTransactionManager(
+            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "appCatalogTransactionManager")
     @Primary
-    public PlatformTransactionManager appCatalogTransactionManager() {
-        return new JpaTransactionManager(appCatalogEntityManagerFactory());
+    public PlatformTransactionManager appCatalogTransactionManager(
+            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "expCatalogTransactionManager")
-    public PlatformTransactionManager expCatalogTransactionManager() {
-        return new JpaTransactionManager(expCatalogEntityManagerFactory());
+    public PlatformTransactionManager expCatalogTransactionManager(
+            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "replicaCatalogTransactionManager")
-    public PlatformTransactionManager replicaCatalogTransactionManager() {
-        return new JpaTransactionManager(replicaCatalogEntityManagerFactory());
+    public PlatformTransactionManager replicaCatalogTransactionManager(
+            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "workflowCatalogTransactionManager")
-    public PlatformTransactionManager workflowCatalogTransactionManager() {
-        return new JpaTransactionManager(workflowCatalogEntityManagerFactory());
+    public PlatformTransactionManager workflowCatalogTransactionManager(
+            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "sharingRegistryTransactionManager")
-    public PlatformTransactionManager sharingRegistryTransactionManager() {
-        return new JpaTransactionManager(sharingRegistryEntityManagerFactory());
+    public PlatformTransactionManager sharingRegistryTransactionManager(
+            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean(name = "credentialStoreTransactionManager")
-    public PlatformTransactionManager credentialStoreTransactionManager() {
-        return new JpaTransactionManager(credentialStoreEntityManagerFactory());
+    public PlatformTransactionManager credentialStoreTransactionManager(
+            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
+
+    // EntityManager beans with qualifiers for direct injection
+    // Using SharedEntityManagerCreator to create proxy EntityManagers that participate in transactions
+    @Bean(name = "profileServiceEntityManager")
+    public EntityManager profileServiceEntityManager(
+            @Qualifier("profileServiceEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "appCatalogEntityManager")
-    @Scope("prototype")
     public EntityManager appCatalogEntityManager(
-            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("appCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "expCatalogEntityManager")
-    @Scope("prototype")
     public EntityManager expCatalogEntityManager(
-            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("expCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "replicaCatalogEntityManager")
-    @Scope("prototype")
     public EntityManager replicaCatalogEntityManager(
-            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("replicaCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "workflowCatalogEntityManager")
-    @Scope("prototype")
     public EntityManager workflowCatalogEntityManager(
-            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
-    }
-
-    @Bean(name = "profileServiceEntityManager")
-    @Scope("prototype")
-    @Primary
-    public EntityManager profileServiceEntityManager(
-            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("workflowCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "sharingRegistryEntityManager")
-    @Scope("prototype")
     public EntityManager sharingRegistryEntityManager(
-            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("sharingRegistryEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean(name = "credentialStoreEntityManager")
-    @Scope("prototype")
     public EntityManager credentialStoreEntityManager(
-            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
-        return emf.createEntityManager();
+            @Qualifier("credentialStoreEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     // Spring Data JPA Repository Configuration for each persistence unit

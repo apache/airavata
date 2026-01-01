@@ -29,7 +29,6 @@ import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,12 +43,12 @@ public class AiravataServiceServer extends ServerLifecycle {
 
     private TServer server, TLSServer;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
+    private final AiravataServiceHandler handler;
 
-    public AiravataServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
-        this.applicationContext = applicationContext;
+    public AiravataServiceServer(AiravataServerProperties properties, AiravataServiceHandler handler) {
         this.properties = properties;
+        this.handler = handler;
     }
 
     @Override
@@ -146,8 +145,6 @@ public class AiravataServiceServer extends ServerLifecycle {
 
     @Override
     protected void doStart() throws Exception {
-        // Get AiravataServiceHandler from Spring context
-        AiravataServiceHandler handler = applicationContext.getBean(AiravataServiceHandler.class);
         // TODO: Migrate SecurityModule to Spring AOP for security interception
         // For now, we use the handler directly. Security checks are still applied via
         // @SecurityCheck annotations

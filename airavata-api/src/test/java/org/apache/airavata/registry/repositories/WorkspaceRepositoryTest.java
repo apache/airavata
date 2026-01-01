@@ -29,7 +29,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, WorkspaceRepositoryTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            WorkspaceRepositoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
@@ -53,6 +57,7 @@ public class WorkspaceRepositoryTest extends TestBase {
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.mappers",
                 "org.apache.airavata.registry.repositories",
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
@@ -70,18 +75,29 @@ public class WorkspaceRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
+                // Exclude infrastructure components - use DI instead of property flags
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern =
-                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern = "org\\.apache\\.airavata\\.helix\\..*"),
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.service\\..*")
+                        pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.manager\\.dbevent\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.orchestrator\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.SecurityManagerConfig.class})
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
         org.apache.airavata.config.AiravataPropertiesConfiguration.class,
-        org.apache.airavata.config.DozerMapperConfig.class
     })
     static class TestConfiguration {}
 

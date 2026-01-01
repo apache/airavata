@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ProcessStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.data.domain.PageRequest;
@@ -38,35 +37,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessStatusService {
     private final ProcessStatusRepository processStatusRepository;
-    private final Mapper mapper;
+    private final ProcessStatusMapper processStatusMapper;
 
-    public ProcessStatusService(ProcessStatusRepository processStatusRepository, Mapper mapper) {
+    public ProcessStatusService(
+            ProcessStatusRepository processStatusRepository, ProcessStatusMapper processStatusMapper) {
         this.processStatusRepository = processStatusRepository;
-        this.mapper = mapper;
+        this.processStatusMapper = processStatusMapper;
     }
 
     public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         List<ProcessStatusEntity> entities =
                 processStatusRepository.findByProcessIdOrderByTimeOfStateChangeDesc(processId);
         if (entities.isEmpty()) return null;
-        return mapper.map(entities.get(0), ProcessStatus.class);
+        return processStatusMapper.toModel(entities.get(0));
     }
 
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
         List<ProcessStatusEntity> entities =
                 processStatusRepository.findByProcessIdOrderByTimeOfStateChangeDesc(processId);
-        List<ProcessStatus> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ProcessStatus.class)));
-        return result;
+        return processStatusMapper.toModelList(entities);
     }
 
     public List<ProcessStatus> getProcessStatusList(ProcessState processState, int offset, int limit)
             throws RegistryException {
         Pageable pageable = PageRequest.of(Math.max(0, offset / Math.max(1, limit)), limit);
         List<ProcessStatusEntity> entities = processStatusRepository.findByState(processState, pageable);
-        List<ProcessStatus> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ProcessStatus.class)));
-        return result;
+        return processStatusMapper.toModelList(entities);
     }
 
     public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
@@ -74,7 +70,7 @@ public class ProcessStatusService {
             processStatus.setStatusId(ExpCatalogUtils.getID("PROCESS_STATE"));
         }
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        ProcessStatusEntity entity = mapper.map(processStatus, ProcessStatusEntity.class);
+        ProcessStatusEntity entity = processStatusMapper.toEntity(processStatus);
         entity.setProcessId(processId);
         processStatusRepository.save(entity);
     }
@@ -87,7 +83,7 @@ public class ProcessStatusService {
             processStatus.setTimeOfStateChange(
                     AiravataUtils.getCurrentTimestamp().getTime());
         }
-        ProcessStatusEntity entity = mapper.map(processStatus, ProcessStatusEntity.class);
+        ProcessStatusEntity entity = processStatusMapper.toEntity(processStatus);
         entity.setProcessId(processId);
         processStatusRepository.save(entity);
     }

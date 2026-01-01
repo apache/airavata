@@ -21,6 +21,7 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.common.model.ProcessTerminateEvent;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -33,11 +34,16 @@ public interface ProcessTerminateEventMapper extends ModelMapper {
 
     /**
      * Convert domain model to thrift model.
+     *
+     * Note: experimentId is automatically skipped as it is not present in the Thrift IDL definition.
      */
     org.apache.airavata.thriftapi.model.ProcessTerminateEvent toThrift(ProcessTerminateEvent domain);
 
     /**
      * Convert thrift model to domain model.
+     *
+     * Note: experimentId is ignored as it is not present in the Thrift IDL definition.
      */
+    @Mapping(target = "experimentId", ignore = true)
     ProcessTerminateEvent toDomain(org.apache.airavata.thriftapi.model.ProcessTerminateEvent thrift);
 }

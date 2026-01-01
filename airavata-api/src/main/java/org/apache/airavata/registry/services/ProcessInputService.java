@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessInputRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -37,22 +36,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProcessInputService {
     private final ProcessInputRepository processInputRepository;
     private final EntityManager entityManager;
-    private final Mapper mapper;
+    private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
 
     public ProcessInputService(
             ProcessInputRepository processInputRepository,
             @Qualifier("expCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
+            InputDataObjectTypeMapper inputDataObjectTypeMapper) {
         this.processInputRepository = processInputRepository;
         this.entityManager = entityManager;
-        this.mapper = mapper;
+        this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
     }
 
     public String addProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
         // Get a reference to the process entity (proxy, doesn't fetch from DB)
         ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         for (InputDataObjectType input : inputs) {
-            ProcessInputEntity entity = mapper.map(input, ProcessInputEntity.class);
+            ProcessInputEntity entity = inputDataObjectTypeMapper.toEntityFromProcess(input);
             entity.setProcessId(processId);
             // Set process relationship to ensure PROCESS_ID is set via @JoinColumn
             entity.setProcess(processEntity);
@@ -73,8 +72,6 @@ public class ProcessInputService {
 
     public List<InputDataObjectType> getProcessInputs(String processId) throws RegistryException {
         List<ProcessInputEntity> entities = processInputRepository.findByProcessId(processId);
-        List<InputDataObjectType> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, InputDataObjectType.class)));
-        return result;
+        return inputDataObjectTypeMapper.toModelListFromProcess(entities);
     }
 }

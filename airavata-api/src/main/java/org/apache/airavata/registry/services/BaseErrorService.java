@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ErrorModelMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class BaseErrorService<TEntity, TRepository extends JpaRepository<TEntity, TPK>, TPK> {
 
     protected final TRepository repository;
-    protected final Mapper mapper;
+    protected final ErrorModelMapper errorModelMapper;
 
     /**
      * Functional interface to set the parent entity ID on the error entity.
@@ -56,9 +56,14 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
     protected abstract Function<String, List<TEntity>> getFindByParentIdFunction();
 
     /**
-     * Get the entity class for Dozer mapping.
+     * Functional interface to map ErrorModel to entity.
      */
-    protected abstract Class<TEntity> getEntityClass();
+    protected abstract Function<ErrorModel, TEntity> getModelToEntityMapper();
+
+    /**
+     * Functional interface to map entity to ErrorModel.
+     */
+    protected abstract Function<TEntity, ErrorModel> getEntityToModelMapper();
 
     /**
      * Functional interface to extract the error ID from the entity.
@@ -66,9 +71,9 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
      */
     protected abstract Function<TEntity, String> getErrorIdExtractor();
 
-    protected BaseErrorService(TRepository repository, Mapper mapper) {
+    protected BaseErrorService(TRepository repository, ErrorModelMapper errorModelMapper) {
         this.repository = repository;
-        this.mapper = mapper;
+        this.errorModelMapper = errorModelMapper;
     }
 
     /**
@@ -81,8 +86,40 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
      */
     @Transactional
     public String addError(ErrorModel error, String parentId) throws RegistryException {
-        TEntity entity = mapper.map(error, getEntityClass());
+        TEntity entity = getModelToEntityMapper().apply(error);
         getParentIdSetter().accept(entity, parentId);
+        // Ensure CREATION_TIME is set if not already set - use reflection to avoid type-specific checks
+        java.sql.Timestamp currentTimestamp = org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp();
+        try {
+            java.lang.reflect.Method getCreationTime = entity.getClass().getMethod("getCreationTime");
+            java.lang.reflect.Method setCreationTime =
+                    entity.getClass().getMethod("setCreationTime", java.sql.Timestamp.class);
+            Object creationTimeValue = getCreationTime.invoke(entity);
+            if (creationTimeValue == null) {
+                setCreationTime.invoke(entity, currentTimestamp);
+            }
+        } catch (Exception e) {
+            // Fallback to type-specific checks if reflection fails
+            if (entity instanceof org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) {
+                org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity taskErrorEntity =
+                        (org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) entity;
+                if (taskErrorEntity.getCreationTime() == null) {
+                    taskErrorEntity.setCreationTime(currentTimestamp);
+                }
+            } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) {
+                org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity experimentErrorEntity =
+                        (org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) entity;
+                if (experimentErrorEntity.getCreationTime() == null) {
+                    experimentErrorEntity.setCreationTime(currentTimestamp);
+                }
+            } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) {
+                org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity processErrorEntity =
+                        (org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) entity;
+                if (processErrorEntity.getCreationTime() == null) {
+                    processErrorEntity.setCreationTime(currentTimestamp);
+                }
+            }
+        }
         TEntity saved = repository.save(entity);
         return getErrorIdExtractor().apply(saved);
     }
@@ -96,8 +133,30 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
      */
     @Transactional
     public void updateError(ErrorModel error, String parentId) throws RegistryException {
-        TEntity entity = mapper.map(error, getEntityClass());
+        TEntity entity = getModelToEntityMapper().apply(error);
         getParentIdSetter().accept(entity, parentId);
+        // Ensure CREATION_TIME is set if not already set (for updates, preserve existing or set new)
+        if (entity instanceof org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) {
+            org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity taskErrorEntity =
+                    (org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) entity;
+            if (taskErrorEntity.getCreationTime() == null) {
+                taskErrorEntity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+            }
+        } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) {
+            org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity experimentErrorEntity =
+                    (org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) entity;
+            if (experimentErrorEntity.getCreationTime() == null) {
+                experimentErrorEntity.setCreationTime(
+                        org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+            }
+        } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) {
+            org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity processErrorEntity =
+                    (org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) entity;
+            if (processErrorEntity.getCreationTime() == null) {
+                processErrorEntity.setCreationTime(
+                        org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+            }
+        }
         repository.save(entity);
     }
 
@@ -111,6 +170,6 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
     @Transactional(readOnly = true)
     public List<ErrorModel> getErrors(String parentId) throws RegistryException {
         List<TEntity> entities = getFindByParentIdFunction().apply(parentId);
-        return entities.stream().map(e -> mapper.map(e, ErrorModel.class)).collect(Collectors.toList());
+        return entities.stream().map(getEntityToModelMapper()).collect(Collectors.toList());
     }
 }

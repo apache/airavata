@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.airavata.sharing.entities.EntityTypeEntity;
 import org.apache.airavata.sharing.entities.EntityTypePK;
+import org.apache.airavata.sharing.mappers.EntityTypeMapper;
 import org.apache.airavata.sharing.model.EntityType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityTypeRepository;
@@ -38,22 +38,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EntityTypeService {
     private final EntityTypeRepository entityTypeRepository;
-    private final Mapper mapper;
+    private final EntityTypeMapper entityTypeMapper;
     private final EntityManager entityManager;
 
     public EntityTypeService(
             EntityTypeRepository entityTypeRepository,
-            Mapper mapper,
+            EntityTypeMapper entityTypeMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.entityTypeRepository = entityTypeRepository;
-        this.mapper = mapper;
+        this.entityTypeMapper = entityTypeMapper;
         this.entityManager = entityManager;
     }
 
     public EntityType get(EntityTypePK pk) throws SharingRegistryException {
         EntityTypeEntity entity = entityTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, EntityType.class);
+        return entityTypeMapper.toModel(entity);
     }
 
     public EntityType create(EntityType entityType) throws SharingRegistryException {
@@ -61,9 +61,9 @@ public class EntityTypeService {
     }
 
     public EntityType update(EntityType entityType) throws SharingRegistryException {
-        EntityTypeEntity entity = mapper.map(entityType, EntityTypeEntity.class);
+        EntityTypeEntity entity = entityTypeMapper.toEntity(entityType);
         EntityTypeEntity saved = entityTypeRepository.save(entity);
-        return mapper.map(saved, EntityType.class);
+        return entityTypeMapper.toModel(saved);
     }
 
     public boolean delete(EntityTypePK pk) throws SharingRegistryException {
@@ -101,6 +101,6 @@ public class EntityTypeService {
         }
 
         var entities = typedQuery.getResultList();
-        return entities.stream().map(e -> mapper.map(e, EntityType.class)).toList();
+        return entityTypeMapper.toModelList(entities);
     }
 }

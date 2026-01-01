@@ -20,24 +20,94 @@
 package org.apache.airavata.service.project;
 
 import java.util.List;
+import java.util.Map;
+import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.ProjectSearchFields;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.stereotype.Service;
 
 /**
- * Service interface for project management operations.
+ * Service for project management operations.
  */
-public interface ProjectService {
-    String createProject(String gatewayId, Project project) throws AiravataSystemException;
+@Service("projectServiceFacade")
+@ConditionalOnBean(RegistryService.class)
+public class ProjectService {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
-    Project getProject(String projectId) throws AiravataSystemException, ProjectNotFoundException;
+    private final RegistryService registryService;
 
-    void updateProject(String projectId, Project updatedProject) throws AiravataSystemException;
+    public ProjectService(RegistryService registryService) {
+        this.registryService = registryService;
+    }
 
-    boolean deleteProject(String projectId) throws AiravataSystemException, ProjectNotFoundException;
+    private AiravataSystemException airavataSystemException(
+            AiravataErrorType errorType, String message, Throwable cause) {
+        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+                errorType, message, cause);
+    }
 
-    List<Project> searchProjects(
+    public String createProject(String gatewayId, Project project) throws AiravataSystemException {
+        try {
+            return registryService.createProject(gatewayId, project);
+        } catch (RegistryServiceException e) {
+            String msg = "Error occurred while creating project: " + project.getName() + " " + project.getDescription()
+                    + " " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public Project getProject(String projectId) throws AiravataSystemException, ProjectNotFoundException {
+        try {
+            return registryService.getProject(projectId);
+        } catch (ProjectNotFoundException e) {
+            throw e;
+        } catch (RegistryServiceException e) {
+            String msg = "Error while retrieving the project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public void updateProject(String projectId, Project updatedProject) throws AiravataSystemException {
+        try {
+            registryService.updateProject(projectId, updatedProject);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while updating project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public boolean deleteProject(String projectId) throws AiravataSystemException, ProjectNotFoundException {
+        try {
+            return registryService.deleteProject(projectId);
+        } catch (ProjectNotFoundException e) {
+            throw e;
+        } catch (RegistryServiceException e) {
+            String msg = "Error while removing the project: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public List<Project> searchProjects(
             String gatewayId, String userName, ProjectSearchFields searchFields, int limit, int offset)
-            throws AiravataSystemException;
+            throws AiravataSystemException {
+        try {
+            Map<ProjectSearchFields, String> filters = searchFields != null ? Map.of(searchFields, "") : Map.of();
+            return registryService.searchProjects(gatewayId, userName, List.of(), filters, limit, offset);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while retrieving projects: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 }

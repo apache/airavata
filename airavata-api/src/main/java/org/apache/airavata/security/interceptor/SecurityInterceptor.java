@@ -33,12 +33,14 @@ import org.apache.airavata.security.IdentityContext;
 import org.apache.airavata.security.model.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * Interceptor of Airavata API calls for the purpose of applying security.
  */
 @Component
+@ConditionalOnBean(AiravataSecurityManager.class)
 public class SecurityInterceptor implements MethodInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
     private static final CountMonitor apiRequestCounter = new CountMonitor("api_server_request_counter", "method");

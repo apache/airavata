@@ -21,6 +21,7 @@ package org.apache.airavata.thriftapi.mapper;
 
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -38,6 +39,15 @@ public interface CertificateCredentialMapper extends ModelMapper {
 
     /**
      * Convert thrift model to domain model.
+     *
+     * Note: The following properties are ignored as they are not present in the Thrift IDL definition:
+     * gatewayId, description, portalUserName, certificateRequestedTime, certificates, privateKeyObject
      */
+    @Mapping(target = "gatewayId", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    @Mapping(target = "portalUserName", ignore = true)
+    @Mapping(target = "certificateRequestedTime", ignore = true)
+    @Mapping(target = "certificates", ignore = true)
+    @Mapping(target = "privateKeyObject", ignore = true)
     CertificateCredential toDomain(org.apache.airavata.thriftapi.credential.model.CertificateCredential thrift);
 }

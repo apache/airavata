@@ -46,13 +46,13 @@ public class RabbitMQPublisher implements Publisher {
             throws AiravataException {
         this.properties = properties;
         this.routingKeySupplier = routingKeySupplier;
-        connect();
+        // Lazy initialization - connect on first use instead of in constructor
     }
 
     public RabbitMQPublisher(RabbitMQProperties properties) throws AiravataException {
         this.properties = properties;
         routingKeySupplier = null;
-        connect();
+        // Lazy initialization - connect on first use instead of in constructor
     }
 
     private void connect() throws AiravataException {
@@ -80,6 +80,10 @@ public class RabbitMQPublisher implements Publisher {
     @Override
     public void publish(MessageContext messageContext) throws AiravataException {
         try {
+            // Lazy connection initialization
+            if (connection == null) {
+                connect();
+            }
             // Serialize MessageContext to JSON using MessageWrapper
             MessageWrapper wrapper = new MessageWrapper(messageContext);
             String routingKey = routingKeySupplier.apply(messageContext);
@@ -101,6 +105,10 @@ public class RabbitMQPublisher implements Publisher {
     @Override
     public void publish(MessageContext messageContext, String routingKey) throws AiravataException {
         try {
+            // Lazy connection initialization
+            if (connection == null) {
+                connect();
+            }
             // Serialize MessageContext to JSON using MessageWrapper
             MessageWrapper wrapper = new MessageWrapper(messageContext);
             byte[] messageBody = objectMapper.writeValueAsBytes(wrapper);
@@ -114,6 +122,10 @@ public class RabbitMQPublisher implements Publisher {
 
     public void send(byte[] message, String routingKey) throws Exception {
         try {
+            // Lazy connection initialization
+            if (connection == null) {
+                connect();
+            }
             if (channelThreadLocal.get() == null) {
                 log.info("Creating the channel for thread "
                         + Thread.currentThread().getName() + " " + toString());

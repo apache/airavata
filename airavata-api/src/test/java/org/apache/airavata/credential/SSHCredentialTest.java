@@ -36,8 +36,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, SSHCredentialTest.TestConfiguration.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true", "security.manager.enabled=false"})
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            SSHCredentialTest.TestConfiguration.class
+        },
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
+            "security.manager.enabled=false"
+        })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @Transactional
 public class SSHCredentialTest {
@@ -91,7 +99,6 @@ public class SSHCredentialTest {
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

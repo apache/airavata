@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -28,6 +27,7 @@ import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ErrorModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -42,8 +42,8 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
     public TaskErrorService(
             TaskErrorRepository taskErrorRepository,
             @Qualifier("expCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
-        super(taskErrorRepository, mapper);
+            ErrorModelMapper errorModelMapper) {
+        super(taskErrorRepository, errorModelMapper);
         this.entityManager = entityManager;
     }
 
@@ -58,8 +58,13 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
     }
 
     @Override
-    protected Class<TaskErrorEntity> getEntityClass() {
-        return TaskErrorEntity.class;
+    protected Function<ErrorModel, TaskErrorEntity> getModelToEntityMapper() {
+        return errorModelMapper::toEntityFromTask;
+    }
+
+    @Override
+    protected Function<TaskErrorEntity, ErrorModel> getEntityToModelMapper() {
+        return errorModelMapper::toModel;
     }
 
     @Override
@@ -76,8 +81,12 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
      * @throws RegistryException if the operation fails
      */
     public String addTaskError(ErrorModel error, String taskId) throws RegistryException {
-        TaskErrorEntity entity = mapper.map(error, TaskErrorEntity.class);
+        TaskErrorEntity entity = errorModelMapper.toEntityFromTask(error);
         getParentIdSetter().accept(entity, taskId);
+        // Ensure CREATION_TIME is set if not already set
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+        }
         // Get a reference to the task entity (proxy, doesn't fetch from DB)
         TaskEntity taskEntity = entityManager.getReference(TaskEntity.class, taskId);
         entity.setTask(taskEntity);

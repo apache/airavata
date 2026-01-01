@@ -35,12 +35,14 @@ import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPol
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * This class provides implementation of the ProcessSchedule Interface
  */
 @Component
+@ConditionalOnBean(RegistryService.class)
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
 

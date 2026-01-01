@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.QueueStatusModel;
 import org.apache.airavata.registry.entities.expcatalog.QueueStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.QueueStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.QueueStatusRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,27 +32,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class QueueStatusService {
     private final QueueStatusRepository queueStatusRepository;
-    private final Mapper mapper;
+    private final QueueStatusMapper queueStatusMapper;
 
-    public QueueStatusService(QueueStatusRepository queueStatusRepository, Mapper mapper) {
+    public QueueStatusService(QueueStatusRepository queueStatusRepository, QueueStatusMapper queueStatusMapper) {
         this.queueStatusRepository = queueStatusRepository;
-        this.mapper = mapper;
+        this.queueStatusMapper = queueStatusMapper;
     }
 
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
         // Get all queue statuses, then group by hostName and queueName to get latest
         // This is a simplified implementation - may need optimization
         List<QueueStatusEntity> allEntities = queueStatusRepository.findAll();
-        List<QueueStatusModel> result = new ArrayList<>();
         // Group by hostName+queueName and get latest for each
         // For now, return all - can be optimized later
-        allEntities.forEach(e -> result.add(mapper.map(e, QueueStatusModel.class)));
-        return result;
+        return queueStatusMapper.toModelList(allEntities);
     }
 
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
         for (QueueStatusModel status : queueStatuses) {
-            QueueStatusEntity entity = mapper.map(status, QueueStatusEntity.class);
+            QueueStatusEntity entity = queueStatusMapper.toEntity(status);
             queueStatusRepository.save(entity);
         }
         return true;
@@ -62,6 +59,6 @@ public class QueueStatusService {
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryException {
         var entity = queueStatusRepository.findFirstByHostNameAndQueueNameOrderByTimeDesc(hostName, queueName);
         if (entity.isEmpty()) return null;
-        return mapper.map(entity.get(), QueueStatusModel.class);
+        return queueStatusMapper.toModel(entity.get());
     }
 }

@@ -73,8 +73,8 @@ public class GroupAdminEntity {
 
     @ManyToOne(targetEntity = UserGroupEntity.class, cascade = CascadeType.MERGE)
     @JoinColumns({
-        @JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID"),
-        @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "DOMAIN_ID")
+        @JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "DOMAIN_ID", insertable = false, updatable = false)
     })
     public UserGroupEntity getUserGroup() {
         return userGroup;

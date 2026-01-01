@@ -22,9 +22,12 @@ package org.apache.airavata.helix.impl.task;
 import java.util.EnumMap;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourceType;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class TaskFactory {
 
     private final Map<ComputeResourceType, HelixTaskFactory> factories;

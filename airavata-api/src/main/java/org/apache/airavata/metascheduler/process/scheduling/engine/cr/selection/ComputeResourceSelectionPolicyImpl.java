@@ -23,23 +23,21 @@ import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnBean(RegistryService.class)
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
 
-    private static ApplicationContext applicationContext;
-    private final ApplicationContext applicationContextInstance;
+    private final RegistryService registryService;
 
-    public ComputeResourceSelectionPolicyImpl(ApplicationContext applicationContext) {
-        this.applicationContextInstance = applicationContext;
-        ComputeResourceSelectionPolicyImpl.applicationContext = applicationContext;
+    public ComputeResourceSelectionPolicyImpl(RegistryService registryService) {
+        this.registryService = registryService;
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourcId, String groupResourceProfileId) throws RegistryServiceException {
-        RegistryService registryService = applicationContextInstance.getBean(RegistryService.class);
         if (registryService.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
             return registryService.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
         }

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.mappers.DataReplicaLocationMapper;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,17 +41,17 @@ public class DataReplicaLocationService {
     private final DataReplicaLocationRepository dataReplicaLocationRepository;
     private final DataProductRepository dataProductRepository;
     private final EntityManager entityManager;
-    private final Mapper mapper;
+    private final DataReplicaLocationMapper dataReplicaLocationMapper;
 
     public DataReplicaLocationService(
             DataReplicaLocationRepository dataReplicaLocationRepository,
             DataProductRepository dataProductRepository,
             @Qualifier("replicaCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
+            DataReplicaLocationMapper dataReplicaLocationMapper) {
         this.dataReplicaLocationRepository = dataReplicaLocationRepository;
         this.dataProductRepository = dataProductRepository;
         this.entityManager = entityManager;
-        this.mapper = mapper;
+        this.dataReplicaLocationMapper = dataReplicaLocationMapper;
     }
 
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel)
@@ -63,7 +63,7 @@ public class DataReplicaLocationService {
                     replicaLocationModel.getReplicaName() != null ? replicaLocationModel.getReplicaName() : "replica");
             replicaLocationModel.setReplicaId(replicaId);
         }
-        DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
+        DataReplicaLocationEntity entity = dataReplicaLocationMapper.toEntity(replicaLocationModel);
         // Set the dataProduct relationship if productUri is provided
         if (replicaLocationModel.getProductUri() != null
                 && !replicaLocationModel.getProductUri().isEmpty()) {
@@ -106,8 +106,8 @@ public class DataReplicaLocationService {
         // Replace PersistentMap with regular HashMap
         entity.setReplicaMetadata(new HashMap<>(metadataCopy));
 
-        // Now perform Dozer mapping - the metadata is a regular HashMap, not a PersistentMap
-        DataReplicaLocationModel model = mapper.map(entity, DataReplicaLocationModel.class);
+        // Now perform MapStruct mapping - the metadata is a regular HashMap, not a PersistentMap
+        DataReplicaLocationModel model = dataReplicaLocationMapper.toModel(entity);
 
         // Always set the metadata copy on the model to ensure it's available after transaction ends
         model.setReplicaMetadata(metadataCopy);
@@ -139,8 +139,8 @@ public class DataReplicaLocationService {
                     // Replace PersistentMap with regular HashMap
                     e.setReplicaMetadata(new HashMap<>(metadataCopy));
 
-                    // Now perform Dozer mapping
-                    DataReplicaLocationModel model = mapper.map(e, DataReplicaLocationModel.class);
+                    // Now perform MapStruct mapping
+                    DataReplicaLocationModel model = dataReplicaLocationMapper.toModel(e);
 
                     // Always set the metadata copy on the model
                     model.setReplicaMetadata(metadataCopy);
@@ -150,7 +150,7 @@ public class DataReplicaLocationService {
     }
 
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {
-        DataReplicaLocationEntity entity = mapper.map(replicaLocationModel, DataReplicaLocationEntity.class);
+        DataReplicaLocationEntity entity = dataReplicaLocationMapper.toEntity(replicaLocationModel);
         // Set the dataProduct relationship if productUri is provided
         if (replicaLocationModel.getProductUri() != null
                 && !replicaLocationModel.getProductUri().isEmpty()) {

@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -62,10 +61,28 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
-            "org.apache.airavata.registry",
-            "org.apache.airavata.profile",
-            "org.apache.airavata.sharing",
-            "org.apache.airavata.credential",
+            "org.apache.airavata.registry.services",
+            "org.apache.airavata.registry.repositories",
+            "org.apache.airavata.registry.mappers",
+            "org.apache.airavata.registry.utils",
+            "org.apache.airavata.profile.repositories",
+            "org.apache.airavata.profile.mappers",
+            "org.apache.airavata.profile.utils",
+            "org.apache.airavata.sharing.services",
+            "org.apache.airavata.sharing.repositories",
+            "org.apache.airavata.sharing.mappers",
+            "org.apache.airavata.sharing.utils",
+            "org.apache.airavata.credential.repositories",
+            "org.apache.airavata.credential.services",
+            "org.apache.airavata.credential.utils",
+            "org.apache.airavata.common.context",
+            "org.apache.airavata.common.exception",
+            "org.apache.airavata.common.logging",
+            "org.apache.airavata.common.repositories",
+            "org.apache.airavata.common.utils",
+            "org.apache.airavata.common.validation",
+            "org.apache.airavata.accountprovisioning",
+            "org.apache.airavata.security",
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
             "org.apache.airavata.orchestrator",
@@ -73,7 +90,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift",
             "org.apache.airavata.thriftapi",
-            "org.apache.airavata.manager",
+            "org.apache.airavata.manager.dbevent",
             "org.apache.airavata.metascheduler",
             "org.apache.airavata.file.server",
             "org.apache.airavata.restproxy",
@@ -82,41 +99,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         excludeFilters = {
             @ComponentScan.Filter(
                     type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\.agent\\.connection\\.service\\.services\\..*" // Exclude agent service's services
-                    // subpackage to avoid AiravataService
-                    // conflict
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.research\\.service\\.AiravataService" // Exclude research
-                    // service's
-                    // AiravataService to avoid
-                    // conflict
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.agent\\.connection\\.service\\.config\\..*" // Exclude agent
-                    // service config to
-                    // avoid filter
-                    // conflicts
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.research\\.service\\.config\\..*" // Exclude research service
-                    // config to avoid filter
-                    // conflicts
+                    pattern = "org\\.apache\\.airavata\\.manager\\.dbevent\\.messaging\\..*" // Exclude manager dbevent
+                    // messaging
+                    // (we scan manager.dbevent broadly, so need to exclude messaging sub-package)
                     )
         })
 @EntityScan(
@@ -126,7 +111,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.sharing.entities",
             "org.apache.airavata.credential.entities"
         })
-@EnableJpaRepositories(basePackages = {"org.apache.airavata.registry.repositories"})
+// JPA repositories are configured in JpaConfig
 public class UnifiedApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(UnifiedApplication.class);

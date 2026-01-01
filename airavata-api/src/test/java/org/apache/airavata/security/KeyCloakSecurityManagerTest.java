@@ -59,16 +59,20 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, KeyCloakSecurityManagerTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            KeyCloakSecurityManagerTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "security.tls.enabled=true",
             "security.iam.server-url=", // Empty to skip IAM HTTP calls in tests
             "security.manager.enabled=true",
             "security.authzCache.enabled=true", // Enable cache - tests will mock cache behavior
-            "services.registryService.enabled=false",
-            "services.background.enabled=false",
-            "services.thrift.enabled=false"
+            // Infrastructure components excluded via component scanning - no property flags needed
+            "test.keycloak.security.manager=true"
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class KeyCloakSecurityManagerTest {
@@ -92,10 +96,14 @@ public class KeyCloakSecurityManagerTest {
     @MockitoBean
     private CredentialStoreService mockCredentialStoreService;
 
+    @MockitoBean
+    private org.apache.airavata.security.GatewayGroupsInitializer mockGatewayGroupsInitializer;
+
     @Autowired
     private KeyCloakSecurityManager keyCloakSecurityManager;
 
     @Configuration
+    @org.springframework.boot.test.context.TestConfiguration
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.security",
@@ -107,11 +115,7 @@ public class KeyCloakSecurityManagerTest {
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.DozerMapperConfig.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.registry\\.messaging\\..*")
+                        })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {
@@ -125,6 +129,35 @@ public class KeyCloakSecurityManagerTest {
             properties.security.iam.serverUrl = "";
             properties.security.authzCache.enabled = true; // Enable cache - tests will mock it
             return properties;
+        }
+
+        @Bean
+        @Primary
+        @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+                name = "test.keycloak.security.manager",
+                havingValue = "true")
+        public org.apache.airavata.security.GatewayGroupsInitializer gatewayGroupsInitializer() {
+            return org.mockito.Mockito.mock(org.apache.airavata.security.GatewayGroupsInitializer.class);
+        }
+
+        @Bean
+        @Primary
+        @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+                name = "test.keycloak.security.manager",
+                havingValue = "true")
+        public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager(
+                org.apache.airavata.service.registry.RegistryService registryService,
+                org.apache.airavata.service.SharingRegistryService sharingRegistryService,
+                org.apache.airavata.config.AiravataServerProperties properties,
+                org.apache.airavata.security.authzcache.AuthzCacheManagerFactory authzCacheManagerFactory,
+                org.apache.airavata.security.GatewayGroupsInitializer gatewayGroupsInitializer)
+                throws org.apache.airavata.security.AiravataSecurityException {
+            return new org.apache.airavata.security.KeyCloakSecurityManager(
+                    registryService,
+                    sharingRegistryService,
+                    properties,
+                    authzCacheManagerFactory,
+                    gatewayGroupsInitializer);
         }
     }
 

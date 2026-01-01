@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ProjectMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ProjectRepository;
 import org.springframework.stereotype.Service;
@@ -35,11 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final Mapper mapper;
+    private final ProjectMapper projectMapper;
 
-    public ProjectService(ProjectRepository projectRepository, Mapper mapper) {
+    public ProjectService(ProjectRepository projectRepository, ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
-        this.mapper = mapper;
+        this.projectMapper = projectMapper;
     }
 
     public boolean isProjectExist(String projectId) throws RegistryException {
@@ -51,7 +51,7 @@ public class ProjectService {
         if (project.getProjectID() == null || project.getProjectID().isEmpty()) {
             project.setProjectID(org.apache.airavata.common.utils.AiravataUtils.getId(project.getName()));
         }
-        ProjectEntity entity = mapper.map(project, ProjectEntity.class);
+        ProjectEntity entity = projectMapper.toEntity(project);
         entity.setGatewayId(gatewayId);
         ProjectEntity saved = projectRepository.save(entity);
         return saved.getProjectID();
@@ -60,7 +60,7 @@ public class ProjectService {
     public Project getProject(String projectId) throws RegistryException {
         ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Project.class);
+        return projectMapper.toModel(entity);
     }
 
     public void removeProject(String projectId) throws RegistryException {
@@ -68,16 +68,20 @@ public class ProjectService {
     }
 
     public void updateProject(Project project, String projectId) throws RegistryException {
-        // Load existing entity to preserve required fields like gatewayId
+        // Load existing entity to preserve required fields like gatewayId and creationTime
         ProjectEntity existingEntity = projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new RegistryException("Project not found: " + projectId));
 
-        ProjectEntity entity = mapper.map(project, ProjectEntity.class);
+        ProjectEntity entity = projectMapper.toEntity(project);
         entity.setProjectID(projectId);
         // Preserve gatewayId if not set in the update
         if (entity.getGatewayId() == null || entity.getGatewayId().isEmpty()) {
             entity.setGatewayId(existingEntity.getGatewayId());
+        }
+        // Preserve creationTime if not set in the update
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(existingEntity.getCreationTime());
         }
         projectRepository.save(entity);
     }
@@ -97,9 +101,7 @@ public class ProjectService {
         } else {
             entities = projectRepository.findAll();
         }
-        List<Project> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, Project.class)));
-        return result;
+        return projectMapper.toModelList(entities);
     }
 
     public List<Project> searchAllAccessibleProjects(
@@ -116,7 +118,7 @@ public class ProjectService {
         for (String projectId : accessibleProjectIds) {
             ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
             if (entity != null) {
-                result.add(mapper.map(entity, Project.class));
+                result.add(projectMapper.toModel(entity));
             }
         }
         return result;

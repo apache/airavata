@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.common.repositories;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * <p>Subclasses must implement:
  * <ul>
- *   <li>{@link #getMapper()} - Returns the Dozer mapper instance</li>
+ *   <li>{@link #mapToEntity(T)} - Maps a Thrift model to a JPA entity using MapStruct</li>
+ *   <li>{@link #mapToModel(E)} - Maps a JPA entity to a Thrift model using MapStruct</li>
  *   <li>{@link #getEntityManager()} - Returns the EntityManager for this persistence unit</li>
  * </ul>
  *
@@ -67,11 +67,20 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     /**
-     * Get the Dozer mapper instance for converting between Thrift models and entities.
+     * Map a Thrift model to a JPA entity using MapStruct mapper.
      *
-     * @return The mapper instance
+     * @param model The Thrift model
+     * @return The JPA entity
      */
-    protected abstract Mapper getMapper();
+    protected abstract E mapToEntity(T model);
+
+    /**
+     * Map a JPA entity to a Thrift model using MapStruct mapper.
+     *
+     * @param entity The JPA entity
+     * @return The Thrift model
+     */
+    protected abstract T mapToModel(E entity);
 
     /**
      * Get the EntityManager for this persistence unit.
@@ -105,16 +114,6 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     /**
-     * Map a Thrift model to a JPA entity.
-     *
-     * @param t The Thrift model
-     * @return The JPA entity
-     */
-    protected E mapToEntity(T t) {
-        return getMapper().map(t, dbEntityGenericClass);
-    }
-
-    /**
      * Merge an entity into the persistence context and map back to Thrift model.
      *
      * @param entity The JPA entity
@@ -123,7 +122,7 @@ public abstract class AbstractRepository<T, E, Id> {
     protected T mergeEntity(E entity) {
         EntityManager em = getEntityManager();
         E persistedCopy = em.merge(entity);
-        return getMapper().map(persistedCopy, thriftGenericClass);
+        return mapToModel(persistedCopy);
     }
 
     /**
@@ -156,7 +155,7 @@ public abstract class AbstractRepository<T, E, Id> {
         if (entity == null) {
             return null;
         }
-        return getMapper().map(entity, thriftGenericClass);
+        return mapToModel(entity);
     }
 
     /**

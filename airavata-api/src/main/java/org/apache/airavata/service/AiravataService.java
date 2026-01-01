@@ -136,13 +136,13 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
-@ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean({RegistryService.class, org.apache.airavata.helix.task.api.support.AdaptorSupport.class})
 public class AiravataService {
     private static final Logger logger = LoggerFactory.getLogger(AiravataService.class);
 
@@ -204,8 +204,9 @@ public class AiravataService {
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
-    private final SSHAccountManager sshAccountManager;
-    private final GatewayGroupsInitializer gatewayGroupsInitializer;
+    private final org.springframework.beans.factory.ObjectProvider<SSHAccountManager> sshAccountManagerProvider;
+    private final org.springframework.beans.factory.ObjectProvider<GatewayGroupsInitializer>
+            gatewayGroupsInitializerProvider;
 
     // Domain services
     private final org.apache.airavata.service.experiment.ExperimentService experimentService;
@@ -215,7 +216,7 @@ public class AiravataService {
     private final org.apache.airavata.service.application.ApplicationService applicationService;
     private final org.apache.airavata.service.security.AuthorizationService authorizationService;
     private final org.apache.airavata.service.sharing.SharingManager sharingManager;
-    private final AdaptorSupport adaptorSupport;
+    private final org.springframework.beans.factory.ObjectProvider<AdaptorSupport> adaptorSupportProvider;
     private final MessagingFactory messagingFactory;
 
     private Publisher statusPublisher;
@@ -226,8 +227,8 @@ public class AiravataService {
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            SSHAccountManager sshAccountManager,
-            GatewayGroupsInitializer gatewayGroupsInitializer,
+            org.springframework.beans.factory.ObjectProvider<SSHAccountManager> sshAccountManagerProvider,
+            org.springframework.beans.factory.ObjectProvider<GatewayGroupsInitializer> gatewayGroupsInitializerProvider,
             org.apache.airavata.service.experiment.ExperimentService experimentService,
             org.apache.airavata.service.project.ProjectService projectService,
             org.apache.airavata.service.notification.NotificationService notificationService,
@@ -235,14 +236,14 @@ public class AiravataService {
             org.apache.airavata.service.application.ApplicationService applicationService,
             org.apache.airavata.service.security.AuthorizationService authorizationService,
             org.apache.airavata.service.sharing.SharingManager sharingManager,
-            AdaptorSupport adaptorSupport,
+            org.springframework.beans.factory.ObjectProvider<AdaptorSupport> adaptorSupportProvider,
             MessagingFactory messagingFactory) {
         this.properties = properties;
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.credentialStoreService = credentialStoreService;
-        this.sshAccountManager = sshAccountManager;
-        this.gatewayGroupsInitializer = gatewayGroupsInitializer;
+        this.sshAccountManagerProvider = sshAccountManagerProvider;
+        this.gatewayGroupsInitializerProvider = gatewayGroupsInitializerProvider;
         this.experimentService = experimentService;
         this.projectService = projectService;
         this.notificationService = notificationService;
@@ -250,7 +251,7 @@ public class AiravataService {
         this.applicationService = applicationService;
         this.authorizationService = authorizationService;
         this.sharingManager = sharingManager;
-        this.adaptorSupport = adaptorSupport;
+        this.adaptorSupportProvider = adaptorSupportProvider;
         this.messagingFactory = messagingFactory;
 
         logger.info("Initialized RegistryService");
@@ -2665,7 +2666,11 @@ public class AiravataService {
             if (isGatewayGroupsExists(gatewayId)) {
                 return getGatewayGroups(gatewayId);
             } else {
-                return gatewayGroupsInitializer.initialize(gatewayId);
+                GatewayGroupsInitializer gatewayGroupsInitializer = gatewayGroupsInitializerProvider.getIfAvailable();
+                if (gatewayGroupsInitializer != null) {
+                    return gatewayGroupsInitializer.initialize(gatewayId);
+                }
+                return null;
             }
         } catch (AiravataSystemException e) {
             throw e;
@@ -3882,6 +3887,13 @@ public class AiravataService {
             }
         }
 
+        AdaptorSupport adaptorSupport = adaptorSupportProvider.getIfAvailable();
+        if (adaptorSupport == null) {
+            String msg = "AdaptorSupport is not available (helix components are not enabled)";
+            logger.warn(msg);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, null);
+        }
+
         AgentAdaptor adaptor =
                 adaptorSupport.fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
         logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
@@ -3989,6 +4001,13 @@ public class AiravataService {
                 }
                 credentialToken = gatewayResourceProfile.getCredentialStoreToken();
             }
+        }
+
+        AdaptorSupport adaptorSupport = adaptorSupportProvider.getIfAvailable();
+        if (adaptorSupport == null) {
+            String msg = "AdaptorSupport is not available (helix components are not enabled)";
+            logger.warn(msg);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, null);
         }
 
         AgentAdaptor adaptor =
@@ -4115,6 +4134,10 @@ public class AiravataService {
                     userId,
                     computeResourceId,
                     gatewayId);
+            SSHAccountManager sshAccountManager = sshAccountManagerProvider.getIfAvailable();
+            if (sshAccountManager == null) {
+                throw new AiravataSystemException("SSHAccountManager is not available");
+            }
             return sshAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
         } catch (InvalidSetupException | InvalidUsernameException e) {
             String msg = "Error occurred while checking if user has an SSH Account: " + e.getMessage();
@@ -4136,6 +4159,10 @@ public class AiravataService {
                     gatewayId);
 
             SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
+            SSHAccountManager sshAccountManager = sshAccountManagerProvider.getIfAvailable();
+            if (sshAccountManager == null) {
+                throw new AiravataSystemException("SSHAccountManager is not available");
+            }
             return sshAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
         } catch (InvalidSetupException
                 | InvalidUsernameException
@@ -4159,6 +4186,10 @@ public class AiravataService {
                     gatewayId);
 
             SSHCredential sshCredential = getSSHCredential(airavataCredStoreToken, gatewayId);
+            SSHAccountManager sshAccountManager = sshAccountManagerProvider.getIfAvailable();
+            if (sshAccountManager == null) {
+                throw new AiravataSystemException("SSHAccountManager is not available");
+            }
             return sshAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
         } catch (AiravataSystemException e) {
             throw e;

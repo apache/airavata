@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
@@ -28,6 +27,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.TaskModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.repositories.expcatalog.TaskRepository;
 import org.apache.airavata.registry.utils.DBConstants;
@@ -45,14 +45,17 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProcessRepository processRepository;
     private final JobService jobService;
-    private final Mapper mapper;
+    private final TaskModelMapper taskModelMapper;
 
     public TaskService(
-            TaskRepository taskRepository, ProcessRepository processRepository, JobService jobService, Mapper mapper) {
+            TaskRepository taskRepository,
+            ProcessRepository processRepository,
+            JobService jobService,
+            TaskModelMapper taskModelMapper) {
         this.taskRepository = taskRepository;
         this.processRepository = processRepository;
         this.jobService = jobService;
-        this.mapper = mapper;
+        this.taskModelMapper = taskModelMapper;
     }
 
     public void populateParentIds(TaskEntity taskEntity) {
@@ -76,8 +79,13 @@ public class TaskService {
 
         if (taskEntity.getJobs() != null) {
             logger.debug("Populating the Job objects' Task ID for the Task");
+            java.sql.Timestamp currentTimestamp = AiravataUtils.getCurrentTimestamp();
             taskEntity.getJobs().forEach(jobEntity -> {
                 jobEntity.setTaskId(taskId);
+                // Ensure CREATION_TIME is set if not already set
+                if (jobEntity.getCreationTime() == null) {
+                    jobEntity.setCreationTime(currentTimestamp);
+                }
                 jobService.populateParentIds(jobEntity);
             });
         }
@@ -95,7 +103,7 @@ public class TaskService {
     public TaskModel getTask(String taskId) throws RegistryException {
         TaskEntity entity = taskRepository.findById(taskId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, TaskModel.class);
+        return taskModelMapper.toModel(entity);
     }
 
     public List<TaskModel> getTaskList(String fieldName, Object value) throws RegistryException {
@@ -104,8 +112,7 @@ public class TaskService {
         if (fieldName.equals(DBConstants.Task.PARENT_PROCESS_ID)) {
             logger.debug("Search criteria is ParentProcessId");
             List<TaskEntity> entities = taskRepository.findByParentProcessId((String) value);
-            taskModelList = new ArrayList<>();
-            entities.forEach(e -> taskModelList.add(mapper.map(e, TaskModel.class)));
+            taskModelList = taskModelMapper.toModelList(entities);
         } else {
             logger.error("Unsupported field name for Task module.");
             throw new IllegalArgumentException("Unsupported field name for Task module.");
@@ -163,11 +170,28 @@ public class TaskService {
         if (!isTaskExist(taskId)) {
             logger.debug("Setting creation time if Task doesn't already exist");
             taskModel.setCreationTime(System.currentTimeMillis());
+        } else if (taskModel.getCreationTime() == 0) {
+            // If updating and creation time is not set, use current time
+            taskModel.setCreationTime(System.currentTimeMillis());
         }
 
-        taskModel.setLastUpdateTime(System.currentTimeMillis());
+        // Always set last update time
+        long currentTime = System.currentTimeMillis();
+        if (taskModel.getLastUpdateTime() == 0) {
+            taskModel.setLastUpdateTime(currentTime);
+        }
 
-        TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
+        TaskEntity taskEntity = taskModelMapper.toEntity(taskModel);
+
+        // Ensure timestamps are set if mapper didn't set them (mapper returns null if model time is 0)
+        if (taskEntity.getCreationTime() == null) {
+            long creationTime = taskModel.getCreationTime() > 0 ? taskModel.getCreationTime() : currentTime;
+            taskEntity.setCreationTime(new java.sql.Timestamp(creationTime));
+        }
+        if (taskEntity.getLastUpdateTime() == null) {
+            long lastUpdateTime = taskModel.getLastUpdateTime() > 0 ? taskModel.getLastUpdateTime() : currentTime;
+            taskEntity.setLastUpdateTime(new java.sql.Timestamp(lastUpdateTime));
+        }
 
         // Set process relationship to ensure PARENT_PROCESS_ID is set via @JoinColumn
         // (parentProcessId field is marked as insertable=false, updatable=false)

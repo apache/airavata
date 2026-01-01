@@ -32,28 +32,26 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * This class contains all utility methods across scheduler sub projects
  */
 @Component("metaschedulerUtils")
+@ConditionalOnBean(RegistryService.class)
 public class Utils {
 
     private final RegistryService registryService;
     private final MessagingFactory messagingFactory;
-    private final ApplicationContext applicationContext;
 
     private Publisher statusPublisher;
-    private static ApplicationContext staticApplicationContext;
+    private static Utils staticInstance;
 
-    public Utils(
-            RegistryService registryService, ApplicationContext applicationContext, MessagingFactory messagingFactory) {
+    public Utils(RegistryService registryService, MessagingFactory messagingFactory) {
         this.registryService = registryService;
-        this.applicationContext = applicationContext;
         this.messagingFactory = messagingFactory;
-        Utils.staticApplicationContext = applicationContext;
+        Utils.staticInstance = this;
     }
 
     public static void saveAndPublishProcessStatus(
@@ -105,9 +103,10 @@ public class Utils {
 
     // Static method for backward compatibility - delegates to Spring-managed instance
     private static Utils getInstance() {
-        if (staticApplicationContext != null) {
-            return staticApplicationContext.getBean("metaschedulerUtils", Utils.class);
+        if (staticInstance != null) {
+            return staticInstance;
         }
-        throw new RuntimeException("ApplicationContext not available. Utils cannot be retrieved.");
+        throw new RuntimeException(
+                "Utils instance not available. Ensure Utils is properly initialized as a Spring bean.");
     }
 }

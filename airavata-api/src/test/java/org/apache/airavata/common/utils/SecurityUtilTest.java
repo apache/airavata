@@ -43,9 +43,14 @@ import org.springframework.test.context.TestPropertySource;
  * Time: 10:42 AM
  */
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, SecurityUtilTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            SecurityUtilTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "security.manager.enabled=false"
         })
@@ -136,7 +141,6 @@ public class SecurityUtilTest {
                         type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
                         classes = {
                             org.apache.airavata.config.BackgroundServicesLauncher.class,
-                            org.apache.airavata.config.DozerMapperConfig.class
                         })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)

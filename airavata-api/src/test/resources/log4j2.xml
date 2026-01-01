@@ -39,12 +39,29 @@
     </RollingFile>
   </Appenders>
   <Loggers>
+    <!-- Suppress verbose logging from third-party libraries -->
     <logger name="ch.qos.logback" level="WARN" />
     <logger name="org.apache.helix" level="WARN" />
     <logger name="org.apache.zookeeper" level="ERROR" />
-    <logger name="org.apache.airavata" level="INFO" />
     <logger name="org.hibernate" level="ERROR" />
-    <Root level="INFO">
+    <logger name="org.hibernate.orm" level="ERROR" />
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.springframework.boot" level="WARN" />
+    <logger name="org.springframework.context" level="WARN" />
+    <logger name="org.springframework.test" level="WARN" />
+    <logger name="org.springframework.data" level="WARN" />
+    <logger name="org.springframework.orm" level="WARN" />
+    <logger name="org.springframework.transaction" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <logger name="org.apache.kafka" level="WARN" />
+    <logger name="org.apache.curator" level="WARN" />
+    <!-- Airavata packages - only show WARN and above during tests -->
+    <logger name="org.apache.airavata" level="WARN" />
+    <!-- Keep test framework logs at INFO for test results visibility -->
+    <logger name="org.junit" level="INFO" />
+    <logger name="org.junit.jupiter" level="INFO" />
+    <logger name="org.junit.platform" level="INFO" />
+    <Root level="WARN">
       <AppenderRef ref="Console" />
       <AppenderRef ref="RollingFileAppender" />
     </Root>

@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
         name = "services.orchestratorRegistryService.enabled",
         havingValue = "true",
         matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class OrchestratorRegistryService {
 
     private final org.apache.airavata.service.registry.RegistryService registryService;

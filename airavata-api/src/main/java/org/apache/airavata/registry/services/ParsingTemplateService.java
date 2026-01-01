@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ParsingTemplate;
 import org.apache.airavata.registry.entities.appcatalog.ParsingTemplateEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ParsingTemplateMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ParsingTemplateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ParsingTemplateService {
     private final ParsingTemplateRepository parsingTemplateRepository;
-    private final Mapper mapper;
+    private final ParsingTemplateMapper parsingTemplateMapper;
 
-    public ParsingTemplateService(ParsingTemplateRepository parsingTemplateRepository, Mapper mapper) {
+    public ParsingTemplateService(
+            ParsingTemplateRepository parsingTemplateRepository, ParsingTemplateMapper parsingTemplateMapper) {
         this.parsingTemplateRepository = parsingTemplateRepository;
-        this.mapper = mapper;
+        this.parsingTemplateMapper = parsingTemplateMapper;
     }
 
     public boolean isExists(String templateId) throws RegistryException {
@@ -48,25 +48,25 @@ public class ParsingTemplateService {
         ParsingTemplateEntity entity =
                 parsingTemplateRepository.findById(templateId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, ParsingTemplate.class);
+        return parsingTemplateMapper.toModel(entity);
     }
 
     public ParsingTemplate create(ParsingTemplate parsingTemplate) throws RegistryException {
-        ParsingTemplateEntity entity = mapper.map(parsingTemplate, ParsingTemplateEntity.class);
+        ParsingTemplateEntity entity = parsingTemplateMapper.toEntity(parsingTemplate);
         ParsingTemplateEntity saved = parsingTemplateRepository.save(entity);
-        return mapper.map(saved, ParsingTemplate.class);
+        return parsingTemplateMapper.toModel(saved);
     }
 
     public List<ParsingTemplate> getParsingTemplatesForApplication(String applicationInterfaceId)
             throws RegistryException {
         List<ParsingTemplateEntity> entities =
                 parsingTemplateRepository.findByApplicationInterfaceId(applicationInterfaceId);
-        return entities.stream().map(e -> mapper.map(e, ParsingTemplate.class)).collect(Collectors.toList());
+        return parsingTemplateMapper.toModelList(entities);
     }
 
     public List<ParsingTemplate> getAllParsingTemplates(String gatewayId) throws RegistryException {
         List<ParsingTemplateEntity> entities = parsingTemplateRepository.findByGatewayId(gatewayId);
-        return entities.stream().map(e -> mapper.map(e, ParsingTemplate.class)).collect(Collectors.toList());
+        return parsingTemplateMapper.toModelList(entities);
     }
 
     public void delete(String templateId) throws RegistryException {

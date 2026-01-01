@@ -31,17 +31,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Integration tests for AiravataService (Main service operations).
  */
 @DisplayName("AiravataService Integration Tests")
-@TestPropertySource(properties = {"services.airavata.enabled=true"})
+// No property flags needed - AiravataService uses @ConditionalOnBean(RegistryService.class)
+// and RegistryService is always available
 public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @MockBean
+    @MockitoBean
     private AiravataService airavataService;
 
     private final RegistryService registryService;
@@ -79,8 +79,13 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
                     exp.setExperimentId(expId);
                     return exp;
                 });
-        Mockito.when(airavataService.getExperimentStatus(Mockito.anyString()))
-                .thenReturn(new org.apache.airavata.common.model.ExperimentStatus());
+        Mockito.when(airavataService.getExperimentStatus(Mockito.anyString())).thenAnswer(invocation -> {
+            org.apache.airavata.common.model.ExperimentStatus status =
+                    new org.apache.airavata.common.model.ExperimentStatus();
+            status.setState(org.apache.airavata.common.model.ExperimentState.CREATED);
+            status.setTimeOfStateChange(System.currentTimeMillis());
+            return status;
+        });
         Mockito.when(airavataService.deleteExperiment(Mockito.anyString())).thenReturn(true);
         Mockito.when(airavataService.searchExperiments(
                         Mockito.any(),

@@ -90,20 +90,20 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
 @DependsOn("messagingFactory")
-@ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean({RegistryService.class, org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class})
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
     private final OrchestratorRegistryService orchestratorRegistryService;
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
-    private final ProcessScheduler processScheduler;
+    private final org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider;
     private final SimpleOrchestratorImpl orchestrator;
     private final MessagingFactory messagingFactory;
 
@@ -116,13 +116,13 @@ public class OrchestratorService {
             RegistryService registryService,
             AiravataServerProperties properties,
             SimpleOrchestratorImpl orchestrator,
-            ProcessScheduler processScheduler,
+            org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider,
             MessagingFactory messagingFactory) {
         this.orchestratorRegistryService = orchestratorRegistryService;
         this.registryService = registryService;
         this.properties = properties;
         this.orchestrator = orchestrator;
-        this.processScheduler = processScheduler;
+        this.processSchedulerProvider = processSchedulerProvider;
         this.messagingFactory = messagingFactory;
     }
 
@@ -237,7 +237,8 @@ public class OrchestratorService {
         }
 
         if (!experiment.getUserConfigurationData().getAiravataAutoSchedule()
-                || processScheduler.canLaunch(experimentId)) {
+                || (processSchedulerProvider.getIfAvailable() != null
+                        && processSchedulerProvider.getIfAvailable().canLaunch(experimentId))) {
             createAndValidateTasks(experiment, false);
             return true; // runExperimentLauncher will be called separately
         } else {

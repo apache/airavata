@@ -35,12 +35,14 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * Create and save an initial set of user management groups for a gateway.
  */
 @Component
+@ConditionalOnBean(RegistryService.class)
 public class GatewayGroupsInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayGroupsInitializer.class);

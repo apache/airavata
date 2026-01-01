@@ -30,7 +30,6 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,17 +41,15 @@ import org.springframework.stereotype.Component;
 public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultComputeResourceSelectionPolicy.class);
-    private static ApplicationContext applicationContext;
+    private final RegistryService registryService;
 
-    public DefaultComputeResourceSelectionPolicy(ApplicationContext applicationContext) {
-        super(applicationContext);
-        DefaultComputeResourceSelectionPolicy.applicationContext = applicationContext;
+    public DefaultComputeResourceSelectionPolicy(RegistryService registryService) {
+        super(registryService);
+        this.registryService = registryService;
     }
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService registryService =
-                DefaultComputeResourceSelectionPolicy.applicationContext.getBean(RegistryService.class);
         try {
             ProcessModel processModel = registryService.getProcess(processId);
 

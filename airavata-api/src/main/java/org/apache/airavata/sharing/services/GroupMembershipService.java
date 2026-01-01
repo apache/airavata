@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -31,6 +30,9 @@ import org.apache.airavata.sharing.entities.GroupMembershipEntity;
 import org.apache.airavata.sharing.entities.GroupMembershipPK;
 import org.apache.airavata.sharing.entities.UserEntity;
 import org.apache.airavata.sharing.entities.UserGroupEntity;
+import org.apache.airavata.sharing.mappers.GroupMembershipMapper;
+import org.apache.airavata.sharing.mappers.UserGroupMapper;
+import org.apache.airavata.sharing.mappers.UserMapper;
 import org.apache.airavata.sharing.model.GroupChildType;
 import org.apache.airavata.sharing.model.GroupMembership;
 import org.apache.airavata.sharing.model.SharingRegistryException;
@@ -48,26 +50,32 @@ public class GroupMembershipService {
     private final GroupMembershipRepository groupMembershipRepository;
     private final UserService userService;
     private final UserGroupService userGroupService;
-    private final Mapper mapper;
+    private final GroupMembershipMapper groupMembershipMapper;
+    private final UserMapper userMapper;
+    private final UserGroupMapper userGroupMapper;
     private final EntityManager entityManager;
 
     public GroupMembershipService(
             GroupMembershipRepository groupMembershipRepository,
             @Qualifier("sharingUserService") UserService userService,
             UserGroupService userGroupService,
-            Mapper mapper,
+            GroupMembershipMapper groupMembershipMapper,
+            UserMapper userMapper,
+            UserGroupMapper userGroupMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.groupMembershipRepository = groupMembershipRepository;
         this.userService = userService;
         this.userGroupService = userGroupService;
-        this.mapper = mapper;
+        this.groupMembershipMapper = groupMembershipMapper;
+        this.userMapper = userMapper;
+        this.userGroupMapper = userGroupMapper;
         this.entityManager = entityManager;
     }
 
     public GroupMembership get(GroupMembershipPK pk) throws SharingRegistryException {
         GroupMembershipEntity entity = groupMembershipRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, GroupMembership.class);
+        return groupMembershipMapper.toModel(entity);
     }
 
     public GroupMembership create(GroupMembership groupMembership) throws SharingRegistryException {
@@ -75,9 +83,9 @@ public class GroupMembershipService {
     }
 
     public GroupMembership update(GroupMembership groupMembership) throws SharingRegistryException {
-        GroupMembershipEntity entity = mapper.map(groupMembership, GroupMembershipEntity.class);
+        GroupMembershipEntity entity = groupMembershipMapper.toEntity(groupMembership);
         GroupMembershipEntity saved = groupMembershipRepository.save(entity);
-        return mapper.map(saved, GroupMembership.class);
+        return groupMembershipMapper.toModel(saved);
     }
 
     public boolean delete(GroupMembershipPK pk) throws SharingRegistryException {
@@ -114,7 +122,7 @@ public class GroupMembershipService {
         }
 
         var entities = typedQuery.getResultList();
-        return entities.stream().map(e -> mapper.map(e, GroupMembership.class)).toList();
+        return groupMembershipMapper.toModelList(entities);
     }
 
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
@@ -146,7 +154,7 @@ public class GroupMembershipService {
         userQuery.where(cb.and(userPredicates.toArray(new Predicate[0])));
 
         List<UserEntity> entities = entityManager.createQuery(userQuery).getResultList();
-        return entities.stream().map(e -> mapper.map(e, User.class)).toList();
+        return userMapper.toModelList(entities);
     }
 
     public List<UserGroup> getAllChildGroups(String domainId, String groupId) throws SharingRegistryException {
@@ -178,7 +186,7 @@ public class GroupMembershipService {
         groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
 
         List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
-        return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
+        return userGroupMapper.toModelList(entities);
     }
 
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
@@ -211,7 +219,7 @@ public class GroupMembershipService {
         groupQuery.where(cb.and(groupPredicates.toArray(new Predicate[0])));
 
         List<UserGroupEntity> entities = entityManager.createQuery(groupQuery).getResultList();
-        return entities.stream().map(e -> mapper.map(e, UserGroup.class)).toList();
+        return userGroupMapper.toModelList(entities);
     }
 
     public List<GroupMembership> getAllParentMembershipsForChild(String domainId, String childId)

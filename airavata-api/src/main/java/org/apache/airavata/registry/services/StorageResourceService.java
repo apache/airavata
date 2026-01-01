@@ -19,11 +19,9 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.StorageResourceDescription;
@@ -31,6 +29,8 @@ import org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.StorageResourceEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.mappers.DataMovementInterfaceMapper;
+import org.apache.airavata.registry.mappers.StorageResourceMapper;
 import org.apache.airavata.registry.repositories.appcatalog.StorageInterfaceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.StorageResourceRepository;
 import org.apache.airavata.registry.utils.AppCatalogUtils;
@@ -47,15 +47,18 @@ public class StorageResourceService {
 
     private final StorageResourceRepository storageResourceRepository;
     private final StorageInterfaceRepository storageInterfaceRepository;
-    private final Mapper mapper;
+    private final StorageResourceMapper storageResourceMapper;
+    private final DataMovementInterfaceMapper dataMovementInterfaceMapper;
 
     public StorageResourceService(
             StorageResourceRepository storageResourceRepository,
             StorageInterfaceRepository storageInterfaceRepository,
-            Mapper mapper) {
+            StorageResourceMapper storageResourceMapper,
+            DataMovementInterfaceMapper dataMovementInterfaceMapper) {
         this.storageResourceRepository = storageResourceRepository;
         this.storageInterfaceRepository = storageInterfaceRepository;
-        this.mapper = mapper;
+        this.storageResourceMapper = storageResourceMapper;
+        this.dataMovementInterfaceMapper = dataMovementInterfaceMapper;
     }
 
     public String addStorageResource(StorageResourceDescription description) throws AppCatalogException {
@@ -73,7 +76,7 @@ public class StorageResourceService {
                 description.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(description.getStorageResourceId()));
             }
-            StorageResourceEntity entity = mapper.map(description, StorageResourceEntity.class);
+            StorageResourceEntity entity = storageResourceMapper.toEntity(description);
             // Ensure storageResourceId is set on entity (Dozer might not map it correctly)
             entity.setStorageResourceId(storageResourceId);
             // Ensure creationTime and updateTime are set
@@ -82,6 +85,20 @@ public class StorageResourceService {
             }
             if (entity.getUpdateTime() == null) {
                 entity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+            // Ensure storageResourceId is set on all StorageInterfaceEntity objects
+            if (entity.getDataMovementInterfaces() != null) {
+                for (StorageInterfaceEntity storageInterface : entity.getDataMovementInterfaces()) {
+                    if (storageInterface.getStorageResourceId() == null) {
+                        storageInterface.setStorageResourceId(storageResourceId);
+                    }
+                    if (storageInterface.getCreationTime() == null) {
+                        storageInterface.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                    }
+                    if (storageInterface.getUpdateTime() == null) {
+                        storageInterface.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                    }
+                }
             }
             StorageResourceEntity saved = storageResourceRepository.save(entity);
             return saved.getStorageResourceId();
@@ -111,9 +128,12 @@ public class StorageResourceService {
             if (existingEntity != null) {
                 // Preserve existing dataMovementInterfaces to avoid duplicate entity issues
                 List<StorageInterfaceEntity> existingInterfaces = existingEntity.getDataMovementInterfaces();
-                // Temporarily null out to prevent Dozer from merging incorrectly
+                // Temporarily null out to prevent MapStruct from merging incorrectly
                 existingEntity.setDataMovementInterfaces(null);
-                mapper.map(updatedStorageResource, existingEntity);
+                // Update basic fields
+                existingEntity.setStorageResourceDescription(updatedStorageResource.getStorageResourceDescription());
+                existingEntity.setEnabled(updatedStorageResource.getEnabled());
+                existingEntity.setHostName(updatedStorageResource.getHostName());
                 // Manually handle dataMovementInterfaces to avoid duplicate entity issues
                 if (updatedStorageResource.getDataMovementInterfaces() != null) {
                     List<StorageInterfaceEntity> newInterfaces = new java.util.ArrayList<>();
@@ -124,7 +144,7 @@ public class StorageResourceService {
                     for (DataMovementInterface dmInterface : updatedStorageResource.getDataMovementInterfaces()) {
                         StorageInterfaceEntity ifaceEntity = existingMap.get(dmInterface.getDataMovementInterfaceId());
                         if (ifaceEntity == null) {
-                            ifaceEntity = mapper.map(dmInterface, StorageInterfaceEntity.class);
+                            ifaceEntity = dataMovementInterfaceMapper.toEntity(dmInterface);
                             ifaceEntity.setStorageResourceId(storageResourceId);
                             ifaceEntity.setStorageResource(existingEntity);
                             // Ensure creationTime and updateTime are set
@@ -135,7 +155,9 @@ public class StorageResourceService {
                                 ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
                             }
                         } else {
-                            mapper.map(dmInterface, ifaceEntity);
+                            // Update existing interface
+                            ifaceEntity.setDataMovementProtocol(dmInterface.getDataMovementProtocol());
+                            ifaceEntity.setPriorityOrder(dmInterface.getPriorityOrder());
                             ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
                         }
                         newInterfaces.add(ifaceEntity);
@@ -148,7 +170,7 @@ public class StorageResourceService {
                 existingEntity.setUpdateTime(new java.sql.Timestamp(updatedStorageResource.getUpdateTime()));
                 storageResourceRepository.save(existingEntity);
             } else {
-                StorageResourceEntity entity = mapper.map(updatedStorageResource, StorageResourceEntity.class);
+                StorageResourceEntity entity = storageResourceMapper.toEntity(updatedStorageResource);
                 // Ensure storageResourceId is set
                 entity.setStorageResourceId(storageResourceId);
                 // Ensure creationTime and updateTime are set
@@ -192,7 +214,7 @@ public class StorageResourceService {
             StorageResourceEntity entity =
                     storageResourceRepository.findById(resourceId).orElse(null);
             if (entity == null) return null;
-            return mapper.map(entity, StorageResourceDescription.class);
+            return storageResourceMapper.toModel(entity);
         } catch (Exception e) {
             logger.error("Error while retrieving storage resource. Resource Id: " + resourceId, e);
             throw new AppCatalogException("Error while retrieving storage resource. Resource Id: " + resourceId, e);
@@ -205,9 +227,7 @@ public class StorageResourceService {
             if (filters.containsKey(DBConstants.StorageResource.HOST_NAME)) {
                 String hostName = "%" + filters.get(DBConstants.StorageResource.HOST_NAME) + "%";
                 List<StorageResourceEntity> entities = storageResourceRepository.findByHostName(hostName);
-                return entities.stream()
-                        .map(e -> mapper.map(e, StorageResourceDescription.class))
-                        .collect(Collectors.toList());
+                return storageResourceMapper.toModelList(entities);
             } else {
                 logger.error("Unsupported field name for storage resource. "
                         + filters.get(DBConstants.StorageResource.HOST_NAME));
@@ -223,9 +243,7 @@ public class StorageResourceService {
     public List<StorageResourceDescription> getAllStorageResourceList() throws AppCatalogException {
         try {
             List<StorageResourceEntity> entities = storageResourceRepository.findAll();
-            return entities.stream()
-                    .map(e -> mapper.map(e, StorageResourceDescription.class))
-                    .collect(Collectors.toList());
+            return storageResourceMapper.toModelList(entities);
         } catch (Exception e) {
             logger.error("Error while retrieving storage resource list", e);
             throw new AppCatalogException("Error while retrieving storage resource list", e);
@@ -271,7 +289,7 @@ public class StorageResourceService {
     }
 
     public String addDataMovementInterface(DataMovementInterface dataMovementInterface) {
-        StorageInterfaceEntity storageInterfaceEntity = mapper.map(dataMovementInterface, StorageInterfaceEntity.class);
+        StorageInterfaceEntity storageInterfaceEntity = dataMovementInterfaceMapper.toEntity(dataMovementInterface);
         StorageInterfaceEntity saved = storageInterfaceRepository.save(storageInterfaceEntity);
         return saved.getDataMovementInterfaceId();
     }
@@ -299,7 +317,7 @@ public class StorageResourceService {
         Map<String, String> storageResourceMap = new HashMap<>();
         if (entities != null) {
             for (StorageResourceEntity entity : entities) {
-                StorageResourceDescription description = mapper.map(entity, StorageResourceDescription.class);
+                StorageResourceDescription description = storageResourceMapper.toModel(entity);
                 storageResourceMap.put(description.getStorageResourceId(), description.getHostName());
             }
         }

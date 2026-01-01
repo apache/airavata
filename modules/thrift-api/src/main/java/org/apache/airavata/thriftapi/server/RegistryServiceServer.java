@@ -38,7 +38,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -52,28 +51,28 @@ public class RegistryServiceServer extends ServerLifecycle {
 
     private TServer server;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
     private final ExpCatalogDBInitConfig expCatalogDBInitConfig;
     private final AppCatalogDBInitConfig appCatalogDBInitConfig;
     private final ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig;
     private final RegistryServiceDBEventMessagingFactory messagingFactory;
+    private final RegistryServiceHandler handler;
 
     private List<DBInitConfig> dbInitConfigs;
 
     public RegistryServiceServer(
-            ApplicationContext applicationContext,
             AiravataServerProperties properties,
             ExpCatalogDBInitConfig expCatalogDBInitConfig,
             AppCatalogDBInitConfig appCatalogDBInitConfig,
             ReplicaCatalogDBInitConfig replicaCatalogDBInitConfig,
-            RegistryServiceDBEventMessagingFactory messagingFactory) {
-        this.applicationContext = applicationContext;
+            RegistryServiceDBEventMessagingFactory messagingFactory,
+            RegistryServiceHandler handler) {
         this.properties = properties;
         this.expCatalogDBInitConfig = expCatalogDBInitConfig;
         this.appCatalogDBInitConfig = appCatalogDBInitConfig;
         this.replicaCatalogDBInitConfig = replicaCatalogDBInitConfig;
         this.messagingFactory = messagingFactory;
+        this.handler = handler;
     }
 
     @Override
@@ -169,7 +168,6 @@ public class RegistryServiceServer extends ServerLifecycle {
 
     @Override
     protected void doStart() throws Exception {
-        RegistryServiceHandler handler = applicationContext.getBean(RegistryServiceHandler.class);
         RegistryService.Processor<RegistryServiceHandler> orchestratorService =
                 new RegistryService.Processor<RegistryServiceHandler>(handler);
         StartRegistryServer(orchestratorService);

@@ -38,13 +38,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    @MockBean
+    @MockitoBean
     private OrchestratorService orchestratorService;
 
     private final RegistryService registryService;

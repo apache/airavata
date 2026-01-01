@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
@@ -28,6 +27,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.JobModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
@@ -42,11 +42,11 @@ public class JobService {
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
 
     private final JobRepository jobRepository;
-    private final Mapper mapper;
+    private final JobModelMapper jobModelMapper;
 
-    public JobService(JobRepository jobRepository, Mapper mapper) {
+    public JobService(JobRepository jobRepository, JobModelMapper jobModelMapper) {
         this.jobRepository = jobRepository;
-        this.mapper = mapper;
+        this.jobModelMapper = jobModelMapper;
     }
 
     public void populateParentIds(JobEntity jobEntity) {
@@ -77,7 +77,7 @@ public class JobService {
     public JobModel getJob(JobPK jobPK) throws RegistryException {
         JobEntity entity = jobRepository.findById(jobPK).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, JobModel.class);
+        return jobModelMapper.toModel(entity);
     }
 
     public List<JobModel> getJobList(String fieldName, Object value) throws RegistryException {
@@ -92,9 +92,7 @@ public class JobService {
             logger.error("Unsupported field name for Job module.");
             throw new IllegalArgumentException("Unsupported field name for Job module.");
         }
-        List<JobModel> jobModelList = new ArrayList<>();
-        entities.forEach(e -> jobModelList.add(mapper.map(e, JobModel.class)));
-        return jobModelList;
+        return jobModelMapper.toModelList(entities);
     }
 
     public List<String> getJobIds(String fieldName, Object value) throws RegistryException {
@@ -138,12 +136,31 @@ public class JobService {
             });
         }
 
+        long currentTime = System.currentTimeMillis();
+        // Always ensure creationTime is set on the model before mapping
         if (!isJobExist(jobPK)) {
             logger.debug("Setting creation time to current time if does not exist");
-            jobModel.setCreationTime(System.currentTimeMillis());
+            jobModel.setCreationTime(currentTime);
+        } else {
+            // For updates, preserve existing creation time if set, otherwise use current time
+            if (jobModel.getCreationTime() <= 0) {
+                // Try to get existing job to preserve its creation time
+                JobModel existingJob = getJob(jobPK);
+                if (existingJob != null && existingJob.getCreationTime() > 0) {
+                    jobModel.setCreationTime(existingJob.getCreationTime());
+                } else {
+                    jobModel.setCreationTime(currentTime);
+                }
+            }
         }
 
-        JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
+        JobEntity jobEntity = jobModelMapper.toEntity(jobModel);
+
+        // Ensure CREATION_TIME is set if mapper didn't set it (mapper returns null if model time is 0 or negative)
+        if (jobEntity.getCreationTime() == null) {
+            long creationTime = (jobModel.getCreationTime() > 0) ? jobModel.getCreationTime() : currentTime;
+            jobEntity.setCreationTime(new java.sql.Timestamp(creationTime));
+        }
 
         populateParentIds(jobEntity);
 

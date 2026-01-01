@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.sharing.entities.DomainEntity;
+import org.apache.airavata.sharing.mappers.DomainMapper;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.DomainRepository;
@@ -32,17 +32,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DomainService {
     private final DomainRepository domainRepository;
-    private final Mapper mapper;
+    private final DomainMapper domainMapper;
 
-    public DomainService(DomainRepository domainRepository, Mapper mapper) {
+    public DomainService(DomainRepository domainRepository, DomainMapper domainMapper) {
         this.domainRepository = domainRepository;
-        this.mapper = mapper;
+        this.domainMapper = domainMapper;
     }
 
     public Domain get(String domainId) throws SharingRegistryException {
         DomainEntity entity = domainRepository.findById(domainId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Domain.class);
+        return domainMapper.toModel(entity);
     }
 
     public Domain create(Domain domain) throws SharingRegistryException {
@@ -50,9 +50,9 @@ public class DomainService {
     }
 
     public Domain update(Domain domain) throws SharingRegistryException {
-        DomainEntity entity = mapper.map(domain, DomainEntity.class);
+        DomainEntity entity = domainMapper.toEntity(domain);
         DomainEntity saved = domainRepository.save(entity);
-        return mapper.map(saved, Domain.class);
+        return domainMapper.toModel(saved);
     }
 
     public boolean delete(String domainId) throws SharingRegistryException {
@@ -66,6 +66,6 @@ public class DomainService {
 
     public List<Domain> getAll() throws SharingRegistryException {
         List<DomainEntity> entities = domainRepository.findAll();
-        return entities.stream().map(e -> mapper.map(e, Domain.class)).toList();
+        return domainMapper.toModelList(entities);
     }
 }

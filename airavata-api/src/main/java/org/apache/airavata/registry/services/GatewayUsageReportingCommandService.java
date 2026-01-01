@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.common.model.GatewayUsageReportingCommand;
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.GatewayUsageReportingCommandMapper;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayUsageReportingCommandRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +32,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class GatewayUsageReportingCommandService {
     private final GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository;
-    private final Mapper mapper;
+    private final GatewayUsageReportingCommandMapper gatewayUsageReportingCommandMapper;
 
     public GatewayUsageReportingCommandService(
-            GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository, Mapper mapper) {
+            GatewayUsageReportingCommandRepository gatewayUsageReportingCommandRepository,
+            GatewayUsageReportingCommandMapper gatewayUsageReportingCommandMapper) {
         this.gatewayUsageReportingCommandRepository = gatewayUsageReportingCommandRepository;
-        this.mapper = mapper;
+        this.gatewayUsageReportingCommandMapper = gatewayUsageReportingCommandMapper;
     }
 
     public boolean isGatewayUsageReportingCommandExists(String gatewayId, String computeResourceId)
@@ -56,11 +57,11 @@ public class GatewayUsageReportingCommandService {
         GatewayUsageReportingCommandEntity entity =
                 gatewayUsageReportingCommandRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, GatewayUsageReportingCommand.class);
+        return gatewayUsageReportingCommandMapper.toModel(entity);
     }
 
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryException {
-        GatewayUsageReportingCommandEntity entity = mapper.map(command, GatewayUsageReportingCommandEntity.class);
+        GatewayUsageReportingCommandEntity entity = gatewayUsageReportingCommandMapper.toEntity(command);
         gatewayUsageReportingCommandRepository.save(entity);
     }
 

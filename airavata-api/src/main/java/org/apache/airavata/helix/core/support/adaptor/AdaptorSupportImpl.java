@@ -30,6 +30,8 @@ import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,11 +41,11 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0-SNAPSHOT
  */
 @Component
+@Primary
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class AdaptorSupportImpl implements AdaptorSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
-
-    private static AdaptorSupportImpl INSTANCE;
 
     private final AgentStore agentStore = new AgentStore();
     private final org.apache.airavata.service.registry.RegistryService registryService;
@@ -54,14 +56,6 @@ public class AdaptorSupportImpl implements AdaptorSupport {
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
-        INSTANCE = this;
-    }
-
-    public static synchronized AdaptorSupportImpl getInstance() {
-        if (INSTANCE == null) {
-            throw new IllegalStateException("AdaptorSupportImpl must be initialized via Spring");
-        }
-        return INSTANCE;
     }
 
     public void initializeAdaptor() {}

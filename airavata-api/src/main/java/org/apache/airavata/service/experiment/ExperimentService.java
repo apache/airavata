@@ -20,36 +20,158 @@
 package org.apache.airavata.service.experiment;
 
 import java.util.List;
+import java.util.Map;
+import org.apache.airavata.common.exception.AiravataErrorType;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatistics;
+import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.service.registry.RegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.stereotype.Service;
 
 /**
- * Service interface for experiment management operations.
+ * Service for experiment management operations.
  */
-public interface ExperimentService {
-    String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException;
+@Service("experimentServiceFacade")
+@ConditionalOnBean(RegistryService.class)
+public class ExperimentService {
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
 
-    ExperimentModel getExperiment(String airavataExperimentId) throws AiravataSystemException;
+    private final RegistryService registryService;
+    private Publisher statusPublisher;
 
-    void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws AiravataSystemException;
+    public ExperimentService(RegistryService registryService, MessagingFactory messagingFactory) {
+        this.registryService = registryService;
+        try {
+            statusPublisher = messagingFactory.getPublisher(Type.STATUS);
+        } catch (Exception e) {
+            logger.warn("StatusPublisher unavailable: " + e.getMessage());
+        }
+    }
 
-    boolean deleteExperiment(String experimentId) throws AiravataSystemException;
+    private AiravataSystemException airavataSystemException(
+            AiravataErrorType errorType, String message, Throwable cause) {
+        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+                errorType, message, cause);
+    }
 
-    String cloneExperiment(String existingExperimentId, String newExperimentName) throws AiravataSystemException;
+    public String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException {
+        try {
+            var experimentId = registryService.createExperiment(gatewayId, experiment);
+            if (statusPublisher != null) {
+                var event = new ExperimentStatusChangeEvent();
+                event.setState(ExperimentState.CREATED);
+                event.setExperimentId(experimentId);
+                event.setGatewayId(gatewayId);
+                var messageId = AiravataUtils.getId("EXPERIMENT");
+                var messageContext = new MessageContext(
+                        event, org.apache.airavata.common.model.MessageType.EXPERIMENT, messageId, gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                statusPublisher.publish(messageContext);
+            }
+            return experimentId;
+        } catch (RegistryServiceException | AiravataException e) {
+            String msg = "Error while creating experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 
-    List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
-            throws AiravataSystemException;
+    public ExperimentModel getExperiment(String airavataExperimentId) throws AiravataSystemException {
+        try {
+            return registryService.getExperiment(airavataExperimentId);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while retrieving experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 
-    List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
-            throws AiravataSystemException;
+    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
+            throws AiravataSystemException {
+        try {
+            registryService.updateExperiment(airavataExperimentId, experiment);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while updating experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 
-    ExperimentStatistics getExperimentStatistics(String gatewayId, String userName, long fromTime, long toTime)
-            throws AiravataSystemException;
+    public boolean deleteExperiment(String experimentId) throws AiravataSystemException {
+        try {
+            return registryService.deleteExperiment(experimentId);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while deleting experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 
-    List<ExperimentSummaryModel> searchExperiments(
+    public String cloneExperiment(String existingExperimentId, String newExperimentName)
+            throws AiravataSystemException {
+        // This is a simplified version - full implementation would need more context
+        throw new UnsupportedOperationException(
+                "Clone experiment requires additional context - use AiravataService.cloneExperiment");
+    }
+
+    public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
+            throws AiravataSystemException {
+        try {
+            return registryService.getUserExperiments(gatewayId, userName, limit, offset);
+        } catch (RegistryServiceException e) {
+            String msg = "Error occurred while getting user experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
+            throws AiravataSystemException {
+        try {
+            return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while retrieving the experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public ExperimentStatistics getExperimentStatistics(String gatewayId, String userName, long fromTime, long toTime)
+            throws AiravataSystemException {
+        try {
+            return registryService.getExperimentStatistics(
+                    gatewayId, fromTime, toTime, userName, null, null, List.of(), 0, 0);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while getting experiment statistics: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    public List<ExperimentSummaryModel> searchExperiments(
             String gatewayId, String userName, ExperimentSearchFields searchFields, int limit, int offset)
-            throws AiravataSystemException;
+            throws AiravataSystemException {
+        try {
+            Map<ExperimentSearchFields, String> filters = searchFields != null ? Map.of(searchFields, "") : Map.of();
+            return registryService.searchExperiments(gatewayId, userName, List.of(), filters, limit, offset);
+        } catch (RegistryServiceException e) {
+            String msg = "Error while searching experiments: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
 }

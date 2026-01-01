@@ -21,13 +21,13 @@ package org.apache.airavata.manager.dbevent.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,9 +43,11 @@ public class DBEventManagerMessagingFactory {
     private Publisher dbEventPublisher;
 
     private final MessagingFactory messagingFactory;
+    private final DBEventMessageHandler handler;
 
-    public DBEventManagerMessagingFactory(MessagingFactory messagingFactory) {
+    public DBEventManagerMessagingFactory(MessagingFactory messagingFactory, @Lazy DBEventMessageHandler handler) {
         this.messagingFactory = messagingFactory;
+        this.handler = handler;
     }
 
     /**
@@ -53,13 +55,14 @@ public class DBEventManagerMessagingFactory {
      * @return
      * @throws AiravataException
      */
-    public Subscriber getDBEventSubscriber(AiravataServerProperties properties) throws AiravataException {
+    public Subscriber getDBEventSubscriber() throws AiravataException {
         if (null == dbEventSubscriber) {
             synchronized (this) {
                 if (null == dbEventSubscriber) {
                     log.info("Creating DB Event subscriber.....");
-                    dbEventSubscriber = messagingFactory.getDBEventSubscriber(
-                            new DBEventMessageHandler(properties, this), DBEventService.DB_EVENT.toString());
+                    // Handler is injected as a Spring bean, no need to instantiate
+                    dbEventSubscriber =
+                            messagingFactory.getDBEventSubscriber(handler, DBEventService.DB_EVENT.toString());
                     log.info("DB Event subscriber created");
                 }
             }

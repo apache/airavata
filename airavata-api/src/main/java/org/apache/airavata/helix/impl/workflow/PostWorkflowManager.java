@@ -27,8 +27,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -63,9 +61,14 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class PostWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
@@ -73,11 +76,19 @@ public class PostWorkflowManager extends WorkflowManager {
 
     private final AiravataServerProperties properties;
     private final org.apache.airavata.helix.impl.task.TaskFactory taskFactory;
+
+    @SuppressWarnings("unused") // Reserved for future use or parent class compatibility
     private final org.springframework.context.ApplicationContext applicationContext;
+
     private final org.apache.airavata.service.registry.RegistryService registryService;
+
+    @SuppressWarnings("unused") // Reserved for future use or parent class compatibility
     private final org.apache.airavata.service.profile.UserProfileService userProfileService;
+
+    @SuppressWarnings("unused") // Reserved for future use or parent class compatibility
     private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
-    private final ExecutorService processingPool = Executors.newFixedThreadPool(10);
+
+    private final ThreadPoolTaskExecutor processingPool;
 
     public PostWorkflowManager(
             AiravataServerProperties properties,
@@ -86,7 +97,8 @@ public class PostWorkflowManager extends WorkflowManager {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
+            @Qualifier("postWorkflowManagerExecutor") ThreadPoolTaskExecutor processingPool) {
         // Default values, will be updated in @PostConstruct
         super("post-workflow-manager", false, registryService, properties, messagingFactory);
         this.properties = properties;
@@ -95,6 +107,7 @@ public class PostWorkflowManager extends WorkflowManager {
         this.registryService = registryService;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
+        this.processingPool = processingPool;
     }
 
     @jakarta.annotation.PostConstruct
@@ -304,6 +317,9 @@ public class PostWorkflowManager extends WorkflowManager {
                         var subTaskModel = (DataStagingTaskModel) taskModel.getSubTaskModel();
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
+                            case INPUT:
+                                // INPUT staging is handled in pre-workflow, skip here
+                                break;
                             case OUPUT:
                                 airavataTask = taskFactory.createOutputDataStagingTask(processId);
                                 airavataTask.setForceRunTask(true);
@@ -367,7 +383,8 @@ public class PostWorkflowManager extends WorkflowManager {
         final Consumer<String, JobStatusResult> consumer = createConsumer();
         new Thread(() -> {
                     while (true) {
-                        final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+                        final ConsumerRecords<String, JobStatusResult> consumerRecords =
+                                consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
                         var executorCompletionService = new ExecutorCompletionService<>(processingPool);
                         var processingFutures = new ArrayList<>();
 
@@ -402,7 +419,7 @@ public class PostWorkflowManager extends WorkflowManager {
                             }
                         }
 
-                        for (var ignored : processingFutures) {
+                        for (int i = 0; i < processingFutures.size(); i++) {
                             try {
                                 executorCompletionService.take().get();
                             } catch (Exception e) {

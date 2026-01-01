@@ -25,8 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
+import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.profile.exception.GroupManagerServiceException;
+import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.profile.exception.UserProfileServiceException;
+import org.apache.airavata.service.SharingRegistryService;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.security.GroupManagerService;
+import org.apache.airavata.sharing.model.Domain;
+import org.apache.airavata.sharing.model.DuplicateEntryException;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,15 +47,31 @@ import org.junit.jupiter.api.Test;
 public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final GroupManagerService groupManagerService;
+    private final UserProfileService userProfileService;
+    private final SharingRegistryService sharingRegistryService;
 
-    public GroupManagerServiceIntegrationTest(GroupManagerService groupManagerService) {
+    public GroupManagerServiceIntegrationTest(
+            GroupManagerService groupManagerService,
+            UserProfileService userProfileService,
+            SharingRegistryService sharingRegistryService) {
         this.groupManagerService = groupManagerService;
+        this.userProfileService = userProfileService;
+        this.sharingRegistryService = sharingRegistryService;
     }
 
     private String testGroupId;
 
     @BeforeEach
-    public void setUpGroups() throws GroupManagerServiceException, SharingRegistryException {
+    public void setUpGroups() throws GroupManagerServiceException, SharingRegistryException, DuplicateEntryException {
+        // Ensure domain exists for the test gateway
+        if (!sharingRegistryService.isDomainExists(TEST_GATEWAY_ID)) {
+            Domain domain = new Domain();
+            domain.setDomainId(TEST_GATEWAY_ID);
+            domain.setName("Test Gateway");
+            domain.setDescription("Test domain for integration tests");
+            sharingRegistryService.createDomain(domain);
+        }
+
         // Create a test group for use in tests
         GroupModel group = new GroupModel();
         group.setName("Test Group");
@@ -143,8 +166,16 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should add users to group")
         void shouldAddUsersToGroup()
-                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
+                        UserProfileServiceException, IamAdminServicesException {
+            // Arrange - create user profiles and commit transaction to avoid rollback issues
+            UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
+            userProfileService.addUserProfile(testAuthzToken, user1Profile);
+            commitTransaction();
+            UserProfile user2Profile = TestDataFactory.createTestUserProfile("user2", TEST_GATEWAY_ID);
+            userProfileService.addUserProfile(testAuthzToken, user2Profile);
+            commitTransaction();
+
             List<String> userIds = new ArrayList<>();
             userIds.add("user1@" + TEST_GATEWAY_ID);
             userIds.add("user2@" + TEST_GATEWAY_ID);
@@ -159,11 +190,17 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should remove users from group")
         void shouldRemoveUsersFromGroup()
-                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
+                        UserProfileServiceException, IamAdminServicesException {
+            // Arrange - create user profile and commit transaction to avoid rollback issues
+            UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
+            userProfileService.addUserProfile(testAuthzToken, user1Profile);
+            commitTransaction();
+
             List<String> userIds = new ArrayList<>();
             userIds.add("user1@" + TEST_GATEWAY_ID);
             groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
+            commitTransaction();
 
             // Act
             boolean removed = groupManagerService.removeUsersFromGroup(testAuthzToken, userIds, testGroupId);
@@ -180,8 +217,18 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should add group admins")
         void shouldAddGroupAdmins()
-                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
+                        UserProfileServiceException, IamAdminServicesException {
+            // Arrange - create user profile for admin and add to group first, commit to avoid rollback issues
+            UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
+            userProfileService.addUserProfile(testAuthzToken, adminProfile);
+            commitTransaction();
+
+            List<String> userIds = new ArrayList<>();
+            userIds.add("admin1@" + TEST_GATEWAY_ID);
+            groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
+            commitTransaction();
+
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
 
@@ -195,11 +242,22 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should remove group admins")
         void shouldRemoveGroupAdmins()
-                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
+                throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
+                        UserProfileServiceException, IamAdminServicesException {
+            // Arrange - create user profile for admin and add to group first, commit to avoid rollback issues
+            UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
+            userProfileService.addUserProfile(testAuthzToken, adminProfile);
+            commitTransaction();
+
+            List<String> userIds = new ArrayList<>();
+            userIds.add("admin1@" + TEST_GATEWAY_ID);
+            groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
+            commitTransaction();
+
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
             groupManagerService.addGroupAdmins(testAuthzToken, testGroupId, adminIds);
+            commitTransaction();
 
             // Act
             boolean removed = groupManagerService.removeGroupAdmins(testAuthzToken, testGroupId, adminIds);

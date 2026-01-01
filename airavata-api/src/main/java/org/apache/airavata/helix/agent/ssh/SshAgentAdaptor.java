@@ -48,6 +48,7 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,6 +58,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0-SNAPSHOT
  */
 @Component
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class SshAgentAdaptor implements AgentAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);

@@ -41,13 +41,14 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class ClusterStatusMonitorJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
-    private static ApplicationContext applicationContext;
 
     private final RegistryService registryService;
     private final CredentialStoreService credentialStoreService;
@@ -56,25 +57,16 @@ public class ClusterStatusMonitorJob implements Job {
     public ClusterStatusMonitorJob(
             RegistryService registryService,
             CredentialStoreService credentialStoreService,
-            AiravataServerProperties properties,
-            ApplicationContext applicationContext) {
+            AiravataServerProperties properties) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
         this.properties = properties;
-        ClusterStatusMonitorJob.applicationContext = applicationContext;
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             String superTenantGatewayId = properties.airavata.superTenantGatewayId;
-            // Use injected service, fallback to ApplicationContext if not injected (for Quartz instantiation)
-            final RegistryService registryService = (this.registryService != null)
-                    ? this.registryService
-                    : (applicationContext != null ? applicationContext.getBean(RegistryService.class) : null);
-            if (registryService == null) {
-                throw new JobExecutionException("RegistryService not available.");
-            }
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {
@@ -147,15 +139,7 @@ public class ClusterStatusMonitorJob implements Job {
 
                 try {
                     JSch jsch = new JSch();
-                    // Use injected service, fallback to ApplicationContext if not injected
-                    CredentialStoreService credentialService = this.credentialStoreService;
-                    if (credentialService == null && applicationContext != null) {
-                        credentialService = applicationContext.getBean(CredentialStoreService.class);
-                    }
-                    if (credentialService == null) {
-                        throw new JobExecutionException("CredentialStoreService not available.");
-                    }
-                    SSHCredential sshCredential = credentialService.getSSHCredential(
+                    SSHCredential sshCredential = credentialStoreService.getSSHCredential(
                             computeResourceProfile.getCredentialStoreToken(), superTenantGatewayId);
                     jsch.addIdentity(
                             hostName,

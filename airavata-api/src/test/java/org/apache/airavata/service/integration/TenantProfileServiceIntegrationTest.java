@@ -51,8 +51,11 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should create gateway successfully")
         void shouldCreateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-create");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-create-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
 
             // Act
@@ -62,14 +65,17 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             assertThat(internalId).isNotNull();
             Gateway retrieved = tenantProfileService.getGateway(testAuthzToken, internalId);
             assertThat(retrieved).isNotNull();
-            assertThat(retrieved.getGatewayId()).isEqualTo("test-gateway-create");
+            assertThat(retrieved.getGatewayId()).isEqualTo(uniqueId);
         }
 
         @Test
         @DisplayName("Should update gateway successfully")
         void shouldUpdateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-update");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-update-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
 
@@ -87,8 +93,11 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get gateway by internal ID")
         void shouldGetGateway() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-get");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-get-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
 
@@ -97,14 +106,17 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
 
             // Assert
             assertThat(retrieved).isNotNull();
-            assertThat(retrieved.getGatewayId()).isEqualTo("test-gateway-get");
+            assertThat(retrieved.getGatewayId()).isEqualTo(uniqueId);
         }
 
         @Test
         @DisplayName("Should delete gateway successfully")
         void shouldDeleteGateway() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-delete");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-delete-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
 
@@ -125,8 +137,11 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways")
         void shouldGetAllGateways() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-list");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-list-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             tenantProfileService.addGateway(testAuthzToken, gateway);
 
@@ -140,8 +155,11 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways for user")
         void shouldGetAllGatewaysForUser() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-user");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-user-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             gateway.setRequesterUsername("test-user");
             tenantProfileService.addGateway(testAuthzToken, gateway);
@@ -161,8 +179,11 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should check if gateway exists")
         void shouldCheckGatewayExists() throws TenantProfileServiceException, CredentialStoreException {
-            // Arrange
-            Gateway gateway = TestDataFactory.createTestGateway("test-gateway-exists");
+            // Arrange - use unique gateway ID, name, and URL to avoid conflicts
+            String uniqueId = "test-gateway-exists-" + System.currentTimeMillis();
+            Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
+            gateway.setGatewayName("Test Gateway " + uniqueId);
+            gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             tenantProfileService.addGateway(testAuthzToken, gateway);
 

@@ -49,6 +49,7 @@ import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskOutputs;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
@@ -62,6 +63,8 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -70,22 +73,23 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0-SNAPSHOT
  */
 @Component
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class ParserWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
     private final AiravataServerProperties properties;
-    private final org.springframework.context.ApplicationContext applicationContext;
-    private final org.apache.airavata.service.registry.RegistryService registryService;
+    private final ApplicationContext applicationContext;
+    private final RegistryService registryService;
     private String parserStorageResourceId;
 
     public ParserWorkflowManager(
             AiravataServerProperties properties,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
-        // Default values, will be updated in @PostConstruct
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            MessagingFactory messagingFactory) {
         super("parser-workflow-manager", false, registryService, properties, messagingFactory);
         this.properties = properties;
         this.applicationContext = applicationContext;

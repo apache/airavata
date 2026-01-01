@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.Notification;
 import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.NotificationMapper;
 import org.apache.airavata.registry.repositories.expcatalog.NotificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationService {
     private final NotificationRepository notificationRepository;
-    private final Mapper mapper;
+    private final NotificationMapper notificationMapper;
 
-    public NotificationService(NotificationRepository notificationRepository, Mapper mapper) {
+    public NotificationService(NotificationRepository notificationRepository, NotificationMapper notificationMapper) {
         this.notificationRepository = notificationRepository;
-        this.mapper = mapper;
+        this.notificationMapper = notificationMapper;
     }
 
     public void deleteNotification(String notificationId) throws RegistryException {
@@ -48,22 +47,56 @@ public class NotificationService {
         NotificationEntity entity =
                 notificationRepository.findById(notificationId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Notification.class);
+        return notificationMapper.toModel(entity);
     }
 
     public List<Notification> getAllGatewayNotifications(String gatewayId) throws RegistryException {
         List<NotificationEntity> entities = notificationRepository.findByGatewayId(gatewayId);
-        return entities.stream().map(e -> mapper.map(e, Notification.class)).collect(Collectors.toList());
+        return notificationMapper.toModelList(entities);
     }
 
     public String createNotification(Notification notification) throws RegistryException {
-        NotificationEntity entity = mapper.map(notification, NotificationEntity.class);
+        NotificationEntity entity = notificationMapper.toEntity(notification);
+        // Ensure required timestamps are set if mapper didn't set them
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        }
+        if (entity.getPublishedTime() == null) {
+            entity.setPublishedTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        }
+        if (entity.getExpirationTime() == null) {
+            // Set expiration to 1 year from now if not set
+            entity.setExpirationTime(new java.sql.Timestamp(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000));
+        }
         NotificationEntity saved = notificationRepository.save(entity);
         return saved.getNotificationId();
     }
 
     public void updateNotification(Notification notification) throws RegistryException {
-        NotificationEntity entity = mapper.map(notification, NotificationEntity.class);
+        NotificationEntity entity = notificationMapper.toEntity(notification);
+        // Ensure required timestamps are set if mapper didn't set them (mapper returns null if model time is 0)
+        if (entity.getCreationTime() == null) {
+            // Try to preserve existing creation time, or use current time
+            if (notification.getNotificationId() != null) {
+                NotificationEntity existing = notificationRepository
+                        .findById(notification.getNotificationId())
+                        .orElse(null);
+                if (existing != null && existing.getCreationTime() != null) {
+                    entity.setCreationTime(existing.getCreationTime());
+                } else {
+                    entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                }
+            } else {
+                entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+        }
+        if (entity.getPublishedTime() == null) {
+            entity.setPublishedTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        }
+        if (entity.getExpirationTime() == null) {
+            // Set expiration to 1 year from now if not set
+            entity.setExpirationTime(new java.sql.Timestamp(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000));
+        }
         notificationRepository.save(entity);
     }
 }

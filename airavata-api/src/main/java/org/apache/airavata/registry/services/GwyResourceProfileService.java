@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.ComputeResourcePreference;
@@ -33,6 +32,9 @@ import org.apache.airavata.registry.entities.appcatalog.SSHAccountProvisionerCon
 import org.apache.airavata.registry.entities.appcatalog.StoragePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.StoragePreferencePK;
 import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.mappers.ComputeResourcePreferenceMapper;
+import org.apache.airavata.registry.mappers.GatewayResourceProfileMapper;
+import org.apache.airavata.registry.mappers.StoragePreferenceMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePrefRepository;
 import org.apache.airavata.registry.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.SSHAccountProvisionerConfigurationRepository;
@@ -45,19 +47,25 @@ public class GwyResourceProfileService {
     private final GwyResourceProfileRepository gwyResourceProfileRepository;
     private final ComputeResourcePrefRepository computeResourcePrefRepository;
     private final StoragePrefRepository storagePrefRepository;
-    private final Mapper mapper;
+    private final GatewayResourceProfileMapper gatewayResourceProfileMapper;
+    private final ComputeResourcePreferenceMapper computeResourcePreferenceMapper;
+    private final StoragePreferenceMapper storagePreferenceMapper;
     private final SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository;
 
     public GwyResourceProfileService(
             GwyResourceProfileRepository gwyResourceProfileRepository,
             ComputeResourcePrefRepository computeResourcePrefRepository,
             StoragePrefRepository storagePrefRepository,
-            Mapper mapper,
+            GatewayResourceProfileMapper gatewayResourceProfileMapper,
+            ComputeResourcePreferenceMapper computeResourcePreferenceMapper,
+            StoragePreferenceMapper storagePreferenceMapper,
             SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository) {
         this.gwyResourceProfileRepository = gwyResourceProfileRepository;
         this.computeResourcePrefRepository = computeResourcePrefRepository;
         this.storagePrefRepository = storagePrefRepository;
-        this.mapper = mapper;
+        this.gatewayResourceProfileMapper = gatewayResourceProfileMapper;
+        this.computeResourcePreferenceMapper = computeResourcePreferenceMapper;
+        this.storagePreferenceMapper = storagePreferenceMapper;
         this.sshAccountProvisionerConfigurationRepository = sshAccountProvisionerConfigurationRepository;
     }
 
@@ -75,7 +83,7 @@ public class GwyResourceProfileService {
     @Transactional
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
-        GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
+        GatewayProfileEntity gatewayProfileEntity = gatewayResourceProfileMapper.toEntity(gatewayResourceProfile);
         if (gwyResourceProfileRepository.findById(gatewayId).isPresent()) {
             gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         } else {
@@ -97,7 +105,7 @@ public class GwyResourceProfileService {
                 if (preference.getSshAccountProvisionerConfig() != null
                         && !preference.getSshAccountProvisionerConfig().isEmpty()) {
                     ComputeResourcePreferenceEntity computeResourcePreferenceEntity =
-                            mapper.map(preference, ComputeResourcePreferenceEntity.class);
+                            computeResourcePreferenceMapper.toEntity(preference);
                     computeResourcePreferenceEntity.setGatewayId(gatewayId);
                     List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
                     for (String sshAccountProvisionerConfigName :
@@ -120,7 +128,7 @@ public class GwyResourceProfileService {
         GatewayProfileEntity entity =
                 gwyResourceProfileRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        GatewayResourceProfile gatewayResourceProfile = mapper.map(entity, GatewayResourceProfile.class);
+        GatewayResourceProfile gatewayResourceProfile = gatewayResourceProfileMapper.toModel(entity);
         gatewayResourceProfile.setGatewayID(gatewayId);
         if (gatewayResourceProfile.getComputeResourcePreferences() != null
                 && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
@@ -147,7 +155,7 @@ public class GwyResourceProfileService {
         List<GatewayProfileEntity> entities = gwyResourceProfileRepository.findAll();
         List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<>();
         for (GatewayProfileEntity entity : entities) {
-            GatewayResourceProfile gatewayResourceProfile = mapper.map(entity, GatewayResourceProfile.class);
+            GatewayResourceProfile gatewayResourceProfile = gatewayResourceProfileMapper.toModel(entity);
             if (gatewayResourceProfile.getComputeResourcePreferences() != null
                     && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
                 for (ComputeResourcePreference preference : gatewayResourceProfile.getComputeResourcePreferences()) {
@@ -191,7 +199,7 @@ public class GwyResourceProfileService {
         computeResourcePreferencePK.setComputeResourceId(hostId);
         ComputeResourcePreference computeResourcePreference = computeResourcePrefRepository
                 .findById(computeResourcePreferencePK)
-                .map(entity -> mapper.map(entity, ComputeResourcePreference.class))
+                .map(entity -> computeResourcePreferenceMapper.toModel(entity))
                 .orElse(null);
         if (computeResourcePreference != null) {
             computeResourcePreference.setSshAccountProvisionerConfig(
@@ -207,16 +215,14 @@ public class GwyResourceProfileService {
         storagePreferencePK.setGatewayId(gatewayId);
         return storagePrefRepository
                 .findById(storagePreferencePK)
-                .map(entity -> mapper.map(entity, StoragePreference.class))
+                .map(entity -> storagePreferenceMapper.toModel(entity))
                 .orElse(null);
     }
 
     @Transactional(readOnly = true)
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
         List<ComputeResourcePreferenceEntity> entities = computeResourcePrefRepository.findByGatewayId(gatewayId);
-        List<ComputeResourcePreference> preferences = entities.stream()
-                .map(entity -> mapper.map(entity, ComputeResourcePreference.class))
-                .collect(java.util.stream.Collectors.toList());
+        List<ComputeResourcePreference> preferences = computeResourcePreferenceMapper.toModelList(entities);
         if (preferences != null && !preferences.isEmpty()) {
             for (ComputeResourcePreference preference : preferences) {
                 preference.setSshAccountProvisionerConfig(
@@ -230,8 +236,6 @@ public class GwyResourceProfileService {
     @Transactional(readOnly = true)
     public List<StoragePreference> getAllStoragePreferences(String gatewayId) {
         List<StoragePreferenceEntity> entities = storagePrefRepository.findByGatewayId(gatewayId);
-        return entities.stream()
-                .map(entity -> mapper.map(entity, StoragePreference.class))
-                .collect(java.util.stream.Collectors.toList());
+        return storagePreferenceMapper.toModelList(entities);
     }
 }

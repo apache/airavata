@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -28,6 +27,7 @@ import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ErrorModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -42,8 +42,8 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
     public ProcessErrorService(
             ProcessErrorRepository processErrorRepository,
             @Qualifier("expCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
-        super(processErrorRepository, mapper);
+            ErrorModelMapper errorModelMapper) {
+        super(processErrorRepository, errorModelMapper);
         this.entityManager = entityManager;
     }
 
@@ -58,8 +58,13 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
     }
 
     @Override
-    protected Class<ProcessErrorEntity> getEntityClass() {
-        return ProcessErrorEntity.class;
+    protected Function<ErrorModel, ProcessErrorEntity> getModelToEntityMapper() {
+        return errorModelMapper::toEntityFromProcess;
+    }
+
+    @Override
+    protected Function<ProcessErrorEntity, ErrorModel> getEntityToModelMapper() {
+        return errorModelMapper::toModel;
     }
 
     @Override
@@ -76,8 +81,12 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
      * @throws RegistryException if the operation fails
      */
     public String addProcessError(ErrorModel error, String processId) throws RegistryException {
-        ProcessErrorEntity entity = mapper.map(error, ProcessErrorEntity.class);
+        ProcessErrorEntity entity = errorModelMapper.toEntityFromProcess(error);
         getParentIdSetter().accept(entity, processId);
+        // Ensure CREATION_TIME is set if not already set
+        if (entity.getCreationTime() == null) {
+            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+        }
         // Get a reference to the process entity (proxy, doesn't fetch from DB)
         ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         entity.setProcess(processEntity);

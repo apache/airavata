@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.TaskStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.TaskStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.TaskStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.stereotype.Service;
@@ -34,11 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class TaskStatusService {
     private final TaskStatusRepository taskStatusRepository;
-    private final Mapper mapper;
+    private final TaskStatusMapper taskStatusMapper;
 
-    public TaskStatusService(TaskStatusRepository taskStatusRepository, Mapper mapper) {
+    public TaskStatusService(TaskStatusRepository taskStatusRepository, TaskStatusMapper taskStatusMapper) {
         this.taskStatusRepository = taskStatusRepository;
-        this.mapper = mapper;
+        this.taskStatusMapper = taskStatusMapper;
     }
 
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
@@ -46,7 +46,7 @@ public class TaskStatusService {
             taskStatus.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
         }
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
+        TaskStatusEntity entity = taskStatusMapper.toEntity(taskStatus);
         entity.setTaskId(taskId);
         taskStatusRepository.save(entity);
     }
@@ -58,7 +58,7 @@ public class TaskStatusService {
         if (taskStatus.getTimeOfStateChange() == 0) {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         }
-        TaskStatusEntity entity = mapper.map(taskStatus, TaskStatusEntity.class);
+        TaskStatusEntity entity = taskStatusMapper.toEntity(taskStatus);
         entity.setTaskId(taskId);
         taskStatusRepository.save(entity);
     }
@@ -66,6 +66,6 @@ public class TaskStatusService {
     public TaskStatus getTaskStatus(String taskId) throws RegistryException {
         List<TaskStatusEntity> entities = taskStatusRepository.findByTaskIdOrderByTimeOfStateChangeDesc(taskId);
         if (entities.isEmpty()) return null;
-        return mapper.map(entities.get(0), TaskStatus.class);
+        return taskStatusMapper.toModel(entities.get(0));
     }
 }

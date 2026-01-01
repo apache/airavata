@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.mappers.DataProductMapper;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -39,15 +39,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataProductService {
     private final DataProductRepository dataProductRepository;
     private final EntityManager entityManager;
-    private final Mapper mapper;
+    private final DataProductMapper dataProductMapper;
 
     public DataProductService(
             DataProductRepository dataProductRepository,
             @Qualifier("replicaCatalogEntityManager") EntityManager entityManager,
-            Mapper mapper) {
+            DataProductMapper dataProductMapper) {
         this.dataProductRepository = dataProductRepository;
         this.entityManager = entityManager;
-        this.mapper = mapper;
+        this.dataProductMapper = dataProductMapper;
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
@@ -83,7 +83,7 @@ public class DataProductService {
         // Detach the main entity as well
         entityManager.detach(entity);
 
-        return mapper.map(entity, DataProductModel.class);
+        return dataProductMapper.toModel(entity);
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
@@ -114,7 +114,7 @@ public class DataProductService {
         }
         entityManager.detach(parentEntity);
 
-        return mapper.map(parentEntity, DataProductModel.class);
+        return dataProductMapper.toModel(parentEntity);
     }
 
     @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
@@ -141,7 +141,7 @@ public class DataProductService {
                         }
                     }
                     entityManager.detach(e);
-                    return mapper.map(e, DataProductModel.class);
+                    return dataProductMapper.toModel(e);
                 })
                 .collect(Collectors.toList());
     }
@@ -173,7 +173,7 @@ public class DataProductService {
                         }
                     }
                     entityManager.detach(e);
-                    return mapper.map(e, DataProductModel.class);
+                    return dataProductMapper.toModel(e);
                 })
                 .collect(Collectors.toList());
     }
@@ -201,7 +201,7 @@ public class DataProductService {
                 }
             }
         }
-        DataProductEntity entity = mapper.map(dataProductModel, DataProductEntity.class);
+        DataProductEntity entity = dataProductMapper.toEntity(dataProductModel);
         // Ensure productUri is set on entity
         entity.setProductUri(dataProductModel.getProductUri());
         // Ensure dataProduct relationship is set on replica locations
@@ -225,7 +225,7 @@ public class DataProductService {
     }
 
     public boolean updateDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
-        DataProductEntity entity = mapper.map(dataProductModel, DataProductEntity.class);
+        DataProductEntity entity = dataProductMapper.toEntity(dataProductModel);
         dataProductRepository.save(entity);
         return true;
     }

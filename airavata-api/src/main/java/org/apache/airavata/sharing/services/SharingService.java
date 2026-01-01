@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.entities.SharingPK;
+import org.apache.airavata.sharing.mappers.SharingMapper;
 import org.apache.airavata.sharing.model.Sharing;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.SharingType;
@@ -37,19 +37,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class SharingService {
     private final SharingRepository sharingRepository;
     private final PermissionTypeService permissionTypeService;
-    private final Mapper mapper;
+    private final SharingMapper sharingMapper;
 
     public SharingService(
-            SharingRepository sharingRepository, PermissionTypeService permissionTypeService, Mapper mapper) {
+            SharingRepository sharingRepository,
+            PermissionTypeService permissionTypeService,
+            SharingMapper sharingMapper) {
         this.sharingRepository = sharingRepository;
         this.permissionTypeService = permissionTypeService;
-        this.mapper = mapper;
+        this.sharingMapper = sharingMapper;
     }
 
     public Sharing get(SharingPK pk) throws SharingRegistryException {
         SharingEntity entity = sharingRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Sharing.class);
+        return sharingMapper.toModel(entity);
     }
 
     public Sharing create(Sharing sharing) throws SharingRegistryException {
@@ -57,9 +59,9 @@ public class SharingService {
     }
 
     public Sharing update(Sharing sharing) throws SharingRegistryException {
-        SharingEntity entity = mapper.map(sharing, SharingEntity.class);
+        SharingEntity entity = sharingMapper.toEntity(sharing);
         SharingEntity saved = sharingRepository.save(entity);
-        return mapper.map(saved, Sharing.class);
+        return sharingMapper.toModel(saved);
     }
 
     public boolean delete(SharingPK pk) throws SharingRegistryException {
@@ -75,14 +77,14 @@ public class SharingService {
         // For complex filters, use Criteria API in service if needed
         // For now, return all if no filters
         List<SharingEntity> entities = sharingRepository.findAll();
-        return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
+        return sharingMapper.toModelList(entities);
     }
 
     public List<Sharing> getIndirectSharedChildren(String domainId, String parentId, String permissionTypeId)
             throws SharingRegistryException {
         List<SharingEntity> entities = sharingRepository.findIndirectSharedChildren(
                 domainId, parentId, SharingType.INDIRECT_CASCADING.toString(), permissionTypeId);
-        return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
+        return sharingMapper.toModelList(entities);
     }
 
     public List<Sharing> getCascadingPermissionsForEntity(String domainId, String entityId)
@@ -91,7 +93,7 @@ public class SharingService {
                 Arrays.asList(SharingType.DIRECT_CASCADING.toString(), SharingType.INDIRECT_CASCADING.toString());
         List<SharingEntity> entities =
                 sharingRepository.findCascadingPermissionsForEntity(domainId, entityId, sharingTypes);
-        return entities.stream().map(e -> mapper.map(e, Sharing.class)).toList();
+        return sharingMapper.toModelList(entities);
     }
 
     public boolean hasAccess(String domainId, String entityId, List<String> groupIds, List<String> permissionTypeIds)

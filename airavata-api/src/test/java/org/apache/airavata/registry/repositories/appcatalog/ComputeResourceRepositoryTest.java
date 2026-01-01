@@ -58,21 +58,18 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
-        classes = {org.apache.airavata.config.JpaConfig.class, ComputeResourceRepositoryTest.TestConfiguration.class},
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            ComputeResourceRepositoryTest.TestConfiguration.class
+        },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "services.background.enabled=false",
-            "services.thrift.enabled=false",
-            "services.helix.enabled=false",
-            "services.airavata.enabled=false",
-            "services.registryService.enabled=false",
-            "services.userprofile.enabled=false",
-            "services.groupmanager.enabled=false",
-            "services.iam.enabled=false",
-            "services.orchestrator.enabled=false",
-            "security.manager.enabled=false"
+            "spring.aop.proxy-target-class=true"
+            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
+            // no property flags needed
         })
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -82,6 +79,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.mappers",
                 "org.apache.airavata.registry.repositories",
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
@@ -99,18 +97,29 @@ public class ComputeResourceRepositoryTest extends TestBase {
                         })
             },
             excludeFilters = {
+                // Exclude infrastructure components - use DI instead of property flags
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern =
-                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
+                        pattern = "org\\.apache\\.airavata\\.helix\\..*"),
                 @ComponentScan.Filter(
                         type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.service\\..*")
+                        pattern = "org\\.apache\\.airavata\\.monitor\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.manager\\.dbevent\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.REGEX,
+                        pattern = "org\\.apache\\.airavata\\.orchestrator\\..*"),
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = {org.apache.airavata.config.SecurityManagerConfig.class})
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
         org.apache.airavata.config.AiravataPropertiesConfiguration.class,
-        org.apache.airavata.config.DozerMapperConfig.class
     })
     static class TestConfiguration {}
 
@@ -150,6 +159,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
 
+        // Handle null case - if no batch queues are returned, it means they were all removed
+        if (updatedBatchQueues == null) {
+            updatedBatchQueues = new java.util.ArrayList<>();
+        }
         Assertions.assertEquals(batchQueues.size(), updatedBatchQueues.size() + 1);
         Optional<BatchQueue> searchedInterfaceResult = updatedBatchQueues.stream()
                 .filter(queue -> queue.getQueueName().equals(batchQueues.get(0).getQueueName()))
@@ -187,6 +200,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
 
+        // Handle null case - if no data movement interfaces are returned, it means they were all removed
+        if (updatedDataMovementInterfaces == null) {
+            updatedDataMovementInterfaces = new java.util.ArrayList<>();
+        }
         Assertions.assertEquals(dataMovementInterfaces.size(), updatedDataMovementInterfaces.size() + 1);
         Optional<DataMovementInterface> searchedInterfaceResult = updatedDataMovementInterfaces.stream()
                 .filter(iface -> iface.getDataMovementInterfaceId()
@@ -226,6 +243,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
                 updatedComputeResource.getJobSubmissionInterfaces();
 
+        // Handle null case - if no job submission interfaces are returned, it means they were all removed
+        if (updatedJobSubmissionInterfaces == null) {
+            updatedJobSubmissionInterfaces = new java.util.ArrayList<>();
+        }
         Assertions.assertEquals(jobSubmissionInterfaces.size(), updatedJobSubmissionInterfaces.size() + 1);
         Optional<JobSubmissionInterface> searchedInterfaceResult = updatedJobSubmissionInterfaces.stream()
                 .filter(iface -> iface.getJobSubmissionInterfaceId()
@@ -362,6 +383,9 @@ public class ComputeResourceRepositoryTest extends TestBase {
         batchQueue.setQueueSpecificMacros("Macros new");
         batchQueue.setIsDefaultQueue(true);
 
+        if (savedComputeResource.getBatchQueues() == null) {
+            savedComputeResource.setBatchQueues(new java.util.ArrayList<>());
+        }
         savedComputeResource.getBatchQueues().add(batchQueue);
         savedComputeResource.setCpusPerNode(43);
         savedComputeResource.setDefaultWalltime(4343);

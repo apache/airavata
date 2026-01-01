@@ -28,7 +28,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,12 +41,12 @@ public class CredentialServiceServer extends ServerLifecycle {
 
     private TServer server;
 
-    private final ApplicationContext applicationContext;
     private final AiravataServerProperties properties;
+    private final CredentialServiceHandler handler;
 
-    public CredentialServiceServer(ApplicationContext applicationContext, AiravataServerProperties properties) {
-        this.applicationContext = applicationContext;
+    public CredentialServiceServer(AiravataServerProperties properties, CredentialServiceHandler handler) {
         this.properties = properties;
+        this.handler = handler;
     }
 
     @Override
@@ -75,7 +74,6 @@ public class CredentialServiceServer extends ServerLifecycle {
     protected void doStart() throws Exception {
         try {
             final int serverPort = properties.services.vault.server.port;
-            CredentialServiceHandler handler = applicationContext.getBean(CredentialServiceHandler.class);
             CredentialStoreService.Processor<CredentialServiceHandler> processor =
                     new CredentialStoreService.Processor<>(handler);
 

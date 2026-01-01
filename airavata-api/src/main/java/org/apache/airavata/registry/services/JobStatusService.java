@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.JobStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.JobStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.springframework.stereotype.Service;
@@ -35,18 +35,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class JobStatusService {
     private final JobStatusRepository jobStatusRepository;
-    private final Mapper mapper;
+    private final JobStatusMapper jobStatusMapper;
 
-    public JobStatusService(JobStatusRepository jobStatusRepository, Mapper mapper) {
+    public JobStatusService(JobStatusRepository jobStatusRepository, JobStatusMapper jobStatusMapper) {
         this.jobStatusRepository = jobStatusRepository;
-        this.mapper = mapper;
+        this.jobStatusMapper = jobStatusMapper;
     }
 
     public JobStatus getJobStatus(JobPK jobPK) throws RegistryException {
         List<JobStatusEntity> entities = jobStatusRepository.findByJobIdAndTaskIdOrderByTimeOfStateChangeDesc(
                 jobPK.getJobId(), jobPK.getTaskId());
         if (entities.isEmpty()) return null;
-        return mapper.map(entities.get(0), JobStatus.class);
+        return jobStatusMapper.toModel(entities.get(0));
     }
 
     public void addJobStatus(JobStatus jobStatus, JobPK jobPK) throws RegistryException {
@@ -54,7 +54,7 @@ public class JobStatusService {
             jobStatus.setStatusId(ExpCatalogUtils.getID("JOB_STATE"));
         }
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        JobStatusEntity entity = mapper.map(jobStatus, JobStatusEntity.class);
+        JobStatusEntity entity = jobStatusMapper.toEntity(jobStatus);
         entity.setJobId(jobPK.getJobId());
         entity.setTaskId(jobPK.getTaskId());
         jobStatusRepository.save(entity);
@@ -67,7 +67,7 @@ public class JobStatusService {
         if (jobStatus.getTimeOfStateChange() == 0) {
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         }
-        JobStatusEntity entity = mapper.map(jobStatus, JobStatusEntity.class);
+        JobStatusEntity entity = jobStatusMapper.toEntity(jobStatus);
         entity.setJobId(jobPK.getJobId());
         entity.setTaskId(jobPK.getTaskId());
         jobStatusRepository.save(entity);

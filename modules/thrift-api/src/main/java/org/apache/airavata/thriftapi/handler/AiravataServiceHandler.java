@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.AiravataService;
@@ -195,9 +194,9 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
     private final ProcessStatusMapper processStatusMapper = ProcessStatusMapper.INSTANCE;
     private final QueueStatusModelMapper queueStatusModelMapper = QueueStatusModelMapper.INSTANCE;
 
-    public AiravataServiceHandler(AiravataService airavataService) throws AiravataException {
+    public AiravataServiceHandler(AiravataService airavataService) {
         this.airavataService = airavataService;
-        this.airavataService.init();
+        // AiravataService.init() is called automatically via @PostConstruct by Spring
     }
 
     /**

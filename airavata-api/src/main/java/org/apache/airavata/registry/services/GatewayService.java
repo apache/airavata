@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.GatewayMapper;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("profileServiceTransactionManager")
 public class GatewayService {
     private final GatewayRepository gatewayRepository;
-    private final Mapper mapper;
+    private final GatewayMapper gatewayMapper;
 
-    public GatewayService(GatewayRepository gatewayRepository, Mapper mapper) {
+    public GatewayService(GatewayRepository gatewayRepository, GatewayMapper gatewayMapper) {
         this.gatewayRepository = gatewayRepository;
-        this.mapper = mapper;
+        this.gatewayMapper = gatewayMapper;
     }
 
     public boolean isGatewayExist(String gatewayId) throws RegistryException {
@@ -47,12 +46,12 @@ public class GatewayService {
     public Gateway getGateway(String gatewayId) throws RegistryException {
         GatewayEntity entity = gatewayRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, Gateway.class);
+        return gatewayMapper.toModel(entity);
     }
 
     public List<Gateway> getAllGateways() throws RegistryException {
         List<GatewayEntity> entities = gatewayRepository.findAll();
-        return entities.stream().map(e -> mapper.map(e, Gateway.class)).collect(Collectors.toList());
+        return gatewayMapper.toModelList(entities);
     }
 
     public void removeGateway(String gatewayId) throws RegistryException {
@@ -60,13 +59,13 @@ public class GatewayService {
     }
 
     public String addGateway(Gateway gateway) throws RegistryException {
-        GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
         GatewayEntity saved = gatewayRepository.save(entity);
         return saved.getGatewayId();
     }
 
     public void updateGateway(String gatewayId, Gateway gateway) throws RegistryException {
-        GatewayEntity entity = mapper.map(gateway, GatewayEntity.class);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
         entity.setGatewayId(gatewayId);
         gatewayRepository.save(entity);
     }

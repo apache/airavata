@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.repositories;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.List;
@@ -41,7 +40,21 @@ public abstract class AbstractRepository<T, E, Id> {
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
 
-    protected abstract Mapper getMapper();
+    /**
+     * Map a Thrift model to a JPA entity using MapStruct mapper.
+     *
+     * @param model The Thrift model
+     * @return The JPA entity
+     */
+    protected abstract E mapToEntity(T model);
+
+    /**
+     * Map a JPA entity to a Thrift model using MapStruct mapper.
+     *
+     * @param entity The JPA entity
+     * @return The Thrift model
+     */
+    protected abstract T mapToModel(E entity);
 
     protected abstract EntityManager getEntityManager();
 
@@ -55,14 +68,10 @@ public abstract class AbstractRepository<T, E, Id> {
         return mergeEntity(mapToEntity(t));
     }
 
-    protected E mapToEntity(T t) {
-        return getMapper().map(t, dbEntityGenericClass);
-    }
-
     protected T mergeEntity(E entity) {
         EntityManager em = getEntityManager();
         E persistedCopy = em.merge(entity);
-        return getMapper().map(persistedCopy, thriftGenericClass);
+        return mapToModel(persistedCopy);
     }
 
     @Transactional
@@ -80,7 +89,7 @@ public abstract class AbstractRepository<T, E, Id> {
         EntityManager em = getEntityManager();
         E entity = em.find(dbEntityGenericClass, id);
         if (entity == null) return null;
-        return getMapper().map(entity, thriftGenericClass);
+        return mapToModel(entity);
     }
 
     @Transactional(readOnly = true)
@@ -88,9 +97,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public List<T> select(String query, int offset) {
         EntityManager em = getEntityManager();
         List<?> resultSet = em.createQuery(query).setFirstResult(offset).getResultList();
-        return resultSet.stream()
-                .map(rs -> getMapper().map(rs, thriftGenericClass))
-                .toList();
+        return resultSet.stream().map(rs -> mapToModel((E) rs)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -104,9 +111,7 @@ public abstract class AbstractRepository<T, E, Id> {
         }
 
         var resultSet = jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
-        return resultSet.stream()
-                .map(rs -> getMapper().map(rs, thriftGenericClass))
-                .toList();
+        return resultSet.stream().map(rs -> mapToModel((E) rs)).toList();
     }
 
     public boolean isExists(Id id) {

@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.sharing.entities.GroupAdminEntity;
 import org.apache.airavata.sharing.entities.GroupAdminPK;
+import org.apache.airavata.sharing.mappers.GroupAdminMapper;
 import org.apache.airavata.sharing.model.GroupAdmin;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.GroupAdminRepository;
@@ -32,17 +32,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class GroupAdminService {
     private final GroupAdminRepository groupAdminRepository;
-    private final Mapper mapper;
+    private final GroupAdminMapper groupAdminMapper;
 
-    public GroupAdminService(GroupAdminRepository groupAdminRepository, Mapper mapper) {
+    public GroupAdminService(GroupAdminRepository groupAdminRepository, GroupAdminMapper groupAdminMapper) {
         this.groupAdminRepository = groupAdminRepository;
-        this.mapper = mapper;
+        this.groupAdminMapper = groupAdminMapper;
     }
 
     public GroupAdmin get(GroupAdminPK pk) throws SharingRegistryException {
         GroupAdminEntity entity = groupAdminRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, GroupAdmin.class);
+        return groupAdminMapper.toModel(entity);
     }
 
     public GroupAdmin create(GroupAdmin groupAdmin) throws SharingRegistryException {
@@ -50,9 +50,9 @@ public class GroupAdminService {
     }
 
     public GroupAdmin update(GroupAdmin groupAdmin) throws SharingRegistryException {
-        GroupAdminEntity entity = mapper.map(groupAdmin, GroupAdminEntity.class);
+        GroupAdminEntity entity = groupAdminMapper.toEntity(groupAdmin);
         GroupAdminEntity saved = groupAdminRepository.save(entity);
-        return mapper.map(saved, GroupAdmin.class);
+        return groupAdminMapper.toModel(saved);
     }
 
     public boolean delete(GroupAdminPK pk) throws SharingRegistryException {

@@ -56,6 +56,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             ApplicationInterfaceRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -82,6 +83,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
+                "org.apache.airavata.registry.mappers",
                 "org.apache.airavata.registry.repositories",
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
@@ -97,20 +99,10 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
                             org.springframework.stereotype.Repository.class,
                             org.springframework.context.annotation.Configuration.class
                         })
-            },
-            excludeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern =
-                                "org\\.apache\\.airavata\\.(monitor|helix|sharing\\.migrator|credential|profile|security|accountprovisioning)\\..*"),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.REGEX,
-                        pattern = "org\\.apache\\.airavata\\.service\\..*")
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
         org.apache.airavata.config.AiravataPropertiesConfiguration.class,
-        org.apache.airavata.config.DozerMapperConfig.class
     })
     static class TestConfiguration {}
 

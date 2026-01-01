@@ -62,30 +62,26 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
-            "org.apache.airavata.registry",
-            "org.apache.airavata.profile",
-            "org.apache.airavata.sharing",
-            "org.apache.airavata.credential",
+            "org.apache.airavata.registry.services",
+            "org.apache.airavata.registry.repositories",
+            "org.apache.airavata.registry.mappers",
+            "org.apache.airavata.registry.utils",
+            "org.apache.airavata.profile.repositories",
+            "org.apache.airavata.profile.mappers",
+            "org.apache.airavata.profile.utils",
+            "org.apache.airavata.sharing.services",
+            "org.apache.airavata.sharing.repositories",
+            "org.apache.airavata.sharing.mappers",
+            "org.apache.airavata.sharing.utils",
+            "org.apache.airavata.credential.repositories",
+            "org.apache.airavata.credential.services",
+            "org.apache.airavata.credential.utils",
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
             "org.apache.airavata.orchestrator",
             "org.apache.airavata.helix",
             "org.apache.airavata.config",
             "org.apache.airavata.api.thrift"
-        },
-        excludeFilters = {
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\$.*" // Exclude inner classes (Thrift-generated)
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = ".*\\.cpi\\..*" // Exclude Thrift CPI classes
-                    ),
-            @ComponentScan.Filter(
-                    type = org.springframework.context.annotation.FilterType.REGEX,
-                    pattern = "org\\.apache\\.airavata\\.model\\..*" // Exclude Thrift-generated model classes
-                    )
         })
 @EntityScan(
         basePackages = {

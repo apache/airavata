@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import java.util.List;
 // SharingRegistryServerHandler moved to thrift-api module - update import if needed
 import org.apache.airavata.sharing.entities.PermissionTypeEntity;
 import org.apache.airavata.sharing.entities.PermissionTypePK;
+import org.apache.airavata.sharing.mappers.PermissionTypeMapper;
 import org.apache.airavata.sharing.model.PermissionType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
@@ -39,22 +39,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PermissionTypeService {
     private final PermissionTypeRepository permissionTypeRepository;
-    private final Mapper mapper;
+    private final PermissionTypeMapper permissionTypeMapper;
     private final EntityManager entityManager;
 
     public PermissionTypeService(
             PermissionTypeRepository permissionTypeRepository,
-            Mapper mapper,
+            PermissionTypeMapper permissionTypeMapper,
             @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
         this.permissionTypeRepository = permissionTypeRepository;
-        this.mapper = mapper;
+        this.permissionTypeMapper = permissionTypeMapper;
         this.entityManager = entityManager;
     }
 
     public PermissionType get(PermissionTypePK pk) throws SharingRegistryException {
         PermissionTypeEntity entity = permissionTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
-        return mapper.map(entity, PermissionType.class);
+        return permissionTypeMapper.toModel(entity);
     }
 
     public PermissionType create(PermissionType permissionType) throws SharingRegistryException {
@@ -62,9 +62,9 @@ public class PermissionTypeService {
     }
 
     public PermissionType update(PermissionType permissionType) throws SharingRegistryException {
-        PermissionTypeEntity entity = mapper.map(permissionType, PermissionTypeEntity.class);
+        PermissionTypeEntity entity = permissionTypeMapper.toEntity(permissionType);
         PermissionTypeEntity saved = permissionTypeRepository.save(entity);
-        return mapper.map(saved, PermissionType.class);
+        return permissionTypeMapper.toModel(saved);
     }
 
     public boolean delete(PermissionTypePK pk) throws SharingRegistryException {
@@ -113,6 +113,6 @@ public class PermissionTypeService {
         }
 
         var entities = typedQuery.getResultList();
-        return entities.stream().map(e -> mapper.map(e, PermissionType.class)).toList();
+        return permissionTypeMapper.toModelList(entities);
     }
 }

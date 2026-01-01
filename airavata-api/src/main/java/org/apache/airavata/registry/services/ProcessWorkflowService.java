@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.github.dozermapper.core.Mapper;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.ProcessWorkflow;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessWorkflowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,22 +32,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProcessWorkflowService {
     private final ProcessWorkflowRepository processWorkflowRepository;
-    private final Mapper mapper;
+    private final ProcessWorkflowMapper processWorkflowMapper;
 
-    public ProcessWorkflowService(ProcessWorkflowRepository processWorkflowRepository, Mapper mapper) {
+    public ProcessWorkflowService(
+            ProcessWorkflowRepository processWorkflowRepository, ProcessWorkflowMapper processWorkflowMapper) {
         this.processWorkflowRepository = processWorkflowRepository;
-        this.mapper = mapper;
+        this.processWorkflowMapper = processWorkflowMapper;
     }
 
     public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException {
         List<ProcessWorkflowEntity> entities = processWorkflowRepository.findByProcessId(processId);
-        List<ProcessWorkflow> result = new ArrayList<>();
-        entities.forEach(e -> result.add(mapper.map(e, ProcessWorkflow.class)));
-        return result;
+        return processWorkflowMapper.toModelList(entities);
     }
 
     public void addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException {
-        ProcessWorkflowEntity entity = mapper.map(processWorkflow, ProcessWorkflowEntity.class);
+        ProcessWorkflowEntity entity = processWorkflowMapper.toEntity(processWorkflow);
         entity.setProcessId(processId);
         processWorkflowRepository.save(entity);
     }
