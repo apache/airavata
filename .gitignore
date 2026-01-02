@@ -58,5 +58,7 @@ logs/
 **/target/
 # Ignore generated sources
 **/generated-sources/
+# Ignore Maven build cache
+.mvn/build-cache/
 /distribution
 /vault*

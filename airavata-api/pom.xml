@@ -485,14 +485,9 @@ under the License.
         <inherited>true</inherited>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
-          <environmentVariables>
-            <DOCKER_HOST>unix://${user.home}/.rd/docker.sock</DOCKER_HOST>
-            <TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>${user.home}/.rd/docker.sock</TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>
-          </environmentVariables>
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
             <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
-            <docker.host>unix://${user.home}/.rd/docker.sock</docker.host>
           </systemPropertyVariables>
           <argLine>@{argLine} -Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar</argLine>
         </configuration>

@@ -21,7 +21,6 @@ package org.apache.airavata.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.File;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
@@ -99,20 +98,16 @@ public class TestcontainersConfig {
         }
 
         if (container == null || !container.isRunning()) {
-            // Configure Testcontainers to use Rancher Desktop socket
-            String rdSocket = System.getProperty("user.home") + "/.rd/docker.sock";
-            File rdSocketFile = new File(rdSocket);
-            if (rdSocketFile.exists()) {
-                System.setProperty("docker.host", "unix://" + rdSocket);
-                System.setProperty("DOCKER_HOST", "unix://" + rdSocket);
-            }
-
-            container = new MariaDBContainer<>(DockerImageName.parse("mariadb:" + MARIADB_VERSION))
+            // Testcontainers will automatically use DOCKER_HOST or TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
+            // environment variables if set. No need to hardcode paths - configure at environment level.
+            @SuppressWarnings("resource") // Container is stored in static variable and reused across tests
+            MariaDBContainer<?> newContainer = new MariaDBContainer<>(DockerImageName.parse("mariadb:" + MARIADB_VERSION))
                     .withDatabaseName(TEST_DATABASE_PREFIX + databaseName)
                     .withUsername("test")
                     .withPassword("test")
                     .withReuse(true);
-            container.start();
+            newContainer.start();
+            container = newContainer;
 
             // Apply Flyway migrations
             if (!USE_EXISTING_CONTAINERS) {
