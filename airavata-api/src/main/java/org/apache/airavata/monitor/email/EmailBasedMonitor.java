@@ -47,10 +47,13 @@ import org.apache.airavata.monitor.email.parser.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
@@ -59,6 +62,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     private final AiravataServerProperties airavataProperties;
     private final org.apache.airavata.service.registry.RegistryService registryService;
+    private final ApplicationContext applicationContext;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -76,11 +80,13 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
 
     public EmailBasedMonitor(
             org.apache.airavata.service.registry.RegistryService registryService,
-            AiravataServerProperties airavataProperties)
+            AiravataServerProperties airavataProperties,
+            ApplicationContext applicationContext)
             throws Exception {
         super(registryService, airavataProperties);
         this.registryService = registryService;
         this.airavataProperties = airavataProperties;
+        this.applicationContext = applicationContext;
         // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 
@@ -162,12 +168,21 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                     addressMap.put(resourceEmailAddress, type);
                 }
                 try {
-                    Class<? extends EmailParser> emailParserClass =
-                            Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
-                    EmailParser emailParser = emailParserClass.getConstructor().newInstance();
+                    // Extract simple class name from full class name
+                    String parserClassName = config.getEmailParser();
+                    String simpleClassName = parserClassName.substring(parserClassName.lastIndexOf('.') + 1);
+                    // Spring default bean name is simple class name with first letter lowercase
+                    String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+
+                    EmailParser emailParser = applicationContext.getBean(beanName, EmailParser.class);
                     emailParserMap.put(type, emailParser);
+                } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
+                    throw new AiravataException(
+                            "EmailParser bean not found: " + config.getEmailParser()
+                                    + ". Make sure it's a Spring bean with @Component annotation.",
+                            e);
                 } catch (Exception e) {
-                    throw new AiravataException("Error while instantiation email parsers", e);
+                    throw new AiravataException("Error while getting email parser bean: " + config.getEmailParser(), e);
                 }
             }
         }

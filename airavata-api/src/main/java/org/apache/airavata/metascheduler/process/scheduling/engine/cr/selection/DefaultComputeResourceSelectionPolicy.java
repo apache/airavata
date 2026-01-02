@@ -30,6 +30,8 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,6 +40,11 @@ import org.springframework.stereotype.Component;
  * This checks whether defined CR is live
  */
 @Component
+@Profile("!test")
+@ConditionalOnProperty(
+        name = "scheduler.selectionPolicy",
+        havingValue = "DefaultComputeResourceSelectionPolicy",
+        matchIfMissing = true)
 public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultComputeResourceSelectionPolicy.class);

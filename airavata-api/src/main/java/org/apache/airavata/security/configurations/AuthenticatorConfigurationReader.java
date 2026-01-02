@@ -28,7 +28,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.Authenticator;
 import org.apache.airavata.security.UserStore;
 import org.slf4j.Logger;
@@ -41,7 +40,12 @@ import org.xml.sax.SAXException;
 
 /**
  * This class will read authenticators.xml and load all configurations related to authenticators.
+ *
+ * @deprecated This class uses reflection for dependency resolution. Use {@link org.apache.airavata.security.AuthenticatorRegistry}
+ *             instead, which collects authenticator beans from Spring context. This class is kept for backward
+ *             compatibility and test purposes only.
  */
+@Deprecated
 public class AuthenticatorConfigurationReader extends AbstractConfigurationReader {
 
     private List<Authenticator> authenticatorList = new ArrayList<Authenticator>();
@@ -142,69 +146,19 @@ public class AuthenticatorConfigurationReader extends AbstractConfigurationReade
     protected Authenticator createAuthenticator(
             String name, String className, String enabled, String priority, String userStoreClassName) {
 
-        log.debug("Loading authenticator class " + className + " and name " + name);
-
-        // Load a class and instantiate an object
-        Class authenticatorClass;
-        try {
-            authenticatorClass =
-                    Class.forName(className, true, Thread.currentThread().getContextClassLoader());
-            // authenticatorClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            log.error("Error loading authenticator class " + className);
-            throw new RuntimeException("Error loading authenticator class " + className, e);
-        }
-
-        try {
-            AbstractAuthenticator authenticatorInstance = (AbstractAuthenticator) authenticatorClass.newInstance();
-            authenticatorInstance.setAuthenticatorName(name);
-
-            if (enabled != null) {
-                authenticatorInstance.setEnabled(Boolean.parseBoolean(enabled));
-            }
-
-            if (priority != null) {
-                authenticatorInstance.setPriority(Integer.parseInt(priority));
-            }
-
-            UserStore userStore = createUserStore(userStoreClassName);
-            authenticatorInstance.setUserStore(userStore);
-
-            return authenticatorInstance;
-
-        } catch (InstantiationException e) {
-            String error = "Error instantiating authenticator class " + className + " object.";
-            log.error(error);
-            throw new RuntimeException(error, e);
-
-        } catch (IllegalAccessException e) {
-            String error = "Not allowed to instantiate authenticator class " + className;
-            log.error(error);
-            throw new RuntimeException(error, e);
-        }
+        // Reflection removed - use AuthenticatorRegistry instead
+        throw new UnsupportedOperationException(
+                "AuthenticatorConfigurationReader.createAuthenticator() uses reflection and is no longer supported. "
+                        + "Use AuthenticatorRegistry to get authenticator beans from Spring context. "
+                        + "Authenticators should be Spring beans with @Component and @ConditionalOnProperty annotations.");
     }
 
     protected UserStore createUserStore(String userStoreClassName) {
-
-        try {
-            Class userStoreClass = Class.forName(
-                    userStoreClassName, true, Thread.currentThread().getContextClassLoader());
-
-            return (UserStore) userStoreClass.newInstance();
-        } catch (ClassNotFoundException e) {
-            log.error("Error loading authenticator class " + userStoreClassName);
-            throw new RuntimeException("Error loading authenticator class " + userStoreClassName, e);
-
-        } catch (InstantiationException e) {
-            String error = "Error instantiating authenticator class " + userStoreClassName + " object.";
-            log.error(error);
-            throw new RuntimeException(error, e);
-
-        } catch (IllegalAccessException e) {
-            String error = "Not allowed to instantiate authenticator class " + userStoreClassName;
-            log.error(error);
-            throw new RuntimeException(error, e);
-        }
+        // Reflection removed - use Spring DI instead
+        throw new UnsupportedOperationException(
+                "AuthenticatorConfigurationReader.createUserStore() uses reflection and is no longer supported. "
+                        + "UserStore implementations should be Spring beans with @Component and @ConditionalOnProperty annotations. "
+                        + "Inject them via constructor injection in authenticator beans.");
     }
 
     public List<Authenticator> getAuthenticatorList() {

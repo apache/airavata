@@ -5,8 +5,8 @@ keytool -genseckey -alias airavata -keyalg AES -keysize 256 -keystore aes.p12 -s
 
 # generate self-signed key-cert pair for SSL termination
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt \
-  -subj "/CN=airavata.host/OU=airavata.host/O=airavata.host/L=airavata.host/ST=airavata.host/C=airavata.host" \
-  -addext "subjectAltName=DNS:airavata.host"
+  -subj "/CN=localhost/OU=localhost/O=localhost/L=localhost/ST=localhost/C=localhost" \
+  -addext "subjectAltName=DNS:localhost"
 
 # add server.crt to java truststore
 sudo keytool -cacerts -storepass changeit -delete -alias airavata

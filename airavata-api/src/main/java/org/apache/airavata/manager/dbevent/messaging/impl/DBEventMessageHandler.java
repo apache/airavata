@@ -29,29 +29,41 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerException;
-import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
 import org.apache.airavata.manager.dbevent.utils.DbEventManagerZkUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/14/17.
  */
 @Component
+@Profile("!test")
 public class DBEventMessageHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DBEventMessageHandler.class);
     private CuratorFramework curatorClient;
     private final AiravataServerProperties properties;
-    private final DBEventManagerMessagingFactory messagingFactory;
+    private Publisher dbEventPublisher;
+    private Subscriber dbEventSubscriber;
 
-    public DBEventMessageHandler(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
+    public DBEventMessageHandler(AiravataServerProperties properties) {
         this.properties = properties;
-        this.messagingFactory = messagingFactory;
+    }
+
+    /**
+     * Set the Publisher and Subscriber after they are created by the factory.
+     * This breaks the circular dependency.
+     */
+    public void setMessagingComponents(Publisher publisher, Subscriber subscriber) {
+        this.dbEventPublisher = publisher;
+        this.dbEventSubscriber = subscriber;
     }
 
     @PostConstruct
@@ -98,17 +110,16 @@ public class DBEventMessageHandler implements MessageHandler {
                             + subscribers.toString());
                     MessageContext messageCtx = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
                     messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                    if (messagingFactory == null) {
-                        throw new IllegalStateException(
-                                "DBEventManagerMessagingFactory must be set on DBEventMessageHandler");
+                    if (dbEventPublisher == null) {
+                        throw new IllegalStateException("DB Event Publisher must be set on DBEventMessageHandler");
                     }
-                    messagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
+                    dbEventPublisher.publish(messageCtx, routingKey);
                     break;
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
-            if (messagingFactory != null) {
-                messagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+            if (dbEventSubscriber != null) {
+                dbEventSubscriber.sendAck(messageContext.getDeliveryTag());
             }
 
         } catch (Exception e) {

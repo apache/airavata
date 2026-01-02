@@ -23,9 +23,11 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class TaskFactory {

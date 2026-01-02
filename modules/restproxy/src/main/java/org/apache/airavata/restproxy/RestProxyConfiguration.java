@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
         matchIfMissing = false)
 public class RestProxyConfiguration {
 
-    @Value("${restproxy.broker.url:airavata.host:9092}")
+    @Value("${restproxy.broker.url:localhost:9092}")
     private String brokerUrl;
 
     public String getBrokerUrl() {

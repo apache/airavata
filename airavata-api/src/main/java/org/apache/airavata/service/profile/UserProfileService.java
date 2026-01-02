@@ -32,6 +32,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
 import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;
@@ -77,13 +78,15 @@ public class UserProfileService {
             AiravataSecurityManager securityManager,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
             @Qualifier("profileServiceTransactionManager") PlatformTransactionManager transactionManager,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            ThriftToDomainMapperRegistry mapperRegistry) {
         this.userProfileRepository = userProfileRepository;
         this.iamAdminServiceProvider = iamAdminServiceProvider;
         this.userProfileMapper = userProfileMapper;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
-        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.USER_PROFILE, messagingFactory);
+        this.dbEventPublisherUtils =
+                new DBEventPublisherUtils(DBEventService.USER_PROFILE, messagingFactory, mapperRegistry);
         // Create a TransactionTemplate for IAM updates that uses REQUIRES_NEW propagation
         this.iamUpdateTransactionTemplate = new TransactionTemplate(transactionManager);
         this.iamUpdateTransactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -444,31 +447,7 @@ public class UserProfileService {
             // If updating an existing entity, preserve creationTime and lastAccessTime from the database
             // These fields are required and should not be null
             if (entity.getAiravataInternalUserId() != null) {
-                UserProfileEntity existingEntity =
-                        entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
-                if (existingEntity != null) {
-                    // Preserve creationTime and lastAccessTime from existing entity
-                    // Use reflection to set private fields since setters are private
-                    try {
-                        java.lang.reflect.Method setCreationTime =
-                                UserProfileEntity.class.getDeclaredMethod("setCreationTime", java.util.Date.class);
-                        setCreationTime.setAccessible(true);
-                        if (entity.getCreationTime() == null && existingEntity.getCreationTime() != null) {
-                            setCreationTime.invoke(entity, existingEntity.getCreationTime());
-                        }
-                        java.lang.reflect.Method setLastAccessTime =
-                                UserProfileEntity.class.getDeclaredMethod("setLastAccessTime", java.util.Date.class);
-                        setLastAccessTime.setAccessible(true);
-                        if (entity.getLastAccessTime() == null && existingEntity.getLastAccessTime() != null) {
-                            setLastAccessTime.invoke(entity, existingEntity.getLastAccessTime());
-                        }
-                    } catch (Exception e) {
-                        logger.warn(
-                                "Failed to preserve creationTime/lastAccessTime using reflection: {}", e.getMessage());
-                        // Fallback: the @PreUpdate callback will set lastAccessTime, but we need creationTime
-                        // If reflection fails, we'll rely on merge to preserve existing values
-                    }
-                }
+                entity = entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
             }
             // For new entities, @PrePersist will set creationTime and lastAccessTime
             persistedCopy = entityManager.merge(entity);

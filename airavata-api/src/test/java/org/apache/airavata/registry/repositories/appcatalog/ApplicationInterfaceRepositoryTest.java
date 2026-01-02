@@ -56,6 +56,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             ApplicationInterfaceRepositoryTest.TestConfiguration.class
         },
@@ -63,6 +64,7 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
+            "flyway.enabled=false",
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
@@ -74,6 +76,7 @@ import org.springframework.test.context.TestPropertySource;
             "services.orchestrator.enabled=false",
             "security.manager.enabled=false"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
@@ -88,17 +91,6 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({

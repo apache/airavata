@@ -27,6 +27,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -134,5 +135,12 @@ public class TaskErrorEntity implements Serializable {
 
     public void setTask(TaskEntity task) {
         this.task = task;
+    }
+
+    @PrePersist
+    void setCreationTime() {
+        if (this.creationTime == null) {
+            this.creationTime = new Timestamp(System.currentTimeMillis());
+        }
     }
 }

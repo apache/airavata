@@ -32,11 +32,11 @@ public class ValidatePersistenceXml {
 
     private static final String[] PERSISTENCE_UNITS = {
         "profile_service",
-        "appcatalog_data_new",
-        "experiment_data_new",
-        "replicacatalog_data_new",
-        "workflowcatalog_data_new",
-        "airavata-sharing-registry",
+        "app_catalog",
+        "experiment_catalog",
+        "replica_catalog",
+        "workflow_catalog",
+        "sharing_registry",
         "credential_store"
     };
 

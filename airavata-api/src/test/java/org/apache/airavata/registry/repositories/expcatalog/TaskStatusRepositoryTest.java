@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.common.model.ExperimentModel;
@@ -39,6 +40,7 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.registry.services.TaskStatusService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,17 +53,19 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             TaskStatusRepositoryTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
+            "flyway.enabled=false"
             // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
             // no property flags needed
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TaskStatusRepositoryTest extends TestBase {
@@ -75,73 +79,6 @@ public class TaskStatusRepositoryTest extends TestBase {
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
-            },
-            excludeFilters = {
-                // Exclude infrastructure components - use DI instead of property flags
-                // Helix components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
-                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
-                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
-                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
-                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
-                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.AiravataTask.class,
-                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.TaskFactory.class,
-                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
-                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
-                        }),
-                // Monitor components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
-                        }),
-                // DB Event Manager components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
-                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
-                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
-                // Orchestrator components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
-                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
-                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
-                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
-                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
-                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
@@ -155,6 +92,12 @@ public class TaskStatusRepositoryTest extends TestBase {
     private final ProcessService processService;
     private final TaskService taskService;
     private final TaskStatusService taskStatusService;
+
+    private String gatewayId;
+    private String projectId;
+    private String experimentId;
+    private String processId;
+    private String taskId;
 
     public TaskStatusRepositoryTest(
             GatewayService gatewayService,
@@ -172,56 +115,78 @@ public class TaskStatusRepositoryTest extends TestBase {
         this.taskStatusService = taskStatusService;
     }
 
-    @Test
-    public void testTaskStatusRepository() throws RegistryException {
+    @BeforeEach
+    public void setUp() throws RegistryException {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayService.addGateway(gateway);
+        gateway.setEmailAddress("test@example.com");
+        gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
+        project.setName("testProject");
+        project.setOwner("testUser");
         project.setGatewayId(gatewayId);
-
-        String projectId = projectService.addProject(project, gatewayId);
+        projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
-
-        String experimentId = experimentService.addExperiment(experimentModel);
+        experimentModel.setUserName("testUser");
+        experimentModel.setExperimentName("testExperiment");
+        experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
-        String processId = processService.addProcess(processModel, experimentId);
+        processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskModel.setParentProcessId(processId);
+        taskId = taskService.addTask(taskModel, processId);
+        assertNotNull(taskId, "Task ID should not be null");
+    }
 
-        String taskId = taskService.addTask(taskModel, processId);
-        assertTrue(taskId != null);
-
+    @Test
+    public void testTaskStatusRepository_StateTransitions() throws RegistryException {
+        // Test task status state transitions (important for workflow tracking)
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.EXECUTING);
         taskStatusService.addTaskStatus(taskStatus, taskId);
-        assertTrue(taskService.getTask(taskId).getTaskStatuses().size() == 1);
+        assertEquals(1, taskService.getTask(taskId).getTaskStatuses().size(), "Task should have one status");
 
+        // Update to different state
         taskStatus.setState(TaskState.CREATED);
         taskStatusService.updateTaskStatus(taskStatus, taskId);
 
         TaskStatus retrievedTaskStatus = taskStatusService.getTaskStatus(taskId);
-        assertEquals(TaskState.CREATED, retrievedTaskStatus.getState());
+        assertEquals(TaskState.CREATED, retrievedTaskStatus.getState(), "Task status should be updated to CREATED");
+        assertNotNull(retrievedTaskStatus.getStatusId(), "Status ID should be set");
+    }
 
-        experimentService.removeExperiment(experimentId);
-        processService.removeProcess(processId);
-        taskService.removeTask(taskId);
-        gatewayService.removeGateway(gatewayId);
-        projectService.removeProject(projectId);
+    @Test
+    public void testTaskStatusRepository_MultipleStatusHistory() throws RegistryException {
+        // Test that task status history is preserved (important for audit trail)
+        TaskStatus status1 = new TaskStatus();
+        status1.setState(TaskState.CREATED);
+        taskStatusService.addTaskStatus(status1, taskId);
+
+        TaskStatus status2 = new TaskStatus();
+        status2.setState(TaskState.EXECUTING);
+        taskStatusService.addTaskStatus(status2, taskId);
+
+        TaskStatus status3 = new TaskStatus();
+        status3.setState(TaskState.COMPLETED);
+        taskStatusService.addTaskStatus(status3, taskId);
+
+        // Verify all statuses are preserved
+        assertTrue(
+                taskService.getTask(taskId).getTaskStatuses().size() >= 3,
+                "Task should have at least 3 statuses in history");
+
+        // Verify latest status is correct
+        TaskStatus latest = taskStatusService.getTaskStatus(taskId);
+        assertEquals(TaskState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
     }
 }

@@ -28,7 +28,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -53,16 +52,6 @@ public class AiravataPropertiesConfiguration {
     public AiravataPropertiesConfiguration(Environment environment) {
         this.environment = environment;
         logger.info("[BEAN-INIT] AiravataPropertiesConfiguration created");
-    }
-
-    /**
-     * Creates BeanPostProcessor that injects Environment into AiravataServerProperties
-     * before its @PostConstruct methods run. This ensures proper initialization order.
-     */
-    @Bean
-    public AiravataServerPropertiesPostProcessor airavataServerPropertiesPostProcessor() {
-        logger.info("[BEAN-INIT] Creating AiravataServerPropertiesPostProcessor bean");
-        return new AiravataServerPropertiesPostProcessor(environment);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataPropertiesConfiguration.class);

@@ -42,6 +42,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = {JpaConfig.class})
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class CipresTest implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(CipresTest.class);

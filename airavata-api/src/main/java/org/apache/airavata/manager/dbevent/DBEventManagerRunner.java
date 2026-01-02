@@ -24,6 +24,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
  * <p>This service starts messaging utilities for database events when enabled.
  */
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true", matchIfMissing = true)
 public class DBEventManagerRunner extends ServerLifecycle {
 

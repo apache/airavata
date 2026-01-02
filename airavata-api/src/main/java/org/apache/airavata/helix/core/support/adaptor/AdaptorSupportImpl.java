@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0-SNAPSHOT
  */
 @Component
+@Profile("!test")
 @Primary
 @ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class AdaptorSupportImpl implements AdaptorSupport {

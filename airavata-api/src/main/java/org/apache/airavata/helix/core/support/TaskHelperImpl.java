@@ -22,6 +22,7 @@ package org.apache.airavata.helix.core.support;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0-SNAPSHOT
  */
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class TaskHelperImpl implements TaskHelper {
 

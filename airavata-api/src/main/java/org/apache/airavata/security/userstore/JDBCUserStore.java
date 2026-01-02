@@ -26,6 +26,8 @@ import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +38,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,6 +47,9 @@ import org.w3c.dom.NodeList;
  * The JDBC user store implementation.
  * Migrated from Apache Shiro to Spring Security JDBC authentication.
  */
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "security.userstore.jdbc.enabled", havingValue = "true", matchIfMissing = false)
 public class JDBCUserStore extends AbstractJDBCUserStore {
 
     protected static Logger log = LoggerFactory.getLogger(JDBCUserStore.class);

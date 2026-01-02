@@ -27,8 +27,15 @@ import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskResult;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Local Job Submission")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.localJobSubmission.enabled", havingValue = "true", matchIfMissing = true)
 public class LocalJobSubmissionTask extends JobSubmissionTask {
 
     public LocalJobSubmissionTask(

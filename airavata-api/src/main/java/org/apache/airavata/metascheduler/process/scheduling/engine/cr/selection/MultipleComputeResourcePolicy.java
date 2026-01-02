@@ -32,6 +32,8 @@ import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,6 +41,11 @@ import org.springframework.stereotype.Component;
  * //TODO: implemented for load testing, for proper usecases airavata should enable multiple compute resources in Experiment creation
  */
 @Component
+@Profile("!test")
+@ConditionalOnProperty(
+        name = "scheduler.selectionPolicy",
+        havingValue = "MultipleComputeResourcePolicy",
+        matchIfMissing = false)
 public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);

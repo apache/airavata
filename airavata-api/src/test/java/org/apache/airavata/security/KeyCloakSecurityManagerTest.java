@@ -52,7 +52,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
@@ -61,19 +60,22 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             KeyCloakSecurityManagerTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "security.tls.enabled=true",
             "security.iam.server-url=", // Empty to skip IAM HTTP calls in tests
             "security.manager.enabled=true",
             "security.authzCache.enabled=true", // Enable cache - tests will mock cache behavior
             // Infrastructure components excluded via component scanning - no property flags needed
-            "test.keycloak.security.manager=true"
+            "test.keycloak.security.manager=true",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class KeyCloakSecurityManagerTest {
 
@@ -109,13 +111,6 @@ public class KeyCloakSecurityManagerTest {
                 "org.apache.airavata.security",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                        })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {

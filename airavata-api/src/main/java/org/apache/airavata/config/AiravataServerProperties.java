@@ -22,6 +22,7 @@ package org.apache.airavata.config;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.env.Environment;
@@ -41,6 +42,7 @@ public class AiravataServerProperties {
         // No-arg constructor required for @ConfigurationProperties
     }
 
+    @Autowired
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
@@ -270,7 +272,7 @@ public class AiravataServerProperties {
     public RabbitMQ rabbitmq = new RabbitMQ();
 
     public static class RabbitMQ {
-        public String brokerUrl = "amqp://guest:guest@airavata.host:5672/develop";
+        public String brokerUrl = "amqp://guest:guest@localhost:5672/develop";
         public String experimentExchangeName = "experiment_exchange";
         public String experimentLaunchQueueName = "experiment.launch.queue";
         public String processExchangeName = "process_exchange";
@@ -282,14 +284,14 @@ public class AiravataServerProperties {
     public Kafka kafka = new Kafka();
 
     public static class Kafka {
-        public String brokerUrl = "airavata.host:9092";
+        public String brokerUrl = "localhost:9092";
     }
 
     // ==================== Infrastructure Configuration ====================
     public Zookeeper zookeeper = new Zookeeper();
 
     public static class Zookeeper {
-        public String serverConnection = "airavata.host:2181";
+        public String serverConnection = "localhost:2181";
         public boolean embedded = false;
     }
 

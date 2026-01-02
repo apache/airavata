@@ -50,7 +50,10 @@ import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
@@ -58,6 +61,10 @@ import software.amazon.awssdk.services.ec2.model.Instance;
 import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 
 @TaskDef(name = "AWS_JOB_SUBMISSION_TASK")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.awsJobSubmission.enabled", havingValue = "true", matchIfMissing = true)
 public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);

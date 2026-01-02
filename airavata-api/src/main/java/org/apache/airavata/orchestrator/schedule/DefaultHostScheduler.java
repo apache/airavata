@@ -21,7 +21,11 @@ package org.apache.airavata.orchestrator.schedule;
 
 import java.util.List;
 import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
+@Component
+@Primary
 public class DefaultHostScheduler implements HostScheduler {
     @Override
     public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts) {

@@ -34,26 +34,28 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
+import org.apache.airavata.profile.mappers.UserProfileMapper;
+import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.security.model.AuthzToken;
-import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@ConditionalOnBean({RegistryService.class, UserProfileService.class})
 @ConditionalOnMissingBean(name = "testIamAdminService")
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 
     private final AiravataServerProperties properties;
-    private final UserProfileService userProfileService;
+    private final UserProfileRepository userProfileRepository;
+    private final UserProfileMapper userProfileMapper;
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
 
@@ -69,15 +71,19 @@ public class IamAdminService {
 
     public IamAdminService(
             AiravataServerProperties properties,
-            UserProfileService userProfileService,
+            UserProfileRepository userProfileRepository,
+            UserProfileMapper userProfileMapper,
             CredentialStoreService credentialStoreService,
             RegistryService registryService,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            ThriftToDomainMapperRegistry mapperRegistry) {
         this.properties = properties;
-        this.userProfileService = userProfileService;
+        this.userProfileRepository = userProfileRepository;
+        this.userProfileMapper = userProfileMapper;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
-        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.IAM_ADMIN, messagingFactory);
+        this.dbEventPublisherUtils =
+                new DBEventPublisherUtils(DBEventService.IAM_ADMIN, messagingFactory, mapperRegistry);
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
@@ -150,6 +156,7 @@ public class IamAdminService {
         }
     }
 
+    @Transactional(transactionManager = "profileServiceTransactionManager")
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
@@ -157,17 +164,23 @@ public class IamAdminService {
         try {
             if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
                 // Check if user profile exists, if not create it
-                boolean userProfileExists =
-                        userProfileService.getUserProfileByIdAndGateWay(username, gatewayId) != null;
+                String lowerUsername = username.toLowerCase();
+                boolean userProfileExists = userProfileRepository
+                        .findByUserIdAndGatewayId(lowerUsername, gatewayId)
+                        .isPresent();
                 if (!userProfileExists) {
                     // Load basic user profile information from Keycloak and then save in UserProfileRepository
                     UserProfile userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
+                    userProfile.setUserId(lowerUsername);
+                    userProfile.setAiravataInternalUserId(lowerUsername + "@" + gatewayId);
                     userProfile.setCreationTime(
                             AiravataUtils.getCurrentTimestamp().getTime());
                     userProfile.setLastAccessTime(
                             AiravataUtils.getCurrentTimestamp().getTime());
                     userProfile.setValidUntil(-1);
-                    userProfileService.createUserProfile(userProfile);
+                    // Convert to entity and save using repository
+                    var entity = userProfileMapper.toEntity(userProfile);
+                    userProfileRepository.save(entity);
                     // Dispatch IAM_ADMIN service event for a new USER_PROFILE
                     dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 }

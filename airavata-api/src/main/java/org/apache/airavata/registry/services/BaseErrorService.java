@@ -88,38 +88,8 @@ public abstract class BaseErrorService<TEntity, TRepository extends JpaRepositor
     public String addError(ErrorModel error, String parentId) throws RegistryException {
         TEntity entity = getModelToEntityMapper().apply(error);
         getParentIdSetter().accept(entity, parentId);
-        // Ensure CREATION_TIME is set if not already set - use reflection to avoid type-specific checks
-        java.sql.Timestamp currentTimestamp = org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp();
-        try {
-            java.lang.reflect.Method getCreationTime = entity.getClass().getMethod("getCreationTime");
-            java.lang.reflect.Method setCreationTime =
-                    entity.getClass().getMethod("setCreationTime", java.sql.Timestamp.class);
-            Object creationTimeValue = getCreationTime.invoke(entity);
-            if (creationTimeValue == null) {
-                setCreationTime.invoke(entity, currentTimestamp);
-            }
-        } catch (Exception e) {
-            // Fallback to type-specific checks if reflection fails
-            if (entity instanceof org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) {
-                org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity taskErrorEntity =
-                        (org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity) entity;
-                if (taskErrorEntity.getCreationTime() == null) {
-                    taskErrorEntity.setCreationTime(currentTimestamp);
-                }
-            } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) {
-                org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity experimentErrorEntity =
-                        (org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity) entity;
-                if (experimentErrorEntity.getCreationTime() == null) {
-                    experimentErrorEntity.setCreationTime(currentTimestamp);
-                }
-            } else if (entity instanceof org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) {
-                org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity processErrorEntity =
-                        (org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity) entity;
-                if (processErrorEntity.getCreationTime() == null) {
-                    processErrorEntity.setCreationTime(currentTimestamp);
-                }
-            }
-        }
+        // CREATION_TIME is now set automatically via @PrePersist callback on error entities
+        // No reflection needed - JPA handles this
         TEntity saved = repository.save(entity);
         return getErrorIdExtractor().apply(saved);
     }

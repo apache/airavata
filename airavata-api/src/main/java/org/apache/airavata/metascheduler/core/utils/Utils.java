@@ -32,14 +32,12 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * This class contains all utility methods across scheduler sub projects
  */
 @Component("metaschedulerUtils")
-@ConditionalOnBean(RegistryService.class)
 public class Utils {
 
     private final RegistryService registryService;

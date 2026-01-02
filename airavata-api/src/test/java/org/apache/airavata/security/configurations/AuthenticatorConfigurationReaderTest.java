@@ -30,13 +30,20 @@ import java.util.List;
 import org.apache.airavata.security.Authenticator;
 import org.apache.airavata.security.userstore.JDBCUserStore;
 import org.apache.airavata.security.userstore.LDAPUserStore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
+ *
+ * @deprecated This test is disabled because AuthenticatorConfigurationReader uses reflection which has been removed.
+ * Use AuthenticatorRegistry instead, which collects authenticator beans from Spring context.
  */
+@Deprecated
+@Disabled(
+        "AuthenticatorConfigurationReader uses reflection which has been removed. Use AuthenticatorRegistry for testing authenticators.")
 public class AuthenticatorConfigurationReaderTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatorConfigurationReaderTest.class);

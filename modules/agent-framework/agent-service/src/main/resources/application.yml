@@ -16,7 +16,7 @@
 
 grpc:
   server:
-    host: airavata.host
+    host: localhost
     port: 19900
     max-inbound-message-size: 20971520
 
@@ -30,7 +30,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://airavata.host:13306/app_catalog"
+    url: "jdbc:mariadb://localhost:13306/app_catalog"
     username: "airavata"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver
@@ -44,15 +44,15 @@ spring:
 
 airavata:
   server:
-    url: airavata.host
+    url: localhost
     port: 8930
     secure: false
-  storageResourceId: airavata.host_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd
+  storageResourceId: localhost_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd
   storagePath: /tmp
   cluster:
     applicationInterfaceId: AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6
   tunnel:
-    serverHost: airavata.host
+    serverHost: localhost
     serverPort: 17000
     serverToken: airavata
-    serverApiUrl: http://airavata.host:8000
+    serverApiUrl: http://localhost:8000

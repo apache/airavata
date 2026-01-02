@@ -35,8 +35,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Parsing Triggering Task")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.parsingTriggering.enabled", havingValue = "true", matchIfMissing = true)
 public class ParsingTriggeringTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);

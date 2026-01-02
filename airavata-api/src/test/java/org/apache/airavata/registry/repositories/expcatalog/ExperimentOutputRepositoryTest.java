@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.apache.airavata.registry.services.ExperimentOutputService;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,17 +50,19 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             ExperimentOutputRepositoryTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
+            "flyway.enabled=false"
             // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
             // no property flags needed
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentOutputRepositoryTest extends TestBase {
@@ -72,73 +76,6 @@ public class ExperimentOutputRepositoryTest extends TestBase {
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
-            },
-            excludeFilters = {
-                // Exclude infrastructure components - use DI instead of property flags
-                // Helix components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
-                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
-                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
-                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
-                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
-                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.AiravataTask.class,
-                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.TaskFactory.class,
-                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
-                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
-                        }),
-                // Monitor components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
-                        }),
-                // DB Event Manager components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
-                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
-                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
-                // Orchestrator components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
-                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
-                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
-                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
-                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
-                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
@@ -150,6 +87,10 @@ public class ExperimentOutputRepositoryTest extends TestBase {
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ExperimentOutputService experimentOutputService;
+
+    private String gatewayId;
+    private String projectId;
+    private String experimentId;
 
     public ExperimentOutputRepositoryTest(
             GatewayService gatewayService,
@@ -163,31 +104,33 @@ public class ExperimentOutputRepositoryTest extends TestBase {
         this.experimentOutputService = experimentOutputService;
     }
 
-    @Test
-    public void testExperimentInputRepository() throws RegistryException {
+    @BeforeEach
+    public void setUp() throws RegistryException {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayService.addGateway(gateway);
+        gateway.setEmailAddress("test@example.com");
+        gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
+        project.setName("testProject");
+        project.setOwner("testUser");
         project.setGatewayId(gatewayId);
-
-        String projectId = projectService.addProject(project, gatewayId);
+        projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
+        experimentModel.setUserName("testUser");
+        experimentModel.setExperimentName("testExperiment");
+        experimentId = experimentService.addExperiment(experimentModel);
+        assertNotNull(experimentId, "Experiment ID should not be null");
+    }
 
-        String experimentId = experimentService.addExperiment(experimentModel);
-        assertTrue(experimentId != null);
-
+    @Test
+    public void testExperimentOutputRepository_CreateAndUpdate() throws RegistryException {
+        // Test creating and updating experiment outputs
         OutputDataObjectType outputDataObjectTypeExp = new OutputDataObjectType();
         outputDataObjectTypeExp.setName("outputE");
         outputDataObjectTypeExp.setType(DataType.STRING);
@@ -196,22 +139,51 @@ public class ExperimentOutputRepositoryTest extends TestBase {
         outputDataObjectTypeExpList.add(outputDataObjectTypeExp);
 
         experimentOutputService.addExperimentOutputs(outputDataObjectTypeExpList, experimentId);
-        assertTrue(experimentService
+        assertEquals(
+                1,
+                experimentService
                         .getExperiment(experimentId)
                         .getExperimentOutputs()
-                        .size()
-                == 1);
+                        .size(),
+                "Experiment should have one output");
 
+        // Update output value
         outputDataObjectTypeExp.setValue("oValueE");
         experimentOutputService.updateExperimentOutputs(outputDataObjectTypeExpList, experimentId);
 
         List<OutputDataObjectType> retrievedExpOutputList = experimentOutputService.getExperimentOutputs(experimentId);
-        assertTrue(retrievedExpOutputList.size() == 1);
-        assertEquals("oValueE", retrievedExpOutputList.get(0).getValue());
-        assertEquals(DataType.STRING, retrievedExpOutputList.get(0).getType());
+        assertEquals(1, retrievedExpOutputList.size(), "Should have one output");
+        assertEquals("oValueE", retrievedExpOutputList.get(0).getValue(), "Output value should be updated");
+        assertEquals(DataType.STRING, retrievedExpOutputList.get(0).getType(), "Output type should match");
+        assertEquals("outputE", retrievedExpOutputList.get(0).getName(), "Output name should match");
+    }
 
-        experimentService.removeExperiment(experimentId);
-        gatewayService.removeGateway(gatewayId);
-        projectService.removeProject(projectId);
+    @Test
+    public void testExperimentOutputRepository_MultipleOutputs() throws RegistryException {
+        // Test that an experiment can have multiple outputs (important for complex workflows)
+        OutputDataObjectType output1 = new OutputDataObjectType();
+        output1.setName("output1");
+        output1.setType(DataType.STRING);
+        output1.setValue("value1");
+
+        OutputDataObjectType output2 = new OutputDataObjectType();
+        output2.setName("output2");
+        output2.setType(DataType.URI);
+        output2.setValue("value2");
+
+        List<OutputDataObjectType> outputs = new ArrayList<>();
+        outputs.add(output1);
+        outputs.add(output2);
+
+        experimentOutputService.addExperimentOutputs(outputs, experimentId);
+
+        List<OutputDataObjectType> retrievedOutputs = experimentOutputService.getExperimentOutputs(experimentId);
+        assertEquals(2, retrievedOutputs.size(), "Experiment should have 2 outputs");
+
+        // Verify all outputs are present
+        assertTrue(
+                retrievedOutputs.stream().anyMatch(o -> o.getName().equals("output1")), "Output 1 should be present");
+        assertTrue(
+                retrievedOutputs.stream().anyMatch(o -> o.getName().equals("output2")), "Output 2 should be present");
     }
 }

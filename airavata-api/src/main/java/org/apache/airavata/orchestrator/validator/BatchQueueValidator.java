@@ -33,13 +33,14 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(RegistryService.class)
+@ConditionalOnProperty(name = "orchestrator.validators.batchQueue.enabled", havingValue = "true", matchIfMissing = true)
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 

@@ -27,8 +27,15 @@ import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Cancel Completing Task")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.cancelCompleting.enabled", havingValue = "true", matchIfMissing = true)
 public class CancelCompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(CancelCompletingTask.class);
 

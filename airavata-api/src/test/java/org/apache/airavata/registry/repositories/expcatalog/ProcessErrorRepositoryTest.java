@@ -20,8 +20,11 @@
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -36,6 +39,7 @@ import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessErrorService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,17 +52,17 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             ProcessErrorRepositoryTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+            "flyway.enabled=false"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessErrorRepositoryTest extends TestBase {
@@ -72,72 +76,6 @@ public class ProcessErrorRepositoryTest extends TestBase {
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
-            },
-            excludeFilters = {
-                // Helix components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
-                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
-                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
-                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
-                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
-                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.AiravataTask.class,
-                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.TaskFactory.class,
-                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
-                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
-                        }),
-                // Monitor components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
-                        }),
-                // DB Event Manager components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
-                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
-                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
-                // Orchestrator components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
-                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
-                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
-                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
-                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
-                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
@@ -150,6 +88,11 @@ public class ProcessErrorRepositoryTest extends TestBase {
     private final ExperimentService experimentService;
     private final ProcessService processService;
     private final ProcessErrorService processErrorService;
+
+    private String gatewayId;
+    private String projectId;
+    private String experimentId;
+    private String processId;
 
     public ProcessErrorRepositoryTest(
             GatewayService gatewayService,
@@ -165,52 +108,258 @@ public class ProcessErrorRepositoryTest extends TestBase {
         this.processErrorService = processErrorService;
     }
 
-    @Test
-    public void testProcessErrorRepository() throws RegistryException {
+    @BeforeEach
+    public void setUp() throws RegistryException {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayService.addGateway(gateway);
+        gateway.setEmailAddress("test@example.com");
+        gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
+        project.setName("testProject");
+        project.setOwner("testUser");
         project.setGatewayId(gatewayId);
-
-        String projectId = projectService.addProject(project, gatewayId);
+        projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
-
-        String experimentId = experimentService.addExperiment(experimentModel);
+        experimentModel.setUserName("testUser");
+        experimentModel.setExperimentName("testExperiment");
+        experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
-        String processId = processService.addProcess(processModel, experimentId);
-        assertTrue(processId != null);
+        processId = processService.addProcess(processModel, experimentId);
+        assertNotNull(processId, "Process ID should not be null");
+    }
 
-        ErrorModel errorModel = new ErrorModel();
-        errorModel.setErrorId("error");
+    @Test
+    public void testProcessErrorRepository_Create_MultipleErrorsPerProcess() throws RegistryException {
+        // Create multiple errors for the same process
+        ErrorModel error1 = createErrorModel("error-1", "First error message", "User friendly message 1");
+        ErrorModel error2 = createErrorModel("error-2", "Second error message", "User friendly message 2");
+        ErrorModel error3 = createErrorModel("error-3", "Third error message", "User friendly message 3");
 
-        String processErrorId = processErrorService.addProcessError(errorModel, processId);
-        assertTrue(processErrorId != null);
-        assertTrue(processService.getProcess(processId).getProcessErrors().size() == 1);
+        String errorId1 = processErrorService.addProcessError(error1, processId);
+        String errorId2 = processErrorService.addProcessError(error2, processId);
+        String errorId3 = processErrorService.addProcessError(error3, processId);
 
-        errorModel.setActualErrorMessage("message");
-        processErrorService.updateProcessError(errorModel, processId);
+        assertNotNull(errorId1, "Error 1 ID should not be null");
+        assertNotNull(errorId2, "Error 2 ID should not be null");
+        assertNotNull(errorId3, "Error 3 ID should not be null");
 
-        List<ErrorModel> retrievedErrorList = processErrorService.getProcessError(processId);
-        assertTrue(retrievedErrorList.size() == 1);
-        assertEquals("message", retrievedErrorList.get(0).getActualErrorMessage());
+        ProcessModel process = processService.getProcess(processId);
+        assertNotNull(process.getProcessErrors(), "Process errors list should not be null");
+        assertEquals(3, process.getProcessErrors().size(), "Process should have 3 errors");
 
-        experimentService.removeExperiment(experimentId);
+        List<ErrorModel> retrievedErrors = processErrorService.getProcessError(processId);
+        assertEquals(3, retrievedErrors.size(), "Should retrieve 3 errors");
+        assertTrue(
+                retrievedErrors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
+        assertTrue(
+                retrievedErrors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");
+        assertTrue(
+                retrievedErrors.stream().anyMatch(e -> e.getErrorId().equals(errorId3)), "Error 3 should be present");
+    }
+
+    @Test
+    public void testProcessErrorRepository_Get_NonExistentProcessId() throws RegistryException {
+        // Test that getting errors for non-existent process returns empty list without exception
+        String nonExistentProcessId =
+                "non-existent-process-" + java.util.UUID.randomUUID().toString();
+        List<ErrorModel> errors = processErrorService.getProcessError(nonExistentProcessId);
+        assertNotNull(errors, "Should return non-null list");
+        assertTrue(errors.isEmpty(), "Non-existent process should return empty error list");
+
+        // Verify this doesn't affect existing process errors
+        ErrorModel error = createErrorModel("error-verify", "Test error", "User message");
+        String errorId = processErrorService.addProcessError(error, processId);
+        assertNotNull(errorId, "Error should be created for existing process");
+
+        List<ErrorModel> existingErrors = processErrorService.getProcessError(processId);
+        assertTrue(existingErrors.size() >= 1, "Existing process should have errors");
+    }
+
+    @Test
+    public void testProcessErrorRepository_Update_AllErrorFields() throws RegistryException {
+        ErrorModel error = createErrorModel("error-update", "Original error message", "Original user message");
+        String errorId = processErrorService.addProcessError(error, processId);
+
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        assertEquals(1, errors.size(), "Should have one error");
+        ErrorModel originalError = errors.get(0);
+
+        // Update all fields
+        originalError.setActualErrorMessage("Updated actual error message");
+        originalError.setUserFriendlyMessage("Updated user friendly message");
+        originalError.setTransientOrPersistent(true);
+        List<String> rootCauses = new ArrayList<>();
+        rootCauses.add("root-cause-1");
+        rootCauses.add("root-cause-2");
+        originalError.setRootCauseErrorIdList(rootCauses);
+
+        processErrorService.updateProcessError(originalError, processId);
+
+        List<ErrorModel> updatedErrors = processErrorService.getProcessError(processId);
+        assertEquals(1, updatedErrors.size(), "Should still have one error");
+        ErrorModel updatedError = updatedErrors.get(0);
+
+        assertEquals(
+                "Updated actual error message",
+                updatedError.getActualErrorMessage(),
+                "Actual error message should be updated");
+        assertEquals(
+                "Updated user friendly message",
+                updatedError.getUserFriendlyMessage(),
+                "User friendly message should be updated");
+        assertTrue(updatedError.getTransientOrPersistent(), "TransientOrPersistent should be updated");
+        assertNotNull(updatedError.getRootCauseErrorIdList(), "Root cause list should not be null");
+        assertEquals(2, updatedError.getRootCauseErrorIdList().size(), "Root cause list should have 2 items");
+        assertTrue(updatedError.getRootCauseErrorIdList().contains("root-cause-1"), "Root cause 1 should be present");
+        assertTrue(updatedError.getRootCauseErrorIdList().contains("root-cause-2"), "Root cause 2 should be present");
+    }
+
+    @Test
+    public void testProcessErrorRepository_TransientVsPersistentErrors() throws RegistryException {
+        // Test that transient and persistent errors are properly stored and retrieved
+        // This is important for error handling and debugging
+        ErrorModel transientError = new ErrorModel();
+        transientError.setErrorId("error-transient");
+        transientError.setActualErrorMessage("Transient error occurred");
+        transientError.setUserFriendlyMessage("This is a temporary error");
+        transientError.setTransientOrPersistent(true); // Transient error
+
+        ErrorModel persistentError = new ErrorModel();
+        persistentError.setErrorId("error-persistent");
+        persistentError.setActualErrorMessage("Persistent error occurred");
+        persistentError.setUserFriendlyMessage("This is a permanent error");
+        persistentError.setTransientOrPersistent(false); // Persistent error
+
+        String transientId = processErrorService.addProcessError(transientError, processId);
+        String persistentId = processErrorService.addProcessError(persistentError, processId);
+
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        assertEquals(2, errors.size(), "Should have 2 errors");
+
+        ErrorModel retrievedTransient = errors.stream()
+                .filter(e -> e.getErrorId().equals(transientId))
+                .findFirst()
+                .orElse(null);
+        ErrorModel retrievedPersistent = errors.stream()
+                .filter(e -> e.getErrorId().equals(persistentId))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(retrievedTransient, "Transient error should be retrieved");
+        assertTrue(retrievedTransient.getTransientOrPersistent(), "Transient error flag should be true");
+
+        assertNotNull(retrievedPersistent, "Persistent error should be retrieved");
+        assertFalse(retrievedPersistent.getTransientOrPersistent(), "Persistent error flag should be false");
+    }
+
+    @Test
+    public void testProcessErrorRepository_CascadingDelete() throws RegistryException {
+        // Create errors for the process
+        ErrorModel error1 = createErrorModel("error-cascade-1", "Error 1", "User message 1");
+        ErrorModel error2 = createErrorModel("error-cascade-2", "Error 2", "User message 2");
+
+        String errorId1 = processErrorService.addProcessError(error1, processId);
+        String errorId2 = processErrorService.addProcessError(error2, processId);
+
+        ProcessModel process = processService.getProcess(processId);
+        assertEquals(2, process.getProcessErrors().size(), "Process should have 2 errors before deletion");
+
+        // Delete the process - errors should be cascaded
         processService.removeProcess(processId);
-        gatewayService.removeGateway(gatewayId);
-        projectService.removeProject(projectId);
+        assertFalse(processService.isProcessExist(processId), "Process should be deleted");
+
+        // Verify errors are no longer accessible
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        assertTrue(errors.isEmpty(), "Errors should be deleted with process");
+    }
+
+    @Test
+    public void testProcessErrorRepository_AutomaticCreationTime() throws RegistryException {
+        // Test that creation time is automatically set if not provided
+        ErrorModel error = new ErrorModel();
+        error.setErrorId("error-auto-time");
+        error.setActualErrorMessage("Error with automatic creation time");
+        error.setUserFriendlyMessage("User-friendly message");
+        // Don't set creation time - service should set it automatically
+
+        long beforeCreation = System.currentTimeMillis();
+        String errorId = processErrorService.addProcessError(error, processId);
+        long afterCreation = System.currentTimeMillis();
+
+        assertNotNull(errorId, "Error should be created");
+
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        assertEquals(1, errors.size(), "Should have one error");
+        ErrorModel retrieved = errors.get(0);
+
+        assertTrue(retrieved.getCreationTime() >= beforeCreation, "Creation time should be set to current or later");
+        assertTrue(retrieved.getCreationTime() <= afterCreation, "Creation time should be set to current or earlier");
+    }
+
+    @Test
+    public void testProcessErrorRepository_ErrorRetrievalOrdering() throws RegistryException {
+        // Test that errors are retrieved in a consistent order (important for error history)
+        ErrorModel error1 = createErrorModel("error-1", "First error", "First user message");
+        ErrorModel error2 = createErrorModel("error-2", "Second error", "Second user message");
+        ErrorModel error3 = createErrorModel("error-3", "Third error", "Third user message");
+
+        String errorId1 = processErrorService.addProcessError(error1, processId);
+        String errorId2 = processErrorService.addProcessError(error2, processId);
+        String errorId3 = processErrorService.addProcessError(error3, processId);
+
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        assertEquals(3, errors.size(), "Should retrieve all 3 errors");
+
+        // Verify all errors are present
+        assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
+        assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");
+        assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId3)), "Error 3 should be present");
+
+        // Verify errors have creation times set
+        errors.forEach(e ->
+                assertTrue(e.getCreationTime() > 0, "Each error should have creation time set: " + e.getErrorId()));
+    }
+
+    @Test
+    public void testProcessErrorRepository_MultipleRootCauses() throws RegistryException {
+        ErrorModel error = new ErrorModel();
+        error.setErrorId("error-rootcauses");
+        error.setActualErrorMessage("Error with multiple root causes");
+        error.setUserFriendlyMessage("User message");
+
+        // Create a large list of root causes
+        List<String> rootCauses = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            rootCauses.add("root-cause-" + i);
+        }
+        error.setRootCauseErrorIdList(rootCauses);
+
+        String errorId = processErrorService.addProcessError(error, processId);
+        assertNotNull(errorId, "Error with multiple root causes should be created");
+
+        List<ErrorModel> errors = processErrorService.getProcessError(processId);
+        ErrorModel retrieved = errors.get(0);
+        assertNotNull(retrieved.getRootCauseErrorIdList(), "Root cause list should not be null");
+        assertEquals(10, retrieved.getRootCauseErrorIdList().size(), "Should have 10 root causes");
+        assertTrue(retrieved.getRootCauseErrorIdList().contains("root-cause-1"), "Root cause 1 should be present");
+        assertTrue(retrieved.getRootCauseErrorIdList().contains("root-cause-10"), "Root cause 10 should be present");
+    }
+
+    // Helper method to create error models
+    private ErrorModel createErrorModel(String errorId, String actualMessage, String userFriendlyMessage) {
+        ErrorModel error = new ErrorModel();
+        error.setErrorId(errorId);
+        error.setActualErrorMessage(actualMessage);
+        error.setUserFriendlyMessage(userFriendlyMessage);
+        error.setTransientOrPersistent(false);
+        return error;
     }
 }

@@ -43,9 +43,16 @@ import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Default Job Submission")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.defaultJobSubmission.enabled", havingValue = "true", matchIfMissing = true)
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);

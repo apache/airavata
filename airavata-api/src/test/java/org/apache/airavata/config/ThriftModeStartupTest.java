@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -42,11 +41,14 @@ import org.springframework.test.context.TestPropertySource;
  * - Background services can be enabled/disabled
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class, ThriftModeStartupTest.TestConfiguration.class
+        classes = {
+            JpaConfig.class,
+            TestcontainersConfig.class,
+            AiravataPropertiesConfiguration.class,
+            ThriftModeStartupTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
@@ -54,9 +56,12 @@ import org.springframework.test.context.TestPropertySource;
             // Background/infrastructure services - keep property flags (truly optional)
             "services.thrift.enabled=true",
             "services.background.enabled=false",
-            "services.orchestrator.enabled=false"
+            "services.orchestrator.enabled=false",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
             // Core services (RegistryService, CredentialStoreService) are always available via DI - no flags needed
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class ThriftModeStartupTest {
 
@@ -86,19 +91,7 @@ public class ThriftModeStartupTest {
                 "org.apache.airavata.accountprovisioning",
                 "org.apache.airavata.helix",
                 "org.apache.airavata.manager.dbevent"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
             })
-    @Import({AiravataPropertiesConfiguration.class})
     static class TestConfiguration {}
 
     @Autowired

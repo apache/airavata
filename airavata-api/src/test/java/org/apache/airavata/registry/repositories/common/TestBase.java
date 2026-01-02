@@ -20,17 +20,22 @@
 package org.apache.airavata.registry.repositories.common;
 
 import org.apache.airavata.config.JpaConfig;
+import org.apache.airavata.config.TestcontainersConfig;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Base class for repository tests using Spring Boot testing framework.
- * Migrated from Derby-based setup to Spring Boot with H2 in-memory databases.
+ * Uses Testcontainers MariaDB databases for testing.
  * All tests use @Transactional for automatic rollback.
  */
-@SpringBootTest(classes = {JpaConfig.class})
+@SpringBootTest(
+        classes = {JpaConfig.class, TestcontainersConfig.class},
+        properties = {"services.airavata.enabled=true", "flyway.enabled=false"})
 @TestPropertySource(locations = "classpath:airavata.properties")
+@ActiveProfiles("test")
 @Transactional
 public class TestBase {
 
@@ -63,7 +68,7 @@ public class TestBase {
         this.databases = databases;
     }
 
-    // Note: Database setup is now handled by Spring Boot configuration
-    // H2 in-memory databases are configured via airavata.properties
-    // No manual setup/teardown needed - Spring Boot handles it automatically
+    // Note: Database setup is now handled by TestcontainersConfig
+    // Testcontainers MariaDB databases are configured automatically
+    // Flyway migrations are applied automatically on container startup
 }

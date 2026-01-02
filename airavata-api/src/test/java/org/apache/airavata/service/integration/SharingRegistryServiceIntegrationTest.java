@@ -43,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @org.junit.jupiter.api.Disabled("Requires external sharing registry; skipped in offline test runs")
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class SharingRegistryServiceIntegrationTest {
 

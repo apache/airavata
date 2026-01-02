@@ -23,7 +23,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.helix.task.api.TaskParamType;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("prototype")
 public class ParsingTaskOutputs implements TaskParamType {
     private List<ParsingTaskOutput> outputs = new ArrayList<>();
 

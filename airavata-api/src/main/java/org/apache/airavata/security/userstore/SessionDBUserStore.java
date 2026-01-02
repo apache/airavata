@@ -25,6 +25,9 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,6 +35,9 @@ import org.w3c.dom.NodeList;
 /**
  * User store which works on sessions. Will talk to database to check whether session ids are stored in the database.
  */
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "security.userstore.sessiondb.enabled", havingValue = "true", matchIfMissing = false)
 public class SessionDBUserStore extends AbstractJDBCUserStore {
 
     private String sessionTable;

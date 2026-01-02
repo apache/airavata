@@ -49,7 +49,7 @@ public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    @Value("${airavata.server.url:airavata.host}")
+    @Value("${airavata.server.url:localhost}")
     private String serverUrl;
 
     @Value("${airavata.server.port:8930}")

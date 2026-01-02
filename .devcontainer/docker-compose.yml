@@ -1,7 +1,6 @@
 networks:
   airavata-network:
     driver: bridge
-    name: airavata.host
     ipam:
       config:
         - subnet: 192.168.100.0/24
@@ -12,139 +11,6 @@ volumes:
     driver: local
 
 services:
-  devcontainer:
-    profiles:
-      - development
-    build:
-      dockerfile: Dockerfile
-      target: deps
-    container_name: devcontainer
-    restart: always
-    volumes:
-      - ..:/home/developer/workspace:cached
-      - $HOME/.m2:/home/developer/.m2
-      - $HOME/.ssh:/home/developer/.ssh
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.9
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-    ports:
-      - "7878:7878"   # sharing registry service
-      - "8000:8000"   # tunnel service
-      - "17000:17000" # tunnel service (ingress)
-      - "8050:8050"   # file service
-      - "8082:8082"   # rest proxy
-      - "8930:8930"   # api service
-      - "8960:8960"   # cred store service
-      - "8962:8962"   # profile service
-      - "8970:8970"   # registry service
-      - "18800:18800" # agent service (http)
-      - "19900:19900" # agent service (gRPC)
-      - "18889:18889" # research service (http)
-      - "19908:19908" # research service (gRPC)
-    command: sleep infinity
-
-  microservices:
-    profiles:
-      - staging
-    build:
-      dockerfile: Dockerfile
-      target: runner
-    container_name: microservices
-    restart: always
-    volumes:
-      - ../vault:/app/vault
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.9
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-    ports:
-      - "7878:7878"   # sharing registry service
-      - "8000:8000"   # tunnel service
-      - "17000:17000" # tunnel service (ingress)
-      - "8050:8050"   # file service
-      - "8930:8930"   # api service
-      - "8960:8960"   # cred store service
-      - "8962:8962"   # profile service
-      - "8970:8970"   # registry service
-      - "18800:18800" # agent service (http)
-      - "19900:19900" # agent service (gRPC)
-      - "18889:18889" # research service (http)
-      - "19908:19908" # research service (gRPC)
-    depends_on:
-      - db
-      - kafka
-      - keycloak
-      - rabbitmq
-      - sshd
-
-  portals:
-    profiles:
-      - development
-      - staging
-    build:
-      context: portals
-      dockerfile: Dockerfile
-    container_name: portals
-    restart: always
-    volumes:
-      - /tmp:/tmp
-      - ./portals/pga_config.php:/var/www/html/default/config/pga_config.php
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.11
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-
-  jupyterhub:
-    profiles:
-      - development
-      - staging
-    build:
-      context: ../modules/research-framework/research-hub/compose
-      dockerfile: Dockerfile
-    container_name: jupyterhub
-    restart: always
-    environment:
-      OAUTH_CLIENT_ID: "cs-jupyterlab"
-      OAUTH_CLIENT_SECRET: "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1"
-      JUPYTERHUB_CRYPT_KEY: "a99323294a5d6f9b1d0e7e33450dff44db664264231b985e069c6eba8f9a3e09"
-      DOCKER_NETWORK_NAME: jupyterhub_network
-      DOCKER_NOTEBOOK_IMAGE: cybershuttle/dev_jupyterlab-base
-    volumes:
-      - ../modules/research-framework/research-hub/compose/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.12
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-
-  proxy:
-    image: nginx:stable
-    container_name: proxy
-    restart: always
-    volumes:
-      - ../vault.local/server.key:/vault/server.key:ro
-      - ../vault.local/server.crt:/vault/server.crt:ro
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./proxy/http.conf:/etc/nginx/conf.d/http.conf:ro
-      - ./proxy/stream.conf:/etc/nginx/conf.d/stream.conf:ro
-    networks:
-      airavata-network:
-        ipv4_address: 192.168.100.13
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
-    ports:
-      - "5173:5173" # tls + research portal
-      - "8008:8008" # tls + php portal
-      - "8009:8009" # tls + django portal
-      - "8443:8443" # tls + keycloak
-      - "9930:9930" # tls + api
-      - "20000:20000" # tls + jupyterhub
-
   keycloak:
     image: keycloak/keycloak:25.0
     container_name: keycloak
@@ -157,10 +23,7 @@ services:
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
     command: [ "start", "--import-realm" ]
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.14
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "18080:18080"
 
@@ -183,10 +46,7 @@ services:
         "--sql-mode=NO_ENGINE_SUBSTITUTION",
       ]
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.15
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "13306:3306"
 
@@ -197,10 +57,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_VHOST: develop
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.16
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -210,10 +67,7 @@ services:
     container_name: zookeeper
     restart: always
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.17
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "2181:2181"
 
@@ -222,13 +76,10 @@ services:
     container_name: kafka
     restart: always
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: airavata.host
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.18
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "9092:9092"
     depends_on:
@@ -241,10 +92,7 @@ services:
     volumes:
       - /tmp:/tmp
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.20
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "22222:22"
 
@@ -253,10 +101,7 @@ services:
     container_name: adminer
     restart: always
     networks:
-      airavata-network:
-        ipv4_address: 192.168.100.21
-    extra_hosts:
-      - "airavata.host:192.168.100.1"
+      - airavata-network
     ports:
       - "18088:8080"
     depends_on:

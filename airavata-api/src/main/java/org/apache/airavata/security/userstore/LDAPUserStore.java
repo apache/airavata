@@ -24,6 +24,8 @@ import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +34,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.authentication.PasswordComparisonAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -40,6 +43,9 @@ import org.w3c.dom.NodeList;
  * A user store which talks to LDAP server. User credentials and user information are stored in a LDAP server.
  * Migrated from Apache Shiro to Spring Security LDAP.
  */
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "security.userstore.ldap.enabled", havingValue = "true", matchIfMissing = false)
 public class LDAPUserStore implements UserStore {
 
     private LdapAuthenticationProvider ldapAuthenticationProvider;

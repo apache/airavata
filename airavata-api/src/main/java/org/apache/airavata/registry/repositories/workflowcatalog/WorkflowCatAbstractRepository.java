@@ -25,7 +25,7 @@ import org.apache.airavata.registry.repositories.AbstractRepository;
 
 public abstract class WorkflowCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 
-    @PersistenceContext(unitName = "workflowcatalog_data_new")
+    @PersistenceContext(unitName = "workflow_catalog")
     protected EntityManager entityManager;
 
     public WorkflowCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {

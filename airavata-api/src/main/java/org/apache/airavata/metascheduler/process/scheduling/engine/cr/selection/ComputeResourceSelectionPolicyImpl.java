@@ -23,11 +23,9 @@ import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnBean(RegistryService.class)
 public abstract class ComputeResourceSelectionPolicyImpl implements ComputeResourceSelectionPolicy {
 
     private final RegistryService registryService;

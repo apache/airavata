@@ -33,6 +33,9 @@ import org.apache.helix.task.TaskResult;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
@@ -44,6 +47,10 @@ import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
  * Create all required AWS resources (SecurityGroup, KeyPair) and launches an EC2 instance
  */
 @TaskDef(name = "Create EC2 Instance Task")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.createEC2Instance.enabled", havingValue = "true", matchIfMissing = true)
 public class CreateEC2InstanceTask extends AiravataTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEC2InstanceTask.class);

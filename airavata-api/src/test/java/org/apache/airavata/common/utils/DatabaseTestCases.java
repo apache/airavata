@@ -88,18 +88,25 @@ public class DatabaseTestCases {
             // ignore
         }
 
-        while (connection == null) {
+        // Wait for database connection with timeout (max 30 seconds)
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = 30000;
+        while (connection == null && (System.currentTimeMillis() - startTime) < timeoutMs) {
             try {
-                Thread.sleep(1000);
-                try {
-                    if (dbUtil != null) {
-                        connection = dbUtil.getConnection();
-                    }
-                } catch (SQLException e) {
-                    // ignore
+                if (dbUtil != null) {
+                    connection = dbUtil.getConnection();
                 }
-            } catch (InterruptedException e) {
-                // ignore
+            } catch (SQLException e) {
+                // ignore and retry
+            }
+            if (connection == null) {
+                // Use small delay only if connection still null
+                try {
+                    Thread.sleep(100); // Reduced from 1000ms to 100ms for faster retry
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
         }
     }

@@ -32,7 +32,13 @@ import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "monitor.email.enabled", havingValue = "true", matchIfMissing = false)
 public class HTCondorEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(HTCondorEmailParser.class);
 

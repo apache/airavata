@@ -37,6 +37,7 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
+import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.profile.mappers.GatewayMapper;
@@ -65,12 +66,13 @@ public class TenantProfileService {
             CredentialStoreService credentialStoreService,
             GatewayMapper gatewayMapper,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            ThriftToDomainMapperRegistry mapperRegistry) {
         this.tenantProfileRepository = tenantProfileRepository;
         this.credentialStoreService = credentialStoreService;
         this.gatewayMapper = gatewayMapper;
         this.entityManager = entityManager;
-        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT, messagingFactory);
+        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT, messagingFactory, mapperRegistry);
     }
 
     @Transactional(transactionManager = "profileServiceTransactionManager")

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.manager.dbevent.messaging;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler;
@@ -27,13 +28,14 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by Ajinkya on 3/1/17.
  */
 @Component
+@Profile("!test")
 public class DBEventManagerMessagingFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DBEventManagerMessagingFactory.class);
@@ -45,9 +47,38 @@ public class DBEventManagerMessagingFactory {
     private final MessagingFactory messagingFactory;
     private final DBEventMessageHandler handler;
 
-    public DBEventManagerMessagingFactory(MessagingFactory messagingFactory, @Lazy DBEventMessageHandler handler) {
+    public DBEventManagerMessagingFactory(MessagingFactory messagingFactory, DBEventMessageHandler handler) {
         this.messagingFactory = messagingFactory;
         this.handler = handler;
+    }
+
+    @PostConstruct
+    private void initializeMessagingComponents() throws AiravataException {
+        // Create Publisher eagerly (no dependency on handler)
+        if (dbEventPublisher == null) {
+            synchronized (this) {
+                if (dbEventPublisher == null) {
+                    log.info("Creating DB Event publisher.....");
+                    dbEventPublisher = messagingFactory.getDBEventPublisher();
+                    log.info("DB Event publisher created");
+                }
+            }
+        }
+
+        // Create Subscriber (needs handler, but handler is already injected)
+        if (dbEventSubscriber == null) {
+            synchronized (this) {
+                if (dbEventSubscriber == null) {
+                    log.info("Creating DB Event subscriber.....");
+                    dbEventSubscriber =
+                            messagingFactory.getDBEventSubscriber(handler, DBEventService.DB_EVENT.toString());
+                    log.info("DB Event subscriber created");
+                }
+            }
+        }
+
+        // Set Publisher and Subscriber on handler to break circular dependency
+        handler.setMessagingComponents(dbEventPublisher, dbEventSubscriber);
     }
 
     /**
@@ -56,29 +87,16 @@ public class DBEventManagerMessagingFactory {
      * @throws AiravataException
      */
     public Subscriber getDBEventSubscriber() throws AiravataException {
-        if (null == dbEventSubscriber) {
-            synchronized (this) {
-                if (null == dbEventSubscriber) {
-                    log.info("Creating DB Event subscriber.....");
-                    // Handler is injected as a Spring bean, no need to instantiate
-                    dbEventSubscriber =
-                            messagingFactory.getDBEventSubscriber(handler, DBEventService.DB_EVENT.toString());
-                    log.info("DB Event subscriber created");
-                }
-            }
+        if (dbEventSubscriber == null) {
+            throw new IllegalStateException(
+                    "DB Event Subscriber not initialized. Check @PostConstruct initialization.");
         }
         return dbEventSubscriber;
     }
 
     public Publisher getDBEventPublisher() throws AiravataException {
-        if (null == dbEventPublisher) {
-            synchronized (this) {
-                if (null == dbEventPublisher) {
-                    log.info("Creating DB Event publisher.....");
-                    dbEventPublisher = messagingFactory.getDBEventPublisher();
-                    log.info("DB Event publisher created");
-                }
-            }
+        if (dbEventPublisher == null) {
+            throw new IllegalStateException("DB Event Publisher not initialized. Check @PostConstruct initialization.");
         }
         return dbEventPublisher;
     }

@@ -36,14 +36,12 @@ import org.apache.airavata.sharing.model.Entity;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for managing sharing registry operations.
  */
 @Service
-@ConditionalOnBean(RegistryService.class)
 public class SharingManager {
     private static final Logger logger = LoggerFactory.getLogger(SharingManager.class);
 

@@ -20,8 +20,12 @@
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
@@ -42,6 +46,7 @@ import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,17 +59,17 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             JobStatusRepositoryTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+            "flyway.enabled=false"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class JobStatusRepositoryTest extends TestBase {
@@ -78,72 +83,6 @@ public class JobStatusRepositoryTest extends TestBase {
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
-            },
-            excludeFilters = {
-                // Helix components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
-                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
-                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
-                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
-                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
-                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.AiravataTask.class,
-                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.TaskFactory.class,
-                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
-                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
-                        }),
-                // Monitor components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
-                        }),
-                // DB Event Manager components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
-                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
-                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
-                // Orchestrator components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
-                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
-                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
-                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
-                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
-                        })
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
@@ -158,6 +97,13 @@ public class JobStatusRepositoryTest extends TestBase {
     private final TaskService taskService;
     private final JobService jobService;
     private final JobStatusService jobStatusService;
+
+    private String gatewayId;
+    private String projectId;
+    private String experimentId;
+    private String processId;
+    private String taskId;
+    private JobPK jobPK;
 
     public JobStatusRepositoryTest(
             GatewayService gatewayService,
@@ -177,71 +123,380 @@ public class JobStatusRepositoryTest extends TestBase {
         this.jobStatusService = jobStatusService;
     }
 
-    @Test
-    public void testJobStatusRepository() throws RegistryException {
+    @BeforeEach
+    public void setUp() throws RegistryException {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
-        String gatewayId = gatewayService.addGateway(gateway);
+        gateway.setEmailAddress("test@example.com");
+        gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
-        project.setName("projectName");
-        project.setOwner("user");
+        project.setName("testProject");
+        project.setOwner("testUser");
         project.setGatewayId(gatewayId);
-
-        String projectId = projectService.addProject(project, gatewayId);
+        projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experimentModel.setUserName("user");
-        experimentModel.setExperimentName("name");
-
-        String experimentId = experimentService.addExperiment(experimentModel);
+        experimentModel.setUserName("testUser");
+        experimentModel.setExperimentName("testExperiment");
+        experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
-        String processId = processService.addProcess(processModel, experimentId);
+        processId = processService.addProcess(processModel, experimentId);
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskModel.setParentProcessId(processId);
-
-        String taskId = taskService.addTask(taskModel, processId);
-        assertTrue(taskId != null);
-
-        taskModel.setTaskType(TaskTypes.MONITORING);
-        taskService.updateTask(taskModel, taskId);
-
-        JobPK jobPK = new JobPK();
-        jobPK.setJobId("job");
-        jobPK.setTaskId(taskId);
+        taskId = taskService.addTask(taskModel, processId);
+        assertNotNull(taskId, "Task ID should not be null");
 
         JobModel jobModel = new JobModel();
-        jobModel.setJobId(jobPK.getJobId());
-        jobModel.setTaskId(jobPK.getTaskId());
-        jobModel.setJobDescription("jobDescription");
-
+        jobModel.setJobId("test-job-" + java.util.UUID.randomUUID().toString());
+        jobModel.setTaskId(taskId);
+        jobModel.setJobDescription("Test job");
         String jobId = jobService.addJob(jobModel, processId);
-        assertTrue(jobId != null);
+        assertNotNull(jobId, "Job ID should not be null");
 
-        JobStatus jobStatus = new JobStatus(JobState.QUEUED);
-        jobStatusService.addJobStatus(jobStatus, jobPK);
-        assertTrue(jobService.getJob(jobPK).getJobStatuses().size() == 1);
+        jobPK = new JobPK();
+        jobPK.setJobId(jobId);
+        jobPK.setTaskId(taskId);
+    }
 
-        jobStatus.setJobState(JobState.ACTIVE);
-        jobStatusService.updateJobStatus(jobStatus, jobPK);
+    @Test
+    public void testJobStatusRepository_Create_MultipleStatuses() throws RegistryException {
+        // Create a status history for the job
+        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        status1.setReason("Job submitted to queue");
+        jobStatusService.addJobStatus(status1, jobPK);
 
-        JobStatus retrievedJobStatus = jobStatusService.getJobStatus(jobPK);
-        assertEquals(JobState.ACTIVE, retrievedJobStatus.getJobState());
+        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        status2.setReason("Job queued for execution");
+        jobStatusService.addJobStatus(status2, jobPK);
 
-        experimentService.removeExperiment(experimentId);
-        processService.removeProcess(processId);
-        taskService.removeTask(taskId);
-        jobService.removeJob(jobPK);
-        gatewayService.removeGateway(gatewayId);
-        projectService.removeProject(projectId);
+        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        status3.setReason("Job is now active");
+        jobStatusService.addJobStatus(status3, jobPK);
+
+        JobModel job = jobService.getJob(jobPK);
+        assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
+        assertTrue(job.getJobStatuses().size() >= 3, "Job should have at least 3 status entries");
+
+        // Verify latest status
+        JobStatus latestStatus = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(latestStatus, "Latest status should not be null");
+        assertEquals(JobState.ACTIVE, latestStatus.getJobState(), "Latest status should be ACTIVE");
+    }
+
+    @Test
+    public void testJobStatusRepository_StateTransitions() throws RegistryException {
+        // Test a complete state transition flow
+        JobStatus submitted = new JobStatus(JobState.SUBMITTED);
+        submitted.setReason("Initial submission");
+        jobStatusService.addJobStatus(submitted, jobPK);
+
+        JobStatus queued = new JobStatus(JobState.QUEUED);
+        queued.setReason("Queued for resources");
+        jobStatusService.addJobStatus(queued, jobPK);
+
+        JobStatus active = new JobStatus(JobState.ACTIVE);
+        active.setReason("Job is running");
+        jobStatusService.addJobStatus(active, jobPK);
+
+        JobStatus complete = new JobStatus(JobState.COMPLETE);
+        complete.setReason("Job completed successfully");
+        jobStatusService.addJobStatus(complete, jobPK);
+
+        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(latest, "Latest status should exist");
+        assertEquals(JobState.COMPLETE, latest.getJobState(), "Final state should be COMPLETE");
+        assertEquals("Job completed successfully", latest.getReason(), "Reason should match");
+
+        // Test failure transition - use a separate job to avoid interference
+        JobModel failedJobModel = new JobModel();
+        failedJobModel.setJobId("failed-job-" + java.util.UUID.randomUUID().toString());
+        failedJobModel.setTaskId(taskId);
+        failedJobModel.setJobDescription("Failed job test");
+        String failedJobId = jobService.addJob(failedJobModel, processId);
+
+        JobPK failedJobPK = new JobPK();
+        failedJobPK.setJobId(failedJobId);
+        failedJobPK.setTaskId(taskId);
+
+        JobStatus failedSubmitted = new JobStatus(JobState.SUBMITTED);
+        jobStatusService.addJobStatus(failedSubmitted, failedJobPK);
+
+        JobStatus failed = new JobStatus(JobState.FAILED);
+        failed.setReason("Job execution failed");
+        jobStatusService.addJobStatus(failed, failedJobPK);
+
+        // Verify the job has the failed status
+        JobModel failedJob = jobService.getJob(failedJobPK);
+        assertNotNull(failedJob.getJobStatuses(), "Failed job should have statuses");
+        assertTrue(failedJob.getJobStatuses().size() >= 2, "Failed job should have at least 2 statuses");
+
+        JobStatus failedStatus = jobStatusService.getJobStatus(failedJobPK);
+        assertNotNull(failedStatus, "Failed job status should exist");
+        assertEquals(JobState.FAILED, failedStatus.getJobState(), "Failed job state should be FAILED");
+    }
+
+    @Test
+    public void testJobStatusRepository_Get_NonExistentJob() throws RegistryException {
+        // Test that getting status for non-existent job returns null without exception
+        JobPK nonExistentPK = new JobPK();
+        nonExistentPK.setJobId("non-existent-job-" + java.util.UUID.randomUUID().toString());
+        nonExistentPK.setTaskId(
+                "non-existent-task-" + java.util.UUID.randomUUID().toString());
+
+        JobStatus status = jobStatusService.getJobStatus(nonExistentPK);
+        assertNull(status, "Non-existent job should return null status");
+
+        // Verify this doesn't affect existing job status
+        JobStatus existingStatus = new JobStatus(JobState.SUBMITTED);
+        existingStatus.setReason("Existing job status");
+        jobStatusService.addJobStatus(existingStatus, jobPK);
+
+        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(retrieved, "Existing job should have status");
+        assertEquals(JobState.SUBMITTED, retrieved.getJobState(), "Status should match");
+    }
+
+    @Test
+    public void testJobStatusRepository_Update_AllStatusFields() throws RegistryException {
+        JobStatus status = new JobStatus(JobState.QUEUED);
+        status.setReason("Initial queued state");
+        jobStatusService.addJobStatus(status, jobPK);
+
+        // Update status with all fields
+        JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
+        updatedStatus.setReason("Updated: Job is now active");
+        updatedStatus.setTimeOfStateChange(System.currentTimeMillis());
+        jobStatusService.updateJobStatus(updatedStatus, jobPK);
+
+        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(retrieved, "Updated status should exist");
+        assertEquals(JobState.ACTIVE, retrieved.getJobState(), "State should be updated to ACTIVE");
+        assertEquals("Updated: Job is now active", retrieved.getReason(), "Reason should be updated");
+        assertTrue(retrieved.getTimeOfStateChange() > 0, "Time of state change should be set");
+    }
+
+    @Test
+    public void testJobStatusRepository_UpdateAddsNewStatusEntry() throws RegistryException {
+        // Test that updateJobStatus creates a new status entry rather than modifying existing
+        // This is important for maintaining complete audit trail
+        JobStatus initialStatus = new JobStatus(JobState.SUBMITTED);
+        initialStatus.setReason("Initial submission");
+        jobStatusService.addJobStatus(initialStatus, jobPK);
+
+        JobModel jobBeforeUpdate = jobService.getJob(jobPK);
+        int statusCountBefore = jobBeforeUpdate.getJobStatuses().size();
+        assertTrue(statusCountBefore >= 1, "Should have at least 1 status before update");
+
+        // Update to new state - this should add a new status entry
+        JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
+        updatedStatus.setReason("Updated to active");
+        jobStatusService.updateJobStatus(updatedStatus, jobPK);
+
+        // Verify update worked and latest status is correct
+        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
+        assertEquals("Updated to active", latest.getReason(), "Latest reason should match");
+
+        // Verify a new status entry was added (history preserved)
+        JobModel jobAfterUpdate = jobService.getJob(jobPK);
+        assertTrue(
+                jobAfterUpdate.getJobStatuses().size() > statusCountBefore,
+                "Update should add a new status entry, not replace existing");
+
+        // Verify both statuses exist in history
+        List<JobStatus> allStatuses = jobAfterUpdate.getJobStatuses();
+        assertTrue(
+                allStatuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
+                "Original SUBMITTED status should still exist in history");
+        assertTrue(
+                allStatuses.stream().anyMatch(s -> s.getJobState() == JobState.ACTIVE),
+                "New ACTIVE status should exist in history");
+    }
+
+    @Test
+    public void testJobStatusRepository_TimeOfStateChangeHandling() throws RegistryException {
+        long beforeTime = System.currentTimeMillis();
+
+        JobStatus status = new JobStatus(JobState.SUBMITTED);
+        status.setReason("Test time handling");
+        // Don't set timeOfStateChange - service should set it automatically
+        jobStatusService.addJobStatus(status, jobPK);
+
+        long afterTime = System.currentTimeMillis();
+
+        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(retrieved, "Status should exist");
+        assertTrue(retrieved.getTimeOfStateChange() >= beforeTime, "Time should be set to current or later");
+        assertTrue(retrieved.getTimeOfStateChange() <= afterTime, "Time should be set to current or earlier");
+
+        // Update with explicit time
+        long explicitTime = System.currentTimeMillis() + 1000;
+        JobStatus updated = new JobStatus(JobState.ACTIVE);
+        updated.setTimeOfStateChange(explicitTime);
+        jobStatusService.updateJobStatus(updated, jobPK);
+
+        JobStatus updatedRetrieved = jobStatusService.getJobStatus(jobPK);
+        assertTrue(updatedRetrieved.getTimeOfStateChange() >= explicitTime, "Updated time should be set correctly");
+    }
+
+    @Test
+    public void testJobStatusRepository_StatusOrdering() throws RegistryException {
+        // Create multiple statuses with slight delays to ensure different timestamps
+        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        jobStatusService.addJobStatus(status1, jobPK);
+
+        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        jobStatusService.addJobStatus(status2, jobPK);
+
+        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        jobStatusService.addJobStatus(status3, jobPK);
+
+        // Get all statuses from the job
+        JobModel job = jobService.getJob(jobPK);
+        List<JobStatus> statuses = job.getJobStatuses();
+        assertNotNull(statuses, "Statuses list should not be null");
+        assertTrue(statuses.size() >= 3, "Should have at least 3 statuses");
+
+        // Verify ordering - latest should be first (service returns ordered by time desc)
+        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(latest, "Latest status should exist");
+        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
+    }
+
+    @Test
+    public void testJobStatusRepository_AutomaticStatusIdGeneration() throws RegistryException {
+        // Test that statusId is automatically generated if not provided
+        JobStatus status = new JobStatus(JobState.SUBMITTED);
+        status.setReason("Testing automatic status ID generation");
+        // Don't set statusId - service should generate it automatically
+
+        jobStatusService.addJobStatus(status, jobPK);
+
+        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
+        assertNotNull(retrieved, "Status should exist");
+        assertNotNull(retrieved.getStatusId(), "Status ID should be automatically generated");
+        assertFalse(retrieved.getStatusId().isEmpty(), "Status ID should not be empty");
+        assertTrue(retrieved.getStatusId().startsWith("JOB_STATE"), "Status ID should start with 'JOB_STATE' prefix");
+    }
+
+    @Test
+    public void testJobStatusRepository_StatusHistoryCompleteness() throws RegistryException {
+        // Test that status history is complete and all statuses are preserved (important for audit trail)
+        // Create statuses with explicit time gaps to ensure distinct timestamps
+        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        status1.setReason("Job submitted");
+        jobStatusService.addJobStatus(status1, jobPK);
+
+        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        status2.setReason("Job queued");
+        jobStatusService.addJobStatus(status2, jobPK);
+
+        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        status3.setReason("Job active");
+        jobStatusService.addJobStatus(status3, jobPK);
+
+        // Verify all statuses are preserved in history
+        JobModel job = jobService.getJob(jobPK);
+        List<JobStatus> statuses = job.getJobStatuses();
+        assertNotNull(statuses, "Statuses list should not be null");
+        assertTrue(statuses.size() >= 3, "Should have at least 3 statuses in history");
+
+        // Verify all expected states are present
+        assertTrue(
+                statuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
+                "SUBMITTED status should be in history");
+        assertTrue(
+                statuses.stream().anyMatch(s -> s.getJobState() == JobState.QUEUED),
+                "QUEUED status should be in history");
+        assertTrue(
+                statuses.stream().anyMatch(s -> s.getJobState() == JobState.ACTIVE),
+                "ACTIVE status should be in history");
+
+        // Verify latest status is returned by getJobStatus (should be most recent)
+        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
+        assertTrue(latest.getTimeOfStateChange() > 0, "Latest status should have timestamp");
+
+        // Verify all statuses have proper timestamps (critical for audit trail)
+        statuses.forEach(s -> {
+            assertTrue(
+                    s.getTimeOfStateChange() > 0, "Each status should have timeOfStateChange set: " + s.getJobState());
+            assertNotNull(s.getStatusId(), "Each status should have statusId: " + s.getJobState());
+        });
+    }
+
+    @Test
+    public void testJobStatusRepository_AllJobStates() throws RegistryException {
+        // Test all possible job states
+        JobState[] allStates = JobState.values();
+        JobPK[] jobPKs = new JobPK[allStates.length];
+
+        // Create a job for each state
+        for (int i = 0; i < allStates.length; i++) {
+            jobPKs[i] = createNewJob("job-state-" + allStates[i].name());
+            JobStatus status = new JobStatus(allStates[i]);
+            status.setReason("Testing state: " + allStates[i].name());
+            jobStatusService.addJobStatus(status, jobPKs[i]);
+
+            JobStatus retrieved = jobStatusService.getJobStatus(jobPKs[i]);
+            assertNotNull(retrieved, "Status for " + allStates[i] + " should exist");
+            assertEquals(allStates[i], retrieved.getJobState(), "State should match for " + allStates[i]);
+        }
+    }
+
+    @Test
+    public void testJobStatusRepository_RapidStatusUpdates() throws RegistryException {
+        // Test handling of rapid sequential status updates - important for real-world scenarios
+        // where job status can change quickly (e.g., SUBMITTED -> QUEUED -> ACTIVE in quick succession)
+        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        status1.setReason("Rapid update 1");
+        jobStatusService.addJobStatus(status1, jobPK);
+
+        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        status2.setReason("Rapid update 2");
+        jobStatusService.addJobStatus(status2, jobPK);
+
+        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        status3.setReason("Rapid update 3");
+        jobStatusService.addJobStatus(status3, jobPK);
+
+        // Verify all statuses are recorded (no data loss)
+        JobModel job = jobService.getJob(jobPK);
+        assertTrue(job.getJobStatuses().size() >= 3, "All rapid status updates should be recorded without loss");
+
+        // Verify latest status reflects the most recent update
+        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should reflect the most recent update");
+        assertEquals("Rapid update 3", latest.getReason(), "Latest reason should match the most recent update");
+
+        // Verify all statuses have proper timestamps
+        List<JobStatus> statuses = job.getJobStatuses();
+        statuses.forEach(s -> {
+            assertTrue(s.getTimeOfStateChange() > 0, "All statuses should have timestamps set: " + s.getJobState());
+            assertNotNull(s.getStatusId(), "All statuses should have status IDs: " + s.getJobState());
+        });
+    }
+
+    // Helper method to create a new job for testing
+    private JobPK createNewJob(String jobIdPrefix) throws RegistryException {
+        JobModel jobModel = new JobModel();
+        jobModel.setJobId(jobIdPrefix + "-" + java.util.UUID.randomUUID().toString());
+        jobModel.setTaskId(taskId);
+        jobModel.setJobDescription("Test job for " + jobIdPrefix);
+        String jobId = jobService.addJob(jobModel, processId);
+
+        JobPK jobPK = new JobPK();
+        jobPK.setJobId(jobId);
+        jobPK.setTaskId(taskId);
+        return jobPK;
     }
 }

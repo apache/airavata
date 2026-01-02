@@ -22,7 +22,6 @@ package org.apache.airavata.thriftapi.server;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.profile.utils.UserProfileCatalogDBInitConfig;
@@ -107,11 +106,8 @@ public class ProfileServiceServer extends ServerLifecycle {
     protected void doStart() throws Exception {
         try {
 
-            logger.info("Initialing profile service databases...");
-            for (DBInitConfig dbInitConfig : dbInitConfigs) {
-                DBInitializer.initializeDB(dbInitConfig);
-            }
-            logger.info("Profile service databases initialized successfully");
+            // Database migrations are handled automatically by Flyway on application startup
+            // See FlywayConfig for migration configuration
 
             final int serverPort = properties.services.api.profile.server.port;
 

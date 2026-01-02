@@ -34,8 +34,13 @@ import org.springframework.test.context.TestPropertySource;
  * and all EntityManagerFactory beans can be created without errors.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true"})
+        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataPropertiesConfiguration.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
+        })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class PersistenceConfigurationTest {
 

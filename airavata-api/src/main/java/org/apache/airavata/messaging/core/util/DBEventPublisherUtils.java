@@ -47,10 +47,15 @@ public class DBEventPublisherUtils {
     private Publisher dbEventPublisher = null;
     private DBEventService publisherService;
     private final MessagingFactory messagingFactory;
+    private final ThriftToDomainMapperRegistry mapperRegistry;
 
-    public DBEventPublisherUtils(DBEventService dbEventService, MessagingFactory messagingFactory) {
+    public DBEventPublisherUtils(
+            DBEventService dbEventService,
+            MessagingFactory messagingFactory,
+            ThriftToDomainMapperRegistry mapperRegistry) {
         this.publisherService = dbEventService;
         this.messagingFactory = messagingFactory;
+        this.mapperRegistry = mapperRegistry;
     }
 
     /**
@@ -139,30 +144,7 @@ public class DBEventPublisherUtils {
     }
 
     private Object convertThriftEntityToDomain(EntityType entityType, Object thriftModel) throws Exception {
-        // Use reflection to call appropriate mapper based on entity type
-        String mapperClassName;
-        String methodName = "toDomain";
-
-        switch (entityType) {
-            case USER_PROFILE:
-                mapperClassName = "org.apache.airavata.thriftapi.mapper.UserProfileMapper";
-                break;
-            case TENANT:
-                mapperClassName = "org.apache.airavata.thriftapi.mapper.GatewayMapper";
-                break;
-            case PROJECT:
-                mapperClassName = "org.apache.airavata.thriftapi.mapper.ProjectMapper";
-                break;
-            case EXPERIMENT:
-                mapperClassName = "org.apache.airavata.thriftapi.mapper.ExperimentModelMapper";
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported entity type: " + entityType);
-        }
-
-        Class<?> mapperClass = Class.forName(mapperClassName);
-        Object mapperInstance = mapperClass.getField("INSTANCE").get(null);
-        java.lang.reflect.Method toDomainMethod = mapperClass.getMethod(methodName, thriftModel.getClass());
-        return toDomainMethod.invoke(mapperInstance, thriftModel);
+        // Use mapper registry instead of reflection
+        return mapperRegistry.convertToDomain(entityType, thriftModel);
     }
 }

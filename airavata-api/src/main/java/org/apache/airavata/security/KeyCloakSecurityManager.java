@@ -59,11 +59,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnBean(RegistryService.class)
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
     // Methods that users user to manage their user resource profile

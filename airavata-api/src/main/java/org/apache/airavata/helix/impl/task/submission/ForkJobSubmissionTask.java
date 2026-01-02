@@ -33,9 +33,16 @@ import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Fork Job Submission")
 @SuppressWarnings("unused")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.forkJobSubmission.enabled", havingValue = "true", matchIfMissing = true)
 public class ForkJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);

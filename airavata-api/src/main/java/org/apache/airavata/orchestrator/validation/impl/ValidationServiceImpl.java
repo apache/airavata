@@ -21,6 +21,7 @@ package org.apache.airavata.orchestrator.validation.impl;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import org.apache.airavata.common.exception.LaunchValidationException;
 import org.apache.airavata.common.exception.ValidationResults;
 import org.apache.airavata.common.exception.ValidatorResult;
@@ -36,25 +37,30 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 /**
  * Implementation of ValidationService.
  */
 @Service
+@Profile("!test")
 @ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(RegistryService.class)
 public class ValidationServiceImpl implements ValidationService {
     private static final Logger logger = LoggerFactory.getLogger(ValidationServiceImpl.class);
 
     private final OrchestratorContext orchestratorContext;
     private final RegistryService registryService;
+    private final org.springframework.context.ApplicationContext applicationContext;
 
-    public ValidationServiceImpl(OrchestratorContext orchestratorContext, RegistryService registryService) {
+    public ValidationServiceImpl(
+            OrchestratorContext orchestratorContext,
+            RegistryService registryService,
+            org.springframework.context.ApplicationContext applicationContext) {
         this.orchestratorContext = orchestratorContext;
         this.registryService = registryService;
+        this.applicationContext = applicationContext;
     }
 
     private ValidationResults runValidators(
@@ -68,14 +74,14 @@ public class ValidationServiceImpl implements ValidationService {
             return validationResults;
         }
 
-        List<String> validatorClasses =
-                orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
-        for (String validator : validatorClasses) {
+        // Get all enabled JobMetadataValidator beans from Spring context
+        Map<String, JobMetadataValidator> validatorBeans =
+                applicationContext.getBeansOfType(JobMetadataValidator.class);
+
+        // Use all enabled validators from Spring context
+        for (JobMetadataValidator validator : validatorBeans.values()) {
             try {
-                Class<? extends JobMetadataValidator> vClass =
-                        Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
-                JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                validationResults = jobMetadataValidator.validate(experiment, processModel);
+                validationResults = validator.validate(experiment, processModel);
 
                 if (validationResults.getValidationState()) {
                     logger.info("Validation of " + validator + " is SUCCESSFUL");
@@ -102,8 +108,8 @@ public class ValidationServiceImpl implements ValidationService {
                     }
                     break;
                 }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                logger.error("Error loading the validation class: " + validator, e);
+            } catch (Exception e) {
+                logger.error("Error loading or executing the validation class: " + validator, e);
                 validationResults.setValidationState(false);
             }
         }

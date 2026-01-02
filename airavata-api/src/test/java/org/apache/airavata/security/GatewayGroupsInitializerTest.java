@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -49,15 +48,18 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             GatewayGroupsInitializerTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "security.tls.enabled=true",
-            "security.manager.enabled=false"
+            "security.manager.enabled=false",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";
@@ -138,13 +140,6 @@ public class GatewayGroupsInitializerTest {
                 "org.apache.airavata.security",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                        })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {}

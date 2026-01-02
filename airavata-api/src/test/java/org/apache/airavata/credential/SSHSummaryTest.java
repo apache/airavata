@@ -43,14 +43,17 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
             SSHSummaryTest.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
-            "security.manager.enabled=false"
+            "security.manager.enabled=false",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @Transactional
 public class SSHSummaryTest {
@@ -99,13 +102,6 @@ public class SSHSummaryTest {
                 "org.apache.airavata.credential",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
-            },
-            excludeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.config.BackgroundServicesLauncher.class,
-                        })
             })
     @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
     static class TestConfiguration {}

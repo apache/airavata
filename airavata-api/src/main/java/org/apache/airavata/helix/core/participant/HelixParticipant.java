@@ -176,32 +176,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
                                 : applicationContext.getBean(
                                         org.apache.airavata.helix.core.support.TaskHelperImpl.class);
 
-                        // Try to get task as Spring bean first
-                        try {
-                            task = applicationContext.getBean(taskClass);
-                        } catch (Exception e) {
-                            // If not a Spring bean, create via reflection with dependencies from ApplicationContext
-                            // This is necessary for dynamically loaded task classes that may not be Spring beans
-                            java.lang.reflect.Constructor<?>[] constructors = taskClass.getConstructors();
-                            java.lang.reflect.Constructor<?> constructor = null;
-                            for (java.lang.reflect.Constructor<?> c : constructors) {
-                                if (c.getParameterCount() > 0) {
-                                    constructor = c;
-                                    break;
-                                }
-                            }
-                            if (constructor != null) {
-                                java.lang.Class<?>[] paramTypes = constructor.getParameterTypes();
-                                Object[] args = new Object[paramTypes.length];
-                                for (int i = 0; i < paramTypes.length; i++) {
-                                    args[i] = applicationContext.getBean(paramTypes[i]);
-                                }
-                                task = (AbstractTask) constructor.newInstance(args);
-                            } else {
-                                task = (AbstractTask)
-                                        taskClass.getDeclaredConstructor().newInstance();
-                            }
-                        }
+                        // Get task as Spring bean - all tasks must be Spring beans now
+                        task = applicationContext.getBean(taskClass);
                     } else {
                         throw new IllegalStateException(
                                 "ApplicationContext must be set on HelixParticipant to create tasks");

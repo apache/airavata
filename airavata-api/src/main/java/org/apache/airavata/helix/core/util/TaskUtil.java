@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.helix.core.util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -39,6 +38,16 @@ import org.apache.airavata.helix.task.api.annotation.TaskParam;
  * @since 1.0.0-SNAPSHOT
  */
 public class TaskUtil {
+
+    private static TaskParamTypeFactory taskParamTypeFactory;
+
+    /**
+     * Set the TaskParamTypeFactory instance.
+     * This should be called during Spring initialization.
+     */
+    public static void setTaskParamTypeFactory(TaskParamTypeFactory factory) {
+        taskParamTypeFactory = factory;
+    }
 
     public static <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
 
@@ -120,10 +129,16 @@ public class TaskUtil {
                             || classField.getType().isAssignableFrom(Boolean.TYPE)) {
                         classField.set(instance, Boolean.parseBoolean(params.get(param.name())));
                     } else if (TaskParamType.class.isAssignableFrom(classField.getType())) {
-                        Class<?> clazz = classField.getType();
-                        Constructor<?> ctor = clazz.getConstructor();
-                        Object obj = ctor.newInstance();
-                        ((TaskParamType) obj).deserialize(params.get(param.name()));
+                        @SuppressWarnings("unchecked")
+                        Class<? extends TaskParamType> clazz = (Class<? extends TaskParamType>) classField.getType();
+                        TaskParamType obj;
+                        if (taskParamTypeFactory != null) {
+                            obj = taskParamTypeFactory.createInstance(clazz);
+                        } else {
+                            // Fallback if factory not set (for backward compatibility)
+                            obj = clazz.getDeclaredConstructor().newInstance();
+                        }
+                        obj.deserialize(params.get(param.name()));
                         classField.set(instance, obj);
                     }
                 }

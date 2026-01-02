@@ -23,7 +23,6 @@ import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.registry.messaging.RegistryServiceDBEventMessagingFactory;
@@ -104,11 +103,8 @@ public class RegistryServiceServer extends ServerLifecycle {
     public void StartRegistryServer(
             RegistryService.Processor<RegistryServiceHandler> orchestratorServerHandlerProcessor) throws Exception {
 
-        logger.info("Initializing databases...");
-        for (DBInitConfig dbInitConfig : dbInitConfigs) {
-            DBInitializer.initializeDB(dbInitConfig);
-        }
-        logger.info("Databases initialized successfully");
+        // Database migrations are handled automatically by Flyway on application startup
+        // See FlywayConfig for migration configuration
 
         final int serverPort = properties.services.registry.server.port;
         try {

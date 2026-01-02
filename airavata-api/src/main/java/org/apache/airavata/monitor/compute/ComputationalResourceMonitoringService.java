@@ -34,6 +34,7 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Service;
  * Computational Resource Monitoring Service
  */
 @Service
+@Profile("!test")
 public class ComputationalResourceMonitoringService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";

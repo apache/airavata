@@ -40,25 +40,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Base class for all service integration tests.
- * Provides Spring Boot test setup with H2 in-memory databases.
+ * Provides Spring Boot test setup with Testcontainers MariaDB databases.
  * All tests use @Transactional for automatic rollback.
  */
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
             ServiceIntegrationTestBase.TestConfiguration.class
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
             // no property flags needed
             // IAM configuration
-            "security.iam.server-url="
+            "security.iam.server-url=",
+            // Disable Flyway in tests - TestcontainersConfig handles migrations
+            "flyway.enabled=false",
+            // Enable Airavata service to enable persistence units
+            "services.airavata.enabled=true"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -106,8 +111,8 @@ public abstract class ServiceIntegrationTestBase {
     }
 
     /**
-     * Test configuration that enables component scanning for services
-     * without loading background services or Thrift servers.
+     * Test configuration that enables component scanning for services.
+     * Infrastructure components are automatically excluded via @Profile("!test").
      */
     @Configuration
     @ComponentScan(
@@ -131,76 +136,6 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security"
-            },
-            useDefaultFilters = false,
-            includeFilters = {
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ANNOTATION,
-                        classes = {
-                            org.springframework.stereotype.Component.class,
-                            org.springframework.stereotype.Service.class,
-                            org.springframework.stereotype.Repository.class,
-                            org.springframework.context.annotation.Configuration.class
-                        })
-            },
-            excludeFilters = {
-                // Exclude infrastructure components - use DI instead of property flags
-                // Helix components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.helix.adaptor.SSHJAgentAdaptor.class,
-                            org.apache.airavata.helix.adaptor.SSHJStorageAdaptor.class,
-                            org.apache.airavata.helix.agent.ssh.SshAgentAdaptor.class,
-                            org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl.class,
-                            org.apache.airavata.helix.core.support.TaskHelperImpl.class,
-                            org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl.class,
-                            org.apache.airavata.helix.impl.controller.HelixController.class,
-                            org.apache.airavata.helix.impl.participant.GlobalParticipant.class,
-                            org.apache.airavata.helix.impl.task.AWSTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.AiravataTask.class,
-                            org.apache.airavata.helix.impl.task.SlurmTaskFactory.class,
-                            org.apache.airavata.helix.impl.task.TaskFactory.class,
-                            org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil.class,
-                            org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder.class,
-                            org.apache.airavata.helix.impl.workflow.ParserWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PostWorkflowManager.class,
-                            org.apache.airavata.helix.impl.workflow.PreWorkflowManager.class
-                        }),
-                // Monitor components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.monitor.AbstractMonitor.class,
-                            org.apache.airavata.monitor.cluster.ClusterStatusMonitorJob.class,
-                            org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService.class,
-                            org.apache.airavata.monitor.email.EmailBasedMonitor.class,
-                            org.apache.airavata.monitor.realtime.RealtimeMonitor.class
-                        }),
-                // DB Event Manager components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.manager.dbevent.DBEventManagerRunner.class,
-                            org.apache.airavata.manager.dbevent.messaging.DBEventManagerMessagingFactory.class,
-                            org.apache.airavata.manager.dbevent.messaging.impl.DBEventMessageHandler.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.BackgroundServicesLauncher.class}),
-                // Orchestrator components
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                            org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class,
-                            org.apache.airavata.orchestrator.utils.OrchestratorUtils.class,
-                            org.apache.airavata.orchestrator.validation.impl.ValidationServiceImpl.class,
-                            org.apache.airavata.orchestrator.validator.BatchQueueValidator.class,
-                            org.apache.airavata.orchestrator.validator.GroupResourceProfileValidator.class
-                        }),
-                @ComponentScan.Filter(
-                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
-                        classes = {org.apache.airavata.config.SecurityManagerConfig.class})
             })
     @Import({
         org.apache.airavata.config.AiravataPropertiesConfiguration.class,
@@ -255,18 +190,26 @@ public abstract class ServiceIntegrationTestBase {
         @Bean(name = "testIamAdminService")
         @Primary
         @org.springframework.boot.autoconfigure.condition.ConditionalOnBean({
-            org.apache.airavata.service.profile.UserProfileService.class,
+            org.apache.airavata.profile.repositories.UserProfileRepository.class,
             org.apache.airavata.service.registry.RegistryService.class
         })
         public org.apache.airavata.service.security.IamAdminService testIamAdminService(
                 org.apache.airavata.config.AiravataServerProperties properties,
-                org.apache.airavata.service.profile.UserProfileService userProfileService,
+                org.apache.airavata.profile.repositories.UserProfileRepository userProfileRepository,
+                org.apache.airavata.profile.mappers.UserProfileMapper userProfileMapper,
                 org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
                 org.apache.airavata.service.registry.RegistryService registryService,
-                org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+                org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
+                org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry mapperRegistry) {
             // Create a mock implementation that extends IamAdminService behavior
             return new org.apache.airavata.service.security.IamAdminService(
-                    properties, userProfileService, credentialStoreService, registryService, messagingFactory) {
+                    properties,
+                    userProfileRepository,
+                    userProfileMapper,
+                    credentialStoreService,
+                    registryService,
+                    messagingFactory,
+                    mapperRegistry) {
                 @Override
                 public boolean isUsernameAvailable(AuthzToken authzToken, String username)
                         throws org.apache.airavata.profile.exception.IamAdminServicesException {

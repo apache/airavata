@@ -318,9 +318,6 @@ Before setting up Apache Airavata, ensure that you have:
 | **Docker Engine** | 20.10+ | `docker -v` |
 | **Docker Compose** | 2.0+ | `docker compose version` |
 
-In your `/etc/hosts`, point `airavata.host` to `127.0.0.1`:
-```
-127.0.0.1    airavata.host
 ```
 
 First, clone the project repository from GitHub.
@@ -356,9 +353,9 @@ docker-compose ps
 **Note:** Docker deployment uses the unified distribution bundle for simplified container management.
 
 **Service Endpoints:**
-- **API Server:** `airavata.host:8960`
-- **Profile Service:** `airavata.host:8962`
-- **Keycloak:** `airavata.host:8443`
+- **API Server:** `localhost:8960`
+- **Profile Service:** `localhost:8962`
+- **Keycloak:** `localhost:8443`
 
 **Stop Services:**
 ```bash

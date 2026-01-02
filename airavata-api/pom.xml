@@ -133,10 +133,35 @@ under the License.
       <artifactId>jsch</artifactId>
     </dependency>
 
+    <!-- Database Migration -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-mysql</artifactId>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mariadb</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -460,20 +485,15 @@ under the License.
         <inherited>true</inherited>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
-          <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-          <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
-          <includes>
-            <include>**/*Test.java</include>
-            <include>**/*Tests.java</include>
-          </includes>
+          <environmentVariables>
+            <DOCKER_HOST>unix://${user.home}/.rd/docker.sock</DOCKER_HOST>
+            <TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>${user.home}/.rd/docker.sock</TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>
+          </environmentVariables>
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
             <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
+            <docker.host>unix://${user.home}/.rd/docker.sock</docker.host>
           </systemPropertyVariables>
-          <excludes>
-            <exclude>**/DAOBaseTestCase.java</exclude>
-            <exclude>**/MappingDAOTest.java</exclude>
-          </excludes>
           <argLine>@{argLine} -Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar</argLine>
         </configuration>
       </plugin>

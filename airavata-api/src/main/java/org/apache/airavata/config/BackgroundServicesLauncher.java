@@ -32,6 +32,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration class to launch all background services when Spring Boot starts.
@@ -51,6 +52,7 @@ import org.springframework.context.annotation.Configuration;
  * Each service can be enabled/disabled via configuration properties.
  */
 @Configuration
+@Profile("!test")
 @ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
 public class BackgroundServicesLauncher {
 

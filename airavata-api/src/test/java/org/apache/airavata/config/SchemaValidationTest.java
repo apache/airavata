@@ -42,13 +42,15 @@ import org.springframework.test.context.TestPropertySource;
  * 3. Validates all 7 persistence units
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataPropertiesConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.allow-circular-references=true",
             "spring.main.banner-mode=off",
-            "spring.main.log-startup-info=false"
+            "spring.main.log-startup-info=false",
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
         })
+@org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(
         properties = {
             // Configure all persistence units to use H2 in-memory database
@@ -115,27 +117,27 @@ public class SchemaValidationTest {
 
     @Test
     public void testAppCatalogSchemaValidation() {
-        validatePersistenceUnit("appcatalog_data_new");
+        validatePersistenceUnit("app_catalog");
     }
 
     @Test
     public void testExpCatalogSchemaValidation() {
-        validatePersistenceUnit("experiment_data_new");
+        validatePersistenceUnit("experiment_catalog");
     }
 
     @Test
     public void testReplicaCatalogSchemaValidation() {
-        validatePersistenceUnit("replicacatalog_data_new");
+        validatePersistenceUnit("replica_catalog");
     }
 
     @Test
     public void testWorkflowCatalogSchemaValidation() {
-        validatePersistenceUnit("workflowcatalog_data_new");
+        validatePersistenceUnit("workflow_catalog");
     }
 
     @Test
     public void testSharingRegistrySchemaValidation() {
-        validatePersistenceUnit("airavata-sharing-registry");
+        validatePersistenceUnit("sharing_registry");
     }
 
     @Test

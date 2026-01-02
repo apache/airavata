@@ -59,9 +59,7 @@ services:
     volumes:
       - kafka-data:/var/lib/kafka/data
     networks:
-      airavata-network:
-        aliases:
-          - airavata.host
+      - airavata-network
 
   airavata-monolithic:
     build:

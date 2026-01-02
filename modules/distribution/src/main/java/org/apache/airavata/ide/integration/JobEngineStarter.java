@@ -19,56 +19,98 @@
 */
 package org.apache.airavata.ide.integration;
 
-import java.util.ArrayList;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
-import org.apache.helix.manager.zk.ZKHelixAdmin;
-import org.apache.helix.manager.zk.ZNRecordSerializer;
-import org.apache.helix.manager.zk.ZkClient;
+import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
+import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
-public class JobEngineStarter {
-
-    // Note: This static field cannot be injected by Spring.
-    // This class needs to be refactored to use Spring ApplicationContext
-    // or convert to a Spring component with instance-based injection.
-    private static GlobalParticipant globalParticipant;
+/**
+ * Spring-based starter for Job Engine components.
+ *
+ * <p>This class starts Helix Controller, Global Participant, and Workflow Managers
+ * using Spring Dependency Injection. All components are obtained from the Spring
+ * application context, eliminating the need for reflection or manual instantiation.
+ *
+ * <p>This starter should be run within a Spring Boot application context.
+ * Use {@link org.apache.airavata.server.UnifiedApplication} or create a Spring Boot
+ * application that includes this component.
+ *
+ * <p>Components are started in the following order:
+ * <ol>
+ *   <li>Helix Controller - Manages Helix cluster</li>
+ *   <li>Global Participant - Executes workflow tasks</li>
+ *   <li>Pre Workflow Manager - Handles process launch events</li>
+ *   <li>Post Workflow Manager - Handles job completion events</li>
+ * </ol>
+ */
+@Component
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+public class JobEngineStarter implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(JobEngineStarter.class);
 
-    public static void main(String args[]) throws Exception {
+    private final ApplicationContext applicationContext;
 
-        ZkClient zkClient = new ZkClient(
-                ApplicationSettings.getSetting("zookeeper.server-connection", "localhost:2181"),
-                ZkClient.DEFAULT_SESSION_TIMEOUT,
-                ZkClient.DEFAULT_CONNECTION_TIMEOUT,
-                new ZNRecordSerializer());
-        ZKHelixAdmin zkHelixAdmin = new ZKHelixAdmin(zkClient);
+    public JobEngineStarter(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
-        zkHelixAdmin.addCluster(ApplicationSettings.getSetting("helix.cluster-name"), true);
+    @Override
+    public void run(String... args) throws Exception {
+        logger.info("Starting Job Engine components via Spring DI...");
 
-        logger.info("Starting Helix Controller .......");
-        // Note: HelixController is a Spring component and requires AiravataServerProperties.
-        // This main method should be run within a Spring application context.
-        logger.warn("HelixController requires Spring context - skipping in standalone mode");
-
-        ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
-
-        for (String taskClassName : GlobalParticipant.TASK_CLASS_NAMES) {
-            taskClasses.add(Class.forName(taskClassName).asSubclass(AbstractTask.class));
+        // Check for components in Spring context
+        // These are conditionally created based on @ConditionalOnProperty annotations
+        // Components are actually started by BackgroundServicesLauncher - we just verify they're available
+        if (applicationContext.getBeanNamesForType(HelixController.class).length > 0) {
+            logger.info("Helix Controller is available and will be started by BackgroundServicesLauncher");
+        } else {
+            logger.warn("HelixController bean not found - may be disabled via configuration");
         }
 
-        logger.info("Starting Helix Participant .......");
-        // Note: GlobalParticipant is a Spring component and requires AiravataServerProperties.
-        // This main method should be run within a Spring application context.
-        logger.warn("GlobalParticipant requires Spring context - skipping in standalone mode");
+        if (applicationContext.getBeanNamesForType(GlobalParticipant.class).length > 0) {
+            logger.info("Global Participant is available and will be started by BackgroundServicesLauncher");
+            // GlobalParticipant automatically discovers task classes from Spring context
+            // No reflection needed - task classes are obtained via
+            // applicationContext.getBeansOfType(AbstractTask.class)
+        } else {
+            logger.warn("GlobalParticipant bean not found - may be disabled via configuration");
+        }
 
-        logger.info("Starting Pre Workflow Manager .......");
-        // Note: PreWorkflowManager and PostWorkflowManager are Spring components
-        // and require dependency injection. This main method should be run within
-        // a Spring application context or these should be obtained from the context.
-        logger.warn("PreWorkflowManager and PostWorkflowManager require Spring context - skipping in standalone mode");
+        if (applicationContext.getBeanNamesForType(PreWorkflowManager.class).length > 0) {
+            logger.info("Pre Workflow Manager is available and will be started by BackgroundServicesLauncher");
+        } else {
+            logger.warn("PreWorkflowManager bean not found - may be disabled via configuration");
+        }
+
+        if (applicationContext.getBeanNamesForType(PostWorkflowManager.class).length > 0) {
+            logger.info("Post Workflow Manager is available and will be started by BackgroundServicesLauncher");
+        } else {
+            logger.warn("PostWorkflowManager bean not found - may be disabled via configuration");
+        }
+
+        logger.info("Job Engine starter completed - components will be started by BackgroundServicesLauncher");
+    }
+
+    /**
+     * Legacy main method - throws UnsupportedOperationException.
+     *
+     * <p>This class must be run within a Spring Boot application context.
+     * Use {@link org.apache.airavata.server.UnifiedApplication} or create a Spring Boot
+     * application that includes this component.
+     *
+     * @param args command line arguments (not used)
+     * @throws UnsupportedOperationException always - this class must be used within Spring context
+     */
+    public static void main(String[] args) throws Exception {
+        throw new UnsupportedOperationException(
+                "JobEngineStarter must be used within a Spring Boot application context. "
+                        + "Use org.apache.airavata.server.UnifiedApplication or create a Spring Boot application.");
     }
 }

@@ -35,23 +35,27 @@ import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPol
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
  * This class provides implementation of the ProcessSchedule Interface
  */
 @Component
-@ConditionalOnBean(RegistryService.class)
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
 
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
+    private final ApplicationContext applicationContext;
 
-    public ProcessSchedulerImpl(RegistryService registryService, AiravataServerProperties properties) {
+    public ProcessSchedulerImpl(
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            ApplicationContext applicationContext) {
         this.registryService = registryService;
         this.properties = properties;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -62,10 +66,9 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             ExperimentModel experiment = registryService.getExperiment(experimentId);
             boolean allProcessesScheduled = true;
 
-            String selectionPolicyClass = properties.services.scheduler.computeResourceSelectionPolicyClass;
-
-            ComputeResourceSelectionPolicy policy = (ComputeResourceSelectionPolicy)
-                    Class.forName(selectionPolicyClass).getDeclaredConstructor().newInstance();
+            // Get policy bean from Spring context using property-based selection
+            String policyClassName = properties.services.scheduler.computeResourceSelectionPolicyClass;
+            ComputeResourceSelectionPolicy policy = getPolicyBean(policyClassName);
 
             for (ProcessModel processModel : processModels) {
                 ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());
@@ -128,6 +131,36 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
         }
 
         return false;
+    }
+
+    /**
+     * Get policy bean by bean name from Spring context.
+     * Uses property-based selection for deterministic bean resolution.
+     * Derives bean name from class name (simple class name with first letter lowercase).
+     */
+    private ComputeResourceSelectionPolicy getPolicyBean(String policyClassName) {
+        try {
+            // Extract simple class name from full class name
+            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
+            // Spring default bean name is simple class name with first letter lowercase
+            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+
+            return applicationContext.getBean(beanName, ComputeResourceSelectionPolicy.class);
+        } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
+            // Extract bean name for error message
+            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
+            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+            LOGGER.error(
+                    "Policy bean not found in Spring context: {} (derived from class name: {})",
+                    beanName,
+                    policyClassName,
+                    e);
+            throw new IllegalStateException(
+                    "Policy bean not found: " + beanName + " (from class: " + policyClassName + ")", e);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get policy bean for class: {}", policyClassName, e);
+            throw new IllegalStateException("Failed to get policy bean for: " + policyClassName, e);
+        }
     }
 
     @Override

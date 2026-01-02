@@ -20,7 +20,6 @@
 package org.apache.airavata.service.orchestrator;
 
 import jakarta.annotation.PostConstruct;
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,12 +90,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service
-@DependsOn("messagingFactory")
-@ConditionalOnBean({RegistryService.class, org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class})
+@ConditionalOnBean(org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class)
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 
@@ -106,6 +103,7 @@ public class OrchestratorService {
     private final org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider;
     private final SimpleOrchestratorImpl orchestrator;
     private final MessagingFactory messagingFactory;
+    private final HostScheduler hostScheduler;
 
     private CuratorFramework curatorClient;
     private Publisher publisher;
@@ -117,13 +115,15 @@ public class OrchestratorService {
             AiravataServerProperties properties,
             SimpleOrchestratorImpl orchestrator,
             org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            HostScheduler hostScheduler) {
         this.orchestratorRegistryService = orchestratorRegistryService;
         this.registryService = registryService;
         this.properties = properties;
         this.orchestrator = orchestrator;
         this.processSchedulerProvider = processSchedulerProvider;
         this.messagingFactory = messagingFactory;
+        this.hostScheduler = hostScheduler;
     }
 
     @PostConstruct
@@ -545,18 +545,6 @@ public class OrchestratorService {
         }
         List<ComputeResourceDescription> computeHostList =
                 Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[] {}));
-        HostScheduler hostScheduler;
-        try {
-            var schedulerClass =
-                    Class.forName(properties.services.scheduler.classpath).asSubclass(HostScheduler.class);
-            hostScheduler = schedulerClass.getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException
-                | NoSuchMethodException
-                | InstantiationException
-                | IllegalAccessException
-                | InvocationTargetException e) {
-            throw new OrchestratorException("Failed to instantiate HostScheduler", e);
-        }
         ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
         return deploymentMap.get(ComputeResourceDescription);
     }

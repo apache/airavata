@@ -29,9 +29,11 @@ import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 @ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements StorageResourceAdaptor {
 

@@ -30,20 +30,24 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnBean(RegistryService.class)
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
 
     private final AiravataServerProperties properties;
     private final RegistryService registryService;
+    private final ApplicationContext applicationContext;
 
-    public ProcessScannerImpl(AiravataServerProperties properties, RegistryService registryService) {
+    public ProcessScannerImpl(
+            AiravataServerProperties properties,
+            RegistryService registryService,
+            ApplicationContext applicationContext) {
         this.properties = properties;
         this.registryService = registryService;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -53,10 +57,9 @@ public class ProcessScannerImpl implements ProcessScanner {
             ProcessState state = ProcessState.QUEUED;
             List<ProcessModel> processModelList = registryService.getProcessListInState(state);
 
-            String reSchedulerPolicyClass = properties.services.scheduler.computeResourceReschedulerPolicyClass;
-            ReScheduler reScheduler = (ReScheduler) Class.forName(reSchedulerPolicyClass)
-                    .getDeclaredConstructor()
-                    .newInstance();
+            // Get reScheduler bean from Spring context using property-based selection
+            String reSchedulerClassName = properties.services.scheduler.computeResourceReschedulerPolicyClass;
+            ReScheduler reScheduler = getReSchedulerBean(reSchedulerClassName);
 
             for (ProcessModel processModel : processModelList) {
                 reScheduler.reschedule(processModel, state);
@@ -73,6 +76,36 @@ public class ProcessScannerImpl implements ProcessScanner {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
             throw new JobExecutionException(msg, ex);
+        }
+    }
+
+    /**
+     * Get ReScheduler bean by bean name from Spring context.
+     * Uses property-based selection for deterministic bean resolution.
+     * Derives bean name from class name (simple class name with first letter lowercase).
+     */
+    private ReScheduler getReSchedulerBean(String reSchedulerClassName) {
+        try {
+            // Extract simple class name from full class name
+            String simpleClassName = reSchedulerClassName.substring(reSchedulerClassName.lastIndexOf('.') + 1);
+            // Spring default bean name is simple class name with first letter lowercase
+            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+
+            return applicationContext.getBean(beanName, ReScheduler.class);
+        } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
+            // Extract bean name for error message
+            String simpleClassName = reSchedulerClassName.substring(reSchedulerClassName.lastIndexOf('.') + 1);
+            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+            LOGGER.error(
+                    "ReScheduler bean not found in Spring context: {} (derived from class name: {})",
+                    beanName,
+                    reSchedulerClassName,
+                    e);
+            throw new IllegalStateException(
+                    "ReScheduler bean not found: " + beanName + " (from class: " + reSchedulerClassName + ")", e);
+        } catch (Exception e) {
+            LOGGER.error("Failed to get ReScheduler bean for class: {}", reSchedulerClassName, e);
+            throw new IllegalStateException("Failed to get ReScheduler bean for: " + reSchedulerClassName, e);
         }
     }
 }

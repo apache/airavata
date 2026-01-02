@@ -25,7 +25,7 @@ import org.apache.airavata.registry.repositories.AbstractRepository;
 
 public abstract class ExpCatAbstractRepository<T, E, Id> extends AbstractRepository<T, E, Id> {
 
-    @PersistenceContext(unitName = "experiment_data_new")
+    @PersistenceContext(unitName = "experiment_catalog")
     protected EntityManager entityManager;
 
     public ExpCatAbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {

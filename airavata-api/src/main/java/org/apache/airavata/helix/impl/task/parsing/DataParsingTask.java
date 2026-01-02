@@ -67,6 +67,9 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 /**
  * Implementation of the data parsing task.
@@ -74,6 +77,10 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0-SNAPSHOT
  */
 @TaskDef(name = "Data Parsing Task")
+@Component
+@Profile("!test")
+@ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "helix.tasks.dataParsing.enabled", havingValue = "true", matchIfMissing = true)
 public class DataParsingTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);

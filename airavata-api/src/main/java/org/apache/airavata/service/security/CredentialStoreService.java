@@ -21,7 +21,6 @@ package org.apache.airavata.service.security;
 
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
@@ -92,7 +91,8 @@ public class CredentialStoreService {
 
         logger.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName
                 + " driver name - " + driverName);
-        DBInitializer.initializeDB(dbInitConfig);
+        // Database migrations are handled automatically by Flyway on application startup
+        // See FlywayConfig for migration configuration
     }
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
