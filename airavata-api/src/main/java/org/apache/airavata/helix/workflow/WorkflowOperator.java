@@ -53,9 +53,12 @@ public class WorkflowOperator {
     private static final long TASK_EXPIRY_TIME = 24 * 60 * 60 * 1000;
     private TaskDriver taskDriver;
     private HelixManager helixManager;
+    private final TaskUtil taskUtil;
 
-    public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
+    public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString, TaskUtil taskUtil)
+            throws Exception {
 
+        this.taskUtil = taskUtil;
         helixManager = HelixManagerFactory.getZKHelixManager(
                 helixClusterName, instanceName, InstanceType.SPECTATOR, zkConnectionString);
         helixManager.connect();
@@ -84,7 +87,7 @@ public class WorkflowOperator {
             TaskConfig.Builder taskBuilder = new TaskConfig.Builder()
                     .setTaskId("Task_" + data.getTaskId())
                     .setCommand(taskType);
-            Map<String, String> paramMap = org.apache.airavata.helix.core.util.TaskUtil.serializeTaskData(data);
+            Map<String, String> paramMap = taskUtil.serializeTaskData(data);
             paramMap.forEach(taskBuilder::addConfig);
 
             List<TaskConfig> taskBuilds = new ArrayList<>();
@@ -104,7 +107,7 @@ public class WorkflowOperator {
 
             workflowBuilder.addJob((data.getTaskId()), job);
 
-            List<OutPort> outPorts = TaskUtil.getOutPortsOfTask(data);
+            List<OutPort> outPorts = taskUtil.getOutPortsOfTask(data);
             outPorts.forEach(outPort -> {
                 if (outPort != null) {
                     workflowBuilder.addParentChildDependency(data.getTaskId(), outPort.getNextJobId());

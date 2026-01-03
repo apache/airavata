@@ -53,9 +53,9 @@ public class TenantProfileServiceHandler
         return org.apache.airavata.thriftapi.profile.model.profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
     }
 
-    private org.apache.thrift.TException wrapException(Throwable e) {
-        if (e instanceof org.apache.thrift.TException te) return te;
-        org.apache.thrift.TException thriftException = null;
+    private TException wrapException(Throwable e) {
+        if (e instanceof TException te) return te;
+        TException thriftException = null;
 
         if (e instanceof org.apache.airavata.profile.exception.TenantProfileServiceException) {
             var ex = new org.apache.airavata.thriftapi.profile.exception.TenantProfileServiceException();

@@ -46,7 +46,7 @@ public class CredentialEntity implements Serializable {
     private String tokenId;
 
     @Lob
-    @Column(name = "CREDENTIAL", nullable = false)
+    @Column(name = "CREDENTIAL", nullable = false, columnDefinition = "LONGBLOB")
     private byte[] credential;
 
     @Column(name = "PORTAL_USER_ID", length = 256, nullable = false)

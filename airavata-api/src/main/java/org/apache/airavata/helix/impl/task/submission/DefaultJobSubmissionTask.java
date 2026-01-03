@@ -59,6 +59,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     private static final CountMonitor defaultJSTaskCounter = new CountMonitor("default_js_task_counter");
 
     public DefaultJobSubmissionTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
@@ -66,6 +67,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
         super(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,

@@ -56,12 +56,19 @@ import org.springframework.stereotype.Component;
 public class OutputDataStagingTask extends DataStagingTask {
 
     public OutputDataStagingTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(OutputDataStagingTask.class);

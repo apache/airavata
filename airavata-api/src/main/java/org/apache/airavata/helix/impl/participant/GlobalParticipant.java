@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
+import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,8 +44,11 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
 
     @SuppressWarnings("WeakerAccess")
     public GlobalParticipant(
-            List<Class<? extends AbstractTask>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
-        super(taskClasses, taskTypeName, properties);
+            List<Class<? extends AbstractTask>> taskClasses,
+            String taskTypeName,
+            AiravataServerProperties properties,
+            TaskHelperImpl taskHelper) {
+        super(taskClasses, taskTypeName, properties, taskHelper);
         this.applicationContext = null;
         // Initialize property-dependent fields immediately for programmatic creation
         initialize();
@@ -53,10 +57,11 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     // Constructor for Spring - uses constructor injection for properties
     // No checked exceptions - initialization happens in @PostConstruct
     @org.springframework.beans.factory.annotation.Autowired
-    public GlobalParticipant(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    public GlobalParticipant(
+            AiravataServerProperties properties, ApplicationContext applicationContext, TaskHelperImpl taskHelper) {
         // Pass empty list for taskClasses - will be set in @PostConstruct
         // Using Collections.emptyList() to avoid ambiguity with Class<T> constructor
-        super(new ArrayList<>(), null, properties);
+        super(new ArrayList<>(), null, properties, taskHelper);
         this.applicationContext = applicationContext;
         setApplicationContext(applicationContext);
     }

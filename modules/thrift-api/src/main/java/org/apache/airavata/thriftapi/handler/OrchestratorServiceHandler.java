@@ -50,9 +50,9 @@ public class OrchestratorServiceHandler
         log.info("OrchestratorServiceHandler initialized with Spring-injected OrchestratorService");
     }
 
-    private org.apache.thrift.TException wrapException(Throwable e) {
-        if (e instanceof org.apache.thrift.TException te) return te;
-        org.apache.thrift.TException thriftException = null;
+    private TException wrapException(Throwable e) {
+        if (e instanceof TException te) return te;
+        TException thriftException = null;
 
         if (e instanceof org.apache.airavata.common.exception.LaunchValidationException) {
             var ex = new org.apache.airavata.thriftapi.exception.LaunchValidationException();

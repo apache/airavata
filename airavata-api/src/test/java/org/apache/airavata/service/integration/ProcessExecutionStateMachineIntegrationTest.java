@@ -37,7 +37,6 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
-import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,7 +44,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +68,6 @@ import org.springframework.transaction.annotation.Transactional;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata-integration.properties")
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrationTestBase {
 
@@ -96,7 +93,6 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
     private final ExperimentService experimentService;
     private final ProcessService processService;
     private final ProcessStatusService processStatusService;
-    private final OrchestratorService orchestratorService;
 
     private TestHierarchy testHierarchy;
 
@@ -105,14 +101,12 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
-            OrchestratorService orchestratorService) {
+            ProcessStatusService processStatusService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
         this.processStatusService = processStatusService;
-        this.orchestratorService = orchestratorService;
     }
 
     @BeforeEach

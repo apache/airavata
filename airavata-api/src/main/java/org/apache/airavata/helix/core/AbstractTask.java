@@ -68,16 +68,21 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
     private HelixParticipant participant;
+    private final TaskUtil taskUtil;
 
     @TaskParam(name = "Retry Count")
     private int retryCount = 3;
+
+    public AbstractTask(TaskUtil taskUtil) {
+        this.taskUtil = taskUtil;
+    }
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
         try {
             taskInitCounter.inc();
-            TaskUtil.deserializeTaskData(
+            taskUtil.deserializeTaskData(
                     this, this.callbackContext.getTaskConfig().getConfigMap());
         } catch (Exception e) {
             taskFailCounter.inc();

@@ -31,6 +31,7 @@ import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.model.ProcessWorkflow;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.workflow.WorkflowOperator;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -53,12 +54,17 @@ public class WorkflowManager {
     protected final RegistryService registryService;
     private final AiravataServerProperties properties;
     private final MessagingFactory messagingFactory;
+    private final TaskUtil taskUtil;
 
     public WorkflowManager(
-            RegistryService registryService, AiravataServerProperties properties, MessagingFactory messagingFactory) {
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            MessagingFactory messagingFactory,
+            TaskUtil taskUtil) {
         this.registryService = registryService;
         this.properties = properties;
         this.messagingFactory = messagingFactory;
+        this.taskUtil = taskUtil;
     }
 
     protected String workflowManagerName;
@@ -72,12 +78,14 @@ public class WorkflowManager {
             boolean loadBalanceClusters,
             RegistryService registryService,
             AiravataServerProperties properties,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            TaskUtil taskUtil) {
         this.workflowManagerName = workflowManagerName;
         this.loadBalanceClusters = loadBalanceClusters;
         this.registryService = registryService;
         this.properties = properties;
         this.messagingFactory = messagingFactory;
+        this.taskUtil = taskUtil;
     }
 
     protected void initComponents() throws Exception {
@@ -91,15 +99,15 @@ public class WorkflowManager {
         if (!loadBalanceClusters) {
             String clusterName = properties.helix.clusterName;
             logger.info("Using default cluster " + clusterName + " to submit workflows");
-            workflowOperators.add(
-                    new WorkflowOperator(clusterName, workflowManagerName, properties.zookeeper.serverConnection));
+            workflowOperators.add(new WorkflowOperator(
+                    clusterName, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
         } else {
             logger.info("Load balancing workflows among existing clusters");
             List<String> clusters = zkHelixAdmin.getClusters();
             logger.info("Total available clusters " + clusters.size());
             for (String cluster : clusters) {
-                workflowOperators.add(
-                        new WorkflowOperator(cluster, workflowManagerName, properties.zookeeper.serverConnection));
+                workflowOperators.add(new WorkflowOperator(
+                        cluster, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
             }
         }
     }

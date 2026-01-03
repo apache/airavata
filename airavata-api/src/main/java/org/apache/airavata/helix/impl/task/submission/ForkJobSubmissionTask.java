@@ -26,6 +26,7 @@ import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -48,6 +49,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
     private static final Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
 
     public ForkJobSubmissionTask(
+            TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
@@ -55,6 +57,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
         super(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,

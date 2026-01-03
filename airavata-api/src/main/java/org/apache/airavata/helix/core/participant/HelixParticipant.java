@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.InstanceType;
 import org.apache.helix.examples.OnlineOfflineStateModelFactory;
@@ -40,6 +41,7 @@ import org.apache.helix.task.TaskFactory;
 import org.apache.helix.task.TaskStateModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * TODO: Class level comments please
@@ -64,30 +66,27 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
     private List<Class<? extends T>> taskClasses;
     private final List<String> runningTasks = Collections.synchronizedList(new ArrayList<String>());
     private AiravataServerProperties properties;
-    private org.springframework.context.ApplicationContext applicationContext;
-    private org.springframework.beans.factory.ObjectProvider<org.apache.airavata.helix.core.support.TaskHelperImpl>
-            taskHelperProvider;
+    private ApplicationContext applicationContext;
+    private final TaskHelperImpl taskHelper;
 
     public HelixParticipant(
-            List<Class<? extends T>> taskClasses, String taskTypeName, AiravataServerProperties properties) {
+            List<Class<? extends T>> taskClasses,
+            String taskTypeName,
+            AiravataServerProperties properties,
+            TaskHelperImpl taskHelper) {
         logger.info("Initializing Participant Node");
 
         this.properties = properties;
         this.taskTypeName = taskTypeName;
         this.taskClasses = taskClasses; // Can be null for deferred initialization
+        this.taskHelper = taskHelper;
 
         // Property-dependent initialization moved to initialize() method
         // This allows subclasses to set taskClasses before initializing properties
     }
 
-    public void setApplicationContext(org.springframework.context.ApplicationContext applicationContext) {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    public void setTaskHelperProvider(
-            org.springframework.beans.factory.ObjectProvider<org.apache.airavata.helix.core.support.TaskHelperImpl>
-                    taskHelperProvider) {
-        this.taskHelperProvider = taskHelperProvider;
     }
 
     /**
@@ -134,8 +133,9 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         }
     }
 
-    public HelixParticipant(Class<T> taskClass, String taskTypeName, AiravataServerProperties properties) {
-        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName, properties);
+    public HelixParticipant(
+            Class<T> taskClass, String taskTypeName, AiravataServerProperties properties, TaskHelperImpl taskHelper) {
+        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName, properties, taskHelper);
     }
 
     public void setShutdownGracePeriod(int shutdownGracePeriod) {
@@ -167,15 +167,8 @@ public class HelixParticipant<T extends AbstractTask> implements Runnable {
         for (Class<? extends T> taskClass : taskClasses) {
             TaskFactory taskFac = context -> {
                 try {
-                    org.apache.airavata.helix.core.support.TaskHelperImpl taskHelper = null;
                     AbstractTask task = null;
                     if (applicationContext != null) {
-                        // Use ObjectProvider for TaskHelper if available, otherwise fall back to ApplicationContext
-                        taskHelper = (taskHelperProvider != null)
-                                ? taskHelperProvider.getIfAvailable()
-                                : applicationContext.getBean(
-                                        org.apache.airavata.helix.core.support.TaskHelperImpl.class);
-
                         // Get task as Spring bean - all tasks must be Spring beans now
                         task = applicationContext.getBean(taskClass);
                     } else {

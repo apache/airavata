@@ -42,6 +42,7 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.parsing.DataParsingTask;
 import org.apache.airavata.helix.impl.task.parsing.ProcessCompletionMessage;
 import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageDeserializer;
@@ -91,8 +92,9 @@ public class ParserWorkflowManager extends WorkflowManager {
             AiravataServerProperties properties,
             ApplicationContext applicationContext,
             RegistryService registryService,
-            MessagingFactory messagingFactory) {
-        super("parser-workflow-manager", false, registryService, properties, messagingFactory);
+            MessagingFactory messagingFactory,
+            TaskUtil taskUtil) {
+        super("parser-workflow-manager", false, registryService, properties, messagingFactory, taskUtil);
         this.properties = properties;
         this.applicationContext = applicationContext;
         this.registryService = registryService;
@@ -270,7 +272,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             List<ParsingTemplateInput> templateInputs,
             RegistryService registryService)
             throws Exception {
-        DataParsingTask parsingTask = new DataParsingTask(registryService, properties);
+        DataParsingTask parsingTask = applicationContext.getBean(DataParsingTask.class);
         parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-"
                 + UUID.randomUUID().toString()));
         parsingTask.setGatewayId(completionMessage.getGatewayId());
@@ -422,7 +424,7 @@ public class ParserWorkflowManager extends WorkflowManager {
             for (ParserConnector connector : parentToChild.get(parentParserInfo.getId())) {
                 Parser childParserInfo =
                         registryService.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
-                DataParsingTask parsingTask = new DataParsingTask(registryService, properties);
+                DataParsingTask parsingTask = applicationContext.getBean(DataParsingTask.class);
                 parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-"
                         + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());

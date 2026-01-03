@@ -24,6 +24,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.openssl.PEMKeyPair;
@@ -49,7 +50,7 @@ public final class SSHUtil {
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
             PublicKey publicKey = converter.getPublicKey(spki);
 
-            java.security.interfaces.RSAPublicKey rsaPublicKey = (java.security.interfaces.RSAPublicKey) publicKey;
+            var rsaPublicKey = (RSAPublicKey) publicKey;
 
             ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(byteOs);

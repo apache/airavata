@@ -59,6 +59,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -95,11 +96,13 @@ public abstract class AiravataTask extends AbstractTask {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AiravataTask(
+            TaskUtil taskUtil,
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
             MessagingFactory messagingFactory) {
+        super(taskUtil);
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;

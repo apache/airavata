@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.mock;
 
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskResult;
@@ -33,6 +34,10 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "services.helix.enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnProperty(name = "helix.tasks.mock.enabled", havingValue = "true", matchIfMissing = true)
 public class MockTask extends AbstractTask {
+
+    public MockTask(TaskUtil taskUtil) {
+        super(taskUtil);
+    }
 
     @Override
     public TaskResult onRun(TaskHelper helper) {

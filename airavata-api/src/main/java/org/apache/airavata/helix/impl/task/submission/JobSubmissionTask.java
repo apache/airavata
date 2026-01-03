@@ -51,13 +51,20 @@ public abstract class JobSubmissionTask extends AiravataTask {
     protected final org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder;
 
     public JobSubmissionTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
         this.groovyMapBuilder = groovyMapBuilder;
     }
 

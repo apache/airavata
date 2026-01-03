@@ -54,12 +54,19 @@ public class RemoteJobCancellationTask extends AiravataTask {
     public static final String JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE = "job-already-cancelled";
 
     public RemoteJobCancellationTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
     }
 
     @Override

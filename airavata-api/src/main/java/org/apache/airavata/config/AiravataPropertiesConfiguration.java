@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.DefaultPropertySourceFactory;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
@@ -46,13 +45,6 @@ import org.springframework.core.io.support.PropertySourceFactory;
         factory = AiravataPropertiesConfiguration.AiravataPropertySourceFactory.class,
         ignoreResourceNotFound = true)
 public class AiravataPropertiesConfiguration {
-
-    private final Environment environment;
-
-    public AiravataPropertiesConfiguration(Environment environment) {
-        this.environment = environment;
-        logger.info("[BEAN-INIT] AiravataPropertiesConfiguration created");
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataPropertiesConfiguration.class);
     private static final String SERVER_PROPERTIES = "airavata.properties";

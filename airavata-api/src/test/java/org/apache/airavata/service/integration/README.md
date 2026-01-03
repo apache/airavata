@@ -13,6 +13,8 @@ Before running these tests, you must start the required background services:
 
 ## Starting Services
 
+**Important**: Services must be started before running tests. Tests will automatically detect and use existing services from `.devcontainer/docker-compose.yml` - no extra configuration needed.
+
 ### Using the startup script (recommended):
 
 ```bash
@@ -20,10 +22,11 @@ cd .devcontainer
 ./start-integration-services.sh
 ```
 
-The script will automatically detect and use:
-- `nerdctl compose` (if available)
-- `docker-compose` (if available)
-- `docker compose` (if available)
+The script will automatically:
+- Detect and use `nerdctl compose`, `docker compose`, or `docker-compose` (whichever is available)
+- Start services: `db`, `zookeeper`, `kafka`, `rabbitmq`
+- Verify services are running
+- Perform basic health checks
 
 ### Manual startup:
 
@@ -34,16 +37,20 @@ nerdctl compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
 
 # Or using docker compose:
 docker compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
+
+# Or using docker-compose:
+docker-compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
 ```
 
 ### Verify services are running:
 
 ```bash
 # Check service status
-docker compose -f .devcontainer/docker-compose.yml ps
+cd .devcontainer
+docker compose -f docker-compose.yml ps
 
 # Or with nerdctl:
-nerdctl compose -f .devcontainer/docker-compose.yml ps
+nerdctl compose -f docker-compose.yml ps
 ```
 
 ## Running Tests
@@ -71,13 +78,23 @@ mvn test -Dtest='JobSubmissionStateMachineIntegrationTest#testJobSubmission_Comp
 
 ## Test Configuration
 
-Tests use the `airavata-integration.properties` file which configures:
-- Database connections to `localhost:13306` (MariaDB)
-- Kafka broker at `localhost:9092`
-- Zookeeper at `localhost:2181`
-- RabbitMQ at `localhost:5672`
+Tests automatically detect and use existing services from `.devcontainer/docker-compose.yml`:
+- **Auto-detection**: Tests check if MariaDB is accessible at `localhost:13306`
+- **If services are running**: Tests use existing containers (no Testcontainers needed)
+- **If services are not running**: Tests fall back to creating Testcontainers
 
-The `localhost` hostname resolves to `192.168.100.1` per the docker-compose.yml network configuration.
+**Service endpoints** (from docker-compose.yml):
+- Database: `localhost:13306` (MariaDB, user: `airavata`, password: `123456`)
+- Kafka broker: `localhost:9092`
+- Zookeeper: `localhost:2181`
+- RabbitMQ: `localhost:5672`
+
+**Note**: The `localhost` hostname resolves to `192.168.100.1` per the docker-compose.yml network configuration when running inside the devcontainer.
+
+**Explicit override** (if needed):
+- Set system property: `-Dtestcontainers.use.existing=true` to force using existing containers
+- Set environment variable: `TESTCONTAINERS_USE_EXISTING=true` to force using existing containers
+- Set system property: `-Dtestcontainers.use.existing=false` to force using Testcontainers
 
 ## Test Files
 

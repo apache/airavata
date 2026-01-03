@@ -112,23 +112,27 @@ public class StateMachineTestUtils {
         processModel.setExperimentId(hierarchy.experimentId);
         hierarchy.processId = processService.addProcess(processModel, hierarchy.experimentId);
 
-        // Create Task
-        TaskModel taskModel = new TaskModel();
-        taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
-        taskModel.setParentProcessId(hierarchy.processId);
-        hierarchy.taskId = taskService.addTask(taskModel, hierarchy.processId);
+        // Create Task (optional - only if TaskService is provided)
+        if (taskService != null) {
+            TaskModel taskModel = new TaskModel();
+            taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+            taskModel.setParentProcessId(hierarchy.processId);
+            hierarchy.taskId = taskService.addTask(taskModel, hierarchy.processId);
+        }
 
-        // Create Job
-        JobModel jobModel = new JobModel();
-        jobModel.setJobId("test-job-" + UUID.randomUUID().toString());
-        jobModel.setTaskId(hierarchy.taskId);
-        jobModel.setJobDescription("Test job for state machine testing");
-        hierarchy.jobId = jobService.addJob(jobModel, hierarchy.processId);
+        // Create Job (optional - only if JobService is provided)
+        if (jobService != null && hierarchy.taskId != null) {
+            JobModel jobModel = new JobModel();
+            jobModel.setJobId("test-job-" + UUID.randomUUID().toString());
+            jobModel.setTaskId(hierarchy.taskId);
+            jobModel.setJobDescription("Test job for state machine testing");
+            hierarchy.jobId = jobService.addJob(jobModel, hierarchy.processId);
 
-        // Create JobPK
-        hierarchy.jobPK = new JobPK();
-        hierarchy.jobPK.setJobId(hierarchy.jobId);
-        hierarchy.jobPK.setTaskId(hierarchy.taskId);
+            // Create JobPK
+            hierarchy.jobPK = new JobPK();
+            hierarchy.jobPK.setJobId(hierarchy.jobId);
+            hierarchy.jobPK.setTaskId(hierarchy.taskId);
+        }
 
         return hierarchy;
     }

@@ -58,12 +58,19 @@ public abstract class DataStagingTask extends AiravataTask {
     private static final CountMonitor transferSizeTaskCounter = new CountMonitor("transfer_data_size_counter");
 
     public DataStagingTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
     }
 
     private static final ExecutorService PASS_THROUGH_EXECUTOR =

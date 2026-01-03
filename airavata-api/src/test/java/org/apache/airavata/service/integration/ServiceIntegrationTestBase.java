@@ -147,6 +147,20 @@ public abstract class ServiceIntegrationTestBase {
             return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
         }
 
+        /**
+         * Provide mapper converters for ThriftToDomainMapperRegistry.
+         * This is a simplified version for tests - in production, ThriftMapperConfiguration provides this.
+         */
+        @Bean
+        public java.util.Map<org.apache.airavata.common.model.EntityType, java.util.function.Function<Object, Object>>
+                mapperConverters() {
+            java.util.Map<org.apache.airavata.common.model.EntityType, java.util.function.Function<Object, Object>>
+                    converters = new java.util.HashMap<>();
+            // For tests, we'll provide empty converters - ThriftToDomainMapperRegistry will be created
+            // but won't be used in most test scenarios. If needed, specific converters can be added.
+            return converters;
+        }
+
         @Bean
         @Primary
         public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager() {

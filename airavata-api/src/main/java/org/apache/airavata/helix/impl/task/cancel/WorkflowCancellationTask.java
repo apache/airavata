@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.cancel;
 
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
@@ -47,6 +48,10 @@ public class WorkflowCancellationTask extends AbstractTask {
 
     private TaskDriver taskDriver;
     private HelixManager helixManager;
+
+    public WorkflowCancellationTask(TaskUtil taskUtil) {
+        super(taskUtil);
+    }
 
     @TaskParam(name = "Cancelling Workflow")
     private String cancellingWorkflowName;

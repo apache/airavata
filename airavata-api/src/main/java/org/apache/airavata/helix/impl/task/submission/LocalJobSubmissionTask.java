@@ -22,6 +22,7 @@ package org.apache.airavata.helix.impl.task.submission;
 import java.util.UUID;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Component;
 public class LocalJobSubmissionTask extends JobSubmissionTask {
 
     public LocalJobSubmissionTask(
+            TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
@@ -46,6 +48,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder) {
         super(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,

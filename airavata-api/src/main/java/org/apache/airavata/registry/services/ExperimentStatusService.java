@@ -65,8 +65,15 @@ public class ExperimentStatusService {
 
     public String updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
             throws RegistryException {
+        // If statusId is not provided, retrieve the existing status to get its ID
         if (experimentStatus.getStatusId() == null) {
-            experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
+            ExperimentStatus existingStatus = getExperimentStatus(experimentId);
+            if (existingStatus != null && existingStatus.getStatusId() != null) {
+                experimentStatus.setStatusId(existingStatus.getStatusId());
+            } else {
+                // No existing status found, generate new ID (will create new record)
+                experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
+            }
         }
         if (experimentStatus.getTimeOfStateChange() == 0) {
             experimentStatus.setTimeOfStateChange(

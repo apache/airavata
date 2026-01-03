@@ -41,6 +41,7 @@ import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
@@ -86,9 +87,10 @@ public class PreWorkflowManager extends WorkflowManager {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            TaskUtil taskUtil) {
         // Default values, will be updated in @PostConstruct
-        super("pre-workflow-manager", false, registryService, properties, messagingFactory);
+        super("pre-workflow-manager", false, registryService, properties, messagingFactory, taskUtil);
         this.properties = properties;
         this.taskFactory = taskFactory;
         this.applicationContext = applicationContext;
@@ -219,8 +221,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
         // For intermediate transfers add a final CompletingTask
         if (intermediateTransfer) {
-            CompletingTask completingTask = new CompletingTask(
-                    applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+            CompletingTask completingTask = applicationContext.getBean(CompletingTask.class);
             completingTask.setGatewayId(experimentModel.getGatewayId());
             completingTask.setExperimentId(experimentModel.getExperimentId());
             completingTask.setProcessId(processModel.getProcessId());
@@ -270,7 +271,7 @@ public class PreWorkflowManager extends WorkflowManager {
             if (workflows.size() > 0) {
                 for (String wf : workflows) {
                     logger.info("Creating cancellation task for workflow " + wf + " of process " + processId);
-                    WorkflowCancellationTask wfct = new WorkflowCancellationTask();
+                    WorkflowCancellationTask wfct = applicationContext.getBean(WorkflowCancellationTask.class);
                     wfct.setTaskId(UUID.randomUUID().toString());
                     wfct.setCancellingWorkflowName(wf);
 
@@ -293,8 +294,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     processId,
                     gcrPref.getResourceType());
 
-            RemoteJobCancellationTask rjct = new RemoteJobCancellationTask(
-                    applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+            RemoteJobCancellationTask rjct = applicationContext.getBean(RemoteJobCancellationTask.class);
             rjct.setTaskId(UUID.randomUUID().toString());
             rjct.setExperimentId(experimentId);
             rjct.setProcessId(processId);
@@ -307,8 +307,7 @@ public class PreWorkflowManager extends WorkflowManager {
             allTasks.add(rjct);
         }
 
-        CancelCompletingTask cct = new CancelCompletingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        CancelCompletingTask cct = applicationContext.getBean(CancelCompletingTask.class);
         cct.setTaskId(UUID.randomUUID().toString());
         cct.setExperimentId(experimentId);
         cct.setProcessId(processId);

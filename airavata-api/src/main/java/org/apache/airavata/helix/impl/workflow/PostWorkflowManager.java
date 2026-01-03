@@ -44,6 +44,7 @@ import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -100,9 +101,10 @@ public class PostWorkflowManager extends WorkflowManager {
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
-            @Qualifier("postWorkflowManagerExecutor") ThreadPoolTaskExecutor processingPool) {
+            @Qualifier("postWorkflowManagerExecutor") ThreadPoolTaskExecutor processingPool,
+            TaskUtil taskUtil) {
         // Default values, will be updated in @PostConstruct
-        super("post-workflow-manager", false, registryService, properties, messagingFactory);
+        super("post-workflow-manager", false, registryService, properties, messagingFactory, taskUtil);
         this.properties = properties;
         this.taskFactory = taskFactory;
         this.applicationContext = applicationContext;

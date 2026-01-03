@@ -71,6 +71,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     private final AWSTaskUtil awsTaskUtil;
 
     public AWSJobSubmissionTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
@@ -79,6 +80,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder groovyMapBuilder,
             AWSTaskUtil awsTaskUtil) {
         super(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,
@@ -358,7 +360,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     }
 
     private SSHJAgentAdaptor initSSHJAgentAdaptor(String sshCredentialToken, String publicIpAddress) throws Exception {
-        org.apache.airavata.service.registry.RegistryService registryService = getRegistryService();
+        var registryService = getRegistryService();
         CredentialStoreService credentialStoreService = getCredentialStoreService();
         SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
         SSHCredential sshCredential = credentialStoreService.getSSHCredential(sshCredentialToken, getGatewayId());

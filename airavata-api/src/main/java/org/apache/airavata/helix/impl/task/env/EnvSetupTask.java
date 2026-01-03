@@ -44,12 +44,19 @@ public class EnvSetupTask extends AiravataTask {
     private static final CountMonitor envSetupTaskCounter = new CountMonitor("env_setup_task_counter");
 
     public EnvSetupTask(
+            org.apache.airavata.helix.core.util.TaskUtil taskUtil,
             org.springframework.context.ApplicationContext applicationContext,
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
             org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
     }
 
     @Override

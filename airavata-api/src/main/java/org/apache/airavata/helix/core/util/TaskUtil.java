@@ -30,26 +30,27 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.task.api.TaskParamType;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 
 /**
- * TODO: Class level comments please
+ * Utility class for task serialization and deserialization.
+ * Uses Spring DI to create TaskParamType instances.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
+@Component
 public class TaskUtil {
 
-    private static TaskParamTypeFactory taskParamTypeFactory;
+    private final BeanFactory beanFactory;
 
-    /**
-     * Set the TaskParamTypeFactory instance.
-     * This should be called during Spring initialization.
-     */
-    public static void setTaskParamTypeFactory(TaskParamTypeFactory factory) {
-        taskParamTypeFactory = factory;
+    public TaskUtil(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
-    public static <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
+    public <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
 
         List<OutPort> outPorts = new ArrayList<>();
         for (Class<?> c = taskObj.getClass(); c != null; c = c.getSuperclass()) {
@@ -66,7 +67,7 @@ public class TaskUtil {
         return outPorts;
     }
 
-    public static <T extends AbstractTask> Map<String, String> serializeTaskData(T data) throws IllegalAccessException {
+    public <T extends AbstractTask> Map<String, String> serializeTaskData(T data) throws IllegalAccessException {
 
         Map<String, String> result = new HashMap<>();
         for (Class<?> c = data.getClass(); c != null; c = c.getSuperclass()) {
@@ -98,7 +99,7 @@ public class TaskUtil {
         return result;
     }
 
-    public static <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params)
+    public <T extends AbstractTask> void deserializeTaskData(T instance, Map<String, String> params)
             throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
         List<Field> allFields = new ArrayList<>();
@@ -131,13 +132,8 @@ public class TaskUtil {
                     } else if (TaskParamType.class.isAssignableFrom(classField.getType())) {
                         @SuppressWarnings("unchecked")
                         Class<? extends TaskParamType> clazz = (Class<? extends TaskParamType>) classField.getType();
-                        TaskParamType obj;
-                        if (taskParamTypeFactory != null) {
-                            obj = taskParamTypeFactory.createInstance(clazz);
-                        } else {
-                            // Fallback if factory not set (for backward compatibility)
-                            obj = clazz.getDeclaredConstructor().newInstance();
-                        }
+                        ObjectProvider<? extends TaskParamType> provider = beanFactory.getBeanProvider(clazz);
+                        TaskParamType obj = provider.getObject();
                         obj.deserialize(params.get(param.name()));
                         classField.set(instance, obj);
                     }
@@ -158,7 +154,7 @@ public class TaskUtil {
         }
     }
 
-    public static String replaceSpecialCharacters(String originalTxt, String replaceTxt) {
+    public String replaceSpecialCharacters(String originalTxt, String replaceTxt) {
         return originalTxt.replaceAll("[^a-zA-Z0-9_-]", replaceTxt);
     }
 }

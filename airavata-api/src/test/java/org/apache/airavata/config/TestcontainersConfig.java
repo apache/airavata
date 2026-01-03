@@ -45,16 +45,64 @@ public class TestcontainersConfig {
     private static final String MARIADB_VERSION = "10.4.13";
     private static final String TEST_DATABASE_PREFIX = "test_";
 
-    // Flag to use existing containers instead of Testcontainers
-    private static final boolean USE_EXISTING_CONTAINERS =
-            System.getProperty("testcontainers.use.existing", "false").equals("true")
-                    || System.getenv("TESTCONTAINERS_USE_EXISTING") != null;
-
-    // Connection details for existing MariaDB containers
+    // Connection details for existing MariaDB containers (from docker-compose.yml)
     private static final String DB_HOST = System.getProperty("test.db.host", "localhost");
     private static final int DB_PORT = Integer.parseInt(System.getProperty("test.db.port", "13306"));
     private static final String DB_USER = System.getProperty("test.db.user", "airavata");
     private static final String DB_PASSWORD = System.getProperty("test.db.password", "123456");
+    private static final String DB_ROOT_PASSWORD = System.getProperty("test.db.root.password", "123456");
+
+    // Flag to use existing containers - auto-detected or explicitly set
+    private static volatile Boolean useExistingContainers = null;
+
+    /**
+     * Check if MariaDB is accessible at the configured host and port.
+     * This auto-detects if services from docker-compose are running.
+     */
+    private static boolean isMariaDBAccessible() {
+        String testUrl =
+                String.format("jdbc:mariadb://%s:%d/mysql?autoReconnect=true&tinyInt1isBit=false", DB_HOST, DB_PORT);
+        try (var conn = java.sql.DriverManager.getConnection(testUrl, "root", DB_ROOT_PASSWORD)) {
+            return conn.isValid(2);
+        } catch (Exception e) {
+            logger.debug(
+                    "MariaDB not accessible at {}:{}, will use Testcontainers: {}", DB_HOST, DB_PORT, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Determine if we should use existing containers.
+     * Checks explicit flag first, then auto-detects by checking MariaDB accessibility.
+     */
+    private static boolean shouldUseExistingContainers() {
+        if (useExistingContainers != null) {
+            return useExistingContainers;
+        }
+
+        // Check explicit flag first
+        String explicitFlag = System.getProperty("testcontainers.use.existing");
+        if (explicitFlag != null) {
+            useExistingContainers = explicitFlag.equals("true");
+            logger.info("Using explicit flag: testcontainers.use.existing={}", useExistingContainers);
+            return useExistingContainers;
+        }
+
+        if (System.getenv("TESTCONTAINERS_USE_EXISTING") != null) {
+            useExistingContainers = true;
+            logger.info("Using environment variable: TESTCONTAINERS_USE_EXISTING is set");
+            return useExistingContainers;
+        }
+
+        // Auto-detect: check if MariaDB is accessible
+        useExistingContainers = isMariaDBAccessible();
+        if (useExistingContainers) {
+            logger.info("Auto-detected existing MariaDB at {}:{}, will use existing containers", DB_HOST, DB_PORT);
+        } else {
+            logger.info("No existing MariaDB detected at {}:{}, will use Testcontainers", DB_HOST, DB_PORT);
+        }
+        return useExistingContainers;
+    }
 
     // Shared containers - reused across tests for performance
     private static MariaDBContainer<?> profileServiceContainer;
@@ -67,7 +115,7 @@ public class TestcontainersConfig {
 
     private static synchronized MariaDBContainer<?> getOrCreateContainer(String databaseName) {
         // If using existing containers, return null (we'll create DataSource directly)
-        if (USE_EXISTING_CONTAINERS) {
+        if (shouldUseExistingContainers()) {
             logger.info("Using existing MariaDB container for {}", databaseName);
             return null;
         }
@@ -101,7 +149,8 @@ public class TestcontainersConfig {
             // Testcontainers will automatically use DOCKER_HOST or TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
             // environment variables if set. No need to hardcode paths - configure at environment level.
             @SuppressWarnings("resource") // Container is stored in static variable and reused across tests
-            MariaDBContainer<?> newContainer = new MariaDBContainer<>(DockerImageName.parse("mariadb:" + MARIADB_VERSION))
+            MariaDBContainer<?> newContainer = new MariaDBContainer<>(
+                            DockerImageName.parse("mariadb:" + MARIADB_VERSION))
                     .withDatabaseName(TEST_DATABASE_PREFIX + databaseName)
                     .withUsername("test")
                     .withPassword("test")
@@ -110,7 +159,7 @@ public class TestcontainersConfig {
             container = newContainer;
 
             // Apply Flyway migrations
-            if (!USE_EXISTING_CONTAINERS) {
+            if (!shouldUseExistingContainers()) {
                 @SuppressWarnings("resource") // Flyway doesn't implement AutoCloseable and doesn't need to be closed
                 Flyway flyway = Flyway.configure()
                         .dataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword())
@@ -154,11 +203,11 @@ public class TestcontainersConfig {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.mariadb.jdbc.Driver");
 
-        if (USE_EXISTING_CONTAINERS || container == null) {
+        if (shouldUseExistingContainers() || container == null) {
             // Create database if it doesn't exist
             String rootJdbcUrl = String.format(
                     "jdbc:mariadb://%s:%d/mysql?autoReconnect=true&tinyInt1isBit=false", DB_HOST, DB_PORT);
-            try (var rootConn = java.sql.DriverManager.getConnection(rootJdbcUrl, "root", "123456")) {
+            try (var rootConn = java.sql.DriverManager.getConnection(rootJdbcUrl, "root", DB_ROOT_PASSWORD)) {
                 try (var stmt = rootConn.createStatement()) {
                     stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + dbName + "`");
                     logger.info("Ensured database {} exists", dbName);
@@ -185,61 +234,91 @@ public class TestcontainersConfig {
                         .cleanDisabled(false)
                         .load();
 
-                // Check if migration is needed
+                // Check current migration state
                 var info = flyway.info();
                 var pendingMigrations = info.pending();
+                var currentVersion = info.current();
 
-                // Only clean if there are pending migrations or if schema history shows issues
-                if (pendingMigrations.length > 0 || info.current() == null) {
-                    // Clean existing schema and run migrations from scratch
+                // If there are pending migrations or no current version, we need to migrate
+                // But first check if schema exists - if not, we can migrate directly
+                boolean schemaExists = false;
+                try (var conn = java.sql.DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASSWORD)) {
+                    var rs = conn.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+                    schemaExists = rs.next();
+                    rs.close();
+                } catch (Exception e) {
+                    logger.debug("Could not check schema existence: {}", e.getMessage());
+                }
+
+                // If schema doesn't exist or is empty (only flyway_schema_history), migrate directly
+                if (!schemaExists || (currentVersion == null && pendingMigrations.length > 0)) {
+                    logger.info("Schema {} is empty or doesn't exist, running migrations from scratch", dbName);
+                    flyway.migrate();
+                    logger.info("Applied Flyway migrations to {}", dbName);
+                } else if (pendingMigrations.length > 0) {
+                    // Schema exists but has pending migrations
+                    // Check if we can migrate incrementally or need to clean
                     try {
-                        flyway.clean();
-                        logger.info("Cleaned schema {}", dbName);
-                    } catch (Exception cleanEx) {
-                        logger.debug(
-                                "Clean failed (may be expected if schema doesn't exist): {}", cleanEx.getMessage());
-                        // Try to drop tables manually if clean fails
-                        try (var conn = java.sql.DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASSWORD)) {
-                            try (var stmt = conn.createStatement()) {
-                                var rs = conn.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
-                                java.util.List<String> tables = new java.util.ArrayList<>();
-                                while (rs.next()) {
-                                    String tableName = rs.getString("TABLE_NAME");
-                                    if (!tableName.equals("flyway_schema_history")) {
-                                        tables.add(tableName);
-                                    }
-                                }
-                                rs.close();
-                                if (!tables.isEmpty()) {
-                                    stmt.execute("SET FOREIGN_KEY_CHECKS=0");
-                                    for (String table : tables) {
-                                        try {
-                                            stmt.executeUpdate("DROP TABLE IF EXISTS `" + table + "`");
-                                        } catch (Exception dropEx) {
-                                            logger.debug("Failed to drop table {}: {}", table, dropEx.getMessage());
+                        // Try to migrate incrementally first
+                        flyway.migrate();
+                        logger.info("Applied pending Flyway migrations to {}", dbName);
+                    } catch (Exception migrateEx) {
+                        // If incremental migration fails (e.g., table doesn't exist for ALTER),
+                        // clean and migrate from scratch
+                        logger.warn(
+                                "Incremental migration failed for {}: {}, cleaning and migrating from scratch",
+                                dbName,
+                                migrateEx.getMessage());
+                        try {
+                            flyway.clean();
+                            logger.info("Cleaned schema {}", dbName);
+                        } catch (Exception cleanEx) {
+                            logger.debug(
+                                    "Clean failed (may be expected if schema doesn't exist): {}", cleanEx.getMessage());
+                            // Try to drop tables manually if clean fails
+                            try (var conn = java.sql.DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASSWORD)) {
+                                try (var stmt = conn.createStatement()) {
+                                    var rs = conn.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+                                    java.util.List<String> tables = new java.util.ArrayList<>();
+                                    while (rs.next()) {
+                                        String tableName = rs.getString("TABLE_NAME");
+                                        if (!tableName.equals("flyway_schema_history")) {
+                                            tables.add(tableName);
                                         }
                                     }
-                                    stmt.execute("SET FOREIGN_KEY_CHECKS=1");
-                                    logger.info("Manually dropped {} tables from {}", tables.size(), dbName);
+                                    rs.close();
+                                    if (!tables.isEmpty()) {
+                                        stmt.execute("SET FOREIGN_KEY_CHECKS=0");
+                                        for (String table : tables) {
+                                            try {
+                                                stmt.executeUpdate("DROP TABLE IF EXISTS `" + table + "`");
+                                            } catch (Exception dropEx) {
+                                                logger.debug("Failed to drop table {}: {}", table, dropEx.getMessage());
+                                            }
+                                        }
+                                        stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+                                        logger.info("Manually dropped {} tables from {}", tables.size(), dbName);
+                                    }
                                 }
+                            } catch (Exception manualCleanEx) {
+                                logger.debug("Manual clean also failed: {}", manualCleanEx.getMessage());
                             }
-                        } catch (Exception manualCleanEx) {
-                            logger.debug("Manual clean also failed: {}", manualCleanEx.getMessage());
                         }
+                        // Repair schema history after clean
+                        try {
+                            flyway.repair();
+                        } catch (Exception repairEx) {
+                            logger.debug(
+                                    "Repair failed (may be expected if schema history doesn't exist): {}",
+                                    repairEx.getMessage());
+                        }
+                        // Now migrate from scratch
+                        flyway.migrate();
+                        logger.info("Applied Flyway migrations to {} after clean", dbName);
                     }
+                } else {
+                    logger.debug("Schema {} is up to date, no migrations needed", dbName);
                 }
-
-                // Repair schema history after clean to ensure consistency
-                try {
-                    flyway.repair();
-                } catch (Exception repairEx) {
-                    logger.debug(
-                            "Repair failed (may be expected if schema history doesn't exist): {}",
-                            repairEx.getMessage());
-                }
-
-                flyway.migrate();
-                logger.info("Applied Flyway migrations to {}", dbName);
             } catch (Exception e) {
                 logger.warn("Failed to migrate {}: {}, trying repair and migrate only", dbName, e.getMessage());
                 // Fallback: try repair and migrate

@@ -69,65 +69,41 @@ public class AWSTaskFactory implements HelixTaskFactory {
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
         LOGGER.info("Creating AWS CreateEc2InstanceTask for process {}...", processId);
-        return new CreateEC2InstanceTask(
-                applicationContext,
-                registryService,
-                userProfileService,
-                credentialStoreService,
-                messagingFactory,
-                awsTaskUtil);
+        return applicationContext.getBean(CreateEC2InstanceTask.class);
     }
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
-        return new NoOperationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(NoOperationTask.class);
     }
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
-        return new AWSJobSubmissionTask(
-                applicationContext,
-                registryService,
-                userProfileService,
-                credentialStoreService,
-                messagingFactory,
-                groovyMapBuilder,
-                awsTaskUtil);
+        return applicationContext.getBean(AWSJobSubmissionTask.class);
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
-        return new NoOperationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(NoOperationTask.class);
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
-        return new NoOperationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(NoOperationTask.class);
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
-        return new NoOperationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(NoOperationTask.class);
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
-        return new AWSCompletingTask(
-                applicationContext,
-                registryService,
-                userProfileService,
-                credentialStoreService,
-                messagingFactory,
-                awsTaskUtil);
+        return applicationContext.getBean(AWSCompletingTask.class);
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
-        return new NoOperationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(NoOperationTask.class);
     }
 }

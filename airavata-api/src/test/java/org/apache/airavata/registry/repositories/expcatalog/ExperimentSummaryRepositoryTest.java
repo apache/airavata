@@ -37,7 +37,6 @@ import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentSummaryEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.common.TestBase;
@@ -67,7 +66,8 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false"
+            "flyway.enabled=false",
+            "services.airavata.enabled=true"
             // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
             // no property flags needed
         })
@@ -116,36 +116,11 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
     }
 
     private void saveExperimentSummary(ExperimentModel experimentModel, String status) {
-        ExperimentSummaryEntity summary = new ExperimentSummaryEntity();
-        summary.setExperimentId(experimentModel.getExperimentId());
-        summary.setProjectId(experimentModel.getProjectId());
-        summary.setGatewayId(experimentModel.getGatewayId());
-        summary.setCreationTime(new Timestamp(experimentModel.getCreationTime()));
-        summary.setUserName(experimentModel.getUserName());
-        summary.setName(experimentModel.getExperimentName());
-        summary.setDescription(experimentModel.getDescription());
-        summary.setExecutionId(experimentModel.getExecutionId());
-        if (status != null) {
-            summary.setExperimentStatus(status);
-        } else if (experimentModel.getExperimentStatus() != null
-                && !experimentModel.getExperimentStatus().isEmpty()) {
-            summary.setExperimentStatus(experimentModel
-                    .getExperimentStatus()
-                    .get(experimentModel.getExperimentStatus().size() - 1)
-                    .getState()
-                    .name());
-        }
-
-        // Populate resourceHostId if available in UserConfigurationData
-        if (experimentModel.getUserConfigurationData() != null
-                && experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
-            summary.setResourceHostId(experimentModel
-                    .getUserConfigurationData()
-                    .getComputationalResourceScheduling()
-                    .getResourceHostId());
-        }
-
-        experimentSummaryRepository.save(summary);
+        // EXPERIMENT_SUMMARY is a read-only view that is automatically populated from
+        // the underlying EXPERIMENT and EXPERIMENT_STATUS tables.
+        // No manual save is needed - the view reflects changes to those tables automatically.
+        // This method is kept for API compatibility but does nothing since the view
+        // is automatically updated when experiments and statuses are created/updated.
     }
 
     @Test

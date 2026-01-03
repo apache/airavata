@@ -45,7 +45,6 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,7 +62,7 @@ public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
 
-    private final ObjectProvider<IamAdminService> iamAdminServiceProvider;
+    private final IamAdminService iamAdminService;
 
     private final UserProfileMapper userProfileMapper;
     private final AiravataSecurityManager securityManager;
@@ -73,7 +72,7 @@ public class UserProfileService {
 
     public UserProfileService(
             UserProfileRepository userProfileRepository,
-            ObjectProvider<IamAdminService> iamAdminServiceProvider,
+            IamAdminService iamAdminService,
             UserProfileMapper userProfileMapper,
             AiravataSecurityManager securityManager,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
@@ -81,7 +80,7 @@ public class UserProfileService {
             MessagingFactory messagingFactory,
             ThriftToDomainMapperRegistry mapperRegistry) {
         this.userProfileRepository = userProfileRepository;
-        this.iamAdminServiceProvider = iamAdminServiceProvider;
+        this.iamAdminService = iamAdminService;
         this.userProfileMapper = userProfileMapper;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
@@ -147,16 +146,7 @@ public class UserProfileService {
             userProfile.setUserId(userProfile.getUserId().toLowerCase());
             userProfile.setAiravataInternalUserId(userProfile.getUserId() + "@" + userProfile.getGatewayId());
             // Only create IAM updater if IAM service is available - skip entirely if not
-            // Check availability before attempting to create updater to avoid any exceptions
             Runnable iamUpdater = null;
-            IamAdminService iamAdminService = null;
-            try {
-                iamAdminService = iamAdminServiceProvider.getIfAvailable();
-            } catch (Throwable t) {
-                // If provider access fails, log and continue without IAM update
-                logger.debug(
-                        "Failed to get IAM service from provider, continuing without IAM update: {}", t.getMessage());
-            }
             if (iamAdminService != null && securityManager != null && authzToken != null && userProfile != null) {
                 try {
                     // Additional check: verify we can safely access authzToken properties
@@ -200,16 +190,7 @@ public class UserProfileService {
             throws UserProfileServiceException, IamAdminServicesException {
         try {
             // Only create IAM updater if IAM service is available - skip entirely if not
-            // Check availability before attempting to create updater to avoid any exceptions
             Runnable iamUserProfileUpdater = null;
-            IamAdminService iamAdminService = null;
-            try {
-                iamAdminService = iamAdminServiceProvider.getIfAvailable();
-            } catch (Throwable t) {
-                // If provider access fails, log and continue without IAM update
-                logger.debug(
-                        "Failed to get IAM service from provider, continuing without IAM update: {}", t.getMessage());
-            }
             if (iamAdminService != null && securityManager != null && authzToken != null && userProfile != null) {
                 try {
                     // Additional check: verify we can safely access authzToken properties
@@ -417,16 +398,6 @@ public class UserProfileService {
         }
     }
 
-    private IamAdminService getIamAdminService() throws UserProfileServiceException {
-        IamAdminService iamAdminService = iamAdminServiceProvider.getIfAvailable();
-        if (iamAdminService == null) {
-            String message = "IAM Admin Service not available";
-            logger.error(message);
-            throw new UserProfileServiceException(message);
-        }
-        return iamAdminService;
-    }
-
     // Helper methods that wrap repository calls and handle entity-to-model mapping
     public UserProfile getUserProfileByIdAndGateWay(String userId, String gatewayId) {
         Optional<UserProfileEntity> entityOpt = userProfileRepository.findByUserIdAndGatewayId(userId, gatewayId);
@@ -447,7 +418,22 @@ public class UserProfileService {
             // If updating an existing entity, preserve creationTime and lastAccessTime from the database
             // These fields are required and should not be null
             if (entity.getAiravataInternalUserId() != null) {
-                entity = entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
+                UserProfileEntity existingEntity =
+                        entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
+                if (existingEntity != null) {
+                    // Entity exists - update it with new values while preserving timestamps
+                    // Copy non-null fields from the new entity to the existing one
+                    if (entity.getUserId() != null) existingEntity.setUserId(entity.getUserId());
+                    if (entity.getGatewayId() != null) existingEntity.setGatewayId(entity.getGatewayId());
+                    if (entity.getFirstName() != null) existingEntity.setFirstName(entity.getFirstName());
+                    if (entity.getLastName() != null) existingEntity.setLastName(entity.getLastName());
+                    if (entity.getEmails() != null) existingEntity.setEmails(entity.getEmails());
+                    if (entity.getState() != null) existingEntity.setState(entity.getState());
+                    if (entity.getValidUntil() != null) existingEntity.setValidUntil(entity.getValidUntil());
+                    // Use existing entity (with preserved timestamps) for merge
+                    entity = existingEntity;
+                }
+                // If existingEntity is null, this is a new entity - use the mapped entity as-is
             }
             // For new entities, @PrePersist will set creationTime and lastAccessTime
             persistedCopy = entityManager.merge(entity);

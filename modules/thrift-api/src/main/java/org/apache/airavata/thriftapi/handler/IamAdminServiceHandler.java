@@ -56,9 +56,9 @@ public class IamAdminServiceHandler implements org.apache.airavata.thriftapi.pro
                 .IAM_ADMIN_SERVICES_CPI_VERSION;
     }
 
-    private org.apache.thrift.TException wrapException(Throwable e) {
-        if (e instanceof org.apache.thrift.TException te) return te;
-        org.apache.thrift.TException thriftException = null;
+    private TException wrapException(Throwable e) {
+        if (e instanceof TException te) return te;
+        TException thriftException = null;
 
         if (e instanceof org.apache.airavata.profile.exception.IamAdminServicesException) {
             var ex = new org.apache.airavata.thriftapi.profile.exception.IamAdminServicesException();

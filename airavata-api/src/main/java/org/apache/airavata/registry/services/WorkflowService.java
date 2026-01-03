@@ -27,6 +27,8 @@ import org.apache.airavata.common.model.ApplicationStatus;
 import org.apache.airavata.common.model.DataBlock;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.HandlerStatus;
+import org.apache.airavata.common.model.InputDataObjectType;
+import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.WorkflowApplication;
 import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.common.model.WorkflowHandler;
@@ -313,10 +315,9 @@ public class WorkflowService {
         return model;
     }
 
-    private org.apache.airavata.common.model.InputDataObjectType convertHandlerInput(
+    private InputDataObjectType convertHandlerInput(
             org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerInputEntity entity) {
-        org.apache.airavata.common.model.InputDataObjectType model =
-                new org.apache.airavata.common.model.InputDataObjectType();
+        var model = new InputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());
         if (entity.getType() != null) {
@@ -335,10 +336,9 @@ public class WorkflowService {
         return model;
     }
 
-    private org.apache.airavata.common.model.OutputDataObjectType convertHandlerOutput(
+    private OutputDataObjectType convertHandlerOutput(
             org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerOutputEntity entity) {
-        org.apache.airavata.common.model.OutputDataObjectType model =
-                new org.apache.airavata.common.model.OutputDataObjectType();
+        var model = new OutputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());
         if (entity.getType() != null) {

@@ -95,11 +95,11 @@ public class JpaConfig {
     // Helper method to create JPA properties
     private Properties createJpaProperties(String url) {
         Properties props = new Properties();
-        // Check if we're in test profile - use update mode for tests, validate for production
+        // Check if we're in test profile - use create-drop for tests, validate for production
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Hibernate mode: create-drop for tests (avoids "table already exists" errors), validate for production
+        // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown), validate for production
         props.put("hibernate.hbm2ddl.auto", isTestProfile ? "create-drop" : "validate");
         props.put("hibernate.show_sql", "false");
         props.put("hibernate.format_sql", "false");

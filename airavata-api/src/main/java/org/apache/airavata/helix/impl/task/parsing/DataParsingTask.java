@@ -52,6 +52,7 @@ import org.apache.airavata.common.model.ReplicaLocationCategory;
 import org.apache.airavata.common.model.ReplicaPersistentType;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.impl.task.parsing.models.ParsingTaskInputs;
@@ -89,7 +90,8 @@ public class DataParsingTask extends AbstractTask {
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
-    public DataParsingTask(RegistryService registryService, AiravataServerProperties properties) {
+    public DataParsingTask(TaskUtil taskUtil, RegistryService registryService, AiravataServerProperties properties) {
+        super(taskUtil);
         this.registryService = registryService;
         this.properties = properties;
     }

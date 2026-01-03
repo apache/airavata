@@ -100,7 +100,7 @@ public class OrchestratorService {
     private final OrchestratorRegistryService orchestratorRegistryService;
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
-    private final org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider;
+    private final ProcessScheduler processScheduler;
     private final SimpleOrchestratorImpl orchestrator;
     private final MessagingFactory messagingFactory;
     private final HostScheduler hostScheduler;
@@ -114,14 +114,14 @@ public class OrchestratorService {
             RegistryService registryService,
             AiravataServerProperties properties,
             SimpleOrchestratorImpl orchestrator,
-            org.springframework.beans.factory.ObjectProvider<ProcessScheduler> processSchedulerProvider,
+            ProcessScheduler processScheduler,
             MessagingFactory messagingFactory,
             HostScheduler hostScheduler) {
         this.orchestratorRegistryService = orchestratorRegistryService;
         this.registryService = registryService;
         this.properties = properties;
         this.orchestrator = orchestrator;
-        this.processSchedulerProvider = processSchedulerProvider;
+        this.processScheduler = processScheduler;
         this.messagingFactory = messagingFactory;
         this.hostScheduler = hostScheduler;
     }
@@ -237,8 +237,7 @@ public class OrchestratorService {
         }
 
         if (!experiment.getUserConfigurationData().getAiravataAutoSchedule()
-                || (processSchedulerProvider.getIfAvailable() != null
-                        && processSchedulerProvider.getIfAvailable().canLaunch(experimentId))) {
+                || (processScheduler != null && processScheduler.canLaunch(experimentId))) {
             createAndValidateTasks(experiment, false);
             return true; // runExperimentLauncher will be called separately
         } else {

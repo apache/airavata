@@ -47,7 +47,7 @@ import org.springframework.test.context.TestPropertySource;
             "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
-            "services.airavata.enabled=false",
+            "services.airavata.enabled=true",
             "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",

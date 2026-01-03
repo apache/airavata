@@ -49,9 +49,9 @@ public class GroupManagerServiceHandler
         return org.apache.airavata.thriftapi.profile.model.group_manager_cpiConstants.GROUP_MANAGER_CPI_VERSION;
     }
 
-    private org.apache.thrift.TException wrapException(Throwable e) {
-        if (e instanceof org.apache.thrift.TException te) return te;
-        org.apache.thrift.TException thriftException = null;
+    private TException wrapException(Throwable e) {
+        if (e instanceof TException te) return te;
+        TException thriftException = null;
 
         if (e instanceof org.apache.airavata.profile.exception.GroupManagerServiceException) {
             var ex = new org.apache.airavata.thriftapi.profile.exception.GroupManagerServiceException();

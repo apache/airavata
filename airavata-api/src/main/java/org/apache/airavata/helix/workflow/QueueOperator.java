@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
@@ -54,6 +55,7 @@ public class QueueOperator {
 
     private HelixManager helixManager;
     private TaskDriver taskDriver;
+    private final TaskUtil taskUtil;
 
     /**
      * This is the constructor for {@link QueueOperator}
@@ -61,10 +63,13 @@ public class QueueOperator {
      * @param helixClusterName   is the name of the Helix cluster
      * @param instanceName       is the name of the Helix instance
      * @param zkConnectionString is the connection details for Zookeeper connection in {@code <host>:<port>} format
+     * @param taskUtil           is the TaskUtil instance for serialization
      * @throws Exception can be thrown when connecting
      */
-    public QueueOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
+    public QueueOperator(String helixClusterName, String instanceName, String zkConnectionString, TaskUtil taskUtil)
+            throws Exception {
 
+        this.taskUtil = taskUtil;
         helixManager = HelixManagerFactory.getZKHelixManager(
                 helixClusterName, instanceName, InstanceType.SPECTATOR, zkConnectionString);
         helixManager.connect();
@@ -169,7 +174,7 @@ public class QueueOperator {
         TaskConfig.Builder taskBuilder =
                 new TaskConfig.Builder().setTaskId("Task_" + task.getTaskId()).setCommand(taskType);
 
-        Map<String, String> paramMap = org.apache.airavata.helix.core.util.TaskUtil.serializeTaskData(task);
+        Map<String, String> paramMap = taskUtil.serializeTaskData(task);
         paramMap.forEach(taskBuilder::addConfig);
 
         List<TaskConfig> taskBuilds = new ArrayList<>();

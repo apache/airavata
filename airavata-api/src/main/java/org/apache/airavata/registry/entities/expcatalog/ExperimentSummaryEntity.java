@@ -25,12 +25,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import org.hibernate.annotations.Immutable;
 
 /**
  * The class for the experiment_summary view.
  */
 @Entity
 @Table(name = "EXPERIMENT_SUMMARY")
+@Immutable
 public class ExperimentSummaryEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

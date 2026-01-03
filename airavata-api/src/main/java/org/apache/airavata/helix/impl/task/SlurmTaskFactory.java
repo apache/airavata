@@ -70,61 +70,48 @@ public class SlurmTaskFactory implements HelixTaskFactory {
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
         LOGGER.info("Creating Slurm EnvSetupTask for process {}...", processId);
-        return new EnvSetupTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(EnvSetupTask.class);
     }
 
     @Override
     public AiravataTask createInputDataStagingTask(String processId) {
         LOGGER.info("Creating Slurm InputDataStagingTask for process {}...", processId);
-        return new InputDataStagingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(InputDataStagingTask.class);
     }
 
     @Override
     public AiravataTask createJobSubmissionTask(String processId) {
         LOGGER.info("Creating Slurm DefaultJobSubmissionTask for process {}...", processId);
-        return new DefaultJobSubmissionTask(
-                applicationContext,
-                registryService,
-                userProfileService,
-                credentialStoreService,
-                messagingFactory,
-                groovyMapBuilder);
+        return applicationContext.getBean(DefaultJobSubmissionTask.class);
     }
 
     @Override
     public AiravataTask createOutputDataStagingTask(String processId) {
         LOGGER.info("Creating Slurm OutputDataStagingTask for process {}...", processId);
-        return new OutputDataStagingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(OutputDataStagingTask.class);
     }
 
     @Override
     public AiravataTask createArchiveTask(String processId) {
         LOGGER.info("Creating Slurm ArchiveTask for process {}...", processId);
-        return new ArchiveTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(ArchiveTask.class);
     }
 
     @Override
     public AiravataTask createJobVerificationTask(String processId) {
         LOGGER.info("Creating Slurm JobVerificationTask for process {}...", processId);
-        return new JobVerificationTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(JobVerificationTask.class);
     }
 
     @Override
     public AiravataTask createCompletingTask(String processId) {
         LOGGER.info("Creating Slurm CompletingTask for process {}...", processId);
-        return new CompletingTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(CompletingTask.class);
     }
 
     @Override
     public AiravataTask createParsingTriggeringTask(String processId) {
         LOGGER.info("Creating Slurm ParsingTriggeringTask for process {}...", processId);
-        return new ParsingTriggeringTask(
-                applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        return applicationContext.getBean(ParsingTriggeringTask.class);
     }
 }
