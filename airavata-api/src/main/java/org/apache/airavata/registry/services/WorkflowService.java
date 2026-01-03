@@ -32,7 +32,10 @@ import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.WorkflowApplication;
 import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.common.model.WorkflowHandler;
+import org.apache.airavata.common.model.WorkflowStatus;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationErrorEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationStatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerErrorEntity;
@@ -159,6 +162,16 @@ public class WorkflowService {
                     .map(this::convertConnection)
                     .collect(Collectors.toList()));
         }
+        if (entity.getStatuses() != null) {
+            workflow.setStatuses(entity.getStatuses().stream()
+                    .map(this::convertWorkflowStatus)
+                    .collect(Collectors.toList()));
+        }
+        if (entity.getErrors() != null) {
+            workflow.setErrors(entity.getErrors().stream()
+                    .map(this::convertWorkflowError)
+                    .collect(Collectors.toList()));
+        }
         return workflow;
     }
 
@@ -261,6 +274,64 @@ public class WorkflowService {
     }
 
     private ErrorModel convertHandlerError(HandlerErrorEntity entity) {
+        ErrorModel model = new ErrorModel();
+        model.setErrorId(entity.getErrorId());
+        model.setCreationTime(
+                entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
+        model.setActualErrorMessage(entity.getActualErrorMessage());
+        model.setUserFriendlyMessage(entity.getUserFriendlyMessage());
+        model.setTransientOrPersistent(entity.isTransientOrPersistent());
+        model.setRootCauseErrorIdList(
+                entity.getRootCauseErrorIdList() != null
+                        ? java.util.Arrays.asList(
+                                entity.getRootCauseErrorIdList().split(","))
+                        : null);
+        return model;
+    }
+
+    private WorkflowStatus convertWorkflowStatus(AiravataWorkflowStatusEntity entity) {
+        WorkflowStatus model = new WorkflowStatus();
+        model.setId(entity.getId());
+        if (entity.getState() != null) {
+            // Convert WorkflowRuntimeState to WorkflowExecutionState
+            try {
+                String stateName = entity.getState().name();
+                // Map WorkflowRuntimeState to WorkflowExecutionState
+                org.apache.airavata.common.model.WorkflowExecutionState executionState = null;
+                switch (stateName) {
+                    case "CREATED":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CREATED;
+                        break;
+                    case "STARTED":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.LAUNCHED;
+                        break;
+                    case "EXECUTING":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.EXECUTING;
+                        break;
+                    case "COMPLETED":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.COMPLETED;
+                        break;
+                    case "FAILED":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.FAILED;
+                        break;
+                    case "CANCELLING":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CANCELING;
+                        break;
+                    case "CANCELED":
+                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CANCELED;
+                        break;
+                }
+                model.setState(executionState);
+            } catch (Exception e) {
+                // If conversion fails, leave state as null
+            }
+        }
+        model.setDescription(entity.getDescription());
+        model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
+        return model;
+    }
+
+    private ErrorModel convertWorkflowError(AiravataWorkflowErrorEntity entity) {
         ErrorModel model = new ErrorModel();
         model.setErrorId(entity.getErrorId());
         model.setCreationTime(
