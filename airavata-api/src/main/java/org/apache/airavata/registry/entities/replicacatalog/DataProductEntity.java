@@ -70,10 +70,10 @@ public class DataProductEntity implements Serializable {
     @Column(name = "PRODUCT_SIZE")
     private int productSize;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
-    @Column(name = "LAST_MODIFIED_TIME")
+    @Column(name = "LAST_MODIFIED_TIME", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp lastModifiedTime;
 
     @Column(name = "PRODUCT_TYPE")

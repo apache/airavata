@@ -42,7 +42,7 @@ public class GatewayProfileEntity implements Serializable {
     @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "CS_TOKEN")
@@ -54,7 +54,7 @@ public class GatewayProfileEntity implements Serializable {
     @Column(name = "IDENTITY_SERVER_TENANT")
     private String identityServerTenant;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @OneToMany(

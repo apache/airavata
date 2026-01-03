@@ -20,12 +20,12 @@
 package org.apache.airavata.agent.connection.service.db.repo;
 
 import java.util.List;
-import org.apache.airavata.agent.connection.service.db.entity.Plan;
+import org.apache.airavata.agent.connection.service.db.entity.PlanEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PlanRepo extends JpaRepository<Plan, String> {
+public interface PlanRepo extends JpaRepository<PlanEntity, String> {
 
-    List<Plan> findAllByUserIdAndGatewayId(String userId, String gatewayId);
+    List<PlanEntity> findAllByUserIdAndGatewayId(String userId, String gatewayId);
 }

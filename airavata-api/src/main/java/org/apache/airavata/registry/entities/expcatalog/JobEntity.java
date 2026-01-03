@@ -59,7 +59,7 @@ public class JobEntity implements Serializable {
     @Column(name = "JOB_DESCRIPTION", nullable = false)
     private String jobDescription;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "COMPUTE_RESOURCE_CONSUMED")

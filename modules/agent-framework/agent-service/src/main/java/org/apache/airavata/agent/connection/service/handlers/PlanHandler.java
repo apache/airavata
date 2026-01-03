@@ -20,7 +20,7 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
 import java.util.List;
-import org.apache.airavata.agent.connection.service.db.entity.Plan;
+import org.apache.airavata.agent.connection.service.db.entity.PlanEntity;
 import org.apache.airavata.agent.connection.service.db.repo.PlanRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +37,17 @@ public class PlanHandler {
         this.planRepo = planRepo;
     }
 
-    public Plan savePlan(Plan plan) {
-        Plan savedPlan = planRepo.save(plan);
+    public PlanEntity savePlan(PlanEntity plan) {
+        PlanEntity savedPlan = planRepo.save(plan);
         logger.info("Created the plan with the id: {}", plan.getId());
         return savedPlan;
     }
 
-    public List<Plan> getAllPlansByUserId(String userId, String gatewayId) {
+    public List<PlanEntity> getAllPlansByUserId(String userId, String gatewayId) {
         return planRepo.findAllByUserIdAndGatewayId(userId, gatewayId);
     }
 
-    public Plan getPlanById(String planId) {
+    public PlanEntity getPlanById(String planId) {
         return planRepo.findById(planId).orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
     }
 }

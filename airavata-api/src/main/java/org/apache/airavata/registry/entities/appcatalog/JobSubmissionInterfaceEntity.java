@@ -49,7 +49,7 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     @Id
     private String jobSubmissionInterfaceId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "JOB_SUBMISSION_PROTOCOL", nullable = false)
@@ -59,7 +59,7 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = ComputeResourceEntity.class)

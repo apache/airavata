@@ -50,7 +50,7 @@ public class ProjectEntity implements Serializable {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     public ProjectEntity() {}

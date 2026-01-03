@@ -39,7 +39,7 @@ public class ApplicationModuleEntity implements Serializable {
     @Column(name = "MODULE_ID", nullable = false)
     private String appModuleId;
 
-    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "GATEWAY_ID", nullable = false, updatable = false)
@@ -54,7 +54,7 @@ public class ApplicationModuleEntity implements Serializable {
     @Column(name = "MODULE_VERSION")
     private String appModuleVersion;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     public ApplicationModuleEntity() {}

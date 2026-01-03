@@ -50,13 +50,13 @@ public class NotificationEntity implements Serializable {
     @Column(name = "NOTIFICATION_MESSAGE", length = 4096, nullable = false)
     private String notificationMessage;
 
-    @Column(name = "CREATION_DATE", nullable = false)
+    @Column(name = "CREATION_DATE", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
-    @Column(name = "PUBLISHED_DATE", nullable = false)
+    @Column(name = "PUBLISHED_DATE", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp publishedTime;
 
-    @Column(name = "EXPIRATION_DATE", nullable = false)
+    @Column(name = "EXPIRATION_DATE", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp expirationTime;
 
     @Column(name = "PRIORITY")

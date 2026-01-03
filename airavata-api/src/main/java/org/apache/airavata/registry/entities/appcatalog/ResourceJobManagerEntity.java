@@ -42,7 +42,7 @@ public class ResourceJobManagerEntity implements Serializable {
     @Column(name = "RESOURCE_JOB_MANAGER_ID")
     private String resourceJobManagerId;
 
-    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime = AiravataUtils.getCurrentTimestamp();
 
     @Column(name = "JOB_MANAGER_BIN_PATH")
@@ -55,7 +55,7 @@ public class ResourceJobManagerEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private ResourceJobManagerType resourceJobManagerType;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     public ResourceJobManagerEntity() {}

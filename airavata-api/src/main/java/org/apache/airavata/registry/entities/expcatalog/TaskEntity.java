@@ -56,10 +56,10 @@ public class TaskEntity implements Serializable {
     @Column(name = "PARENT_PROCESS_ID", nullable = false, insertable = false, updatable = false)
     private String parentProcessId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
-    @Column(name = "LAST_UPDATE_TIME", nullable = false)
+    @Column(name = "LAST_UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp lastUpdateTime;
 
     @Lob

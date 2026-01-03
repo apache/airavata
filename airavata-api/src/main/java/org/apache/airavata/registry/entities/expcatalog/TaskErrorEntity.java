@@ -49,7 +49,7 @@ public class TaskErrorEntity implements Serializable {
     @Column(name = "TASK_ID", nullable = false)
     private String taskId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob

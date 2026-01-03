@@ -45,7 +45,7 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "RESOURCE_ID", nullable = false)
     private String computeResourceId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "ENABLED")
@@ -69,7 +69,7 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @Column(name = "CPUS_PER_NODE")

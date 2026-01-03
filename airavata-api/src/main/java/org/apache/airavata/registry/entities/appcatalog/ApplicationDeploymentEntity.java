@@ -48,7 +48,7 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "APPLICATION_DESC")
     private String appDeploymentDescription;
 
-    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "ENV_MODULE_LOAD_CMD")
@@ -64,7 +64,7 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private ApplicationParallelismType parallelism;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @Column(name = "COMPUTE_HOSTID", nullable = false)

@@ -50,10 +50,10 @@ public class WorkflowDataBlockEntity implements Serializable {
     @Column(name = "DATA_TYPE")
     private String dataType;
 
-    @Column(name = "CREATED_AT")
+    @Column(name = "CREATED_AT", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
-    @Column(name = "UPDATED_AT")
+    @Column(name = "UPDATED_AT", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updatedAt;
 
     @OneToMany(

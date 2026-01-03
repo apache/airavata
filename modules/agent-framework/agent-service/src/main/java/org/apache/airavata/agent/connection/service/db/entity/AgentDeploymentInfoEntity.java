@@ -23,10 +23,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity(name = "AGENT_DEPLOYMENT_INFO")
-public class AgentDeploymentInfo {
+@Entity
+@Table(name = "AGENT_DEPLOYMENT_INFO")
+public class AgentDeploymentInfoEntity {
 
     @Id
     @Column(name = "AGENT_DEPLOYMENT_INFO_ID")

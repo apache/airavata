@@ -47,7 +47,7 @@ public class HandlerErrorEntity implements Serializable {
     @Column(name = "HANDLER_ID", nullable = false)
     private String handlerId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob

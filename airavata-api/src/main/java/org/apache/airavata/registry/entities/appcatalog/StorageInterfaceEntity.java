@@ -50,7 +50,7 @@ public class StorageInterfaceEntity implements Serializable {
     @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
     private String dataMovementInterfaceId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "DATA_MOVEMENT_PROTOCOL", nullable = false)
@@ -60,7 +60,7 @@ public class StorageInterfaceEntity implements Serializable {
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)

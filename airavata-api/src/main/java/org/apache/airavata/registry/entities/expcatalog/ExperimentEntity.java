@@ -64,7 +64,7 @@ public class ExperimentEntity implements Serializable {
     @Column(name = "EXPERIMENT_NAME")
     public String experimentName;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     public Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")

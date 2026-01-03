@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.apache.airavata.agent.connection.service.UserContext;
-import org.apache.airavata.agent.connection.service.db.entity.Plan;
+import org.apache.airavata.agent.connection.service.db.entity.PlanEntity;
 import org.apache.airavata.agent.connection.service.handlers.PlanHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,19 +52,19 @@ public class PlanController {
     }
 
     @PostMapping
-    public ResponseEntity<Plan> savePlan(@RequestBody JsonNode incomingData) {
+    public ResponseEntity<PlanEntity> savePlan(@RequestBody JsonNode incomingData) {
         try {
             String planId = incomingData.get("id").asText();
 
             String dataAsString = objectMapper.writeValueAsString(incomingData);
 
-            Plan plan = new Plan();
+            PlanEntity plan = new PlanEntity();
             plan.setId(planId);
             plan.setUserId(UserContext.username());
             plan.setGatewayId(UserContext.gatewayId());
             plan.setData(dataAsString);
 
-            Plan savedPlan = planHandler.savePlan(plan);
+            PlanEntity savedPlan = planHandler.savePlan(plan);
             return ResponseEntity.ok(savedPlan);
 
         } catch (Exception e) {
@@ -74,21 +74,21 @@ public class PlanController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Plan>> getPlansByUserId() {
-        List<Plan> plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
+    public ResponseEntity<List<PlanEntity>> getPlansByUserId() {
+        List<PlanEntity> plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
         return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{planId}")
-    public ResponseEntity<Plan> getPlanById(@PathVariable("planId") String planId) {
-        Plan plan = planHandler.getPlanById(planId);
+    public ResponseEntity<PlanEntity> getPlanById(@PathVariable("planId") String planId) {
+        PlanEntity plan = planHandler.getPlanById(planId);
         return ResponseEntity.ok(plan);
     }
 
     @PutMapping("/{planId}")
-    public ResponseEntity<Plan> updatePlan(@PathVariable("planId") String planId, @RequestBody JsonNode incomingData) {
+    public ResponseEntity<PlanEntity> updatePlan(@PathVariable("planId") String planId, @RequestBody JsonNode incomingData) {
         try {
-            Plan existingPlan = planHandler.getPlanById(planId);
+            PlanEntity existingPlan = planHandler.getPlanById(planId);
 
             if (existingPlan == null) {
                 logger.error("Couldn't find a plan with id: {} to update", planId);
@@ -97,7 +97,7 @@ public class PlanController {
 
             String dataAsString = objectMapper.writeValueAsString(incomingData);
             existingPlan.setData(dataAsString);
-            Plan updatedPlan = planHandler.savePlan(existingPlan);
+            PlanEntity updatedPlan = planHandler.savePlan(existingPlan);
             return ResponseEntity.ok(updatedPlan);
 
         } catch (Exception e) {

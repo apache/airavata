@@ -42,7 +42,7 @@ public class ProcessWorkflowEntity {
     @Column(name = "WORKFLOW_ID", nullable = false)
     private String workflowId;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "TYPE")

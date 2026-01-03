@@ -52,7 +52,7 @@ public class ExperimentErrorEntity implements Serializable {
     @Column(name = "EXPERIMENT_ID", nullable = false)
     private String experimentId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob

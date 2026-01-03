@@ -26,10 +26,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity(name = "AGENT_EXECUTION_STATUS")
-public class AgentExecutionStatus {
+@Entity
+@Table(name = "AGENT_EXECUTION_STATUS")
+public class AgentExecutionStatusEntity {
 
     public static enum ExecutionStatus {
         SUBMITTED_TO_CLUSTER,
@@ -46,8 +48,8 @@ public class AgentExecutionStatus {
     @Column(name = "AGENT_EXECUTION_STATUS_ID")
     private String id;
 
-    @ManyToOne(targetEntity = AgentExecution.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private AgentExecution agentExecution;
+    @ManyToOne(targetEntity = AgentExecutionEntity.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private AgentExecutionEntity agentExecution;
 
     @Column(name = "UPDATED_TIME")
     private long updateTime;
@@ -66,11 +68,11 @@ public class AgentExecutionStatus {
         this.id = id;
     }
 
-    public AgentExecution getAgentExecution() {
+    public AgentExecutionEntity getAgentExecution() {
         return agentExecution;
     }
 
-    public void setAgentExecution(AgentExecution agentExecution) {
+    public void setAgentExecution(AgentExecutionEntity agentExecution) {
         this.agentExecution = agentExecution;
     }
 

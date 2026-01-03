@@ -22,9 +22,11 @@ package org.apache.airavata.agent.connection.service.db.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity(name = "PLAN")
-public class Plan {
+@Entity
+@Table(name = "PLAN")
+public class PlanEntity {
 
     @Id
     @Column(name = "PLAN_ID", nullable = false)

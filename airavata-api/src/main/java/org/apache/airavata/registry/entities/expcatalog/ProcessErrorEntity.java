@@ -49,7 +49,7 @@ public class ProcessErrorEntity implements Serializable {
     @Column(name = "PROCESS_ID", nullable = false)
     private String processId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob

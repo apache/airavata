@@ -46,7 +46,7 @@ public class ApplicationErrorEntity implements Serializable {
     @Column(name = "APPLICATION_ID", nullable = false)
     private String applicationId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob

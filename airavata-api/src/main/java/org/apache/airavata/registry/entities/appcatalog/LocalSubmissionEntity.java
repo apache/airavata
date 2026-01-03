@@ -44,10 +44,10 @@ public class LocalSubmissionEntity implements Serializable {
     @Column(name = "JOB_SUBMISSION_INTERFACE_ID", nullable = false)
     private String jobSubmissionInterfaceId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @Column(name = "RESOURCE_JOB_MANAGER_ID", nullable = false, insertable = false, updatable = false)

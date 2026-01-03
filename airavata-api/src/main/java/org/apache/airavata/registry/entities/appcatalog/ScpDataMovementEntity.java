@@ -44,7 +44,7 @@ public class ScpDataMovementEntity implements Serializable {
     @Column(name = "ALTERNATIVE_SCP_HOSTNAME")
     private String alternativeSCPHostName;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "QUEUE_DESCRIPTION")
@@ -57,7 +57,7 @@ public class ScpDataMovementEntity implements Serializable {
     @Column(name = "SSH_PORT")
     private int sshPort;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     public ScpDataMovementEntity() {}

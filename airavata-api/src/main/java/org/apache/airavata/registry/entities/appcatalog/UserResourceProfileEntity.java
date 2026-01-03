@@ -56,10 +56,10 @@ public class UserResourceProfileEntity {
     @Column(name = "IDENTITY_SERVER_TENANT")
     private String identityServerTenant;
 
-    @Column(name = "CREATION_TIME")
+    @Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @OneToMany(

@@ -55,13 +55,13 @@ public class ApplicationInterfaceEntity implements Serializable {
     @Column(name = "ARCHIVE_WORKING_DIRECTORY")
     private boolean archiveWorkingDirectory;
 
-    @Column(name = "CREATION_TIME", nullable = false, updatable = false)
+    @Column(name = "CREATION_TIME", nullable = false, updatable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Column(name = "GATEWAY_ID", nullable = false, updatable = false)
     private String gatewayId;
 
-    @Column(name = "UPDATE_TIME", nullable = false)
+    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @Column(name = "HAS_OPTIONAL_FILE_INPUTS")

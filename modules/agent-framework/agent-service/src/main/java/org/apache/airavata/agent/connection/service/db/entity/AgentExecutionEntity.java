@@ -23,10 +23,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity(name = "AGENT_EXECUTION")
-public class AgentExecution {
+@Entity
+@Table(name = "AGENT_EXECUTION")
+public class AgentExecutionEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")

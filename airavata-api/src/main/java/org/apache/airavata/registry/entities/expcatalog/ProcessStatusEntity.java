@@ -55,7 +55,7 @@ public class ProcessStatusEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private ProcessState state;
 
-    @Column(name = "TIME_OF_STATE_CHANGE", nullable = false)
+    @Column(name = "TIME_OF_STATE_CHANGE", nullable = false, columnDefinition = "TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)")
     private Timestamp timeOfStateChange;
 
     @Lob

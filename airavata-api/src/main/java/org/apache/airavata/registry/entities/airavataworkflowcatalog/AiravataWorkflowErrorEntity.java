@@ -46,7 +46,7 @@ public class AiravataWorkflowErrorEntity implements Serializable {
     @Column(name = "WORKFLOW_ID", nullable = false)
     private String workflowId;
 
-    @Column(name = "CREATION_TIME", nullable = false)
+    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime;
 
     @Lob
