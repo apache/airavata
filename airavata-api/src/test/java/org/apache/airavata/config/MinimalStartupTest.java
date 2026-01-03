@@ -39,7 +39,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test to verify UnifiedApplication startup with minimal configuration.
+ * Test to verify AiravataApplication startup with minimal configuration.
  *
  * Minimal configuration:
  * - Thrift disabled

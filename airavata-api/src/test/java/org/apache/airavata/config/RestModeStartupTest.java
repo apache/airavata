@@ -33,7 +33,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test to verify UnifiedApplication startup in REST mode.
+ * Test to verify AiravataApplication startup in REST mode.
  *
  * In REST mode:
  * - Thrift servers should be disabled

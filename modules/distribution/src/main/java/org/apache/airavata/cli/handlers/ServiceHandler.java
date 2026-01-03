@@ -24,10 +24,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.apache.airavata.cli.util.PropertiesManager;
+import org.apache.airavata.cli.util.ProcessManager;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,11 +40,18 @@ public class ServiceHandler {
     private static final Logger logger = LoggerFactory.getLogger(ServiceHandler.class);
 
     private final AiravataServerProperties properties;
+    private final ServiceRegistry serviceRegistry;
+    private final ApplicationContext applicationContext;
 
-    // Service name to thread name and property key mapping
+    // Service name to service info mapping
     private static final Map<String, ServiceInfo> SERVICE_MAP = new HashMap<>();
 
     static {
+        // TCP Server Services
+        SERVICE_MAP.put("thrift-api", new ServiceInfo("ThriftAPI", "services.thrift.enabled"));
+        SERVICE_MAP.put("rest-api", new ServiceInfo("RESTAPI", "services.rest.enabled"));
+        
+        // Background Services
         SERVICE_MAP.put("helix-controller", new ServiceInfo("HelixController", "helix.controller.enabled"));
         SERVICE_MAP.put("helix-participant", new ServiceInfo("GlobalParticipant", "helix.participant.enabled"));
         SERVICE_MAP.put("pre-workflow-manager", new ServiceInfo("PreWorkflowManager", "services.prewm.enabled"));
@@ -51,81 +63,53 @@ public class ServiceHandler {
     }
 
     private static class ServiceInfo {
-        final String threadName;
+        final String displayName;
         final String propertyKey;
 
-        ServiceInfo(String threadName, String propertyKey) {
-            this.threadName = threadName;
+        ServiceInfo(String displayName, String propertyKey) {
+            this.displayName = displayName;
             this.propertyKey = propertyKey;
         }
     }
 
-    public ServiceHandler(AiravataServerProperties properties) {
+    @Autowired
+    public ServiceHandler(AiravataServerProperties properties, ServiceRegistry serviceRegistry, ApplicationContext applicationContext) {
         this.properties = properties;
+        this.serviceRegistry = serviceRegistry;
+        this.applicationContext = applicationContext;
     }
 
     /**
-     * Check if Airavata process is running.
+     * Check if Airavata process is running using socket-based health check.
      */
     public boolean isAiravataRunning() {
-        Path pidFile = getPidFilePath();
-        if (!Files.exists(pidFile)) {
-            return false;
-        }
-
-        try {
-            String pidStr = Files.readString(pidFile).trim();
-            long pid = Long.parseLong(pidStr);
-
-            // Check if process is alive (Unix/Linux/Mac)
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-                // Windows: use tasklist
-                ProcessBuilder pb = new ProcessBuilder("tasklist", "/FI", "PID eq " + pid);
-                Process process = pb.start();
-                int exitCode = process.waitFor();
-                // tasklist returns 0 if process found
-                return exitCode == 0;
-            } else {
-                // Unix/Linux/Mac: use kill -0
-                ProcessBuilder pb = new ProcessBuilder("kill", "-0", String.valueOf(pid));
-                Process process = pb.start();
-                int exitCode = process.waitFor();
-                return exitCode == 0;
-            }
-        } catch (Exception e) {
-            logger.debug("Error checking process status", e);
-            return false;
-        }
+        String configDir = getConfigDir();
+        return ServiceSocketClient.isServiceRunning(configDir);
     }
 
     /**
      * Get Airavata process PID.
      */
     public Long getAiravataPid() {
-        Path pidFile = getPidFilePath();
-        if (!Files.exists(pidFile)) {
-            return null;
-        }
-
-        try {
-            String pidStr = Files.readString(pidFile).trim();
-            return Long.parseLong(pidStr);
-        } catch (Exception e) {
-            logger.error("Error reading PID file", e);
-            return null;
-        }
+        String configDir = getConfigDir();
+        return ProcessManager.readPid(configDir);
     }
 
     /**
-     * Get PID file path.
+     * Get config directory from system property or environment.
      */
-    private Path getPidFilePath() {
-        String airavataHome = System.getenv("AIRAVATA_HOME");
-        if (airavataHome != null && !airavataHome.isEmpty()) {
-            return Paths.get(airavataHome, "bin", "pid-airavata");
+    private String getConfigDir() {
+        String configDir = System.getProperty("airavata.config.dir");
+        if (configDir == null || configDir.isEmpty()) {
+            configDir = System.getenv("AIRAVATA_CONFIG_DIR");
         }
-        return Paths.get("bin", "pid-airavata");
+        if (configDir == null || configDir.isEmpty()) {
+            String airavataHome = System.getenv("AIRAVATA_HOME");
+            if (airavataHome != null && !airavataHome.isEmpty()) {
+                configDir = airavataHome;
+            }
+        }
+        return configDir;
     }
 
     /**
@@ -140,7 +124,7 @@ public class ServiceHandler {
         boolean enabled = isServiceEnabled(serviceName);
         boolean running = isServiceRunning(serviceName);
 
-        return new ServiceStatus(serviceName, info.threadName, enabled, running);
+        return new ServiceStatus(serviceName, info.displayName, enabled, running);
     }
 
     /**
@@ -169,6 +153,10 @@ public class ServiceHandler {
     private boolean getServiceEnabledFromProperties(String serviceName) {
         try {
             switch (serviceName) {
+                case "thrift-api":
+                    return properties.services.thrift;
+                case "rest-api":
+                    return properties.services.rest;
                 case "helix-controller":
                     return properties.helix.controller.enabled;
                 case "helix-participant":
@@ -193,7 +181,7 @@ public class ServiceHandler {
     }
 
     /**
-     * Check if service thread is running.
+     * Check if service is running using Spring lifecycle state.
      */
     private boolean isServiceRunning(String serviceName) {
         ServiceInfo info = SERVICE_MAP.get(serviceName);
@@ -201,14 +189,20 @@ public class ServiceHandler {
             return false;
         }
 
-        // Get all threads and check if service thread exists and is alive
-        Set<Thread> threads = Thread.getAllStackTraces().keySet();
-        for (Thread thread : threads) {
-            if (info.threadName.equals(thread.getName()) && thread.isAlive()) {
-                return true;
-            }
+        // First check if main Airavata process is running
+        if (!isAiravataRunning()) {
+            return false;
         }
-        return false;
+
+        // Get lifecycle bean and check its running state
+        SmartLifecycle lifecycleBean = serviceRegistry.getLifecycleBean(serviceName);
+        if (lifecycleBean != null) {
+            return lifecycleBean.isRunning();
+        }
+
+        // If no lifecycle bean found, check if service is enabled
+        // (Some services may not have lifecycle beans yet)
+        return isServiceEnabled(serviceName);
     }
 
     /**
@@ -223,7 +217,7 @@ public class ServiceHandler {
     }
 
     /**
-     * Start a service (enable it in properties).
+     * Start a service using Spring lifecycle.
      */
     public void startService(String serviceName) throws IOException {
         ServiceInfo info = SERVICE_MAP.get(serviceName);
@@ -231,13 +225,30 @@ public class ServiceHandler {
             throw new IllegalArgumentException("Unknown service: " + serviceName);
         }
 
+        // Enable in properties first
         PropertiesManager.updateBooleanProperty(info.propertyKey, true);
-        System.out.println("✓ Service " + serviceName + " enabled in configuration");
-        System.out.println("Note: Airavata process restart may be required for changes to take effect.");
+
+        // Start via Spring lifecycle if bean exists
+        SmartLifecycle lifecycleBean = serviceRegistry.getLifecycleBean(serviceName);
+        if (lifecycleBean != null) {
+            try {
+                if (!lifecycleBean.isRunning()) {
+                    lifecycleBean.start();
+                    logger.info("Service {} started via Spring lifecycle", serviceName);
+                } else {
+                    logger.debug("Service {} is already running", serviceName);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to start service " + serviceName, e);
+                throw new IOException("Failed to start service: " + serviceName, e);
+            }
+        } else {
+            logger.warn("No lifecycle bean found for service: {}. Only enabled in configuration.", serviceName);
+        }
     }
 
     /**
-     * Stop a service (disable it in properties).
+     * Stop a service using Spring lifecycle.
      */
     public void stopService(String serviceName) throws IOException {
         ServiceInfo info = SERVICE_MAP.get(serviceName);
@@ -245,9 +256,24 @@ public class ServiceHandler {
             throw new IllegalArgumentException("Unknown service: " + serviceName);
         }
 
+        // Stop via Spring lifecycle if bean exists
+        SmartLifecycle lifecycleBean = serviceRegistry.getLifecycleBean(serviceName);
+        if (lifecycleBean != null) {
+            try {
+                if (lifecycleBean.isRunning()) {
+                    lifecycleBean.stop();
+                    logger.info("Service {} stopped via Spring lifecycle", serviceName);
+                } else {
+                    logger.debug("Service {} is not running", serviceName);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to stop service " + serviceName, e);
+                throw new IOException("Failed to stop service: " + serviceName, e);
+            }
+        }
+
+        // Disable in properties
         PropertiesManager.updateBooleanProperty(info.propertyKey, false);
-        System.out.println("✓ Service " + serviceName + " disabled in configuration");
-        System.out.println("Note: Airavata process restart may be required for changes to take effect.");
     }
 
     /**
@@ -255,6 +281,12 @@ public class ServiceHandler {
      */
     public void restartService(String serviceName) throws IOException {
         stopService(serviceName);
+        // Small delay to ensure clean stop
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         startService(serviceName);
     }
 
@@ -270,13 +302,13 @@ public class ServiceHandler {
      */
     public static class ServiceStatus {
         private final String serviceName;
-        private final String threadName;
+        private final String displayName;
         private final boolean enabled;
         private final boolean running;
 
-        public ServiceStatus(String serviceName, String threadName, boolean enabled, boolean running) {
+        public ServiceStatus(String serviceName, String displayName, boolean enabled, boolean running) {
             this.serviceName = serviceName;
-            this.threadName = threadName;
+            this.displayName = displayName;
             this.enabled = enabled;
             this.running = running;
         }
@@ -285,8 +317,13 @@ public class ServiceHandler {
             return serviceName;
         }
 
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        @Deprecated
         public String getThreadName() {
-            return threadName;
+            return displayName; // For backward compatibility
         }
 
         public boolean isEnabled() {
@@ -300,7 +337,7 @@ public class ServiceHandler {
         @Override
         public String toString() {
             return String.format(
-                    "%s (thread: %s, enabled: %s, running: %s)", serviceName, threadName, enabled, running);
+                    "%s (display: %s, enabled: %s, running: %s)", serviceName, displayName, enabled, running);
         }
     }
 }

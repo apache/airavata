@@ -46,7 +46,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test suite to verify UnifiedApplication startup with different configurations.
+ * Test suite to verify AiravataApplication startup with different configurations.
  *
  * These tests verify that:
  * - Spring context loads successfully

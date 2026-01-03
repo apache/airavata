@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.server.bootstrap;
+package org.apache.airavata.bootstrap;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -47,13 +47,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring Boot CLI command for running database migrations.
- *
- * <p>Usage: java -jar airavata-{version}.jar --spring.main.web-application-type=none
- * --migrate.enabled=true --migrate.url=jdbc:mysql://localhost:3306/db
- * --migrate.user=user --migrate.password=pass --migrate.version=0.7
- *
- * <p>Or via command line arguments: --url=... --user=... --pwd=... --version=...
+ * Database migration command.
  */
 @Component
 @Order(1) // Run before other CommandLineRunners
@@ -87,7 +81,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
         String jdbcPwd = migratePassword;
         String currentAiravataVersion = migrateVersion;
 
-        // Parse command line arguments (override properties if provided)
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.startsWith("--url=")) {
@@ -199,12 +192,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
         }
     }
 
-    /**
-     * Find migration script in dev-tools/db-migration directory.
-     * Searches relative to project root, airavata.home, or current working directory.
-     */
     private Path findMigrationScript(String versionDir, String scriptName) {
-        // Try multiple base paths
         String[] basePaths = {
             System.getProperty("airavata.home"),
             System.getProperty("user.dir"), // Current working directory
@@ -216,7 +204,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 continue;
             }
 
-            // Try as project root (if basePath is project root)
             Path projectRoot = Paths.get(basePath);
             Path migrationPath =
                     projectRoot.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);
@@ -224,7 +211,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 return migrationPath;
             }
 
-            // Try going up from airavata-api directory (if basePath is airavata-api)
             Path apiPath = projectRoot.resolve("airavata-api");
             if (Files.exists(apiPath)) {
                 Path migrationPathFromApi =
@@ -234,7 +220,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 }
             }
 
-            // Try going up from current directory to find project root
             Path current = Paths.get(basePath);
             for (int i = 0; i < 5; i++) {
                 Path candidate =
@@ -250,7 +235,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
             }
         }
 
-        // Last resort: try relative to current working directory
         Path currentDir = Paths.get(System.getProperty("user.dir"));
         for (int i = 0; i < 5; i++) {
             Path candidate =
@@ -294,7 +278,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 + "', expire_date='" + getCurrentDate() + "' WHERE config_key='" + REGISTRY_VERSION
                 + "' and category_id='SYSTEM'";
 
-        // if existing need to update, otherwise insert
         if (executeSelectQuery(connection, selectQuery) != null) {
             executeQuery(connection, updateQuery);
         } else {
@@ -362,9 +345,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 }
                 sql.append(" ").append(line);
 
-                // SQL defines "--" as a comment to EOL
-                // and in Oracle it may contain a hint
-                // so we cannot just remove it, instead we must end it
                 if (line.indexOf("--") >= 0) {
                     sql.append("\n");
                 }
@@ -375,7 +355,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 }
             }
             logger.info(sql.toString());
-            // Catch any statements not followed by ;
             if (sql.length() > 0) {
                 executeSQL(sql.toString(), conn);
             }
@@ -408,8 +387,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
         if (suffix.length() > buffer.length()) {
             return false;
         }
-        // this loop is done on purpose to avoid memory allocation performance
-        // problems on various JDKs
         int endIndex = suffix.length() - 1;
         int bufferIndex = buffer.length() - 1;
         while (endIndex >= 0) {

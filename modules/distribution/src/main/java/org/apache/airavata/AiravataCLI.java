@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.cli;
+package org.apache.airavata;
 
 import org.apache.airavata.cli.commands.AccountCommand;
 import org.apache.airavata.cli.commands.ApplicationCommand;
@@ -25,6 +25,7 @@ import org.apache.airavata.cli.commands.ComputeCommand;
 import org.apache.airavata.cli.commands.GroupCommand;
 import org.apache.airavata.cli.commands.InitCommand;
 import org.apache.airavata.cli.commands.ProjectCommand;
+import org.apache.airavata.cli.commands.ServeCommand;
 import org.apache.airavata.cli.commands.ServiceCommand;
 import org.apache.airavata.cli.commands.StorageCommand;
 import org.apache.airavata.cli.commands.TestCommand;
@@ -37,27 +38,9 @@ import picocli.CommandLine.IFactory;
 
 /**
  * Airavata CLI - Command-line interface for Airavata administration.
- *
- * Provides commands for:
- * - Database initialization and management
- * - Root account management
- * - Storage and compute resource registration
- * - Group resource profile management
- * - Application management
- * - Service management (start/stop/restart background services)
- * - Testing and validation
- *
- * Usage: airavata-cli <command> [subcommand] [flags]
- *
- * Examples:
- *   airavata-cli init --clean
- *   airavata-cli account init --username=admin --password=pass --gateway=my-gateway
- *   airavata-cli storage register --name=storage1 --hostname=host.example.com
- *   airavata-cli compute register --name=compute1 --hostname=compute.example.com
- *   airavata-cli help
  */
 @Component
-@Order(1) // Run early, before other CommandLineRunners
+@Order(1)
 @ConditionalOnProperty(name = "airavata.cli.enabled", havingValue = "true", matchIfMissing = true)
 @CommandLine.Command(
         name = "airavata",
@@ -70,17 +53,16 @@ import picocli.CommandLine.IFactory;
             ComputeCommand.class,
             GroupCommand.class,
             ApplicationCommand.class,
+            ServeCommand.class,
             ServiceCommand.class,
             TestCommand.class
         },
         mixinStandardHelpOptions = true)
 public class AiravataCLI implements CommandLineRunner {
 
-    private final IFactory factory;
     private final CommandLine commandLine;
 
     public AiravataCLI(IFactory factory) {
-        this.factory = factory;
         this.commandLine = new CommandLine(this, factory);
     }
 
@@ -88,5 +70,18 @@ public class AiravataCLI implements CommandLineRunner {
     public void run(String... args) throws Exception {
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
+    }
+
+    public static void main(String[] args) {
+        org.springframework.boot.SpringApplication app = 
+            new org.springframework.boot.SpringApplication(AiravataCLI.class);
+        app.setDefaultProperties(java.util.Map.of(
+                "spring.main.allow-bean-definition-overriding", "true",
+                "spring.classformat.ignore", "true",
+                "airavata.cli.enabled", "true",
+                "airavata.server.enabled", "false"
+        ));
+        app.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
+        app.run(args);
     }
 }

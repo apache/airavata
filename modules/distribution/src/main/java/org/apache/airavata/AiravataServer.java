@@ -17,10 +17,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.server.applications;
+package org.apache.airavata;
 
 import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.restapi.RestAPIConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -32,32 +33,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Spring Boot application entry point for Airavata API.
- *
- * <p>This class initializes the Spring application context and enables
- * dependency injection for services, repositories, and entities.
- *
- * <p>Startup sequence:
- * <ol>
- *   <li>Load and merge application settings from properties files and command line args</li>
- *   <li>Initialize Spring Boot application context</li>
- *   <li>Background services are started via {@link org.apache.airavata.config.BackgroundServicesLauncher}
- *       (Order 1-7): Helix Controller, Global Participant, Workflow Managers, Monitors</li>
- *   <li>Thrift servers are started automatically via Spring's SmartLifecycle
- *       (phases 10-70): DB Event Manager, Registry Server, Credential Store, API Server, etc.</li>
- * </ol>
- *
- * <p>All services run in daemon threads and the main thread is kept alive to prevent
- * the application from exiting.
- *
- * <p>Note: This class is kept in the distribution module for reference.
- * The unified server uses {@link org.apache.airavata.server.UnifiedApplication}
- * which includes all services.
+ * Spring Boot application entry point for Airavata Server.
  */
 @SpringBootApplication(
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableTransactionManagement
-@EnableConfigurationProperties(AiravataServerProperties.class)
+@EnableConfigurationProperties({AiravataServerProperties.class, RestAPIConfiguration.class})
 @Import({AiravataPropertiesConfiguration.class})
 @ComponentScan(
         basePackages = {
@@ -76,12 +57,29 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.credential.repositories",
             "org.apache.airavata.credential.services",
             "org.apache.airavata.credential.utils",
+            "org.apache.airavata.common.context",
+            "org.apache.airavata.common.exception",
+            "org.apache.airavata.common.logging",
+            "org.apache.airavata.common.repositories",
+            "org.apache.airavata.common.utils",
+            "org.apache.airavata.common.validation",
+            "org.apache.airavata.accountprovisioning",
+            "org.apache.airavata.security",
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
             "org.apache.airavata.orchestrator",
             "org.apache.airavata.helix",
             "org.apache.airavata.config",
-            "org.apache.airavata.api.thrift"
+            "org.apache.airavata.api.thrift",
+            "org.apache.airavata.thriftapi",
+            "org.apache.airavata.manager.dbevent",
+            "org.apache.airavata.metascheduler",
+            "org.apache.airavata.file.server",
+            "org.apache.airavata.restapi",
+            "org.apache.airavata.agent.connection.service",
+            "org.apache.airavata.research.service",
+            "org.apache.airavata.bootstrap",
+            "org.apache.airavata.cli"
         })
 @EntityScan(
         basePackages = {
@@ -90,24 +88,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.sharing.entities",
             "org.apache.airavata.credential.entities"
         })
-public class AiravataApplication {
+public class AiravataServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(AiravataApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(AiravataServer.class);
 
     public static void main(String[] args) {
-        logger.info("Starting Airavata Spring Boot application...");
-        // Spring Boot will automatically load properties via AiravataPropertiesConfiguration
-        // Command line arguments are automatically merged by Spring Boot
-        // Command line arguments are automatically merged by Spring Boot
-
-        // Start Spring Boot application - this will initialize all beans and run CommandLineRunners
-        SpringApplication app = new SpringApplication(AiravataApplication.class);
-        // Enable bean overriding to handle repository name conflicts
+        logger.info("Starting Airavata Server...");
+        SpringApplication app = new SpringApplication(AiravataServer.class);
         app.setDefaultProperties(java.util.Map.of(
                 "spring.main.allow-bean-definition-overriding", "true",
-                "spring.classformat.ignore", "true" // Ignore class format issues in Thrift-generated classes
-                ));
-        // Don't exit immediately - keep running for background services
+                "spring.classformat.ignore", "true"
+        ));
         app.setRegisterShutdownHook(true);
         app.run(args);
     }

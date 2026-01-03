@@ -36,8 +36,8 @@ export AIRAVATA_HOME CLASSPATH
 # Default Java options
 JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME} -Dlog4j.configurationFile=file:${AIRAVATA_HOME}/conf/log4j2.xml"
 
-# Main class - use UnifiedApplication
-MAIN_CLASS="org.apache.airavata.server.UnifiedApplication"
+# Main class - use AiravataServer
+MAIN_CLASS="org.apache.airavata.AiravataServer"
 
 # Parse arguments
 URL=""

@@ -35,8 +35,17 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
 
 /**
- * Configuration class that loads airavata.properties from the correct location.
- * Respects the airavata.config.dir system property, checking file system first, then classpath.
+ * Configuration class that loads airavata.properties and other configuration files
+ * from the correct location. Respects the airavata.config.dir system property,
+ * checking file system first, then classpath.
+ *
+ * <p>When airavata.config.dir is set, all configuration files are loaded from that directory:
+ * <ul>
+ *   <li>airavata.properties - Main configuration</li>
+ *   <li>application.properties / application.yml - Service-specific configuration</li>
+ *   <li>log4j2.xml - Logging configuration</li>
+ *   <li>META-INF/persistence.xml - JPA persistence configuration</li>
+ * </ul>
  */
 @Configuration
 @EnableConfigurationProperties(AiravataServerProperties.class)
@@ -49,6 +58,13 @@ public class AiravataPropertiesConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(AiravataPropertiesConfiguration.class);
     private static final String SERVER_PROPERTIES = "airavata.properties";
     private static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
+    
+    /**
+     * Get the config directory path if set, otherwise null.
+     */
+    public static String getConfigDir() {
+        return System.getProperty(AIRAVATA_CONFIG_DIR);
+    }
 
     /**
      * Custom PropertySourceFactory that loads airavata.properties

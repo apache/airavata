@@ -33,7 +33,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test to verify UnifiedApplication startup in Thrift mode (default).
+ * Test to verify AiravataApplication startup in Thrift mode (default).
  *
  * In Thrift mode:
  * - All Thrift API servers should be configured

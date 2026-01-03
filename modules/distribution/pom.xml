@@ -32,6 +32,10 @@ under the License.
 
     <properties>
         <distribution.name>airavata-${project.version}</distribution.name>
+        <graalvm.version>23.1.1</graalvm.version>
+        <native.maven.plugin.version>0.10.1</native.maven.plugin.version>
+        <skipNativeAssembly>true</skipNativeAssembly>
+        <skipTarGzAssembly>false</skipTarGzAssembly>
     </properties>
 
     <dependencyManagement>
@@ -124,17 +128,49 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Spring Boot Starter for CLI -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Picocli for command-line interface -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli-spring-boot-starter</artifactId>
+            <version>4.7.5</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>airavata-${project.version}</finalName>
         <plugins>
+            <!-- Compiler plugin with -parameters flag for CLI -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
             <!-- Spring Boot plugin to create executable uber-jar -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.apache.airavata.server.UnifiedApplication</mainClass>
+                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.apache.logging.log4j</groupId>
@@ -177,6 +213,23 @@ under the License.
                             <attach>false</attach>
                             <outputDirectory>${project.basedir}/../../distribution</outputDirectory>
                             <appendAssemblyId>false</appendAssemblyId>
+                            <skipAssembly>${skipTarGzAssembly}</skipAssembly>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>native-binary-distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/native-binary-assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                            <outputDirectory>${project.basedir}/../../distribution</outputDirectory>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <skipAssembly>${skipNativeAssembly}</skipAssembly>
                         </configuration>
                     </execution>
                 </executions>
@@ -187,7 +240,7 @@ under the License.
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>org.apache.airavata.server.UnifiedApplication</mainClass>
+                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
                     <systemProperties>
                         <systemProperty>
                             <key>airavata.config.dir</key>
@@ -204,7 +257,127 @@ under the License.
                     </systemProperties>
                 </configuration>
             </plugin>
+            <!-- GraalVM Native Image Maven Plugin -->
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
+                    <imageName>airavata</imageName>
+                    <buildArgs>
+                        <buildArg>--no-fallback</buildArg>
+                        <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                        <buildArg>-H:IncludeResources=.*\.properties|.*\.xml|.*\.yml|.*\.yaml|.*\.template|.*\.json</buildArg>
+                        <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/reflect-config.json</buildArg>
+                        <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json</buildArg>
+                        <buildArg>--initialize-at-build-time=org.slf4j.LoggerFactory,org.slf4j.impl.StaticLoggerBinder</buildArg>
+                        <buildArg>--initialize-at-run-time=io.netty</buildArg>
+                    </buildArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Native image build profile -->
+        <profile>
+            <id>native</id>
+            <properties>
+                <skipNativeAssembly>false</skipNativeAssembly>
+                <skipTarGzAssembly>true</skipTarGzAssembly>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Native image build for Linux -->
+        <profile>
+            <id>native-linux</id>
+            <properties>
+                <skipNativeAssembly>false</skipNativeAssembly>
+                <skipTarGzAssembly>true</skipTarGzAssembly>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <buildArgs>
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                                <buildArg>-H:IncludeResources=.*\.properties|.*\.xml|.*\.yml|.*\.yaml|.*\.template|.*\.json</buildArg>
+                                <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/reflect-config.json</buildArg>
+                                <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json</buildArg>
+                                <buildArg>--initialize-at-build-time=org.slf4j.LoggerFactory,org.slf4j.impl.StaticLoggerBinder</buildArg>
+                                <buildArg>--initialize-at-run-time=io.netty</buildArg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native-linux</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Native image build for macOS -->
+        <profile>
+            <id>native-macos</id>
+            <properties>
+                <skipNativeAssembly>false</skipNativeAssembly>
+                <skipTarGzAssembly>true</skipTarGzAssembly>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <buildArgs>
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                                <buildArg>-H:IncludeResources=.*\.properties|.*\.xml|.*\.yml|.*\.yaml|.*\.template|.*\.json</buildArg>
+                                <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/reflect-config.json</buildArg>
+                                <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json</buildArg>
+                                <buildArg>--initialize-at-build-time=org.slf4j.LoggerFactory,org.slf4j.impl.StaticLoggerBinder</buildArg>
+                                <buildArg>--initialize-at-run-time=io.netty</buildArg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native-macos</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

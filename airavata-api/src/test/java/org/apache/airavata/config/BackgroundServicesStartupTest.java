@@ -38,7 +38,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test to verify UnifiedApplication startup with background services enabled.
+ * Test to verify AiravataApplication startup with background services enabled.
  *
  * Background services include:
  * - Helix Controller
