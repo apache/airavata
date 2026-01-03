@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ApplicationModule and thrift ApplicationModule.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ApplicationModuleMapper extends ModelMapper {
 
     ApplicationModuleMapper INSTANCE = Mappers.getMapper(ApplicationModuleMapper.class);

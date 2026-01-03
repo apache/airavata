@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessWorkflow and thrift ProcessWorkflow.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessWorkflowMapper extends ModelMapper {
 
     ProcessWorkflowMapper INSTANCE = Mappers.getMapper(ProcessWorkflowMapper.class);

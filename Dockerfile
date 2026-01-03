@@ -93,7 +93,7 @@ EXPOSE 18889
 EXPOSE 19908
 # monitoring
 EXPOSE 9097
-# rest proxy (commented out as restproxy distribution is not available)
+# rest proxy (commented out as restapi distribution is not available)
 # EXPOSE 8082
 
 # Copy startup script

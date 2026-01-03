@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain AiravataWorkflow and thrift AiravataWorkflow.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface AiravataWorkflowMapper extends ModelMapper {
 
     AiravataWorkflowMapper INSTANCE = Mappers.getMapper(AiravataWorkflowMapper.class);

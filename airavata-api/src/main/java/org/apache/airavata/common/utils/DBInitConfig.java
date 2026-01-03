@@ -19,6 +19,12 @@
 */
 package org.apache.airavata.common.utils;
 
+/**
+ * @deprecated Database initialization is now handled by Flyway migrations.
+ * This interface is kept for backward compatibility when Flyway is disabled.
+ * Use Flyway migrations in db/migration/ directories instead.
+ */
+@Deprecated
 public interface DBInitConfig {
     String getDriver();
 
@@ -30,6 +36,10 @@ public interface DBInitConfig {
 
     String getValidationQuery();
 
+    /**
+     * @deprecated database_scripts are deprecated. Use Flyway migrations instead.
+     */
+    @Deprecated
     String getDBInitScriptPrefix();
 
     String getCheckTableName();

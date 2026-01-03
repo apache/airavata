@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CommunityUser and thrift CommunityUser.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CommunityUserMapper extends ModelMapper {
 
     CommunityUserMapper INSTANCE = Mappers.getMapper(CommunityUserMapper.class);

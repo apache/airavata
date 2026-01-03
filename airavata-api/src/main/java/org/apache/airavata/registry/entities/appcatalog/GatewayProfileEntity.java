@@ -54,7 +54,10 @@ public class GatewayProfileEntity implements Serializable {
     @Column(name = "IDENTITY_SERVER_TENANT")
     private String identityServerTenant;
 
-    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(
+            name = "UPDATE_TIME",
+            nullable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @OneToMany(

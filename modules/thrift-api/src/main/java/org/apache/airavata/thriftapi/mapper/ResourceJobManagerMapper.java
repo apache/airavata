@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ResourceJobManager and thrift ResourceJobManager.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ResourceJobManagerMapper extends ModelMapper {
 
     ResourceJobManagerMapper INSTANCE = Mappers.getMapper(ResourceJobManagerMapper.class);

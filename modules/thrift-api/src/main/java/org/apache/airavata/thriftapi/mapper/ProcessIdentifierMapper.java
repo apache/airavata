@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessIdentifier and thrift ProcessIdentifier.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessIdentifierMapper extends ModelMapper {
 
     ProcessIdentifierMapper INSTANCE = Mappers.getMapper(ProcessIdentifierMapper.class);

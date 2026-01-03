@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessTerminateEvent and thrift ProcessTerminateEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessTerminateEventMapper extends ModelMapper {
 
     ProcessTerminateEventMapper INSTANCE = Mappers.getMapper(ProcessTerminateEventMapper.class);

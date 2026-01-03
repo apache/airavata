@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain AuthzToken and thrift AuthzToken.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface AuthzTokenMapper extends ModelMapper {
 
     AuthzTokenMapper INSTANCE = Mappers.getMapper(AuthzTokenMapper.class);

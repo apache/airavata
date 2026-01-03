@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UnicoreJobSubmission and thrift UnicoreJobSubmission.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UnicoreJobSubmissionMapper extends ModelMapper {
 
     UnicoreJobSubmissionMapper INSTANCE = Mappers.getMapper(UnicoreJobSubmissionMapper.class);

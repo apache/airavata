@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DBEventMessage and thrift DBEventMessage.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DBEventMessageMapper extends ModelMapper {
 
     DBEventMessageMapper INSTANCE = Mappers.getMapper(DBEventMessageMapper.class);

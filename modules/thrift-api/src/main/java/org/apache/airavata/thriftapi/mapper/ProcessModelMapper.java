@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessModel and thrift ProcessModel.
  */
-@Mapper(uses = TaskModelMapper.class)
+@Mapper(config = ModelMapper.class, uses = TaskModelMapper.class)
 public interface ProcessModelMapper extends ModelMapper {
 
     ProcessModelMapper INSTANCE = Mappers.getMapper(ProcessModelMapper.class);

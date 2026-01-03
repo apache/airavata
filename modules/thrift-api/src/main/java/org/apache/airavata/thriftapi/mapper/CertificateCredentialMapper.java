@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CertificateCredential and thrift CertificateCredential.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CertificateCredentialMapper extends ModelMapper {
 
     CertificateCredentialMapper INSTANCE = Mappers.getMapper(CertificateCredentialMapper.class);

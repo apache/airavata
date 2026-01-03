@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SSHAccountProvisionerConfigParam and thrift SSHAccountProvisionerConfigParam.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SSHAccountProvisionerConfigParamMapper extends ModelMapper {
 
     SSHAccountProvisionerConfigParamMapper INSTANCE = Mappers.getMapper(SSHAccountProvisionerConfigParamMapper.class);

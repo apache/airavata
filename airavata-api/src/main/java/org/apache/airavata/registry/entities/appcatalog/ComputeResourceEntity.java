@@ -69,7 +69,10 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
 
-    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(
+            name = "UPDATE_TIME",
+            nullable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @Column(name = "CPUS_PER_NODE")

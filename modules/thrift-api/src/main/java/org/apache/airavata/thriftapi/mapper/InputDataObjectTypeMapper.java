@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain InputDataObjectType and thrift InputDataObjectType.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface InputDataObjectTypeMapper extends ModelMapper {
 
     InputDataObjectTypeMapper INSTANCE = Mappers.getMapper(InputDataObjectTypeMapper.class);

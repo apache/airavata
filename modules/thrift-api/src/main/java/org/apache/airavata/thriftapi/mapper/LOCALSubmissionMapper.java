@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain LOCALSubmission and thrift LOCALSubmission.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface LOCALSubmissionMapper extends ModelMapper {
 
     LOCALSubmissionMapper INSTANCE = Mappers.getMapper(LOCALSubmissionMapper.class);

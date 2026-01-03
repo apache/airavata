@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain TaskOutputChangeEvent and thrift TaskOutputChangeEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface TaskOutputChangeEventMapper extends ModelMapper {
 
     TaskOutputChangeEventMapper INSTANCE = Mappers.getMapper(TaskOutputChangeEventMapper.class);

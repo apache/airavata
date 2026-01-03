@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain StorageVolumeInfo and thrift StorageVolumeInfo.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface StorageVolumeInfoMapper extends ModelMapper {
 
     StorageVolumeInfoMapper INSTANCE = Mappers.getMapper(StorageVolumeInfoMapper.class);

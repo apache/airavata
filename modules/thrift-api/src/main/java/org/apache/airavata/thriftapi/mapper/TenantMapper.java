@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Tenant and thrift Tenant.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface TenantMapper extends ModelMapper {
 
     TenantMapper INSTANCE = Mappers.getMapper(TenantMapper.class);

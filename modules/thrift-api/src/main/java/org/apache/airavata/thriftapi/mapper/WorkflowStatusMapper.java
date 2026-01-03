@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain WorkflowStatus and thrift WorkflowStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface WorkflowStatusMapper extends ModelMapper {
 
     WorkflowStatusMapper INSTANCE = Mappers.getMapper(WorkflowStatusMapper.class);

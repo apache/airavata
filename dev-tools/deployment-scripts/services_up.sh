@@ -49,5 +49,5 @@ log "File Service started."
 # Start the REST proxy
 # ================================
 log "Starting the REST proxy..."
-./apache-airavata-restproxy-0.21-SNAPSHOT/bin/restproxy.sh -d start
+./apache-airavata-restapi-0.21-SNAPSHOT/bin/restapi.sh -d start
 log "REST proxy started."

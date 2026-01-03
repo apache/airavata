@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GroupAccountSSHProvisionerConfig and thrift GroupAccountSSHProvisionerConfig.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GroupAccountSSHProvisionerConfigMapper extends ModelMapper {
 
     GroupAccountSSHProvisionerConfigMapper INSTANCE = Mappers.getMapper(GroupAccountSSHProvisionerConfigMapper.class);

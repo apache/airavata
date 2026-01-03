@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain PortModel and thrift PortModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface PortModelMapper extends ModelMapper {
 
     PortModelMapper INSTANCE = Mappers.getMapper(PortModelMapper.class);

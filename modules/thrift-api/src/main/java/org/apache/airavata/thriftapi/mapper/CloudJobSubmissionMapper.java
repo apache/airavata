@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CloudJobSubmission and thrift CloudJobSubmission.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CloudJobSubmissionMapper extends ModelMapper {
 
     CloudJobSubmissionMapper INSTANCE = Mappers.getMapper(CloudJobSubmissionMapper.class);

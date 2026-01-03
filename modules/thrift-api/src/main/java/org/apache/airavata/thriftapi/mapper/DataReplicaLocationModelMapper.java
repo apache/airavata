@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DataReplicaLocationModel and thrift DataReplicaLocationModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DataReplicaLocationModelMapper extends ModelMapper {
 
     DataReplicaLocationModelMapper INSTANCE = Mappers.getMapper(DataReplicaLocationModelMapper.class);

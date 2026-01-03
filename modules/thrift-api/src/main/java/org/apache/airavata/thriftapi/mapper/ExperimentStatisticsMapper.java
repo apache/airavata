@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ExperimentStatistics and thrift ExperimentStatistics.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ExperimentStatisticsMapper extends ModelMapper {
 
     ExperimentStatisticsMapper INSTANCE = Mappers.getMapper(ExperimentStatisticsMapper.class);

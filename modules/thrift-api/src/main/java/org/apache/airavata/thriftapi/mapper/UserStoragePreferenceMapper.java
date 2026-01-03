@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UserStoragePreference and thrift UserStoragePreference.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UserStoragePreferenceMapper extends ModelMapper {
 
     UserStoragePreferenceMapper INSTANCE = Mappers.getMapper(UserStoragePreferenceMapper.class);

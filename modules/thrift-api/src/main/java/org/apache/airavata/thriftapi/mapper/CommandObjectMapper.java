@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CommandObject and thrift CommandObject.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CommandObjectMapper extends ModelMapper {
 
     CommandObjectMapper INSTANCE = Mappers.getMapper(CommandObjectMapper.class);

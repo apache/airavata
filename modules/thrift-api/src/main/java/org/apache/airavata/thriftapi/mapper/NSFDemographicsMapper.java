@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain NSFDemographics and thrift NSFDemographics.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface NSFDemographicsMapper extends ModelMapper {
 
     NSFDemographicsMapper INSTANCE = Mappers.getMapper(NSFDemographicsMapper.class);

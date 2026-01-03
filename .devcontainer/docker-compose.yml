@@ -36,7 +36,6 @@ services:
       MYSQL_USER: airavata
       MYSQL_PASSWORD: 123456
     volumes:
-      - ./database_scripts/init:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
     command:
       [

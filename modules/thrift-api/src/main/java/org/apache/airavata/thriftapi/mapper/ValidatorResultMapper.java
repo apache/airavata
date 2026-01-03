@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ValidatorResult and thrift ValidatorResult.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ValidatorResultMapper extends ModelMapper {
 
     ValidatorResultMapper INSTANCE = Mappers.getMapper(ValidatorResultMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GroupComputeResourcePreference and thrift GroupComputeResourcePreference.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GroupComputeResourcePreferenceMapper extends ModelMapper {
 
     GroupComputeResourcePreferenceMapper INSTANCE = Mappers.getMapper(GroupComputeResourcePreferenceMapper.class);

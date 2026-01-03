@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ComputationalResourceSchedulingModel and thrift ComputationalResourceSchedulingModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ComputationalResourceSchedulingModelMapper extends ModelMapper {
 
     ComputationalResourceSchedulingModelMapper INSTANCE =

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain BatchQueue and thrift BatchQueue.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface BatchQueueMapper extends ModelMapper {
 
     BatchQueueMapper INSTANCE = Mappers.getMapper(BatchQueueMapper.class);

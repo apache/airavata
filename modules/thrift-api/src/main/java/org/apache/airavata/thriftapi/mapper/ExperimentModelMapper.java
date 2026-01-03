@@ -26,7 +26,9 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ExperimentModel and thrift ExperimentModel.
  */
-@Mapper(uses = {ProcessModelMapper.class, TaskModelMapper.class})
+@Mapper(
+        config = ModelMapper.class,
+        uses = {ProcessModelMapper.class, TaskModelMapper.class})
 public interface ExperimentModelMapper extends ModelMapper {
 
     ExperimentModelMapper INSTANCE = Mappers.getMapper(ExperimentModelMapper.class);

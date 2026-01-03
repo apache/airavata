@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GridFTPDataMovement and thrift GridFTPDataMovement.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GridFTPDataMovementMapper extends ModelMapper {
 
     GridFTPDataMovementMapper INSTANCE = Mappers.getMapper(GridFTPDataMovementMapper.class);

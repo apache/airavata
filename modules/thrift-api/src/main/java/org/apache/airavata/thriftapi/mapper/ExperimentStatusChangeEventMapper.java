@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ExperimentStatusChangeEvent and thrift ExperimentStatusChangeEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ExperimentStatusChangeEventMapper extends ModelMapper {
 
     ExperimentStatusChangeEventMapper INSTANCE = Mappers.getMapper(ExperimentStatusChangeEventMapper.class);

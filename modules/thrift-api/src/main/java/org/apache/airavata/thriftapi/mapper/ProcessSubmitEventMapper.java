@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessSubmitEvent and thrift ProcessSubmitEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessSubmitEventMapper extends ModelMapper {
 
     ProcessSubmitEventMapper INSTANCE = Mappers.getMapper(ProcessSubmitEventMapper.class);

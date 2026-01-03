@@ -64,14 +64,6 @@
       </includes>
     </fileSet>
 
-    <!-- ********************** copy database scripts ********************** -->
-    <fileSet>
-      <directory>src/main/resources/database_scripts</directory>
-      <outputDirectory>database_scripts</outputDirectory>
-      <includes>
-        <include>*.sql</include>
-      </includes>
-    </fileSet>
 
     <!-- ********************** copy bin files ********************** -->
     <fileSet>

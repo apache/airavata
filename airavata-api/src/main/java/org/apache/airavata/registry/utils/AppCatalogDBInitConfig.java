@@ -25,7 +25,13 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.registry.services.GwyResourceProfileService;
 import org.springframework.stereotype.Component;
 
+/**
+ * @deprecated Database initialization is now handled by Flyway migrations.
+ * This class is kept for backward compatibility when Flyway is disabled.
+ * Use Flyway migrations in db/migration/app_catalog/ instead.
+ */
 @Component
+@Deprecated
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
     private final AiravataServerProperties properties;
@@ -37,6 +43,10 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
         this.gwyResourceProfileService = gwyResourceProfileService;
     }
 
+    /**
+     * @deprecated database_scripts are deprecated. Use Flyway migrations instead.
+     */
+    @Deprecated
     private String dbInitScriptPrefix = "database_scripts/appcatalog";
 
     @Override

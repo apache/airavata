@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Gateway and thrift Gateway.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GatewayMapper extends ModelMapper {
 
     GatewayMapper INSTANCE = Mappers.getMapper(GatewayMapper.class);

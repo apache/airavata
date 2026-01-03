@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DBEventSubscriber and thrift DBEventSubscriber.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DBEventSubscriberMapper extends ModelMapper {
 
     DBEventSubscriberMapper INSTANCE = Mappers.getMapper(DBEventSubscriberMapper.class);

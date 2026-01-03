@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ComputeResourcePolicy and thrift ComputeResourcePolicy.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ComputeResourcePolicyMapper extends ModelMapper {
 
     ComputeResourcePolicyMapper INSTANCE = Mappers.getMapper(ComputeResourcePolicyMapper.class);

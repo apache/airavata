@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain QueueStatusModel and thrift QueueStatusModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface QueueStatusModelMapper extends ModelMapper {
 
     QueueStatusModelMapper INSTANCE = Mappers.getMapper(QueueStatusModelMapper.class);

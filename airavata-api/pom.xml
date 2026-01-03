@@ -420,6 +420,77 @@ under the License.
 
       <!-- Thrift code generation moved to thrift-api module -->
 
+      <!-- Process Java template files -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-template-file</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/generated-sources/templates/org/apache/airavata/config</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/java/org/apache/airavata/config</directory>
+                  <includes>
+                    <include>DatabaseVersionConstants.java.template</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-api-server-resources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.api.server.build.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${docker.api.server.image.src.root}</directory>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>${session.executionRootDirectory}/dev-tools/deployment-scripts</directory>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>${session.executionRootDirectory}/distribution</directory>
+                  <includes>
+                    <include>${api.server.dist.name}.tar.gz</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>rename-template-file</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <move file="${project.build.directory}/generated-sources/templates/org/apache/airavata/config/DatabaseVersionConstants.java.template"
+                      tofile="${project.build.directory}/generated-sources/templates/org/apache/airavata/config/DatabaseVersionConstants.java"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- MapStruct annotation processing -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -451,6 +522,7 @@ under the License.
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-sources/annotations</source>
+                <source>${project.build.directory}/generated-sources/templates</source>
               </sources>
             </configuration>
           </execution>
@@ -535,39 +607,6 @@ under the License.
         </executions>
       </plugin>
 
-
-      <!-- Package distribution (docker) preparation -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-api-server-resources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${docker.api.server.build.directory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${docker.api.server.image.src.root}</directory>
-                  <filtering>false</filtering>
-                </resource>
-                <resource>
-                  <directory>${session.executionRootDirectory}/dev-tools/deployment-scripts</directory>
-                  <filtering>false</filtering>
-                </resource>
-                <resource>
-                  <directory>${session.executionRootDirectory}/distribution</directory>
-                  <includes>
-                    <include>${api.server.dist.name}.tar.gz</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
       <!--   Package Distribution (Docker)   -->
       <plugin>

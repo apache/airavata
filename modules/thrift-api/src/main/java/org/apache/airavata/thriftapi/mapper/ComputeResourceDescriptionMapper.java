@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ComputeResourceDescription and thrift ComputeResourceDescription.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ComputeResourceDescriptionMapper extends ModelMapper {
 
     ComputeResourceDescriptionMapper INSTANCE = Mappers.getMapper(ComputeResourceDescriptionMapper.class);

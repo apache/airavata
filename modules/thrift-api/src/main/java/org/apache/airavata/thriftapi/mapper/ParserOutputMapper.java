@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ParserOutput and thrift ParserOutput.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ParserOutputMapper extends ModelMapper {
 
     ParserOutputMapper INSTANCE = Mappers.getMapper(ParserOutputMapper.class);

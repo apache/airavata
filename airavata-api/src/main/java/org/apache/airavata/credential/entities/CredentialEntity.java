@@ -52,7 +52,10 @@ public class CredentialEntity implements Serializable {
     @Column(name = "PORTAL_USER_ID", length = 256, nullable = false)
     private String portalUserId;
 
-    @Column(name = "TIME_PERSISTED", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
+    @Column(
+            name = "TIME_PERSISTED",
+            nullable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp timePersisted;
 
     @Column(name = "DESCRIPTION")

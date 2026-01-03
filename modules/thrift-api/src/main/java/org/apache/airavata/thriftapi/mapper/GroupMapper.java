@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Group and thrift Group.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GroupMapper extends ModelMapper {
 
     GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Parser and thrift Parser.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ParserMapper extends ModelMapper {
 
     ParserMapper INSTANCE = Mappers.getMapper(ParserMapper.class);

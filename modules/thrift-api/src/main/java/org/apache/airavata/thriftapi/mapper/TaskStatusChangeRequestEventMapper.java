@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain TaskStatusChangeRequestEvent and thrift TaskStatusChangeRequestEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface TaskStatusChangeRequestEventMapper extends ModelMapper {
 
     TaskStatusChangeRequestEventMapper INSTANCE = Mappers.getMapper(TaskStatusChangeRequestEventMapper.class);

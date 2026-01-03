@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain JobSubmissionTaskModel and thrift JobSubmissionTaskModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface JobSubmissionTaskModelMapper extends ModelMapper {
 
     JobSubmissionTaskModelMapper INSTANCE = Mappers.getMapper(JobSubmissionTaskModelMapper.class);

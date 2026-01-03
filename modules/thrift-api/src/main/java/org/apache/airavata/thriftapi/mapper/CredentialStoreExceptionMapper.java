@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CredentialStoreException and thrift CredentialStoreException.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CredentialStoreExceptionMapper extends ModelMapper {
 
     CredentialStoreExceptionMapper INSTANCE = Mappers.getMapper(CredentialStoreExceptionMapper.class);

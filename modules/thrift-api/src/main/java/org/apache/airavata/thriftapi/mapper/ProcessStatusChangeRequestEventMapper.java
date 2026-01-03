@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessStatusChangeRequestEvent and thrift ProcessStatusChangeRequestEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessStatusChangeRequestEventMapper extends ModelMapper {
 
     ProcessStatusChangeRequestEventMapper INSTANCE = Mappers.getMapper(ProcessStatusChangeRequestEventMapper.class);

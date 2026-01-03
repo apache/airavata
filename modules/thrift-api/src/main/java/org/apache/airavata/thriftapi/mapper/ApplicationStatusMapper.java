@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ApplicationStatus and thrift ApplicationStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ApplicationStatusMapper extends ModelMapper {
 
     ApplicationStatusMapper INSTANCE = Mappers.getMapper(ApplicationStatusMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ExperimentSummaryModel and thrift ExperimentSummaryModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ExperimentSummaryModelMapper extends ModelMapper {
 
     ExperimentSummaryModelMapper INSTANCE = Mappers.getMapper(ExperimentSummaryModelMapper.class);

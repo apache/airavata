@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ComponentStatus and thrift ComponentStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ComponentStatusMapper extends ModelMapper {
 
     ComponentStatusMapper INSTANCE = Mappers.getMapper(ComponentStatusMapper.class);

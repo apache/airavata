@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain StorageResourceDescription and thrift StorageResourceDescription.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface StorageResourceDescriptionMapper extends ModelMapper {
 
     StorageResourceDescriptionMapper INSTANCE = Mappers.getMapper(StorageResourceDescriptionMapper.class);

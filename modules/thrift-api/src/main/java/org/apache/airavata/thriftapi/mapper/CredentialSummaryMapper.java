@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CredentialSummary and thrift CredentialSummary.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CredentialSummaryMapper extends ModelMapper {
 
     CredentialSummaryMapper INSTANCE = Mappers.getMapper(CredentialSummaryMapper.class);

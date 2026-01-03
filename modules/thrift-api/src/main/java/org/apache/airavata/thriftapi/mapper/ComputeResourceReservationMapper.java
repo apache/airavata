@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ComputeResourceReservation and thrift ComputeResourceReservation.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ComputeResourceReservationMapper extends ModelMapper {
 
     ComputeResourceReservationMapper INSTANCE = Mappers.getMapper(ComputeResourceReservationMapper.class);

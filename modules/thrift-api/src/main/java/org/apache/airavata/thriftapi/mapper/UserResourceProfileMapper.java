@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UserResourceProfile and thrift UserResourceProfile.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UserResourceProfileMapper extends ModelMapper {
 
     UserResourceProfileMapper INSTANCE = Mappers.getMapper(UserResourceProfileMapper.class);

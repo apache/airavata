@@ -26,6 +26,7 @@ import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
@@ -48,6 +49,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
     ExperimentModel experiment;
 
     public ProcessDataManager(
+            TaskUtil taskUtil,
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
@@ -56,7 +58,13 @@ public class ProcessDataManager extends OutputDataStagingTask {
             String processId,
             AdaptorSupport adaptorSupport)
             throws Exception {
-        super(applicationContext, registryService, userProfileService, credentialStoreService, messagingFactory);
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
         this.adaptorSupport = adaptorSupport;
         try {
             process = registryService.getProcess(processId);

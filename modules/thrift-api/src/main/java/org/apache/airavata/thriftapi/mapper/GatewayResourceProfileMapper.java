@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GatewayResourceProfile and thrift GatewayResourceProfile.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GatewayResourceProfileMapper extends ModelMapper {
 
     GatewayResourceProfileMapper INSTANCE = Mappers.getMapper(GatewayResourceProfileMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DataProductModel and thrift DataProductModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DataProductModelMapper extends ModelMapper {
 
     DataProductModelMapper INSTANCE = Mappers.getMapper(DataProductModelMapper.class);

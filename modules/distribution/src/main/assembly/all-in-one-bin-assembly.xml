@@ -82,14 +82,6 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Database scripts -->
-    <fileSet>
-      <directory>../../../airavata-api/src/main/resources/database_scripts</directory>
-      <outputDirectory>database_scripts</outputDirectory>
-      <includes>
-        <include>*.sql</include>
-      </includes>
-    </fileSet>
 
     <!-- Config files from agent-service -->
     <fileSet>
@@ -121,9 +113,9 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Config files from restproxy -->
+    <!-- Config files from restapi -->
     <fileSet>
-      <directory>../restproxy/src/main/resources</directory>
+      <directory>../restapi/src/main/resources</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>application.properties</include>

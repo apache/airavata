@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain JobStatus and thrift JobStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface JobStatusMapper extends ModelMapper {
 
     JobStatusMapper INSTANCE = Mappers.getMapper(JobStatusMapper.class);

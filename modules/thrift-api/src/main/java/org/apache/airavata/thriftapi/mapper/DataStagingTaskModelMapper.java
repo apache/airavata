@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DataStagingTaskModel and thrift DataStagingTaskModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DataStagingTaskModelMapper extends ModelMapper {
 
     DataStagingTaskModelMapper INSTANCE = Mappers.getMapper(DataStagingTaskModelMapper.class);

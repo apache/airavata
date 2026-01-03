@@ -60,7 +60,10 @@ public class StorageInterfaceEntity implements Serializable {
     @Column(name = "PRIORITY_ORDER")
     private int priorityOrder;
 
-    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(
+            name = "UPDATE_TIME",
+            nullable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)

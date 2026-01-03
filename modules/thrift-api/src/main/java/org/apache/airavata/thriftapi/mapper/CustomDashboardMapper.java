@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain CustomDashboard and thrift CustomDashboard.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface CustomDashboardMapper extends ModelMapper {
 
     CustomDashboardMapper INSTANCE = Mappers.getMapper(CustomDashboardMapper.class);

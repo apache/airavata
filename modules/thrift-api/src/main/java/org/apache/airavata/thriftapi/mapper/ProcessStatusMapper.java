@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ProcessStatus and thrift ProcessStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProcessStatusMapper extends ModelMapper {
 
     ProcessStatusMapper INSTANCE = Mappers.getMapper(ProcessStatusMapper.class);

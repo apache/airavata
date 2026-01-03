@@ -21,7 +21,7 @@ package org.apache.airavata.server;
 
 import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.restproxy.RestProxyConfiguration;
+import org.apache.airavata.restapi.RestAPIConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -56,7 +56,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(
         exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
 @EnableTransactionManagement
-@EnableConfigurationProperties({AiravataServerProperties.class, RestProxyConfiguration.class})
+@EnableConfigurationProperties({AiravataServerProperties.class, RestAPIConfiguration.class})
 @Import({AiravataPropertiesConfiguration.class})
 @ComponentScan(
         basePackages = {
@@ -93,7 +93,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.manager.dbevent",
             "org.apache.airavata.metascheduler",
             "org.apache.airavata.file.server",
-            "org.apache.airavata.restproxy",
+            "org.apache.airavata.restapi",
             "org.apache.airavata.server.bootstrap"
         },
         excludeFilters = {

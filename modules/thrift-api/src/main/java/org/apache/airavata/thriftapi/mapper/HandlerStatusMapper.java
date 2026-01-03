@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain HandlerStatus and thrift HandlerStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface HandlerStatusMapper extends ModelMapper {
 
     HandlerStatusMapper INSTANCE = Mappers.getMapper(HandlerStatusMapper.class);

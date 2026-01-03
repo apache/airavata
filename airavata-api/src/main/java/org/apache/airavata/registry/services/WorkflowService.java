@@ -168,9 +168,8 @@ public class WorkflowService {
                     .collect(Collectors.toList()));
         }
         if (entity.getErrors() != null) {
-            workflow.setErrors(entity.getErrors().stream()
-                    .map(this::convertWorkflowError)
-                    .collect(Collectors.toList()));
+            workflow.setErrors(
+                    entity.getErrors().stream().map(this::convertWorkflowError).collect(Collectors.toList()));
         }
         return workflow;
     }

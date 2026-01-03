@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ApplicationInterfaceDescription and thrift ApplicationInterfaceDescription.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ApplicationInterfaceDescriptionMapper extends ModelMapper {
 
     ApplicationInterfaceDescriptionMapper INSTANCE = Mappers.getMapper(ApplicationInterfaceDescriptionMapper.class);

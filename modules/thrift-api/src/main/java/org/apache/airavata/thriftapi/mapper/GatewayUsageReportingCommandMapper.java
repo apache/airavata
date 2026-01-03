@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GatewayUsageReportingCommand and thrift GatewayUsageReportingCommand.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GatewayUsageReportingCommandMapper extends ModelMapper {
 
     GatewayUsageReportingCommandMapper INSTANCE = Mappers.getMapper(GatewayUsageReportingCommandMapper.class);

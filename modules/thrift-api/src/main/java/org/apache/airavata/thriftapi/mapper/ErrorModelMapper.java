@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ErrorModel and thrift ErrorModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ErrorModelMapper extends ModelMapper {
 
     ErrorModelMapper INSTANCE = Mappers.getMapper(ErrorModelMapper.class);

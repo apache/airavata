@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain EnvironmentSetupTaskModel and thrift EnvironmentSetupTaskModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface EnvironmentSetupTaskModelMapper extends ModelMapper {
 
     EnvironmentSetupTaskModelMapper INSTANCE = Mappers.getMapper(EnvironmentSetupTaskModelMapper.class);

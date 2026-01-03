@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SlurmComputeResourcePreference and thrift SlurmComputeResourcePreference.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SlurmComputeResourcePreferenceMapper extends ModelMapper {
 
     SlurmComputeResourcePreferenceMapper INSTANCE = Mappers.getMapper(SlurmComputeResourcePreferenceMapper.class);

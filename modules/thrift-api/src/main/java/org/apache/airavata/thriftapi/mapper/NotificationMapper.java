@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Notification and thrift Notification.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface NotificationMapper extends ModelMapper {
 
     NotificationMapper INSTANCE = Mappers.getMapper(NotificationMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DataMovementInterface and thrift DataMovementInterface.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DataMovementInterfaceMapper extends ModelMapper {
 
     DataMovementInterfaceMapper INSTANCE = Mappers.getMapper(DataMovementInterfaceMapper.class);

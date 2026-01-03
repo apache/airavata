@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SCPDataMovement and thrift SCPDataMovement.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SCPDataMovementMapper extends ModelMapper {
 
     SCPDataMovementMapper INSTANCE = Mappers.getMapper(SCPDataMovementMapper.class);

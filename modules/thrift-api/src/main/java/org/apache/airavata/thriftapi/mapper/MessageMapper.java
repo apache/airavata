@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Message and thrift Message.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface MessageMapper extends ModelMapper {
 
     MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);

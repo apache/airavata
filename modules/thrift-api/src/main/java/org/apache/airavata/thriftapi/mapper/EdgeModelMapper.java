@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain EdgeModel and thrift EdgeModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface EdgeModelMapper extends ModelMapper {
 
     EdgeModelMapper INSTANCE = Mappers.getMapper(EdgeModelMapper.class);

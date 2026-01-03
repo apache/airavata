@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain DataBlock and thrift DataBlock.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface DataBlockMapper extends ModelMapper {
 
     DataBlockMapper INSTANCE = Mappers.getMapper(DataBlockMapper.class);

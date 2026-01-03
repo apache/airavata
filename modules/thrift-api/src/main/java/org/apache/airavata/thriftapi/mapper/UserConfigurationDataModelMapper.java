@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UserConfigurationDataModel and thrift UserConfigurationDataModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UserConfigurationDataModelMapper extends ModelMapper {
 
     UserConfigurationDataModelMapper INSTANCE = Mappers.getMapper(UserConfigurationDataModelMapper.class);

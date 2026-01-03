@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain TaskModel and thrift TaskModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface TaskModelMapper extends ModelMapper {
 
     TaskModelMapper INSTANCE = Mappers.getMapper(TaskModelMapper.class);

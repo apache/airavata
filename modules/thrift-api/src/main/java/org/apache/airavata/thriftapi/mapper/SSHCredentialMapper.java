@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SSHCredential and thrift SSHCredential.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SSHCredentialMapper extends ModelMapper {
 
     SSHCredentialMapper INSTANCE = Mappers.getMapper(SSHCredentialMapper.class);

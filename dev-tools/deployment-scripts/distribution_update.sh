@@ -28,8 +28,8 @@ tar -xvf ./apache-airavata-file-server-0.21-SNAPSHOT.tar.gz -C .
 log "File Service updated."
 
 log "Updating the REST proxy..."
-rm -rf ./apache-airavata-restproxy-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-restproxy-0.21-SNAPSHOT.tar.gz -C .
+rm -rf ./apache-airavata-restapi-0.21-SNAPSHOT
+tar -xvf ./apache-airavata-restapi-0.21-SNAPSHOT.tar.gz -C .
 log "REST proxy updated."
 
 # ================================
@@ -57,7 +57,7 @@ cp vault/application-file-server.properties ./apache-airavata-file-server-0.21-S
 cp vault/log4j2.xml ./apache-airavata-file-server-0.21-SNAPSHOT/conf/log4j2.xml
 log "File Service config files updated."
 
-mkdir -p ./apache-airavata-restproxy-0.21-SNAPSHOT/conf
-cp vault/application-restproxy.properties ./apache-airavata-restproxy-0.21-SNAPSHOT/conf/application.properties
-cp vault/log4j2.xml ./apache-airavata-restproxy-0.21-SNAPSHOT/conf/log4j2.xml
+mkdir -p ./apache-airavata-restapi-0.21-SNAPSHOT/conf
+cp vault/application-restapi.properties ./apache-airavata-restapi-0.21-SNAPSHOT/conf/application.properties
+cp vault/log4j2.xml ./apache-airavata-restapi-0.21-SNAPSHOT/conf/log4j2.xml
 log "REST proxy config files updated."

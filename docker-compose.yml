@@ -11,7 +11,6 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./.devcontainer/database_scripts/init:/docker-entrypoint-initdb.d:ro
     networks:
       - airavata-network
 

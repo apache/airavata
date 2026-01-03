@@ -34,12 +34,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 /**
- * Test to validate that Hibernate entities match the database schema defined in ddl.sql.
+ * Test to validate that Hibernate entities match the database schema defined in Flyway migrations.
  *
  * This test:
  * 1. Uses Spring Boot test context to inject EntityManagerFactory beans
  * 2. Validates that entities can be loaded and metamodel is accessible
  * 3. Validates all 7 persistence units
+ *
+ * Note: Database schema is managed by Flyway migrations in db/migration/ directories.
+ * This test validates entity structure and mapping correctness.
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class, AiravataPropertiesConfiguration.class},
@@ -171,8 +174,9 @@ public class SchemaValidationTest {
      * - Entity mappings are syntactically correct
      * - Metamodel is accessible and contains entities
      *
-     * Note: For full schema validation against ddl.sql, ensure the database schema
-     * matches the DDL. This test validates entity structure and mapping correctness.
+     * Note: Database schema is managed by Flyway migrations. This test validates
+     * entity structure and mapping correctness. For full schema validation, ensure
+     * Flyway migrations match entity definitions.
      */
     private void validatePersistenceUnit(String persistenceUnitName) {
         EntityManagerFactory emf = emfMap.get(persistenceUnitName);

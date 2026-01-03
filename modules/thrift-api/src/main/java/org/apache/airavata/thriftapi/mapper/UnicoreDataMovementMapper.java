@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UnicoreDataMovement and thrift UnicoreDataMovement.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UnicoreDataMovementMapper extends ModelMapper {
 
     UnicoreDataMovementMapper INSTANCE = Mappers.getMapper(UnicoreDataMovementMapper.class);

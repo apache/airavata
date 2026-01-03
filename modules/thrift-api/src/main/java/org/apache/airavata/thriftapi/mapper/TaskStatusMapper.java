@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain TaskStatus and thrift TaskStatus.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface TaskStatusMapper extends ModelMapper {
 
     TaskStatusMapper INSTANCE = Mappers.getMapper(TaskStatusMapper.class);

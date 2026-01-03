@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain OutputDataObjectType and thrift OutputDataObjectType.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface OutputDataObjectTypeMapper extends ModelMapper {
 
     OutputDataObjectTypeMapper INSTANCE = Mappers.getMapper(OutputDataObjectTypeMapper.class);

@@ -53,7 +53,11 @@ public class SshJobSubmissionEntity implements Serializable {
     @Column(name = "ALTERNATIVE_SSH_HOSTNAME")
     private String alternativeSshHostname;
 
-    @Column(name = "CREATION_TIME", nullable = false, updatable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
+    @Column(
+            name = "CREATION_TIME",
+            nullable = false,
+            updatable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Timestamp creationTime = AiravataUtils.getCurrentTimestamp();
 
     @Column(name = "MONITOR_MODE")
@@ -66,7 +70,10 @@ public class SshJobSubmissionEntity implements Serializable {
     @Column(name = "SSH_PORT")
     private int sshPort;
 
-    @Column(name = "UPDATE_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(
+            name = "UPDATE_TIME",
+            nullable = false,
+            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
     public SshJobSubmissionEntity() {}

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ParserConnectorInput and thrift ParserConnectorInput.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ParserConnectorInputMapper extends ModelMapper {
 
     ParserConnectorInputMapper INSTANCE = Mappers.getMapper(ParserConnectorInputMapper.class);

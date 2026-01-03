@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain PasswordCredential and thrift PasswordCredential.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface PasswordCredentialMapper extends ModelMapper {
 
     PasswordCredentialMapper INSTANCE = Mappers.getMapper(PasswordCredentialMapper.class);

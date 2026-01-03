@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain Project and thrift Project.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ProjectMapper extends ModelMapper {
 
     ProjectMapper INSTANCE = Mappers.getMapper(ProjectMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain StorageDirectoryInfo and thrift StorageDirectoryInfo.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface StorageDirectoryInfoMapper extends ModelMapper {
 
     StorageDirectoryInfoMapper INSTANCE = Mappers.getMapper(StorageDirectoryInfoMapper.class);

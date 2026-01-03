@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ExperimentIntermediateOutputsEvent and thrift ExperimentIntermediateOutputsEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ExperimentIntermediateOutputsEventMapper extends ModelMapper {
 
     ExperimentIntermediateOutputsEventMapper INSTANCE =

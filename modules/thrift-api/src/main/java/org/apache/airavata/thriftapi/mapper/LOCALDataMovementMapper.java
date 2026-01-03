@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain LOCALDataMovement and thrift LOCALDataMovement.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface LOCALDataMovementMapper extends ModelMapper {
 
     LOCALDataMovementMapper INSTANCE = Mappers.getMapper(LOCALDataMovementMapper.class);

@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain MonitorTaskModel and thrift MonitorTaskModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface MonitorTaskModelMapper extends ModelMapper {
 
     MonitorTaskModelMapper INSTANCE = Mappers.getMapper(MonitorTaskModelMapper.class);

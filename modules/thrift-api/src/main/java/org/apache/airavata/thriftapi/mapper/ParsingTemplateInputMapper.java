@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain ParsingTemplateInput and thrift ParsingTemplateInput.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface ParsingTemplateInputMapper extends ModelMapper {
 
     ParsingTemplateInputMapper INSTANCE = Mappers.getMapper(ParsingTemplateInputMapper.class);

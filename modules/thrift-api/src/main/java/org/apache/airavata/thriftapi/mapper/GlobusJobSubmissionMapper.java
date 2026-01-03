@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GlobusJobSubmission and thrift GlobusJobSubmission.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GlobusJobSubmissionMapper extends ModelMapper {
 
     GlobusJobSubmissionMapper INSTANCE = Mappers.getMapper(GlobusJobSubmissionMapper.class);

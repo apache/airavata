@@ -90,7 +90,7 @@ API_SERVER_DIR="${AIRAVATA_HOME}/services/api-server"
 AGENT_SERVICE_DIR="${AIRAVATA_HOME}/services/agent-service"
 FILE_SERVER_DIR="${AIRAVATA_HOME}/services/file-server"
 RESEARCH_SERVICE_DIR="${AIRAVATA_HOME}/services/research-service"
-RESTPROXY_DIR="${AIRAVATA_HOME}/services/restproxy"
+restapi_DIR="${AIRAVATA_HOME}/services/restapi"
 
 # Function to start a service
 start_service() {
@@ -153,7 +153,7 @@ start_all() {
   else
     # REST mode: Start REST proxy and API server without Thrift
     log "Starting REST Proxy..."
-    start_service "REST Proxy" "$RESTPROXY_DIR" "bin/restproxy.sh"
+    start_service "REST Proxy" "$restapi_DIR" "bin/restapi.sh"
     
     log "Starting API Server (without Thrift API, includes all background services)..."
     cd "$API_SERVER_DIR"
@@ -175,7 +175,7 @@ stop_all() {
   
   # Stop mode-specific services first
   if [[ "$MODE" == "rest" ]]; then
-    stop_service "REST Proxy" "$RESTPROXY_DIR" "bin/restproxy.sh"
+    stop_service "REST Proxy" "$restapi_DIR" "bin/restapi.sh"
   fi
   
   # Stop API server (this will stop all background services internally)

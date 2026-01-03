@@ -28,6 +28,7 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
+import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
@@ -50,6 +51,7 @@ public class AirvataFileService {
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
     private final MessagingFactory messagingFactory;
+    private final TaskUtil taskUtil;
 
     public AirvataFileService(
             AdaptorSupport adaptorSupport,
@@ -57,13 +59,15 @@ public class AirvataFileService {
             ApplicationContext applicationContext,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            TaskUtil taskUtil) {
         this.adaptorSupport = adaptorSupport;
         this.registryService = registryService;
         this.applicationContext = applicationContext;
         this.userProfileService = userProfileService;
         this.credentialStoreService = credentialStoreService;
         this.messagingFactory = messagingFactory;
+        this.taskUtil = taskUtil;
     }
 
     private AgentAdaptor getAgentAdaptor(ProcessDataManager dataManager, String processId) throws Exception {
@@ -79,6 +83,7 @@ public class AirvataFileService {
 
     public FileMetadata getInfo(String processId, String subPath) throws Exception {
         var dataManager = new ProcessDataManager(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,
@@ -95,6 +100,7 @@ public class AirvataFileService {
 
     public AiravataDirectory listDir(String processId, String subPath) throws Exception {
         var dataManager = new ProcessDataManager(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,
@@ -129,6 +135,7 @@ public class AirvataFileService {
 
     public AiravataFile listFile(String processId, String subPath) throws Exception {
         var dataManager = new ProcessDataManager(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,
@@ -153,6 +160,7 @@ public class AirvataFileService {
         Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
 
         var dataManager = new ProcessDataManager(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,
@@ -180,6 +188,7 @@ public class AirvataFileService {
     public Path downloadFile(String processId, String subPath) throws Exception {
 
         var dataManager = new ProcessDataManager(
+                taskUtil,
                 applicationContext,
                 registryService,
                 userProfileService,

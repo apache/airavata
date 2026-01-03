@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain GroupResourceProfile and thrift GroupResourceProfile.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface GroupResourceProfileMapper extends ModelMapper {
 
     GroupResourceProfileMapper INSTANCE = Mappers.getMapper(GroupResourceProfileMapper.class);

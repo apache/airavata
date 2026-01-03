@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SetEnvPaths and thrift SetEnvPaths.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SetEnvPathsMapper extends ModelMapper {
 
     SetEnvPathsMapper INSTANCE = Mappers.getMapper(SetEnvPathsMapper.class);

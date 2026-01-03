@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SSHJobSubmission and thrift SSHJobSubmission.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SSHJobSubmissionMapper extends ModelMapper {
 
     SSHJobSubmissionMapper INSTANCE = Mappers.getMapper(SSHJobSubmissionMapper.class);

@@ -78,7 +78,7 @@ apache-airavata-all-0.21-SNAPSHOT/
 │   ├── agent-service/              # Agent Service
 │   ├── file-server/                # File Server
 │   ├── research-service/           # Research Service
-│   └── restproxy/                  # REST Proxy
+│   └── restapi/                  # REST Proxy
 └── logs/                           # Centralized logs directory
 ```
 
@@ -175,9 +175,9 @@ The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Aira
 
 The Airavata Research Service is the backend for the **research catalog** in Airavata. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting.
 
-### 5. Airavata REST Proxy `(apache-airavata-restproxy)` [NEW]
-> Class Name: `org.apache.airavata.restproxy.RestProxyApplication`
-> Command: `bin/restproxy.sh` (or via unified `bin/airavata-server.sh -mode rest`)
+### 5. Airavata REST Proxy `(apache-airavata-restapi)` [NEW]
+> Class Name: `org.apache.airavata.restapi.restapiApplication`
+> Command: `bin/restapi.sh` (or via unified `bin/airavata-server.sh -mode rest`)
 
 The Airavata REST Proxy provides a RESTful API interface to Airavata services. It acts as an alternative to the Thrift API, offering HTTP/JSON endpoints for clients that prefer REST over Thrift. The REST Proxy can be run in REST mode via the unified distribution, which automatically disables the Thrift API Server to avoid conflicts.
 
@@ -215,7 +215,7 @@ Once the project is built, individual service distributions and a unified bundle
 ├── apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
 ├── apache-airavata-file-server-0.21-SNAPSHOT.tar.gz
 ├── apache-airavata-research-service-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-restproxy-0.21-SNAPSHOT.tar.gz
+├── apache-airavata-restapi-0.21-SNAPSHOT.tar.gz
 └── apache-airavata-all-0.21-SNAPSHOT.tar.gz  # Unified bundle
 
 1 directory, 6 files
@@ -238,7 +238,7 @@ cp -r ../../vault services/api-server/conf/vault
 cp -r ../../vault services/agent-service/conf/vault
 cp -r ../../vault services/file-server/conf/vault
 cp -r ../../vault services/research-service/conf/vault
-cp -r ../../vault services/restproxy/conf/vault
+cp -r ../../vault services/restapi/conf/vault
 
 # Start all services in Thrift mode (default)
 ./bin/airavata-server.sh -d start
@@ -264,7 +264,7 @@ cp -r ../../vault services/restproxy/conf/vault
 * `application-agent-service.yml` - config file for the airavata agent service.
 * `application-file-server.yml` - config file for the airavata file server.
 * `application-research-service.yml` - config file for the airavata research service.
-* `application-restproxy.properties` - config file for the airavata rest proxy.
+* `application-restapi.properties` - config file for the airavata rest proxy.
 * `email-config.yml` - contains the email addresses observed by the email monitor.
 * `log4j2.xml` - contains the Log4j configuration for all airavata services.
 
@@ -284,7 +284,7 @@ cp -r ../vault apache-airavata-api-server-0.21-SNAPSHOT/conf/vault
 cp -r ../vault apache-airavata-agent-service-0.21-SNAPSHOT/conf/vault
 cp -r ../vault apache-airavata-file-server-0.21-SNAPSHOT/conf/vault
 cp -r ../vault apache-airavata-research-service-0.21-SNAPSHOT/conf/vault
-cp -r ../vault apache-airavata-restproxy-0.21-SNAPSHOT/conf/vault
+cp -r ../vault apache-airavata-restapi-0.21-SNAPSHOT/conf/vault
 
 # Copy deployment scripts
 cp -r ../dev-tools/deployment-scripts/ .

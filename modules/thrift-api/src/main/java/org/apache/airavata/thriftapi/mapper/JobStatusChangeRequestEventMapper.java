@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain JobStatusChangeRequestEvent and thrift JobStatusChangeRequestEvent.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface JobStatusChangeRequestEventMapper extends ModelMapper {
 
     JobStatusChangeRequestEventMapper INSTANCE = Mappers.getMapper(JobStatusChangeRequestEventMapper.class);

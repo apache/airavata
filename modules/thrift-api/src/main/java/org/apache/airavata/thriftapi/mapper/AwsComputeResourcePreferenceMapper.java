@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain AwsComputeResourcePreference and thrift AwsComputeResourcePreference.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface AwsComputeResourcePreferenceMapper extends ModelMapper {
 
     AwsComputeResourcePreferenceMapper INSTANCE = Mappers.getMapper(AwsComputeResourcePreferenceMapper.class);

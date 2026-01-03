@@ -76,10 +76,10 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- REST Proxy module -->
+        <!-- REST Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>restproxy</artifactId>
+            <artifactId>rest-api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -108,7 +108,7 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Thrift API module -->
+        <!-- Thrift Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>thrift-api</artifactId>

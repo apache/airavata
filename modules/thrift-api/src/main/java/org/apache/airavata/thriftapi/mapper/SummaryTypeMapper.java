@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain SummaryType and thrift SummaryType.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface SummaryTypeMapper extends ModelMapper {
 
     SummaryTypeMapper INSTANCE = Mappers.getMapper(SummaryTypeMapper.class);

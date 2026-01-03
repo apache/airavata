@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain BatchQueueResourcePolicy and thrift BatchQueueResourcePolicy.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface BatchQueueResourcePolicyMapper extends ModelMapper {
 
     BatchQueueResourcePolicyMapper INSTANCE = Mappers.getMapper(BatchQueueResourcePolicyMapper.class);

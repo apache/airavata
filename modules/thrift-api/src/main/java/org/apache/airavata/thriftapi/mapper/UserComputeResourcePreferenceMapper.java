@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain UserComputeResourcePreference and thrift UserComputeResourcePreference.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface UserComputeResourcePreferenceMapper extends ModelMapper {
 
     UserComputeResourcePreferenceMapper INSTANCE = Mappers.getMapper(UserComputeResourcePreferenceMapper.class);

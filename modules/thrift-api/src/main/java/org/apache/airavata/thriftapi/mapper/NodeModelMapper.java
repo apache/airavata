@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain NodeModel and thrift NodeModel.
  */
-@Mapper
+@Mapper(config = ModelMapper.class)
 public interface NodeModelMapper extends ModelMapper {
 
     NodeModelMapper INSTANCE = Mappers.getMapper(NodeModelMapper.class);
