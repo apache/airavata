@@ -97,8 +97,7 @@ public class AiravataServer {
         SpringApplication app = new SpringApplication(AiravataServer.class);
         app.setDefaultProperties(java.util.Map.of(
                 "spring.main.allow-bean-definition-overriding", "true",
-                "spring.classformat.ignore", "true"
-        ));
+                "spring.classformat.ignore", "true"));
         app.setRegisterShutdownHook(true);
         app.run(args);
     }

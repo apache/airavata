@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -1389,7 +1388,7 @@ public class SharingRegistryService {
 
     private <T> T getUpdatedObject(T oldEntity, T newEntity) throws SharingRegistryException {
         Field[] newEntityFields = newEntity.getClass().getDeclaredFields();
-        Hashtable newHT = fieldsToHT(newEntityFields, newEntity);
+        HashMap<String, Object> newHT = fieldsToHT(newEntityFields, newEntity);
 
         Class oldEntityClass = oldEntity.getClass();
         Field[] oldEntityFields = oldEntityClass.getDeclaredFields();
@@ -1414,8 +1413,8 @@ public class SharingRegistryService {
         return oldEntity;
     }
 
-    private static Hashtable<String, Object> fieldsToHT(Field[] fields, Object obj) {
-        Hashtable<String, Object> hashtable = new Hashtable<>();
+    private static HashMap<String, Object> fieldsToHT(Field[] fields, Object obj) {
+        HashMap<String, Object> hashtable = new HashMap<>();
         for (Field field : fields) {
             field.setAccessible(true);
             try {

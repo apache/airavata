@@ -39,25 +39,25 @@ mkdir -p ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/
 cp vault/airavata.properties ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata.properties
 cp vault/airavata.sym.p12 ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/airavata.sym.p12
 cp vault/email-config.yml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/email-config.yml
-cp vault/log4j2.xml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/log4j2.xml
+cp vault/logback.xml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/logback.xml
 log "API Server config files updated."
 
 mkdir -p ./apache-airavata-agent-service-0.21-SNAPSHOT/conf
 cp vault/application-agent-service.yml ./apache-airavata-agent-service-0.21-SNAPSHOT/conf/application.yml
-cp vault/log4j2.xml ./apache-airavata-agent-service-0.21-SNAPSHOT/conf/log4j2.xml
+cp vault/logback.xml ./apache-airavata-agent-service-0.21-SNAPSHOT/conf/logback.xml
 log "Agent Service config files updated."
 
 mkdir -p ./apache-airavata-research-service-0.21-SNAPSHOT/conf
 cp vault/application-research-service.yml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/application.yml
-cp vault/log4j2.xml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/log4j2.xml
+cp vault/logback.xml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/logback.xml
 log "Research Service config files updated."
 
 mkdir -p ./apache-airavata-file-server-0.21-SNAPSHOT/conf
 cp vault/application-file-server.properties ./apache-airavata-file-server-0.21-SNAPSHOT/conf/application.properties
-cp vault/log4j2.xml ./apache-airavata-file-server-0.21-SNAPSHOT/conf/log4j2.xml
+cp vault/logback.xml ./apache-airavata-file-server-0.21-SNAPSHOT/conf/logback.xml
 log "File Service config files updated."
 
 mkdir -p ./apache-airavata-restapi-0.21-SNAPSHOT/conf
 cp vault/application-restapi.properties ./apache-airavata-restapi-0.21-SNAPSHOT/conf/application.properties
-cp vault/log4j2.xml ./apache-airavata-restapi-0.21-SNAPSHOT/conf/log4j2.xml
+cp vault/logback.xml ./apache-airavata-restapi-0.21-SNAPSHOT/conf/logback.xml
 log "REST proxy config files updated."

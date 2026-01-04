@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.agent.AgentCommunicationServiceGrpc;
 import org.apache.airavata.agent.AgentMessage;
 import org.apache.airavata.agent.AgentPing;
@@ -79,8 +78,9 @@ import org.apache.airavata.agent.connection.service.models.AgentTunnelTerminateR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-@GrpcService
+@Service
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
 
     private static final Logger logger = LoggerFactory.getLogger(AgentConnectionHandler.class);

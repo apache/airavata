@@ -318,9 +318,9 @@ public class AiravataServerProperties {
 
     public static class Services {
         // Service enablement flags - both can be true to run in parallel
-        public boolean thrift = true;  // Default: enabled
-        public boolean rest = false;   // Default: disabled
-        
+        public boolean thrift = true; // Default: enabled
+        public boolean rest = false; // Default: disabled
+
         public Api api = new Api();
         public Orchestrator orchestrator = new Orchestrator();
         public Participant participant = new Participant();

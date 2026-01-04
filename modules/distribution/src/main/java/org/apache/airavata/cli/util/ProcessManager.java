@@ -50,7 +50,8 @@ public class ProcessManager {
      * @return Process handle
      * @throws IOException if process cannot be started
      */
-    public static Process startServiceProcess(String configDir, String jarPath, String nativeBinaryPath) throws IOException {
+    public static Process startServiceProcess(String configDir, String jarPath, String nativeBinaryPath)
+            throws IOException {
         // Check if socket already exists (another process running)
         if (ServiceSocketClient.socketExists(configDir)) {
             throw new IOException("Airavata service is already running (socket exists). Stop it first.");
@@ -257,7 +258,8 @@ public class ProcessManager {
                     if (classPath.startsWith("jar:file:")) {
                         String jarPath = classPath.substring(9, classPath.indexOf("!"));
                         // Handle URL encoding
-                        if (jarPath.startsWith("/") && System.getProperty("os.name").toLowerCase().contains("win")) {
+                        if (jarPath.startsWith("/")
+                                && System.getProperty("os.name").toLowerCase().contains("win")) {
                             jarPath = jarPath.substring(1); // Remove leading slash on Windows
                         }
                         return URLDecoder.decode(jarPath, "UTF-8");
@@ -270,4 +272,3 @@ public class ProcessManager {
         return null;
     }
 }
-

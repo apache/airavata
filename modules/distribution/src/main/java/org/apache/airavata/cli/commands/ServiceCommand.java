@@ -20,7 +20,6 @@
 package org.apache.airavata.cli.commands;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.apache.airavata.cli.handlers.ServiceHandler;
@@ -73,11 +72,14 @@ public class ServiceCommand implements Runnable {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> data = (Map<String, Object>) response.get("data");
                 @SuppressWarnings("unchecked")
-                java.util.List<Map<String, Object>> services = (java.util.List<Map<String, Object>>) data.get("services");
+                java.util.List<Map<String, Object>> services =
+                        (java.util.List<Map<String, Object>>) data.get("services");
 
                 System.out.println("Airavata Services:");
-                System.out.println(String.format("%-30s %-25s %-10s %-10s", "Service", "Display Name", "Enabled", "Running"));
-                System.out.println(String.format("%-30s %-25s %-10s %-10s", "-------", "------------", "-------", "-------"));
+                System.out.println(
+                        String.format("%-30s %-25s %-10s %-10s", "Service", "Display Name", "Enabled", "Running"));
+                System.out.println(
+                        String.format("%-30s %-25s %-10s %-10s", "-------", "------------", "-------", "-------"));
 
                 for (Map<String, Object> service : services) {
                     System.out.println(String.format(

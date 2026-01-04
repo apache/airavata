@@ -21,16 +21,16 @@ package org.apache.airavata.cli.handlers;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.thriftapi.server.AiravataServiceServer;
-import org.apache.airavata.thriftapi.server.OrchestratorServiceServer;
-import org.apache.airavata.thriftapi.server.RegistryServiceServer;
-import org.apache.airavata.thriftapi.server.ProfileServiceServer;
-import org.apache.airavata.thriftapi.server.CredentialServiceServer;
-import org.apache.airavata.thriftapi.server.SharingRegistryServer;
 import org.apache.airavata.manager.dbevent.DBEventManagerRunner;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
+import org.apache.airavata.thriftapi.server.AiravataServiceServer;
+import org.apache.airavata.thriftapi.server.CredentialServiceServer;
+import org.apache.airavata.thriftapi.server.OrchestratorServiceServer;
+import org.apache.airavata.thriftapi.server.ProfileServiceServer;
+import org.apache.airavata.thriftapi.server.RegistryServiceServer;
+import org.apache.airavata.thriftapi.server.SharingRegistryServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
@@ -65,20 +65,20 @@ public class ServiceRegistry {
         // TCP Server Services
         serviceNameToBeanClass.put("thrift-api", AiravataServiceServer.class);
         // REST API is handled specially via WebServerApplicationContext
-        
+
         // Thrift API sub-services (these are part of thrift-api but can be tracked separately)
         serviceNameToBeanClass.put("orchestrator-server", OrchestratorServiceServer.class);
         serviceNameToBeanClass.put("registry-server", RegistryServiceServer.class);
         serviceNameToBeanClass.put("profile-server", ProfileServiceServer.class);
         serviceNameToBeanClass.put("credential-server", CredentialServiceServer.class);
         serviceNameToBeanClass.put("sharing-registry-server", SharingRegistryServer.class);
-        
+
         // Background Services (if they implement SmartLifecycle)
         serviceNameToBeanClass.put("db-event-manager", DBEventManagerRunner.class);
         serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);
         serviceNameToBeanClass.put("process-rescheduler", ProcessReschedulingService.class);
         serviceNameToBeanClass.put("compute-monitor", ComputationalResourceMonitoringService.class);
-        
+
         // Discover additional SmartLifecycle beans dynamically
         discoverLifecycleBeans();
     }
@@ -93,13 +93,13 @@ public class ServiceRegistry {
                 String beanName = entry.getKey();
                 SmartLifecycle bean = entry.getValue();
                 Class<?> beanClass = bean.getClass();
-                
+
                 // Map by bean name (lowercase, with dashes)
                 String serviceName = beanName.toLowerCase().replaceAll("([a-z])([A-Z])", "$1-$2");
                 if (!serviceNameToBeanName.containsKey(serviceName)) {
                     serviceNameToBeanName.put(serviceName, beanName);
                 }
-                
+
                 logger.debug("Discovered lifecycle bean: {} -> {}", serviceName, beanClass.getSimpleName());
             }
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class ServiceRegistry {
         if ("rest-api".equals(serviceName)) {
             return getRestApiLifecycle();
         }
-        
+
         // Check class-based mapping first
         Class<? extends SmartLifecycle> beanClass = serviceNameToBeanClass.get(serviceName);
         if (beanClass != null) {
@@ -125,7 +125,7 @@ public class ServiceRegistry {
                 logger.debug("Bean not found for class: {}", beanClass.getName(), e);
             }
         }
-        
+
         // Check bean name mapping
         String beanName = serviceNameToBeanName.get(serviceName);
         if (beanName != null) {
@@ -135,14 +135,14 @@ public class ServiceRegistry {
                 logger.debug("Bean not found for name: {}", beanName, e);
             }
         }
-        
+
         // Try direct lookup by service name
         try {
             return applicationContext.getBean(serviceName, SmartLifecycle.class);
         } catch (Exception e) {
             logger.debug("Bean not found for service name: {}", serviceName, e);
         }
-        
+
         return null;
     }
 
@@ -235,4 +235,3 @@ public class ServiceRegistry {
         }
     }
 }
-

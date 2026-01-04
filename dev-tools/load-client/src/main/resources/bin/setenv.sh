@@ -37,7 +37,7 @@ export AIRAVATA_HOME CLASSPATH
 # Usage: run_service <service_name> <main_class> <java_opts>
 run_service() {
   local SERVICE_NAME="$1" MAIN_CLASS="$2" JAVA_OPTS="$3"
-  # Export SERVICE_NAME as environment variable for log4j2 configuration
+  # Export SERVICE_NAME as environment variable for logging configuration
   export SERVICE_NAME
   local CWD="$PWD" PID_PATH_NAME="${AIRAVATA_HOME}/bin/pid-${SERVICE_NAME}"
   local DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/${SERVICE_NAME}.log"

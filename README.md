@@ -55,131 +55,139 @@ Apache Airavata is composed of modular components spanning core services, data m
 
 ## 🔄 How Airavata Works
 
-Airavata is composed as 5 top-level services that work together to facilitate the full lifecycle of computational jobs. These services can be deployed individually or as a unified bundle.
+Airavata is composed as 5 top-level services that work together to facilitate the full lifecycle of computational jobs. All services run in a unified Spring Boot application (`AiravataServer`) within a single JVM process.
 
 ![image](assets/airavata-dataflow.png)
 
 ### Unified Distribution
 
-Airavata provides a **unified distribution bundle** (`apache-airavata-all`) that includes all services and can be run in two modes:
+Airavata provides a **unified distribution bundle** (`airavata`) that includes all services in a single Spring Boot application. The application can be run in two modes:
 
-- **Thrift Mode** (default): Starts all services with the Thrift API Server
-- **REST Mode**: Starts all services with the REST Proxy (Thrift API disabled)
+- **Thrift Mode** (default): Enables Thrift API Server along with all background services
+- **REST Mode**: Enables REST Proxy instead of Thrift API, along with all background services
 
-The unified bundle simplifies deployment and ensures all services are properly configured and started together.
+The unified bundle simplifies deployment by running all services in a single JVM process, managed by Spring Boot's lifecycle.
 
 **Bundle Structure:**
 ```
-apache-airavata-all-0.21-SNAPSHOT/
+airavata-0.21-SNAPSHOT/
 ├── bin/
-│   └── airavata-server.sh          # Master startup script
-├── services/
-│   ├── api-server/                 # API Server (includes all background services)
-│   ├── agent-service/              # Agent Service
-│   ├── file-server/                # File Server
-│   ├── research-service/           # Research Service
-│   └── restapi/                  # REST Proxy
-└── logs/                           # Centralized logs directory
+│   └── airavata.sh                 # Startup script for AiravataServer
+├── lib/
+│   └── airavata-0.21-SNAPSHOT.jar  # Executable JAR (Spring Boot application)
+├── conf/
+│   ├── keystores/                  # Keystore files
+│   ├── *.properties                # Config files from all services
+│   ├── *.yml                       # Config files from services
+│   ├── *.xml                       # Config files
+│   └── templates/                  # Template files
+├── logs/                           # Logs directory
+├── INSTALL
+├── LICENSE
+├── NOTICE
+├── RELEASE_NOTES
+└── README.md
 ```
 
-The unified startup script (`airavata-server.sh`) manages the lifecycle of all services:
-- **Always starts**: Agent Service, File Server, Research Service, and API Server (with background workers)
-- **Mode-dependent**: Thrift API Server (thrift mode) or REST Proxy (rest mode)
+The unified application (`AiravataServer`) is a Spring Boot application that starts all services in a single JVM process:
+- **Main Class**: `org.apache.airavata.AiravataServer`
+- **All services** run as Spring components within the same application
+- **Background services** (Controller, Participant, Workflow Managers, Monitors) are started automatically as daemon threads
+- **Mode-dependent**: Thrift API or REST Proxy can be enabled via configuration properties
 
-### 1. Airavata API Server `(apache-airavata-api-server)`
+### 1. Airavata API Server
 
-The Airavata API Server bootstraps the services needed to run/monitor computational jobs, access/share results of computational runs, and manage fine-grained access to computational resources.
+The Airavata API Server provides the core services needed to run/monitor computational jobs, access/share results of computational runs, and manage fine-grained access to computational resources.
 
+#### Main Application
+> Class Name: `org.apache.airavata.AiravataServer`
+> Command: `bin/airavata.sh` (or `java -jar lib/airavata-*.jar`)
 
-#### Orchestrator (API Server)
-> Class Name: `org.apache.airavata.AiravataApplication`
-> Command: `bin/airavata.sh api-orch` (or via unified `bin/airavata-server.sh`)
+The `AiravataServer` is a Spring Boot application that starts all services in a single JVM process. It includes:
 
-The Orchestrator (API Server) spins up 7 servers (of type `org.apache.airavata.common.utils.IServer`) for external clients to run computational jobs from. It is started via the Spring Boot application which automatically launches all required services.
-
-- **API** - public-facing API consumed by Airavata SDKs and dashboards. It bridges external clients and internal services, and is served over Thrift.
-  (`org.apache.airavata.api.server.AiravataAPIServer`)
-- **DB Event Manager** - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
-  (`org.apache.airavata.db.event.manager.DBEventManagerRunner`)
-- **Registry** - Manages metadata and definitions for executable tasks and applications.
+- **Thrift API Server** - Public-facing API consumed by Airavata SDKs and dashboards. Serves the Thrift API on port 8930 (configurable).
+  (`org.apache.airavata.api.thrift.server.AiravataServiceServer`)
+- **REST API Server** - Alternative RESTful API interface (can run in parallel with Thrift or replace it).
+  (Spring Boot Web application)
+- **Profile Service** - Manages users, tenants, compute resources, and group profiles. Served on port 8962 (configurable).
+  (`org.apache.airavata.api.thrift.server.ProfileServiceServer`)
+- **Registry Service** - Manages metadata and definitions for executable tasks and applications.
   (`org.apache.airavata.registry.api.service.RegistryAPIServer`)
 - **Credential Store** - Manages secure storage and retrieval of credentials for accessing registered compute resources.
   (`org.apache.airavata.credential.server.CredentialStoreServer`)
 - **Sharing Registry** - Handles sharing and permissioning of Airavata resources between users and groups.
   (`org.apache.airavata.sharing.registry.server.SharingRegistryServer`)
-- **Orchestrator** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
+- **Orchestrator Service** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
   (`org.apache.airavata.orchestrator.server.OrchestratorServer`)
-- **Profile** - Manages users, tenants, compute resources, and group profiles.
-  (`org.apache.airavata.service.profile.server.ProfileServiceServer`)
+- **DB Event Manager** - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
+  (`org.apache.airavata.db.event.manager.DBEventManagerRunner`)
 
 #### Controller
 > Class Name: `org.apache.airavata.helix.impl.controller.HelixController`
-> Command: Started automatically by API Server (or `bin/controller.sh` for standalone)
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure. In the unified distribution, the Controller is started automatically by the API Server.
+The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure. The Controller is started automatically as a daemon thread when `AiravataServer` starts (enabled via `helix.controller.enabled=true` in configuration).
 
 ![image](assets/airavata-state-transitions.png)
 
 #### Participant
 > Class Name: `org.apache.airavata.helix.impl.participant.GlobalParticipant`
-> Command: Started automatically by API Server (or `bin/participant.sh` for standalone)
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`. In the unified distribution, the Participant is started automatically by the API Server.
+The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`. The Participant is started automatically as a daemon thread when `AiravataServer` starts (enabled via `helix.participant.enabled=true` in configuration).
 
 #### Email Monitor
 > Class Name: `org.apache.airavata.monitor.email.EmailBasedMonitor`
-> Command: `bin/email-monitor.sh`
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The email monitor periodically checks an email inbox for job status updates sent via email. If it reads a new email with a job status update, it relays that state-change to the internal MQ (KafkaProducer).
+The email monitor periodically checks an email inbox for job status updates sent via email. If it reads a new email with a job status update, it relays that state-change to the internal MQ (KafkaProducer). The Email Monitor is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.monitor.email.monitorEnabled=true` in configuration).
 
 #### Realtime Monitor
 > Class Name: `org.apache.airavata.monitor.realtime.RealtimeMonitor`
-> Command: `bin/realtime-monitor.sh`
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The realtime monitor listens to incoming state-change messages on the internal MQ (KafkaConsumer), and relays that state-change to the internal MQ (KafkaProducer). When a task is completed at the compute resource, the realtime monitor is notified of this.
+The realtime monitor listens to incoming state-change messages on the internal MQ (KafkaConsumer), and relays that state-change to the internal MQ (KafkaProducer). When a task is completed at the compute resource, the realtime monitor is notified of this. The Realtime Monitor is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.monitor.realtime.monitorEnabled=true` in configuration).
 
 #### Pre Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
-> Command: Started automatically by API Server (or `bin/pre-wm.sh` for standalone)
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant. In the unified distribution, the Pre Workflow Manager is started automatically by the API Server.
+The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant. The Pre Workflow Manager is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.prewm.enabled=true` in configuration).
 
 #### Post Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
-> Command: Started automatically by API Server (or `bin/post-wm.sh` for standalone)
+> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
 
-The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller. In the unified distribution, the Post Workflow Manager is started automatically by the API Server.
+The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller. The Post Workflow Manager is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.postwm.enabled=true` in configuration).
 
 ![image](assets/airavata-components.png)
 
 
-### 2. Airavata File Server `(apache-airavata-file-server)`
+### 2. Airavata File Server
 > Class Name: `org.apache.airavata.file.server.FileServerApplication`
-> Command: `bin/file-service.sh` (or via unified `bin/airavata-server.sh`)
+> Started: Automatically as a Spring component within `AiravataServer`
 
-The Airavata File Server is a lightweight SFTP wrapper running on storage nodes integrated with Airavata. It lets users securely access storage via SFTP, using Airavata authentication tokens as ephemeral passwords.
+The Airavata File Server is a lightweight SFTP wrapper running on storage nodes integrated with Airavata. It lets users securely access storage via SFTP, using Airavata authentication tokens as ephemeral passwords. The File Server is started automatically as part of the unified `AiravataServer` application.
 
 
-### 3. Airavata Agent Service `(apache-airavata-agent-service)` [NEW]
+### 3. Airavata Agent Service
 > Class Name: `org.apache.airavata.agent.connection.service.AgentServiceApplication`
-> Command: `bin/agent-service.sh` (or via unified `bin/airavata-server.sh`)
+> Started: Automatically as a Spring component within `AiravataServer`
 
-The Airavata Agent Service is the backend for launching **interactive** jobs using Airavata.
-It provide constructs to launch a custom "Agent" on a compute resource, that connects back to the Agent Service through a bi-directional gRPC channel.
-The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Airavata API (Thrift) to submit and execute interactive jobs, spawn subprocesses, and create network tunnels to subprocesses, even if they are behind NAT.
+The Airavata Agent Service is the backend for launching **interactive** jobs using Airavata. It provides constructs to launch a custom "Agent" on a compute resource, that connects back to the Agent Service through a bi-directional gRPC channel. The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Airavata API (Thrift) to submit and execute interactive jobs, spawn subprocesses, and create network tunnels to subprocesses, even if they are behind NAT. The Agent Service is started automatically as part of the unified `AiravataServer` application.
 
 
-### 4. Airavata Research Service `(apache-airavata-research-service)` [NEW]
+### 4. Airavata Research Service
 > Class Name: `org.apache.airavata.research.service.ResearchServiceApplication`
-> Command: `bin/research-service.sh` (or via unified `bin/airavata-server.sh`)
+> Started: Automatically as a Spring component within `AiravataServer`
 
-The Airavata Research Service is the backend for the **research catalog** in Airavata. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting.
+The Airavata Research Service is the backend for the **research catalog** in Airavata. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting. The Research Service is started automatically as part of the unified `AiravataServer` application.
 
-### 5. Airavata REST Proxy `(apache-airavata-restapi)` [NEW]
+### 5. Airavata REST Proxy
 > Class Name: `org.apache.airavata.restapi.restapiApplication`
-> Command: `bin/restapi.sh` (or via unified `bin/airavata-server.sh -mode rest`)
+> Started: Automatically as a Spring Boot Web application within `AiravataServer` (when `services.rest.enabled=true`)
 
-The Airavata REST Proxy provides a RESTful API interface to Airavata services. It acts as an alternative to the Thrift API, offering HTTP/JSON endpoints for clients that prefer REST over Thrift. The REST Proxy can be run in REST mode via the unified distribution, which automatically disables the Thrift API Server to avoid conflicts.
+The Airavata REST Proxy provides a RESTful API interface to Airavata services. It acts as an alternative to the Thrift API, offering HTTP/JSON endpoints for clients that prefer REST over Thrift. The REST Proxy runs as part of the unified `AiravataServer` application and can be enabled alongside or instead of the Thrift API via configuration properties.
 
 
 ## 🏗️ Getting Started
@@ -191,7 +199,7 @@ Before setting up Apache Airavata, ensure that you have:
 
 | Requirement | Version | Check Using |
 |-------------|---------|-------|
-| **Java SDK** | 17+ | `java --version` |
+| **Java SDK** | 25+ | `java --version` |
 | **Apache Maven** | 3.8+ | `mvn -v` |
 | **Git** | Latest | `git -v` |
 
@@ -209,19 +217,15 @@ mvn clean install
 mvn clean install -DskipTests
 ```
 
-Once the project is built, individual service distributions and a unified bundle will be generated in the `./distribution` folder.
+Once the project is built, a unified bundle will be generated in the `./distribution` folder.
 ```bash
-├── apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-file-server-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-research-service-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-restapi-0.21-SNAPSHOT.tar.gz
-└── apache-airavata-all-0.21-SNAPSHOT.tar.gz  # Unified bundle
+├── airavata-0.21-SNAPSHOT.tar.gz  # Unified bundle
+└── airavata-0.21-SNAPSHOT-{arch}  # Native binary (when built with -Pnative)
 
-1 directory, 6 files
+1 directory, 2 files (1 tarball, 1 native binary)
 ```
 
-**Recommended:** Use the unified bundle (`apache-airavata-all`) for easier deployment and management.
+**Recommended:** Use the unified bundle (`airavata`) for easier deployment and management.
 
 ### Option 1A - Using Unified Bundle (Recommended)
 
@@ -230,32 +234,40 @@ Extract the unified bundle and start all services with a single command:
 ```bash
 # Extract the unified bundle
 cd distribution
-tar -xzf apache-airavata-all-0.21-SNAPSHOT.tar.gz
-cd apache-airavata-all-0.21-SNAPSHOT
+tar -xzf airavata-0.21-SNAPSHOT.tar.gz
+cd airavata-0.21-SNAPSHOT
 
-# Copy configuration files
-cp -r ../../vault services/api-server/conf/vault
-cp -r ../../vault services/agent-service/conf/vault
-cp -r ../../vault services/file-server/conf/vault
-cp -r ../../vault services/research-service/conf/vault
-cp -r ../../vault services/restapi/conf/vault
+# Copy configuration files from vault to conf directory
+cp ../../vault/airavata.properties conf/
+cp ../../vault/airavata.sym.p12 conf/keystores/
+cp ../../vault/application-agent-service.yml conf/
+cp ../../vault/application-file-server.yml conf/
+cp ../../vault/application-research-service.yml conf/
+cp ../../vault/application-restapi.properties conf/
+cp ../../vault/email-config.yml conf/
+cp ../../vault/logback.xml conf/
 
 # Start all services in Thrift mode (default)
-./bin/airavata-server.sh -d start
+./bin/airavata.sh -d start
 
 # OR start in REST mode
-./bin/airavata-server.sh -mode rest -d start
+./bin/airavata.sh -mode rest -d start
 
 # Stop all services
-./bin/airavata-server.sh -d stop
+./bin/airavata.sh -d stop
 
 # Restart all services
-./bin/airavata-server.sh -d restart
+./bin/airavata.sh -d restart
+
+# Run in foreground (for debugging)
+./bin/airavata.sh
 ```
 
 **Modes:**
-- **Thrift Mode** (`-mode thrift` or default): Starts API Server with Thrift API
-- **REST Mode** (`-mode rest`): Starts REST Proxy and API Server (Thrift disabled)
+- **Thrift Mode** (`-mode thrift` or default): Enables Thrift API Server (`services.thrift.enabled=true`, `services.rest.enabled=false`)
+- **REST Mode** (`-mode rest`): Enables REST Proxy (`services.rest.enabled=true`, `services.thrift.enabled=false`)
+
+**Note:** Both Thrift and REST can be enabled simultaneously by setting both `services.thrift.enabled=true` and `services.rest.enabled=true` in `airavata.properties`.
 
 **What's in the vault?**
 
@@ -266,11 +278,13 @@ cp -r ../../vault services/restapi/conf/vault
 * `application-research-service.yml` - config file for the airavata research service.
 * `application-restapi.properties` - config file for the airavata rest proxy.
 * `email-config.yml` - contains the email addresses observed by the email monitor.
-* `log4j2.xml` - contains the Log4j configuration for all airavata services.
+* `logback.xml` - contains the Logback configuration for all airavata services.
 
 ### Option 1B - Using Individual Service Distributions
 
-If you prefer to deploy services individually:
+> ⚠️ **Note:** Individual service distributions are not currently generated by the build. Only the unified bundle is produced. This section is kept for reference in case individual distributions are needed in the future.
+
+If individual service distributions were available, you would deploy them as follows:
 
 ```bash
 # Extract all service distributions
@@ -280,11 +294,7 @@ for tarball in apache-airavata-*.tar.gz; do
 done
 
 # Copy configuration files
-cp -r ../vault apache-airavata-api-server-0.21-SNAPSHOT/conf/vault
-cp -r ../vault apache-airavata-agent-service-0.21-SNAPSHOT/conf/vault
-cp -r ../vault apache-airavata-file-server-0.21-SNAPSHOT/conf/vault
-cp -r ../vault apache-airavata-research-service-0.21-SNAPSHOT/conf/vault
-cp -r ../vault apache-airavata-restapi-0.21-SNAPSHOT/conf/vault
+cp -r ../vault airavata-0.21-SNAPSHOT/conf/
 
 # Copy deployment scripts
 cp -r ../dev-tools/deployment-scripts/ .
@@ -298,9 +308,9 @@ cp -r ../dev-tools/deployment-scripts/ .
 
 ```bash
 # Using unified bundle
-tail -f services/*/logs/*.log
+tail -f logs/*.log
 
-# Using individual distributions
+# Using individual distributions (if available)
 multitail apache-airavata-*/logs/*.log
 ```
 
@@ -312,7 +322,7 @@ Before setting up Apache Airavata, ensure that you have:
 
 | Requirement | Version | Check Using |
 |-------------|---------|-------|
-| **Java SDK** | 17+ | `java --version` |
+| **Java SDK** | 25+ | `java --version` |
 | **Apache Maven** | 3.8+ | `mvn -v` |
 | **Git** | Latest | `git -v` |
 | **Docker Engine** | 20.10+ | `docker -v` |
@@ -364,6 +374,133 @@ docker-compose \
   -f modules/distribution/src/main/docker/docker-compose.yml \
   down
 ```
+
+### 🚀 Option 3 - Native Binary (GraalVM)
+
+Build and use the GraalVM native binary for Airavata. The native binary provides faster startup times and lower memory footprint compared to the JAR-based distribution.
+
+#### Prerequisites
+
+Before building the native binary, ensure that you have:
+
+| Requirement | Version | Check Using |
+|-------------|---------|-------|
+| **GraalVM JDK** | 25+ | `java -version` (should show GraalVM) |
+| **Native Image** | Installed | `gu install native-image` |
+| **Apache Maven** | 3.8+ | `mvn -v` |
+| **Build Tools** | Required | `gcc` (Linux) or Xcode Command Line Tools (macOS) |
+
+#### Build
+
+```bash
+cd modules/distribution
+mvn clean package -Pnative -DskipTests
+```
+
+The native binary will be generated in the `distribution/` folder at the project root with the naming convention `airavata-{version}-{arch}`:
+- `airavata-0.21-SNAPSHOT-amd64` (on x86_64 systems)
+- `airavata-0.21-SNAPSHOT-arm64` (on aarch64/ARM64 systems)
+- `airavata-0.21-SNAPSHOT-{arch}` (for other architectures)
+
+**Note:** Architecture names are normalized (x86_64 → amd64, aarch64 → arm64) for consistency.
+
+#### Usage
+
+##### CLI Commands
+
+```bash
+# Navigate to distribution folder
+cd ../../distribution
+
+# Initialize Airavata databases
+./airavata-0.21-SNAPSHOT-{arch} init --clean
+
+# Initialize root account
+./airavata-0.21-SNAPSHOT-{arch} account init --username=admin --password=pass --gateway=my-gateway
+
+# Start server (requires --config-dir)
+./airavata-0.21-SNAPSHOT-{arch} serve --config-dir /path/to/config
+
+# Other available commands
+./airavata-0.21-SNAPSHOT-{arch} project --help      # Manage projects
+./airavata-0.21-SNAPSHOT-{arch} compute --help      # Manage compute resources
+./airavata-0.21-SNAPSHOT-{arch} storage --help      # Manage storage resources
+./airavata-0.21-SNAPSHOT-{arch} group --help        # Manage groups
+./airavata-0.21-SNAPSHOT-{arch} application --help  # Manage applications
+./airavata-0.21-SNAPSHOT-{arch} service --help     # Manage services
+```
+
+##### Configuration
+
+The `serve` command requires `--config-dir` pointing to a directory containing:
+- `airavata.properties` - Main Airavata configuration
+- `logback.xml` - Logging configuration
+- `application-agent-service.yml` - Agent service configuration (optional)
+- `application-file-server.yml` - File server configuration (optional)
+- `application-research-service.yml` - Research service configuration (optional)
+- `application-restapi.properties` - REST API configuration (optional)
+- `email-config.yml` - Email monitor configuration (optional)
+- `META-INF/persistence.xml` - JPA persistence configuration
+- `keystores/` - Directory containing keystore files (e.g., `airavata.sym.p12`)
+
+##### Service Control
+
+In `airavata.properties`:
+```properties
+services.thrift.enabled=true   # Default: true
+services.rest.enabled=false    # Default: false
+```
+
+Both can run in parallel if both are `true`.
+
+#### Native Image Configuration
+
+Configuration files are in `modules/distribution/src/main/resources/META-INF/native-image/`:
+- `reflect-config.json` - Reflection metadata
+- `resource-config.json` - Resource patterns
+
+##### Generating Configs
+
+Use GraalVM tracing agent to auto-discover requirements:
+
+```bash
+# Build JAR first
+cd modules/distribution
+mvn clean install -DskipTests
+
+# Run with agent to generate native image configuration
+java -agentlib:native-image-agent=config-output-dir=target/native-image-config \
+  -jar target/airavata-*.jar serve --config-dir /path/to/config
+
+# Exercise all functionality, then merge generated configs
+# After merging, build native binary with: mvn clean package -Pnative -DskipTests
+```
+
+##### Updating Configs
+
+1. Run agent and exercise all functionality
+2. Review `target/native-image-config/` output
+3. Merge relevant entries to `modules/distribution/src/main/resources/META-INF/native-image/`
+4. Rebuild native image
+
+#### Troubleshooting
+
+**Missing reflection**: Add class to `reflect-config.json` and rebuild  
+**Missing resource**: Add pattern to `resource-config.json` and rebuild  
+**Build fails**: Check GraalVM version (`java -version` should show GraalVM)
+
+#### Notes
+
+- Build time: 5-15 minutes (first build), 2-5 minutes (incremental)
+- Configs are maintained manually from agent output
+- Platform-specific: build separately for Linux/macOS/Windows
+- Binary location: `distribution/` folder at project root
+
+#### Known Warnings
+
+Some warnings may appear from dependency native-image.properties files:
+- AWS SDK's `--allow-incomplete-classpath` warning: This is from the AWS SDK dependency and cannot be directly fixed. It's informational and doesn't affect functionality.
+- Proxy configuration warnings: Some dependencies use deprecated proxy-config.json format. These are from third-party libraries and will be resolved as those libraries update.
 
 
 ## 🤝 Contributing

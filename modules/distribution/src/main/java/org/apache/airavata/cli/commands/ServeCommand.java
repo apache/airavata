@@ -21,9 +21,9 @@ package org.apache.airavata.cli.commands;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.airavata.AiravataServer;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.apache.airavata.cli.util.ProcessManager;
-import org.apache.airavata.AiravataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -80,8 +80,7 @@ public class ServeCommand implements Runnable {
                     "spring.main.allow-bean-definition-overriding", "true",
                     "spring.classformat.ignore", "true",
                     "airavata.cli.enabled", "false",
-                    "airavata.server.enabled", "true"
-            ));
+                    "airavata.server.enabled", "true"));
             app.setRegisterShutdownHook(true);
             try {
                 app.run();
@@ -134,4 +133,3 @@ public class ServeCommand implements Runnable {
         }
     }
 }
-

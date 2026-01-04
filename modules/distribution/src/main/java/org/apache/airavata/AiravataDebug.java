@@ -79,8 +79,7 @@ public class AiravataDebug {
                 "spring.main.allow-bean-definition-overriding", "true",
                 "spring.classformat.ignore", "true",
                 "airavata.cli.enabled", "false",
-                "airavata.server.enabled", "true"
-        ));
+                "airavata.server.enabled", "true"));
         app.setRegisterShutdownHook(true);
         app.run(args);
     }
@@ -97,4 +96,3 @@ public class AiravataDebug {
         return null;
     }
 }
-

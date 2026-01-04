@@ -169,6 +169,11 @@ under the License.
       <artifactId>spring-boot-starter-web</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Spring Web for RestTemplate in KeycloakRestClient -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -246,16 +251,8 @@ under the License.
       <artifactId>helix-core</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-slf4j-impl</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.httpcomponents</groupId>
@@ -306,32 +303,6 @@ under the License.
       <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.angus</groupId>
-      <artifactId>angus-mail</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-admin-client</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.angus</groupId>
-          <artifactId>angus-mail</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.jandex</groupId>
-          <artifactId>jandex</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.resteasy</groupId>
-          <artifactId>resteasy-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.databene</groupId>
-      <artifactId>contiperf</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -350,10 +321,6 @@ under the License.
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
       <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
@@ -496,7 +463,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <release>17</release>
+          <release>25</release>
           <fork>true</fork>
           <annotationProcessorPaths>
             <path>
@@ -633,12 +600,9 @@ under the License.
         <version>3.1.0</version>
         <configuration>
           <mainClass>org.apache.airavata.AiravataApplication</mainClass>
-          <systemProperties>
-            <systemProperty>
-              <key>airavata.config.dir</key>
-              <value>${project.basedir}/src/main/resources</value>
-            </systemProperty>
-          </systemProperties>
+          <systemPropertyVariables>
+            <airavata.config.dir>${project.basedir}/src/main/resources</airavata.config.dir>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
 

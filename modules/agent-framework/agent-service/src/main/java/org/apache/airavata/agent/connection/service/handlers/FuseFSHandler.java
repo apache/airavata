@@ -23,7 +23,6 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import java.nio.charset.Charset;
-import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.FileEntry;
 import org.apache.airavata.fuse.FileInfo;
@@ -50,8 +49,9 @@ import org.apache.airavata.fuse.WriteFileReq;
 import org.apache.airavata.fuse.WriteFileRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-@GrpcService
+@Service
 public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FuseFSHandler.class);

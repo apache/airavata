@@ -20,13 +20,10 @@
 package org.apache.airavata.cli.handlers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
-import org.apache.airavata.cli.util.PropertiesManager;
 import org.apache.airavata.cli.util.ProcessManager;
+import org.apache.airavata.cli.util.PropertiesManager;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +47,7 @@ public class ServiceHandler {
         // TCP Server Services
         SERVICE_MAP.put("thrift-api", new ServiceInfo("ThriftAPI", "services.thrift.enabled"));
         SERVICE_MAP.put("rest-api", new ServiceInfo("RESTAPI", "services.rest.enabled"));
-        
+
         // Background Services
         SERVICE_MAP.put("helix-controller", new ServiceInfo("HelixController", "helix.controller.enabled"));
         SERVICE_MAP.put("helix-participant", new ServiceInfo("GlobalParticipant", "helix.participant.enabled"));
@@ -73,7 +70,10 @@ public class ServiceHandler {
     }
 
     @Autowired
-    public ServiceHandler(AiravataServerProperties properties, ServiceRegistry serviceRegistry, ApplicationContext applicationContext) {
+    public ServiceHandler(
+            AiravataServerProperties properties,
+            ServiceRegistry serviceRegistry,
+            ApplicationContext applicationContext) {
         this.properties = properties;
         this.serviceRegistry = serviceRegistry;
         this.applicationContext = applicationContext;

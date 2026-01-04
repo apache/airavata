@@ -27,8 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +119,8 @@ public class ServiceSocketClient {
             int bytesRead = channel.read(response);
             if (bytesRead > 0) {
                 response.flip();
-                String responseStr = StandardCharsets.UTF_8.decode(response).toString().trim();
+                String responseStr =
+                        StandardCharsets.UTF_8.decode(response).toString().trim();
                 // Parse JSON response
                 try {
                     Map<String, Object> jsonResponse = objectMapper.readValue(responseStr, Map.class);
@@ -192,7 +191,8 @@ public class ServiceSocketClient {
 
             if (totalBytes > 0) {
                 response.flip();
-                String responseStr = StandardCharsets.UTF_8.decode(response).toString().trim();
+                String responseStr =
+                        StandardCharsets.UTF_8.decode(response).toString().trim();
                 return objectMapper.readValue(responseStr, Map.class);
             }
 
@@ -209,9 +209,7 @@ public class ServiceSocketClient {
      * Get service status via socket.
      */
     public static Map<String, Object> getServiceStatus(String configDir, String serviceName) throws IOException {
-        String command = serviceName != null && !serviceName.isEmpty() 
-            ? "STATUS:" + serviceName 
-            : "STATUS";
+        String command = serviceName != null && !serviceName.isEmpty() ? "STATUS:" + serviceName : "STATUS";
         return sendCommand(configDir, command);
     }
 
@@ -252,4 +250,3 @@ public class ServiceSocketClient {
         return sendCommand(configDir, "RESTART:" + serviceName);
     }
 }
-

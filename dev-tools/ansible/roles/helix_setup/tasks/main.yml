@@ -84,7 +84,7 @@
   - "{{ helix_post_wm_dist_name }}"
   - "{{ helix_parser_wm_dist_name }}"
 
-# Copy properties files & log4j2.xml files
+# Copy properties files & logback.xml files
 
 - name: Copy Airavata server properties files
   template: "src={{ item.name }}/airavata.properties.j2
@@ -100,8 +100,8 @@
   - { name: parser-wm, dir: "{{ helix_parser_wm_version }}" }
 
 - name: Copy logback configuration file
-  template: "src={{ item.name }}/log4j2.xml.j2
-            dest={{ helix_dir }}/{{ item.dir }}/conf/log4j2.xml
+  template: "src={{ item.name }}/logback.xml.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/logback.xml
             owner={{ user }}
             group={{ group }}
             mode=\"u=rw,g=r,o=r\""

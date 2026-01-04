@@ -107,7 +107,8 @@ public class ServiceSocketManager {
 
         // Check if socket already exists (lock check)
         if (isSocketLocked()) {
-            throw new IOException("Socket already exists at " + socketPath + ". Another Airavata process may be running.");
+            throw new IOException(
+                    "Socket already exists at " + socketPath + ". Another Airavata process may be running.");
         }
 
         try {
@@ -173,12 +174,13 @@ public class ServiceSocketManager {
             int bytesRead = client.read(buffer);
             if (bytesRead > 0) {
                 buffer.flip();
-                String request = StandardCharsets.UTF_8.decode(buffer).toString().trim();
+                String request =
+                        StandardCharsets.UTF_8.decode(buffer).toString().trim();
                 logger.debug("Received request: {}", request);
 
                 // Process command and get response
                 String response = processCommand(request);
-                
+
                 // Send response
                 ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes(StandardCharsets.UTF_8));
                 client.write(responseBuffer);
@@ -200,7 +202,7 @@ public class ServiceSocketManager {
     private String processCommand(String command) {
         try {
             Map<String, Object> response = new HashMap<>();
-            
+
             if (command == null || command.isEmpty()) {
                 response.put("status", "error");
                 response.put("message", "Empty command");
@@ -378,4 +380,3 @@ public class ServiceSocketManager {
         return running.get() && serverChannel != null && serverChannel.isOpen();
     }
 }
-

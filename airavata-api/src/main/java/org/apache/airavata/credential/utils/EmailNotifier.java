@@ -34,6 +34,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * User: AmilaJ (amilaj@apache.org)
  * Date: 12/3/13
  * Time: 4:25 PM
+ *
+ * EmailNotifier uses Spring's JavaMailSender with Jakarta Mail API.
+ * Spring Boot's mail starter provides the Jakarta Mail implementation.
  */
 public class EmailNotifier implements CredentialStoreNotifier {
 
@@ -65,6 +68,11 @@ public class EmailNotifier implements CredentialStoreNotifier {
         }
     }
 
+    /**
+     * Creates a JavaMailSender using Spring's JavaMailSenderImpl with Jakarta Mail API.
+     * Spring Boot's mail starter (spring-boot-starter-mail) provides the Jakarta Mail
+     * implementation, which is automatically used by JavaMailSenderImpl.
+     */
     private JavaMailSender createMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(this.emailNotifierConfiguration.getEmailServer());

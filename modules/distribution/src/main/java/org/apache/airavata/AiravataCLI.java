@@ -30,6 +30,8 @@ import org.apache.airavata.cli.commands.ServiceCommand;
 import org.apache.airavata.cli.commands.StorageCommand;
 import org.apache.airavata.cli.commands.TestCommand;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,7 @@ import picocli.CommandLine.IFactory;
 /**
  * Airavata CLI - Command-line interface for Airavata administration.
  */
+@SpringBootApplication(scanBasePackages = {"org.apache.airavata.cli", "org.apache.airavata.bootstrap"})
 @Component
 @Order(1)
 @ConditionalOnProperty(name = "airavata.cli.enabled", havingValue = "true", matchIfMissing = true)
@@ -73,14 +76,12 @@ public class AiravataCLI implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        org.springframework.boot.SpringApplication app = 
-            new org.springframework.boot.SpringApplication(AiravataCLI.class);
+        SpringApplication app = new SpringApplication(AiravataCLI.class);
         app.setDefaultProperties(java.util.Map.of(
                 "spring.main.allow-bean-definition-overriding", "true",
                 "spring.classformat.ignore", "true",
                 "airavata.cli.enabled", "true",
-                "airavata.server.enabled", "false"
-        ));
+                "airavata.server.enabled", "false"));
         app.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
         app.run(args);
     }

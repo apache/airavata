@@ -22,7 +22,6 @@ package org.apache.airavata.cli.communication;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
-import org.apache.airavata.cli.communication.ServiceSocketManager;
 import org.apache.airavata.cli.handlers.ServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,9 @@ public class SocketServerConfiguration {
         socketManager = new ServiceSocketManager(configDir, serviceHandler);
 
         if (socketManager.isSocketLocked()) {
-            logger.error("Socket already exists at {}. Another Airavata process may be running.", socketManager.getSocketPath());
+            logger.error(
+                    "Socket already exists at {}. Another Airavata process may be running.",
+                    socketManager.getSocketPath());
             throw new IllegalStateException("Socket already exists. Only one Airavata process can run at a time.");
         }
 
@@ -68,4 +69,3 @@ public class SocketServerConfiguration {
         }
     }
 }
-
