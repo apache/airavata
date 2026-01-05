@@ -38,7 +38,6 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -73,7 +72,8 @@ public class ValidationServiceImpl implements ValidationService {
         // Fallback: create a minimal context if orchestrator is not initialized yet
         logger.warn("OrchestratorContext not available, using default validation configuration");
         OrchestratorContext context = new OrchestratorContext();
-        org.apache.airavata.orchestrator.OrchestratorConfiguration config = new org.apache.airavata.orchestrator.OrchestratorConfiguration();
+        org.apache.airavata.orchestrator.OrchestratorConfiguration config =
+                new org.apache.airavata.orchestrator.OrchestratorConfiguration();
         config.setEnableValidation(true);
         context.setOrchestratorConfiguration(config);
         return context;
@@ -87,8 +87,9 @@ public class ValidationServiceImpl implements ValidationService {
         String errorMsg = "Validation Errors : ";
 
         OrchestratorContext orchestratorContext = getOrchestratorContext();
-        if (orchestratorContext == null || orchestratorContext.getOrchestratorConfiguration() == null || 
-                !orchestratorContext.getOrchestratorConfiguration().isEnableValidation()) {
+        if (orchestratorContext == null
+                || orchestratorContext.getOrchestratorConfiguration() == null
+                || !orchestratorContext.getOrchestratorConfiguration().isEnableValidation()) {
             return validationResults;
         }
 

@@ -25,9 +25,9 @@ import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.airavata.agent.ServerMessage;
@@ -191,11 +191,7 @@ public class AiravataFileService {
             List<Project> userProjects;
             try {
                 userProjects = airavataService.getUserProjects(
-                        UserContext.authzToken(),
-                        UserContext.gatewayId(),
-                        UserContext.username(),
-                        limit,
-                        offset);
+                        UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
             } catch (Exception e) {
                 String msg = String.format(
                         "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
@@ -224,8 +220,7 @@ public class AiravataFileService {
     private List<String> getUserExperimentIDs() {
         int limit = 100;
         String projectId = getProjectId("Default Project");
-        Map<ExperimentSearchFields, String> filters = Map.of(
-                ExperimentSearchFields.PROJECT_ID, projectId);
+        Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, projectId);
 
         return Stream.iterate(0, offset -> offset + limit)
                 .<List<ExperimentSummaryModel>>map(offset -> {

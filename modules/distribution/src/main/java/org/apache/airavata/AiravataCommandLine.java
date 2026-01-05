@@ -84,7 +84,7 @@ public class AiravataCommandLine implements CommandLineRunner {
         // Don't exit if serve command is running in foreground - it will block
         // Only exit for other commands
         if (exitCode != 0 || !isServeCommandForeground(args)) {
-        System.exit(exitCode);
+            System.exit(exitCode);
         }
         // For serve --foreground, the command will block, so we don't exit here
     }

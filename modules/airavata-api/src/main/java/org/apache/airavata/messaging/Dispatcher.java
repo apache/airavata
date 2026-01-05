@@ -52,9 +52,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * DirectDBEventDispatcher replaces DBEventPublisherUtils with direct service calls.
- * Makes synchronous calls to RegistryService and SharingRegistryService.
- * On failure, publishes to RabbitMQ retry queue for database state synchronization.
+ * Dispatcher handles DB event synchronization for multi-database deployments.
+ *
+ * <p>For each database event, the Dispatcher:
+ * <ol>
+ *   <li>Makes direct service calls to RegistryService and SharingRegistryService (for local database sync)</li>
+ *   <li>Always publishes to RabbitMQ (for durability and multi-instance database sync)</li>
+ * </ol>
  */
 @Component
 public class Dispatcher {
@@ -65,7 +69,7 @@ public class Dispatcher {
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final MessagingFactory messagingFactory;
-    private Publisher retryQueuePublisher = null;
+    private Publisher syncQueuePublisher = null;
 
     public Dispatcher(
             RegistryService registryService,
@@ -77,18 +81,31 @@ public class Dispatcher {
     }
 
     /**
-     * Dispatch DB event by making direct service calls.
-     * On failure, publishes to RabbitMQ retry queue for database state synchronization.
-     * All RabbitMQ messages use Jackson JSON serialization of domain models (never Thrift).
+     * Dispatch DB event by making direct service calls and always publishing to RabbitMQ.
+     *
+     * <p>This method performs two independent operations:
+     * <ol>
+     *   <li>Makes direct service calls to RegistryService and SharingRegistryService (for local instance)</li>
+     *   <li>Always publishes to RabbitMQ (for other instances to synchronize their databases)</li>
+     * </ol>
+     *
+     * <p>Both operations are independent - failures in one don't prevent the other from executing.
+     * This enables multi-instance database synchronization where each instance can sync with others
+     * via RabbitMQ messages.
+     *
+     * <p>All RabbitMQ messages use Jackson JSON serialization of domain models (never Thrift).
      *
      * @param entityType The type of entity
      * @param crudType The CRUD operation type
      * @param domainModel Domain model
-     * @throws AiravataException
+     * @throws AiravataException (Only thrown if both operations fail - should be rare)
      */
     public void dispatch(EntityType entityType, CrudType crudType, Object domainModel) throws AiravataException {
+        boolean directCallSuccess = false;
+        boolean rabbitMQPublishSuccess = false;
+
+        // Step 1: Make direct service calls (for local instance)
         try {
-            // Make direct service calls based on entity type
             switch (entityType) {
                 case TENANT -> dispatchTenantEvent(crudType, domainModel);
                 case USER_PROFILE -> dispatchUserProfileEvent(crudType, domainModel);
@@ -97,11 +114,30 @@ public class Dispatcher {
                     logger.warn("No handler for entity type: {}", entityType);
                 }
             }
+            directCallSuccess = true;
+            logger.debug(
+                    "Direct service calls completed successfully: entityType={}, crudType={}", entityType, crudType);
         } catch (Exception e) {
-            logger.error("Error dispatching DB event: entityType={}, crudType={}", entityType, crudType, e);
-            // Publish to RabbitMQ retry queue for database state synchronization
-            publishToRetryQueue(entityType, crudType, domainModel);
-            throw new AiravataException("Failed to dispatch DB event, published to retry queue", e);
+            logger.error(
+                    "Error in direct service calls for DB event: entityType={}, crudType={}", entityType, crudType, e);
+            // Continue to publish to RabbitMQ - other instances can still synchronize
+        }
+
+        // Step 2: Always publish to RabbitMQ (for other instances to synchronize)
+        try {
+            publishToSyncQueue(entityType, crudType, domainModel);
+            rabbitMQPublishSuccess = true;
+            logger.debug("RabbitMQ publish completed successfully: entityType={}, crudType={}", entityType, crudType);
+        } catch (Exception e) {
+            logger.error(
+                    "Error publishing to RabbitMQ for DB event: entityType={}, crudType={}", entityType, crudType, e);
+            // Continue - direct calls may have succeeded
+        }
+
+        // Only throw exception if both operations failed (should be rare)
+        if (!directCallSuccess && !rabbitMQPublishSuccess) {
+            throw new AiravataException("Both direct service calls and RabbitMQ publishing failed for entityType="
+                    + entityType + ", crudType=" + crudType);
         }
     }
 
@@ -352,7 +388,24 @@ public class Dispatcher {
         return user;
     }
 
-    private void publishToRetryQueue(EntityType entityType, CrudType crudType, Object entityModel)
+    /**
+     * Publish DB event to RabbitMQ synchronization queue.
+     *
+     * <p>This method always publishes DB events to RabbitMQ to enable multi-instance database
+     * synchronization. Other Airavata instances listening to the queue will process these
+     * messages and synchronize their databases.
+     *
+     * <p>The message is published to the same queue that DBEventRetryConsumer listens to,
+     * enabling all instances to receive and process the event.
+     *
+     * <p>All messages use Jackson JSON serialization of domain models (never Thrift).
+     *
+     * @param entityType The type of entity
+     * @param crudType The CRUD operation type
+     * @param entityModel Domain model to publish
+     * @throws AiravataException If publishing fails
+     */
+    private void publishToSyncQueue(EntityType entityType, CrudType crudType, Object entityModel)
             throws AiravataException {
         try {
             // entityModel is always a domain model (RabbitMQ only uses domain models, never Thrift)
@@ -361,7 +414,7 @@ public class Dispatcher {
             // Serialize domain model to JSON using Jackson (RabbitMQ uses JSON, never Thrift)
             byte[] entityJsonBytes = objectMapper.writeValueAsBytes(domainModel);
 
-            // Create DBEventMessage for retry queue (will be Jackson-serialized via MessageContext.Wrapper)
+            // Create DBEventMessage for synchronization queue (will be Jackson-serialized via MessageContext.Wrapper)
             DBEventMessage dbEventMessage = new DBEventMessage();
             DBEventPublisherContext publisherContext = new DBEventPublisherContext();
             publisherContext.setCrudType(crudType);
@@ -378,31 +431,40 @@ public class Dispatcher {
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 
-            // Publish to RabbitMQ retry queue (DB state sync only)
+            // Publish to RabbitMQ synchronization queue (for multi-instance DB sync)
             // MessageContext will be Jackson-serialized to JSON via MessageContext.Wrapper in RabbitMQPublisher
-            getRetryQueuePublisher()
+            getSyncQueuePublisher()
                     .publish(messageContext, DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
 
             logger.info(
-                    "Published failed DB event to RabbitMQ retry queue (JSON-serialized): entityType={}, crudType={}",
+                    "Published DB event to RabbitMQ sync queue (JSON-serialized): entityType={}, crudType={}",
                     entityType,
                     crudType);
         } catch (Exception e) {
-            logger.error("Error publishing to retry queue", e);
-            throw new AiravataException("Failed to publish to retry queue", e);
+            logger.error("Error publishing to RabbitMQ sync queue", e);
+            throw new AiravataException("Failed to publish to RabbitMQ sync queue", e);
         }
     }
 
-    private Publisher getRetryQueuePublisher() throws AiravataException {
-        if (retryQueuePublisher == null) {
+    /**
+     * Get or create the RabbitMQ synchronization queue publisher.
+     *
+     * <p>This publisher is used to send DB events to RabbitMQ for multi-instance database
+     * synchronization. The publisher is lazily initialized and thread-safe.
+     *
+     * @return Publisher for RabbitMQ synchronization queue
+     * @throws AiravataException If publisher creation fails
+     */
+    private Publisher getSyncQueuePublisher() throws AiravataException {
+        if (syncQueuePublisher == null) {
             synchronized (this) {
-                if (retryQueuePublisher == null) {
-                    logger.info("Creating RabbitMQ retry queue publisher for DB state sync");
-                    retryQueuePublisher = messagingFactory.getDBEventPublisher();
-                    logger.info("RabbitMQ retry queue publisher created");
+                if (syncQueuePublisher == null) {
+                    logger.info("Creating RabbitMQ sync queue publisher for multi-instance DB synchronization");
+                    syncQueuePublisher = messagingFactory.getDBEventPublisher();
+                    logger.info("RabbitMQ sync queue publisher created");
                 }
             }
         }
-        return retryQueuePublisher;
+        return syncQueuePublisher;
     }
 }

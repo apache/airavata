@@ -116,8 +116,9 @@ public abstract class WorkflowManager extends ServerLifecycle {
                 }
             }
         } catch (Exception e) {
-            logger.warn("Failed to initialize workflow operators (Zookeeper may not be available): {}. " +
-                    "Workflow management features will be unavailable until Zookeeper is accessible.", 
+            logger.warn(
+                    "Failed to initialize workflow operators (Zookeeper may not be available): {}. "
+                            + "Workflow management features will be unavailable until Zookeeper is accessible.",
                     e.getMessage());
             // Allow server to start even if workflow operators can't be created
         }
@@ -134,8 +135,9 @@ public abstract class WorkflowManager extends ServerLifecycle {
                     .setZkAddress(properties.zookeeper.serverConnection)
                     .build();
         } catch (Exception e) {
-            logger.warn("Failed to initialize Helix Admin (Zookeeper may not be available): {}. " +
-                    "Workflow management features will be unavailable until Zookeeper is accessible.", 
+            logger.warn(
+                    "Failed to initialize Helix Admin (Zookeeper may not be available): {}. "
+                            + "Workflow management features will be unavailable until Zookeeper is accessible.",
                     e.getMessage());
             // Allow server to start even if Zookeeper is unavailable
             this.zkHelixAdmin = null;

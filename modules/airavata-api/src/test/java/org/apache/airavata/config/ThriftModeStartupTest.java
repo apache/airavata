@@ -22,7 +22,6 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// DBEventManagerRunner class not found - using fully qualified name in test
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -96,24 +95,13 @@ public class ThriftModeStartupTest {
     private ApplicationContext applicationContext;
 
     @Test
-    public void testDBEventManagerIsEnabled() {
-        // DBEventManagerRunner has @Profile("!test") so it won't be available in test profile
-        // This is expected behavior - DBEventManagerRunner is excluded from tests
-        // In production (non-test profile), it would be available when services.thrift.enabled=true
-        // DBEventManagerRunner class may not exist - check using class name string
-        int dbEventManagerCount = 0;
-        try {
-            Class<?> dbEventManagerClass = Class.forName("org.apache.airavata.manager.dbevent.DBEventManagerRunner");
-            dbEventManagerCount = applicationContext.getBeansOfType(dbEventManagerClass).size();
-        } catch (ClassNotFoundException e) {
-            // Class doesn't exist - expected in some configurations
-            dbEventManagerCount = 0;
-        }
-        // In test profile, DBEventManagerRunner is excluded, so count will be 0 (expected)
-        // In production profile, count should be > 0
-        assertTrue(
-                dbEventManagerCount >= 0,
-                "DBEventManagerRunner configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
+    public void testDBEventDispatcherIsEnabled() {
+        // Dispatcher replaces DBEventManagerRunner and is always available as a @Component
+        // Use getBeanNamesForType to check for bean existence without reflection
+        String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
+        int dispatcherCount = beanNames.length;
+        // Dispatcher should always be available as it's a core component
+        assertTrue(dispatcherCount > 0, "Dispatcher should be available (replaces DBEventManagerRunner)");
     }
 
     @Test

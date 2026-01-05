@@ -84,13 +84,14 @@ public class DerbyUtil {
     /**
      * Starts derby server in embedded mode.
      *
-     * @throws ClassNotFoundException
-     *             If specified driver not found in the class path.
+     * <p>Note: JDBC 4.0+ automatically loads drivers via ServiceLoader mechanism,
+     * so manual driver loading is no longer needed.
+     *
      * @throws SQLException
-     *             If an error occurred while creat
+     *             If an error occurred while creating the connection.
      */
-    public static void startDerbyInEmbeddedMode() throws ClassNotFoundException, SQLException {
-        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+    public static void startDerbyInEmbeddedMode() throws SQLException {
+        // JDBC 4.0+ auto-loads drivers when DriverManager.getConnection() is called
         DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true")
                 .close();
     }

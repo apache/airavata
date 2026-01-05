@@ -28,7 +28,7 @@ import org.springframework.core.type.ClassMetadata;
 /**
  * Enables a {@link JobMetadataValidator} bean iff its simple class name (without package) appears in the comma-separated list
  * configured by {@code services.monitor.compute.validators}.
- * 
+ *
  * Example: If the property is "BatchQueueValidator,ExperimentStatusValidator", then only those validator beans will be enabled.
  */
 public class ComputeValidatorEnabledCondition implements Condition {

@@ -62,7 +62,8 @@ public class ServiceConfigurationBuilder {
     // Port configuration for Thrift and REST API services
     private int thriftPort = 8930;
     private int restPort = 8082;
-    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+    // services.thrift.server.port
 
     /**
      * Enable Thrift API service.
@@ -303,7 +304,8 @@ public class ServiceConfigurationBuilder {
         return this;
     }
 
-    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+    // services.thrift.server.port
     // Individual port setters removed - use withThriftPort() instead
 
     /**
@@ -409,7 +411,8 @@ public class ServiceConfigurationBuilder {
         props.put("services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
-        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+        // services.thrift.server.port
         props.put("services.thrift.server.port", String.valueOf(thriftPort));
         props.put("services.rest.server.port", String.valueOf(restPort));
 
@@ -440,7 +443,8 @@ public class ServiceConfigurationBuilder {
         props.setProperty("services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
-        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+        // services.thrift.server.port
         props.setProperty("services.thrift.server.port", String.valueOf(thriftPort));
         props.setProperty("services.rest.server.port", String.valueOf(restPort));
 

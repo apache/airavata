@@ -194,26 +194,21 @@ public class DBUtil {
         }
     }
 
+    /**
+     * Loads the JDBC driver.
+     *
+     * <p>Note: JDBC 4.0+ automatically loads drivers via ServiceLoader mechanism
+     * when DriverManager.getConnection() is called, so manual driver loading
+     * is no longer needed. This method is kept for backward compatibility but
+     * no longer performs any action.
+     *
+     * @throws ApplicationSettingsException
+     *             (Never thrown - kept for backward compatibility)
+     */
     private void loadDriver() throws ApplicationSettingsException {
-        try {
-            // Try with current classloader first
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            try {
-                // Try with thread context classloader
-                Thread.currentThread().getContextClassLoader().loadClass(driverName);
-            } catch (ClassNotFoundException e2) {
-                // In JDBC 4.0+, drivers are auto-loaded via ServiceLoader, so we can continue
-                log.warn("Could not manually load database driver class: " + driverName
-                        + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e.getMessage());
-            } catch (Exception e2) {
-                log.warn("Could not manually load database driver class: " + driverName
-                        + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e2.getMessage());
-            }
-        } catch (Exception e) {
-            log.warn("Could not manually load database driver class: " + driverName
-                    + ". Will rely on JDBC 4.0+ auto-loading. Error: " + e.getMessage());
-        }
+        // JDBC 4.0+ auto-loads drivers when DriverManager.getConnection() is called.
+        // No manual loading needed. The driver will be automatically discovered
+        // via the ServiceLoader mechanism when a connection is requested.
     }
 
     /**
@@ -244,17 +239,8 @@ public class DBUtil {
      *             If an error occurred while creating the connection.
      */
     public Connection getConnection() throws SQLException {
-        // Ensure driver is loaded before getting connection
-        try {
-            Class.forName(driverName);
-        } catch (ClassNotFoundException e) {
-            try {
-                Thread.currentThread().getContextClassLoader().loadClass(driverName);
-            } catch (ClassNotFoundException e2) {
-                // Driver will be auto-loaded by JDBC 4.0+ if available
-                log.debug("Driver class not found, relying on JDBC 4.0+ auto-loading: " + driverName);
-            }
-        }
+        // JDBC 4.0+ automatically loads drivers via ServiceLoader mechanism
+        // when DriverManager.getConnection() is called, so no manual loading needed.
         if (jdbcUrl == null || jdbcUrl.isEmpty()) {
             throw new SQLException("JDBC URL is null or empty. Driver: " + driverName);
         }

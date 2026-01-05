@@ -156,7 +156,8 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
             logger.info("Using migration script: {}", migrationScriptPath);
             sqlStream = new FileInputStream(migrationScriptPath.toFile());
 
-            Class.forName(jdbcDriver).getDeclaredConstructor().newInstance();
+            // JDBC 4.0+ automatically loads drivers via ServiceLoader mechanism
+            // when DriverManager.getConnection() is called, so no manual loading needed.
             connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPwd);
 
             String selectQuery =

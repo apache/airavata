@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -97,16 +96,13 @@ public class RestModeStartupTest {
     private ApplicationContext applicationContext;
 
     @Test
-    public void testDBEventManagerIsDisabled() {
-        // In REST mode, DB Event Manager should not be created (it's thrift-specific)
-        // DBEventManagerRunner class may not exist - check using class name string
-        try {
-            Class<?> dbEventManagerClass = Class.forName("org.apache.airavata.manager.dbevent.DBEventManagerRunner");
-            int count = applicationContext.getBeansOfType(dbEventManagerClass).size();
-            assertFalse(count > 0, "DBEventManagerRunner should not be configured in REST mode");
-        } catch (ClassNotFoundException e) {
-            // Class doesn't exist - this is fine, test passes
-        }
+    public void testDBEventDispatcherIsAvailable() {
+        // Dispatcher replaces DBEventManagerRunner and is always available as a @Component
+        // Use getBeanNamesForType to check for bean existence without reflection
+        String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
+        int count = beanNames.length;
+        // Dispatcher should always be available in both REST and Thrift modes
+        assertTrue(count > 0, "Dispatcher should be available in REST mode (replaces DBEventManagerRunner)");
     }
 
     @Test

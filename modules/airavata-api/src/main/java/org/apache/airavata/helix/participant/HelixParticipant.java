@@ -175,7 +175,7 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
                         throw new IllegalStateException(
                                 "ApplicationContext must be set on HelixParticipant to create tasks");
                     }
-                    return task.setParticipant(HelixParticipant.this)
+                    return task.setParticipant((HelixParticipant<T>) this)
                             .setCallbackContext(context)
                             .setTaskHelper(taskHelper);
                 } catch (Exception e) {

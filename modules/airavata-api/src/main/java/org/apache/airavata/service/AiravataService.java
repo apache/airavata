@@ -290,23 +290,29 @@ public class AiravataService {
         } catch (SharingRegistryException | DuplicateEntryException e) {
             String msg = String.format("Error while initializing sharing registry: %s", e.getMessage());
             // Check if it's a database connection issue
-            if (e.getCause() != null && (e.getCause().getMessage() != null && 
-                    (e.getCause().getMessage().contains("Connection refused") ||
-                     e.getCause().getMessage().contains("Connection is not available") ||
-                     e.getCause().getMessage().contains("Unable to acquire JDBC Connection")))) {
-                logger.warn("Database not available during sharing registry initialization. Will retry when database is available: {}", e.getMessage());
+            if (e.getCause() != null
+                    && (e.getCause().getMessage() != null
+                            && (e.getCause().getMessage().contains("Connection refused")
+                                    || e.getCause().getMessage().contains("Connection is not available")
+                                    || e.getCause().getMessage().contains("Unable to acquire JDBC Connection")))) {
+                logger.warn(
+                        "Database not available during sharing registry initialization. Will retry when database is available: {}",
+                        e.getMessage());
                 // Don't throw - allow server to start without database
             } else {
-            logger.error(msg, e);
-            throw new AiravataException(msg, e);
+                logger.error(msg, e);
+                throw new AiravataException(msg, e);
             }
         } catch (Exception e) {
             // Check if it's a database connection issue
-            if (e.getCause() != null && e.getCause().getMessage() != null && 
-                    (e.getCause().getMessage().contains("Connection refused") ||
-                     e.getCause().getMessage().contains("Connection is not available") ||
-                     e.getCause().getMessage().contains("Unable to acquire JDBC Connection"))) {
-                logger.warn("Database not available during sharing registry initialization. Will retry when database is available: {}", e.getMessage());
+            if (e.getCause() != null
+                    && e.getCause().getMessage() != null
+                    && (e.getCause().getMessage().contains("Connection refused")
+                            || e.getCause().getMessage().contains("Connection is not available")
+                            || e.getCause().getMessage().contains("Unable to acquire JDBC Connection"))) {
+                logger.warn(
+                        "Database not available during sharing registry initialization. Will retry when database is available: {}",
+                        e.getMessage());
                 // Don't throw - allow server to start without database
             } else {
                 String msg = String.format("Error while initializing sharing registry: %s", e.getMessage());
@@ -325,11 +331,14 @@ public class AiravataService {
             // Don't throw - allow server to start without default gateway initialization
         } catch (Exception e) {
             // Check if it's a database connection issue
-            if (e.getCause() != null && e.getCause().getMessage() != null && 
-                    (e.getCause().getMessage().contains("Connection refused") ||
-                     e.getCause().getMessage().contains("Connection is not available") ||
-                     e.getCause().getMessage().contains("Unable to acquire JDBC Connection"))) {
-                logger.warn("Database not available during gateway initialization. Will retry when database is available: {}", e.getMessage());
+            if (e.getCause() != null
+                    && e.getCause().getMessage() != null
+                    && (e.getCause().getMessage().contains("Connection refused")
+                            || e.getCause().getMessage().contains("Connection is not available")
+                            || e.getCause().getMessage().contains("Unable to acquire JDBC Connection"))) {
+                logger.warn(
+                        "Database not available during gateway initialization. Will retry when database is available: {}",
+                        e.getMessage());
                 // Don't throw - allow server to start without database
             } else {
                 String msg = String.format(

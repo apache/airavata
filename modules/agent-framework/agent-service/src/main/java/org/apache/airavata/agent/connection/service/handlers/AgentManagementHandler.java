@@ -21,9 +21,9 @@ package org.apache.airavata.agent.connection.service.handlers;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.Optional;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
@@ -70,14 +70,10 @@ public class AgentManagementHandler {
         this.clusterApplicationConfig = clusterApplicationConfig;
     }
 
-
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
-            ExperimentModel experiment = airavataService.getExperiment(
-                    UserContext.authzToken(), experimentId);
-            airavataService.terminateExperiment(
-                    experiment.getExperimentId(),
-                    experiment.getGatewayId());
+            ExperimentModel experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
+            airavataService.terminateExperiment(experiment.getExperimentId(), experiment.getGatewayId());
             return new AgentTerminateResponse(experimentId, true);
         } catch (Exception e) {
             LOGGER.error("Error terminating experiment {}", experimentId, e);
@@ -87,16 +83,15 @@ public class AgentManagementHandler {
 
     public ExperimentModel getExperiment(String experimentId) {
         try {
-            ExperimentModel experiment = airavataService.getExperiment(
-                    UserContext.authzToken(), experimentId);
+            ExperimentModel experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
             GroupResourceProfile groupResourceProfile = airavataService.getGroupResourceProfile(
                     UserContext.authzToken(),
                     experiment.getUserConfigurationData().getGroupResourceProfileId());
 
             // Always get the Default allocation
             if (!"Default".equalsIgnoreCase(groupResourceProfile.getGroupResourceProfileName())) {
-                List<GroupResourceProfile> groupResourceList = airavataService.getGroupResourceList(
-                        UserContext.authzToken(), experiment.getGatewayId());
+                List<GroupResourceProfile> groupResourceList =
+                        airavataService.getGroupResourceList(UserContext.authzToken(), experiment.getGatewayId());
 
                 groupResourceList.stream()
                         .filter(profile -> "Default".equalsIgnoreCase(profile.getGroupResourceProfileName()))
@@ -164,12 +159,9 @@ public class AgentManagementHandler {
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
 
-            String experimentId = airavataService.createExperiment(
-                    experiment.getGatewayId(),
-                    experiment);
+            String experimentId = airavataService.createExperiment(experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
-            airavataService.launchExperiment(
-                    UserContext.authzToken(), experiment.getGatewayId(), experimentId);
+            airavataService.launchExperiment(UserContext.authzToken(), experiment.getGatewayId(), experimentId);
             return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (Exception e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
@@ -223,8 +215,8 @@ public class AgentManagementHandler {
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
                 new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref = extractGroupComputeResourcePreference(
-                req.getGroup(), req.getRemoteCluster());
+        GroupComputeResourcePreference groupCompResourcePref =
+                extractGroupComputeResourcePreference(req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
@@ -299,11 +291,7 @@ public class AgentManagementHandler {
             List<Project> userProjects;
             try {
                 userProjects = airavataService.getUserProjects(
-                        UserContext.authzToken(),
-                        UserContext.gatewayId(),
-                        UserContext.username(),
-                        limit,
-                        offset);
+                        UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
             } catch (Exception e) {
                 String msg = String.format(
                         "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
@@ -332,8 +320,7 @@ public class AgentManagementHandler {
     private GroupComputeResourcePreference extractGroupComputeResourcePreference(String group, String remoteCluster) {
         List<GroupResourceProfile> groupResourceList;
         try {
-            groupResourceList = airavataService.getGroupResourceList(
-                    UserContext.authzToken(), UserContext.gatewayId());
+            groupResourceList = airavataService.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
         } catch (Exception e) {
             String msg = String.format(
                     "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",

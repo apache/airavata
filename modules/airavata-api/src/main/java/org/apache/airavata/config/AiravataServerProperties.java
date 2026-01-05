@@ -31,9 +31,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
@@ -128,34 +126,66 @@ public class AiravataServerProperties {
         }
 
         logger.info("Airavata home resolved: {}, config directory: {}", this.airavataHome, confDir.getAbsolutePath());
-        
+
         // Manually bind properties from Environment if they weren't bound automatically
         // This ensures properties from the custom PropertySource are available
         if (this.database == null) {
             this.database = new Database();
         }
-        
+
         // Manually bind all database configurations from Environment
         // This ensures properties from the custom PropertySource are available
         if (environment != null) {
-            bindDatabaseConfig(environment, "profile", 
-                () -> this.database.profile == null ? (this.database.profile = new Database.Profile()) : this.database.profile);
-            bindDatabaseConfig(environment, "catalog", 
-                () -> this.database.catalog == null ? (this.database.catalog = new Database.Catalog()) : this.database.catalog);
-            bindDatabaseConfig(environment, "registry", 
-                () -> this.database.registry == null ? (this.database.registry = new Database.Registry()) : this.database.registry);
-            bindDatabaseConfig(environment, "replica", 
-                () -> this.database.replica == null ? (this.database.replica = new Database.Replica()) : this.database.replica);
-            bindDatabaseConfig(environment, "research", 
-                () -> this.database.research == null ? (this.database.research = new Database.Research()) : this.database.research);
-            bindDatabaseConfig(environment, "sharing", 
-                () -> this.database.sharing == null ? (this.database.sharing = new Database.Sharing()) : this.database.sharing);
-            bindDatabaseConfig(environment, "workflow", 
-                () -> this.database.workflow == null ? (this.database.workflow = new Database.Workflow()) : this.database.workflow);
-            bindDatabaseConfig(environment, "vault", 
-                () -> this.database.vault == null ? (this.database.vault = new Database.Vault()) : this.database.vault);
+            bindDatabaseConfig(
+                    environment,
+                    "profile",
+                    () -> this.database.profile == null
+                            ? (this.database.profile = new Database.Profile())
+                            : this.database.profile);
+            bindDatabaseConfig(
+                    environment,
+                    "catalog",
+                    () -> this.database.catalog == null
+                            ? (this.database.catalog = new Database.Catalog())
+                            : this.database.catalog);
+            bindDatabaseConfig(
+                    environment,
+                    "registry",
+                    () -> this.database.registry == null
+                            ? (this.database.registry = new Database.Registry())
+                            : this.database.registry);
+            bindDatabaseConfig(
+                    environment,
+                    "replica",
+                    () -> this.database.replica == null
+                            ? (this.database.replica = new Database.Replica())
+                            : this.database.replica);
+            bindDatabaseConfig(
+                    environment,
+                    "research",
+                    () -> this.database.research == null
+                            ? (this.database.research = new Database.Research())
+                            : this.database.research);
+            bindDatabaseConfig(
+                    environment,
+                    "sharing",
+                    () -> this.database.sharing == null
+                            ? (this.database.sharing = new Database.Sharing())
+                            : this.database.sharing);
+            bindDatabaseConfig(
+                    environment,
+                    "workflow",
+                    () -> this.database.workflow == null
+                            ? (this.database.workflow = new Database.Workflow())
+                            : this.database.workflow);
+            bindDatabaseConfig(
+                    environment,
+                    "vault",
+                    () -> this.database.vault == null
+                            ? (this.database.vault = new Database.Vault())
+                            : this.database.vault);
         }
-        
+
         // Manually bind security.vault.keystore properties from Environment
         if (environment != null && this.security != null) {
             if (this.security.vault == null) {
@@ -168,8 +198,10 @@ public class AiravataServerProperties {
                 String keystoreUrl = environment.getProperty("security.vault.keystore.url");
                 if (keystoreUrl != null) {
                     this.security.vault.keystore.url = keystoreUrl;
-                    this.security.vault.keystore.alias = environment.getProperty("security.vault.keystore.alias", "airavata");
-                    this.security.vault.keystore.password = environment.getProperty("security.vault.keystore.password", "airavata");
+                    this.security.vault.keystore.alias =
+                            environment.getProperty("security.vault.keystore.alias", "airavata");
+                    this.security.vault.keystore.password =
+                            environment.getProperty("security.vault.keystore.password", "airavata");
                     logger.debug("Manually bound security.vault.keystore properties from Environment");
                 }
             }
@@ -201,13 +233,16 @@ public class AiravataServerProperties {
                     if (urlField.get(db) == null) {
                         urlField.set(db, url);
                         java.lang.reflect.Field driverField = db.getClass().getField("driver");
-                        driverField.set(db, env.getProperty("database." + dbName + ".driver", "org.mariadb.jdbc.Driver"));
+                        driverField.set(
+                                db, env.getProperty("database." + dbName + ".driver", "org.mariadb.jdbc.Driver"));
                         java.lang.reflect.Field userField = db.getClass().getField("user");
                         userField.set(db, env.getProperty("database." + dbName + ".user"));
                         java.lang.reflect.Field passwordField = db.getClass().getField("password");
                         passwordField.set(db, env.getProperty("database." + dbName + ".password"));
-                        java.lang.reflect.Field validationQueryField = db.getClass().getField("validationQuery");
-                        validationQueryField.set(db, env.getProperty("database." + dbName + ".validation-query", "SELECT 1"));
+                        java.lang.reflect.Field validationQueryField =
+                                db.getClass().getField("validationQuery");
+                        validationQueryField.set(
+                                db, env.getProperty("database." + dbName + ".validation-query", "SELECT 1"));
                         logger.debug("Manually bound database.{} properties from Environment", dbName);
                     }
                 }
@@ -459,7 +494,8 @@ public class AiravataServerProperties {
         public static class Api {
             // Note: Api service is controlled by services.thrift.enabled, not a separate services.api.enabled
             // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing Registry) are now
-            // multiplexed on the unified port (services.thrift.server.port). Individual service toggles and ports removed.
+            // multiplexed on the unified port (services.thrift.server.port). Individual service toggles and ports
+            // removed.
             public Vault vault = new Vault();
 
             public static class Vault {
@@ -579,11 +615,13 @@ public class AiravataServerProperties {
         }
 
         public static class Sharing {
-            // Note: enabled and serverPort removed - service is multiplexed on unified port (services.thrift.server.port)
+            // Note: enabled and serverPort removed - service is multiplexed on unified port
+            // (services.thrift.server.port)
         }
 
         public static class Registry {
-            // Note: enabled and Server.port removed - service is multiplexed on unified port (services.thrift.server.port)
+            // Note: enabled and Server.port removed - service is multiplexed on unified port
+            // (services.thrift.server.port)
         }
 
         public static class Default {

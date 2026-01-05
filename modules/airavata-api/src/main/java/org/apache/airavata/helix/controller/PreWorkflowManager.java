@@ -131,8 +131,9 @@ public class PreWorkflowManager extends WorkflowManager {
         try {
             super.initComponents();
         } catch (Exception e) {
-            logger.warn("Failed to initialize workflow manager components (Zookeeper may not be available): {}. " +
-                    "Workflow management features will be unavailable until Zookeeper is accessible.", 
+            logger.warn(
+                    "Failed to initialize workflow manager components (Zookeeper may not be available): {}. "
+                            + "Workflow management features will be unavailable until Zookeeper is accessible.",
                     e.getMessage());
             // Allow server to start even if workflow manager components can't be initialized
         }

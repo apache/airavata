@@ -47,7 +47,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         // Check if research service is enabled
         String enabled = environment.getProperty("services.research.enabled", "true");
         Map<String, Object> mappedProperties = new HashMap<>();
-        
+
         if ("true".equalsIgnoreCase(enabled)) {
             // Enable gRPC server and map properties when research service is enabled
             mappedProperties.put("spring.grpc.server.enabled", "true");
@@ -56,23 +56,38 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
             // Disable gRPC server when research service is disabled
             mappedProperties.put("spring.grpc.server.enabled", "false");
         }
-        
+
         if (!mappedProperties.isEmpty()) {
-            environment.getPropertySources()
+            environment
+                    .getPropertySources()
                     .addFirst(new MapPropertySource("researchServiceGrpcConfig", mappedProperties));
-            logger.debug("Set spring.grpc.server.enabled={} based on services.research.enabled={}", 
-                    mappedProperties.get("spring.grpc.server.enabled"), enabled);
+            logger.debug(
+                    "Set spring.grpc.server.enabled={} based on services.research.enabled={}",
+                    mappedProperties.get("spring.grpc.server.enabled"),
+                    enabled);
         }
     }
 
     private void mapScopedProperties(ConfigurableEnvironment environment, Map<String, Object> mappedProperties) {
         // Map services.research.grpc.* to spring.grpc.server.*
         mapProperty("services.research.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
-        
+
         // Map keepalive properties if they exist in scoped form
-        mapProperty("services.research.grpc.keepalive-time", "spring.grpc.server.keepalive-time", mappedProperties, environment);
-        mapProperty("services.research.grpc.keepalive-timeout", "spring.grpc.server.keepalive-timeout", mappedProperties, environment);
-        mapProperty("services.research.grpc.permit-keepalive-without-calls", "spring.grpc.server.permit-keepalive-without-calls", mappedProperties, environment);
+        mapProperty(
+                "services.research.grpc.keepalive-time",
+                "spring.grpc.server.keepalive-time",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.research.grpc.keepalive-timeout",
+                "spring.grpc.server.keepalive-timeout",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.research.grpc.permit-keepalive-without-calls",
+                "spring.grpc.server.permit-keepalive-without-calls",
+                mappedProperties,
+                environment);
 
         // Map services.research.spring.servlet.multipart.* to spring.servlet.multipart.*
         mapProperty(

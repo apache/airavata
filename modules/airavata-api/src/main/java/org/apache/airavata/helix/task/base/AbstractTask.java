@@ -68,7 +68,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
-    private HelixParticipant<AbstractTask> participant;
+    private HelixParticipant<? extends AbstractTask> participant;
     private final TaskUtil taskUtil;
 
     @TaskParam(name = "Retry Count")
@@ -245,7 +245,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         return curatorClient;
     }
 
-    public AbstractTask setParticipant(HelixParticipant<AbstractTask> participant) {
+    public AbstractTask setParticipant(HelixParticipant<? extends AbstractTask> participant) {
         this.participant = participant;
         return this;
     }

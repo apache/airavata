@@ -30,6 +30,4 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(
         value = "classpath:conf/airavata.properties",
         factory = AiravataServerProperties.AiravataPropertySourceFactory.class)
-public class AiravataPropertySourceConfiguration {
-}
-
+public class AiravataPropertySourceConfiguration {}

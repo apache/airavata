@@ -112,7 +112,7 @@ public class JpaConfig {
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown), 
+        // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)
         // Can be overridden via hibernate.hbm2ddl.auto property
         String hbm2ddlAuto = environment != null ? environment.getProperty("hibernate.hbm2ddl.auto") : null;
@@ -172,7 +172,8 @@ public class JpaConfig {
         }
         if (db.url == null || db.url.isEmpty()) {
             throw new IllegalStateException(
-                    "Database configuration for profile service is missing or invalid. properties.database.profile.url is null or empty. Check airavata.properties for database.profile.url. Current value: " + db.url);
+                    "Database configuration for profile service is missing or invalid. properties.database.profile.url is null or empty. Check airavata.properties for database.profile.url. Current value: "
+                            + db.url);
         }
         return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }

@@ -86,7 +86,8 @@ public class ServiceStartupRangeTest {
         assertEquals("true", props.get("services.monitor.email.enabled"));
 
         // Verify all ports are configured
-        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+        // services.thrift.server.port
         assertNotNull(props.get("services.thrift.server.port"));
         assertNotNull(props.get("services.rest.server.port"));
     }
@@ -357,12 +358,12 @@ public class ServiceStartupRangeTest {
      */
     @Test
     public void testPortConfiguration() {
-        ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder()
-                .withThriftPort(8931);
+        ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder().withThriftPort(8931);
 
         Map<String, String> props = builder.build();
 
-        // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
+        // services.thrift.server.port
         assertEquals("8931", props.get("services.thrift.server.port"));
     }
 

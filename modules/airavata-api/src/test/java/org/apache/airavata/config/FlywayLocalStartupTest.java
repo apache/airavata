@@ -37,12 +37,7 @@ import org.springframework.test.context.TestPropertySource;
  * configuration is correct. Actual migration testing requires a real database.
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            AiravataServerProperties.class,
-            FlywayConfig.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class, FlywayConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",

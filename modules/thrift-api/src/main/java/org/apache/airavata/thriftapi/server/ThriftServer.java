@@ -173,9 +173,10 @@ public class ThriftServer extends ServerLifecycle {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
                 String configDir =
                         org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
-                if (properties.security == null || properties.security.tls == null || 
-                    properties.security.tls.keystore == null || 
-                    properties.security.tls.keystore.path == null) {
+                if (properties.security == null
+                        || properties.security.tls == null
+                        || properties.security.tls.keystore == null
+                        || properties.security.tls.keystore.path == null) {
                     throw new IllegalStateException(
                             "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
                 }
