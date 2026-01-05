@@ -73,7 +73,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             // Infrastructure components excluded via component scanning - no property flags needed
             "test.keycloak.security.manager=true",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

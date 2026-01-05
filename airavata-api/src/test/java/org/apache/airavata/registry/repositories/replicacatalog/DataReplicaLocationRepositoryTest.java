@@ -56,7 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
+
             // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
             // no property flags needed
         })

@@ -103,12 +103,10 @@ under the License.
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>1.5.5.Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -355,7 +353,6 @@ under the License.
     <dependency>
       <groupId>io.smallrye</groupId>
       <artifactId>jandex</artifactId>
-      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -469,7 +466,6 @@ under the License.
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
-              <version>1.5.5.Final</version>
             </path>
           </annotationProcessorPaths>
           <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
@@ -528,7 +524,11 @@ under the License.
             <credential.module.directory>${basedir}</credential.module.directory>
             <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
           </systemPropertyVariables>
-          <argLine>@{argLine} -Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED -javaagent:${settings.localRepository}/org/jmockit/jmockit/1.50/jmockit-1.50.jar</argLine>
+          <argLine>@{argLine} -Xmx2048m --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+          </includes>
         </configuration>
       </plugin>
 
@@ -536,7 +536,6 @@ under the License.
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
@@ -579,7 +578,6 @@ under the License.
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.46.0</version>
         <configuration>
           <verbose>true</verbose>
           <images>
@@ -597,7 +595,6 @@ under the License.
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
         <configuration>
           <mainClass>org.apache.airavata.AiravataApplication</mainClass>
           <systemPropertyVariables>

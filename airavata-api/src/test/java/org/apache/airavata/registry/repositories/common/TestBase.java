@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class},
-        properties = {"services.airavata.enabled=true", "flyway.enabled=false"})
+        properties = {"flyway.enabled=false"})
 @TestPropertySource(locations = "classpath:airavata.properties")
 @ActiveProfiles("test")
 @Transactional

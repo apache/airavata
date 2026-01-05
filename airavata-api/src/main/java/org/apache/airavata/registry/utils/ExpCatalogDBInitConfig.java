@@ -90,7 +90,7 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
         try {
             // Create default gateway and default user if not already created
-            String defaultGatewayId = properties.services.default_.gateway;
+            String defaultGatewayId = properties.services.defaults.gateway;
             if (!gatewayService.isGatewayExist(defaultGatewayId)) {
                 Gateway gateway = new Gateway();
                 gateway.setGatewayId(defaultGatewayId);
@@ -100,7 +100,7 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
                 gatewayService.addGateway(gateway);
             }
 
-            String defaultUsername = properties.services.default_.user;
+            String defaultUsername = properties.services.defaults.user;
             if (!userService.isUserExists(defaultGatewayId, defaultUsername)) {
                 UserProfile defaultUser = new UserProfile();
                 defaultUser.setUserId(defaultUsername);

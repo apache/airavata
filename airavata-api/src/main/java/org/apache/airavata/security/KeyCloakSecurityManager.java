@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -47,21 +46,20 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.sharing.model.UserGroup;
-import org.apache.http.Consts;
-import org.apache.http.HttpHeaders;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "security.iam.enabled", havingValue = "true", matchIfMissing = true)
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
     // Methods that users user to manage their user resource profile
@@ -114,6 +112,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final AuthzCacheManagerFactory authzCacheManagerFactory;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public KeyCloakSecurityManager(
             RegistryService registryService,
@@ -376,24 +375,23 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     }
 
     public JsonNode getClientCredentials(String tokenURL, String clientId, String clientSecret) throws IOException {
-
-        CloseableHttpClient httpClient = HttpClients.createSystem();
-
-        HttpPost httpPost = new HttpPost(tokenURL);
-        String encoded =
-                Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
-        httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded);
-        List<NameValuePair> formParams = new ArrayList<>();
-        formParams.add(new BasicNameValuePair("grant_type", "client_credentials"));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
-        httpPost.setEntity(entity);
-        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            String responseBody = EntityUtils.toString(response.getEntity());
-            return objectMapper.readTree(responseBody);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            httpClient.close();
+        try {
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setBasicAuth(clientId, clientSecret);
+            
+            // Create form data
+            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+            formData.add("grant_type", "client_credentials");
+            
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
+            
+            // Make POST request
+            ResponseEntity<String> response = restTemplate.postForEntity(tokenURL, request, String.class);
+            return objectMapper.readTree(response.getBody());
+        } catch (Exception e) {
+            throw new IOException("Failed to get client credentials", e);
         }
     }
 

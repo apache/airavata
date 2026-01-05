@@ -26,11 +26,11 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.monitor.platform.CountMonitor;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.IdentityContext;
 import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.telemetry.CounterMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnBean(AiravataSecurityManager.class)
 public class SecurityInterceptor implements MethodInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
-    private static final CountMonitor apiRequestCounter = new CountMonitor("api_server_request_counter", "method");
+    private static final CounterMetric apiRequestCounter = new CounterMetric("api_server_request_counter", "method");
 
     private final AiravataSecurityManager securityManager;
     private final AiravataServerProperties properties;

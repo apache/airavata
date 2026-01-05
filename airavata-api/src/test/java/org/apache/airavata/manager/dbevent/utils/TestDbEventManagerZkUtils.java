@@ -26,29 +26,6 @@ public class TestDbEventManagerZkUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TestDbEventManagerZkUtils.class);
 
-    public static void main(String[] args) {
-        logger.info("TestDbEventManagerZkUtils::main()");
-        // String connectionString = "localhost:2181";
-        // String userProfileService =
-        // DBEventManagerConstants.DBEventService.USER_PROFILE.toString();
-        // String sharingService =
-        // DBEventManagerConstants.DBEventService.SHARING.toString();
-        // String registryService =
-        // DBEventManagerConstants.DBEventService.REGISTRY.toString();
-        // RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
-        // CuratorFramework curatorClient =
-        // CuratorFrameworkFactory.newClient(connectionString, retryPolicy);
-        // curatorClient.start();
-        // try {
-        // DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient,
-        // userProfileService, sharingService);
-        // DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient,
-        // userProfileService, registryService);
-        // logger.info("Subscribers: {}",
-        // DbEventManagerZkUtils.getSubscribersForPublisher(curatorClient,
-        // userProfileService));
-        // } catch (Exception ex) {
-        // logger.error("Error creating ZK node", ex);
-        // }
-    }
+    // Test functionality has been removed as it was all commented out.
+    // If Zookeeper utility testing is needed, create proper JUnit tests with Testcontainers.
 }

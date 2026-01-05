@@ -42,14 +42,17 @@ import org.apache.thrift.transport.TTransportException;
  * Created by goshenoy on 03/08/2017.
  */
 public class ProfileServiceClientFactory {
+    private static final String PROFILE_SERVICE_NAME = "ProfileService";
+
     public static UserProfileService.Client createUserProfileServiceClient(String serverHost, int serverPort)
             throws UserProfileServiceException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, profile_user_cpiConstants.USER_PROFILE_CPI_NAME);
+            // Use prefixed service name for Profile sub-services
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+                    protocol, PROFILE_SERVICE_NAME + "." + profile_user_cpiConstants.USER_PROFILE_CPI_NAME);
             return new UserProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new UserProfileServiceException(e.getMessage());
@@ -62,8 +65,9 @@ public class ProfileServiceClientFactory {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME);
+            // Use prefixed service name for Profile sub-services
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+                    protocol, PROFILE_SERVICE_NAME + "." + profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME);
             return new TenantProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new TenantProfileServiceException(e.getMessage());
@@ -76,8 +80,9 @@ public class ProfileServiceClientFactory {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME);
+            // Use prefixed service name for Profile sub-services
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+                    protocol, PROFILE_SERVICE_NAME + "." + iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME);
             return new IamAdminServices.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new IamAdminServicesException(e.getMessage());
@@ -90,8 +95,9 @@ public class ProfileServiceClientFactory {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME);
+            // Use prefixed service name for Profile sub-services
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+                    protocol, PROFILE_SERVICE_NAME + "." + group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME);
             return new GroupManagerService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new GroupManagerServiceException(e.getMessage());

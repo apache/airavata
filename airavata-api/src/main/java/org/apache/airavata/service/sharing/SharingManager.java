@@ -36,12 +36,14 @@ import org.apache.airavata.sharing.model.Entity;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for managing sharing registry operations.
  */
 @Service
+@ConditionalOnBean(org.apache.airavata.service.SharingRegistryService.class)
 public class SharingManager {
     private static final Logger logger = LoggerFactory.getLogger(SharingManager.class);
 
@@ -145,7 +147,7 @@ public class SharingManager {
      */
     public String createExperimentEntity(String experimentId, ExperimentModel experiment)
             throws AiravataSystemException {
-        if (!properties.services.sharing.enabled) {
+        if (!properties.airavata.sharing.enabled) {
             return experimentId;
         }
 
@@ -180,7 +182,7 @@ public class SharingManager {
      * Returns the created entity ID.
      */
     public String createProjectEntity(String projectId, Project project) throws AiravataSystemException {
-        if (!properties.services.sharing.enabled) {
+        if (!properties.airavata.sharing.enabled) {
             return projectId;
         }
 
@@ -209,7 +211,7 @@ public class SharingManager {
      * Updates sharing entity metadata for an experiment.
      */
     public void updateExperimentEntity(String experimentId, ExperimentModel experiment) throws AiravataSystemException {
-        if (!properties.services.sharing.enabled) {
+        if (!properties.airavata.sharing.enabled) {
             return;
         }
 
@@ -230,7 +232,7 @@ public class SharingManager {
      * Deletes a sharing entity.
      */
     public void deleteEntity(String entityId) throws AiravataSystemException {
-        if (!properties.services.sharing.enabled) {
+        if (!properties.airavata.sharing.enabled) {
             return;
         }
 

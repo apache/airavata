@@ -44,7 +44,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
@@ -56,7 +55,7 @@ public class ApplicationSettingsTest {
 
     @Test
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
-        String url = ApplicationSettings.getSetting("airavata.default.user");
+        String url = ApplicationSettings.getSetting("airavata.defaults.user");
         assertEquals("test-user", url);
     }
 

@@ -39,12 +39,14 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for experiment management operations.
  */
 @Service("experimentServiceFacade")
+@ConditionalOnBean(org.apache.airavata.service.registry.RegistryService.class)
 public class ExperimentService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
 

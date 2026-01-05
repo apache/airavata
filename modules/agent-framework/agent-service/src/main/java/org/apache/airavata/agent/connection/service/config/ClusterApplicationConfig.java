@@ -19,11 +19,13 @@
 */
 package org.apache.airavata.agent.connection.service.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "airavata.cluster")
+@ConditionalOnProperty(name = "services.agent.enabled", havingValue = "true", matchIfMissing = true)
 public class ClusterApplicationConfig {
 
     private String applicationInterfaceId;

@@ -49,12 +49,6 @@ public class ApplicationSettings {
 
     private static final String SHUTDOWN_STATEGY_STRING = "shutdown.strategy";
 
-    // ThriftClientPool Constants
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED =
-            "airavata.thrift-client-pool-abandoned-removal-enabled";
-    private static final String THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED =
-            "airavata.thrift-client-pool-abandoned-removal-logged";
-
     protected static ApplicationSettings INSTANCE;
 
     public static enum ShutdownStrategy {
@@ -283,11 +277,11 @@ public class ApplicationSettings {
     }
 
     public static String getClusterStatusMonitoringRepeatTime() throws ApplicationSettingsException {
-        return getSetting("services.monitor.cluster.repeat-time");
+        return getSetting("services.monitor.compute.cluster-check-repeat-time");
     }
 
     public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
-        return getSetting("services.monitor.cluster.enable").equalsIgnoreCase("true");
+        return getSetting("services.monitor.compute.enabled").equalsIgnoreCase("true");
     }
 
     public static Boolean enableMetaschedulerJobScanning() throws ApplicationSettingsException {
@@ -308,14 +302,6 @@ public class ApplicationSettings {
 
     public static String getIamServerUrl() throws ApplicationSettingsException {
         return getSetting("security.iam.server-url");
-    }
-
-    public static boolean isThriftClientPoolAbandonedRemovalEnabled() {
-        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_ENABLED, "false"));
-    }
-
-    public static boolean isThriftClientPoolAbandonedRemovalLogged() {
-        return Boolean.parseBoolean(getSetting(THRIFT_CLIENT_POOL_ABANDONED_REMOVAL_LOGGED, "false"));
     }
 
     public static void mergeSettingsCommandLineArgs(String[] args) {

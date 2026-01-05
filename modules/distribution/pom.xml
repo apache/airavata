@@ -173,7 +173,7 @@ under the License.
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
+                    <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>ch.qos.logback</groupId>
@@ -237,13 +237,18 @@ under the License.
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
-                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
-                    <systemPropertyVariables>
-                        <airavata.config.dir>${project.basedir}/../../../airavata-api/src/main/resources</airavata.config.dir>
-                        <airavata.home>${project.basedir}/../../../</airavata.home>
-                    </systemPropertyVariables>
+                    <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>airavata.config.dir</key>
+                            <value>${project.basedir}/../../../airavata-api/src/main/resources</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>airavata.home</key>
+                            <value>${project.basedir}/../../../</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
             <!-- GraalVM Native Image Maven Plugin -->
@@ -253,7 +258,7 @@ under the License.
                 <version>${native.maven.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <mainClass>org.apache.airavata.AiravataCLI</mainClass>
+                    <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
                     <imageName>airavata-${project.version}-${native.binary.arch}</imageName>
                     <outputDirectory>${distribution.output.directory}</outputDirectory>
                     <classesDirectory>${project.build.outputDirectory}</classesDirectory>

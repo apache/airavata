@@ -61,7 +61,7 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
+
             // Infrastructure components excluded via @ComponentScan excludeFilters - no property flags needed
             // Core services (RegistryService, CredentialStoreService) are always available via DI
         })

@@ -37,7 +37,7 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("!test")
-@ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class ValidationServiceImpl implements ValidationService {
     private static final Logger logger = LoggerFactory.getLogger(ValidationServiceImpl.class);
 

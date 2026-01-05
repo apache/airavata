@@ -42,7 +42,6 @@ import org.springframework.test.context.TestPropertySource;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

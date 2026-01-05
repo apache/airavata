@@ -23,10 +23,12 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Standalone utility to validate persistence.xml configuration.
- * This can be run to check if all entity classes are correctly referenced.
+ * Test to validate persistence.xml configuration.
+ * Verifies that all entity classes are correctly referenced.
  */
 public class ValidatePersistenceXml {
 
@@ -40,12 +42,12 @@ public class ValidatePersistenceXml {
         "credential_store"
     };
 
-    public static void main(String[] args) {
-        System.out.println("Validating persistence.xml configuration...");
+    @Test
+    public void testAllPersistenceUnits() {
         int errors = 0;
+        StringBuilder errorMessages = new StringBuilder();
 
         for (String puName : PERSISTENCE_UNITS) {
-            System.out.print("Checking persistence unit: " + puName + " ... ");
             try {
                 // Use in-memory H2 database to avoid connection issues
                 Map<String, String> properties = new HashMap<>();
@@ -58,27 +60,23 @@ public class ValidatePersistenceXml {
 
                 EntityManagerFactory emf = Persistence.createEntityManagerFactory(puName, properties);
                 if (emf != null) {
-                    System.out.println("OK");
                     emf.close();
                 } else {
-                    System.out.println("FAILED - EntityManagerFactory is null");
+                    errorMessages.append("Persistence unit ").append(puName).append(": EntityManagerFactory is null\n");
                     errors++;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: " + e.getMessage());
+                errorMessages.append("Persistence unit ").append(puName).append(": ").append(e.getMessage());
                 if (e.getCause() != null) {
-                    System.out.println("  Caused by: " + e.getCause().getMessage());
+                    errorMessages.append(" (Caused by: ").append(e.getCause().getMessage()).append(")");
                 }
+                errorMessages.append("\n");
                 errors++;
             }
         }
 
-        if (errors == 0) {
-            System.out.println("\nAll persistence units validated successfully!");
-            System.exit(0);
-        } else {
-            System.out.println("\nValidation failed with " + errors + " error(s)");
-            System.exit(1);
+        if (errors > 0) {
+            fail("Validation failed with " + errors + " error(s):\n" + errorMessages.toString());
         }
     }
 }

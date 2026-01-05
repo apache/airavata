@@ -24,12 +24,15 @@ import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.thriftapi.service.Airavata;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class AiravataServiceClientFactory {
+
+    private static final String AIRAVATA_SERVICE_NAME = "Airavata";
 
     public static Airavata.Client createAiravataClient(
             String serverHost, int serverPort, boolean secure, AiravataServerProperties properties)
@@ -50,8 +53,8 @@ public class AiravataServiceClientFactory {
             }
 
             var protocol = new TBinaryProtocol(transport);
-            //            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "APIServer");
-            return new Airavata.Client(protocol);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, AIRAVATA_SERVICE_NAME);
+            return new Airavata.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             AiravataClientException exception = new AiravataClientException();
             exception.setParameter("Unable to connect to the server at " + serverHost + ":" + serverPort);

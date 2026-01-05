@@ -19,13 +19,15 @@
 */
 package org.apache.airavata.file.server;
 
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.agents.api.AdaptorSupport;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties
+@ConditionalOnProperty(name = "services.file.enabled", havingValue = "true", matchIfMissing = true)
 public class FileServerConfiguration {
 
     private final AdaptorSupport adaptorSupport;

@@ -32,7 +32,7 @@ import org.apache.airavata.common.model.GatewayApprovalStatus;
 /**
  * The persistent class for the gateway database table.
  */
-@Entity
+@Entity(name = "ExpCatalogGatewayEntity")
 @Table(name = "GATEWAY")
 public class GatewayEntity implements Serializable {
     private static final long serialVersionUID = 1L;

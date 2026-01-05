@@ -19,8 +19,10 @@
 */
 package org.apache.airavata.config;
 
+import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -33,13 +35,14 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("!test")
 @ConditionalOnProperty(name = "security.manager.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnBean(AiravataSecurityManager.class)
 public class SecurityManagerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityManagerConfig.class);
 
-    public SecurityManagerConfig(AiravataServerProperties properties) {
+    public SecurityManagerConfig(AiravataSecurityManager securityManager) {
         logger.info(
                 "SecurityManagerConfig initialized. SecurityManager implementation: {}",
-                properties.security.iam.classpath);
+                securityManager.getClass().getName());
     }
 }

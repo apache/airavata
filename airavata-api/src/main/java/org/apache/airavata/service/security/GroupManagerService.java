@@ -39,9 +39,11 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 

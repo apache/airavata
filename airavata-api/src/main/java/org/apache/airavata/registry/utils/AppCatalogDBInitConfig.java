@@ -93,7 +93,7 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
     public void postInit() {
         try {
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayID(properties.services.default_.gateway);
+            gatewayResourceProfile.setGatewayID(properties.services.defaults.gateway);
             if (!gwyResourceProfileService.isGatewayResourceProfileExists(gatewayResourceProfile.getGatewayID())) {
                 gwyResourceProfileService.addGatewayResourceProfile(gatewayResourceProfile);
             }

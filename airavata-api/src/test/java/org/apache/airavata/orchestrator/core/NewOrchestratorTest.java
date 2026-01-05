@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

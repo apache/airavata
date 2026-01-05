@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.dbus.enabled", havingValue = "true", matchIfMissing = true)
 public class DBEventManagerRunner extends ServerLifecycle {
 
     private static final String SERVER_NAME = "DB Event Manager";
@@ -42,6 +42,7 @@ public class DBEventManagerRunner extends ServerLifecycle {
 
     private final AiravataServerProperties properties;
     private final DBEventManagerMessagingFactory messagingFactory;
+    private Thread managerThread;
 
     public DBEventManagerRunner(AiravataServerProperties properties, DBEventManagerMessagingFactory messagingFactory) {
         this.properties = properties;
@@ -85,12 +86,28 @@ public class DBEventManagerRunner extends ServerLifecycle {
     @Override
     protected void doStart() throws Exception {
         logger.info("Starting the DB Event Manager runner.");
-        new Thread(() -> this.startDBEventManagerRunner()).start();
+        managerThread = new Thread(this::startDBEventManagerRunner);
+        managerThread.setName(getServerName());
+        managerThread.setDaemon(true);
+        managerThread.start();
     }
 
     @Override
     protected void doStop() throws Exception {
-        // TODO: implement stopping the DBEventManager
-        logger.info("Stopping DB Event Manager (shutdown not yet implemented)");
+        if (managerThread != null) {
+            managerThread.interrupt();
+            try {
+                managerThread.join(5000); // Wait up to 5 seconds
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for DB Event Manager thread to stop", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        logger.info("Stopped DB Event Manager");
+    }
+
+    @Override
+    public boolean isRunning() {
+        return super.isRunning() && managerThread != null && managerThread.isAlive();
     }
 }

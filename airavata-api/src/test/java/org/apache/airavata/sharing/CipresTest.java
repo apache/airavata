@@ -36,29 +36,26 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {JpaConfig.class})
-@org.springframework.test.context.ActiveProfiles("test")
+@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
-public class CipresTest implements CommandLineRunner {
+@Disabled("Integration test requiring database setup")
+public class CipresTest {
     private static final Logger logger = LoggerFactory.getLogger(CipresTest.class);
 
-    private final SharingRegistryService sharingService;
+    @Autowired
+    private SharingRegistryService sharingService;
 
-    public CipresTest(SharingRegistryService sharingService) {
-        this.sharingService = sharingService;
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(CipresTest.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
+    @Test
+    public void testSharingRegistryOperations() throws Exception {
         logger.info("Hello World!");
 
         try {
@@ -655,6 +652,7 @@ public class CipresTest implements CommandLineRunner {
             logger.info("End of try clause...");
         } catch (SharingRegistryException ex2) {
             logger.error("SharingRegistryException in CipresTest", ex2);
+            fail("SharingRegistryException: " + ex2.getMessage());
         }
     }
 }

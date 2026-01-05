@@ -25,12 +25,7 @@ import org.apache.airavata.manager.dbevent.DBEventManagerRunner;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
-import org.apache.airavata.thriftapi.server.AiravataServiceServer;
-import org.apache.airavata.thriftapi.server.CredentialServiceServer;
-import org.apache.airavata.thriftapi.server.OrchestratorServiceServer;
-import org.apache.airavata.thriftapi.server.ProfileServiceServer;
-import org.apache.airavata.thriftapi.server.RegistryServiceServer;
-import org.apache.airavata.thriftapi.server.SharingRegistryServer;
+import org.apache.airavata.thriftapi.server.ThriftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
@@ -63,15 +58,10 @@ public class ServiceRegistry {
      */
     private void initializeServiceMappings() {
         // TCP Server Services
-        serviceNameToBeanClass.put("thrift-api", AiravataServiceServer.class);
+        serviceNameToBeanClass.put("thrift-api", ThriftServer.class);
         // REST API is handled specially via WebServerApplicationContext
-
-        // Thrift API sub-services (these are part of thrift-api but can be tracked separately)
-        serviceNameToBeanClass.put("orchestrator-server", OrchestratorServiceServer.class);
-        serviceNameToBeanClass.put("registry-server", RegistryServiceServer.class);
-        serviceNameToBeanClass.put("profile-server", ProfileServiceServer.class);
-        serviceNameToBeanClass.put("credential-server", CredentialServiceServer.class);
-        serviceNameToBeanClass.put("sharing-registry-server", SharingRegistryServer.class);
+        // Note: All Thrift services (Airavata, Profile, Orchestrator, Registry, Credential, Sharing)
+        // are now multiplexed in the unified ThriftServer
 
         // Background Services (if they implement SmartLifecycle)
         serviceNameToBeanClass.put("db-event-manager", DBEventManagerRunner.class);

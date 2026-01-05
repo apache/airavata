@@ -130,11 +130,11 @@ public class AiravataServerProperties {
             database.validationQuery = getProperty("database.validation-query", database.validationQuery);
         }
 
-        // Manually bind default properties from airavata.default.* to services.default_.*
-        if (services != null && services.default_ != null && environment != null) {
-            services.default_.gateway = getProperty("airavata.default.gateway", services.default_.gateway);
-            services.default_.user = getProperty("airavata.default.user", services.default_.user);
-            services.default_.password = getProperty("airavata.default.password", services.default_.password);
+        // Manually bind default properties from airavata.defaults.* to services.defaults.*
+        if (services != null && services.defaults != null && environment != null) {
+            services.defaults.gateway = getProperty("airavata.defaults.gateway", services.defaults.gateway);
+            services.defaults.user = getProperty("airavata.defaults.user", services.defaults.user);
+            services.defaults.password = getProperty("airavata.defaults.password", services.defaults.password);
         }
 
         // Log configuration
@@ -255,11 +255,9 @@ public class AiravataServerProperties {
 
         public static class AuthzCache {
             public boolean enabled = true;
-            public String classpath = "org.apache.airavata.security.authzcache.DefaultAuthzCacheManager";
         }
 
         public static class Iam {
-            public String classpath = "org.apache.airavata.security.KeyCloakSecurityManager";
             public String serverUrl;
             public String superAdminUsername = "admin";
             public String superAdminPassword = "admin";
@@ -295,34 +293,15 @@ public class AiravataServerProperties {
         public boolean embedded = false;
     }
 
-    public Helix helix = new Helix();
-
-    public static class Helix {
-        public String clusterName = "AiravataCluster";
-        public String controllerName = "AiravataController";
-        public String participantName = "AiravataParticipant";
-        public Controller controller = new Controller();
-        public Participant participant = new Participant();
-
-        public static class Controller {
-            public boolean enabled = true;
-        }
-
-        public static class Participant {
-            public boolean enabled = true;
-        }
-    }
-
     // ==================== Services Configuration ====================
     public Services services = new Services();
 
     public static class Services {
         // Service enablement flags - both can be true to run in parallel
-        public boolean thrift = true; // Default: enabled
-        public boolean rest = false; // Default: disabled
+        public Thrift thrift = new Thrift(); // Default: enabled
+        public Rest rest = new Rest(); // Default: disabled
 
         public Api api = new Api();
-        public Orchestrator orchestrator = new Orchestrator();
         public Participant participant = new Participant();
         public Controller controller = new Controller();
         public PreWm prewm = new PreWm();
@@ -332,62 +311,91 @@ public class AiravataServerProperties {
         public Monitor monitor = new Monitor();
         public Sharing sharing = new Sharing();
         public Registry registry = new Registry();
-        public Default default_ = new Default();
-        public DbEvent dbevent = new DbEvent();
-        public Vault vault = new Vault();
+        public Default defaults = new Default();
+        public Background background = new Background();
+        public Helix helix = new Helix();
+        public Research research = new Research();
+        public Agent agent = new Agent();
+        public File file = new File();
+        public Dbus dbus = new Dbus();
+
+        public static class Thrift {
+            public boolean enabled = true;
+            public int port = 8930;
+        }
+
+        public static class Rest {
+            public boolean enabled = false;
+            public int port = 8082;
+        }
+
+        public static class Research {
+            public boolean enabled = true;
+        }
+
+        public static class Agent {
+            public boolean enabled = true;
+        }
+
+        public static class File {
+            public boolean enabled = true;
+        }
+
+        public Telemetry telemetry = new Telemetry();
+
+        public static class Telemetry {
+            public boolean enabled = true;
+            public String host = "localhost";
+            public int port = 9090;
+        }
+
+        public static class Helix {
+            public String clusterName = "AiravataCluster";
+            public String controllerName = "AiravataController";
+            public String participantName = "AiravataParticipant";
+        }
 
         public static class Api {
-            public int port = 8930;
-            public int minThreads = 50;
-            public String classpath = "org.apache.airavata.api.thrift.server.AiravataServiceServer";
-            public Profile profile = new Profile();
+            // Note: Api service is controlled by services.thrift.enabled, not a separate services.api.enabled
+            // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing Registry) are now
+            // multiplexed on the unified port (services.thrift.port). Individual service toggles and ports removed.
+            public Vault vault = new Vault();
 
-            public static class Profile {
-                public Server server = new Server();
-                public String classpath = "org.apache.airavata.api.thrift.server.ProfileServiceServer";
+            public static class Vault {
+                public Keystore keystore = new Keystore();
+                // Note: enabled and port removed - service is multiplexed on unified port
 
-                public static class Server {
-                    public int port = 8962;
+                public static class Keystore {
+                    public String url;
+                    public String password;
+                    public String alias;
                 }
             }
         }
 
-        public static class Orchestrator {
-            public int serverMinThreads = 50;
-            public int serverPort = 8940;
-            public String classpath = "org.apache.airavata.api.thrift.server.OrchestratorServiceServer";
+        public static class Dbus {
+            public boolean enabled = true;
+            public String classpath = "org.apache.airavata.main.DBEventManagerRunner";
         }
 
         public static class Participant {
-            // Participant-specific configuration
+            public boolean enabled = true; // services.participant.enabled
         }
 
         public static class Controller {
-            // Controller-specific configuration
+            public boolean enabled = true;
         }
 
         public static class PreWm {
             public boolean enabled = true;
             public boolean loadBalanceClusters = false;
-            public Monitoring monitoring = new Monitoring();
             public String name = "AiravataPreWM";
-
-            public static class Monitoring {
-                public boolean enabled = true;
-                public int port = 9093;
-            }
         }
 
         public static class PostWm {
             public boolean enabled = true;
             public boolean loadBalanceClusters = false;
-            public Monitoring monitoring = new Monitoring();
             public String name = "AiravataPostWM";
-
-            public static class Monitoring {
-                public boolean enabled = true;
-                public int port = 9094;
-            }
         }
 
         public static class Parser {
@@ -405,8 +413,9 @@ public class AiravataServerProperties {
         }
 
         public static class Scheduler {
-            public String classpath = "org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler";
             public boolean enabled = false;
+            public Interpreter interpreter = new Interpreter();
+            public Rescheduler rescheduler = new Rescheduler();
             public String gateway = "";
             public String groupResourceProfile = "";
             public String username = "";
@@ -418,13 +427,20 @@ public class AiravataServerProperties {
                     "org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy";
             public String computeResourceReschedulerPolicyClass =
                     "org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler";
+
+            public static class Interpreter {
+                public boolean enabled = true;
+            }
+
+            public static class Rescheduler {
+                public boolean enabled = true;
+            }
         }
 
         public static class Monitor {
             public Email email = new Email();
             public Realtime realtime = new Realtime();
-            public Cluster cluster = new Cluster();
-            public Job job = new Job();
+            public Compute compute = new Compute();
 
             public static class Email {
                 public String address;
@@ -434,23 +450,17 @@ public class AiravataServerProperties {
                 public String storeProtocol = "imaps";
                 public int period = 10000;
                 public int connectionRetryInterval = 30000; // 30 seconds
-                public boolean monitorEnabled = true;
+                public boolean enabled = true;
                 public int expiryMins = 60;
             }
 
             public static class Realtime {
-                public boolean enabled = false;
-                public boolean monitorEnabled = true;
+                public boolean enabled = true;
                 public String brokerConsumerGroup = "monitor";
                 public String brokerTopic = "helix-airavata-mq";
             }
 
-            public static class Cluster {
-                public boolean enable = false;
-                public int repeatTime = 18000;
-            }
-
-            public static class Job {
+            public static class Compute {
                 public String brokerPublisherId = "AiravataMonitorPublisher";
                 public String emailPublisherId = "EmailBasedProducer";
                 public String realtimePublisherId = "RealtimeProducer";
@@ -459,28 +469,23 @@ public class AiravataServerProperties {
                 public Notification notification = new Notification();
                 public String statusPublishEndpoint;
                 public String validators;
+                public boolean enabled = true; // services.monitor.compute.enabled
+                public int clusterCheckTimeWindow =
+                        300; // time window to skip cluster checks after submission (seconds)
+                public int clusterCheckRepeatTime = 18000; // how often to run cluster status checks (seconds)
 
                 public static class Notification {
                     public String emailIds = "";
-                    public boolean enable = true;
                 }
             }
         }
 
         public static class Sharing {
-            public int serverPort = 7878;
-            public String classpath = "org.apache.airavata.api.thrift.server.SharingRegistryServer";
-            public boolean enabled = true;
+            // Note: enabled and serverPort removed - service is multiplexed on unified port (services.thrift.port)
         }
 
         public static class Registry {
-            public String classpath = "org.apache.airavata.api.thrift.server.RegistryServiceServer";
-            public Server server = new Server();
-
-            public static class Server {
-                public int minThreads = 50;
-                public int port = 8970;
-            }
+            // Note: enabled and Server.port removed - service is multiplexed on unified port (services.thrift.port)
         }
 
         public static class Default {
@@ -489,23 +494,11 @@ public class AiravataServerProperties {
             public String user;
         }
 
-        public static class DbEvent {
-            public String classpath = "org.apache.airavata.main.DBEventManagerRunner";
-        }
+        public static class Background {
+            public Controller controller = new Controller();
 
-        public static class Vault {
-            public Server server = new Server();
-            public String classpath = "org.apache.airavata.api.thrift.server.CredentialServiceServer";
-            public Keystore keystore = new Keystore();
-
-            public static class Server {
-                public int port = 8960;
-            }
-
-            public static class Keystore {
-                public String url;
-                public String password;
-                public String alias;
+            public static class Controller {
+                public boolean enabled = true;
             }
         }
     }
@@ -517,10 +510,21 @@ public class AiravataServerProperties {
         public String localDataLocation = "/tmp";
         public int maxArchiveSize = 1000;
         public int inMemoryCacheSize = 1000;
-        public boolean enableValidation = true;
-        public boolean enableStreamingTransfer = false;
+        public Validation validation = new Validation();
+        public StreamingTransfer streamingTransfer = new StreamingTransfer();
+        public Sharing sharing = new Sharing();
         public String superTenantGatewayId = "default";
-        public boolean thriftClientPoolAbandonedRemovalEnabled = true;
-        public boolean thriftClientPoolAbandonedRemovalLogged = false;
+
+        public static class Validation {
+            public boolean enabled = true;
+        }
+
+        public static class StreamingTransfer {
+            public boolean enabled = false;
+        }
+
+        public static class Sharing {
+            public boolean enabled = true;
+        }
     }
 }

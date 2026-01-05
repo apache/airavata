@@ -138,9 +138,11 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
@@ -2125,7 +2127,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleExpIds.size() == 0 && !properties.services.sharing.enabled) {
+                if (accessibleExpIds.size() == 0 && !properties.airavata.sharing.enabled) {
                     if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
                         regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                     }
@@ -2508,7 +2510,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleProjIds.size() == 0 && !properties.services.sharing.enabled) {
+                if (accessibleProjIds.size() == 0 && !properties.airavata.sharing.enabled) {
                     if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
                         regFilters.put(DBConstants.Project.OWNER, userName);
                     }

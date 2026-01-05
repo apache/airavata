@@ -106,7 +106,7 @@ The Airavata API Server provides the core services needed to run/monitor computa
 The `AiravataServer` is a Spring Boot application that starts all services in a single JVM process. It includes:
 
 - **Thrift API Server** - Public-facing API consumed by Airavata SDKs and dashboards. Serves the Thrift API on port 8930 (configurable).
-  (`org.apache.airavata.api.thrift.server.AiravataServiceServer`)
+  (`org.apache.airavata.thriftapi.server.ThriftServer`)
 - **REST API Server** - Alternative RESTful API interface (can run in parallel with Thrift or replace it).
   (Spring Boot Web application)
 - **Profile Service** - Manages users, tenants, compute resources, and group profiles. Served on port 8962 (configurable).
@@ -124,7 +124,7 @@ The `AiravataServer` is a Spring Boot application that starts all services in a 
 
 #### Controller
 > Class Name: `org.apache.airavata.helix.impl.controller.HelixController`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure. The Controller is started automatically as a daemon thread when `AiravataServer` starts (enabled via `helix.controller.enabled=true` in configuration).
 
@@ -132,31 +132,31 @@ The Controller manages the step-by-step transition of task state on *helix-side*
 
 #### Participant
 > Class Name: `org.apache.airavata.helix.impl.participant.GlobalParticipant`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`. The Participant is started automatically as a daemon thread when `AiravataServer` starts (enabled via `helix.participant.enabled=true` in configuration).
 
 #### Email Monitor
 > Class Name: `org.apache.airavata.monitor.email.EmailBasedMonitor`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The email monitor periodically checks an email inbox for job status updates sent via email. If it reads a new email with a job status update, it relays that state-change to the internal MQ (KafkaProducer). The Email Monitor is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.monitor.email.monitorEnabled=true` in configuration).
 
 #### Realtime Monitor
 > Class Name: `org.apache.airavata.monitor.realtime.RealtimeMonitor`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The realtime monitor listens to incoming state-change messages on the internal MQ (KafkaConsumer), and relays that state-change to the internal MQ (KafkaProducer). When a task is completed at the compute resource, the realtime monitor is notified of this. The Realtime Monitor is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.monitor.realtime.monitorEnabled=true` in configuration).
 
 #### Pre Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant. The Pre Workflow Manager is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.prewm.enabled=true` in configuration).
 
 #### Post Workflow Manager
 > Class Name: `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
-> Started: Automatically by Spring Boot via `BackgroundServicesLauncher`
+> Started: Automatically by Spring Boot via SmartLifecycle
 
 The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller. The Post Workflow Manager is started automatically as a daemon thread when `AiravataServer` starts (enabled via `services.postwm.enabled=true` in configuration).
 

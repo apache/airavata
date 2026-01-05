@@ -51,7 +51,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(

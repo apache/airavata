@@ -22,19 +22,16 @@ package org.apache.airavata.monitor;
 import java.util.List;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.monitor.kafka.MessageProducer;
+import org.apache.airavata.monitor.realtime.MessageProducer;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);

@@ -22,6 +22,7 @@ package org.apache.airavata.thriftapi.client;
 import org.apache.airavata.thriftapi.registry.exception.RegistryServiceException;
 import org.apache.airavata.thriftapi.registry.model.RegistryService;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -29,13 +30,16 @@ import org.apache.thrift.transport.TTransportException;
 
 public class RegistryServiceClientFactory {
 
+    private static final String REGISTRY_SERVICE_NAME = "RegistryService";
+
     public static RegistryService.Client createRegistryClient(String serverHost, int serverPort)
             throws RegistryServiceException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            return new RegistryService.Client(protocol);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, REGISTRY_SERVICE_NAME);
+            return new RegistryService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new RegistryServiceException();
         }

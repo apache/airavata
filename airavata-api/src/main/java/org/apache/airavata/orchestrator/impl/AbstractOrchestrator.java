@@ -93,7 +93,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 
     protected void setGatewayProperties() {
         if (properties != null) {
-            var defaultRegistry = properties.services.default_;
+            var defaultRegistry = properties.services.defaults;
             setAiravataUserName(defaultRegistry.user);
             setGatewayName(defaultRegistry.gateway);
         }

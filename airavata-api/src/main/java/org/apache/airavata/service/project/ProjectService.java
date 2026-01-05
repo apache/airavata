@@ -30,12 +30,14 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for project management operations.
  */
 @Service("projectServiceFacade")
+@ConditionalOnBean(org.apache.airavata.service.registry.RegistryService.class)
 public class ProjectService {
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 

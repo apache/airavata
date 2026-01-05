@@ -44,11 +44,13 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 @ConditionalOnMissingBean(name = "testIamAdminService")
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);

@@ -65,12 +65,6 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     private static int NUM_CONCURRENT_REQUESTS = 1;
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorServiceIntegrationTest.class);
 
-    public static void main(String[] args) {
-        throw new UnsupportedOperationException(
-                "OrchestratorServiceServer must be used within a Spring application context. "
-                        + "Use Spring Boot application or provide dependencies manually via constructor.");
-    }
-
     @Test
     public void testStoreExperimentDetail() {
         for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
@@ -90,7 +84,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
                     output.setValue("");
                     exOut.add(output);
 
-                    String defaultGateway = properties.services.default_.gateway;
+                    String defaultGateway = properties.services.defaults.gateway;
                     ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(
                             defaultGateway,
                             "default",

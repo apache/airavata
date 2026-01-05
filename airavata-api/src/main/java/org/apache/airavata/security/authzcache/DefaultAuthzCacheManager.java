@@ -22,9 +22,11 @@ package org.apache.airavata.security.authzcache;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "security.authzCache.enabled", havingValue = "true", matchIfMissing = true)
 public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);

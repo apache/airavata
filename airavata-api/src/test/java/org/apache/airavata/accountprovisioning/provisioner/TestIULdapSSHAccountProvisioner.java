@@ -23,16 +23,27 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.InvalidUsernameException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Disabled("Requires external LDAP server and SSH tunnel setup")
 public class TestIULdapSSHAccountProvisioner {
     private static final Logger logger = LoggerFactory.getLogger(TestIULdapSSHAccountProvisioner.class);
+    private IULdapSSHAccountProvisioner sshAccountProvisioner;
+    private Map<ConfigParam, String> config;
 
-    public static void main(String[] args) throws InvalidUsernameException {
-        String ldapPassword = args[0];
-        IULdapSSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
-        Map<ConfigParam, String> config = new HashMap<>();
+    @BeforeEach
+    public void setUp() throws InvalidUsernameException {
+        sshAccountProvisioner = new IULdapSSHAccountProvisioner();
+        config = new HashMap<>();
         // Create SSH tunnel to server that has firewall access to bazooka:
         //   ssh airavata@apidev.scigap.org -L 9000:bazooka.hps.iu.edu:636 -N &
         // Put entry in /etc/hosts with the following
@@ -40,7 +51,8 @@ public class TestIULdapSSHAccountProvisioner {
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_HOST, "bazooka.hps.iu.edu");
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_PORT, "9000"); // ssh tunnel port
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_USERNAME, "cn=sgrcusr,dc=rt,dc=iu,dc=edu");
-        config.put(IULdapSSHAccountProvisionerProvider.LDAP_PASSWORD, ldapPassword);
+        // Note: LDAP password should be provided via environment variable or test properties
+        config.put(IULdapSSHAccountProvisionerProvider.LDAP_PASSWORD, System.getenv("LDAP_PASSWORD"));
         config.put(IULdapSSHAccountProvisionerProvider.LDAP_BASE_DN, "ou=bigred2-sgrc,dc=rt,dc=iu,dc=edu");
         config.put(
                 IULdapSSHAccountProvisionerProvider.CANONICAL_SCRATCH_LOCATION,
@@ -49,18 +61,33 @@ public class TestIULdapSSHAccountProvisioner {
                 IULdapSSHAccountProvisionerProvider.CYBERGATEWAY_GROUP_DN,
                 "cn=cybergateway,ou=Group,dc=rt,dc=iu,dc=edu");
         sshAccountProvisioner.init(config);
+    }
+
+    @Test
+    public void testAccountProvisioningOperations() throws InvalidUsernameException {
         String userId = "machrist@iu.edu";
-        logger.info("hasAccount={}", sshAccountProvisioner.hasAccount(userId));
-        logger.info("scratchLocation={}", sshAccountProvisioner.getScratchLocation(userId));
+        
+        // Test hasAccount
+        boolean hasAccount = sshAccountProvisioner.hasAccount(userId);
+        logger.info("hasAccount={}", hasAccount);
+        
+        // Test getScratchLocation
+        String scratchLocation = sshAccountProvisioner.getScratchLocation(userId);
+        logger.info("scratchLocation={}", scratchLocation);
+        assertNotNull(scratchLocation, "Scratch location should not be null");
+        
+        // Test SSH key provisioning
         String sshPublicKey = "foobar12345";
         boolean sshAccountProvisioningComplete =
                 sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
         logger.info("isSSHAccountProvisioningComplete={}", sshAccountProvisioningComplete);
+        
         if (!sshAccountProvisioningComplete) {
             sshAccountProvisioner.installSSHKey(userId, sshPublicKey);
             sshAccountProvisioningComplete =
                     sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
-            logger.info("isSSHAccountProvisioningComplete={}", sshAccountProvisioningComplete);
+            logger.info("isSSHAccountProvisioningComplete after install={}", sshAccountProvisioningComplete);
+            assertTrue(sshAccountProvisioningComplete, "SSH key provisioning should be complete after installation");
         }
     }
 }

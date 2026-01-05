@@ -21,7 +21,6 @@ package org.apache.airavata;
 
 import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.restapi.RestAPIConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -36,9 +35,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Spring Boot application entry point for Airavata Server.
  */
 @SpringBootApplication(
-        exclude = {org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class})
+        exclude = {
+            org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class,
+            org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class
+        })
 @EnableTransactionManagement
-@EnableConfigurationProperties({AiravataServerProperties.class, RestAPIConfiguration.class})
+@EnableConfigurationProperties({AiravataServerProperties.class})
 @Import({AiravataPropertiesConfiguration.class})
 @ComponentScan(
         basePackages = {
@@ -70,7 +72,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.orchestrator",
             "org.apache.airavata.helix",
             "org.apache.airavata.config",
-            "org.apache.airavata.api.thrift",
             "org.apache.airavata.thriftapi",
             "org.apache.airavata.manager.dbevent",
             "org.apache.airavata.metascheduler",

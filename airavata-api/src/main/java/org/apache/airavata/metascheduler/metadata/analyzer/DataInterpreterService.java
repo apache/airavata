@@ -33,12 +33,14 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "services.scheduler.interpreter.enabled", havingValue = "true", matchIfMissing = true)
 public class DataInterpreterService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Data Interpreter Service";

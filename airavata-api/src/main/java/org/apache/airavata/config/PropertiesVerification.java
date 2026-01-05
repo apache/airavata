@@ -43,8 +43,9 @@ public class PropertiesVerification implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("=== Verifying AiravataServerProperties ===");
 
-        // Verify API Server
-        logger.info("API Server - Port: {}", properties.services.api.port);
+        // Verify API Servers
+        logger.info("Thrift Server - Port: {}", properties.services.thrift.port);
+        logger.info("REST Server - Port: {}", properties.services.rest.port);
         // Verify Database configurations
         logger.info(
                 "AppCatalog DB - URL: {}, Driver: {}",
@@ -57,10 +58,10 @@ public class PropertiesVerification implements CommandLineRunner {
         // Verify Default Registry
         logger.info(
                 "Default Registry - Gateway: {}, User: {}",
-                properties.services.default_.gateway,
-                properties.services.default_.user);
+                properties.services.defaults.gateway,
+                properties.services.defaults.user);
         // Verify Sharing
-        logger.info("Sharing - Enabled: {}", properties.services.sharing.enabled);
+        logger.info("Sharing - Enabled: {}", properties.airavata.sharing.enabled);
         // Verify Zookeeper
         logger.info(
                 "Zookeeper - Embedded: {}, Connection: {}",

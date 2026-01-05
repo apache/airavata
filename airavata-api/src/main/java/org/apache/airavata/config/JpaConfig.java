@@ -26,7 +26,7 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -46,9 +46,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Configuration for multiple JPA persistence units using Spring-provided methods.
  * Uses LocalContainerEntityManagerFactoryBean for each of the 7 persistence units
  * to integrate with Spring's transaction management and lifecycle.
+ *
+ * <p>This configuration is only enabled when at least one API service is enabled
+ * (services.rest.enabled OR services.thrift.enabled). If neither is enabled,
+ * no database access or persistence will be initialized.
  */
 @Configuration
 @EnableTransactionManagement
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class JpaConfig {
 
     private final AiravataServerProperties properties;
@@ -73,10 +78,14 @@ public class JpaConfig {
             String driver, String url, String user, String password, String validationQuery) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(driver);
-        // Add URL suffix for MySQL/MariaDB compatibility
+        // Append MySQL/MariaDB connection parameters
         String jdbcUrl = url;
-        if (url != null) {
-            jdbcUrl = url + "?autoReconnect=true&tinyInt1isBit=false";
+        if (url != null
+                && driver != null
+                && (driver.toLowerCase().contains("mysql")
+                        || driver.toLowerCase().contains("mariadb"))) {
+            String separator = url.contains("?") ? "&" : "?";
+            jdbcUrl = url + separator + "autoReconnect=true&tinyInt1isBit=false";
         }
         config.setJdbcUrl(jdbcUrl);
         config.setUsername(user);
@@ -137,7 +146,6 @@ public class JpaConfig {
     @Bean
     @Primary
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource profileServiceDataSource() {
         var db = properties.database.profile;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -149,7 +157,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource appCatalogDataSource() {
         var db = properties.database.catalog;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -161,7 +168,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource registryDataSource() {
         var db = properties.database.registry;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -173,7 +179,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource replicaDataSource() {
         var db = properties.database.replica;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -185,7 +190,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource workflowDataSource() {
         var db = properties.database.workflow;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -197,7 +201,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource sharingDataSource() {
         var db = properties.database.sharing;
         if (db == null || db.url == null || db.url.isEmpty()) {
@@ -209,7 +212,6 @@ public class JpaConfig {
 
     @Bean
     @Profile("!test")
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public DataSource credentialStoreDataSource() {
         var db = properties.database.vault;
         // Fallback to registry database if vault DB not configured
@@ -230,7 +232,6 @@ public class JpaConfig {
     // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @DependsOn("profileServiceDataSource")
     public LocalContainerEntityManagerFactoryBean profileServiceEntityManagerFactory(
             @Qualifier("profileServiceDataSource") DataSource dataSource) {
@@ -238,7 +239,6 @@ public class JpaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean appCatalogEntityManagerFactory(
             @Qualifier("appCatalogDataSource") DataSource dataSource) {
         return createEntityManagerFactory(
@@ -246,7 +246,6 @@ public class JpaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean expCatalogEntityManagerFactory(
             @Qualifier("registryDataSource") DataSource dataSource) {
         return createEntityManagerFactory(
@@ -254,7 +253,6 @@ public class JpaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean replicaCatalogEntityManagerFactory(
             @Qualifier("replicaDataSource") DataSource dataSource) {
         return createEntityManagerFactory(
@@ -262,7 +260,6 @@ public class JpaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean workflowCatalogEntityManagerFactory(
             @Qualifier("workflowDataSource") DataSource dataSource) {
         return createEntityManagerFactory(
@@ -270,21 +267,18 @@ public class JpaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean sharingRegistryEntityManagerFactory(
             @Qualifier("sharingDataSource") DataSource dataSource) {
         return createEntityManagerFactory(SHARING_REGISTRY_PU, dataSource, "org.apache.airavata.sharing.entities");
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public LocalContainerEntityManagerFactoryBean credentialStoreEntityManagerFactory(
             @Qualifier("credentialStoreDataSource") DataSource dataSource) {
         return createEntityManagerFactory(CREDENTIAL_STORE_PU, dataSource, "org.apache.airavata.credential.entities");
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager profileServiceTransactionManager(
             @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
@@ -292,42 +286,36 @@ public class JpaConfig {
 
     @Bean
     @Primary
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager appCatalogTransactionManager(
             @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager expCatalogTransactionManager(
             @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager replicaCatalogTransactionManager(
             @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager workflowCatalogTransactionManager(
             @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager sharingRegistryTransactionManager(
             @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public PlatformTransactionManager credentialStoreTransactionManager(
             @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
@@ -336,49 +324,42 @@ public class JpaConfig {
     // EntityManager beans with qualifiers for direct injection
     // Using SharedEntityManagerCreator to create proxy EntityManagers that participate in transactions
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager profileServiceEntityManager(
             @Qualifier("profileServiceEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager appCatalogEntityManager(
             @Qualifier("appCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager expCatalogEntityManager(
             @Qualifier("expCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager replicaCatalogEntityManager(
             @Qualifier("replicaCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager workflowCatalogEntityManager(
             @Qualifier("workflowCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager sharingRegistryEntityManager(
             @Qualifier("sharingRegistryEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     public EntityManager credentialStoreEntityManager(
             @Qualifier("credentialStoreEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
@@ -390,7 +371,6 @@ public class JpaConfig {
     // Note: Order matters - repositories registered later will override earlier ones with the same name
     // We register expcatalog last so it's not overridden by sharing's UserRepository
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.profile.repositories",
             entityManagerFactoryRef = "profileServiceEntityManagerFactory",
@@ -400,7 +380,6 @@ public class JpaConfig {
     static class ProfileServiceJpaRepositoriesConfig {}
 
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.appcatalog",
             entityManagerFactoryRef = "appCatalogEntityManagerFactory",
@@ -409,7 +388,6 @@ public class JpaConfig {
     static class AppCatalogJpaRepositoriesConfig {}
 
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
             entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
@@ -418,7 +396,6 @@ public class JpaConfig {
     static class ReplicaCatalogJpaRepositoriesConfig {}
 
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
             entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
@@ -427,7 +404,6 @@ public class JpaConfig {
     static class WorkflowCatalogJpaRepositoriesConfig {}
 
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.sharing.repositories",
             entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
@@ -436,7 +412,6 @@ public class JpaConfig {
     static class SharingRegistryJpaRepositoriesConfig {}
 
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.credential.repositories",
             entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
@@ -447,7 +422,6 @@ public class JpaConfig {
     // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
     // This must be the last @Configuration class to ensure expcatalog repository is the final bean
     @Configuration
-    @ConditionalOnProperty(name = "services.airavata.enabled", havingValue = "true", matchIfMissing = false)
     @EnableJpaRepositories(
             basePackages = "org.apache.airavata.registry.repositories.expcatalog",
             entityManagerFactoryRef = "expCatalogEntityManagerFactory",

@@ -27,7 +27,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "ExpCatalogUserEntity")
 @Table(name = "USERS")
 @IdClass(UserPK.class)
 public class UserEntity {

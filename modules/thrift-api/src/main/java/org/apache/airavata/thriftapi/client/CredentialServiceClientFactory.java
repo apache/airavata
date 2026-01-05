@@ -22,6 +22,7 @@ package org.apache.airavata.thriftapi.client;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.thriftapi.credential.model.CredentialStoreService;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -29,13 +30,17 @@ import org.apache.thrift.transport.TTransportException;
 
 public class CredentialServiceClientFactory {
 
+    private static final String CREDENTIAL_STORE_SERVICE_NAME = "CredentialStoreService";
+
     public static CredentialStoreService.Client createAiravataCSClient(String serverHost, int serverPort)
             throws CredentialStoreException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            return new CredentialStoreService.Client(protocol);
+            TMultiplexedProtocol multiplexedProtocol =
+                    new TMultiplexedProtocol(protocol, CREDENTIAL_STORE_SERVICE_NAME);
+            return new CredentialStoreService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new CredentialStoreException(
                     "Unable to connect to the credential store server at " + serverHost + ":" + serverPort);

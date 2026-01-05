@@ -40,10 +40,9 @@ import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.monitor.email.parser.EmailParser;
-import org.apache.airavata.monitor.email.parser.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,15 +53,15 @@ import org.yaml.snakeyaml.Yaml;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
-public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
+@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = true)
+public class EmailBasedMonitor extends ServerLifecycle {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private final AiravataServerProperties airavataProperties;
     private final org.apache.airavata.service.registry.RegistryService registryService;
     private final ApplicationContext applicationContext;
+    private final AbstractMonitor abstractMonitor;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -77,21 +76,21 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     private final Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private long emailExpirationTimeMinutes;
     private String publisherId;
+    private Thread emailThread;
 
     public EmailBasedMonitor(
             org.apache.airavata.service.registry.RegistryService registryService,
             AiravataServerProperties airavataProperties,
             ApplicationContext applicationContext)
             throws Exception {
-        super(registryService, airavataProperties);
         this.registryService = registryService;
         this.airavataProperties = airavataProperties;
         this.applicationContext = applicationContext;
+        this.abstractMonitor = new AbstractMonitor(registryService, airavataProperties);
         // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 
     @jakarta.annotation.PostConstruct
-    @Override
     public void init() {
         try {
             loadContext();
@@ -105,7 +104,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         storeProtocol = airavataProperties.services.monitor.email.storeProtocol;
         folderName = airavataProperties.services.monitor.email.folderName;
         emailExpirationTimeMinutes = airavataProperties.services.monitor.email.expiryMins;
-        publisherId = airavataProperties.services.monitor.job.emailPublisherId;
+        publisherId = airavataProperties.services.monitor.compute.emailPublisherId;
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new RuntimeException(
                     "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
@@ -224,79 +223,135 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
     }
 
     @Override
-    public void run() {
+    public String getServerName() {
+        return "Email Monitor";
+    }
 
-        while (!ShutdownFlag.isStopAllThreads()) {
-            try {
-                Session session = Session.getDefaultInstance(properties);
-                store = session.getStore(storeProtocol);
-                store.connect(host, emailAddress, password);
-                emailFolder = store.getFolder(folderName);
-                // first we search for all unread messages.
-                SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                while (!ShutdownFlag.isStopAllThreads()) {
-                    Thread.sleep(airavataProperties.services.monitor.email.period); // sleep for long enough
-                    if (!store.isConnected()) {
-                        store.connect();
-                        emailFolder = store.getFolder(folderName);
-                    }
-                    log.info("[EJM]: Retrieving unseen emails");
-                    if (emailFolder == null) {
-                        return;
-                    }
-                    emailFolder.open(Folder.READ_WRITE);
-                    if (emailFolder.isOpen()) {
-                        // flush if any message left in flushUnseenMessage
-                        if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
-                            try {
-                                emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
-                                flushUnseenMessages = null;
-                            } catch (MessagingException e) {
-                                if (!store.isConnected()) {
-                                    store.connect();
+    @Override
+    public String getServerVersion() {
+        return "1.0";
+    }
+
+    @Override
+    public int getPhase() {
+        return 40; // Start after realtime monitor
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        emailThread = new Thread(() -> {
+            while (!ShutdownFlag.isStopAllThreads() && !Thread.currentThread().isInterrupted()) {
+                try {
+                    Session session = Session.getDefaultInstance(properties);
+                    store = session.getStore(storeProtocol);
+                    store.connect(host, emailAddress, password);
+                    emailFolder = store.getFolder(folderName);
+                    // first we search for all unread messages.
+                    SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+                    while (!ShutdownFlag.isStopAllThreads()
+                            && !Thread.currentThread().isInterrupted()) {
+                        Thread.sleep(airavataProperties.services.monitor.email.period); // sleep for long enough
+                        if (!store.isConnected()) {
+                            store.connect();
+                            emailFolder = store.getFolder(folderName);
+                        }
+                        log.info("[EJM]: Retrieving unseen emails");
+                        if (emailFolder == null) {
+                            return;
+                        }
+                        emailFolder.open(Folder.READ_WRITE);
+                        if (emailFolder.isOpen()) {
+                            // flush if any message left in flushUnseenMessage
+                            if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+                                try {
                                     emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
                                     flushUnseenMessages = null;
+                                } catch (MessagingException e) {
+                                    if (!store.isConnected()) {
+                                        store.connect();
+                                        emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                        flushUnseenMessages = null;
+                                    }
                                 }
                             }
+                            Message[] searchMessages = emailFolder.search(unseenBefore);
+                            if (searchMessages == null || searchMessages.length == 0) {
+                                log.info("[EJM]: No new email messages");
+                            } else {
+                                log.info("[EJM]: {} new email/s received", searchMessages.length);
+                                processMessages(searchMessages);
+                            }
+                            emailFolder.close(false);
                         }
-                        Message[] searchMessages = emailFolder.search(unseenBefore);
-                        if (searchMessages == null || searchMessages.length == 0) {
-                            log.info("[EJM]: No new email messages");
-                        } else {
-                            log.info("[EJM]: {} new email/s received", searchMessages.length);
-                            processMessages(searchMessages);
-                        }
-                        emailFolder.close(false);
-                    }
-                }
-            } catch (MessagingException e) {
-                log.error("[EJM]: Couldn't connect to the store ", e);
-                try {
-                    Thread.sleep(airavataProperties.services.monitor.email.connectionRetryInterval);
-                } catch (InterruptedException ie) {
-                    log.error("[EJM]: Interrupted while waiting before retry", ie);
-                    Thread.currentThread().interrupt();
-                }
-            } catch (InterruptedException e) {
-                log.error("[EJM]: Interrupt exception while sleep ", e);
-            } catch (Throwable e) {
-                log.error("[EJM]: Caught a throwable ", e);
-            } finally {
-                try {
-                    if (emailFolder != null) {
-                        emailFolder.close(false);
-                    }
-                    if (store != null) {
-                        store.close();
                     }
                 } catch (MessagingException e) {
-                    log.error("[EJM]: Store close operation failed, couldn't close store", e);
+                    log.error("[EJM]: Couldn't connect to the store ", e);
+                    try {
+                        Thread.sleep(airavataProperties.services.monitor.email.connectionRetryInterval);
+                    } catch (InterruptedException ie) {
+                        log.error("[EJM]: Interrupted while waiting before retry", ie);
+                        Thread.currentThread().interrupt();
+                    }
+                } catch (InterruptedException e) {
+                    log.error("[EJM]: Interrupt exception while sleep ", e);
                 } catch (Throwable e) {
-                    log.error("[EJM]: Caught a throwable while closing email store ", e);
+                    log.error("[EJM]: Caught a throwable ", e);
+                } finally {
+                    try {
+                        if (emailFolder != null) {
+                            emailFolder.close(false);
+                        }
+                        if (store != null) {
+                            store.close();
+                        }
+                    } catch (MessagingException e) {
+                        log.error("[EJM]: Store close operation failed, couldn't close store", e);
+                    } catch (Throwable e) {
+                        log.error("[EJM]: Caught a throwable while closing email store ", e);
+                    }
                 }
             }
+            log.info("[EJM]: Email monitoring daemon stopped");
+        });
+        emailThread.setName("EmailBasedMonitor-Worker");
+        emailThread.setDaemon(true);
+        emailThread.start();
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        ShutdownFlag.setStopAllThreads(true);
+        if (emailThread != null) {
+            emailThread.interrupt();
+            try {
+                emailThread.join(5000); // Wait up to 5 seconds
+            } catch (InterruptedException e) {
+                log.warn("Interrupted while waiting for email thread to stop", e);
+                Thread.currentThread().interrupt();
+            }
         }
-        log.info("[EJM]: Email monitoring daemon stopped");
+        // Close email connections
+        try {
+            if (emailFolder != null) {
+                emailFolder.close(false);
+            }
+            if (store != null) {
+                store.close();
+            }
+        } catch (MessagingException e) {
+            log.warn("Error closing email store", e);
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        // ServerLifecycle provides the base isRunning() implementation
+        // Check if the email thread is also alive
+        return super.isRunning() && emailThread != null && emailThread.isAlive();
+    }
+
+    protected org.apache.airavata.service.registry.RegistryService getRegistryService() {
+        return registryService;
     }
 
     private void processMessages(Message[] searchMessages) throws MessagingException {
@@ -307,7 +362,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
             try {
                 JobStatusResult jobStatusResult = parse(message, publisherId);
                 log.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
-                submitJobStatus(jobStatusResult);
+                abstractMonitor.submitJobStatus(jobStatusResult);
                 processedMessages.add(message);
             } catch (Exception e) {
                 var msgTime = message.getReceivedDate().getTime();
@@ -348,29 +403,5 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
                 flushUnseenMessages = unseenMessages;
             }
         }
-    }
-
-    public void startServer() throws InterruptedException {
-        Thread t = new Thread(this);
-        t.start();
-        t.join();
-    }
-
-    /**
-     * Standardized start method for Spring Boot integration.
-     * Non-blocking: starts internal thread and returns immediately.
-     */
-    public void start() {
-        Thread t = new Thread(this);
-        t.setName("EmailBasedMonitor-Worker");
-        t.setDaemon(true);
-        t.start();
-    }
-
-    public static void main(String[] args) throws Exception {
-        // Note: EmailBasedMonitor is a Spring component and requires RegistryService and AiravataServerProperties.
-        // This main method should be run within a Spring application context.
-        // For standalone execution, use Spring Boot application or provide dependencies manually.
-        throw new UnsupportedOperationException("EmailBasedMonitor must be used within a Spring application context");
     }
 }

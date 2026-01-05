@@ -38,9 +38,11 @@ import org.apache.airavata.credential.utils.TokenGenerator;
 import org.apache.airavata.credential.utils.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
 

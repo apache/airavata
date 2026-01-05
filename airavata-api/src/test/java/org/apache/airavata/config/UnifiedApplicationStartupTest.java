@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
+import org.apache.airavata.agents.api.AdaptorSupport;
+import org.apache.airavata.agents.support.AdaptorSupportImpl;
 import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.repositories.CredentialRepository;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
@@ -67,7 +67,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            "services.airavata.enabled=true",
             "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
             // Infrastructure components excluded via @Profile("!test") annotations
             // Core services (RegistryService, CredentialStoreService) are always available via DI

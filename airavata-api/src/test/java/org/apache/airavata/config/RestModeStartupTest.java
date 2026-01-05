@@ -58,7 +58,7 @@ import org.springframework.test.context.TestPropertySource;
             // Disable thrift to prevent DBEventManager from being created via @ConditionalOnProperty
             "services.thrift.enabled=false",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
+
             // Infrastructure components excluded via @ComponentScan excludeFilters - no property flags needed
             // Core services (RegistryService, CredentialStoreService) are always available via DI
         })

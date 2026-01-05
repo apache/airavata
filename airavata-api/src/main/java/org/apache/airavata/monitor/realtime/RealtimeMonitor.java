@@ -24,10 +24,10 @@ import java.util.Collections;
 import java.util.Properties;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.MonitoringException;
-import org.apache.airavata.monitor.realtime.parser.RealtimeJobStatusParser;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -41,29 +41,31 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.background.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
-public class RealtimeMonitor extends AbstractMonitor {
+@ConditionalOnProperty(name = "services.monitor.realtime.enabled", havingValue = "true", matchIfMissing = true)
+public class RealtimeMonitor extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
     private final AiravataServerProperties properties;
     private final org.apache.airavata.service.registry.RegistryService registryService;
-    private final RealtimeJobStatusParser parser;
+    private final RealtimeComputeStatusParser parser;
+    private final AbstractMonitor abstractMonitor;
     private String publisherId;
     private String brokerTopic;
+    private Thread consumerThread;
+    private volatile Consumer<String, String> consumer;
 
     public RealtimeMonitor(
             org.apache.airavata.service.registry.RegistryService registryService, AiravataServerProperties properties) {
-        super(registryService, properties);
         this.registryService = registryService;
         this.properties = properties;
-        parser = new RealtimeJobStatusParser();
+        this.abstractMonitor = new AbstractMonitor(registryService, properties);
+        parser = new RealtimeComputeStatusParser();
     }
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        publisherId = properties.services.monitor.job.realtimePublisherId;
+        publisherId = properties.services.monitor.compute.realtimePublisherId;
         brokerTopic = properties.services.monitor.realtime.brokerTopic;
     }
 
@@ -74,14 +76,14 @@ public class RealtimeMonitor extends AbstractMonitor {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Create the consumer using props.
-        final Consumer<String, String> consumer = new KafkaConsumer<>(props);
+        consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(brokerTopic));
         return consumer;
     }
 
     private void runConsumer() {
-        final Consumer<String, String> consumer = createConsumer();
+        consumer = createConsumer();
 
         while (true) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
@@ -101,18 +103,30 @@ public class RealtimeMonitor extends AbstractMonitor {
         JobStatusResult statusResult = parser.parse(value, publisherId, getRegistryService());
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
-            submitJobStatus(statusResult);
+            abstractMonitor.submitJobStatus(statusResult);
         } else {
             logger.warn("Ignoring message as it is invalid");
         }
     }
 
-    /**
-     * Standardized start method for Spring Boot integration.
-     * Non-blocking: starts consumer in background thread and returns immediately.
-     */
-    public void start() {
-        Thread consumerThread = new Thread(() -> {
+    @Override
+    public String getServerName() {
+        return "Realtime Monitor";
+    }
+
+    @Override
+    public String getServerVersion() {
+        return "1.0";
+    }
+
+    @Override
+    public int getPhase() {
+        return 35; // Start after workflow managers
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        consumerThread = new Thread(() -> {
             try {
                 runConsumer();
             } catch (Exception e) {
@@ -124,10 +138,39 @@ public class RealtimeMonitor extends AbstractMonitor {
         consumerThread.start();
     }
 
-    public static void main(String args[]) throws ApplicationSettingsException {
-        // Note: RealtimeMonitor is a Spring component and requires RegistryService and AiravataServerProperties.
-        // This main method should be run within a Spring application context.
-        // For standalone execution, use Spring Boot application or provide dependencies manually.
-        throw new UnsupportedOperationException("RealtimeMonitor must be used within a Spring application context");
+    @Override
+    protected void doStop() throws Exception {
+        if (consumer != null) {
+            try {
+                consumer.wakeup();
+            } catch (Exception e) {
+                logger.warn("Error waking up consumer", e);
+            }
+        }
+        if (consumerThread != null) {
+            consumerThread.interrupt();
+            try {
+                consumerThread.join(5000); // Wait up to 5 seconds
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for consumer thread to stop", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        if (consumer != null) {
+            try {
+                consumer.close();
+            } catch (Exception e) {
+                logger.warn("Error closing consumer", e);
+            }
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return super.isRunning() && consumerThread != null && consumerThread.isAlive();
+    }
+
+    protected org.apache.airavata.service.registry.RegistryService getRegistryService() {
+        return registryService;
     }
 }

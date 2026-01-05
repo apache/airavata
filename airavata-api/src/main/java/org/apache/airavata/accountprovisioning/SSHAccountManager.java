@@ -36,11 +36,9 @@ import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(name = "services.registryService.enabled", havingValue = "true", matchIfMissing = true)
 public class SSHAccountManager {
 
     private final RegistryService registryService;

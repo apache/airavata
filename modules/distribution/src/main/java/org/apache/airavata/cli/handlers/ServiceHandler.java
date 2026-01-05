@@ -49,14 +49,20 @@ public class ServiceHandler {
         SERVICE_MAP.put("rest-api", new ServiceInfo("RESTAPI", "services.rest.enabled"));
 
         // Background Services
-        SERVICE_MAP.put("helix-controller", new ServiceInfo("HelixController", "helix.controller.enabled"));
-        SERVICE_MAP.put("helix-participant", new ServiceInfo("GlobalParticipant", "helix.participant.enabled"));
+        SERVICE_MAP.put("helix-controller", new ServiceInfo("HelixController", "services.controller.enabled"));
+        SERVICE_MAP.put("helix-participant", new ServiceInfo("GlobalParticipant", "services.participant.enabled"));
         SERVICE_MAP.put("pre-workflow-manager", new ServiceInfo("PreWorkflowManager", "services.prewm.enabled"));
         SERVICE_MAP.put("parser-workflow-manager", new ServiceInfo("ParserWorkflowManager", "services.parser.enabled"));
         SERVICE_MAP.put("post-workflow-manager", new ServiceInfo("PostWorkflowManager", "services.postwm.enabled"));
-        SERVICE_MAP.put(
-                "realtime-monitor", new ServiceInfo("RealtimeMonitor", "services.monitor.realtime.monitorEnabled"));
-        SERVICE_MAP.put("email-monitor", new ServiceInfo("EmailMonitor", "services.monitor.email.monitorEnabled"));
+        SERVICE_MAP.put("realtime-monitor", new ServiceInfo("RealtimeMonitor", "services.monitor.realtime.enabled"));
+        SERVICE_MAP.put("email-monitor", new ServiceInfo("EmailMonitor", "services.monitor.email.enabled"));
+        SERVICE_MAP.put("compute-monitor", new ServiceInfo("ComputeMonitor", "services.monitor.compute.enabled"));
+
+        // Additional Services
+        SERVICE_MAP.put("research-service", new ServiceInfo("ResearchService", "services.research.enabled"));
+        SERVICE_MAP.put("agent-service", new ServiceInfo("AgentService", "services.agent.enabled"));
+        SERVICE_MAP.put("file-service", new ServiceInfo("FileService", "services.file.enabled"));
+        SERVICE_MAP.put("dbevent-service", new ServiceInfo("DBEventManager", "services.dbus.enabled"));
     }
 
     private static class ServiceInfo {
@@ -154,13 +160,13 @@ public class ServiceHandler {
         try {
             switch (serviceName) {
                 case "thrift-api":
-                    return properties.services.thrift;
+                    return properties.services.thrift.enabled;
                 case "rest-api":
-                    return properties.services.rest;
+                    return properties.services.rest.enabled;
                 case "helix-controller":
-                    return properties.helix.controller.enabled;
+                    return properties.services.controller.enabled;
                 case "helix-participant":
-                    return properties.helix.participant.enabled;
+                    return properties.services.participant.enabled;
                 case "pre-workflow-manager":
                     return properties.services.prewm.enabled;
                 case "parser-workflow-manager":
@@ -168,9 +174,19 @@ public class ServiceHandler {
                 case "post-workflow-manager":
                     return properties.services.postwm.enabled;
                 case "realtime-monitor":
-                    return properties.services.monitor.realtime.monitorEnabled;
+                    return properties.services.monitor.realtime.enabled;
                 case "email-monitor":
-                    return properties.services.monitor.email.monitorEnabled;
+                    return properties.services.monitor.email.enabled;
+                case "compute-monitor":
+                    return properties.services.monitor.compute.enabled;
+                case "research-service":
+                    return properties.services.research.enabled;
+                case "agent-service":
+                    return properties.services.agent.enabled;
+                case "file-service":
+                    return properties.services.file.enabled;
+                case "dbevent-service":
+                    return properties.services.dbus.enabled;
                 default:
                     return false;
             }

@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
             // Disable Flyway in tests - TestcontainersConfig handles migrations
             "flyway.enabled=false",
             // Enable Airavata service to enable persistence units
-            "services.airavata.enabled=true"
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

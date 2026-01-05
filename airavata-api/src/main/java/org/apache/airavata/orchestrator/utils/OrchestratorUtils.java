@@ -51,7 +51,7 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +60,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
 
@@ -79,9 +79,9 @@ public class OrchestratorUtils {
             throws OrchestratorException, IOException, NumberFormatException {
 
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setEnableValidation(properties.airavata.enableValidation);
+        orchestratorConfiguration.setEnableValidation(properties.airavata.validation.enabled);
         if (orchestratorConfiguration.isEnableValidation()) {
-            String validators = properties.services.monitor.job.validators;
+            String validators = properties.services.monitor.compute.validators;
             if (validators != null && !validators.isEmpty()) {
                 orchestratorConfiguration.setValidatorClasses(Arrays.asList(validators.split(",")));
             }

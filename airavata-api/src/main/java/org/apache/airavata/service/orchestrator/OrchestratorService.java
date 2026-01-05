@@ -90,10 +90,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnBean(org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class)
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnBean({
+    org.apache.airavata.service.orchestrator.OrchestratorRegistryService.class,
+    org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class
+})
 public class OrchestratorService {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
 

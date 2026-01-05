@@ -22,6 +22,7 @@ package org.apache.airavata.thriftapi.client;
 import org.apache.airavata.thriftapi.sharing.model.SharingRegistryException;
 import org.apache.airavata.thriftapi.sharing.model.SharingRegistryService;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
@@ -29,16 +30,19 @@ import org.slf4j.LoggerFactory;
 
 public class SharingRegistryServiceClientFactory {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServiceClientFactory.class);
+    private static final String SHARING_REGISTRY_SERVICE_NAME = "SharingRegistryService";
 
     public static SharingRegistryService.Client createSharingRegistryClient(String serverHost, int serverPort)
             throws SharingRegistryException {
         try {
-            TSocket e = new TSocket(serverHost, serverPort);
-            e.open();
-            TBinaryProtocol protocol = new TBinaryProtocol(e);
-            return new SharingRegistryService.Client(protocol);
-        } catch (TTransportException var4) {
-            logger.error("failed to create sharing registry client", var4);
+            TSocket transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TBinaryProtocol protocol = new TBinaryProtocol(transport);
+            TMultiplexedProtocol multiplexedProtocol =
+                    new TMultiplexedProtocol(protocol, SHARING_REGISTRY_SERVICE_NAME);
+            return new SharingRegistryService.Client(multiplexedProtocol);
+        } catch (TTransportException e) {
+            logger.error("failed to create sharing registry client", e);
             throw new SharingRegistryException();
         }
     }

@@ -28,13 +28,14 @@ import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ProcessModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.orchestrator.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
 @ConditionalOnProperty(
         name = "orchestrator.validators.experimentStatus.enabled",
         havingValue = "true",

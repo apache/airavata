@@ -57,7 +57,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "security.tls.enabled=true",
             "security.manager.enabled=false",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

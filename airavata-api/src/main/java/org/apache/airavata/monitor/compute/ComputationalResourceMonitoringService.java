@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.config.ServerLifecycle;
-import org.apache.airavata.monitor.compute.job.MonitoringJob;
-import org.apache.airavata.monitor.compute.utils.Constants;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -33,6 +31,9 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -44,8 +45,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("!test")
+@ConditionalOnProperty(name = "services.monitor.compute.enabled", havingValue = "true", matchIfMissing = true)
 public class ComputationalResourceMonitoringService extends ServerLifecycle {
 
+    private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
     private static final String SERVER_VERSION = "1.0";
 
@@ -94,24 +97,24 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
         final double scanningInterval = 1800000; // default in milliseconds
 
         for (int i = 0; i < parallelJobs; i++) {
-            String name = Constants.COMPUTE_RESOURCE_SCANNER_TRIGGER + "_" + i;
+            String name = ComputeMonitorConstants.COMPUTE_RESOURCE_SCANNER_TRIGGER + "_" + i;
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(name, Constants.COMPUTE_RESOURCE_SCANNER_GROUP)
+                    .withIdentity(name, ComputeMonitorConstants.COMPUTE_RESOURCE_SCANNER_GROUP)
                     .startNow()
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                             .withIntervalInSeconds((int) scanningInterval)
                             .repeatForever())
                     .build();
 
-            String jobName = Constants.COMPUTE_RESOURCE_SCANNER_JOB + "_" + i;
+            String jobName = ComputeMonitorConstants.COMPUTE_RESOURCE_SCANNER_JOB + "_" + i;
 
-            JobDetail jobC = JobBuilder.newJob(MonitoringJob.class)
-                    .withIdentity(jobName, Constants.COMPUTE_RESOURCE_SCANNER_JOB)
-                    .usingJobData(Constants.METASCHEDULER_SCANNING_JOBS, parallelJobs)
-                    .usingJobData(Constants.METASCHEDULER_SCANNING_JOB_ID, i)
-                    .usingJobData(Constants.METASCHEDULER_USERNAME, metaUsername)
-                    .usingJobData(Constants.METASCHEDULER_GATEWAY, metaGatewayId)
-                    .usingJobData(Constants.METASCHEDULER_GRP_ID, metaGroupResourceProfileId)
+            JobDetail jobC = JobBuilder.newJob(ComputeMonitoringJob.class)
+                    .withIdentity(jobName, ComputeMonitorConstants.COMPUTE_RESOURCE_SCANNER_JOB)
+                    .usingJobData(ComputeMonitorConstants.METASCHEDULER_SCANNING_JOBS, parallelJobs)
+                    .usingJobData(ComputeMonitorConstants.METASCHEDULER_SCANNING_JOB_ID, i)
+                    .usingJobData(ComputeMonitorConstants.METASCHEDULER_USERNAME, metaUsername)
+                    .usingJobData(ComputeMonitorConstants.METASCHEDULER_GATEWAY, metaGatewayId)
+                    .usingJobData(ComputeMonitorConstants.METASCHEDULER_GRP_ID, metaGroupResourceProfileId)
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }

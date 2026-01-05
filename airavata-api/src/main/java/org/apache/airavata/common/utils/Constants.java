@@ -26,7 +26,6 @@ public final class Constants {
     public static final String JOB = "job";
 
     // API security relates property names
-    public static final String SECURITY_MANAGER_CLASS = "security.iam.classpath";
     public static final String IS_TLS_ENABLED = "security.tls.enabled";
     public static final String KEYSTORE_PATH = "security.keystore.path";
     public static final String KEYSTORE_PASSWORD = "security.keystore.password";
@@ -36,7 +35,6 @@ public final class Constants {
 
     // constants in XACML authorization response.
 
-    public static final String AUTHZ_CACHE_MANAGER_CLASS = "security.authzCache.classpath";
     public static final String AUTHZ_CACHE_ENABLED = "security.authzCache.enabled";
 
     public static final String IN_MEMORY_CACHE_SIZE = "airavata.in-memory-cache-size";
@@ -47,5 +45,5 @@ public final class Constants {
     public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
 
-    public static final String ENABLE_STREAMING_TRANSFER = "airavata.enable-streaming-transfer";
+    public static final String ENABLE_STREAMING_TRANSFER = "airavata.streaming-transfer.enabled";
 }

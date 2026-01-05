@@ -40,15 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-            "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
-            "services.airavata.enabled=false",
-            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
-            "services.orchestrator.enabled=false",
+            "services.api.orchestrator.enabled=false",
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")

@@ -72,7 +72,7 @@ public class CredentialEntityService {
     public void init() {
         try {
             String airavataConfigDir = properties.airavataConfigDir;
-            String credentialStoreKeyStorePath = properties.services.vault.keystore.url;
+            String credentialStoreKeyStorePath = properties.services.api.vault.keystore.url;
             if (airavataConfigDir == null || credentialStoreKeyStorePath == null) {
                 logger.warn(
                         "Keystore configuration is missing (airavataConfigDir or keystore.url is null), encryption will be disabled");
@@ -80,7 +80,7 @@ public class CredentialEntityService {
                 return;
             }
             this.keyStorePath = new java.io.File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
-            this.secretKeyAlias = properties.services.vault.keystore.alias;
+            this.secretKeyAlias = properties.services.api.vault.keystore.alias;
         } catch (Exception e) {
             logger.warn("Failed to initialize keystore settings, encryption will be disabled", e);
             this.keyStorePath = null;

@@ -20,11 +20,13 @@
 package org.apache.airavata.research.service.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@ConditionalOnProperty(name = "services.research.enabled", havingValue = "true", matchIfMissing = true)
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Value("${airavata.research-portal.url}")

@@ -22,11 +22,11 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.helix.impl.controller.HelixController;
-import org.apache.airavata.helix.impl.participant.GlobalParticipant;
-import org.apache.airavata.helix.impl.workflow.ParserWorkflowManager;
-import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
-import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
+import org.apache.airavata.helix.controller.HelixController;
+import org.apache.airavata.helix.controller.ParserWorkflowManager;
+import org.apache.airavata.helix.controller.PostWorkflowManager;
+import org.apache.airavata.helix.controller.PreWorkflowManager;
+import org.apache.airavata.helix.participant.GlobalParticipant;
 import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,6 @@ import org.springframework.test.context.TestPropertySource;
             JpaConfig.class,
             TestcontainersConfig.class,
             AiravataPropertiesConfiguration.class,
-            BackgroundServicesLauncher.class,
             BackgroundServicesStartupTest.TestConfiguration.class
         },
         properties = {
@@ -63,18 +62,16 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             // Background/infrastructure services - keep property flags (truly optional)
             "services.thrift.enabled=false",
-            "services.background.enabled=true",
-            "services.orchestrator.enabled=false",
+            "services.api.orchestrator.enabled=false",
             // Core services (RegistryService, CredentialStoreService) are always available via DI - no flags needed
-            "helix.controller.enabled=true",
-            "helix.participant.enabled=true",
+            "services.controller.enabled=true",
+            "services.participant.enabled=true",
             "services.prewm.enabled=true",
             "flyway.enabled=false",
-            "services.airavata.enabled=true",
             "services.postwm.enabled=true",
             "services.parser.enabled=true",
-            "services.monitor.realtime.monitorEnabled=true",
-            "services.monitor.email.monitorEnabled=true"
+            "services.monitor.realtime.enabled=true",
+            "services.monitor.email.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")
@@ -113,21 +110,7 @@ public class BackgroundServicesStartupTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Test
-    public void testBackgroundServicesLauncherIsConfigured() {
-        // BackgroundServicesLauncher has @Profile("!test") so it won't be available in test profile
-        // This is expected behavior - BackgroundServicesLauncher is excluded from tests
-        // In production (non-test profile), it would be available when services.background.enabled=true
-        // For test profile, we verify the configuration is correct but don't expect the bean
-        int launcherCount = applicationContext
-                .getBeansOfType(BackgroundServicesLauncher.class)
-                .size();
-        // In test profile, launcher is excluded, so count will be 0 (expected)
-        // In production profile, count should be > 0
-        assertTrue(
-                launcherCount >= 0,
-                "BackgroundServicesLauncher configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
-    }
+    // BackgroundServicesLauncher has been removed - services are now managed via SmartLifecycle
 
     @Test
     public void testHelixComponentsAreAvailable() {
@@ -167,7 +150,7 @@ public class BackgroundServicesStartupTest {
     public void testMonitorsAreAvailable() {
         // RealtimeMonitor has @Profile("!test") so it won't be available in test profile
         // This is expected behavior - RealtimeMonitor is excluded from tests
-        // In production (non-test profile), it would be available when services.monitor.realtime.monitorEnabled=true
+        // In production (non-test profile), it would be available when services.monitor.realtime.enabled=true
         int monitorCount =
                 applicationContext.getBeansOfType(RealtimeMonitor.class).size();
         // In test profile, monitor is excluded, so count will be 0 (expected)

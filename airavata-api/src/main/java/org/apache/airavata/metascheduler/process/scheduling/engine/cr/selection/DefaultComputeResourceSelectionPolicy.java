@@ -88,11 +88,4 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
         return Optional.empty();
     }
 
-    public static void main(String[] args) {
-        // Note: DefaultComputeResourceSelectionPolicy is a Spring component and requires ApplicationContext.
-        // This main method should be run within a Spring application context.
-        // For standalone execution, use Spring Boot application or provide dependencies manually.
-        throw new UnsupportedOperationException(
-                "DefaultComputeResourceSelectionPolicy must be used within a Spring application context");
-    }
 }

@@ -61,15 +61,12 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-            "services.background.enabled=false",
             "services.thrift.enabled=false",
             "services.helix.enabled=false",
-            "services.airavata.enabled=false",
-            "services.registryService.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
-            "services.orchestrator.enabled=false",
+            "services.api.orchestrator.enabled=false",
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")
@@ -118,7 +115,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 this.gwyResourceProfileService.getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(
-                properties.services.default_.gateway,
+                properties.services.defaults.gateway,
                 defaultGatewayResourceProfileList.get(0).getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();

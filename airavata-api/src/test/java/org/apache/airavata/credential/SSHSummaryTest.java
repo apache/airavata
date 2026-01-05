@@ -51,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.main.allow-bean-definition-overriding=true",
             "security.manager.enabled=false",
             "flyway.enabled=false",
-            "services.airavata.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:airavata.properties")

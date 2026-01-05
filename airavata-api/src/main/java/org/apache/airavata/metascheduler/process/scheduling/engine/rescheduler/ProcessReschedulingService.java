@@ -32,6 +32,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Component;
  * Process rescheduling service to scann the Queue or Requeued services and relaunch them.
  */
 @Component
+@ConditionalOnProperty(name = "services.scheduler.rescheduler.enabled", havingValue = "true", matchIfMissing = true)
 public class ProcessReschedulingService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Airavata Process Rescheduling Service";
