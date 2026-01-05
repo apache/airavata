@@ -43,7 +43,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory,
             org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder,
             org.apache.airavata.monitor.compute.ComputeSubmissionTracker computeSubmissionTracker) {
         super(

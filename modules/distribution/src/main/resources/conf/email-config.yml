@@ -1,7 +1,7 @@
 config:
  resources:
    - jobManagerType: PBS
-     emailParser: org.apache.airavata.monitor.email.parser.PBSEmailParser
+     emailParser: org.apache.airavata.monitor.email.PBSEmailParser
      resourceEmailAddresses:
        - pbsconsult@sdsc.edu  # gordon
        - adm@trident.bigred2.uits.iu.edu # Bigred2
@@ -9,21 +9,22 @@ config:
        - root <adm@scyld.localdomain> # alamo
 
    - jobManagerType: SLURM
-     emailParser: org.apache.airavata.monitor.email.parser.SLURMEmailParser
+     emailParser: org.apache.airavata.monitor.email.SLURMEmailParser
      resourceEmailAddresses:
        - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
        - slurm@batch1.stampede.tacc.utexas.edu # stampede
        - slurm@helix-slurm-headnode.novalocal
 
    - jobManagerType: UGE
-     emailParser: org.apache.airavata.monitor.email.parser.UGEEmailParser
+     emailParser: org.apache.airavata.monitor.email.UGEEmailParser
      resourceEmailAddresses:
        - ls4.tacc.utexas.edu # contain Lonestar
 
    - jobManagerType: HTCONDOR
-     emailParser: org.apache.airavata.monitor.email.parser.HTCondorEmailParser
+     emailParser: org.apache.airavata.monitor.email.HTCondorEmailParser
      resourceEmailAddresses:
        - condor@js-169-152.jetstream-cloud.org
        - Owner of HTCondor Daemons <condor@condor.scigap.org> #EHT Condor Access point
        - Owner of HTCondor Daemons <condor@login04.osgconnect.net>
        - slurm@br003.ib.bridges2.psc.edu # AutoDock_Vina
+

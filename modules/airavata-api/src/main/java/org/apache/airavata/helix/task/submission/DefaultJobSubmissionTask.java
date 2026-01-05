@@ -63,7 +63,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory,
             org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder,
             ComputeSubmissionTracker computeSubmissionTracker) {
         super(

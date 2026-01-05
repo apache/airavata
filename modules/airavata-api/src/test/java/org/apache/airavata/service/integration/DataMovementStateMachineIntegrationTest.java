@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             DataMovementStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -80,7 +80,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
-        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.AiravataServerProperties.class,
     })
     static class TestConfiguration {}
 

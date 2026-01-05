@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             WorkspaceRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -65,7 +65,7 @@ public class WorkspaceRepositoryTest extends TestBase {
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
-        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.AiravataServerProperties.class,
     })
     static class TestConfiguration {}
 

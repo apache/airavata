@@ -23,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class AiravataPropertiesConfigurationTest {
+public class AiravataServerPropertiesTest {
 
     @Test
     public void testGetSettingFallsBackToProperties() {
-        String user = AiravataPropertiesConfiguration.getSetting("airavata.defaults.user", "missing");
+        String user = AiravataServerProperties.getSetting("airavata.defaults.user", "missing");
         assertEquals("test-user", user);
     }
 }

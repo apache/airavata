@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "monitor.email.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = false)
 public class SLURMEmailParser implements EmailParser {
 
     private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);

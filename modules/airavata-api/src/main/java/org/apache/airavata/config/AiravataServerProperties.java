@@ -20,22 +20,44 @@
 package org.apache.airavata.config;
 
 import jakarta.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.EncodedResource;
+import org.springframework.core.io.support.PropertySourceFactory;
 
 /**
  * Spring Boot configuration properties for Airavata server.
  * Maps all properties from airavata.properties to strongly-typed Java objects.
+ *
+ * <p>All configuration files are loaded from {airavataHome}/conf:
+ * <ul>
+ *   <li>airavata.properties - Unified configuration (aggregated from all modules)</li>
+ *   <li>logback.xml - Logging configuration</li>
+ *   <li>email-config.yml - Email monitoring configuration</li>
+ *   <li>templates/ - Job submission templates</li>
+ *   <li>keystores/ - Security keystores</li>
+ * </ul>
  */
 @ConfigurationProperties(prefix = "")
 public class AiravataServerProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerProperties.class);
+    private static final String SERVER_PROPERTIES = "airavata.properties";
+    private static volatile Properties cachedAiravataProperties;
+    private static volatile AiravataServerProperties instance;
 
     private Environment environment;
 
@@ -43,191 +65,156 @@ public class AiravataServerProperties {
         // No-arg constructor required for @ConfigurationProperties
     }
 
-    @Autowired
+    @org.springframework.beans.factory.annotation.Autowired
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
 
     // ==================== Core Configuration ====================
-    public String airavataConfigDir = ".";
+    /**
+     * Airavata home directory. Config directory is always {airavataHome}/conf.
+     *
+     * <p>Resolution precedence (checked in order):
+     * <ol>
+     *   <li>System property -Dairavata.home=XXX (highest priority, can override property file)</li>
+     *   <li>airavata.home property in airavata.properties (if set and non-empty)</li>
+     *   <li>Resources root (IDE mode: modules/distribution/src/main/resources)</li>
+     * </ol>
+     *
+     * <p>In IDE mode, if neither system property nor property file value is set, the resources root
+     * is automatically resolved and used as airavataHome.
+     * The {airavataHome}/conf directory must exist and be a valid directory.
+     *
+     * <p>Static utility methods are available on this class:
+     * {@link #getConfigDir()}, {@link #loadFile(String)}, {@link #getSetting(String, String)}.
+     */
+    public String airavataHome;
 
     @PostConstruct
     public void bindProperties() {
         logger.info("Binding properties to AiravataServerProperties");
 
-        // Manually bind database properties from environment
-        if (database != null && environment != null) {
-            // Bind registry
-            if (database.registry != null) {
-                database.registry.url = getProperty("database.registry.url", database.registry.url);
-                database.registry.user = getProperty("database.registry.user", database.registry.user);
-                database.registry.password = getProperty("database.registry.password", database.registry.password);
-                database.registry.driver = getProperty("database.registry.driver", database.registry.driver);
-                database.registry.validationQuery =
-                        getProperty("database.registry.validation-query", database.registry.validationQuery);
-            }
+        // Resolution precedence:
+        // 1. System property -Dairavata.home=XXX (highest priority)
+        // 2. Property from airavata.properties file (via Spring binding)
+        // 3. Resources root (IDE mode)
 
-            // Bind catalog
-            if (database.catalog != null) {
-                database.catalog.url = getProperty("database.catalog.url", database.catalog.url);
-                database.catalog.user = getProperty("database.catalog.user", database.catalog.user);
-                database.catalog.password = getProperty("database.catalog.password", database.catalog.password);
-                database.catalog.driver = getProperty("database.catalog.driver", database.catalog.driver);
-                database.catalog.validationQuery =
-                        getProperty("database.catalog.validation-query", database.catalog.validationQuery);
-            }
-
-            // Bind vault
-            if (database.vault != null) {
-                database.vault.url = getProperty("database.vault.url", database.vault.url);
-                database.vault.user = getProperty("database.vault.user", database.vault.user);
-                database.vault.password = getProperty("database.vault.password", database.vault.password);
-                database.vault.driver = getProperty("database.vault.driver", database.vault.driver);
-                database.vault.validationQuery =
-                        getProperty("database.vault.validation-query", database.vault.validationQuery);
-            }
-
-            // Bind profile
-            if (database.profile != null) {
-                database.profile.url = getProperty("database.profile.url", database.profile.url);
-                database.profile.user = getProperty("database.profile.user", database.profile.user);
-                database.profile.password = getProperty("database.profile.password", database.profile.password);
-                database.profile.driver = getProperty("database.profile.driver", database.profile.driver);
-                database.profile.validationQuery =
-                        getProperty("database.profile.validation-query", database.profile.validationQuery);
-            }
-
-            // Bind sharing
-            if (database.sharing != null) {
-                database.sharing.url = getProperty("database.sharing.url", database.sharing.url);
-                database.sharing.user = getProperty("database.sharing.user", database.sharing.user);
-                database.sharing.password = getProperty("database.sharing.password", database.sharing.password);
-                database.sharing.driver = getProperty("database.sharing.driver", database.sharing.driver);
-                database.sharing.validationQuery =
-                        getProperty("database.sharing.validation-query", database.sharing.validationQuery);
-            }
-
-            // Bind replica
-            if (database.replica != null) {
-                database.replica.url = getProperty("database.replica.url", database.replica.url);
-                database.replica.user = getProperty("database.replica.user", database.replica.user);
-                database.replica.password = getProperty("database.replica.password", database.replica.password);
-                database.replica.driver = getProperty("database.replica.driver", database.replica.driver);
-                database.replica.validationQuery =
-                        getProperty("database.replica.validation-query", database.replica.validationQuery);
-            }
-
-            // Bind workflow
-            if (database.workflow != null) {
-                database.workflow.url = getProperty("database.workflow.url", database.workflow.url);
-                database.workflow.user = getProperty("database.workflow.user", database.workflow.user);
-                database.workflow.password = getProperty("database.workflow.password", database.workflow.password);
-                database.workflow.driver = getProperty("database.workflow.driver", database.workflow.driver);
-                database.workflow.validationQuery =
-                        getProperty("database.workflow.validation-query", database.workflow.validationQuery);
-            }
-
-            // Bind research catalog
-            if (database.research != null) {
-                database.research.url = getProperty("database.research.url", database.research.url);
-                database.research.user = getProperty("database.research.user", database.research.user);
-                database.research.password = getProperty("database.research.password", database.research.password);
-                database.research.driver = getProperty("database.research.driver", database.research.driver);
-                database.research.validationQuery =
-                        getProperty("database.research.validation-query", database.research.validationQuery);
-            }
-
-            // Bind database-level validation query
-            database.validationQuery = getProperty("database.validation-query", database.validationQuery);
+        // Check system property first (can override property file)
+        String systemPropertyHome = System.getProperty("airavata.home");
+        if (systemPropertyHome != null && !systemPropertyHome.isEmpty()) {
+            this.airavataHome = systemPropertyHome;
+            logger.debug("Using airavata.home from system property: {}", this.airavataHome);
         }
 
-        // Manually bind default gateway (still sourced from airavata.defaults.gateway)
-        if (services != null && services.defaults != null && environment != null) {
-            services.defaults.gateway = getProperty("airavata.defaults.gateway", services.defaults.gateway);
+        // IDE mode: If still not set, try to resolve resources root
+        if (this.airavataHome == null || this.airavataHome.isEmpty()) {
+            String resourcesRoot = resolveResourcesRoot();
+            if (resourcesRoot != null) {
+                this.airavataHome = resourcesRoot;
+                logger.info("IDE mode detected: using resources root as airavata.home: {}", this.airavataHome);
+            }
         }
 
-        // Log configuration
-        if (database != null && database.registry != null) {
-            logger.info(
-                    "Registry URL after binding: {}", database.registry.url != null ? database.registry.url : "NULL");
+        // Validate that airavataHome is set and {airavataHome}/conf exists
+        if (this.airavataHome == null || this.airavataHome.isEmpty()) {
+            throw new IllegalStateException(
+                    "airavata.home is not set. Please set -Dairavata.home=XXX or set airavata.home in airavata.properties.");
         }
 
-        // Backwards-compat + explicit binding for renamed security keys
-        if (security != null && environment != null) {
-            // security.keystore.* -> security.tls.keystore.*
-            if (security.tls != null && security.tls.keystore != null) {
-                String tlsKeystorePath =
-                        getProperty("security.tls.keystore.path", getProperty("security.keystore.path", null));
-                if (tlsKeystorePath != null) {
-                    security.tls.keystore.path = tlsKeystorePath;
-                }
-                String tlsKeystorePassword =
-                        getProperty("security.tls.keystore.password", getProperty("security.keystore.password", null));
-                if (tlsKeystorePassword != null) {
-                    security.tls.keystore.password = tlsKeystorePassword;
-                }
+        java.io.File confDir = new java.io.File(this.airavataHome, "conf");
+        if (!confDir.exists() || !confDir.isDirectory()) {
+            throw new IllegalStateException("Config directory does not exist at " + confDir.getAbsolutePath()
+                    + ". Please ensure airavata.home points to the correct Airavata installation directory.");
+        }
+
+        logger.info("Airavata home resolved: {}, config directory: {}", this.airavataHome, confDir.getAbsolutePath());
+        
+        // Manually bind properties from Environment if they weren't bound automatically
+        // This ensures properties from the custom PropertySource are available
+        if (this.database == null) {
+            this.database = new Database();
+        }
+        
+        // Manually bind all database configurations from Environment
+        // This ensures properties from the custom PropertySource are available
+        if (environment != null) {
+            bindDatabaseConfig(environment, "profile", 
+                () -> this.database.profile == null ? (this.database.profile = new Database.Profile()) : this.database.profile);
+            bindDatabaseConfig(environment, "catalog", 
+                () -> this.database.catalog == null ? (this.database.catalog = new Database.Catalog()) : this.database.catalog);
+            bindDatabaseConfig(environment, "registry", 
+                () -> this.database.registry == null ? (this.database.registry = new Database.Registry()) : this.database.registry);
+            bindDatabaseConfig(environment, "replica", 
+                () -> this.database.replica == null ? (this.database.replica = new Database.Replica()) : this.database.replica);
+            bindDatabaseConfig(environment, "research", 
+                () -> this.database.research == null ? (this.database.research = new Database.Research()) : this.database.research);
+            bindDatabaseConfig(environment, "sharing", 
+                () -> this.database.sharing == null ? (this.database.sharing = new Database.Sharing()) : this.database.sharing);
+            bindDatabaseConfig(environment, "workflow", 
+                () -> this.database.workflow == null ? (this.database.workflow = new Database.Workflow()) : this.database.workflow);
+            bindDatabaseConfig(environment, "vault", 
+                () -> this.database.vault == null ? (this.database.vault = new Database.Vault()) : this.database.vault);
+        }
+        
+        // Manually bind security.vault.keystore properties from Environment
+        if (environment != null && this.security != null) {
+            if (this.security.vault == null) {
+                this.security.vault = new Security.Vault();
             }
-
-            // services.api.vault.* -> security.vault.*
-            if (security.vault != null && security.vault.keystore != null) {
-                String vaultUrl = getProperty(
-                        "security.vault.keystore.url", getProperty("services.api.vault.keystore.url", null));
-                if (vaultUrl != null) {
-                    security.vault.keystore.url = vaultUrl;
-                }
-                String vaultPassword = getProperty(
-                        "security.vault.keystore.password", getProperty("services.api.vault.keystore.password", null));
-                if (vaultPassword != null) {
-                    security.vault.keystore.password = vaultPassword;
-                }
-                String vaultAlias = getProperty(
-                        "security.vault.keystore.alias", getProperty("services.api.vault.keystore.alias", null));
-                if (vaultAlias != null) {
-                    security.vault.keystore.alias = vaultAlias;
-                }
+            if (this.security.vault.keystore == null) {
+                this.security.vault.keystore = new Security.Vault.Keystore();
             }
-
-            // Merge airavata.defaults.user/password into security.iam.super.* and rename super-admin-* -> super.*
-            if (security.iam != null) {
-                // username
-                String superUsername = getProperty(
-                        "security.iam.super.username",
-                        getProperty(
-                                "security.iam.super-admin-username",
-                                getProperty("airavata.defaults.user", security.iam.superAdminUsername)));
-                if (superUsername != null) {
-                    security.iam.superAdminUsername = superUsername;
-                }
-
-                // password
-                String superPassword = getProperty(
-                        "security.iam.super.password",
-                        getProperty(
-                                "security.iam.super-admin-password",
-                                getProperty("airavata.defaults.password", security.iam.superAdminPassword)));
-                if (superPassword != null) {
-                    security.iam.superAdminPassword = superPassword;
+            if (this.security.vault.keystore.url == null) {
+                String keystoreUrl = environment.getProperty("security.vault.keystore.url");
+                if (keystoreUrl != null) {
+                    this.security.vault.keystore.url = keystoreUrl;
+                    this.security.vault.keystore.alias = environment.getProperty("security.vault.keystore.alias", "airavata");
+                    this.security.vault.keystore.password = environment.getProperty("security.vault.keystore.password", "airavata");
+                    logger.debug("Manually bound security.vault.keystore properties from Environment");
                 }
             }
         }
 
-        // Backwards-compat: services.defaults.user/password now come from security.iam.super.*
+        // Store instance for static method access
+        instance = this;
+
+        // Bind services.defaults.user/password from security.iam.super.*
         if (services != null && services.defaults != null && security != null && security.iam != null) {
             services.defaults.user = security.iam.superAdminUsername;
             services.defaults.password = security.iam.superAdminPassword;
         }
-
-        // Backwards-compat + explicit binding for renamed helix keys
-        if (services != null && services.helix != null && environment != null) {
-            services.helix.clusterName = getProperty("helix.cluster.name", services.helix.clusterName);
-            services.helix.controllerName = getProperty("helix.controller.name", services.helix.controllerName);
-            services.helix.participantName = getProperty("helix.participant.name", services.helix.participantName);
-        }
     }
 
-    private String getProperty(String key, String defaultValue) {
-        String value = environment.getProperty(key);
-        return value != null ? value : defaultValue;
+    /**
+     * Helper method to bind database configuration from Environment.
+     * Works with any database config class that has url, driver, user, password, validationQuery fields.
+     */
+    private void bindDatabaseConfig(Environment env, String dbName, java.util.function.Supplier<Object> dbSupplier) {
+        if (env == null) return;
+        String url = env.getProperty("database." + dbName + ".url");
+        if (url != null && !url.isEmpty()) {
+            try {
+                Object db = dbSupplier.get();
+                if (db != null) {
+                    // Use reflection to set fields since database config classes have same structure
+                    java.lang.reflect.Field urlField = db.getClass().getField("url");
+                    if (urlField.get(db) == null) {
+                        urlField.set(db, url);
+                        java.lang.reflect.Field driverField = db.getClass().getField("driver");
+                        driverField.set(db, env.getProperty("database." + dbName + ".driver", "org.mariadb.jdbc.Driver"));
+                        java.lang.reflect.Field userField = db.getClass().getField("user");
+                        userField.set(db, env.getProperty("database." + dbName + ".user"));
+                        java.lang.reflect.Field passwordField = db.getClass().getField("password");
+                        passwordField.set(db, env.getProperty("database." + dbName + ".password"));
+                        java.lang.reflect.Field validationQueryField = db.getClass().getField("validationQuery");
+                        validationQueryField.set(db, env.getProperty("database." + dbName + ".validation-query", "SELECT 1"));
+                        logger.debug("Manually bound database.{} properties from Environment", dbName);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to bind database.{} properties: {}", dbName, e.getMessage());
+            }
+        }
     }
 
     // ==================== Database Configuration ====================
@@ -646,19 +633,199 @@ public class AiravataServerProperties {
         }
     }
 
-    // ==================== Non-Spring helper accessors (for tools/Helix tasks) ====================
-    // NOTE: These helpers delegate to AiravataPropertiesConfiguration to ensure a single source of truth
-    // for config file resolution (airavata.config.dir first, then classpath).
+    // ==================== Static utility methods (for tools/Helix tasks) ====================
 
-    public static URL loadFile(String fileName) {
-        return AiravataPropertiesConfiguration.loadFile(fileName);
+    /**
+     * Resolve the resources root path in IDE mode.
+     * Attempts to find modules/distribution/src/main/resources by locating conf/airavata.properties on classpath.
+     *
+     * @return Absolute path to resources root, or null if not found
+     */
+    private static String resolveResourcesRoot() {
+        try {
+            // Try to locate conf/airavata.properties on classpath
+            java.net.URL resourceUrl =
+                    AiravataServerProperties.class.getClassLoader().getResource("conf/airavata.properties");
+            if (resourceUrl != null && "file".equals(resourceUrl.getProtocol())) {
+                // Extract filesystem path
+                String resourcePath = resourceUrl.getPath();
+                // Remove URL encoding if present
+                if (resourcePath.contains("%20")) {
+                    resourcePath = URLDecoder.decode(resourcePath, "UTF-8");
+                }
+                // Remove leading slash on Windows
+                if (resourcePath.startsWith("/")
+                        && System.getProperty("os.name").toLowerCase().contains("win")) {
+                    resourcePath = resourcePath.substring(1);
+                }
+                // Navigate up from conf/airavata.properties to resources root
+                java.io.File resourceFile = new java.io.File(resourcePath);
+                java.io.File confDir = resourceFile.getParentFile(); // conf/
+                if (confDir != null && confDir.getName().equals("conf")) {
+                    java.io.File resourcesRoot = confDir.getParentFile(); // resources root
+                    if (resourcesRoot != null && resourcesRoot.exists() && resourcesRoot.isDirectory()) {
+                        return resourcesRoot.getAbsolutePath();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Could not resolve resources root", e);
+        }
+        return null;
     }
 
+    /**
+     * Get the config directory path (always {airavataHome}/conf).
+     * Resolution precedence:
+     * <ol>
+     *   <li>Instance field (if Spring bean is initialized)</li>
+     *   <li>System property -Dairavata.home=XXX</li>
+     *   <li>Resources root (IDE mode)</li>
+     * </ol>
+     *
+     * @return The config directory path ({airavataHome}/conf)
+     * @throws IllegalStateException if airavataHome cannot be resolved or {airavataHome}/conf does not exist
+     */
+    public static String getConfigDir() {
+        // Try to use instance field first (if Spring bean is initialized)
+        if (instance != null && instance.airavataHome != null && !instance.airavataHome.isEmpty()) {
+            File confDir = new File(instance.airavataHome, "conf");
+            if (confDir.exists() && confDir.isDirectory()) {
+                return confDir.getAbsolutePath();
+            }
+            throw new IllegalStateException("Config directory does not exist at " + confDir.getAbsolutePath()
+                    + ". Please ensure airavata.home points to the correct Airavata installation directory.");
+        }
+
+        // Check system property
+        String systemPropertyHome = System.getProperty("airavata.home");
+        if (systemPropertyHome != null && !systemPropertyHome.isEmpty()) {
+            File confDir = new File(systemPropertyHome, "conf");
+            if (confDir.exists() && confDir.isDirectory()) {
+                return confDir.getAbsolutePath();
+            }
+            throw new IllegalStateException("Config directory does not exist at " + confDir.getAbsolutePath()
+                    + ". Please ensure -Dairavata.home points to the correct Airavata installation directory.");
+        }
+
+        // IDE mode: Try to resolve resources root
+        String resourcesRoot = resolveResourcesRoot();
+        if (resourcesRoot != null) {
+            File confDir = new File(resourcesRoot, "conf");
+            if (confDir.exists() && confDir.isDirectory()) {
+                logger.debug("IDE mode: using resources root configDir: {}", confDir.getAbsolutePath());
+                return confDir.getAbsolutePath();
+            }
+        }
+
+        throw new IllegalStateException(
+                "airavata.home is not set. Please set -Dairavata.home=XXX or set airavata.home in airavata.properties.");
+    }
+
+    /**
+     * Load a config file from configDir.
+     * The fileName should NOT include "conf/" prefix - it will be resolved relative to configDir.
+     *
+     * @param fileName The filename (e.g., "email-config.yml", "logback.xml", "templates/PBS_Groovy.template")
+     * @return URL to the file
+     * @throws IllegalStateException if configDir cannot be resolved or file is not found
+     */
+    public static URL loadFile(String fileName) {
+        String configDir = getConfigDir(); // Will throw if not found
+        try {
+            // Load from filesystem: {configDir}/{fileName}
+            String configDirPath = configDir.endsWith(File.separator) ? configDir : configDir + File.separator;
+            String filePath = configDirPath + fileName;
+            File file = new File(filePath);
+            if (file.exists() && file.isFile()) {
+                logger.debug("Loading file from configDir: {}", file.getAbsolutePath());
+                return file.toURI().toURL();
+            }
+            throw new IllegalStateException("Config file not found: " + fileName + " in configDir: " + configDir);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Error parsing the file path from configDir: " + configDir, e);
+        }
+    }
+
+    /**
+     * Load and cache {@code airavata.properties} from {airavataHome}/conf.
+     */
+    public static Properties getAiravataProperties() {
+        Properties props = cachedAiravataProperties;
+        if (props != null) {
+            return props;
+        }
+        synchronized (AiravataServerProperties.class) {
+            if (cachedAiravataProperties != null) {
+                return cachedAiravataProperties;
+            }
+            Properties loaded = new Properties();
+            URL url = loadFile(SERVER_PROPERTIES); // Will throw if configDir not found or file missing
+            try (InputStream is = url.openStream()) {
+                loaded.load(is);
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to load airavata.properties from " + url, e);
+            }
+            cachedAiravataProperties = loaded;
+            return loaded;
+        }
+    }
+
+    /**
+     * Lightweight, non-Spring property access for tools/Helix tasks.
+     * Order: system props -> env vars -> loaded airavata.properties.
+     */
     public static String getSetting(String key, String defaultValue) {
-        return AiravataPropertiesConfiguration.getSetting(key, defaultValue);
+        String value = System.getProperty(key);
+        if (value == null) {
+            value = System.getenv(key);
+        }
+        if (value == null) {
+            value = getAiravataProperties().getProperty(key);
+        }
+        return value != null ? value : defaultValue;
     }
 
     public static String getSetting(String key) {
-        return AiravataPropertiesConfiguration.getSetting(key);
+        return getSetting(key, null);
+    }
+
+    /**
+     * Custom PropertySourceFactory that loads airavata.properties
+     * from configDir. Fails immediately if configDir is not set.
+     */
+    public static class AiravataPropertySourceFactory implements PropertySourceFactory {
+
+        @Override
+        public org.springframework.core.env.PropertySource<?> createPropertySource(
+                String name, EncodedResource resource) throws IOException {
+
+            // Load from configDir (will throw if not found)
+            String configDir = getConfigDir();
+            try {
+                String configDirPath = configDir.endsWith(File.separator) ? configDir : configDir + File.separator;
+                String filePath = configDirPath + SERVER_PROPERTIES;
+                File configFile = new File(filePath);
+
+                if (!configFile.exists() || !configFile.isFile()) {
+                    throw new IllegalStateException("airavata.properties not found in configDir: " + filePath);
+                }
+
+                logger.info("Loading airavata.properties from: {}", configFile.getAbsolutePath());
+                Properties props = new Properties();
+                try (InputStream is = new FileInputStream(configFile)) {
+                    props.load(is);
+                }
+                // Log a sample property to verify loading
+                String registryUrl = props.getProperty("database.registry.url");
+                logger.debug("Loaded database.registry.url: {}", registryUrl != null ? "found" : "not found");
+                return new org.springframework.core.env.PropertiesPropertySource("airavata.properties", props);
+            } catch (Exception e) {
+                if (e instanceof IllegalStateException) {
+                    throw e;
+                }
+                throw new IllegalStateException("Failed to load airavata.properties from configDir: " + configDir, e);
+            }
+        }
     }
 }

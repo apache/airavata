@@ -28,7 +28,7 @@ import org.apache.airavata.agent.connection.service.config.ClusterApplicationCon
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
-import org.apache.airavata.agent.connection.service.services.AiravataService;
+import org.apache.airavata.agent.connection.service.services.AiravataThriftClient;
 import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.AuthorizationException;
@@ -58,7 +58,7 @@ import org.springframework.stereotype.Service;
 public class AgentManagementHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
-    private final AiravataService airavataService;
+    private final AiravataThriftClient airavataThriftClient;
     private final ClusterApplicationConfig clusterApplicationConfig;
 
     @Value("${services.agent.storage.id}")
@@ -70,8 +70,8 @@ public class AgentManagementHandler {
     // no longer configurable; keep local default (used for the "server_url" app input)
     private final String grpcHost = "localhost";
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
-        this.airavataService = airavataService;
+    public AgentManagementHandler(AiravataThriftClient airavataThriftClient, ClusterApplicationConfig clusterApplicationConfig) {
+        this.airavataThriftClient = airavataThriftClient;
         this.clusterApplicationConfig = clusterApplicationConfig;
     }
 
@@ -368,7 +368,7 @@ public class AgentManagementHandler {
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Client airavata = airavataThriftClient.airavata();
             org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment =
                     airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
             ExperimentModel experiment = convertExperimentModel(thriftExperiment);
@@ -385,7 +385,7 @@ public class AgentManagementHandler {
 
     public ExperimentModel getExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Client airavata = airavataThriftClient.airavata();
             org.apache.airavata.thriftapi.model.ExperimentModel thriftExperiment =
                     airavata.getExperiment(convertAuthzToken(UserContext.authzToken()), experimentId);
             ExperimentModel experiment = convertExperimentModel(thriftExperiment);
@@ -432,7 +432,7 @@ public class AgentManagementHandler {
 
         for (AgentLaunchRequest req : launchRequests) {
             String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
-            org.apache.airavata.thriftapi.model.ExperimentStatistics thriftExperimentStatistics = airavataService
+            org.apache.airavata.thriftapi.model.ExperimentStatistics thriftExperimentStatistics = airavataThriftClient
                     .airavata()
                     .getExperimentStatistics(
                             convertAuthzToken(UserContext.authzToken()),
@@ -473,14 +473,14 @@ public class AgentManagementHandler {
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
             ExperimentModel experiment = generateExperiment(req, agentId, envName);
 
-            String experimentId = airavataService
+            String experimentId = airavataThriftClient
                     .airavata()
                     .createExperiment(
                             convertAuthzToken(UserContext.authzToken()),
                             experiment.getGatewayId(),
                             convertExperimentModelToThrift(experiment));
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
-            airavataService
+            airavataThriftClient
                     .airavata()
                     .launchExperiment(
                             convertAuthzToken(UserContext.authzToken()), experimentId, experiment.getGatewayId());
@@ -495,7 +495,7 @@ public class AgentManagementHandler {
     public void terminateApplication(String gatewayId, String experimentId) {
         try {
             LOGGER.info("Terminating the application with experiment Id: {}", experimentId);
-            airavataService
+            airavataThriftClient
                     .airavata()
                     .terminateExperiment(convertAuthzToken(UserContext.authzToken()), experimentId, gatewayId);
         } catch (Exception e) {
@@ -508,7 +508,7 @@ public class AgentManagementHandler {
     public ProcessModel getEnvProcessModel(String expId) {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);
-            org.apache.airavata.thriftapi.model.ExperimentModel thriftExpModel = airavataService
+            org.apache.airavata.thriftapi.model.ExperimentModel thriftExpModel = airavataThriftClient
                     .airavata()
                     .getDetailedExperimentTree(convertAuthzToken(UserContext.authzToken()), expId);
             ExperimentModel expModel = convertExperimentModel(thriftExpModel);
@@ -527,12 +527,12 @@ public class AgentManagementHandler {
     private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        Airavata.Client airavataClient = airavataService.airavata();
+        Airavata.Client airavataClient = airavataThriftClient.airavata();
 
         String experimentName = req.getExperimentName();
         String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
         String projectDir = projectName.replace(" ", "_");
-        String projectId = airavataService.getProjectId(airavataClient, projectName);
+        String projectId = airavataThriftClient.getProjectId(airavataClient, projectName);
         org.apache.airavata.thriftapi.security.model.AuthzToken thriftAuthzToken =
                 convertAuthzToken(UserContext.authzToken());
         String userName = UserContext.username();
@@ -547,7 +547,7 @@ public class AgentManagementHandler {
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
                 new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref = airavataService.extractGroupComputeResourcePreference(
+        GroupComputeResourcePreference groupCompResourcePref = airavataThriftClient.extractGroupComputeResourcePreference(
                 airavataClient, req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());

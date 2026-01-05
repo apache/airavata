@@ -19,8 +19,11 @@
 */
 package org.apache.airavata.config;
 
+import java.io.File;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -32,12 +35,36 @@ import org.springframework.context.annotation.DependsOn;
  * Each persistence unit has its own Flyway instance that manages migrations
  * for its corresponding database.
  *
- * Flyway is enabled by default in production but can be disabled via
+ * <p>Migration files are loaded from {airavataHome}/conf/db/migration/{database_name}/
+ * where {airavataHome} is resolved from:
+ * <ul>
+ *   <li>System property -Dairavata.home=XXX (highest priority)</li>
+ *   <li>airavata.home property in airavata.properties (if set and non-empty)</li>
+ *   <li>Resources root (IDE mode: modules/distribution/src/main/resources)</li>
+ * </ul>
+ *
+ * <p>Flyway is enabled by default in production but can be disabled via
  * flyway.enabled=false property.
  */
 @Configuration
-@ConditionalOnProperty(name = "flyway.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "flyway.enabled", havingValue = "true", matchIfMissing = false)
 public class FlywayConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(FlywayConfig.class);
+
+    /**
+     * Get the migration location path for a given database.
+     * Uses filesystem path: {configDir}/db/migration/{databaseName}
+     * getConfigDir() handles both production and IDE modes automatically.
+     */
+    private static String getMigrationLocation(String databaseName) {
+        // getConfigDir() now handles both production and IDE modes
+        String configDir = AiravataServerProperties.getConfigDir();
+        String migrationPath =
+                configDir + File.separator + "db" + File.separator + "migration" + File.separator + databaseName;
+        logger.debug("Flyway migration location for {}: {}", databaseName, migrationPath);
+        return "filesystem:" + migrationPath;
+    }
 
     /**
      * Configure Flyway for profile service database.
@@ -47,7 +74,7 @@ public class FlywayConfig {
     public Flyway profileServiceFlyway(@Qualifier("profileServiceDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/profile_service")
+                .locations(getMigrationLocation("profile_service"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -61,7 +88,7 @@ public class FlywayConfig {
     public Flyway appCatalogFlyway(@Qualifier("appCatalogDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/app_catalog")
+                .locations(getMigrationLocation("app_catalog"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -75,7 +102,7 @@ public class FlywayConfig {
     public Flyway expCatalogFlyway(@Qualifier("registryDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/experiment_catalog")
+                .locations(getMigrationLocation("experiment_catalog"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -89,7 +116,7 @@ public class FlywayConfig {
     public Flyway replicaCatalogFlyway(@Qualifier("replicaDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/replica_catalog")
+                .locations(getMigrationLocation("replica_catalog"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -103,7 +130,7 @@ public class FlywayConfig {
     public Flyway workflowCatalogFlyway(@Qualifier("workflowDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/workflow_catalog")
+                .locations(getMigrationLocation("workflow_catalog"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -117,7 +144,7 @@ public class FlywayConfig {
     public Flyway sharingRegistryFlyway(@Qualifier("sharingDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/sharing_registry")
+                .locations(getMigrationLocation("sharing_registry"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -131,7 +158,7 @@ public class FlywayConfig {
     public Flyway credentialStoreFlyway(@Qualifier("credentialStoreDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/credential_store")
+                .locations(getMigrationLocation("credential_store"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -145,7 +172,7 @@ public class FlywayConfig {
     public Flyway researchCatalogFlyway(@Qualifier("researchCatalogDataSource") DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/migration/research_catalog")
+                .locations(getMigrationLocation("research_catalog"))
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();

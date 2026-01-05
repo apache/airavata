@@ -31,7 +31,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             BaseOrchestratorTest.TestConfiguration.class
         },
         properties = {
@@ -54,6 +54,6 @@ public class BaseOrchestratorTest {
                 "org.apache.airavata.service",
                 "org.apache.airavata.config"
             })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

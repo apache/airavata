@@ -46,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             org.apache.airavata.config.TestcontainersConfig.class,
             ServiceIntegrationTestBase.TestConfiguration.class
         },
@@ -138,7 +138,7 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.security"
             })
     @Import({
-        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.AiravataServerProperties.class,
     })
     static class TestConfiguration {
         @Bean

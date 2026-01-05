@@ -51,7 +51,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataPropertiesConfiguration.class,
+            AiravataServerProperties.class,
             MinimalStartupTest.TestConfiguration.class
         },
         properties = {

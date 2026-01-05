@@ -46,17 +46,45 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         ConfigurableEnvironment environment = event.getEnvironment();
         // Check if research service is enabled
         String enabled = environment.getProperty("services.research.enabled", "true");
-        if (!"true".equalsIgnoreCase(enabled)) {
-            return;
+        Map<String, Object> mappedProperties = new HashMap<>();
+        
+        // Always set keepalive properties to prevent NullPointerException in gRPC auto-configuration
+        // These are set in airavata.properties as well, but setting them here ensures they're always available
+        mappedProperties.put("spring.grpc.server.keepalive-time", "30s");
+        mappedProperties.put("spring.grpc.server.keepalive-timeout", "5s");
+        mappedProperties.put("spring.grpc.server.permit-keepalive-without-calls", "true");
+        
+        if ("true".equalsIgnoreCase(enabled)) {
+            // Enable gRPC server and map properties when research service is enabled
+            mappedProperties.put("spring.grpc.server.enabled", "true");
+            mapScopedProperties(environment, mappedProperties);
+        } else {
+            // Disable gRPC server when research service is disabled
+            mappedProperties.put("spring.grpc.server.enabled", "false");
         }
-        mapScopedProperties(environment);
+        
+        if (!mappedProperties.isEmpty()) {
+            environment.getPropertySources()
+                    .addFirst(new MapPropertySource("researchServiceGrpcConfig", mappedProperties));
+            logger.debug("Set spring.grpc.server.enabled={} based on services.research.enabled={}", 
+                    mappedProperties.get("spring.grpc.server.enabled"), enabled);
+        }
     }
 
-    private void mapScopedProperties(ConfigurableEnvironment environment) {
-        Map<String, Object> mappedProperties = new HashMap<>();
-
-        // Do NOT map research server/grpc properties into global server/grpc properties.
-        // In unified distribution mode, server/grpc ports are owned by the unified runtime.
+    private void mapScopedProperties(ConfigurableEnvironment environment, Map<String, Object> mappedProperties) {
+        // Map services.research.grpc.* to spring.grpc.server.*
+        mapProperty("services.research.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
+        
+        // Always set default keepalive properties first to ensure they're never null
+        // Then override if scoped properties exist
+        mappedProperties.put("spring.grpc.server.keepalive-time", "30s");
+        mappedProperties.put("spring.grpc.server.keepalive-timeout", "5s");
+        mappedProperties.put("spring.grpc.server.permit-keepalive-without-calls", "true");
+        
+        // Override with scoped properties if they exist
+        mapProperty("services.research.grpc.keepalive-time", "spring.grpc.server.keepalive-time", mappedProperties, environment);
+        mapProperty("services.research.grpc.keepalive-timeout", "spring.grpc.server.keepalive-timeout", mappedProperties, environment);
+        mapProperty("services.research.grpc.permit-keepalive-without-calls", "spring.grpc.server.permit-keepalive-without-calls", mappedProperties, environment);
 
         // Map services.research.spring.servlet.multipart.* to spring.servlet.multipart.*
         mapProperty(

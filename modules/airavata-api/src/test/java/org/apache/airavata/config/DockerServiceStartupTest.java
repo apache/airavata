@@ -46,7 +46,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataPropertiesConfiguration.class,
+            AiravataServerProperties.class,
             ServiceStartupTestBase.TestConfiguration.class
         },
         properties = {
@@ -145,11 +145,16 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testAiravataConfigDir() {
         assertNotNull(applicationContext, "Application context should load");
-        String configDir = System.getProperty("airavata.config.dir");
-        if (configDir == null) {
-            configDir = System.getenv("AIRAVATA_CONFIG_DIR");
+        // Get airavata.home from property or env var, then resolve configDir
+        String airavataHome = System.getProperty("airavata.home");
+        if (airavataHome == null || airavataHome.isEmpty()) {
+            airavataHome = System.getenv("AIRAVATA_HOME");
         }
-        logger.info("Airavata config directory: {}", configDir);
+        String configDir = null;
+        if (airavataHome != null && !airavataHome.isEmpty()) {
+            configDir = new java.io.File(airavataHome, "conf").getAbsolutePath();
+        }
+        logger.info("Airavata home: {}, config directory: {}", airavataHome, configDir);
         // In Docker, this should be /opt/airavata/vault
         // In test environment, it may be different, which is OK
     }

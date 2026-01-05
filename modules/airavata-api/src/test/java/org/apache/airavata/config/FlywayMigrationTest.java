@@ -35,7 +35,7 @@ import org.springframework.test.context.TestPropertySource;
  * Tests that migrations are applied and database schema is created.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class, TestcontainersConfig.class},
+        classes = {JpaConfig.class, AiravataServerProperties.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",

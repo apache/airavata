@@ -21,6 +21,7 @@ package org.apache.airavata.cli.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import org.apache.airavata.AiravataServer;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.apache.airavata.cli.util.ProcessManager;
@@ -44,50 +45,70 @@ public class ServeCommand implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ServeCommand.class);
 
     @Option(
-            names = {"--config-dir"},
-            required = true,
-            description = "Path to directory containing all configuration files")
-    private String configDir;
-
-    @Option(
             names = {"--foreground"},
             description = "Run server in foreground (current process, for debugging)")
     private boolean foreground = false;
 
     @Override
     public void run() {
-        File configDirFile = new File(configDir);
-        if (!configDirFile.exists() || !configDirFile.isDirectory()) {
-            System.err.println("Error: Config directory does not exist or is not a directory: " + configDir);
+        // Resolve airavata.home from system property or environment variable
+        String airavataHome = System.getProperty("airavata.home");
+        if (airavataHome == null || airavataHome.isEmpty()) {
+            // Fallback to AIRAVATA_HOME environment variable
+            airavataHome = System.getenv("AIRAVATA_HOME");
+            if (airavataHome == null || airavataHome.isEmpty()) {
+                System.err.println(
+                        "Error: airavata.home system property or AIRAVATA_HOME environment variable must be set.");
+                System.exit(1);
+                return;
+            }
+        }
+
+        // Set airavata.home system property if not already set
+        if (System.getProperty("airavata.home") == null) {
+            System.setProperty("airavata.home", airavataHome);
+        }
+
+        // Derive configDir from airavata.home
+        File airavataHomeFile = new File(airavataHome);
+        File confDir = new File(airavataHomeFile, "conf");
+        if (!confDir.exists() || !confDir.isDirectory()) {
+            System.err.println("Error: Config directory does not exist at: " + confDir.getAbsolutePath());
+            System.err.println("Please ensure airavata.home points to the correct Airavata installation directory.");
             System.exit(1);
             return;
         }
+        String resolvedConfigDir = confDir.getAbsolutePath();
 
-        if (ServiceSocketClient.socketExists(configDir)) {
+        if (ServiceSocketClient.socketExists(resolvedConfigDir)) {
             System.err.println("Error: Airavata service is already running (socket exists). Stop it first.");
             System.exit(1);
             return;
         }
 
         if (foreground) {
-            logger.info("Starting Airavata services in foreground with config directory: {}", configDir);
-            System.setProperty("airavata.config.dir", configDir);
-            System.setProperty("airavata.home", configDirFile.getParent() != null ? configDirFile.getParent() : ".");
+            logger.info(
+                    "Starting Airavata services in foreground with airavata.home: {}, config directory: {}",
+                    airavataHome,
+                    resolvedConfigDir);
             System.setProperty("airavata.cli.enabled", "false");
             System.setProperty("airavata.server.enabled", "true");
             SpringApplication app = new SpringApplication(AiravataServer.class);
-            app.setDefaultProperties(java.util.Map.of(
-                    "spring.main.allow-bean-definition-overriding", "true",
-                    "spring.classformat.ignore", "true",
-                    "airavata.cli.enabled", "false",
-                    "airavata.server.enabled", "true"));
+            var defaultProps = new HashMap<String, Object>();
+            defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
+            defaultProps.put("spring.classformat.ignore", "true");
+            defaultProps.put("spring.main.lazy-initialization", "true");
+            defaultProps.put("airavata.cli.enabled", "false");
+            defaultProps.put("airavata.server.enabled", "true");
+            // Set gRPC keepalive properties early to prevent NullPointerException
+            defaultProps.put("spring.grpc.server.keepalive-time", "30s");
+            defaultProps.put("spring.grpc.server.keepalive-timeout", "5s");
+            defaultProps.put("spring.grpc.server.permit-keepalive-without-calls", "true");
+            app.setDefaultProperties(defaultProps);
             app.setRegisterShutdownHook(true);
-            try {
-                app.run();
-            } catch (Exception e) {
-                logger.error("Server failed to start", e);
-                System.exit(1);
-            }
+            // Don't catch exceptions - let Spring Boot handle them and keep the server running
+            // The server will block here until shutdown
+            app.run();
         } else {
             try {
                 String jarPath = null;
@@ -120,10 +141,10 @@ public class ServeCommand implements Runnable {
                     return;
                 }
 
-                Process process = ProcessManager.startServiceProcess(configDir, jarPath, nativeBinaryPath);
+                Process process = ProcessManager.startServiceProcess(airavataHome, jarPath, nativeBinaryPath);
                 System.out.println("Airavata service started in background (PID: " + process.pid() + ")");
-                System.out.println("Socket: " + ServiceSocketClient.getSocketPath(configDir));
-                System.out.println("Logs: " + new File(configDir, "logs").getAbsolutePath());
+                System.out.println("Socket: " + ServiceSocketClient.getSocketPath(resolvedConfigDir));
+                System.out.println("Logs: " + new File(resolvedConfigDir, "logs").getAbsolutePath());
                 System.exit(0);
             } catch (IOException e) {
                 System.err.println("Error: Failed to start Airavata service: " + e.getMessage());

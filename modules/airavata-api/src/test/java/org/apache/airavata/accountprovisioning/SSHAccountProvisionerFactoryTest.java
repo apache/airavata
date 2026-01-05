@@ -37,7 +37,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             SSHAccountProvisionerFactoryTest.TestConfiguration.class
         },
         properties = {
@@ -107,6 +107,6 @@ public class SSHAccountProvisionerFactoryTest {
 
     @Configuration
     @ComponentScan(basePackages = {"org.apache.airavata.accountprovisioning", "org.apache.airavata.config"})
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

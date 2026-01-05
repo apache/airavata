@@ -40,7 +40,7 @@ public class NoOperationTask extends AiravataTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,

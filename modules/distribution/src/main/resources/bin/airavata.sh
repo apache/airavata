@@ -43,7 +43,7 @@ if [[ -z "$JAR_FILE" ]]; then
 fi
 
 # Define JAVA_OPTS
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME}"
+JAVA_OPTS="-Dairavata.home=${AIRAVATA_HOME}"
 
-# Start AiravataØ
+# Start Airavata
 java $JAVA_OPTS -jar "$JAR_FILE" "$@"

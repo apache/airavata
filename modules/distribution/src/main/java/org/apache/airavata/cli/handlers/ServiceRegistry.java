@@ -59,8 +59,6 @@ public class ServiceRegistry {
         // TCP Server Services
         serviceNameToBeanClass.put("thrift-api", ThriftServer.class);
         // REST API is handled specially via WebServerApplicationContext
-        // Note: All Thrift services (Airavata, Profile, Orchestrator, Registry, Credential, Sharing)
-        // are now multiplexed in the unified ThriftServer
 
         // Background Services (if they implement SmartLifecycle)
         serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);

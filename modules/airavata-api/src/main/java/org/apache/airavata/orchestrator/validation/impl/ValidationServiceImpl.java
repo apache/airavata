@@ -28,6 +28,7 @@ import org.apache.airavata.common.exception.ValidatorResult;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.orchestrator.Orchestrator;
 import org.apache.airavata.orchestrator.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
@@ -37,7 +38,9 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -50,17 +53,30 @@ import org.springframework.stereotype.Service;
 public class ValidationServiceImpl implements ValidationService {
     private static final Logger logger = LoggerFactory.getLogger(ValidationServiceImpl.class);
 
-    private final OrchestratorContext orchestratorContext;
+    private final Orchestrator orchestrator;
     private final RegistryService registryService;
     private final org.springframework.context.ApplicationContext applicationContext;
 
     public ValidationServiceImpl(
-            OrchestratorContext orchestratorContext,
+            @Lazy Orchestrator orchestrator,
             RegistryService registryService,
             org.springframework.context.ApplicationContext applicationContext) {
-        this.orchestratorContext = orchestratorContext;
+        this.orchestrator = orchestrator;
         this.registryService = registryService;
         this.applicationContext = applicationContext;
+    }
+
+    private OrchestratorContext getOrchestratorContext() {
+        if (orchestrator instanceof org.apache.airavata.orchestrator.impl.AbstractOrchestrator) {
+            return ((org.apache.airavata.orchestrator.impl.AbstractOrchestrator) orchestrator).getOrchestratorContext();
+        }
+        // Fallback: create a minimal context if orchestrator is not initialized yet
+        logger.warn("OrchestratorContext not available, using default validation configuration");
+        OrchestratorContext context = new OrchestratorContext();
+        org.apache.airavata.orchestrator.OrchestratorConfiguration config = new org.apache.airavata.orchestrator.OrchestratorConfiguration();
+        config.setEnableValidation(true);
+        context.setOrchestratorConfiguration(config);
+        return context;
     }
 
     private ValidationResults runValidators(
@@ -70,7 +86,9 @@ public class ValidationServiceImpl implements ValidationService {
         validationResults.setValidationState(true);
         String errorMsg = "Validation Errors : ";
 
-        if (!orchestratorContext.getOrchestratorConfiguration().isEnableValidation()) {
+        OrchestratorContext orchestratorContext = getOrchestratorContext();
+        if (orchestratorContext == null || orchestratorContext.getOrchestratorConfiguration() == null || 
+                !orchestratorContext.getOrchestratorConfiguration().isEnableValidation()) {
             return validationResults;
         }
 

@@ -61,7 +61,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             KeyCloakSecurityManagerTest.TestConfiguration.class
         },
         properties = {
@@ -111,13 +111,13 @@ public class KeyCloakSecurityManagerTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {
         @Bean
         @Primary
         public AiravataServerProperties airavataServerProperties(org.springframework.core.env.Environment environment) {
             AiravataServerProperties properties = new AiravataServerProperties();
-            properties.setEnvironment(environment);
+            // AiravataServerProperties doesn't have setEnvironment - properties are set via Spring binding
             properties.security.tls.enabled = true;
             // Leave IAM server URL empty to skip HTTP calls in tests
             properties.security.iam.serverUrl = "";

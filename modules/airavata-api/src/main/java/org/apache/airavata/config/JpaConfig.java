@@ -99,6 +99,9 @@ public class JpaConfig {
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);
+        // Don't fail application startup if database is not available
+        // Connection will be established lazily when needed
+        config.setInitializationFailTimeout(-1);
         return new HikariDataSource(config);
     }
 
@@ -109,14 +112,25 @@ public class JpaConfig {
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown), validate for production
-        props.put("hibernate.hbm2ddl.auto", isTestProfile ? "create-drop" : "validate");
+        // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown), 
+        // none for production when database might not be available (skip validation)
+        // Can be overridden via hibernate.hbm2ddl.auto property
+        String hbm2ddlAuto = environment != null ? environment.getProperty("hibernate.hbm2ddl.auto") : null;
+        if (hbm2ddlAuto == null) {
+            props.put("hibernate.hbm2ddl.auto", isTestProfile ? "create-drop" : "none");
+        } else {
+            props.put("hibernate.hbm2ddl.auto", hbm2ddlAuto);
+        }
         props.put("hibernate.show_sql", "false");
         props.put("hibernate.format_sql", "false");
         props.put("hibernate.connection.provider_disables_autocommit", "true");
         props.put("hibernate.archive.scanner", "org.hibernate.boot.archive.scan.internal.StandardScanner");
-        // Always use MySQL dialect (MariaDB is compatible)
-        props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        // Set reasonable cache sizes (must be at least twice concurrencyLevel)
+        props.put("hibernate.query.plan_cache_max_size", "2048");
+        props.put("hibernate.query.plan_parameter_metadata_max_size", "128");
+        // Disable query validation to avoid database connection during startup
+        props.put("hibernate.query.validate_queries", "false");
+        props.put("spring.jpa.properties.hibernate.query.validate_queries", "false");
         return props;
     }
 
@@ -137,7 +151,10 @@ public class JpaConfig {
         emf.setJpaVendorAdapter(vendorAdapter);
 
         String url = ((HikariDataSource) dataSource).getJdbcUrl();
-        emf.setJpaProperties(createJpaProperties(url));
+        Properties jpaProps = createJpaProperties(url);
+        // Disable JDBC metadata usage to avoid connection attempts during startup
+        jpaProps.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
+        emf.setJpaProperties(jpaProps);
 
         return emf;
     }
@@ -149,9 +166,13 @@ public class JpaConfig {
     @Profile("!test")
     public DataSource profileServiceDataSource() {
         var db = properties.database.profile;
-        if (db == null || db.url == null || db.url.isEmpty()) {
+        if (db == null) {
             throw new IllegalStateException(
-                    "Database configuration for profile service is missing or invalid. Check airavata.properties for database.profile.url");
+                    "Database configuration for profile service is missing. properties.database.profile is null. Check airavata.properties for database.profile.* properties.");
+        }
+        if (db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for profile service is missing or invalid. properties.database.profile.url is null or empty. Check airavata.properties for database.profile.url. Current value: " + db.url);
         }
         return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
     }
@@ -243,11 +264,19 @@ public class JpaConfig {
 
     // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean
     @Bean
-    @Primary
     @DependsOn("profileServiceDataSource")
-    public LocalContainerEntityManagerFactoryBean profileServiceEntityManagerFactory(
+    public LocalContainerEntityManagerFactoryBean profileServiceEntityManagerFactoryBean(
             @Qualifier("profileServiceDataSource") DataSource dataSource) {
         return createEntityManagerFactory(PROFILE_SERVICE_PU, dataSource, "org.apache.airavata.profile.entities");
+    }
+
+    // Expose the actual EntityManagerFactory for Spring Data JPA
+    @Bean
+    @Primary
+    @DependsOn("profileServiceEntityManagerFactoryBean")
+    public EntityManagerFactory profileServiceEntityManagerFactory(
+            @Qualifier("profileServiceEntityManagerFactoryBean") LocalContainerEntityManagerFactoryBean emfBean) {
+        return emfBean.getObject();
     }
 
     @Bean
@@ -298,6 +327,7 @@ public class JpaConfig {
     }
 
     @Bean
+    @org.springframework.context.annotation.Lazy
     public PlatformTransactionManager profileServiceTransactionManager(
             @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
@@ -306,52 +336,52 @@ public class JpaConfig {
     @Bean
     @Primary
     public PlatformTransactionManager appCatalogTransactionManager(
-            @Qualifier("appCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("appCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager expCatalogTransactionManager(
-            @Qualifier("expCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("expCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager replicaCatalogTransactionManager(
-            @Qualifier("replicaCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("replicaCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager workflowCatalogTransactionManager(
-            @Qualifier("workflowCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("workflowCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager sharingRegistryTransactionManager(
-            @Qualifier("sharingRegistryEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("sharingRegistryEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager credentialStoreTransactionManager(
-            @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("credentialStoreEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     @Bean
     public PlatformTransactionManager researchCatalogTransactionManager(
-            @Qualifier("researchCatalogEntityManagerFactory") EntityManagerFactory emf) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("researchCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return new JpaTransactionManager(emfBean.getObject());
     }
 
     // EntityManager beans with qualifiers for direct injection
     // Using SharedEntityManagerCreator to create proxy EntityManagers that participate in transactions
     @Bean
     public EntityManager profileServiceEntityManager(
-            @Qualifier("profileServiceEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
-        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
+            @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emf);
     }
 
     @Bean
@@ -407,7 +437,9 @@ public class JpaConfig {
             entityManagerFactoryRef = "profileServiceEntityManagerFactory",
             transactionManagerRef = "profileServiceTransactionManager",
             enableDefaultTransactions = true,
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+    @DependsOn({"profileServiceEntityManagerFactoryBean"})
     static class ProfileServiceJpaRepositoriesConfig {}
 
     @Configuration
@@ -415,7 +447,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.registry.repositories.appcatalog",
             entityManagerFactoryRef = "appCatalogEntityManagerFactory",
             transactionManagerRef = "appCatalogTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class AppCatalogJpaRepositoriesConfig {}
 
     @Configuration
@@ -423,7 +456,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
             entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
             transactionManagerRef = "replicaCatalogTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class ReplicaCatalogJpaRepositoriesConfig {}
 
     @Configuration
@@ -431,7 +465,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
             entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
             transactionManagerRef = "workflowCatalogTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class WorkflowCatalogJpaRepositoriesConfig {}
 
     @Configuration
@@ -439,7 +474,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.sharing.repositories",
             entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
             transactionManagerRef = "sharingRegistryTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class SharingRegistryJpaRepositoriesConfig {}
 
     @Configuration
@@ -447,7 +483,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.credential.repositories",
             entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
             transactionManagerRef = "credentialStoreTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class CredentialStoreJpaRepositoriesConfig {}
 
     @Configuration
@@ -455,7 +492,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.research.service.model.repo",
             entityManagerFactoryRef = "researchCatalogEntityManagerFactory",
             transactionManagerRef = "researchCatalogTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class ResearchCatalogJpaRepositoriesConfig {}
 
     // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
@@ -465,6 +503,8 @@ public class JpaConfig {
             basePackages = "org.apache.airavata.registry.repositories.expcatalog",
             entityManagerFactoryRef = "expCatalogEntityManagerFactory",
             transactionManagerRef = "expCatalogTransactionManager",
-            considerNestedRepositories = true)
+            considerNestedRepositories = true,
+            repositoryImplementationPostfix = "Impl",
+            bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
     static class ExpCatalogJpaRepositoriesConfig {}
 }

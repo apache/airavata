@@ -50,7 +50,7 @@ public class SlurmTaskFactory implements HelixTaskFactory {
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder;
-    private final org.apache.airavata.messaging.core.MessagingFactory messagingFactory;
+    private final org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory;
 
     public SlurmTaskFactory(
             ApplicationContext applicationContext,
@@ -58,7 +58,7 @@ public class SlurmTaskFactory implements HelixTaskFactory {
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;

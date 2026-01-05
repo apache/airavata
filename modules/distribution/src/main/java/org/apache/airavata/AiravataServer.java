@@ -19,8 +19,8 @@
 */
 package org.apache.airavata;
 
-import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.ThriftMapperImplExcludeFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -37,11 +37,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(
         exclude = {
             org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.class,
-            org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class
+            org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
+            org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
         })
 @EnableTransactionManagement
 @EnableConfigurationProperties({AiravataServerProperties.class})
-@Import({AiravataPropertiesConfiguration.class})
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
@@ -66,6 +66,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.common.utils",
             "org.apache.airavata.common.validation",
             "org.apache.airavata.accountprovisioning",
+            "org.apache.airavata.agents",
             "org.apache.airavata.security",
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
@@ -80,7 +81,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.agent.connection.service",
             "org.apache.airavata.research.service",
             "org.apache.airavata.bootstrap"
-        })
+        },
+        excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = ThriftMapperImplExcludeFilter.class))
 @EntityScan(
         basePackages = {
             "org.apache.airavata.registry.entities",

@@ -70,21 +70,16 @@ public class CredentialEntityService {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        try {
-            String airavataConfigDir = properties.airavataConfigDir;
-            String credentialStoreKeyStorePath = properties.security.vault.keystore.url;
-            if (airavataConfigDir == null || credentialStoreKeyStorePath == null) {
-                logger.warn(
-                        "Keystore configuration is missing (airavataConfigDir or keystore.url is null), encryption will be disabled");
-                this.keyStorePath = null;
-                return;
-            }
-            this.keyStorePath = new java.io.File(airavataConfigDir, credentialStoreKeyStorePath).getAbsolutePath();
-            this.secretKeyAlias = properties.security.vault.keystore.alias;
-        } catch (Exception e) {
-            logger.warn("Failed to initialize keystore settings, encryption will be disabled", e);
-            this.keyStorePath = null;
+        String configDir =
+                org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
+        String credentialStoreKeyStorePath = properties.security.vault.keystore.url;
+        if (credentialStoreKeyStorePath == null) {
+            throw new IllegalStateException(
+                    "Keystore configuration is missing: security.vault.keystore.url is not set in airavata.properties");
         }
+        // Keystore path is relative to configDir (e.g., "keystores/airavata.sym.p12")
+        this.keyStorePath = new java.io.File(configDir, credentialStoreKeyStorePath).getAbsolutePath();
+        this.secretKeyAlias = properties.security.vault.keystore.alias;
     }
 
     /**

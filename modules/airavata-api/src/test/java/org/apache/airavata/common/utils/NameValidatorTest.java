@@ -32,7 +32,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             NameValidatorTest.TestConfiguration.class
         },
         properties = {
@@ -65,6 +65,6 @@ public class NameValidatorTest {
 
     @Configuration
     @ComponentScan(basePackages = {"org.apache.airavata.common", "org.apache.airavata.config"})
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

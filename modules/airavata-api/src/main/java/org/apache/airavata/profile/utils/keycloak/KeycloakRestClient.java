@@ -87,9 +87,15 @@ public class KeycloakRestClient {
                     && properties.security.tls.enabled) {
                 // Configure SSL with keystore
                 SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-                String airavataConfigDir = properties.airavataConfigDir;
+                String configDir =
+                        org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
                 String keystorePath = properties.security.tls.keystore.path;
-                String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
+                if (keystorePath == null) {
+                    throw new IllegalStateException(
+                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
+                }
+                // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
+                String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
                 String keystorePassword = properties.security.tls.keystore.password;
                 KeyStore keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
                 sslContextBuilder.loadTrustMaterial(keyStore, new TrustSelfSignedStrategy());

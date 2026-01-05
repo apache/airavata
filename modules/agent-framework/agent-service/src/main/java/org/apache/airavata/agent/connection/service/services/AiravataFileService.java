@@ -52,13 +52,13 @@ public class AiravataFileService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataFileService.class);
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final AiravataService airavataService;
+    private final AiravataThriftClient airavataThriftClient;
 
     private final Cache<String, ExperimentStorageResponse> storageCache =
             CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-    public AiravataFileService(AiravataService airavataService) {
-        this.airavataService = airavataService;
+    public AiravataFileService(AiravataThriftClient airavataThriftClient) {
+        this.airavataThriftClient = airavataThriftClient;
     }
 
     private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(
@@ -71,14 +71,14 @@ public class AiravataFileService {
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {
-        Airavata.Client airavataClient = airavataService.airavata();
+        Airavata.Client airavataClient = airavataThriftClient.airavata();
         String fusePath = request.getName();
 
         ReadDirRes.Builder readDirResBuilder = ReadDirRes.newBuilder();
 
         try {
             if ("/".equals(fusePath)) {
-                List<String> experimentIds = airavataService.getUserExperimentIDs(airavataClient);
+                List<String> experimentIds = airavataThriftClient.getUserExperimentIDs(airavataClient);
 
                 // Handle root directory
                 for (String expId : experimentIds) {

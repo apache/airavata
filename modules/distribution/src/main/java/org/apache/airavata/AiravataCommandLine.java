@@ -29,7 +29,6 @@ import org.apache.airavata.cli.commands.ServeCommand;
 import org.apache.airavata.cli.commands.ServiceCommand;
 import org.apache.airavata.cli.commands.StorageCommand;
 import org.apache.airavata.cli.commands.TestCommand;
-import org.apache.airavata.config.AiravataPropertiesConfiguration;
 import org.apache.airavata.config.FlywayConfig;
 import org.apache.airavata.config.JpaConfig;
 import org.springframework.boot.CommandLineRunner;
@@ -51,7 +50,7 @@ import picocli.CommandLine.IFactory;
             org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
             org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
         })
-@Import({AiravataPropertiesConfiguration.class, JpaConfig.class, FlywayConfig.class})
+@Import({JpaConfig.class, FlywayConfig.class})
 @Component
 @Order(1)
 @ConditionalOnProperty(name = "airavata.cli.enabled", havingValue = "true", matchIfMissing = true)
@@ -82,7 +81,30 @@ public class AiravataCommandLine implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         int exitCode = commandLine.execute(args);
-        System.exit(exitCode);
+        // Don't exit if serve command is running in foreground - it will block
+        // Only exit for other commands
+        if (exitCode != 0 || !isServeCommandForeground(args)) {
+            System.exit(exitCode);
+        }
+        // For serve --foreground, the command will block, so we don't exit here
+    }
+
+    private boolean isServeCommandForeground(String... args) {
+        if (args == null || args.length == 0) {
+            return false;
+        }
+        boolean hasServe = false;
+        boolean hasForeground = false;
+        for (String arg : args) {
+            if (arg != null) {
+                if ("serve".equals(arg)) {
+                    hasServe = true;
+                } else if ("--foreground".equals(arg)) {
+                    hasForeground = true;
+                }
+            }
+        }
+        return hasServe && hasForeground;
     }
 
     public static void main(String[] args) {

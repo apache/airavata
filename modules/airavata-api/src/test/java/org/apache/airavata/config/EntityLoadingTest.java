@@ -38,7 +38,7 @@ import org.springframework.test.context.TestPropertySource;
  * through their respective EntityManagerFactories.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataPropertiesConfiguration.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "flyway.enabled=false",

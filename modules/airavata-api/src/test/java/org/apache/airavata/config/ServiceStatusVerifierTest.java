@@ -40,7 +40,7 @@ public class ServiceStatusVerifierTest {
     public void setUp() {
         // Create a minimal Spring context for testing
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.register(AiravataPropertiesConfiguration.class);
+        ctx.register(AiravataServerProperties.class);
         ctx.refresh();
 
         this.applicationContext = ctx;

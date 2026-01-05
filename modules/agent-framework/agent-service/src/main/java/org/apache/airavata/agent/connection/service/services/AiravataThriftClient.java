@@ -44,10 +44,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service("agentAiravataService")
-public class AiravataService {
+@Service("agentAiravataThriftClient")
+public class AiravataThriftClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AiravataThriftClient.class);
 
     @Value("${services.agent.thriftclient.url:localhost}")
     private String serverUrl;
@@ -60,7 +60,7 @@ public class AiravataService {
 
     private final AiravataServerProperties properties;
 
-    public AiravataService(AiravataServerProperties properties) {
+    public AiravataThriftClient(AiravataServerProperties properties) {
         this.properties = properties;
     }
 

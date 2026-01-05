@@ -40,7 +40,7 @@ import org.springframework.test.context.TestPropertySource;
  * Testcontainers will automatically detect and use the available container runtime.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataPropertiesConfiguration.class, TestcontainersConfig.class},
+        classes = {JpaConfig.class, AiravataServerProperties.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",

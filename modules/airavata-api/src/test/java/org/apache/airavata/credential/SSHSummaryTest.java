@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             SSHSummaryTest.TestConfiguration.class
         },
         properties = {
@@ -102,6 +102,6 @@ public class SSHSummaryTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataPropertiesConfiguration.class)
+    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

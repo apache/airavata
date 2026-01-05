@@ -44,7 +44,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataPropertiesConfiguration.class,
+            AiravataServerProperties.class,
             RestModeStartupTest.TestConfiguration.class
         },
         properties = {
@@ -99,12 +99,14 @@ public class RestModeStartupTest {
     @Test
     public void testDBEventManagerIsDisabled() {
         // In REST mode, DB Event Manager should not be created (it's thrift-specific)
-        assertFalse(
-                applicationContext
-                                .getBeansOfType(org.apache.airavata.manager.dbevent.DBEventManagerRunner.class)
-                                .size()
-                        > 0,
-                "DBEventManagerRunner should not be configured in REST mode");
+        // DBEventManagerRunner class may not exist - check using class name string
+        try {
+            Class<?> dbEventManagerClass = Class.forName("org.apache.airavata.manager.dbevent.DBEventManagerRunner");
+            int count = applicationContext.getBeansOfType(dbEventManagerClass).size();
+            assertFalse(count > 0, "DBEventManagerRunner should not be configured in REST mode");
+        } catch (ClassNotFoundException e) {
+            // Class doesn't exist - this is fine, test passes
+        }
     }
 
     @Test

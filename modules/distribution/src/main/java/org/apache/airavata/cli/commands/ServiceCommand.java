@@ -256,19 +256,15 @@ public class ServiceCommand implements Runnable {
     }
 
     /**
-     * Get config directory from system property or environment.
+     * Get config directory from AIRAVATA_HOME environment variable.
+     * Returns AIRAVATA_HOME/conf.
      */
     private static String getConfigDir() {
-        String configDir = System.getProperty("airavata.config.dir");
-        if (configDir == null || configDir.isEmpty()) {
-            configDir = System.getenv("AIRAVATA_CONFIG_DIR");
+        String airavataHome = System.getenv("AIRAVATA_HOME");
+        if (airavataHome == null || airavataHome.isEmpty()) {
+            throw new IllegalStateException(
+                    "AIRAVATA_HOME environment variable is not set. Please set AIRAVATA_HOME to the Airavata installation directory.");
         }
-        if (configDir == null || configDir.isEmpty()) {
-            String airavataHome = System.getenv("AIRAVATA_HOME");
-            if (airavataHome != null && !airavataHome.isEmpty()) {
-                configDir = airavataHome;
-            }
-        }
-        return configDir;
+        return new java.io.File(airavataHome, "conf").getAbsolutePath();
     }
 }

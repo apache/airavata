@@ -45,7 +45,7 @@ import org.springframework.test.context.TestPropertySource;
  * This test validates entity structure and mapping correctness.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataPropertiesConfiguration.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",

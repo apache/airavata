@@ -24,10 +24,11 @@ import java.util.Map;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
 
     private final AdaptorSupport adaptorSupport;
 
-    public FileServerConfiguration(AdaptorSupport adaptorSupport) {
+    public FileServerConfiguration(@Lazy @Qualifier("adaptorSupportImpl") AdaptorSupport adaptorSupport) {
         this.adaptorSupport = adaptorSupport;
     }
 
@@ -94,10 +95,7 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
         }
     }
 
-    @Bean
-    public AdaptorSupport adaptorSupportBean() {
-        return adaptorSupport;
-    }
+    // AdaptorSupport is already a @Component bean (AdaptorSupportImpl), no need to create it here
 
     // RegistryService is already a @Service bean, no need to create it here
 }

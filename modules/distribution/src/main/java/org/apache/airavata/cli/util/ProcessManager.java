@@ -44,24 +44,30 @@ public class ProcessManager {
     /**
      * Fork a new Airavata service process.
      *
-     * @param configDir Configuration directory
+     * @param airavataHome Airavata home directory (config dir will be {airavataHome}/conf)
      * @param jarPath Path to JAR file (null if using native binary)
      * @param nativeBinaryPath Path to native binary (null if using JAR)
      * @return Process handle
      * @throws IOException if process cannot be started
      */
-    public static Process startServiceProcess(String configDir, String jarPath, String nativeBinaryPath)
+    public static Process startServiceProcess(String airavataHome, String jarPath, String nativeBinaryPath)
             throws IOException {
-        String normalizedConfigDir = configDir;
+        String normalizedAiravataHome = airavataHome;
         try {
-            if (configDir != null && !configDir.isEmpty()) {
-                normalizedConfigDir =
-                        Paths.get(configDir).toAbsolutePath().normalize().toString();
+            if (airavataHome != null && !airavataHome.isEmpty()) {
+                normalizedAiravataHome =
+                        Paths.get(airavataHome).toAbsolutePath().normalize().toString();
             }
         } catch (Exception e) {
             // Keep original if normalization fails.
-            normalizedConfigDir = configDir;
+            normalizedAiravataHome = airavataHome;
         }
+
+        // Derive configDir from airavataHome
+        String normalizedConfigDir = Paths.get(normalizedAiravataHome, "conf")
+                .toAbsolutePath()
+                .normalize()
+                .toString();
 
         // Check if socket already exists (another process running)
         if (ServiceSocketClient.socketExists(normalizedConfigDir)) {
@@ -79,8 +85,6 @@ public class ProcessManager {
             }
             command.add(nativeBinaryPath);
             command.add("serve");
-            command.add("--config-dir");
-            command.add(normalizedConfigDir);
             // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
             command.add("--foreground");
             pb = new ProcessBuilder(command);
@@ -99,11 +103,10 @@ public class ProcessManager {
             }
 
             command.add(javaCmd);
+            command.add("-Dairavata.home=" + normalizedAiravataHome);
             command.add("-jar");
             command.add(jarPath);
             command.add("serve");
-            command.add("--config-dir");
-            command.add(normalizedConfigDir);
             // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
             command.add("--foreground");
 
@@ -113,16 +116,8 @@ public class ProcessManager {
             throw new IllegalArgumentException("Either jarPath or nativeBinaryPath must be provided");
         }
 
-        // Set environment
-        pb.environment().put("AIRAVATA_CONFIG_DIR", normalizedConfigDir);
-        // AIRAVATA_HOME should be the parent of the config dir (i.e., distribution root), when available.
-        try {
-            Path cfg = Paths.get(normalizedConfigDir);
-            Path parent = cfg.getParent();
-            pb.environment().put("AIRAVATA_HOME", parent != null ? parent.toString() : normalizedConfigDir);
-        } catch (Exception e) {
-            pb.environment().put("AIRAVATA_HOME", normalizedConfigDir);
-        }
+        // Set environment variables
+        pb.environment().put("AIRAVATA_HOME", normalizedAiravataHome);
 
         // Redirect output
         Path logDir = Paths.get(normalizedConfigDir, "logs");

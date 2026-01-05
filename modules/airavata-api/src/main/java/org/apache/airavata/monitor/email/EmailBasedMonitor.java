@@ -52,7 +52,7 @@ import org.yaml.snakeyaml.Yaml;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = false)
 public class EmailBasedMonitor extends ServerLifecycle {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
@@ -120,11 +120,8 @@ public class EmailBasedMonitor extends ServerLifecycle {
 
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
+        // loadFile() will throw IllegalStateException if configDir is not found or file is missing
         java.net.URL emailConfigUrl = AiravataServerProperties.loadFile("email-config.yml");
-        if (emailConfigUrl == null) {
-            log.warn("email-config.yml not found. Email monitoring will use default configuration.");
-            return; // Use default configuration
-        }
         InputStream emailConfigStream = emailConfigUrl.openStream();
         Object load = yaml.load(emailConfigStream);
 

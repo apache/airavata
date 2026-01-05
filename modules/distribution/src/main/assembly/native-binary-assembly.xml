@@ -61,27 +61,24 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Config files from airavata-api -->
+    <!-- Config files from airavata-api (META-INF/persistence.xml) -->
     <fileSet>
       <directory>../airavata-api/src/main/resources</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>META-INF/persistence.xml</include>
-        <include>templates/*.template</include>
-        <include>*.xml</include>
-        <include>logback.xml</include>
       </includes>
-      <excludes>
-        <exclude>airavata.properties</exclude>
-      </excludes>
     </fileSet>
 
-    <!-- Distribution-owned airavata.properties -->
+    <!-- Distribution-owned config files (airavata.properties, logback.xml, templates, email-config.yml) -->
     <fileSet>
       <directory>src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>airavata.properties</include>
+        <include>logback.xml</include>
+        <include>email-config.yml</include>
+        <include>templates/*.template</include>
       </includes>
     </fileSet>
 

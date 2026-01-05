@@ -43,7 +43,16 @@ public class SocketServerConfiguration {
 
     @PostConstruct
     public void startSocketServer() {
-        String configDir = System.getProperty("airavata.config.dir");
+        // Get configDir from AIRAVATA_HOME/conf
+        String airavataHome = System.getenv("AIRAVATA_HOME");
+        if (airavataHome == null || airavataHome.isEmpty()) {
+            airavataHome = System.getProperty("airavata.home");
+        }
+        if (airavataHome == null || airavataHome.isEmpty()) {
+            throw new IllegalStateException(
+                    "AIRAVATA_HOME environment variable or airavata.home system property must be set.");
+        }
+        String configDir = new java.io.File(airavataHome, "conf").getAbsolutePath();
         socketManager = new ServiceSocketManager(configDir, serviceHandler);
 
         if (socketManager.isSocketLocked()) {

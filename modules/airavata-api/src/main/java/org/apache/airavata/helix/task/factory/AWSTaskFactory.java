@@ -47,7 +47,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder;
     private final org.apache.airavata.helix.task.aws.utils.AWSTaskUtil awsTaskUtil;
-    private final org.apache.airavata.messaging.core.MessagingFactory messagingFactory;
+    private final org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory;
 
     public AWSTaskFactory(
             ApplicationContext applicationContext,
@@ -56,7 +56,7 @@ public class AWSTaskFactory implements HelixTaskFactory {
             CredentialStoreService credentialStoreService,
             org.apache.airavata.helix.task.submission.GroovyMapBuilder groovyMapBuilder,
             org.apache.airavata.helix.task.aws.utils.AWSTaskUtil awsTaskUtil,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory) {
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;

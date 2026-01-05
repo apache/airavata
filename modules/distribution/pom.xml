@@ -63,12 +63,6 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Thrift API module (provides ThriftServer used by ServiceRegistry) -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>thrift-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- Agent Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -235,8 +229,14 @@ under the License.
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
-                    <!-- Use distribution-owned config resources (copied to target/classes/conf) -->
-                    <commandlineArgs>serve --config-dir ${project.build.outputDirectory}/conf</commandlineArgs>
+                    <!-- Set airavata.home to target/classes directory (config will be at target/classes/conf) -->
+                    <systemProperties>
+                        <systemProperty>
+                            <key>airavata.home</key>
+                            <value>${project.build.outputDirectory}</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <commandlineArgs>serve --foreground</commandlineArgs>
                 </configuration>
             </plugin>
             <!-- GraalVM Native Image Maven Plugin -->

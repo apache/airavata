@@ -44,7 +44,7 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+            org.apache.airavata.config.AiravataServerProperties.class,
             WorkflowRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -73,7 +73,7 @@ public class WorkflowRepositoryTest extends TestBase {
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     @Import({
-        org.apache.airavata.config.AiravataPropertiesConfiguration.class,
+        org.apache.airavata.config.AiravataServerProperties.class,
     })
     static class TestConfiguration {}
 

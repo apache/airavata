@@ -45,9 +45,17 @@ public class AiravataServiceClientFactory {
             } else {
                 // TLS enabled client
                 var params = new TSSLTransportFactory.TSSLTransportParameters();
-                String airavataConfigDir = properties.airavataConfigDir;
+                String configDir =
+                        org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
+                if (properties.security == null || properties.security.tls == null || 
+                    properties.security.tls.keystore == null || 
+                    properties.security.tls.keystore.path == null) {
+                    throw new IllegalStateException(
+                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
+                }
                 String keystorePath = properties.security.tls.keystore.path;
-                String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
+                // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
+                String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
                 params.setKeyStore(keystoreFullPath, properties.security.tls.keystore.password);
                 transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             }
