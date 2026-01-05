@@ -55,7 +55,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             // Background/infrastructure services - keep property flags (truly optional)
             "services.thrift.enabled=true",
-            "services.api.orchestrator.enabled=false",
             "flyway.enabled=false",
 
             // Core services (RegistryService, CredentialStoreService) are always available via DI - no flags needed

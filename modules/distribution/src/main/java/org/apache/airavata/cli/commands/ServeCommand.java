@@ -101,9 +101,10 @@ public class ServeCommand implements Runnable {
             defaultProps.put("airavata.cli.enabled", "false");
             defaultProps.put("airavata.server.enabled", "true");
             // Set gRPC keepalive properties early to prevent NullPointerException
-            defaultProps.put("spring.grpc.server.keepalive-time", "30s");
-            defaultProps.put("spring.grpc.server.keepalive-timeout", "5s");
-            defaultProps.put("spring.grpc.server.permit-keepalive-without-calls", "true");
+            // These will be mapped to spring.grpc.server.* by ResearchServiceConfiguration
+            defaultProps.put("services.research.grpc.keepalive-time", "30s");
+            defaultProps.put("services.research.grpc.keepalive-timeout", "5s");
+            defaultProps.put("services.research.grpc.permit-keepalive-without-calls", "true");
             app.setDefaultProperties(defaultProps);
             app.setRegisterShutdownHook(true);
             // Don't catch exceptions - let Spring Boot handle them and keep the server running

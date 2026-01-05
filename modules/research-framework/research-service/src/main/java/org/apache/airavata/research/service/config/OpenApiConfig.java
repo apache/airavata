@@ -41,7 +41,7 @@ public class OpenApiConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiConfig.class);
 
-    @Value("${airavata.openid.url:http://localhost:18080/realms/default}")
+    @Value("${services.research.openid.url:http://localhost:18080/realms/default}")
     private String openIdConfigURL;
 
     @Bean

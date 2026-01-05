@@ -297,8 +297,8 @@ public class AiravataService {
                 logger.warn("Database not available during sharing registry initialization. Will retry when database is available: {}", e.getMessage());
                 // Don't throw - allow server to start without database
             } else {
-                logger.error(msg, e);
-                throw new AiravataException(msg, e);
+            logger.error(msg, e);
+            throw new AiravataException(msg, e);
             }
         } catch (Exception e) {
             // Check if it's a database connection issue

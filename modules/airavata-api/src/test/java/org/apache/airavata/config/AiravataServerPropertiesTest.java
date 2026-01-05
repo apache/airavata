@@ -27,7 +27,8 @@ public class AiravataServerPropertiesTest {
 
     @Test
     public void testGetSettingFallsBackToProperties() {
-        String user = AiravataServerProperties.getSetting("airavata.defaults.user", "missing");
-        assertEquals("test-user", user);
+        // Test with a property that exists in airavata.properties
+        String gateway = AiravataServerProperties.getSetting("airavata.defaults.gateway", "missing");
+        assertEquals("default", gateway);
     }
 }

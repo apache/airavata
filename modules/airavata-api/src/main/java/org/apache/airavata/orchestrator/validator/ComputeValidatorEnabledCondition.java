@@ -26,8 +26,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
 /**
- * Enables a {@link JobMetadataValidator} bean iff its class name appears in the comma-separated list
+ * Enables a {@link JobMetadataValidator} bean iff its simple class name (without package) appears in the comma-separated list
  * configured by {@code services.monitor.compute.validators}.
+ * 
+ * Example: If the property is "BatchQueueValidator,ExperimentStatusValidator", then only those validator beans will be enabled.
  */
 public class ComputeValidatorEnabledCondition implements Condition {
 
@@ -48,10 +50,13 @@ public class ComputeValidatorEnabledCondition implements Condition {
             return false;
         }
 
-        final String target = className;
+        // Extract simple class name from full class name
+        String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+
+        // Match against simple class names in the configuration
         return Arrays.stream(configured.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .anyMatch(s -> s.equals(target));
+                .anyMatch(s -> s.equals(simpleClassName));
     }
 }

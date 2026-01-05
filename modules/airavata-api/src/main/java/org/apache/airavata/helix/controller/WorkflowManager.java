@@ -95,20 +95,31 @@ public abstract class WorkflowManager extends ServerLifecycle {
     }
 
     private void initWorkflowOperators() throws Exception {
+        if (zkHelixAdmin == null) {
+            logger.warn("Helix Admin not initialized (Zookeeper unavailable). Workflow operators will not be created.");
+            return;
+        }
 
-        if (!loadBalanceClusters) {
-            String clusterName = properties.services.helix.clusterName;
-            logger.info("Using default cluster " + clusterName + " to submit workflows");
-            workflowOperators.add(new WorkflowOperator(
-                    clusterName, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
-        } else {
-            logger.info("Load balancing workflows among existing clusters");
-            List<String> clusters = zkHelixAdmin.getClusters();
-            logger.info("Total available clusters " + clusters.size());
-            for (String cluster : clusters) {
+        try {
+            if (!loadBalanceClusters) {
+                String clusterName = properties.services.helix.clusterName;
+                logger.info("Using default cluster " + clusterName + " to submit workflows");
                 workflowOperators.add(new WorkflowOperator(
-                        cluster, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
+                        clusterName, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
+            } else {
+                logger.info("Load balancing workflows among existing clusters");
+                List<String> clusters = zkHelixAdmin.getClusters();
+                logger.info("Total available clusters " + clusters.size());
+                for (String cluster : clusters) {
+                    workflowOperators.add(new WorkflowOperator(
+                            cluster, workflowManagerName, properties.zookeeper.serverConnection, taskUtil));
+                }
             }
+        } catch (Exception e) {
+            logger.warn("Failed to initialize workflow operators (Zookeeper may not be available): {}. " +
+                    "Workflow management features will be unavailable until Zookeeper is accessible.", 
+                    e.getMessage());
+            // Allow server to start even if workflow operators can't be created
         }
     }
 
@@ -117,10 +128,18 @@ public abstract class WorkflowManager extends ServerLifecycle {
     }
 
     private void initHelixAdmin() {
-        this.zkHelixAdmin = new ZKHelixAdmin.Builder()
-                .setRealmMode(RealmMode.SINGLE_REALM)
-                .setZkAddress(properties.zookeeper.serverConnection)
-                .build();
+        try {
+            this.zkHelixAdmin = new ZKHelixAdmin.Builder()
+                    .setRealmMode(RealmMode.SINGLE_REALM)
+                    .setZkAddress(properties.zookeeper.serverConnection)
+                    .build();
+        } catch (Exception e) {
+            logger.warn("Failed to initialize Helix Admin (Zookeeper may not be available): {}. " +
+                    "Workflow management features will be unavailable until Zookeeper is accessible.", 
+                    e.getMessage());
+            // Allow server to start even if Zookeeper is unavailable
+            this.zkHelixAdmin = null;
+        }
     }
 
     public Publisher getStatusPublisher() {

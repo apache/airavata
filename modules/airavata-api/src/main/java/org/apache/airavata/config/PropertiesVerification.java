@@ -44,8 +44,8 @@ public class PropertiesVerification implements CommandLineRunner {
         logger.info("=== Verifying AiravataServerProperties ===");
 
         // Verify API Servers
-        logger.info("Thrift Server - Port: {}", properties.services.thrift.port);
-        logger.info("REST Server - Port: {}", properties.services.rest.port);
+        logger.info("Thrift Server - Port: {}", properties.services.thrift.server.port);
+        logger.info("REST Server - Port: {}", properties.services.rest.server.port);
         // Verify Database configurations
         logger.info(
                 "AppCatalog DB - URL: {}, Driver: {}",

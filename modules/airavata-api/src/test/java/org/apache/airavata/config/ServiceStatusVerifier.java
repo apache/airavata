@@ -90,7 +90,7 @@ public class ServiceStatusVerifier {
                 case "agent-service":
                     return properties.services.agent.enabled;
                 case "file-service":
-                    return properties.services.file.enabled;
+                    return properties.services.fileserver.enabled;
                 case "dbevent-service":
                     return properties.services.dbus.enabled;
                 default:

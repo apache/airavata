@@ -28,9 +28,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.airavata.common.model.UserProfile;
-import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,13 +44,13 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
     private static final String USERNAME_CLAIM = "userName";
     private static final String GATEWAY_CLAIM = "gatewayID";
 
-    private final AiravataService airavataService;
+    private final UserProfileService userProfileService;
 
     @Value("${services.research.hub.url}")
     private String csHubUrl;
 
-    public AuthzTokenFilter(AiravataService airavataService) {
-        this.airavataService = airavataService;
+    public AuthzTokenFilter(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
                     authzToken.setClaimsMap(claimsMap);
                     UserContext.setAuthzToken(authzToken);
 
-                    UserProfile userProfile = airavataService.getUserProfile(
+                    UserProfile userProfile = userProfileService.getUserProfileById(
                             authzToken, getClaim(authzToken, USERNAME_CLAIM), getClaim(authzToken, GATEWAY_CLAIM));
                     UserContext.setUser(userProfile);
                 } catch (Exception e) {

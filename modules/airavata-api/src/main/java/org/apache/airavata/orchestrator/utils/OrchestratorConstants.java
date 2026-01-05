@@ -25,7 +25,7 @@ package org.apache.airavata.orchestrator.utils;
  */
 public class OrchestratorConstants {
     public static final String ENABLE_VALIDATION = "enable.validation";
-    public static final String JOB_VALIDATOR = "job.validators";
+    public static final String JOB_VALIDATOR = "services.monitor.compute.validators";
 
     public static final String EXPERIMENT_ERROR = "EXPERIMENT_ERROR";
     public static final String PROCESS_ERROR = "PROCESS_ERROR";

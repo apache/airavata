@@ -26,8 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.UserProfile;
-import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
 import org.apache.airavata.research.service.enums.PrivacyEnum;
@@ -56,18 +56,18 @@ public class ResourceHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceHandler.class);
 
-    private final AiravataService airavataService;
+    private final UserProfileService userProfileService;
     private final TagRepository tagRepository;
     private final ResourceRepository resourceRepository;
     private final ResourceStarRepository resourceStarRepository;
 
     public ResourceHandler(
-            AiravataService airavataService,
+            UserProfileService userProfileService,
             TagRepository tagRepository,
             ResourceRepository resourceRepository,
             ProjectRepository projectRepository,
             ResourceStarRepository resourceStarRepository) {
-        this.airavataService = airavataService;
+        this.userProfileService = userProfileService;
         this.tagRepository = tagRepository;
         this.resourceRepository = resourceRepository;
         this.resourceStarRepository = resourceStarRepository;
@@ -77,7 +77,8 @@ public class ResourceHandler {
         Set<String> userSet = new HashSet<>();
         for (String authorId : resource.getAuthors()) {
             try {
-                UserProfile fetchedUser = airavataService.getUserProfile(authorId);
+                UserProfile fetchedUser = userProfileService.getUserProfileById(
+                        UserContext.authzToken(), authorId, UserContext.gatewayId());
                 userSet.add(fetchedUser.getUserId());
             } catch (Exception e) {
                 LOGGER.error("Error while fetching user profile with the userId: {}", authorId, e);

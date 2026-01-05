@@ -109,7 +109,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     @Value("${services.agent.tunnelserver.port}")
     private int tunnelServerPort;
 
-    @Value("${services.agent.tunnelserver.apiurl}")
+    @Value("${services.agent.tunnelserver.url}")
     private String tunnelServerApiUrl;
 
     @Value("${services.agent.tunnelserver.token}")

@@ -62,9 +62,8 @@ public class ServiceStartupRangeTest {
         assertEquals("false", props.get("services.monitor.email.enabled"));
 
         // Ports should still be configured even if services are disabled
-        assertNotNull(props.get("services.thrift.port"));
-        assertNotNull(props.get("services.rest.port"));
-        assertNotNull(props.get("services.api.profile.server.port"));
+        assertNotNull(props.get("services.thrift.server.port"));
+        assertNotNull(props.get("services.rest.server.port"));
     }
 
     /**
@@ -87,13 +86,9 @@ public class ServiceStartupRangeTest {
         assertEquals("true", props.get("services.monitor.email.enabled"));
 
         // Verify all ports are configured
-        assertNotNull(props.get("services.thrift.port"));
-        assertNotNull(props.get("services.rest.port"));
-        assertNotNull(props.get("services.api.profile.server.port"));
-        assertNotNull(props.get("services.orchestrator.serverPort"));
-        assertNotNull(props.get("services.registry.server.port"));
-        assertNotNull(props.get("services.vault.server.port"));
-        assertNotNull(props.get("services.sharing.serverPort"));
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        assertNotNull(props.get("services.thrift.server.port"));
+        assertNotNull(props.get("services.rest.server.port"));
     }
 
     /**
@@ -363,21 +358,12 @@ public class ServiceStartupRangeTest {
     @Test
     public void testPortConfiguration() {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder()
-                .withThriftPort(8931)
-                .withProfilePort(8963)
-                .withOrchestratorPort(8941)
-                .withRegistryPort(8971)
-                .withVaultPort(8961)
-                .withSharingPort(7879);
+                .withThriftPort(8931);
 
         Map<String, String> props = builder.build();
 
-        assertEquals("8931", props.get("services.thrift.port"));
-        assertEquals("8963", props.get("services.api.profile.server.port"));
-        assertEquals("8941", props.get("services.orchestrator.serverPort"));
-        assertEquals("8971", props.get("services.registry.server.port"));
-        assertEquals("8961", props.get("services.vault.server.port"));
-        assertEquals("7879", props.get("services.sharing.serverPort"));
+        // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        assertEquals("8931", props.get("services.thrift.server.port"));
     }
 
     /**
@@ -389,13 +375,9 @@ public class ServiceStartupRangeTest {
         Map<String, String> props = builder.build();
 
         // Verify default ports match expected values
-        assertEquals("8930", props.get("services.thrift.port"));
-        assertEquals("8082", props.get("services.rest.port"));
-        assertEquals("8962", props.get("services.api.profile.server.port"));
-        assertEquals("8940", props.get("services.orchestrator.serverPort"));
-        assertEquals("8970", props.get("services.registry.server.port"));
-        assertEquals("8960", props.get("services.vault.server.port"));
-        assertEquals("7878", props.get("services.sharing.serverPort"));
+        // Note: All Thrift services are multiplexed on services.thrift.server.port
+        assertEquals("8930", props.get("services.thrift.server.port"));
+        assertEquals("8082", props.get("services.rest.server.port"));
     }
 
     /**
@@ -405,7 +387,7 @@ public class ServiceStartupRangeTest {
     public void testPortConfigurationIndependentOfEnablement() {
         // Ports should be configured even when services are disabled
         ServiceConfigurationBuilder builder =
-                ServiceConfigurationBuilder.minimal().withThriftPort(9999).withProfilePort(9998);
+                ServiceConfigurationBuilder.minimal().withThriftPort(9999);
 
         Map<String, String> props = builder.build();
 
@@ -413,8 +395,8 @@ public class ServiceStartupRangeTest {
         assertEquals("false", props.get("services.thrift.enabled"));
 
         // But ports are still configured
-        assertEquals("9999", props.get("services.thrift.port"));
-        assertEquals("9998", props.get("services.api.profile.server.port"));
+        // Note: All Thrift services are multiplexed on services.thrift.server.port
+        assertEquals("9999", props.get("services.thrift.server.port"));
     }
 
     /**

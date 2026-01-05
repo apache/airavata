@@ -27,15 +27,21 @@ import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.airavata.agent.ServerMessage;
 import org.apache.airavata.agent.connection.service.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
 import org.apache.airavata.agent.connection.service.models.ExperimentStorageResponse;
 import org.apache.airavata.agent.connection.service.models.FileInfo;
+import org.apache.airavata.common.model.ExperimentSearchFields;
+import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.model.Project;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.ReadDirReq;
 import org.apache.airavata.fuse.ReadDirRes;
-import org.apache.airavata.thriftapi.service.Airavata;
+import org.apache.airavata.service.AiravataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -52,33 +58,23 @@ public class AiravataFileService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataFileService.class);
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final AiravataThriftClient airavataThriftClient;
+    private final AiravataService airavataService;
 
     private final Cache<String, ExperimentStorageResponse> storageCache =
             CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-    public AiravataFileService(AiravataThriftClient airavataThriftClient) {
-        this.airavataThriftClient = airavataThriftClient;
-    }
-
-    private org.apache.airavata.thriftapi.security.model.AuthzToken convertAuthzToken(
-            org.apache.airavata.security.model.AuthzToken domainToken) {
-        org.apache.airavata.thriftapi.security.model.AuthzToken thriftToken =
-                new org.apache.airavata.thriftapi.security.model.AuthzToken();
-        thriftToken.setAccessToken(domainToken.getAccessToken());
-        thriftToken.setClaimsMap(domainToken.getClaimsMap());
-        return thriftToken;
+    public AiravataFileService(AiravataService airavataService) {
+        this.airavataService = airavataService;
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {
-        Airavata.Client airavataClient = airavataThriftClient.airavata();
         String fusePath = request.getName();
 
         ReadDirRes.Builder readDirResBuilder = ReadDirRes.newBuilder();
 
         try {
             if ("/".equals(fusePath)) {
-                List<String> experimentIds = airavataThriftClient.getUserExperimentIDs(airavataClient);
+                List<String> experimentIds = getUserExperimentIDs();
 
                 // Handle root directory
                 for (String expId : experimentIds) {
@@ -185,5 +181,78 @@ public class AiravataFileService {
     private long generateInodeNumber(String value) {
         long hash = value.hashCode();
         return Math.abs(hash);
+    }
+
+    private String getProjectId(String projectName) {
+        int limit = 10;
+        int offset = 0;
+
+        while (true) {
+            List<Project> userProjects;
+            try {
+                userProjects = airavataService.getUserProjects(
+                        UserContext.authzToken(),
+                        UserContext.gatewayId(),
+                        UserContext.username(),
+                        limit,
+                        offset);
+            } catch (Exception e) {
+                String msg = String.format(
+                        "Error getting user projects: projectName=%s, gatewayId=%s, username=%s, limit=%d, offset=%d. Reason: %s",
+                        projectName, UserContext.gatewayId(), UserContext.username(), limit, offset, e.getMessage());
+                LOGGER.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }
+
+            java.util.Optional<Project> defaultProject = userProjects.stream()
+                    .filter(project -> projectName.equals(project.getName()))
+                    .findFirst();
+
+            if (defaultProject.isPresent()) {
+                return defaultProject.get().getProjectID();
+            }
+            if (userProjects.size() < limit) {
+                break;
+            }
+            offset += limit;
+        }
+
+        throw new RuntimeException(
+                "Could not find project: " + projectName + " for the user: " + UserContext.username());
+    }
+
+    private List<String> getUserExperimentIDs() {
+        int limit = 100;
+        String projectId = getProjectId("Default Project");
+        Map<ExperimentSearchFields, String> filters = Map.of(
+                ExperimentSearchFields.PROJECT_ID, projectId);
+
+        return Stream.iterate(0, offset -> offset + limit)
+                .<List<ExperimentSummaryModel>>map(offset -> {
+                    try {
+                        return airavataService.searchExperiments(
+                                UserContext.authzToken(),
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset);
+                    } catch (Exception e) {
+                        String msg = String.format(
+                                "Error searching experiments: gatewayId=%s, username=%s, filters=%s, limit=%d, offset=%d. Reason: %s",
+                                UserContext.gatewayId(),
+                                UserContext.username(),
+                                filters,
+                                limit,
+                                offset,
+                                e.getMessage());
+                        LOGGER.error(msg, e);
+                        throw new RuntimeException(msg, e);
+                    }
+                })
+                .takeWhile(list -> !list.isEmpty())
+                .flatMap(List::stream)
+                .map(ExperimentSummaryModel::getExperimentId)
+                .collect(Collectors.toList());
     }
 }

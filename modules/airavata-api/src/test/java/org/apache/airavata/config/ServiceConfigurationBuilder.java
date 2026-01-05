@@ -62,12 +62,7 @@ public class ServiceConfigurationBuilder {
     // Port configuration for Thrift and REST API services
     private int thriftPort = 8930;
     private int restPort = 8082;
-    // Additional port configurations (for test compatibility)
-    private int profilePort = 8962;
-    private int orchestratorPort = 8940;
-    private int registryPort = 8970;
-    private int vaultPort = 8960;
-    private int sharingPort = 7878;
+    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
 
     /**
      * Enable Thrift API service.
@@ -308,45 +303,8 @@ public class ServiceConfigurationBuilder {
         return this;
     }
 
-    /**
-     * Set Profile service port (for test compatibility).
-     */
-    public ServiceConfigurationBuilder withProfilePort(int port) {
-        this.profilePort = port;
-        return this;
-    }
-
-    /**
-     * Set Orchestrator service port (for test compatibility).
-     */
-    public ServiceConfigurationBuilder withOrchestratorPort(int port) {
-        this.orchestratorPort = port;
-        return this;
-    }
-
-    /**
-     * Set Registry service port (for test compatibility).
-     */
-    public ServiceConfigurationBuilder withRegistryPort(int port) {
-        this.registryPort = port;
-        return this;
-    }
-
-    /**
-     * Set Vault service port (for test compatibility).
-     */
-    public ServiceConfigurationBuilder withVaultPort(int port) {
-        this.vaultPort = port;
-        return this;
-    }
-
-    /**
-     * Set Sharing service port (for test compatibility).
-     */
-    public ServiceConfigurationBuilder withSharingPort(int port) {
-        this.sharingPort = port;
-        return this;
-    }
+    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+    // Individual port setters removed - use withThriftPort() instead
 
     /**
      * Enable Research Service.
@@ -446,19 +404,14 @@ public class ServiceConfigurationBuilder {
         props.put("services.monitor.email.enabled", String.valueOf(emailMonitor));
         props.put("services.research.enabled", String.valueOf(researchService));
         props.put("services.agent.enabled", String.valueOf(agentService));
-        props.put("services.file.enabled", String.valueOf(fileService));
+        props.put("services.fileserver.enabled", String.valueOf(fileService));
         props.put("services.dbus.enabled", String.valueOf(dbeventService));
         props.put("services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
-        props.put("services.thrift.port", String.valueOf(thriftPort));
-        props.put("services.rest.port", String.valueOf(restPort));
-        // Additional ports for test compatibility
-        props.put("services.api.profile.server.port", String.valueOf(profilePort));
-        props.put("services.orchestrator.serverPort", String.valueOf(orchestratorPort));
-        props.put("services.registry.server.port", String.valueOf(registryPort));
-        props.put("services.vault.server.port", String.valueOf(vaultPort));
-        props.put("services.sharing.serverPort", String.valueOf(sharingPort));
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        props.put("services.thrift.server.port", String.valueOf(thriftPort));
+        props.put("services.rest.server.port", String.valueOf(restPort));
 
         return props;
     }
@@ -482,19 +435,14 @@ public class ServiceConfigurationBuilder {
         props.setProperty("services.monitor.email.enabled", String.valueOf(emailMonitor));
         props.setProperty("services.research.enabled", String.valueOf(researchService));
         props.setProperty("services.agent.enabled", String.valueOf(agentService));
-        props.setProperty("services.file.enabled", String.valueOf(fileService));
+        props.setProperty("services.fileserver.enabled", String.valueOf(fileService));
         props.setProperty("services.dbus.enabled", String.valueOf(dbeventService));
         props.setProperty("services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
-        props.setProperty("services.thrift.port", String.valueOf(thriftPort));
-        props.setProperty("services.rest.port", String.valueOf(restPort));
-        // Additional ports for test compatibility
-        props.setProperty("services.api.profile.server.port", String.valueOf(profilePort));
-        props.setProperty("services.orchestrator.serverPort", String.valueOf(orchestratorPort));
-        props.setProperty("services.registry.server.port", String.valueOf(registryPort));
-        props.setProperty("services.vault.server.port", String.valueOf(vaultPort));
-        props.setProperty("services.sharing.serverPort", String.valueOf(sharingPort));
+        // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on services.thrift.server.port
+        props.setProperty("services.thrift.server.port", String.valueOf(thriftPort));
+        props.setProperty("services.rest.server.port", String.valueOf(restPort));
 
         return props;
     }

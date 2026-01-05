@@ -48,12 +48,6 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         String enabled = environment.getProperty("services.research.enabled", "true");
         Map<String, Object> mappedProperties = new HashMap<>();
         
-        // Always set keepalive properties to prevent NullPointerException in gRPC auto-configuration
-        // These are set in airavata.properties as well, but setting them here ensures they're always available
-        mappedProperties.put("spring.grpc.server.keepalive-time", "30s");
-        mappedProperties.put("spring.grpc.server.keepalive-timeout", "5s");
-        mappedProperties.put("spring.grpc.server.permit-keepalive-without-calls", "true");
-        
         if ("true".equalsIgnoreCase(enabled)) {
             // Enable gRPC server and map properties when research service is enabled
             mappedProperties.put("spring.grpc.server.enabled", "true");
@@ -75,13 +69,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         // Map services.research.grpc.* to spring.grpc.server.*
         mapProperty("services.research.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
         
-        // Always set default keepalive properties first to ensure they're never null
-        // Then override if scoped properties exist
-        mappedProperties.put("spring.grpc.server.keepalive-time", "30s");
-        mappedProperties.put("spring.grpc.server.keepalive-timeout", "5s");
-        mappedProperties.put("spring.grpc.server.permit-keepalive-without-calls", "true");
-        
-        // Override with scoped properties if they exist
+        // Map keepalive properties if they exist in scoped form
         mapProperty("services.research.grpc.keepalive-time", "spring.grpc.server.keepalive-time", mappedProperties, environment);
         mapProperty("services.research.grpc.keepalive-timeout", "spring.grpc.server.keepalive-timeout", mappedProperties, environment);
         mapProperty("services.research.grpc.permit-keepalive-without-calls", "spring.grpc.server.permit-keepalive-without-calls", mappedProperties, environment);

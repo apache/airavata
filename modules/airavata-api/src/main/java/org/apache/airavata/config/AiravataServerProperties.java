@@ -406,17 +406,25 @@ public class AiravataServerProperties {
         public Helix helix = new Helix();
         public Research research = new Research();
         public Agent agent = new Agent();
-        public File file = new File();
+        public Fileserver fileserver = new Fileserver();
         public Dbus dbus = new Dbus();
 
         public static class Thrift {
             public boolean enabled = true;
-            public int port = 8930;
+            public Server server = new Server();
+
+            public static class Server {
+                public int port = 8930;
+            }
         }
 
         public static class Rest {
             public boolean enabled = false;
-            public int port = 8082;
+            public Server server = new Server();
+
+            public static class Server {
+                public int port = 8082;
+            }
         }
 
         public static class Research {
@@ -427,7 +435,7 @@ public class AiravataServerProperties {
             public boolean enabled = true;
         }
 
-        public static class File {
+        public static class Fileserver {
             public boolean enabled = true;
         }
 
@@ -435,7 +443,11 @@ public class AiravataServerProperties {
 
         public static class Telemetry {
             public boolean enabled = true;
-            public int port = 9090;
+            public Server server = new Server();
+
+            public static class Server {
+                public int port = 9090;
+            }
         }
 
         public static class Helix {
@@ -447,7 +459,7 @@ public class AiravataServerProperties {
         public static class Api {
             // Note: Api service is controlled by services.thrift.enabled, not a separate services.api.enabled
             // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing Registry) are now
-            // multiplexed on the unified port (services.thrift.port). Individual service toggles and ports removed.
+            // multiplexed on the unified port (services.thrift.server.port). Individual service toggles and ports removed.
             public Vault vault = new Vault();
 
             public static class Vault {
@@ -567,11 +579,11 @@ public class AiravataServerProperties {
         }
 
         public static class Sharing {
-            // Note: enabled and serverPort removed - service is multiplexed on unified port (services.thrift.port)
+            // Note: enabled and serverPort removed - service is multiplexed on unified port (services.thrift.server.port)
         }
 
         public static class Registry {
-            // Note: enabled and Server.port removed - service is multiplexed on unified port (services.thrift.port)
+            // Note: enabled and Server.port removed - service is multiplexed on unified port (services.thrift.server.port)
         }
 
         public static class Default {

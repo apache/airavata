@@ -138,7 +138,7 @@ public class ThriftServer extends ServerLifecycle {
     public void startThriftServer(TMultiplexedProcessor multiplexedProcessor)
             throws org.apache.airavata.thriftapi.exception.AiravataSystemException {
         try {
-            final int serverPort = properties.services.thrift.port;
+            final int serverPort = properties.services.thrift.server.port;
 
             if (!properties.security.tls.enabled) {
                 TServerTransport serverTransport = new TServerSocket(serverPort);

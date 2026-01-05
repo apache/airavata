@@ -45,7 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
             "services.iam.enabled=false",
-            "services.api.orchestrator.enabled=false",
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")

@@ -49,7 +49,7 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         ConfigurableEnvironment environment = event.getEnvironment();
         // Check if file service is enabled
-        String enabled = environment.getProperty("services.file.enabled", "true");
+        String enabled = environment.getProperty("services.fileserver.enabled", "true");
         if (!"true".equalsIgnoreCase(enabled)) {
             return;
         }
