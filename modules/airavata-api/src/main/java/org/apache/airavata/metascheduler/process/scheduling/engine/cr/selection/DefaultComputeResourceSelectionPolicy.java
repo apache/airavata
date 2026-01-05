@@ -87,5 +87,4 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
         }
         return Optional.empty();
     }
-
 }

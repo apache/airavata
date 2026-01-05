@@ -20,7 +20,6 @@
 package org.apache.airavata.agents.support;
 
 import java.util.Optional;
-
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;

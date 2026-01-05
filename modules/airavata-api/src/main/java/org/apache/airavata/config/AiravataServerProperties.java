@@ -161,8 +161,8 @@ public class AiravataServerProperties {
                 if (tlsKeystorePath != null) {
                     security.tls.keystore.path = tlsKeystorePath;
                 }
-                String tlsKeystorePassword = getProperty(
-                        "security.tls.keystore.password", getProperty("security.keystore.password", null));
+                String tlsKeystorePassword =
+                        getProperty("security.tls.keystore.password", getProperty("security.keystore.password", null));
                 if (tlsKeystorePassword != null) {
                     security.tls.keystore.password = tlsKeystorePassword;
                 }
@@ -170,8 +170,8 @@ public class AiravataServerProperties {
 
             // services.api.vault.* -> security.vault.*
             if (security.vault != null && security.vault.keystore != null) {
-                String vaultUrl =
-                        getProperty("security.vault.keystore.url", getProperty("services.api.vault.keystore.url", null));
+                String vaultUrl = getProperty(
+                        "security.vault.keystore.url", getProperty("services.api.vault.keystore.url", null));
                 if (vaultUrl != null) {
                     security.vault.keystore.url = vaultUrl;
                 }

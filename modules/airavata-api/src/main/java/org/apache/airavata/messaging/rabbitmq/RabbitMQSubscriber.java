@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core.impl;
+package org.apache.airavata.messaging.rabbitmq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -29,11 +29,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.core.RabbitMQProperties;
-import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * RabbitMQ subscriber for airavata-api.
+ * All messages are Jackson JSON-deserialized using MessageContext.Wrapper (never Thrift).
+ * Used exclusively for database state synchronization in airavata-api.
+ * Consumers (MessageConsumer, StatusConsumer, etc.) handle JSON deserialization.
+ */
 public class RabbitMQSubscriber implements Subscriber {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQSubscriber.class);
 

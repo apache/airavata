@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.thriftapi.client;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
 @TestPropertySource(locations = "classpath:airavata.properties")
@@ -56,10 +57,10 @@ public class TestAiravataServiceClientFactory {
         claimsMap.put(Constants.GATEWAY_ID, "seagrid");
         claimsMap.put(Constants.USER_NAME, "2021test1");
         token.setClaimsMap(claimsMap);
-        
+
         Airavata.Client apiClient = AiravataServiceClientFactory.createAiravataClient(
                 "apidev.scigap.org", 8930, properties.security.tls.enabled, properties);
-        
+
         assertNotNull(apiClient, "Airavata client should be created");
 
         List<String> outputNames = new ArrayList<>();

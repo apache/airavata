@@ -48,7 +48,7 @@ import org.apache.airavata.helix.task.TaskUtil;
 import org.apache.airavata.helix.task.base.AbstractTask;
 import org.apache.airavata.helix.task.base.AiravataTask;
 import org.apache.airavata.helix.task.factory.HelixTaskFactory;
-import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.realtime.ComputeStatusResultDeserializer;
@@ -103,7 +103,7 @@ public class PostWorkflowManager extends WorkflowManager {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
+            org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory,
             @Qualifier("postWorkflowManagerExecutor") ThreadPoolTaskExecutor processingPool,
             TaskUtil taskUtil) {
         // Default values, will be updated in @PostConstruct

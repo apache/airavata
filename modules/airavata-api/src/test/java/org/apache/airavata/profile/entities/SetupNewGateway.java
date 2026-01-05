@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.profile.entities;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
@@ -32,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -147,7 +148,7 @@ public class SetupNewGateway {
         tenantAdminCreds.setLoginUserName("mavenTest");
         tenantAdminCreds.setPassword("Test@1234");
         tenantAdminCreds.setPortalUserName("TenantAdmin");
-        
+
         TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
 
         try {

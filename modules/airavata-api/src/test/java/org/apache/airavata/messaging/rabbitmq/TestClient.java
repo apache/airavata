@@ -17,23 +17,25 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core;
+package org.apache.airavata.messaging.rabbitmq;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.junit.jupiter.api.Test;
+import org.apache.airavata.messaging.MessageHandler;
+import org.apache.airavata.messaging.Type;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -52,12 +54,12 @@ public class TestClient {
             List<String> routingKeys = new ArrayList<>();
             routingKeys.add(experimentId);
             routingKeys.add(experimentId + ".*");
-            
+
             CountDownLatch messageReceived = new CountDownLatch(1);
             MessageHandler handler = getMessageHandler(messageReceived);
-            
+
             messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
-            
+
             // Wait for a message (with timeout) or verify subscriber was created
             // Note: This test requires actual messaging infrastructure
             assertNotNull(messagingFactory, "MessagingFactory should be created");

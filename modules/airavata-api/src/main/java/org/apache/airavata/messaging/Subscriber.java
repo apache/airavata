@@ -17,28 +17,30 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core;
+package org.apache.airavata.messaging;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Consumer;
+import java.util.List;
+import java.util.function.BiFunction;
 import org.apache.airavata.common.exception.AiravataException;
 
 /**
- * This is the basic publisher interface.
+ * This is the basic consumer
  */
-// @FunctionalInterface
-public interface Publisher {
-
+public interface Subscriber {
     /**
-     *
-     * @param messageContext object of message context which will include actual event and other information
+     * Start listening for messages, The binding properties are specified in the handler.
+     * Returns and unique id to this Subscriber. This id can be used to stop the listening
+     * @param supplier - return RabbitMQ Consumer
+     * @return string id
      * @throws AiravataException
      */
-    public void publish(MessageContext messageContext) throws AiravataException;
+    String listen(BiFunction<Connection, Channel, Consumer> supplier, String queueName, List<String> routingKeys)
+            throws AiravataException;
 
-    /**
-     * For publishing DB Events
-     * @param messageContext object of message context which will include actual db event and other information
-     * @param routingKey
-     * @throws AiravataException
-     */
-    public void publish(MessageContext messageContext, String routingKey) throws AiravataException;
+    void stopListen(final String id) throws AiravataException;
+
+    void sendAck(long deliveryTag);
 }

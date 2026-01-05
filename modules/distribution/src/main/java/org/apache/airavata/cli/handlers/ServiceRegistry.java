@@ -21,7 +21,6 @@ package org.apache.airavata.cli.handlers;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.manager.dbevent.DBEventManagerRunner;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
@@ -64,7 +63,6 @@ public class ServiceRegistry {
         // are now multiplexed in the unified ThriftServer
 
         // Background Services (if they implement SmartLifecycle)
-        serviceNameToBeanClass.put("db-event-manager", DBEventManagerRunner.class);
         serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);
         serviceNameToBeanClass.put("process-rescheduler", ProcessReschedulingService.class);
         serviceNameToBeanClass.put("compute-monitor", ComputationalResourceMonitoringService.class);

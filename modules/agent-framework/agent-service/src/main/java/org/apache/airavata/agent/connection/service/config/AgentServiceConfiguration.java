@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.agent.connection.service.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -27,14 +29,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Configuration class that maps scoped agent.* properties to Spring Boot standard properties.
  * This allows agent-service specific properties to be clearly scoped while still working
  * with Spring Boot auto-configuration.
- * 
+ *
  * Uses ApplicationEnvironmentPreparedEvent to ensure mapping happens before auto-configuration runs.
  */
 @Configuration
@@ -60,33 +59,62 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
         // that expect grpc.* (agent service runs as a separate process).
 
         // Map services.agent.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("services.agent.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("services.agent.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
+        mapProperty(
+                "services.agent.spring.servlet.multipart.max-file-size",
+                "spring.servlet.multipart.max-file-size",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.agent.spring.servlet.multipart.max-request-size",
+                "spring.servlet.multipart.max-request-size",
+                mappedProperties,
+                environment);
 
         // Map database.catalog.* to spring.datasource.* (agent uses app_catalog)
         mapProperty("database.catalog.url", "spring.datasource.url", mappedProperties, environment);
         mapProperty("database.catalog.user", "spring.datasource.username", mappedProperties, environment);
         mapProperty("database.catalog.password", "spring.datasource.password", mappedProperties, environment);
         mapProperty("database.catalog.driver", "spring.datasource.driver-class-name", mappedProperties, environment);
-        mapProperty("database.catalog.hikari.pool-name", "spring.datasource.hikari.pool-name", mappedProperties, environment);
-        mapProperty("database.catalog.hikari.leak-detection-threshold", "spring.datasource.hikari.leak-detection-threshold", mappedProperties, environment);
+        mapProperty(
+                "database.catalog.hikari.pool-name",
+                "spring.datasource.hikari.pool-name",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "database.catalog.hikari.leak-detection-threshold",
+                "spring.datasource.hikari.leak-detection-threshold",
+                mappedProperties,
+                environment);
 
         // Map services.agent.spring.jpa.* to spring.jpa.*
-        mapProperty("services.agent.spring.jpa.hibernate.ddl-auto", "spring.jpa.hibernate.ddl-auto", mappedProperties, environment);
+        mapProperty(
+                "services.agent.spring.jpa.hibernate.ddl-auto",
+                "spring.jpa.hibernate.ddl-auto",
+                mappedProperties,
+                environment);
         mapProperty("services.agent.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
 
         // Map services.agent.grpc.* to grpc.server.*
         mapProperty("services.agent.grpc.port", "grpc.server.port", mappedProperties, environment);
-        mapProperty("services.agent.grpc.max-inbound-message-size", "grpc.server.max-inbound-message-size", mappedProperties, environment);
+        mapProperty(
+                "services.agent.grpc.max-inbound-message-size",
+                "grpc.server.max-inbound-message-size",
+                mappedProperties,
+                environment);
 
         if (!mappedProperties.isEmpty()) {
-            environment.getPropertySources().addFirst(
-                    new MapPropertySource("agentServiceMappedProperties", mappedProperties));
+            environment
+                    .getPropertySources()
+                    .addFirst(new MapPropertySource("agentServiceMappedProperties", mappedProperties));
             logger.debug("Mapped {} agent.* properties to Spring Boot properties", mappedProperties.size());
         }
     }
 
-    private void mapProperty(String scopedKey, String standardKey, Map<String, Object> mappedProperties, ConfigurableEnvironment environment) {
+    private void mapProperty(
+            String scopedKey,
+            String standardKey,
+            Map<String, Object> mappedProperties,
+            ConfigurableEnvironment environment) {
         String value = environment.getProperty(scopedKey);
         if (value != null) {
             mappedProperties.put(standardKey, value);
@@ -94,4 +122,3 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
         }
     }
 }
-

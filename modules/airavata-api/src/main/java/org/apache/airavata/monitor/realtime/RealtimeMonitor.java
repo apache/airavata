@@ -22,7 +22,6 @@ package org.apache.airavata.monitor.realtime;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.AbstractMonitor;

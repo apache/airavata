@@ -28,13 +28,10 @@ import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
+import org.apache.airavata.messaging.Dispatcher;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
@@ -61,7 +58,7 @@ public class IamAdminService {
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
 
-    private final DBEventPublisherUtils dbEventPublisherUtils;
+    private final Dispatcher dbEventDispatcher;
 
     private boolean isIamConfigured() {
         return properties != null
@@ -77,15 +74,13 @@ public class IamAdminService {
             UserProfileMapper userProfileMapper,
             CredentialStoreService credentialStoreService,
             RegistryService registryService,
-            MessagingFactory messagingFactory,
-            ThriftToDomainMapperRegistry mapperRegistry) {
+            Dispatcher dbEventDispatcher) {
         this.properties = properties;
         this.userProfileRepository = userProfileRepository;
         this.userProfileMapper = userProfileMapper;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
-        this.dbEventPublisherUtils =
-                new DBEventPublisherUtils(DBEventService.IAM_ADMIN, messagingFactory, mapperRegistry);
+        this.dbEventDispatcher = dbEventDispatcher;
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
@@ -184,7 +179,7 @@ public class IamAdminService {
                     var entity = userProfileMapper.toEntity(userProfile);
                     userProfileRepository.save(entity);
                     // Dispatch IAM_ADMIN service event for a new USER_PROFILE
-                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 }
                 return true;
             } else {

@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ResourceJobManagerType;
-import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;

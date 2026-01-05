@@ -19,16 +19,16 @@
 */
 package org.apache.airavata.helix.task.submission.parser;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
-import org.apache.airavata.helix.task.submission.parser.LSFOutputParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLSFOutputParser {
 
@@ -44,7 +44,7 @@ public class TestLSFOutputParser {
     public void testJobIdExtractionFromSubmissionOutput() throws Exception {
         String test = "Job <2477982> is submitted to queue <short>.";
         String jobId = lsfOutputParser.parseJobSubmission(test);
-        
+
         assertNotNull(jobId, "Job ID should be extracted");
         assertEquals("2477982", jobId, "Extracted job ID should match expected value");
     }

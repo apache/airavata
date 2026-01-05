@@ -172,10 +172,8 @@ public class ThriftServer extends ServerLifecycle {
             } else {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
                 java.io.File configDir = new java.io.File(properties.airavataConfigDir);
-                java.io.File keystoreFile =
-                        new java.io.File(configDir, properties.security.tls.keystore.path);
-                TLSParams.setKeyStore(
-                        keystoreFile.getAbsolutePath(), properties.security.tls.keystore.password);
+                java.io.File keystoreFile = new java.io.File(configDir, properties.security.tls.keystore.path);
+                TLSParams.setKeyStore(keystoreFile.getAbsolutePath(), properties.security.tls.keystore.password);
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
                         serverPort, properties.security.tls.clientTimeout, null, TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core.impl;
+package org.apache.airavata.messaging.rabbitmq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
@@ -26,21 +26,20 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessageWrapper;
+import org.apache.airavata.messaging.MessageContext;
+import org.apache.airavata.messaging.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExperimentConsumer extends DefaultConsumer {
-    private static final Logger log = LoggerFactory.getLogger(ExperimentConsumer.class);
+public class ProcessConsumer extends DefaultConsumer {
+    private static final Logger log = LoggerFactory.getLogger(ProcessConsumer.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private MessageHandler handler;
     private Channel channel;
     private Connection connection;
 
-    public ExperimentConsumer(MessageHandler messageHandler, Connection connection, Channel channel) {
+    public ProcessConsumer(MessageHandler messageHandler, Connection connection, Channel channel) {
         super(channel);
         this.handler = messageHandler;
         this.connection = connection;
@@ -48,12 +47,13 @@ public class ExperimentConsumer extends DefaultConsumer {
     }
 
     @Override
-    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties basicProperties, byte[] body)
             throws IOException {
         try {
-            // Deserialize JSON to MessageWrapper
-            MessageWrapper wrapper = objectMapper.readValue(body, MessageWrapper.class);
-            MessageContext messageContext = wrapper.toMessageContext();
+            // Deserialize JSON bytes to MessageContext.Wrapper using Jackson (RabbitMQ uses JSON, never Thrift)
+            // All RabbitMQ messages in airavata-api use Jackson JSON serialization
+            MessageContext.Wrapper jsonWrapper = objectMapper.readValue(body, MessageContext.Wrapper.class);
+            MessageContext messageContext = jsonWrapper.toMessageContext();
             messageContext.setIsRedeliver(envelope.isRedeliver());
 
             log.info(
@@ -63,8 +63,8 @@ public class ExperimentConsumer extends DefaultConsumer {
 
             handler.onMessage(messageContext);
         } catch (Exception e) {
-            String msg = "Failed to handle experiment message, reason: " + e.getMessage();
-            log.error(msg, e);
+            String msg = "Failed to handle process message, reason: " + e.getMessage();
+            log.warn(msg, e);
             long deliveryTag = envelope.getDeliveryTag();
             sendAck(deliveryTag);
         }

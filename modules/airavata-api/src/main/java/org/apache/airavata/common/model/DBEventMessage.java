@@ -20,7 +20,7 @@
 package org.apache.airavata.common.model;
 
 import java.util.Objects;
-import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.MessageContext;
 
 /**
  * Domain model: DBEventMessage

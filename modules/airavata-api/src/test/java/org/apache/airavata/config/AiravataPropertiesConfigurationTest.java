@@ -31,5 +31,3 @@ public class AiravataPropertiesConfigurationTest {
         assertEquals("test-user", user);
     }
 }
-
-

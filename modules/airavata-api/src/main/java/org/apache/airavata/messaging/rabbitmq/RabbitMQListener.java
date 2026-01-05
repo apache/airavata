@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.client;
+package org.apache.airavata.messaging.rabbitmq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

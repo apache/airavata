@@ -29,10 +29,7 @@ import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
+import org.apache.airavata.messaging.Dispatcher;
 import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;
@@ -69,7 +66,7 @@ public class UserProfileService {
     private final UserProfileMapper userProfileMapper;
     private final AiravataSecurityManager securityManager;
     private final EntityManager entityManager;
-    private final DBEventPublisherUtils dbEventPublisherUtils;
+    private final Dispatcher dbEventDispatcher;
     private final TransactionTemplate iamUpdateTransactionTemplate;
 
     public UserProfileService(
@@ -79,15 +76,13 @@ public class UserProfileService {
             AiravataSecurityManager securityManager,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
             @Qualifier("profileServiceTransactionManager") PlatformTransactionManager transactionManager,
-            MessagingFactory messagingFactory,
-            ThriftToDomainMapperRegistry mapperRegistry) {
+            Dispatcher dbEventDispatcher) {
         this.userProfileRepository = userProfileRepository;
         this.iamAdminService = iamAdminService;
         this.userProfileMapper = userProfileMapper;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
-        this.dbEventPublisherUtils =
-                new DBEventPublisherUtils(DBEventService.USER_PROFILE, messagingFactory, mapperRegistry);
+        this.dbEventDispatcher = dbEventDispatcher;
         // Create a TransactionTemplate for IAM updates that uses REQUIRES_NEW propagation
         this.iamUpdateTransactionTemplate = new TransactionTemplate(transactionManager);
         this.iamUpdateTransactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -120,9 +115,9 @@ public class UserProfileService {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
                 try {
-                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing user profile creation event", e);
+                    logger.error("Error dispatching USER_PROFILE create event", e);
                 }
                 // return userId
                 return userProfile.getUserId();
@@ -171,9 +166,9 @@ public class UserProfileService {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
                 try {
-                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing user profile creation event", e);
+                    logger.error("Error dispatching USER_PROFILE create event", e);
                 }
                 // return userId
                 return userProfile.getUserId();
@@ -215,9 +210,9 @@ public class UserProfileService {
                 // replicate userProfile at end-places
                 // DB event publishing is best-effort and should not affect the transaction
                 try {
-                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
+                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing user profile update event", e);
+                    logger.error("Error dispatching USER_PROFILE update event", e);
                 } catch (RuntimeException e) {
                     // Catch RuntimeException as well - DB event publishing failures should not rollback the transaction
                     logger.error("Error publishing user profile update event (RuntimeException)", e);
@@ -364,9 +359,9 @@ public class UserProfileService {
             if (deleteSuccess) {
                 // delete userProfile at end-places
                 try {
-                    dbEventPublisherUtils.publish(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
+                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing user profile deletion event", e);
+                    logger.error("Error dispatching USER_PROFILE delete event", e);
                 }
             }
             return deleteSuccess;

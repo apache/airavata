@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core;
+package org.apache.airavata.messaging.rabbitmq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,11 @@ import org.apache.airavata.common.model.TaskOutputChangeEvent;
 import org.apache.airavata.common.model.TaskStatusChangeEvent;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.messaging.core.impl.ExperimentConsumer;
-import org.apache.airavata.messaging.core.impl.MessageConsumer;
-import org.apache.airavata.messaging.core.impl.ProcessConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQSubscriber;
-import org.apache.airavata.messaging.core.impl.StatusConsumer;
+import org.apache.airavata.messaging.MessageContext;
+import org.apache.airavata.messaging.MessageHandler;
+import org.apache.airavata.messaging.Publisher;
+import org.apache.airavata.messaging.Subscriber;
+import org.apache.airavata.messaging.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

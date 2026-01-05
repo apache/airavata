@@ -30,11 +30,9 @@ import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.UserProfile;
-import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
+import org.apache.airavata.messaging.Dispatcher;
+import org.apache.airavata.messaging.MessageContext;
+import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -52,16 +50,15 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private final RegistryService registryService;
     private final RegistryServiceDBEventMessagingFactory messagingFactory;
-    private final DBEventPublisherUtils dbEventPublisherUtils;
+    private final Dispatcher dbEventDispatcher;
 
     public RegistryServiceDBEventHandler(
             RegistryService registryService,
             RegistryServiceDBEventMessagingFactory messagingFactory,
-            ThriftToDomainMapperRegistry mapperRegistry) {
+            Dispatcher dbEventDispatcher) {
         this.registryService = registryService;
         this.messagingFactory = messagingFactory;
-        this.dbEventPublisherUtils = new DBEventPublisherUtils(
-                DBEventService.REGISTRY, messagingFactory.getMessagingFactory(), mapperRegistry);
+        this.dbEventDispatcher = dbEventDispatcher;
     }
 
     @Override
@@ -134,9 +131,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                             var defaultProject = createDefaultProject(registryService, userProfile);
                             if (defaultProject != null) {
 
-                                // Publish new PROJECT event (sharing service will listen for it and register this
-                                // as a shared Entity)
-                                dbEventPublisherUtils.publish(EntityType.PROJECT, CrudType.CREATE, defaultProject);
+                                // Dispatch new PROJECT event (sharing service will handle it)
+                                try {
+                                    dbEventDispatcher.dispatch(EntityType.PROJECT, CrudType.CREATE, defaultProject);
+                                } catch (AiravataException e) {
+                                    logger.error("Error dispatching PROJECT create event for default project", e);
+                                }
                             }
                             logger.info("addUser Replication Success!");
                         }

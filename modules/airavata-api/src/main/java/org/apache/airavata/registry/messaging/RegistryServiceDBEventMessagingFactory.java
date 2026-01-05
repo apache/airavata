@@ -19,19 +19,11 @@
 */
 package org.apache.airavata.registry.messaging;
 
-import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.model.DBEventMessage;
-import org.apache.airavata.common.model.DBEventMessageContext;
-import org.apache.airavata.common.model.DBEventSubscriber;
-import org.apache.airavata.common.model.DBEventType;
-import org.apache.airavata.common.model.MessageType;
-import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.Publisher;
+import org.apache.airavata.messaging.Subscriber;
+import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -91,28 +83,5 @@ public class RegistryServiceDBEventMessagingFactory {
             }
         }
         return registryServiceDBEventSubscriber;
-    }
-
-    public boolean registerRegistryServiceWithPublishers(List<String> publisherList) throws AiravataException {
-        for (String publisher : publisherList) {
-            logger.info("Sending service discovery message. Publisher: " + publisher + ", Subscriber: "
-                    + DBEventService.REGISTRY.toString());
-
-            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber();
-            dbEventSubscriber.setSubscriberService(DBEventService.REGISTRY.toString());
-            DBEventMessageContext dbEventMessageContext = new DBEventMessageContext();
-            dbEventMessageContext.setSubscriber(dbEventSubscriber);
-
-            DBEventMessage dbEventMessage = new DBEventMessage();
-            dbEventMessage.setDbEventType(DBEventType.SUBSCRIBER);
-            dbEventMessage.setMessageContext(dbEventMessageContext);
-            dbEventMessage.setPublisherService(publisher);
-
-            MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
-
-            getDBEventPublisher()
-                    .publish(messageContext, DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString()));
-        }
-        return true;
     }
 }

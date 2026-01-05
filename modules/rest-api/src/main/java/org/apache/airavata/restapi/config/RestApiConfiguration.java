@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.restapi.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -27,14 +29,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Configuration class that maps scoped rest.* properties to Spring Boot standard properties.
  * This allows rest-api specific properties to be clearly scoped while still working
  * with Spring Boot auto-configuration.
- * 
+ *
  * Uses ApplicationEnvironmentPreparedEvent to ensure mapping happens before auto-configuration runs.
  */
 @Configuration
@@ -60,13 +59,18 @@ public class RestApiConfiguration implements ApplicationListener<ApplicationEnvi
         mapProperty("services.rest.server.port", "server.port", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
-            environment.getPropertySources().addFirst(
-                    new MapPropertySource("restApiMappedProperties", mappedProperties));
+            environment
+                    .getPropertySources()
+                    .addFirst(new MapPropertySource("restApiMappedProperties", mappedProperties));
             logger.debug("Mapped {} rest.* properties to Spring Boot properties", mappedProperties.size());
         }
     }
 
-    private void mapProperty(String scopedKey, String standardKey, Map<String, Object> mappedProperties, ConfigurableEnvironment environment) {
+    private void mapProperty(
+            String scopedKey,
+            String standardKey,
+            Map<String, Object> mappedProperties,
+            ConfigurableEnvironment environment) {
         String value = environment.getProperty(scopedKey);
         if (value != null) {
             mappedProperties.put(standardKey, value);
@@ -74,4 +78,3 @@ public class RestApiConfiguration implements ApplicationListener<ApplicationEnvi
         }
     }
 }
-

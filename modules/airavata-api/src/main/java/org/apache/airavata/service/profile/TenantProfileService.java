@@ -32,12 +32,9 @@ import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.util.DBEventPublisherUtils;
-import org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry;
+import org.apache.airavata.messaging.Dispatcher;
 import org.apache.airavata.profile.entities.GatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.profile.mappers.GatewayMapper;
@@ -61,20 +58,19 @@ public class TenantProfileService {
     private final GatewayMapper gatewayMapper;
     private final EntityManager entityManager;
 
-    private final DBEventPublisherUtils dbEventPublisherUtils;
+    private final Dispatcher dbEventDispatcher;
 
     public TenantProfileService(
             TenantProfileRepository tenantProfileRepository,
             CredentialStoreService credentialStoreService,
             GatewayMapper gatewayMapper,
             @Qualifier("profileServiceEntityManager") EntityManager entityManager,
-            MessagingFactory messagingFactory,
-            ThriftToDomainMapperRegistry mapperRegistry) {
+            Dispatcher dbEventDispatcher) {
         this.tenantProfileRepository = tenantProfileRepository;
         this.credentialStoreService = credentialStoreService;
         this.gatewayMapper = gatewayMapper;
         this.entityManager = entityManager;
-        this.dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.TENANT, messagingFactory, mapperRegistry);
+        this.dbEventDispatcher = dbEventDispatcher;
     }
 
     @Transactional(transactionManager = "profileServiceTransactionManager")
@@ -97,9 +93,9 @@ public class TenantProfileService {
                                 "Gateway with ID: {}, is now APPROVED, replicating to subscribers.",
                                 gateway.getGatewayId());
                         try {
-                            dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.CREATE, gateway);
+                            dbEventDispatcher.dispatch(EntityType.TENANT, CrudType.CREATE, gateway);
                         } catch (AiravataException e) {
-                            logger.error("Error publishing gateway creation event", e);
+                            logger.error("Error dispatching gateway creation event", e);
                         }
                     }
                     // return internal id
@@ -151,9 +147,9 @@ public class TenantProfileService {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
                 // replicate tenant at end-places
                 try {
-                    dbEventPublisherUtils.publish(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
+                    dbEventDispatcher.dispatch(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing gateway update event", e);
+                    logger.error("Error dispatching gateway update event", e);
                 }
                 return true;
             } else {
@@ -209,14 +205,14 @@ public class TenantProfileService {
                     Gateway gateway = new Gateway();
                     gateway.setGatewayId(gatewayId);
                     gateway.setGatewayApprovalStatus(GatewayApprovalStatus.DEACTIVATED);
-                    dbEventPublisherUtils.publish(
+                    dbEventDispatcher.dispatch(
                             EntityType.TENANT,
                             CrudType.DELETE,
                             // pass along gateway datamodel, with correct gatewayId;
                             // approvalstatus is not used for delete, hence set dummy value
                             gateway);
                 } catch (AiravataException e) {
-                    logger.error("Error publishing gateway deletion event", e);
+                    logger.error("Error dispatching gateway deletion event", e);
                 }
             }
             return deleteSuccess;

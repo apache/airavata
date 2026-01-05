@@ -19,12 +19,13 @@
 */
 package org.apache.airavata.config;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test to validate persistence.xml configuration.
@@ -66,9 +67,16 @@ public class ValidatePersistenceXml {
                     errors++;
                 }
             } catch (Exception e) {
-                errorMessages.append("Persistence unit ").append(puName).append(": ").append(e.getMessage());
+                errorMessages
+                        .append("Persistence unit ")
+                        .append(puName)
+                        .append(": ")
+                        .append(e.getMessage());
                 if (e.getCause() != null) {
-                    errorMessages.append(" (Caused by: ").append(e.getCause().getMessage()).append(")");
+                    errorMessages
+                            .append(" (Caused by: ")
+                            .append(e.getCause().getMessage())
+                            .append(")");
                 }
                 errorMessages.append("\n");
                 errors++;

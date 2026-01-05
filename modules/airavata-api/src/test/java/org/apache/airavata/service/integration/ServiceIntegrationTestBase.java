@@ -147,19 +147,7 @@ public abstract class ServiceIntegrationTestBase {
             return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
         }
 
-        /**
-         * Provide mapper converters for ThriftToDomainMapperRegistry.
-         * This is a simplified version for tests - in production, ThriftMapperConfiguration provides this.
-         */
-        @Bean
-        public java.util.Map<org.apache.airavata.common.model.EntityType, java.util.function.Function<Object, Object>>
-                mapperConverters() {
-            java.util.Map<org.apache.airavata.common.model.EntityType, java.util.function.Function<Object, Object>>
-                    converters = new java.util.HashMap<>();
-            // For tests, we'll provide empty converters - ThriftToDomainMapperRegistry will be created
-            // but won't be used in most test scenarios. If needed, specific converters can be added.
-            return converters;
-        }
+        // ThriftToDomainMapperRegistry removed - all RabbitMQ messages use domain models (never Thrift)
 
         @Bean
         @Primary
@@ -213,8 +201,7 @@ public abstract class ServiceIntegrationTestBase {
                 org.apache.airavata.profile.mappers.UserProfileMapper userProfileMapper,
                 org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
                 org.apache.airavata.service.registry.RegistryService registryService,
-                org.apache.airavata.messaging.core.MessagingFactory messagingFactory,
-                org.apache.airavata.messaging.core.util.ThriftToDomainMapperRegistry mapperRegistry) {
+                org.apache.airavata.messaging.Dispatcher dbEventDispatcher) {
             // Create a mock implementation that extends IamAdminService behavior
             return new org.apache.airavata.service.security.IamAdminService(
                     properties,
@@ -222,8 +209,7 @@ public abstract class ServiceIntegrationTestBase {
                     userProfileMapper,
                     credentialStoreService,
                     registryService,
-                    messagingFactory,
-                    mapperRegistry) {
+                    dbEventDispatcher) {
                 @Override
                 public boolean isUsernameAvailable(AuthzToken authzToken, String username)
                         throws org.apache.airavata.profile.exception.IamAdminServicesException {

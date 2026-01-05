@@ -25,7 +25,8 @@ import org.mapstruct.ReportingPolicy;
 
 @MapperConfig(
         // Thrift mappers are used via MapStruct's static INSTANCE fields (see ThriftMapperConfiguration and handlers).
-        // Keeping them as non-Spring mappers avoids bean name collisions with similarly-named Spring mappers in other modules.
+        // Keeping them as non-Spring mappers avoids bean name collisions with similarly-named Spring mappers in other
+        // modules.
         componentModel = "default",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)

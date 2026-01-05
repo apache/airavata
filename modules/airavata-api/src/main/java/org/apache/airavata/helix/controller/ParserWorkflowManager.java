@@ -50,7 +50,7 @@ import org.apache.airavata.helix.task.parsing.models.ParsingTaskInput;
 import org.apache.airavata.helix.task.parsing.models.ParsingTaskInputs;
 import org.apache.airavata.helix.task.parsing.models.ParsingTaskOutput;
 import org.apache.airavata.helix.task.parsing.models.ParsingTaskOutputs;
-import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.telemetry.CounterMetric;

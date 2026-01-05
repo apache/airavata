@@ -20,7 +20,6 @@
 package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
-
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.ssh.SSHJAgentAdaptor;
@@ -31,7 +30,7 @@ import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.helix.task.TaskUtil;
 import org.apache.airavata.helix.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.task.staging.OutputDataStagingTask;
-import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;

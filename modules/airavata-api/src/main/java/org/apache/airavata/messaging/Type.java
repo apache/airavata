@@ -17,10 +17,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.messaging.core;
+package org.apache.airavata.messaging;
 
-@FunctionalInterface
-public interface MessageHandler {
-
-    void onMessage(MessageContext messageContext);
+public enum Type {
+    EXPERIMENT_LAUNCH,
+    PROCESS_LAUNCH,
+    STATUS
 }

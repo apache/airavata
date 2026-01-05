@@ -17,12 +17,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.manager.dbevent.utils;
+package org.apache.airavata.messaging;
 
-/**
- * Created by Ajinkya on 3/1/17.
- */
-public class Constants {
+@FunctionalInterface
+public interface MessageHandler {
 
-    public static final String DB_EVENT_MGR_ZK_PATH = "db-event-mgr";
+    void onMessage(MessageContext messageContext);
 }

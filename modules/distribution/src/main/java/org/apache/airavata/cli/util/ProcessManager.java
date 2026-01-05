@@ -55,7 +55,8 @@ public class ProcessManager {
         String normalizedConfigDir = configDir;
         try {
             if (configDir != null && !configDir.isEmpty()) {
-                normalizedConfigDir = Paths.get(configDir).toAbsolutePath().normalize().toString();
+                normalizedConfigDir =
+                        Paths.get(configDir).toAbsolutePath().normalize().toString();
             }
         } catch (Exception e) {
             // Keep original if normalization fails.
@@ -297,7 +298,9 @@ public class ProcessManager {
                         if (jarPath != null) {
                             // Handle URL encoding
                             if (jarPath.startsWith("/")
-                                    && System.getProperty("os.name").toLowerCase().contains("win")) {
+                                    && System.getProperty("os.name")
+                                            .toLowerCase()
+                                            .contains("win")) {
                                 jarPath = jarPath.substring(1); // Remove leading slash on Windows
                             }
                             jarPath = URLDecoder.decode(jarPath, "UTF-8");

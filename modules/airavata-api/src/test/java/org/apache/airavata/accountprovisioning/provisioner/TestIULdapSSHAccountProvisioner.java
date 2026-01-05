@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.accountprovisioning.provisioner;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.accountprovisioning.ConfigParam;
@@ -30,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -66,22 +67,22 @@ public class TestIULdapSSHAccountProvisioner {
     @Test
     public void testAccountProvisioningOperations() throws InvalidUsernameException {
         String userId = "machrist@iu.edu";
-        
+
         // Test hasAccount
         boolean hasAccount = sshAccountProvisioner.hasAccount(userId);
         logger.info("hasAccount={}", hasAccount);
-        
+
         // Test getScratchLocation
         String scratchLocation = sshAccountProvisioner.getScratchLocation(userId);
         logger.info("scratchLocation={}", scratchLocation);
         assertNotNull(scratchLocation, "Scratch location should not be null");
-        
+
         // Test SSH key provisioning
         String sshPublicKey = "foobar12345";
         boolean sshAccountProvisioningComplete =
                 sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshPublicKey);
         logger.info("isSSHAccountProvisioningComplete={}", sshAccountProvisioningComplete);
-        
+
         if (!sshAccountProvisioningComplete) {
             sshAccountProvisioner.installSSHKey(userId, sshPublicKey);
             sshAccountProvisioningComplete =

@@ -19,13 +19,14 @@
 */
 package org.apache.airavata.agents.impl.ssh.util;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.airavata.agents.ssh.SshAdaptorParams;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestSshAdaptorParams {
 

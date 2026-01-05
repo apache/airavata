@@ -62,7 +62,7 @@ public class ServiceHandler {
         SERVICE_MAP.put("research-service", new ServiceInfo("ResearchService", "services.research.enabled"));
         SERVICE_MAP.put("agent-service", new ServiceInfo("AgentService", "services.agent.enabled"));
         SERVICE_MAP.put("file-service", new ServiceInfo("FileService", "services.file.enabled"));
-        SERVICE_MAP.put("dbevent-service", new ServiceInfo("DBEventManager", "services.dbus.enabled"));
+        // DBEventManager removed - replaced with direct service calls
     }
 
     private static class ServiceInfo {
@@ -185,8 +185,6 @@ public class ServiceHandler {
                     return properties.services.agent.enabled;
                 case "file-service":
                     return properties.services.file.enabled;
-                case "dbevent-service":
-                    return properties.services.dbus.enabled;
                 default:
                     return false;
             }

@@ -24,14 +24,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
 import org.apache.airavata.helix.task.TaskUtil;
-import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.file.server;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @ConfigurationProperties
@@ -63,17 +62,31 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
         mapProperty("services.fileserver.server.port", "server.port", mappedProperties, environment);
 
         // Map services.fileserver.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("services.fileserver.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("services.fileserver.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
+        mapProperty(
+                "services.fileserver.spring.servlet.multipart.max-file-size",
+                "spring.servlet.multipart.max-file-size",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.fileserver.spring.servlet.multipart.max-request-size",
+                "spring.servlet.multipart.max-request-size",
+                mappedProperties,
+                environment);
 
         if (!mappedProperties.isEmpty()) {
-            environment.getPropertySources().addFirst(
-                    new MapPropertySource("fileServerMappedProperties", mappedProperties));
-            logger.debug("Mapped {} services.fileserver.* properties to Spring Boot properties", mappedProperties.size());
+            environment
+                    .getPropertySources()
+                    .addFirst(new MapPropertySource("fileServerMappedProperties", mappedProperties));
+            logger.debug(
+                    "Mapped {} services.fileserver.* properties to Spring Boot properties", mappedProperties.size());
         }
     }
 
-    private void mapProperty(String scopedKey, String standardKey, Map<String, Object> mappedProperties, ConfigurableEnvironment environment) {
+    private void mapProperty(
+            String scopedKey,
+            String standardKey,
+            Map<String, Object> mappedProperties,
+            ConfigurableEnvironment environment) {
         String value = environment.getProperty(scopedKey);
         if (value != null) {
             mappedProperties.put(standardKey, value);

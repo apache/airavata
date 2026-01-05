@@ -21,7 +21,6 @@ package org.apache.airavata.helix.task.aws;
 
 import java.security.Security;
 import java.util.UUID;
-
 import org.apache.airavata.agents.ssh.SSHUtil;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
 import org.apache.airavata.credential.model.SSHCredential;
