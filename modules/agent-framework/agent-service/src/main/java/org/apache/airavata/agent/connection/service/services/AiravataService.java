@@ -52,7 +52,7 @@ public class AiravataService {
     @Value("${airavata.server.url:localhost}")
     private String serverUrl;
 
-    @Value("${airavata.server.port:8930}")
+    @Value("${services.thrift.port:8930}")
     private int port;
 
     @Value("${airavata.server.secure:false}")

@@ -416,9 +416,6 @@ public class AiravataServerProperties {
             public boolean enabled = false;
             public Interpreter interpreter = new Interpreter();
             public Rescheduler rescheduler = new Rescheduler();
-            public String gateway = "";
-            public String groupResourceProfile = "";
-            public String username = "";
             public double clusterScanningInterval = 1800000;
             public double jobScanningInterval = 1800000;
             public int clusterScanningParallelJobs = 1;
@@ -507,20 +504,12 @@ public class AiravataServerProperties {
     public Airavata airavata = new Airavata();
 
     public static class Airavata {
-        public String localDataLocation = "/tmp";
-        public int maxArchiveSize = 1000;
-        public int inMemoryCacheSize = 1000;
         public Validation validation = new Validation();
-        public StreamingTransfer streamingTransfer = new StreamingTransfer();
         public Sharing sharing = new Sharing();
         public String superTenantGatewayId = "default";
 
         public static class Validation {
             public boolean enabled = true;
-        }
-
-        public static class StreamingTransfer {
-            public boolean enabled = false;
         }
 
         public static class Sharing {

@@ -68,7 +68,7 @@ under the License.
     </issueManagement>
 
     <modules>
-        <module>airavata-api</module>
+        <module>modules/airavata-api</module>
         <module>modules/thrift-api</module>
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>

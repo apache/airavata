@@ -45,7 +45,7 @@ public class ProxyController {
     private KafkaProducer<String, String> producer;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${restapi.broker.url:localhost:9092}")
+    @Value("${kafka.broker-url:localhost:9092}")
     private String brokerUrl;
 
     @PostConstruct

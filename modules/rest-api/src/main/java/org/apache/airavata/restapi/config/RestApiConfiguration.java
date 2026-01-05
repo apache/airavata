@@ -17,39 +17,36 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.file.server;
+package org.apache.airavata.restapi.config;
 
-import org.apache.airavata.agents.api.AdaptorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-@ConfigurationProperties
-public class FileServerConfiguration implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+/**
+ * Configuration class that maps scoped rest.* properties to Spring Boot standard properties.
+ * This allows rest-api specific properties to be clearly scoped while still working
+ * with Spring Boot auto-configuration.
+ * 
+ * Uses ApplicationEnvironmentPreparedEvent to ensure mapping happens before auto-configuration runs.
+ */
+@Configuration
+public class RestApiConfiguration implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileServerConfiguration.class);
-
-    private final AdaptorSupport adaptorSupport;
-
-    public FileServerConfiguration(AdaptorSupport adaptorSupport) {
-        this.adaptorSupport = adaptorSupport;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(RestApiConfiguration.class);
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         ConfigurableEnvironment environment = event.getEnvironment();
-        // Check if file service is enabled
-        String enabled = environment.getProperty("services.file.enabled", "true");
+        // Check if rest service is enabled
+        String enabled = environment.getProperty("services.rest.enabled", "false");
         if (!"true".equalsIgnoreCase(enabled)) {
             return;
         }
@@ -59,17 +56,13 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
-        // Map file.server.* to server.*
-        mapProperty("file.server.port", "server.port", mappedProperties, environment);
-
-        // Map file.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("file.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("file.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
+        // Map rest.server.* to server.*
+        mapProperty("rest.server.port", "server.port", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
             environment.getPropertySources().addFirst(
-                    new MapPropertySource("fileServerMappedProperties", mappedProperties));
-            logger.debug("Mapped {} file.* properties to Spring Boot properties", mappedProperties.size());
+                    new MapPropertySource("restApiMappedProperties", mappedProperties));
+            logger.debug("Mapped {} rest.* properties to Spring Boot properties", mappedProperties.size());
         }
     }
 
@@ -80,11 +73,5 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
             logger.trace("Mapped {}={} to {}", scopedKey, value, standardKey);
         }
     }
-
-    @Bean
-    public AdaptorSupport adaptorSupportBean() {
-        return adaptorSupport;
-    }
-
-    // RegistryService is already a @Service bean, no need to create it here
 }
+

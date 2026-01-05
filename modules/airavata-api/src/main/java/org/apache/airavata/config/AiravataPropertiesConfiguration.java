@@ -41,8 +41,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
  *
  * <p>When airavata.config.dir is set, all configuration files are loaded from that directory:
  * <ul>
- *   <li>airavata.properties - Main configuration</li>
- *   <li>application.properties / application.yml - Service-specific configuration</li>
+ *   <li>airavata.properties - Unified configuration (aggregated from all modules)</li>
  *   <li>logback.xml - Logging configuration</li>
  *   <li>META-INF/persistence.xml - JPA persistence configuration</li>
  * </ul>
