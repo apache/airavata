@@ -54,7 +54,8 @@ public class TelemetryServer extends ServerLifecycle {
 
     @Override
     protected void doStart() throws Exception {
-        String host = properties.services.telemetry.host;
+        // Bind address is no longer configurable; keep it simple and local-only by default.
+        String host = "localhost";
         int port = properties.services.telemetry.port;
         try {
             logger.info("Starting Prometheus monitoring server on {}:{}", host, port);

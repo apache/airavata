@@ -102,7 +102,7 @@ cred_keystore_passwd: "{{ vault_cred_keystore_passwd }}"
 cred_keystore_alias: "airavata"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
-keystores_location: "{{ deployment_dir }}/keystores"
+keystores_location: "{{ deployment_dir }}/conf/keystores"
 
 # Gfac related variables
 gfac_name: "gfac-node0"

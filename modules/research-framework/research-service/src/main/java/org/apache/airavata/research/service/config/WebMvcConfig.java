@@ -29,10 +29,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnProperty(name = "services.research.enabled", havingValue = "true", matchIfMissing = true)
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${airavata.research-portal.url}")
+    @Value("${services.research.portal.url}")
     private String deployedOrigin;
 
-    @Value("${airavata.research-portal.dev-url}")
+    @Value("${services.research.portal.dev-url}")
     private String devOrigin;
 
     @Override

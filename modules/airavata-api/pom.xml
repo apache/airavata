@@ -612,7 +612,7 @@ under the License.
         <directory>${project.basedir}/src/test/resources</directory>
       </testResource>
       <testResource>
-        <directory>${project.basedir}/../keystores</directory>
+        <directory>${project.basedir}/../distribution/src/main/resources/conf/keystores</directory>
         <targetPath>keystores</targetPath>
         <includes>
           <include>*.jks</include>

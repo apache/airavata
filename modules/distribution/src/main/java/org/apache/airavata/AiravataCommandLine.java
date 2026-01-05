@@ -86,13 +86,54 @@ public class AiravataCommandLine implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
+        boolean helpRequested = args == null || args.length == 0;
+        String commandName = null;
+        if (args != null) {
+            for (String arg : args) {
+                if (arg == null) continue;
+                if ("-h".equals(arg) || "--help".equals(arg) || "help".equals(arg)) {
+                    helpRequested = true;
+                }
+                // First non-option token is the subcommand name.
+                if (commandName == null && !arg.startsWith("-")) {
+                    commandName = arg;
+                }
+            }
+        }
+
+        // Only a small subset of commands should require DB connectivity during CLI bootstrap.
+        // Everything else (including `serve`) should remain usable without a running DB.
+        boolean requiresDb = "init".equals(commandName);
+
         SpringApplication app = new SpringApplication(AiravataCommandLine.class);
-        app.setDefaultProperties(java.util.Map.of(
-                "spring.main.allow-bean-definition-overriding", "true",
-                "spring.classformat.ignore", "true",
-                "airavata.cli.enabled", "true",
-                "airavata.server.enabled", "false",
-                "services.thrift.enabled", "true"));
+        java.util.Map<String, Object> defaults = new java.util.HashMap<>();
+        defaults.put("spring.main.allow-bean-definition-overriding", "true");
+        defaults.put("spring.classformat.ignore", "true");
+        defaults.put("airavata.cli.enabled", "true");
+        defaults.put("airavata.server.enabled", "false");
+        // CLI should not require DB connectivity just to start up.
+        // Service startup uses AiravataServer (ServeCommand) and reads enable-flags from the config dir.
+        defaults.put("services.thrift.enabled", requiresDb ? "true" : "false");
+        defaults.put("services.rest.enabled", "false");
+
+        if (!requiresDb || helpRequested) {
+            // Keep CLI usable even without DB connectivity by avoiding eager bean creation
+            // and excluding JPA auto-config that would otherwise require an EntityManagerFactory.
+            defaults.put("spring.main.lazy-initialization", "true");
+            defaults.put("flyway.enabled", "false");
+            defaults.put(
+                    "spring.autoconfigure.exclude",
+                    String.join(
+                            ",",
+                            "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+                            "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration",
+                            "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"));
+        } else {
+            // init command: needs Flyway + datasources
+            defaults.put("flyway.enabled", "true");
+        }
+
+        app.setDefaultProperties(defaults);
         app.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
         app.run(args);
     }

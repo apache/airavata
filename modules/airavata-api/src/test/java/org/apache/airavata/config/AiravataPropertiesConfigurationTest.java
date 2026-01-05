@@ -17,18 +17,19 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.thriftapi.mapper;
+package org.apache.airavata.config;
 
-import org.mapstruct.MapperConfig;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@MapperConfig(
-        // Thrift mappers are used via MapStruct's static INSTANCE fields (see ThriftMapperConfiguration and handlers).
-        // Keeping them as non-Spring mappers avoids bean name collisions with similarly-named Spring mappers in other modules.
-        componentModel = "default",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface ModelMapper {
-    // Base interface for all mappers - each mapper defines its own specific methods
+import org.junit.jupiter.api.Test;
+
+public class AiravataPropertiesConfigurationTest {
+
+    @Test
+    public void testGetSettingFallsBackToProperties() {
+        String user = AiravataPropertiesConfiguration.getSetting("airavata.defaults.user", "missing");
+        assertEquals("test-user", user);
+    }
 }
+
+

@@ -20,6 +20,7 @@
 package org.apache.airavata.config;
 
 import jakarta.annotation.PostConstruct;
+import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,21 +127,101 @@ public class AiravataServerProperties {
                         getProperty("database.workflow.validation-query", database.workflow.validationQuery);
             }
 
+            // Bind research catalog
+            if (database.research != null) {
+                database.research.url = getProperty("database.research.url", database.research.url);
+                database.research.user = getProperty("database.research.user", database.research.user);
+                database.research.password = getProperty("database.research.password", database.research.password);
+                database.research.driver = getProperty("database.research.driver", database.research.driver);
+                database.research.validationQuery =
+                        getProperty("database.research.validation-query", database.research.validationQuery);
+            }
+
             // Bind database-level validation query
             database.validationQuery = getProperty("database.validation-query", database.validationQuery);
         }
 
-        // Manually bind default properties from airavata.defaults.* to services.defaults.*
+        // Manually bind default gateway (still sourced from airavata.defaults.gateway)
         if (services != null && services.defaults != null && environment != null) {
             services.defaults.gateway = getProperty("airavata.defaults.gateway", services.defaults.gateway);
-            services.defaults.user = getProperty("airavata.defaults.user", services.defaults.user);
-            services.defaults.password = getProperty("airavata.defaults.password", services.defaults.password);
         }
 
         // Log configuration
         if (database != null && database.registry != null) {
             logger.info(
                     "Registry URL after binding: {}", database.registry.url != null ? database.registry.url : "NULL");
+        }
+
+        // Backwards-compat + explicit binding for renamed security keys
+        if (security != null && environment != null) {
+            // security.keystore.* -> security.tls.keystore.*
+            if (security.tls != null && security.tls.keystore != null) {
+                String tlsKeystorePath =
+                        getProperty("security.tls.keystore.path", getProperty("security.keystore.path", null));
+                if (tlsKeystorePath != null) {
+                    security.tls.keystore.path = tlsKeystorePath;
+                }
+                String tlsKeystorePassword = getProperty(
+                        "security.tls.keystore.password", getProperty("security.keystore.password", null));
+                if (tlsKeystorePassword != null) {
+                    security.tls.keystore.password = tlsKeystorePassword;
+                }
+            }
+
+            // services.api.vault.* -> security.vault.*
+            if (security.vault != null && security.vault.keystore != null) {
+                String vaultUrl =
+                        getProperty("security.vault.keystore.url", getProperty("services.api.vault.keystore.url", null));
+                if (vaultUrl != null) {
+                    security.vault.keystore.url = vaultUrl;
+                }
+                String vaultPassword = getProperty(
+                        "security.vault.keystore.password", getProperty("services.api.vault.keystore.password", null));
+                if (vaultPassword != null) {
+                    security.vault.keystore.password = vaultPassword;
+                }
+                String vaultAlias = getProperty(
+                        "security.vault.keystore.alias", getProperty("services.api.vault.keystore.alias", null));
+                if (vaultAlias != null) {
+                    security.vault.keystore.alias = vaultAlias;
+                }
+            }
+
+            // Merge airavata.defaults.user/password into security.iam.super.* and rename super-admin-* -> super.*
+            if (security.iam != null) {
+                // username
+                String superUsername = getProperty(
+                        "security.iam.super.username",
+                        getProperty(
+                                "security.iam.super-admin-username",
+                                getProperty("airavata.defaults.user", security.iam.superAdminUsername)));
+                if (superUsername != null) {
+                    security.iam.superAdminUsername = superUsername;
+                }
+
+                // password
+                String superPassword = getProperty(
+                        "security.iam.super.password",
+                        getProperty(
+                                "security.iam.super-admin-password",
+                                getProperty("airavata.defaults.password", security.iam.superAdminPassword)));
+                if (superPassword != null) {
+                    security.iam.superAdminPassword = superPassword;
+                }
+            }
+        }
+
+        // Backwards-compat: services.defaults.user/password now come from security.iam.super.*
+        if (services != null && services.defaults != null && security != null && security.iam != null) {
+            services.defaults.user = security.iam.superAdminUsername;
+            services.defaults.password = security.iam.superAdminPassword;
+        }
+
+        // Backwards-compat + explicit binding for renamed helix keys
+        if (services != null && services.helix != null && environment != null) {
+            services.helix.clusterName = getProperty("helix.cluster.name", services.helix.clusterName);
+            services.helix.controllerName = getProperty("helix.controller.name", services.helix.controllerName);
+            services.helix.participantName = getProperty("helix.participant.name", services.helix.participantName);
         }
     }
 
@@ -174,6 +255,9 @@ public class AiravataServerProperties {
 
         @NestedConfigurationProperty
         public Workflow workflow = new Workflow();
+
+        @NestedConfigurationProperty
+        public Research research = new Research();
 
         public String validationQuery = "SELECT 1";
 
@@ -232,6 +316,14 @@ public class AiravataServerProperties {
             public String password;
             public String validationQuery = "SELECT 1";
         }
+
+        public static class Research {
+            public String driver = "org.mariadb.jdbc.Driver";
+            public String url;
+            public String user;
+            public String password;
+            public String validationQuery = "SELECT 1";
+        }
     }
 
     // ==================== Security Configuration ====================
@@ -239,13 +331,14 @@ public class AiravataServerProperties {
 
     public static class Security {
         public Tls tls = new Tls();
-        public Keystore keystore = new Keystore();
         public AuthzCache authzCache = new AuthzCache();
         public Iam iam = new Iam();
+        public Vault vault = new Vault();
 
         public static class Tls {
             public boolean enabled = false;
             public int clientTimeout = 10000;
+            public Keystore keystore = new Keystore();
         }
 
         public static class Keystore {
@@ -263,6 +356,16 @@ public class AiravataServerProperties {
             public String superAdminPassword = "admin";
             public String oauthClientId;
             public String oauthClientSecret;
+        }
+
+        public static class Vault {
+            public Keystore keystore = new Keystore();
+
+            public static class Keystore {
+                public String url;
+                public String password;
+                public String alias;
+            }
         }
     }
 
@@ -345,7 +448,6 @@ public class AiravataServerProperties {
 
         public static class Telemetry {
             public boolean enabled = true;
-            public String host = "localhost";
             public int port = 9090;
         }
 
@@ -506,7 +608,30 @@ public class AiravataServerProperties {
     public static class Airavata {
         public Validation validation = new Validation();
         public Sharing sharing = new Sharing();
-        public String superTenantGatewayId = "default";
+        // NOTE: super-tenant gateway id has been merged into airavata.defaults.gateway.
+        /**
+         * Size for in-memory authz cache.
+         * Binds from property: airavata.in-memory-cache-size
+         */
+        public int inMemoryCacheSize = 1000;
+
+        /**
+         * Local data location for staging.
+         * Binds from property: airavata.local-data-location
+         */
+        public String localDataLocation = "";
+
+        /**
+         * Max archive size (bytes).
+         * Binds from property: airavata.max-archive-size
+         */
+        public long maxArchiveSize = 0L;
+
+        /**
+         * Streaming transfer settings.
+         * Binds from property: airavata.streaming-transfer.*
+         */
+        public StreamingTransfer streamingTransfer = new StreamingTransfer();
 
         public static class Validation {
             public boolean enabled = true;
@@ -515,5 +640,25 @@ public class AiravataServerProperties {
         public static class Sharing {
             public boolean enabled = true;
         }
+
+        public static class StreamingTransfer {
+            public boolean enabled = false;
+        }
+    }
+
+    // ==================== Non-Spring helper accessors (for tools/Helix tasks) ====================
+    // NOTE: These helpers delegate to AiravataPropertiesConfiguration to ensure a single source of truth
+    // for config file resolution (airavata.config.dir first, then classpath).
+
+    public static URL loadFile(String fileName) {
+        return AiravataPropertiesConfiguration.loadFile(fileName);
+    }
+
+    public static String getSetting(String key, String defaultValue) {
+        return AiravataPropertiesConfiguration.getSetting(key, defaultValue);
+    }
+
+    public static String getSetting(String key) {
+        return AiravataPropertiesConfiguration.getSetting(key);
     }
 }

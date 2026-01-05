@@ -211,7 +211,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 return migrationPath;
             }
 
-            Path apiPath = projectRoot.resolve("airavata-api");
+            Path apiPath = projectRoot.resolve("modules/airavata-api");
             if (Files.exists(apiPath)) {
                 Path migrationPathFromApi =
                         projectRoot.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);

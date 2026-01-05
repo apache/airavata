@@ -52,8 +52,18 @@ public class ProcessManager {
      */
     public static Process startServiceProcess(String configDir, String jarPath, String nativeBinaryPath)
             throws IOException {
+        String normalizedConfigDir = configDir;
+        try {
+            if (configDir != null && !configDir.isEmpty()) {
+                normalizedConfigDir = Paths.get(configDir).toAbsolutePath().normalize().toString();
+            }
+        } catch (Exception e) {
+            // Keep original if normalization fails.
+            normalizedConfigDir = configDir;
+        }
+
         // Check if socket already exists (another process running)
-        if (ServiceSocketClient.socketExists(configDir)) {
+        if (ServiceSocketClient.socketExists(normalizedConfigDir)) {
             throw new IOException("Airavata service is already running (socket exists). Stop it first.");
         }
 
@@ -69,7 +79,9 @@ public class ProcessManager {
             command.add(nativeBinaryPath);
             command.add("serve");
             command.add("--config-dir");
-            command.add(configDir);
+            command.add(normalizedConfigDir);
+            // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
+            command.add("--foreground");
             pb = new ProcessBuilder(command);
             pb.directory(binary.getParentFile());
         } else if (jarPath != null && !jarPath.isEmpty()) {
@@ -90,7 +102,9 @@ public class ProcessManager {
             command.add(jarPath);
             command.add("serve");
             command.add("--config-dir");
-            command.add(configDir);
+            command.add(normalizedConfigDir);
+            // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
+            command.add("--foreground");
 
             pb = new ProcessBuilder(command);
             pb.directory(jar.getParentFile());
@@ -99,11 +113,18 @@ public class ProcessManager {
         }
 
         // Set environment
-        pb.environment().put("AIRAVATA_CONFIG_DIR", configDir);
-        pb.environment().put("AIRAVATA_HOME", configDir);
+        pb.environment().put("AIRAVATA_CONFIG_DIR", normalizedConfigDir);
+        // AIRAVATA_HOME should be the parent of the config dir (i.e., distribution root), when available.
+        try {
+            Path cfg = Paths.get(normalizedConfigDir);
+            Path parent = cfg.getParent();
+            pb.environment().put("AIRAVATA_HOME", parent != null ? parent.toString() : normalizedConfigDir);
+        } catch (Exception e) {
+            pb.environment().put("AIRAVATA_HOME", normalizedConfigDir);
+        }
 
         // Redirect output
-        Path logDir = Paths.get(configDir, "logs");
+        Path logDir = Paths.get(normalizedConfigDir, "logs");
         if (!Files.exists(logDir)) {
             Files.createDirectories(logDir);
         }
@@ -118,7 +139,7 @@ public class ProcessManager {
 
         // Write PID file
         try {
-            Path pidFile = getPidFilePath(configDir);
+            Path pidFile = getPidFilePath(normalizedConfigDir);
             Files.createDirectories(pidFile.getParent());
             Files.writeString(pidFile, String.valueOf(process.pid()));
             logger.info("Started Airavata service process (PID: {})", process.pid());
@@ -255,14 +276,39 @@ public class ProcessManager {
                 java.net.URL resource = ProcessManager.class.getClassLoader().getResource(className);
                 if (resource != null) {
                     String classPath = resource.toString();
-                    if (classPath.startsWith("jar:file:")) {
-                        String jarPath = classPath.substring(9, classPath.indexOf("!"));
-                        // Handle URL encoding
-                        if (jarPath.startsWith("/")
-                                && System.getProperty("os.name").toLowerCase().contains("win")) {
-                            jarPath = jarPath.substring(1); // Remove leading slash on Windows
+                    int bang = classPath.indexOf("!");
+                    if (bang > 0) {
+                        String jarPath = null;
+                        if (classPath.startsWith("jar:file:")) {
+                            jarPath = classPath.substring(9, bang);
+                        } else if (classPath.startsWith("jar:nested:")) {
+                            // Spring Boot loader (3.x) uses jar:nested:/path/app.jar!/...
+                            jarPath = classPath.substring("jar:nested:".length(), bang);
+                        } else if (classPath.startsWith("jar:")) {
+                            // Generic jar: scheme; trim and try to locate the underlying file path.
+                            String remainder = classPath.substring("jar:".length(), bang);
+                            if (remainder.startsWith("file:")) {
+                                jarPath = remainder.substring("file:".length());
+                            } else {
+                                jarPath = remainder;
+                            }
                         }
-                        return URLDecoder.decode(jarPath, "UTF-8");
+
+                        if (jarPath != null) {
+                            // Handle URL encoding
+                            if (jarPath.startsWith("/")
+                                    && System.getProperty("os.name").toLowerCase().contains("win")) {
+                                jarPath = jarPath.substring(1); // Remove leading slash on Windows
+                            }
+                            jarPath = URLDecoder.decode(jarPath, "UTF-8");
+                            // Some URL formats may leave a trailing slash (e.g. "...app.jar/"); normalize it.
+                            if (jarPath.endsWith(".jar/")) {
+                                jarPath = jarPath.substring(0, jarPath.length() - 1);
+                            } else if (jarPath.endsWith("/") && jarPath.contains(".jar")) {
+                                jarPath = jarPath.substring(0, jarPath.length() - 1);
+                            }
+                            return jarPath;
+                        }
                     }
                 }
             } catch (Exception e) {

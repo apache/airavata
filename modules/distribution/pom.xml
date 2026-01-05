@@ -63,6 +63,12 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Thrift API module (provides ThriftServer used by ServiceRegistry) -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>thrift-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Agent Service module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -174,16 +180,6 @@ under the License.
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
-                    <excludes>
-                        <exclude>
-                            <groupId>ch.qos.logback</groupId>
-                            <artifactId>logback-classic</artifactId>
-                        </exclude>
-                        <exclude>
-                            <groupId>ch.qos.logback</groupId>
-                            <artifactId>logback-core</artifactId>
-                        </exclude>
-                    </excludes>
                     <includeSystemScope>false</includeSystemScope>
                 </configuration>
                 <executions>
@@ -239,7 +235,8 @@ under the License.
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.apache.airavata.AiravataCommandLine</mainClass>
-                    <commandlineArgs>serve --config-dir ${project.build.directory}/merged-config</commandlineArgs>
+                    <!-- Use distribution-owned config resources (copied to target/classes/conf) -->
+                    <commandlineArgs>serve --config-dir ${project.build.outputDirectory}/conf</commandlineArgs>
                 </configuration>
             </plugin>
             <!-- GraalVM Native Image Maven Plugin -->
@@ -272,99 +269,6 @@ under the License.
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
-                    <!-- Merge properties early for exec:java and other development tasks -->
-                    <execution>
-                        <id>merge-properties-files-early</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/merged-config"/>
-                                <property name="root.dir" value="${session.executionRootDirectory}"/>
-                                <property name="api.props" value="${root.dir}/modules/airavata-api/src/main/resources/airavata.properties"/>
-                                <property name="agent.props" value="${root.dir}/modules/agent-framework/agent-service/src/main/resources/airavata.properties"/>
-                                <property name="research.props" value="${root.dir}/modules/research-framework/research-service/src/main/resources/airavata.properties"/>
-                                <property name="file.props" value="${root.dir}/modules/file-server/src/main/resources/airavata.properties"/>
-                                <property name="rest.props" value="${root.dir}/modules/rest-api/src/main/resources/airavata.properties"/>
-                                
-                                <concat destfile="${project.build.directory}/merged-config/airavata.properties" fixlastline="yes" encoding="UTF-8" failonerror="false">
-                                    <header filtering="no" trimleading="yes"># ==================== Main Airavata Configuration ====================
-# Properties from airavata-api module
-#</header>
-                                    <fileset file="${api.props}" erroronmissingdir="false"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== Agent Service Configuration ====================
-# Properties from agent-framework/agent-service module
-#</header>
-                                    <fileset file="${agent.props}" erroronmissingdir="false"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== Research Service Configuration ====================
-# Properties from research-framework/research-service module
-#</header>
-                                    <fileset file="${research.props}" erroronmissingdir="false"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== File Server Configuration ====================
-# Properties from file-server module
-#</header>
-                                    <fileset file="${file.props}" erroronmissingdir="false"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== REST API Configuration ====================
-# Properties from rest-api module
-#</header>
-                                    <fileset file="${rest.props}" erroronmissingdir="false"/>
-                                </concat>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <!-- Also merge for package phase (for distribution assembly) -->
-                    <execution>
-                        <id>merge-properties-files</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/merged-config"/>
-                                <concat destfile="${project.build.directory}/merged-config/airavata.properties" fixlastline="yes" encoding="UTF-8">
-                                    <header filtering="no" trimleading="yes"># ==================== Main Airavata Configuration ====================
-# Properties from airavata-api module
-#</header>
-                                    <fileset file="${project.basedir}/../airavata-api/src/main/resources/airavata.properties"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== Agent Service Configuration ====================
-# Properties from agent-framework/agent-service module
-#</header>
-                                    <fileset file="${project.basedir}/../agent-framework/agent-service/src/main/resources/airavata.properties"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== Research Service Configuration ====================
-# Properties from research-framework/research-service module
-#</header>
-                                    <fileset file="${project.basedir}/../research-framework/research-service/src/main/resources/airavata.properties"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== File Server Configuration ====================
-# Properties from file-server module
-#</header>
-                                    <fileset file="${project.basedir}/../file-server/src/main/resources/airavata.properties"/>
-                                    <header filtering="no" trimleading="yes">
-
-# ==================== REST API Configuration ====================
-# Properties from rest-api module
-#</header>
-                                    <fileset file="${project.basedir}/../rest-api/src/main/resources/airavata.properties"/>
-                                </concat>
-                            </target>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>remove-cyclonedx-file</id>
                         <phase>post-package</phase>

@@ -27,8 +27,8 @@ public final class Constants {
 
     // API security relates property names
     public static final String IS_TLS_ENABLED = "security.tls.enabled";
-    public static final String KEYSTORE_PATH = "security.keystore.path";
-    public static final String KEYSTORE_PASSWORD = "security.keystore.password";
+    public static final String KEYSTORE_PATH = "security.tls.keystore.path";
+    public static final String KEYSTORE_PASSWORD = "security.tls.keystore.password";
     public static final String TLS_CLIENT_TIMEOUT = "security.tls.client-timeout";
 
     public static final String API_METHOD_NAME = "api.method.name";

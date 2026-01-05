@@ -15,6 +15,10 @@ Apache Airavata is a software framework for executing and managing computational
 - 🖥️ Comprehensive API and SDK ecosystem
 - 🌐 [Reference UI Implementations](https://github.com/apache/airavata-portals)
 
+## Thrift stubs (SDK + server APIs)
+
+Airavata’s Thrift IDLs live in `thrift-interface-descriptions/`. For **Java stub generation** (and other languages), see `thrift-interface-descriptions/README.md`.
+
 ## Using Airavata
 
 If you’re a researcher, Airavata offers several ways to streamline your workflows:
@@ -441,7 +445,7 @@ The `serve` command requires `--config-dir` pointing to a directory containing:
 - `application-restapi.properties` - REST API configuration (optional)
 - `email-config.yml` - Email monitor configuration (optional)
 - `META-INF/persistence.xml` - JPA persistence configuration
-- `keystores/` - Directory containing keystore files (e.g., `airavata.sym.p12`)
+- `conf/keystores/` - Directory containing keystore files (e.g., `airavata.sym.p12`)
 
 ##### Service Control
 

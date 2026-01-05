@@ -38,11 +38,11 @@ public class DefaultKeyStorePasswordCallback implements KeyStorePasswordCallback
 
     @Override
     public char[] getStorePassword() {
-        return properties.services.api.vault.keystore.password.toCharArray();
+        return properties.security.vault.keystore.password.toCharArray();
     }
 
     @Override
     public char[] getSecretKeyPassPhrase(String keyAlias) {
-        return properties.services.api.vault.keystore.password.toCharArray();
+        return properties.security.vault.keystore.password.toCharArray();
     }
 }

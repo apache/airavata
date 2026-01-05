@@ -56,8 +56,8 @@ public class RestApiConfiguration implements ApplicationListener<ApplicationEnvi
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
-        // Map rest.server.* to server.*
-        mapProperty("rest.server.port", "server.port", mappedProperties, environment);
+        // Map services.rest.server.* to server.*
+        mapProperty("services.rest.server.port", "server.port", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
             environment.getPropertySources().addFirst(

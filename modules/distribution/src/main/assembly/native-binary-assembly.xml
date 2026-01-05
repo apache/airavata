@@ -53,7 +53,7 @@ under the License.
 
     <!-- Keystores -->
     <fileSet>
-      <directory>../../keystores</directory>
+      <directory>src/main/resources/conf/keystores</directory>
       <outputDirectory>conf/keystores</outputDirectory>
       <includes>
         <include>*.jks</include>
@@ -76,9 +76,9 @@ under the License.
       </excludes>
     </fileSet>
 
-    <!-- Merged airavata.properties from all modules -->
+    <!-- Distribution-owned airavata.properties -->
     <fileSet>
-      <directory>${project.build.directory}/merged-config</directory>
+      <directory>src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>airavata.properties</include>

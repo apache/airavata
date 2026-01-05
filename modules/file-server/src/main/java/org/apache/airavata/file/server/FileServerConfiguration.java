@@ -59,17 +59,17 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
-        // Map file.server.* to server.*
-        mapProperty("file.server.port", "server.port", mappedProperties, environment);
+        // Map services.fileserver.server.* to server.*
+        mapProperty("services.fileserver.server.port", "server.port", mappedProperties, environment);
 
-        // Map file.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("file.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("file.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
+        // Map services.fileserver.spring.servlet.multipart.* to spring.servlet.multipart.*
+        mapProperty("services.fileserver.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
+        mapProperty("services.fileserver.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
             environment.getPropertySources().addFirst(
                     new MapPropertySource("fileServerMappedProperties", mappedProperties));
-            logger.debug("Mapped {} file.* properties to Spring Boot properties", mappedProperties.size());
+            logger.debug("Mapped {} services.fileserver.* properties to Spring Boot properties", mappedProperties.size());
         }
     }
 

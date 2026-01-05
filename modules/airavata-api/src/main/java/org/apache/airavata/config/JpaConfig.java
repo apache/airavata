@@ -72,6 +72,7 @@ public class JpaConfig {
     public static final String WORKFLOWCATALOG_PU = "workflow_catalog";
     public static final String SHARING_REGISTRY_PU = "sharing_registry";
     public static final String CREDENTIAL_STORE_PU = "credential_store";
+    public static final String RESEARCH_CATALOG_PU = "research_catalog";
 
     // Helper method to create HikariCP DataSource
     private DataSource createDataSource(
@@ -229,6 +230,17 @@ public class JpaConfig {
         return createDataSource(driver, url, user, password, validationQuery);
     }
 
+    @Bean
+    @Profile("!test")
+    public DataSource researchCatalogDataSource() {
+        var db = properties.database.research;
+        if (db == null || db.url == null || db.url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration for research catalog is missing or invalid. Check airavata.properties for database.research.url");
+        }
+        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+    }
+
     // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean
     @Bean
     @Primary
@@ -279,6 +291,13 @@ public class JpaConfig {
     }
 
     @Bean
+    public LocalContainerEntityManagerFactoryBean researchCatalogEntityManagerFactory(
+            @Qualifier("researchCatalogDataSource") DataSource dataSource) {
+        return createEntityManagerFactory(
+                RESEARCH_CATALOG_PU, dataSource, "org.apache.airavata.research.service.model.entity");
+    }
+
+    @Bean
     public PlatformTransactionManager profileServiceTransactionManager(
             @Qualifier("profileServiceEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
@@ -318,6 +337,12 @@ public class JpaConfig {
     @Bean
     public PlatformTransactionManager credentialStoreTransactionManager(
             @Qualifier("credentialStoreEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
+
+    @Bean
+    public PlatformTransactionManager researchCatalogTransactionManager(
+            @Qualifier("researchCatalogEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 
@@ -362,6 +387,12 @@ public class JpaConfig {
     @Bean
     public EntityManager credentialStoreEntityManager(
             @Qualifier("credentialStoreEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
+        return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
+    }
+
+    @Bean
+    public EntityManager researchCatalogEntityManager(
+            @Qualifier("researchCatalogEntityManagerFactory") LocalContainerEntityManagerFactoryBean emfBean) {
         return SharedEntityManagerCreator.createSharedEntityManager(emfBean.getObject());
     }
 
@@ -418,6 +449,14 @@ public class JpaConfig {
             transactionManagerRef = "credentialStoreTransactionManager",
             considerNestedRepositories = true)
     static class CredentialStoreJpaRepositoriesConfig {}
+
+    @Configuration
+    @EnableJpaRepositories(
+            basePackages = "org.apache.airavata.research.service.model.repo",
+            entityManagerFactoryRef = "researchCatalogEntityManagerFactory",
+            transactionManagerRef = "researchCatalogTransactionManager",
+            considerNestedRepositories = true)
+    static class ResearchCatalogJpaRepositoriesConfig {}
 
     // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
     // This must be the last @Configuration class to ensure expcatalog repository is the final bean

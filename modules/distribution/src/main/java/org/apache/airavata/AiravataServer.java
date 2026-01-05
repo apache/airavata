@@ -79,8 +79,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.restapi",
             "org.apache.airavata.agent.connection.service",
             "org.apache.airavata.research.service",
-            "org.apache.airavata.bootstrap",
-            "org.apache.airavata.cli"
+            "org.apache.airavata.bootstrap"
         })
 @EntityScan(
         basePackages = {

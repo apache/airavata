@@ -44,8 +44,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(
         properties = {
             "security.iam.server-url=http://localhost:18080",
-            "security.iam.super-admin-username=admin",
-            "security.iam.super-admin-password=admin"
+            "security.iam.super.username=admin",
+            "security.iam.super.password=admin"
         })
 public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 

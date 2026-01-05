@@ -46,9 +46,9 @@ public class AiravataServiceClientFactory {
                 // TLS enabled client
                 var params = new TSSLTransportFactory.TSSLTransportParameters();
                 String airavataConfigDir = properties.airavataConfigDir;
-                String keystorePath = properties.security.keystore.path;
+                String keystorePath = properties.security.tls.keystore.path;
                 String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
-                params.setKeyStore(keystoreFullPath, properties.security.keystore.password);
+                params.setKeyStore(keystoreFullPath, properties.security.tls.keystore.password);
                 transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             }
 

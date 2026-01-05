@@ -38,7 +38,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../keystores</directory>
+      <directory>../../../modules/distribution/src/main/resources/conf/keystores</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>777</fileMode>
       <includes>

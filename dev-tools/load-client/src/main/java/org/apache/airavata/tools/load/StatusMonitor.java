@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
@@ -52,7 +52,8 @@ public class StatusMonitor {
         Map<String, ExperimentModel> experimentModelMap = new HashMap<>();
 
         Airavata.Client airavataClient;
-        boolean tlsEnabled = Boolean.parseBoolean(ApplicationSettings.getSetting("security.tls.enabled", "false"));
+        boolean tlsEnabled =
+                Boolean.parseBoolean(AiravataServerProperties.getSetting("security.tls.enabled", "false"));
         long monitoringStartTime = System.currentTimeMillis();
         while (experiments.size() > jobModelMap.size()) {
             logger.info("Running a monitoring round....");

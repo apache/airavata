@@ -106,7 +106,7 @@ cred_keystore_passwd: "123456"
 cred_keystore_alias: "seckey"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
-keystores_location: "{{ deployment_dir }}/keystores"
+keystores_location: "{{ deployment_dir }}/conf/keystores"
 cred_store_server_bind_host: "{{ cred_store_server_host }}"
 
 # Gfac related variables

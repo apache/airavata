@@ -21,7 +21,6 @@ package org.apache.airavata.research.service.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
@@ -57,37 +56,21 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
-        // Map research.server.* to server.*
-        mapProperty("research.server.port", "server.port", mappedProperties, environment);
-        mapProperty("research.server.address", "server.address", mappedProperties, environment);
+        // Do NOT map research server/grpc properties into global server/grpc properties.
+        // In unified distribution mode, server/grpc ports are owned by the unified runtime.
 
-        // Map research.grpc.server.* to grpc.server.*
-        mapProperty("research.grpc.server.port", "grpc.server.port", mappedProperties, environment);
+        // Map services.research.spring.servlet.multipart.* to spring.servlet.multipart.*
+        mapProperty("services.research.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
+        mapProperty("services.research.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
 
-        // Map research.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("research.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("research.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
-
-        // Map research.spring.datasource.* to spring.datasource.*
-        mapProperty("research.spring.datasource.url", "spring.datasource.url", mappedProperties, environment);
-        mapProperty("research.spring.datasource.username", "spring.datasource.username", mappedProperties, environment);
-        mapProperty("research.spring.datasource.password", "spring.datasource.password", mappedProperties, environment);
-        mapProperty("research.spring.datasource.driver-class-name", "spring.datasource.driver-class-name", mappedProperties, environment);
-        mapProperty("research.spring.datasource.hikari.pool-name", "spring.datasource.hikari.pool-name", mappedProperties, environment);
-        mapProperty("research.spring.datasource.hikari.leak-detection-threshold", "spring.datasource.hikari.leak-detection-threshold", mappedProperties, environment);
-
-        // Map research.spring.jpa.* to spring.jpa.*
-        mapProperty("research.spring.jpa.hibernate.ddl-auto", "spring.jpa.hibernate.ddl-auto", mappedProperties, environment);
-        mapProperty("research.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
-
-        // Map research.springdoc.* to springdoc.*
-        mapProperty("research.springdoc.api-docs.enabled", "springdoc.api-docs.enabled", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.path", "springdoc.swagger-ui.path", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.operationsSorter", "springdoc.swagger-ui.operationsSorter", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.tagsSorter", "springdoc.swagger-ui.tagsSorter", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.doc-expansion", "springdoc.swagger-ui.doc-expansion", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.oauth.use-pkce-with-authorization-code-grant", "springdoc.swagger-ui.oauth.use-pkce-with-authorization-code-grant", mappedProperties, environment);
-        mapProperty("research.springdoc.swagger-ui.oauth.client-id", "springdoc.swagger-ui.oauth.client-id", mappedProperties, environment);
+        // Map services.research.springdoc.* to springdoc.*
+        mapProperty("services.research.springdoc.api-docs.enabled", "springdoc.api-docs.enabled", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.path", "springdoc.swagger-ui.path", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.operationsSorter", "springdoc.swagger-ui.operationsSorter", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.tagsSorter", "springdoc.swagger-ui.tagsSorter", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.doc-expansion", "springdoc.swagger-ui.doc-expansion", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.oauth.use-pkce-with-authorization-code-grant", "springdoc.swagger-ui.oauth.use-pkce-with-authorization-code-grant", mappedProperties, environment);
+        mapProperty("services.research.springdoc.swagger-ui.oauth.client-id", "springdoc.swagger-ui.oauth.client-id", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
             environment.getPropertySources().addFirst(

@@ -88,9 +88,9 @@ public class KeycloakRestClient {
                 // Configure SSL with keystore
                 SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
                 String airavataConfigDir = properties.airavataConfigDir;
-                String keystorePath = properties.security.keystore.path;
+                String keystorePath = properties.security.tls.keystore.path;
                 String keystoreFullPath = new File(airavataConfigDir, keystorePath).getAbsolutePath();
-                String keystorePassword = properties.security.keystore.password;
+                String keystorePassword = properties.security.tls.keystore.password;
                 KeyStore keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
                 sslContextBuilder.loadTrustMaterial(keyStore, new TrustSelfSignedStrategy());
                 // Note: TLS configuration is handled at JVM level via system properties

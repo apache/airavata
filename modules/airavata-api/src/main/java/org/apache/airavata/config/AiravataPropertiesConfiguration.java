@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -57,12 +58,82 @@ public class AiravataPropertiesConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(AiravataPropertiesConfiguration.class);
     private static final String SERVER_PROPERTIES = "airavata.properties";
     private static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
+    private static volatile Properties cachedAiravataProperties;
 
     /**
      * Get the config directory path if set, otherwise null.
      */
     public static String getConfigDir() {
         return System.getProperty(AIRAVATA_CONFIG_DIR);
+    }
+
+    /**
+     * Load a config file from {@code airavata.config.dir} if set (filesystem), otherwise from classpath.
+     */
+    public static URL loadFile(String fileName) {
+        String configDir = System.getProperty(AIRAVATA_CONFIG_DIR);
+        if (configDir != null) {
+            try {
+                String configDirPath = configDir.endsWith(File.separator) ? configDir : configDir + File.separator;
+                String filePath = configDirPath + fileName;
+                File asfile = new File(filePath);
+                if (asfile.exists() && asfile.isFile()) {
+                    return asfile.toURI().toURL();
+                }
+            } catch (MalformedURLException e) {
+                logger.error("Error parsing the file from airavata.config.dir: {}", configDir);
+            }
+        }
+
+        return AiravataPropertiesConfiguration.class.getClassLoader().getResource(fileName);
+    }
+
+    /**
+     * Load and cache {@code airavata.properties} using the same precedence as Spring bootstrapping:
+     * filesystem (airavata.config.dir) first, then classpath.
+     */
+    public static Properties getAiravataProperties() {
+        Properties props = cachedAiravataProperties;
+        if (props != null) {
+            return props;
+        }
+        synchronized (AiravataPropertiesConfiguration.class) {
+            if (cachedAiravataProperties != null) {
+                return cachedAiravataProperties;
+            }
+            Properties loaded = new Properties();
+            URL url = loadFile(SERVER_PROPERTIES);
+            if (url != null) {
+                try (InputStream is = url.openStream()) {
+                    loaded.load(is);
+                } catch (Exception e) {
+                    logger.warn("Failed to load airavata.properties from {}, returning empty Properties", url, e);
+                }
+            } else {
+                logger.warn("airavata.properties not found in airavata.config.dir or classpath");
+            }
+            cachedAiravataProperties = loaded;
+            return loaded;
+        }
+    }
+
+    /**
+     * Lightweight, non-Spring property access for tools/Helix tasks.
+     * Order: system props -> env vars -> loaded airavata.properties.
+     */
+    public static String getSetting(String key, String defaultValue) {
+        String value = System.getProperty(key);
+        if (value == null) {
+            value = System.getenv(key);
+        }
+        if (value == null) {
+            value = getAiravataProperties().getProperty(key);
+        }
+        return value != null ? value : defaultValue;
+    }
+
+    public static String getSetting(String key) {
+        return getSetting(key, null);
     }
 
     /**

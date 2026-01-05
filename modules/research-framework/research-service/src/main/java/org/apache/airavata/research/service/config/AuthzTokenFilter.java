@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+@Component("researchAuthzTokenFilter")
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthzTokenFilter.class);
@@ -46,7 +46,7 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private final AiravataService airavataService;
 
-    @Value("${airavata.research-hub.url}")
+    @Value("${services.research.hub.url}")
     private String csHubUrl;
 
     public AuthzTokenFilter(AiravataService airavataService) {

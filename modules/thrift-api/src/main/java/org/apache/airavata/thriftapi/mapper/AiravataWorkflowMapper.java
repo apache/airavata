@@ -26,7 +26,9 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper for converting between domain AiravataWorkflow and thrift AiravataWorkflow.
  */
-@Mapper(config = ModelMapper.class)
+// This mapper is used via MapStruct's Mappers factory (INSTANCE). It should not be a Spring bean,
+// otherwise it conflicts with similarly-named Spring mappers in other modules.
+@Mapper(componentModel = "default", config = ModelMapper.class)
 public interface AiravataWorkflowMapper extends ModelMapper {
 
     AiravataWorkflowMapper INSTANCE = Mappers.getMapper(AiravataWorkflowMapper.class);

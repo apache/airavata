@@ -24,17 +24,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "airavata.cluster")
+@ConfigurationProperties(prefix = "services.agent.appinterface")
 @ConditionalOnProperty(name = "services.agent.enabled", havingValue = "true", matchIfMissing = true)
 public class ClusterApplicationConfig {
 
-    private String applicationInterfaceId;
+    private String id;
 
     public String getApplicationInterfaceId() {
-        return applicationInterfaceId;
+        return id;
     }
 
     public void setApplicationInterfaceId(String applicationInterfaceId) {
-        this.applicationInterfaceId = applicationInterfaceId;
+        this.id = applicationInterfaceId;
     }
 }

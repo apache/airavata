@@ -42,11 +42,11 @@ under the License.
 
     <!-- Startup script -->
     <fileSet>
-      <directory>src/main/resources</directory>
+      <directory>src/main/resources/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
-        <include>bin/*.sh</include>
+        <include>*.sh</include>
       </includes>
     </fileSet>
 
@@ -61,7 +61,7 @@ under the License.
 
     <!-- Keystores -->
     <fileSet>
-      <directory>../../keystores</directory>
+      <directory>src/main/resources/conf/keystores</directory>
       <outputDirectory>conf/keystores</outputDirectory>
       <includes>
         <include>*.jks</include>
@@ -85,9 +85,9 @@ under the License.
     </fileSet>
 
 
-    <!-- Merged airavata.properties from all modules -->
+    <!-- Distribution-owned airavata.properties -->
     <fileSet>
-      <directory>${project.build.directory}/merged-config</directory>
+      <directory>src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>airavata.properties</include>

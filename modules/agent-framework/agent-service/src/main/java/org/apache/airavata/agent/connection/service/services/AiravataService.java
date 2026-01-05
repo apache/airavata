@@ -44,18 +44,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("agentAiravataService")
 public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    @Value("${airavata.server.url:localhost}")
+    @Value("${services.agent.thriftclient.url:localhost}")
     private String serverUrl;
 
     @Value("${services.thrift.port:8930}")
     private int port;
 
-    @Value("${airavata.server.secure:false}")
+    @Value("${services.agent.thriftclient.secure:false}")
     private boolean secure;
 
     private final AiravataServerProperties properties;

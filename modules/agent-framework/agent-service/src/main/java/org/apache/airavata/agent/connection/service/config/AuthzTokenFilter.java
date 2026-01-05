@@ -32,7 +32,7 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+@Component("agentAuthzTokenFilter")
 public class AuthzTokenFilter extends OncePerRequestFilter {
 
     @Override

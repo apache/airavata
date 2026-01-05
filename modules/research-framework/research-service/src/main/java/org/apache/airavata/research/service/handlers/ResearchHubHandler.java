@@ -53,13 +53,13 @@ public class ResearchHubHandler {
     private final ProjectHandler projectHandler;
     private final SessionHandler sessionHandler;
 
-    @Value("${airavata.research-hub.url}")
+    @Value("${services.research.hub.url}")
     private String csHubUrl;
 
-    @Value("${airavata.research-hub.adminApiKey}")
+    @Value("${services.research.hub.adminApiKey}")
     private String adminApiKey;
 
-    @Value("${airavata.research-hub.limit}")
+    @Value("${services.research.hub.limit}")
     private int maxRHubSessions;
 
     public ResearchHubHandler(

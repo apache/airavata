@@ -70,7 +70,8 @@ public class ClusterStatusMonitorJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            String superTenantGatewayId = properties.airavata.superTenantGatewayId;
+            // Super-tenant gateway is now derived from the default gateway config.
+            String superTenantGatewayId = properties.services.defaults.gateway;
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {

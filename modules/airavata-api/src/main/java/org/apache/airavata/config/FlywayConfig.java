@@ -136,4 +136,18 @@ public class FlywayConfig {
                 .validateOnMigrate(true)
                 .load();
     }
+
+    /**
+     * Configure Flyway for research catalog database.
+     */
+    @Bean(name = "researchCatalogFlyway", initMethod = "migrate")
+    @DependsOn("researchCatalogDataSource")
+    public Flyway researchCatalogFlyway(@Qualifier("researchCatalogDataSource") DataSource dataSource) {
+        return Flyway.configure()
+                .dataSource(dataSource)
+                .locations("classpath:db/migration/research_catalog")
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true)
+                .load();
+    }
 }

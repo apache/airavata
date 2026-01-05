@@ -232,8 +232,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         if (curatorClient == null) {
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
             try {
-                // Try to get properties from ApplicationSettings
-                String zkConnection = org.apache.airavata.common.utils.ApplicationSettings.getSetting(
+                // Try to get properties from AiravataServerProperties (backed by AiravataPropertiesConfiguration)
+                String zkConnection = org.apache.airavata.config.AiravataServerProperties.getSetting(
                         "zookeeper.server-connection", "localhost:2181");
                 AbstractTask.curatorClient = CuratorFrameworkFactory.newClient(zkConnection, retryPolicy);
                 AbstractTask.curatorClient.start();

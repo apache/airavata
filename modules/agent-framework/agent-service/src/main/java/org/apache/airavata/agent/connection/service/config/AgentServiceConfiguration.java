@@ -56,30 +56,28 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
-        // Map agent.server.* to server.*
-        mapProperty("agent.server.port", "server.port", mappedProperties, environment);
-        mapProperty("agent.server.address", "server.address", mappedProperties, environment);
+        // Keep agent config keys scoped (services.agent.*), but map selected keys into framework defaults
+        // that expect grpc.* (agent service runs as a separate process).
 
-        // Map agent.grpc.server.* to grpc.server.*
-        mapProperty("agent.grpc.server.host", "grpc.server.host", mappedProperties, environment);
-        mapProperty("agent.grpc.server.port", "grpc.server.port", mappedProperties, environment);
-        mapProperty("agent.grpc.server.max-inbound-message-size", "grpc.server.max-inbound-message-size", mappedProperties, environment);
+        // Map services.agent.spring.servlet.multipart.* to spring.servlet.multipart.*
+        mapProperty("services.agent.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
+        mapProperty("services.agent.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
 
-        // Map agent.spring.servlet.multipart.* to spring.servlet.multipart.*
-        mapProperty("agent.spring.servlet.multipart.max-file-size", "spring.servlet.multipart.max-file-size", mappedProperties, environment);
-        mapProperty("agent.spring.servlet.multipart.max-request-size", "spring.servlet.multipart.max-request-size", mappedProperties, environment);
+        // Map database.catalog.* to spring.datasource.* (agent uses app_catalog)
+        mapProperty("database.catalog.url", "spring.datasource.url", mappedProperties, environment);
+        mapProperty("database.catalog.user", "spring.datasource.username", mappedProperties, environment);
+        mapProperty("database.catalog.password", "spring.datasource.password", mappedProperties, environment);
+        mapProperty("database.catalog.driver", "spring.datasource.driver-class-name", mappedProperties, environment);
+        mapProperty("database.catalog.hikari.pool-name", "spring.datasource.hikari.pool-name", mappedProperties, environment);
+        mapProperty("database.catalog.hikari.leak-detection-threshold", "spring.datasource.hikari.leak-detection-threshold", mappedProperties, environment);
 
-        // Map agent.spring.datasource.* to spring.datasource.*
-        mapProperty("agent.spring.datasource.url", "spring.datasource.url", mappedProperties, environment);
-        mapProperty("agent.spring.datasource.username", "spring.datasource.username", mappedProperties, environment);
-        mapProperty("agent.spring.datasource.password", "spring.datasource.password", mappedProperties, environment);
-        mapProperty("agent.spring.datasource.driver-class-name", "spring.datasource.driver-class-name", mappedProperties, environment);
-        mapProperty("agent.spring.datasource.hikari.pool-name", "spring.datasource.hikari.pool-name", mappedProperties, environment);
-        mapProperty("agent.spring.datasource.hikari.leak-detection-threshold", "spring.datasource.hikari.leak-detection-threshold", mappedProperties, environment);
+        // Map services.agent.spring.jpa.* to spring.jpa.*
+        mapProperty("services.agent.spring.jpa.hibernate.ddl-auto", "spring.jpa.hibernate.ddl-auto", mappedProperties, environment);
+        mapProperty("services.agent.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
 
-        // Map agent.spring.jpa.* to spring.jpa.*
-        mapProperty("agent.spring.jpa.hibernate.ddl-auto", "spring.jpa.hibernate.ddl-auto", mappedProperties, environment);
-        mapProperty("agent.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
+        // Map services.agent.grpc.* to grpc.server.*
+        mapProperty("services.agent.grpc.port", "grpc.server.port", mappedProperties, environment);
+        mapProperty("services.agent.grpc.max-inbound-message-size", "grpc.server.max-inbound-message-size", mappedProperties, environment);
 
         if (!mappedProperties.isEmpty()) {
             environment.getPropertySources().addFirst(

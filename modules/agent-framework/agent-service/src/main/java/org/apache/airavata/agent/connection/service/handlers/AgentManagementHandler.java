@@ -61,14 +61,14 @@ public class AgentManagementHandler {
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
 
-    @Value("${airavata.storageResourceId}")
+    @Value("${services.agent.storage.id}")
     private String storageResourceId;
 
-    @Value("${airavata.storagePath}")
+    @Value("${services.agent.storage.path}")
     private String storagePath;
 
-    @Value("${grpc.server.host}")
-    private String grpcHost;
+    // no longer configurable; keep local default (used for the "server_url" app input)
+    private final String grpcHost = "localhost";
 
     public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
         this.airavataService = airavataService;

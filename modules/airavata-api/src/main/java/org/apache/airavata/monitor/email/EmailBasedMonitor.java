@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ResourceJobManagerType;
-import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
@@ -121,7 +121,7 @@ public class EmailBasedMonitor extends ServerLifecycle {
 
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
-        java.net.URL emailConfigUrl = ApplicationSettings.loadFile("email-config.yml");
+        java.net.URL emailConfigUrl = AiravataServerProperties.loadFile("email-config.yml");
         if (emailConfigUrl == null) {
             log.warn("email-config.yml not found. Email monitoring will use default configuration.");
             return; // Use default configuration

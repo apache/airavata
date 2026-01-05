@@ -103,16 +103,16 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, TunnelCreationResponse> TUNNEL_CREATION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
-    @Value("${airavata.tunnel.serverHost}")
+    @Value("${services.agent.tunnelserver.host}")
     private String tunnelServerHost;
 
-    @Value("${airavata.tunnel.serverPort}")
+    @Value("${services.agent.tunnelserver.port}")
     private int tunnelServerPort;
 
-    @Value("${airavata.tunnel.serverApiUrl}")
+    @Value("${services.agent.tunnelserver.apiurl}")
     private String tunnelServerApiUrl;
 
-    @Value("${airavata.tunnel.serverToken}")
+    @Value("${services.agent.tunnelserver.token}")
     private String tunnelServerToken;
 
     // response handling
