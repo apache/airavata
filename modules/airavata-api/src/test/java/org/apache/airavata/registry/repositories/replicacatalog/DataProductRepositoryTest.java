@@ -57,11 +57,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class DataProductRepositoryTest extends TestBase {
 
@@ -174,7 +174,7 @@ public class DataProductRepositoryTest extends TestBase {
         DataReplicaLocationModel retrievedReplicaLocationModel1 =
                 retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
-        // validUntilTime has a default value
+
         assertEquals(0, retrievedReplicaLocationModel1.getValidUntilTime());
 
         dataProductService.removeDataProduct(productUri1);

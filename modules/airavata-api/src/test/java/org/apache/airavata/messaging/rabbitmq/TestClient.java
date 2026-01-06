@@ -28,28 +28,50 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.Type;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest
+@SpringBootTest(classes = {
+    org.apache.airavata.config.JpaConfig.class,
+    TestcontainersConfig.class
+}, properties = {
+    "spring.main.allow-bean-definition-overriding=true",
+    "flyway.enabled=false"
+})
 @ActiveProfiles("test")
-@Disabled("Requires messaging infrastructure (RabbitMQ/Kafka) to be running")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private static final Logger logger = LoggerFactory.getLogger(TestClient.class);
     private static final String experimentId = "*";
 
+    @Autowired
+    private AiravataServerProperties properties;
+
+    @BeforeAll
+    public static void setupRabbitMQ() {
+        // Initialize RabbitMQ container via TestcontainersConfig
+        TestcontainersConfig.getRabbitMQUrl();
+        logger.info("RabbitMQ container initialized for tests");
+    }
+
     @Test
     public void testMessagingFactorySubscriberCreation() throws Exception {
         try {
-            AiravataServerProperties properties = new AiravataServerProperties();
+            // Update properties with RabbitMQ URL from Testcontainers
+            String rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
+            // Properties are loaded from airavata.properties, but we can override if needed
+            logger.info("Using RabbitMQ URL: {}", rabbitMQUrl);
             MessagingFactory messagingFactory = new MessagingFactory(properties);
             List<String> routingKeys = new ArrayList<>();
             routingKeys.add(experimentId);

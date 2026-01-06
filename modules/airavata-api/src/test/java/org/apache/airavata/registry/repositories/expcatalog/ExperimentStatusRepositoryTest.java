@@ -57,11 +57,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentStatusRepositoryTest extends TestBase {
 
@@ -128,7 +128,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentStatusRepository_InitialStatusCreation() throws RegistryException {
-        // Test that addExperiment automatically creates CREATED status
+
         assertEquals(
                 1,
                 experimentService
@@ -144,7 +144,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentStatusRepository_StateTransitions() throws RegistryException {
-        // Test experiment status state transitions (important for workflow tracking)
+
         ExperimentStatus validatedStatus = new ExperimentStatus();
         validatedStatus.setState(ExperimentState.VALIDATED);
         String statusId = experimentStatusService.addExperimentStatus(validatedStatus, experimentId);
@@ -157,7 +157,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
                         .size(),
                 "Experiment should have 2 statuses");
 
-        // Update to executing state
+
         validatedStatus.setState(ExperimentState.EXECUTING);
         experimentStatusService.updateExperimentStatus(validatedStatus, experimentId);
 
@@ -167,14 +167,14 @@ public class ExperimentStatusRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentStatusRepository_StatusUpdateWithReason() throws RegistryException {
-        // Test that status updates preserve reason and timestamp
+
         ExperimentStatus status = new ExperimentStatus();
         status.setState(ExperimentState.EXECUTING);
         experimentStatusService.addExperimentStatus(status, experimentId);
 
         long originalTime = status.getTimeOfStateChange();
 
-        // Update with reason
+
         ExperimentStatus updatedStatus = new ExperimentStatus();
         updatedStatus.setState(ExperimentState.EXECUTING);
         updatedStatus.setReason("Updated execution reason");

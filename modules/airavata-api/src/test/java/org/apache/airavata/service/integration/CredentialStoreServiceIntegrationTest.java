@@ -46,27 +46,21 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldAddSSHCredential() throws CredentialStoreException {
-        // Arrange
         var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         sshCredential.setDescription("Test SSH Credential");
 
-        // Act
         String token = credentialStoreService.addSSHCredential(sshCredential);
 
-        // Assert
         assertThat(token).isNotNull().isNotEmpty();
     }
 
     @Test
     public void shouldGetSSHCredential() throws CredentialStoreException {
-        // Arrange
         var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         String token = credentialStoreService.addSSHCredential(sshCredential);
 
-        // Act
         var retrieved = credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
         assertThat(retrieved.getUsername()).isEqualTo(TEST_USERNAME);
@@ -75,23 +69,18 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldReturnNullForNonExistentSSHCredential() throws CredentialStoreException {
-        // Act
         var retrieved = credentialStoreService.getSSHCredential("non-existent-token", TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(retrieved).isNull();
     }
 
     @Test
     public void shouldDeleteSSHCredential() throws CredentialStoreException {
-        // Arrange
         var sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         var token = credentialStoreService.addSSHCredential(sshCredential);
 
-        // Act
         var deleted = credentialStoreService.deleteSSHCredential(token, TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(deleted).isTrue();
         assertThat(credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID))
                 .isNull();
@@ -99,14 +88,12 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldThrowExceptionWhenDeletingNonExistentCredential() {
-        // Act & Assert
         assertThatThrownBy(() -> credentialStoreService.deleteSSHCredential("non-existent-token", TEST_GATEWAY_ID))
                 .isInstanceOf(CredentialStoreException.class);
     }
 
     @Test
     public void shouldAddPasswordCredential() throws CredentialStoreException {
-        // Arrange
         PasswordCredential passwordCredential = new PasswordCredential();
         passwordCredential.setGatewayId(TEST_GATEWAY_ID);
         passwordCredential.setPortalUserName(TEST_USERNAME);
@@ -114,16 +101,13 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         passwordCredential.setPassword("test-password");
         passwordCredential.setDescription("Test Password Credential");
 
-        // Act
         String token = credentialStoreService.addPasswordCredential(passwordCredential);
 
-        // Assert
         assertThat(token).isNotNull().isNotEmpty();
     }
 
     @Test
     public void shouldGetPasswordCredential() throws CredentialStoreException {
-        // Arrange
         PasswordCredential passwordCredential = new PasswordCredential();
         passwordCredential.setGatewayId(TEST_GATEWAY_ID);
         passwordCredential.setPortalUserName(TEST_USERNAME);
@@ -131,10 +115,8 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         passwordCredential.setPassword("test-password");
         String token = credentialStoreService.addPasswordCredential(passwordCredential);
 
-        // Act
         PasswordCredential retrieved = credentialStoreService.getPasswordCredential(token, TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
         assertThat(retrieved.getPortalUserName()).isEqualTo(TEST_USERNAME);
@@ -144,7 +126,6 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldDeletePasswordCredential() throws CredentialStoreException {
-        // Arrange
         PasswordCredential passwordCredential = new PasswordCredential();
         passwordCredential.setGatewayId(TEST_GATEWAY_ID);
         passwordCredential.setPortalUserName(TEST_USERNAME);
@@ -152,23 +133,18 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         passwordCredential.setPassword("test-password");
         String token = credentialStoreService.addPasswordCredential(passwordCredential);
 
-        // Act
         boolean deleted = credentialStoreService.deletePWDCredential(token, TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(deleted).isTrue();
     }
 
     @Test
     public void shouldGetCredentialSummary() throws CredentialStoreException {
-        // Arrange
         SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         String token = credentialStoreService.addSSHCredential(sshCredential);
 
-        // Act
         CredentialSummary summary = credentialStoreService.getCredentialSummary(token, TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(summary).isNotNull();
         assertThat(summary.getType()).isEqualTo(SummaryType.SSH);
         assertThat(summary.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
@@ -178,24 +154,20 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldGetAllCredentialSummaries() throws CredentialStoreException {
-        // Arrange
         SSHCredential sshCredential1 = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, "user1");
         SSHCredential sshCredential2 = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, "user2");
         String token1 = credentialStoreService.addSSHCredential(sshCredential1);
         String token2 = credentialStoreService.addSSHCredential(sshCredential2);
 
-        // Act
         List<CredentialSummary> summaries = credentialStoreService.getAllCredentialSummaries(
                 SummaryType.SSH, List.of(token1, token2), TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(summaries).isNotNull().hasSize(2);
         assertThat(summaries).extracting(CredentialSummary::getToken).containsExactlyInAnyOrder(token1, token2);
     }
 
     @Test
     public void shouldFilterCredentialSummariesByType() throws CredentialStoreException {
-        // Arrange
         SSHCredential sshCredential = TestDataFactory.createSSHCredential(TEST_GATEWAY_ID, TEST_USERNAME);
         String sshToken = credentialStoreService.addSSHCredential(sshCredential);
 
@@ -206,13 +178,11 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         passwordCredential.setPassword("test-password");
         String pwdToken = credentialStoreService.addPasswordCredential(passwordCredential);
 
-        // Act
         List<CredentialSummary> sshSummaries = credentialStoreService.getAllCredentialSummaries(
                 SummaryType.SSH, List.of(sshToken, pwdToken), TEST_GATEWAY_ID);
         List<CredentialSummary> pwdSummaries = credentialStoreService.getAllCredentialSummaries(
                 SummaryType.PASSWD, List.of(sshToken, pwdToken), TEST_GATEWAY_ID);
 
-        // Assert
         assertThat(sshSummaries).hasSize(1);
         assertThat(sshSummaries.get(0).getType()).isEqualTo(SummaryType.SSH);
         assertThat(pwdSummaries).hasSize(1);
@@ -221,7 +191,6 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
     @Test
     public void shouldAddCertificateCredential() throws CredentialStoreException {
-        // Arrange
         var certificateCredential = new CertificateCredential();
         var communityUser = new CommunityUser();
         communityUser.setGatewayName(TEST_GATEWAY_ID);
@@ -230,28 +199,23 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         certificateCredential.setCommunityUser(communityUser);
         certificateCredential.setX509Cert("-----BEGIN CERTIFICATE-----\nTEST_CERT\n-----END CERTIFICATE-----");
 
-        // Act
         var token = credentialStoreService.addCertificateCredential(certificateCredential);
 
-        // Assert
         assertThat(token).isNotNull().isNotEmpty();
     }
 
     @Test
     public void shouldGetCertificateCredential() {
-        // Note: This test requires a valid certificate
         assertThat(credentialStoreService).isNotNull();
     }
 
     @Test
     public void shouldEnforceGatewayBasedAccessControl() throws CredentialStoreException {
-        // Arrange
         String gateway1 = "gateway-1";
         String gateway2 = "gateway-2";
         SSHCredential sshCredential = TestDataFactory.createSSHCredential(gateway1, TEST_USERNAME);
         String token = credentialStoreService.addSSHCredential(sshCredential);
 
-        // Act & Assert
         assertThat(credentialStoreService.getSSHCredential(token, gateway1)).isNotNull();
         assertThat(credentialStoreService.getSSHCredential(token, gateway2)).isNull();
     }

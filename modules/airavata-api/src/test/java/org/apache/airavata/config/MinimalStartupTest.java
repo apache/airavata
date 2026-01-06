@@ -51,7 +51,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataServerProperties.class,
             MinimalStartupTest.TestConfiguration.class
         },
         properties = {
@@ -62,11 +61,12 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components excluded via @ComponentScan excludeFilters - no property flags needed
-            // Core services (RegistryService, CredentialStoreService) are always available via DI
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class MinimalStartupTest {
 
     @Configuration
@@ -160,7 +160,7 @@ public class MinimalStartupTest {
 
     @Test
     public void testJpaConfigIsLoaded() {
-        // Verify JpaConfig is loaded by checking for EntityManagerFactory beans
+
         assertTrue(
                 applicationContext.getBeansOfType(EntityManagerFactory.class).size() >= 7,
                 "All EntityManagerFactory beans should be created (at least 7 catalogs)");

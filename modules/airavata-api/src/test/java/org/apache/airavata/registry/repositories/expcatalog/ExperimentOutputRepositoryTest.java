@@ -60,11 +60,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentOutputRepositoryTest extends TestBase {
 
@@ -131,7 +131,7 @@ public class ExperimentOutputRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentOutputRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating experiment outputs
+
         OutputDataObjectType outputDataObjectTypeExp = new OutputDataObjectType();
         outputDataObjectTypeExp.setName("outputE");
         outputDataObjectTypeExp.setType(DataType.STRING);
@@ -148,7 +148,7 @@ public class ExperimentOutputRepositoryTest extends TestBase {
                         .size(),
                 "Experiment should have one output");
 
-        // Update output value
+
         outputDataObjectTypeExp.setValue("oValueE");
         experimentOutputService.updateExperimentOutputs(outputDataObjectTypeExpList, experimentId);
 
@@ -161,7 +161,7 @@ public class ExperimentOutputRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentOutputRepository_MultipleOutputs() throws RegistryException {
-        // Test that an experiment can have multiple outputs (important for complex workflows)
+
         OutputDataObjectType output1 = new OutputDataObjectType();
         output1.setName("output1");
         output1.setType(DataType.STRING);
@@ -181,7 +181,7 @@ public class ExperimentOutputRepositoryTest extends TestBase {
         List<OutputDataObjectType> retrievedOutputs = experimentOutputService.getExperimentOutputs(experimentId);
         assertEquals(2, retrievedOutputs.size(), "Experiment should have 2 outputs");
 
-        // Verify all outputs are present
+
         assertTrue(
                 retrievedOutputs.stream().anyMatch(o -> o.getName().equals("output1")), "Output 1 should be present");
         assertTrue(

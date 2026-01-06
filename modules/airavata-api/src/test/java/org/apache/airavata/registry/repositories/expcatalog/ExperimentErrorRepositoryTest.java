@@ -58,11 +58,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentErrorRepositoryTest extends TestBase {
 
@@ -129,7 +129,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentErrorRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating experiment errors
+
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error-1");
         errorModel.setActualErrorMessage("Initial error message");
@@ -139,18 +139,18 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         assertNotNull(experimentErrorId, "Experiment error ID should not be null");
         assertEquals("error-1", experimentErrorId, "Error ID should match");
 
-        // Verify error is associated with experiment
+
         assertEquals(
                 1,
                 experimentService.getExperiment(experimentId).getErrors().size(),
                 "Experiment should have one error");
 
-        // Update error message
+
         errorModel.setActualErrorMessage("Updated error message");
         errorModel.setUserFriendlyMessage("Updated user-friendly message");
         experimentErrorService.updateExperimentError(errorModel, experimentId);
 
-        // Verify update
+
         List<ErrorModel> retrievedErrorList = experimentErrorService.getExperimentErrors(experimentId);
         assertEquals(1, retrievedErrorList.size(), "Should have one error");
         assertEquals(
@@ -165,7 +165,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentErrorRepository_MultipleErrorsPerExperiment() throws RegistryException {
-        // Test that an experiment can have multiple errors (important for error history)
+
         ErrorModel error1 = new ErrorModel();
         error1.setErrorId("error-1");
         error1.setActualErrorMessage("First error");
@@ -181,11 +181,11 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         error3.setActualErrorMessage("Third error");
         String errorId3 = experimentErrorService.addExperimentError(error3, experimentId);
 
-        // Verify all errors are associated with the experiment
+
         List<ErrorModel> errors = experimentErrorService.getExperimentErrors(experimentId);
         assertEquals(3, errors.size(), "Experiment should have 3 errors");
 
-        // Verify all error IDs are present
+
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId3)), "Error 3 should be present");

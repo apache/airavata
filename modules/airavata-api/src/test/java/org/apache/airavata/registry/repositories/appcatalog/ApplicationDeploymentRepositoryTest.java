@@ -64,11 +64,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class ApplicationDeploymentRepositoryTest extends TestBase {
@@ -380,7 +380,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
             filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
             Assertions.fail();
         } catch (Exception e) {
-            // ignore
+
         }
     }
 

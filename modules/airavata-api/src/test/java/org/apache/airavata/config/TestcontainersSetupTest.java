@@ -40,20 +40,23 @@ import org.springframework.test.context.TestPropertySource;
  * Testcontainers will automatically detect and use the available container runtime.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, AiravataServerProperties.class, TestcontainersConfig.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
         })
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @ActiveProfiles("test")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class TestcontainersSetupTest {
 
     /**
      * Ensure Flyway migrations are applied before checking for tables.
      * This method explicitly runs migrations to guarantee schema is ready.
      * Handles failed migrations by repairing first if needed.
+     * Also checks if tables actually exist - if Flyway history says migrations are applied
+     * but tables don't exist, cleans and re-applies migrations.
      */
     private void ensureMigrationsApplied(DataSource dataSource, String migrationLocation) {
         Flyway flyway = Flyway.configure()
@@ -64,9 +67,26 @@ public class TestcontainersSetupTest {
                 .cleanDisabled(false)
                 .load();
 
-        // Check if there are failed migrations and repair if needed
+        // Check if any tables exist (other than flyway_schema_history)
+        boolean tablesExist = false;
+        int tableCount = 0;
+        try (var conn = dataSource.getConnection()) {
+            var rs = conn.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+            while (rs.next()) {
+                String tableName = rs.getString("TABLE_NAME");
+                if (!tableName.equals("flyway_schema_history")) {
+                    tableCount++;
+                }
+            }
+            rs.close();
+            tablesExist = tableCount > 0;
+        } catch (Exception e) {
+            // If we can't check, assume tables don't exist and proceed with migration
+        }
+
         var info = flyway.info();
         var allMigrations = info.all();
+        var currentVersion = info.current();
         boolean hasFailed = false;
         for (var migration : allMigrations) {
             if (migration.getState().isFailed()) {
@@ -75,27 +95,101 @@ public class TestcontainersSetupTest {
             }
         }
 
-        if (hasFailed) {
+        // Check specifically for profile_service tables
+        boolean profileTablesExist = false;
+        try (var conn = dataSource.getConnection()) {
+            var rs = conn.getMetaData().getTables(null, null, "USER_PROFILE", null);
+            profileTablesExist = rs.next();
+            rs.close();
+            if (!profileTablesExist) {
+                // Also check NSF_DEMOGRAPHIC tables
+                rs = conn.getMetaData().getTables(null, null, "NSF_DEMOGRAPHIC", null);
+                profileTablesExist = rs.next();
+                rs.close();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        System.out.println("Migration check: currentVersion=" + currentVersion + ", tablesExist=" + tablesExist + ", tableCount=" + tableCount + ", profileTablesExist=" + profileTablesExist + ", allMigrations.length=" + allMigrations.length);
+
+        // If Flyway says migrations are applied but profile tables don't exist, clean and re-apply
+        if (currentVersion != null && !profileTablesExist && allMigrations.length > 0) {
             try {
-                // Try repair first
-                flyway.repair();
+                System.out.println("Detected mismatch: Flyway version " + currentVersion + " but no profile tables exist. Cleaning and re-applying migrations.");
+                flyway.clean();
+                System.out.println("Database cleaned successfully");
+                // Don't call baseline() - let migrate() apply migrations from scratch
+                var migrateResult = flyway.migrate();
+                System.out.println("Migration completed. Migrations applied: " + migrateResult.migrationsExecuted + ", success: " + migrateResult.success);
+                if (migrateResult.migrationsExecuted > 0 && !migrateResult.migrations.isEmpty()) {
+                    var firstMigration = migrateResult.migrations.get(0);
+                    System.out.println("Applied migration: " + firstMigration.version + " - " + firstMigration.description);
+                }
+                // Verify tables exist after migration - check multiple ways
+                try (var conn = dataSource.getConnection()) {
+                    String catalog = conn.getCatalog();
+                    System.out.println("Connected to database: " + catalog);
+                    var rs = conn.getMetaData().getTables(catalog, null, "USER_PROFILE", null);
+                    boolean userProfileExists = rs.next();
+                    rs.close();
+                    if (!userProfileExists) {
+                        // Try case-insensitive
+                        rs = conn.getMetaData().getTables(catalog, null, "user_profile", null);
+                        userProfileExists = rs.next();
+                        rs.close();
+                    }
+                    // List all tables to see what exists
+                    rs = conn.getMetaData().getTables(catalog, null, null, new String[] {"TABLE"});
+                    java.util.List<String> tables = new java.util.ArrayList<>();
+                    while (rs.next()) {
+                        tables.add(rs.getString("TABLE_NAME"));
+                    }
+                    rs.close();
+                    System.out.println("After migration, USER_PROFILE exists: " + userProfileExists + ". Total tables: " + tables.size());
+                    if (tables.size() < 10) {
+                        System.out.println("Tables found: " + tables);
+                    }
+                }
+                return;
             } catch (Exception e) {
-                // If repair fails, try clean and migrate from scratch
+                System.out.println("Clean/migrate failed: " + e.getMessage());
+                e.printStackTrace();
+                // If clean fails, try repair and migrate
                 try {
-                    flyway.clean();
-                    flyway.baseline();
-                } catch (Exception cleanEx) {
-                    // Clean might fail, continue anyway
+                    flyway.repair();
+                    flyway.migrate();
+                } catch (Exception e2) {
+                    System.out.println("Repair also failed: " + e2.getMessage());
+                    e2.printStackTrace();
                 }
             }
         }
 
-        // Now try to migrate
+        if (hasFailed) {
+            try {
+                flyway.repair();
+            } catch (Exception e) {
+                try {
+                    flyway.clean();
+                    flyway.baseline();
+                } catch (Exception cleanEx) {
+                    // Ignore
+                }
+            }
+        }
+
         try {
             flyway.migrate();
         } catch (Exception e) {
-            // If migrate still fails after repair/clean, the test will check if tables exist
-            // This allows the test to continue and verify the actual state
+            // If migrate fails, try clean and migrate from scratch
+            try {
+                flyway.clean();
+                flyway.baseline();
+                flyway.migrate();
+            } catch (Exception e2) {
+                // Last resort - log and continue
+            }
         }
     }
 
@@ -105,21 +199,21 @@ public class TestcontainersSetupTest {
      */
     private boolean tableExists(Connection conn, String tableName) throws Exception {
         DatabaseMetaData metaData = conn.getMetaData();
-        // Try exact case first
+
         ResultSet tables = metaData.getTables(null, null, tableName, null);
         if (tables.next()) {
             tables.close();
             return true;
         }
         tables.close();
-        // Try uppercase
+
         tables = metaData.getTables(null, null, tableName.toUpperCase(), null);
         if (tables.next()) {
             tables.close();
             return true;
         }
         tables.close();
-        // Try lowercase
+
         tables = metaData.getTables(null, null, tableName.toLowerCase(), null);
         if (tables.next()) {
             tables.close();
@@ -134,8 +228,8 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "App catalog DataSource should be created");
 
-        // Ensure migrations are applied before checking for tables
-        ensureMigrationsApplied(dataSource, "classpath:db/migration/app_catalog");
+
+        ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/app_catalog");
 
         try (Connection conn = dataSource.getConnection()) {
             assertTrue(conn.isValid(5), "Connection should be valid");
@@ -148,8 +242,8 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "Experiment catalog DataSource should be created");
 
-        // Ensure migrations are applied before checking for tables
-        ensureMigrationsApplied(dataSource, "classpath:db/migration/experiment_catalog");
+
+        ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/experiment_catalog");
 
         try (Connection conn = dataSource.getConnection()) {
             assertTrue(conn.isValid(5), "Connection should be valid");
@@ -162,8 +256,8 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "Profile service DataSource should be created");
 
-        // Ensure migrations are applied before checking for tables
-        ensureMigrationsApplied(dataSource, "classpath:db/migration/profile_service");
+
+        ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/profile_service");
 
         try (Connection conn = dataSource.getConnection()) {
             assertTrue(conn.isValid(5), "Connection should be valid");
@@ -176,8 +270,8 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "Replica catalog DataSource should be created");
 
-        // Ensure migrations are applied before checking for tables
-        ensureMigrationsApplied(dataSource, "classpath:db/migration/replica_catalog");
+
+        ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/replica_catalog");
 
         try (Connection conn = dataSource.getConnection()) {
             assertTrue(conn.isValid(5), "Connection should be valid");
@@ -194,7 +288,7 @@ public class TestcontainersSetupTest {
             assertTrue(conn.isValid(5), "Connection should be valid");
 
             DatabaseMetaData metaData = conn.getMetaData();
-            // Check for any table to verify schema exists
+
             ResultSet tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
             assertTrue(tables.next(), "Workflow catalog should have at least one table");
             tables.close();
@@ -225,7 +319,7 @@ public class TestcontainersSetupTest {
             assertTrue(conn.isValid(5), "Connection should be valid");
 
             DatabaseMetaData metaData = conn.getMetaData();
-            // Check for any table to verify schema exists
+
             ResultSet tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
             assertTrue(tables.next(), "Credential store should have at least one table");
             tables.close();

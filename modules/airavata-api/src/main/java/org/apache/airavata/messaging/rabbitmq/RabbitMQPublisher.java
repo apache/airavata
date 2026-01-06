@@ -25,6 +25,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.messaging.MessageContext;
@@ -164,6 +165,34 @@ public class RabbitMQPublisher implements Publisher {
             String msg = "Failed to publish message to exchange: " + properties.getExchangeName();
             log.error(msg, e);
             throw new Exception(msg, e);
+        }
+    }
+
+    /**
+     * Close the RabbitMQ connection and clean up thread-local channels.
+     */
+    public void close() {
+        // Close thread-local channels
+        Channel channel = channelThreadLocal.get();
+        if (channel != null) {
+            try {
+                if (channel.isOpen()) {
+                    channel.close();
+                }
+            } catch (IOException | TimeoutException ignore) {
+                // Ignore errors during cleanup
+            }
+            channelThreadLocal.remove();
+        }
+        // Close connection
+        if (connection != null) {
+            try {
+                if (connection.isOpen()) {
+                    connection.close();
+                }
+            } catch (IOException ignore) {
+                // Ignore errors during cleanup
+            }
         }
     }
 }

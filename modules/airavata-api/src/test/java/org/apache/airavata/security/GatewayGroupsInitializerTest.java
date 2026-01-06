@@ -59,7 +59,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class GatewayGroupsInitializerTest {
     public static final String GATEWAY_ID = "test-gateway";
     public static final String IDENTITY_SERVER_PWD_CRED_TOKEN = "identity-server-pwd-cred-token";
@@ -140,6 +141,5 @@ public class GatewayGroupsInitializerTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

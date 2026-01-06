@@ -58,7 +58,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataServerProperties.class,
             UnifiedApplicationStartupTest.TestConfiguration.class
         },
         properties = {
@@ -68,11 +67,12 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
-            // Infrastructure components excluded via @Profile("!test") annotations
-            // Core services (RegistryService, CredentialStoreService) are always available via DI
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class UnifiedApplicationStartupTest {
 
     @Configuration
@@ -131,7 +131,7 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testCoreServicesAreCreated() {
-        // Test that core services are available as beans
+
         assertTrue(
                 applicationContext.getBeansOfType(RegistryService.class).size() > 0,
                 "RegistryService should be registered as a bean");
@@ -142,7 +142,7 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testMapperBeansAreCreated() {
-        // Test that MapStruct mappers are created as Spring beans
+
         assertTrue(
                 applicationContext
                                 .getBeansOfType(org.apache.airavata.registry.mappers.GatewayMapper.class)
@@ -159,7 +159,7 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testRequiredComponentsAreCreated() {
-        // Test that required components are available
+
         assertTrue(
                 applicationContext.getBeansOfType(SSHAccountManager.class).size() > 0,
                 "SSHAccountManager should be registered as a bean");
@@ -179,8 +179,8 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testAdaptorSupportBeanIsPrimary() {
-        // Test that AdaptorSupportImpl is marked as @Primary
-        // Note: AdaptorSupport may not be available if orchestrator is disabled
+
+
         if (applicationContext.getBeansOfType(AdaptorSupport.class).size() > 0) {
             AdaptorSupport adaptorSupport = applicationContext.getBean(AdaptorSupport.class);
             assertNotNull(adaptorSupport, "AdaptorSupport bean should be available");
@@ -208,10 +208,10 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testAiravataServiceIsNotInitializedWhenThriftDisabled() {
-        // When thrift is disabled, AiravataService should not be fully initialized
-        // (it requires sharing registry initialization which may fail in test environment)
-        // The bean may not exist if the service is disabled
-        // This test verifies that the context loads successfully without AiravataService
+
+
+
+
         assertTrue(
                 applicationContext.getBeansOfType(RegistryService.class).size() > 0,
                 "RegistryService should be available");

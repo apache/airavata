@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
-// import org.apache.airavata.client.tools.DocumentCreatorNew;
+
 
 @SpringBootTest(
         classes = {
@@ -40,11 +40,11 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class BaseOrchestratorTest {
 
     public BaseOrchestratorTest() {
-        // Spring Boot test - dependencies can be injected via constructor if needed
+
     }
 
     @Configuration
@@ -54,6 +54,5 @@ public class BaseOrchestratorTest {
                 "org.apache.airavata.service",
                 "org.apache.airavata.config"
             })
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

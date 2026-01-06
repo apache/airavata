@@ -56,11 +56,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class UserRepositoryTest extends TestBase {
 
@@ -131,7 +131,7 @@ public class UserRepositoryTest extends TestBase {
     @Test
     public void testGetAllUsernamesInGateway() throws RegistryException {
 
-        // Two users in first gateway, only one in the second gateway
+
         String username1 = "username1";
         UserProfile userProfile = new UserProfile();
         userProfile.setUserId(username1);

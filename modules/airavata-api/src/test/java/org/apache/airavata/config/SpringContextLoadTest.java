@@ -46,13 +46,14 @@ import org.springframework.test.context.TestPropertySource;
  * and all JPA repositories and entity manager factories are properly configured.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class SpringContextLoadTest {
 
     @Autowired
@@ -190,14 +191,14 @@ public class SpringContextLoadTest {
 
     @Test
     public void testEntityManagerFactoriesHaveCorrectPersistenceUnits() {
-        // Verify factories are created and have properties configured
+
         assertNotNull(profileServiceEntityManagerFactory.getProperties());
         assertNotNull(appCatalogEntityManagerFactory.getProperties());
     }
 
     @Test
     public void testAllRepositoriesAreAccessible() {
-        // Test that repositories can be accessed (they should be Spring beans)
+
         assertTrue(
                 applicationContext.getBeansOfType(UserProfileRepository.class).size() > 0,
                 "UserProfileRepository should be registered as a bean");

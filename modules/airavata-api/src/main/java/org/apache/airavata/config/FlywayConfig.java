@@ -59,7 +59,7 @@ public class FlywayConfig {
      */
     private static String getMigrationLocation(String databaseName) {
         // getConfigDir() now handles both production and IDE modes
-        String configDir = AiravataServerProperties.getConfigDir();
+        String configDir = AiravataConfigUtils.getConfigDir();
         String migrationPath =
                 configDir + File.separator + "db" + File.separator + "migration" + File.separator + databaseName;
         logger.debug("Flyway migration location for {}: {}", databaseName, migrationPath);

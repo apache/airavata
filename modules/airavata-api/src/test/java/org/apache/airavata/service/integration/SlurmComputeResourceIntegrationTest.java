@@ -62,14 +62,11 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should register SLURM compute resource with batch queues")
         void shouldRegisterSlurmResourceWithBatchQueues() throws AppCatalogException {
-            // Arrange
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
 
-            // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
-            // Assert
             assertThat(resourceId).isNotNull();
             assertThat(retrieved).isNotNull();
             assertThat(retrieved.getBatchQueues()).isNotEmpty();
@@ -79,7 +76,6 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should register SLURM compute resource with job manager commands")
         void shouldRegisterSlurmResourceWithJobManagerCommands() throws AppCatalogException {
-            // Arrange
             ResourceJobManager jobManager = new ResourceJobManager();
             jobManager.setResourceJobManagerType(ResourceJobManagerType.SLURM);
             jobManager.setJobManagerBinPath("/usr/bin");
@@ -109,11 +105,9 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
                 computeResource.getJobSubmissionInterfaces().get(0).setJobSubmissionInterfaceId(submissionId);
             }
 
-            // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
-            // Assert
             assertThat(resourceId).isNotNull();
             assertThat(retrieved).isNotNull();
         }
@@ -126,29 +120,23 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should configure multiple batch queues")
         void shouldConfigureMultipleBatchQueues() throws AppCatalogException {
-            // Arrange
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
 
-            // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
-            // Assert
             assertThat(retrieved.getBatchQueues()).hasSizeGreaterThanOrEqualTo(1);
         }
 
         @Test
         @DisplayName("Should set default queue")
         void shouldSetDefaultQueue() throws AppCatalogException {
-            // Arrange
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
             computeResource.getBatchQueues().get(0).setIsDefaultQueue(true);
 
-            // Act
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
-            // Assert
             assertThat(retrieved.getBatchQueues()).isNotEmpty();
             assertThat(retrieved.getBatchQueues().get(0).getIsDefaultQueue()).isTrue();
         }
@@ -161,7 +149,6 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should create group resource profile with SLURM preference")
         void shouldCreateGroupResourceProfileWithSlurmPreference() throws AppCatalogException {
-            // Arrange
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
             String computeResourceId = computeResourceService.addComputeResource(computeResource);
 
@@ -174,10 +161,8 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
                     computeResourceId, groupProfile.getGroupResourceProfileId());
             groupProfile.getComputePreferences().add(preference);
 
-            // Act
             String groupProfileId = groupResourceProfileService.addGroupResourceProfile(groupProfile);
 
-            // Assert
             assertThat(groupProfileId).isNotNull();
             GroupComputeResourcePreference retrieved =
                     groupResourceProfileService.getGroupComputeResourcePreference(computeResourceId, groupProfileId);
@@ -185,6 +170,52 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
             assertThat(retrieved.getResourceType()).isEqualTo(ComputeResourceType.SLURM);
         }
     }
+
+    @Nested
+    @DisplayName("SLURM Job Submission Interface Configuration")
+    class SlurmJobSubmissionInterfaceTests {
+
+        @Test
+        @DisplayName("Should configure SSH job submission interface")
+        void shouldConfigureSSHJobSubmissionInterface() throws AppCatalogException {
+            ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
+            
+            assertThat(computeResource.getJobSubmissionInterfaces()).isNotEmpty();
+            
+            String resourceId = computeResourceService.addComputeResource(computeResource);
+            ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
+
+            assertThat(retrieved.getJobSubmissionInterfaces()).isNotEmpty();
+            assertThat(retrieved.getJobSubmissionInterfaces().get(0).getJobSubmissionProtocol())
+                    .isEqualTo(org.apache.airavata.common.model.JobSubmissionProtocol.SSH);
+        }
+
+        @Test
+        @DisplayName("Should configure data movement interface")
+        void shouldConfigureDataMovementInterface() throws AppCatalogException {
+            ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
+            
+            String resourceId = computeResourceService.addComputeResource(computeResource);
+            ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
+
+            assertThat(retrieved.getDataMovementInterfaces()).isNotEmpty();
+            assertThat(retrieved.getDataMovementInterfaces().get(0).getDataMovementProtocol())
+                    .isEqualTo(org.apache.airavata.common.model.DataMovementProtocol.SCP);
+        }
+    }
+
+    /**
+     * Note: Real SSH connection and job submission tests require:
+     * 1. A test SSH server (can use Testcontainers with an SSH server image)
+     * 2. Valid SSH credentials
+     * 3. A SLURM installation on the test server
+     * 
+     * For now, these tests verify configuration only.
+     * To add real SSH tests, consider using:
+     * - Testcontainers with an SSH server container
+     * - Mock SSH server library
+     * - Integration test environment with real compute resources
+     */
 
     private ComputeResourceDescription createSlurmComputeResourceWithQueues() {
         ComputeResourceDescription computeResource = TestDataFactory.createSlurmComputeResource("slurm-host");

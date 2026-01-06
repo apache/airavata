@@ -51,11 +51,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class QueueStatusRepositoryTest extends TestBase {
 
@@ -84,7 +84,7 @@ public class QueueStatusRepositoryTest extends TestBase {
 
     @Test
     public void testQueueStatusRepository_CreateAndRetrieve() throws RegistryException {
-        // Test creating and retrieving queue status (important for monitoring queue health)
+
         String uniqueHostName = "test-host-" + java.util.UUID.randomUUID().toString();
         String uniqueQueueName = "test-queue-" + java.util.UUID.randomUUID().toString();
 
@@ -99,21 +99,21 @@ public class QueueStatusRepositoryTest extends TestBase {
         boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queueStatusModel));
         assertTrue(returnValue, "Queue status creation should succeed");
 
-        // Use getQueueStatus to retrieve the specific queue status
+
         QueueStatusModel retrieved = queueStatusService.getQueueStatus(uniqueHostName, uniqueQueueName);
 
         assertNotNull(retrieved, "Created queue status should be retrievable");
         assertEquals(uniqueHostName, retrieved.getHostName(), "Host name should match");
         assertEquals(uniqueQueueName, retrieved.getQueueName(), "Queue name should match");
         assertNotNull(retrieved.getTime(), "Time should be set");
-        // Verify queue status has meaningful fields set (exact values may vary due to data transformations)
+
         assertTrue(retrieved.getRunningJobs() >= 0, "Running jobs should be non-negative");
         assertTrue(retrieved.getQueuedJobs() >= 0, "Queued jobs should be non-negative");
     }
 
     @Test
     public void testQueueStatusRepository_MultipleQueues() throws RegistryException {
-        // Test that multiple queue statuses can be created and retrieved
+
         String uniqueHost1 = "host1-" + java.util.UUID.randomUUID().toString();
         String uniqueQueue1 = "queue1-" + java.util.UUID.randomUUID().toString();
         String uniqueHost2 = "host2-" + java.util.UUID.randomUUID().toString();
@@ -141,7 +141,7 @@ public class QueueStatusRepositoryTest extends TestBase {
         List<QueueStatusModel> queueStatusModelList = queueStatusService.getLatestQueueStatuses();
         assertTrue(queueStatusModelList.size() >= 2, "Should have at least 2 queue statuses");
 
-        // Verify both queues are present
+
         assertTrue(
                 queueStatusModelList.stream().anyMatch(q -> q.getHostName().equals(uniqueHost1)),
                 "Queue 1 should be present");

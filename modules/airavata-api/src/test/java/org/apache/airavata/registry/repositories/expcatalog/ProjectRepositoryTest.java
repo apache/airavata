@@ -56,11 +56,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProjectRepositoryTest extends TestBase {
 
@@ -108,8 +108,8 @@ public class ProjectRepositoryTest extends TestBase {
         assertTrue(projectId != null);
 
         Project updatedProject = new Project();
-        // Simulate clients that may or may not set projectId but will pass
-        // projectId as an argument to updateProject
+
+
         updatedProject.setProjectID(null);
         updatedProject.setName("updated projectName");
         updatedProject.setDescription("projectDescription");
@@ -120,8 +120,8 @@ public class ProjectRepositoryTest extends TestBase {
         assertEquals("updated projectName", retrievedProject.getName());
         assertEquals("projectDescription", retrievedProject.getDescription());
 
-        // Note: getProjectIDs method may need to be added to ProjectService if needed
-        // For now, skipping this assertion as it requires additional service method
+
+
 
         List<String> accessibleProjectIds = new ArrayList<>();
         accessibleProjectIds.add(projectId);

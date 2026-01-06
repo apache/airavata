@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.config.JpaConfig;
+import org.apache.airavata.config.TestcontainersConfig;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.Entity;
@@ -36,7 +38,6 @@ import org.apache.airavata.sharing.model.SearchCriteria;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +45,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = {JpaConfig.class})
+@SpringBootTest(classes = {
+    JpaConfig.class,
+    TestcontainersConfig.class
+}, properties = {
+    "spring.main.allow-bean-definition-overriding=true",
+    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+    "flyway.enabled=false"
+})
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
-@Disabled("Integration test requiring database setup")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@Transactional
 public class CipresTest {
     private static final Logger logger = LoggerFactory.getLogger(CipresTest.class);
 
@@ -67,100 +77,100 @@ public class CipresTest {
                 logger.info("deleteDomain failed: {}", sre1.getMessage());
             }
             Domain domain = new Domain();
-            // has to be one word
+
             domain.setName("test-domain");
-            // optional
+
             domain.setDescription("test domain description");
-            // domain id will be same as domain name
+
             String domainId = sharingService.createDomain(domain);
             logger.info("After domain creation...");
 
             User user1 = new User();
             String userName1 = "test-user-1";
             String userId1 = "test-user-1";
-            // required
+
             user1.setUserId(userId1);
-            // required
+
             user1.setUserName(userName1);
-            // required
+
             user1.setDomainId(domainId);
-            // required
+
             user1.setFirstName("John");
-            // required
+
             user1.setLastName("Doe");
-            // required
+
             user1.setEmail("john.doe@abc.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[10];
-            // user1.setIcon(icon);
+
+
+
             sharingService.createUser(user1);
             User user2 = new User();
             String userName2 = "test-user-2";
             String userId2 = "test-user-2";
-            // required
+
             user2.setUserId(userId2);
-            // required
+
             user2.setUserName(userName2);
-            // required
+
             user2.setDomainId(domainId);
-            // required
+
             user2.setFirstName("John");
-            // required
+
             user2.setLastName("Doe");
-            // required
+
             user2.setEmail("john.doe@abc.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[20];
-            // user2.setIcon(icon);
+
+
+
             sharingService.createUser(user2);
             User user3 = new User();
             String userName3 = "test-user-3";
             String userId3 = "test-user-3";
-            // required
+
             user3.setUserId(userId3);
-            // required
+
             user3.setUserName(userName3);
-            // required
+
             user3.setDomainId(domainId);
-            // required
+
             user3.setFirstName("John");
-            // required
+
             user3.setLastName("Doe");
-            // required
+
             user3.setEmail("john.doe@abc.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[30];
-            // user3.setIcon(icon);
+
+
+
             sharingService.createUser(user3);
             logger.info("After user creation...");
 
             UserGroup userGroup1 = new UserGroup();
-            // required
+
             userGroup1.setGroupId("test-group-1");
-            // required
+
             userGroup1.setDomainId(domainId);
-            // required
+
             userGroup1.setName("test-group-1");
-            // optional
-            // userGroup1.setDescription("test group description");
-            // required
+
+
+
             userGroup1.setOwnerId("test-user-1");
-            // required
+
             userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingService.createGroup(userGroup1);
-            // Similarly create another group "userGroup2" with the owner being "test-user-2".
+
             UserGroup userGroup2 = new UserGroup();
-            // required
+
             userGroup2.setGroupId("test-group-2");
-            // required
+
             userGroup2.setDomainId(domainId);
-            // required
+
             userGroup2.setName("test-group-2");
-            // optional
-            // userGroup2.setDescription("test group description");
-            // required
+
+
+
             userGroup2.setOwnerId("test-user-2");
-            // required
+
             userGroup2.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingService.createGroup(userGroup2);
             logger.info("After group creation...");
@@ -171,13 +181,13 @@ public class CipresTest {
             sharingService.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
 
             PermissionType permissionType1 = new PermissionType();
-            // required
+
             permissionType1.setPermissionTypeId("READ");
-            // required
+
             permissionType1.setDomainId(domainId);
-            // required
+
             permissionType1.setName("READ");
-            // optional
+
             permissionType1.setDescription("READ description");
             sharingService.createPermissionType(permissionType1);
             PermissionType permissionType2 = new PermissionType();
@@ -195,13 +205,13 @@ public class CipresTest {
             logger.info("After adding groups to parent group...");
 
             EntityType entityType1 = new EntityType();
-            // required
+
             entityType1.setEntityTypeId("PROJECT");
-            // required
+
             entityType1.setDomainId(domainId);
-            // required
+
             entityType1.setName("PROJECT");
-            // optional
+
             entityType1.setDescription("PROJECT entity type description");
             sharingService.createEntityType(entityType1);
             EntityType entityType2 = new EntityType();
@@ -219,21 +229,21 @@ public class CipresTest {
             logger.info("After project entity creation...");
 
             Entity entity1 = new Entity();
-            // required
+
             entity1.setEntityId("test-project-1");
-            // required
+
             entity1.setDomainId(domainId);
-            // required
+
             entity1.setEntityTypeId("PROJECT");
-            // required
+
             entity1.setOwnerId("test-user-1");
-            // required
+
             entity1.setName("test-project-1");
-            // optional
+
             entity1.setDescription("test project 1 description");
-            // optional
+
             entity1.setFullText("test project 1 stampede gaussian seagrid");
-            // optional - If not set this will be default to current system time
+
             entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
             sharingService.createEntity(entity1);
             logger.info("After currentTimeMillis()...");
@@ -273,27 +283,27 @@ public class CipresTest {
             logger.info("After sharingServiceClient.createEntity entity4...");
             logger.info("After test entity creation...");
 
-            // shared with cascading permissions
-            // logger.info("Before shareEntityWithUsers WRITE...");
-            // sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"),
-            // "WRITE", true);
+
+
+
+
             logger.info("Before shareEntityWithGroups READ...");
             long time = System.currentTimeMillis();
             sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
             logger.info("Time for sharing " + (System.currentTimeMillis() - time));
-            // shared with non cascading permissions
+
             logger.info("Before shareEntityWithGroups CLONE...");
             time = System.currentTimeMillis();
             sharingService.shareEntityWithGroups(
                     domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
             logger.info("Time for sharing " + (System.currentTimeMillis() - time));
 
-            // test-project-1 is explicitly shared with test-user-2 with WRITE permission
+
             logger.info("Before userHasAccess 1...");
             logger.info(
                     "userHasAccess 1: {}",
                     sharingService.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
-            // test-user-2 has WRITE permission to test-experiment-1 and test-experiment-2 indirectly
+
             logger.info("Before userHasAccess 2...");
             logger.info(
                     "userHasAccess 2: {}",
@@ -302,7 +312,7 @@ public class CipresTest {
             logger.info(
                     "userHasAccess 3: {}",
                     sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
-            // test-user-2 does not have READ permission to test-experiment-1 and test-experiment-2
+
             logger.info("Before userHasAccess 4...");
             logger.info(
                     "userHasAccess 4: {}",
@@ -310,28 +320,28 @@ public class CipresTest {
             logger.info(
                     "userHasAccess 5: {}",
                     sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
-            // test-user-3 does not have READ permission to test-project-1
+
             logger.info("Before userHasAccess 6...");
             logger.info(
                     "userHasAccess 6: {}",
                     sharingService.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
-            // test-experiment-2 is shared with test-group-2 with READ permission. Therefore test-user-3 has READ
-            // permission
+
+
             logger.info("Before userHasAccess 7...");
             logger.info(
                     "userHasAccess 7: {}",
                     sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
-            // test-user-3 does not have WRITE permission to test-experiment-2
+
             logger.info("Before userHasAccess 8...");
             logger.info(
                     "userHasAccess 8: {}",
                     sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
-            // test-user-3 has CLONE permission to test-experiment-2
+
             logger.info("Before userHasAccess 9...");
             logger.info(
                     "userHasAccess 9: {}",
                     sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE"));
-            // test-user-3 does not have CLONE permission to test-file-1
+
             logger.info("Before userHasAccess 10...");
             logger.info(
                     "userHasAccess 10: {}",
@@ -339,12 +349,12 @@ public class CipresTest {
             logger.info("After cascading permissions...");
 
             ArrayList<SearchCriteria> filters = new ArrayList<>();
-            // ArrayList<SearchCriteria> filters = new List<>();
+
             SearchCriteria searchCriteria = new SearchCriteria();
             searchCriteria.setSearchCondition(SearchCondition.LIKE);
             searchCriteria.setValue("experiment stampede methyl");
-            // searchCriteria.setValue("stampede");
-            // searchCriteria.setSearchField(EntitySearchField.NAME);
+
+
             searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
             filters.add(searchCriteria);
             searchCriteria = new SearchCriteria();
@@ -365,93 +375,93 @@ public class CipresTest {
             User userA = new User();
             String userNameA = "UserA";
             String userIdA = "UserA";
-            // required
+
             userA.setUserId(userIdA);
-            // required
+
             userA.setUserName(userNameA);
-            // required
+
             userA.setDomainId(domainId);
-            // required
+
             userA.setFirstName("User");
-            // required
+
             userA.setLastName("A");
-            // required
+
             userA.setEmail("user.a@example.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[10];
-            // userA.setIcon(icon);
+
+
+
             sharingService.createUser(userA);
             User userB = new User();
             String userNameB = "UserB";
             String userIdB = "UserB";
-            // required
+
             userB.setUserId(userIdB);
-            // required
+
             userB.setUserName(userNameB);
-            // required
+
             userB.setDomainId(domainId);
-            // required
+
             userB.setFirstName("User");
-            // required
+
             userB.setLastName("B");
-            // required
+
             userB.setEmail("user.b@example.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[10];
-            // userB.setIcon(icon);
+
+
+
             sharingService.createUser(userB);
             User userC = new User();
             String userNameC = "UserC";
             String userIdC = "UserC";
-            // required
+
             userC.setUserId(userIdC);
-            // required
+
             userC.setUserName(userNameC);
-            // required
+
             userC.setDomainId(domainId);
-            // required
+
             userC.setFirstName("User");
-            // required
+
             userC.setLastName("C");
-            // required
+
             userC.setEmail("user.c@example.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[10];
-            // userC.setIcon(icon);
+
+
+
             sharingService.createUser(userC);
             User userD = new User();
             String userNameD = "UserD";
             String userIdD = "UserD";
-            // required
+
             userD.setUserId(userIdD);
-            // required
+
             userD.setUserName(userNameD);
-            // required
+
             userD.setDomainId(domainId);
-            // required
+
             userD.setFirstName("User");
-            // required
+
             userD.setLastName("D");
-            // required
+
             userD.setEmail("user.d@example.com");
-            // optional - this should be bytes of the users image icon
-            // byte[] icon = new byte[10];
-            // userD.setIcon(icon);
+
+
+
             sharingService.createUser(userD);
             logger.info("After user creation...");
 
             UserGroup Group1 = new UserGroup();
-            // required
+
             Group1.setGroupId("Group1");
-            // required
+
             Group1.setDomainId(domainId);
-            // required
+
             Group1.setName("Group1");
-            // optional
-            // userGroup1.setDescription("test group description");
-            // required
+
+
+
             Group1.setOwnerId("UserA");
-            // required
+
             Group1.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingService.createGroup(Group1);
             logger.info("After Group1 creation...");
@@ -463,65 +473,65 @@ public class CipresTest {
             logger.info("After adding users to Group1 creation...");
 
             EntityType entityTypeFolder = new EntityType();
-            // required
+
             entityTypeFolder.setEntityTypeId("FOLDER");
-            // required
+
             entityTypeFolder.setDomainId(domainId);
-            // required
+
             entityTypeFolder.setName("FOLDER");
-            // optional
-            // entityTypeFolder.setDescription("PROJECT entity type description");
+
+
             sharingService.createEntityType(entityTypeFolder);
             logger.info("After creating FOLDER entity type...");
 
             EntityType entityTypeInputData = new EntityType();
-            // required
+
             entityTypeInputData.setEntityTypeId("INPUTDATA");
-            // required
+
             entityTypeInputData.setDomainId(domainId);
-            // required
+
             entityTypeInputData.setName("INPUTDATA");
-            // optional
-            // entityTypeFolder.setDescription("PROJECT entity type description");
+
+
             sharingService.createEntityType(entityTypeInputData);
             logger.info("After creating INPUTDATA entity type...");
 
             Entity entityB1 = new Entity();
-            // required
+
             entityB1.setEntityId("UserBProject1");
-            // required
+
             entityB1.setDomainId(domainId);
-            // required
+
             entityB1.setEntityTypeId("PROJECT");
-            // required
+
             entityB1.setOwnerId("UserB");
-            // required
+
             entityB1.setName("UserBProject1");
-            // optional
+
             entityB1.setDescription("User B's Project 1");
-            // optional
+
             entityB1.setFullText("test project 1");
-            // optional - If not set this will be default to current system time
+
             entityB1.setOriginalEntityCreationTime(System.currentTimeMillis());
             sharingService.createEntity(entityB1);
             logger.info("After creating UserBProject1 ...");
 
             Entity entityC1 = new Entity();
-            // required
+
             entityC1.setEntityId("UserCProject2");
-            // required
+
             entityC1.setDomainId(domainId);
-            // required
+
             entityC1.setEntityTypeId("PROJECT");
-            // required
+
             entityC1.setOwnerId("UserC");
-            // required
+
             entityC1.setName("UserCProject2");
-            // optional
+
             entityC1.setDescription("User C's Project 2");
-            // optional
+
             entityC1.setFullText("test project 2");
-            // optional - If not set this will be default to current system time
+
             entityC1.setOriginalEntityCreationTime(System.currentTimeMillis());
             sharingService.createEntity(entityC1);
             logger.info("After creating UserCProject2 ...");
@@ -574,14 +584,14 @@ public class CipresTest {
             sharingService.createEntity(entityD2);
             logger.info("After creating Data2 ...");
 
-            // sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"),
-            // "READ", true);
+
+
             time = System.currentTimeMillis();
             sharingService.shareEntityWithGroups(domainId, "Folder1", List.of("Group1"), "READ", true);
             logger.info("Time for sharing " + (System.currentTimeMillis() - time));
             logger.info("After READ sharing UserBFolder1 with Group1 ...");
-            // sharingServiceClient.shareEntityWithGroups(domainId, "Folder2", Arrays.asList("Group1"), "READ", true);
-            // logger.info("After READ sharing UserCFolder2 with Group1 ...");
+
+
 
             Entity entityD3 = new Entity();
             entityD3.setEntityId("Data3");
@@ -619,7 +629,7 @@ public class CipresTest {
                     "items READable by UserC: {}",
                     sharingService.searchEntities(domainId, "UserC", sharedfilters, 0, -1));
             searchCriteria = new SearchCriteria();
-            // searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+
             searchCriteria.setSearchCondition(SearchCondition.NOT);
             searchCriteria.setValue("UserC");
             searchCriteria.setSearchField(EntitySearchField.OWNER_ID);

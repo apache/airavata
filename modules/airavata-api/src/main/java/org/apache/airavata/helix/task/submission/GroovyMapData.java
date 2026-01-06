@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.AiravataConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -579,7 +579,7 @@ public class GroovyMapData {
     }
 
     public String loadFromFile(String templateName) throws Exception {
-        URL templateUrl = AiravataServerProperties.loadFile(templateName);
+        URL templateUrl = AiravataConfigUtils.loadFile(templateName);
         if (templateUrl == null) {
             String error = "Template file '" + templateName + "' not found";
             logger.error(error);

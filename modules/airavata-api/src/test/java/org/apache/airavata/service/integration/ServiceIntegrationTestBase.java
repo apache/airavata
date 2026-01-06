@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             org.apache.airavata.config.TestcontainersConfig.class,
             ServiceIntegrationTestBase.TestConfiguration.class
         },
@@ -60,11 +59,12 @@ import org.springframework.transaction.annotation.Transactional;
             "security.iam.server-url=",
             // Disable Flyway in tests - TestcontainersConfig handles migrations
             "flyway.enabled=false",
-            // Enable Airavata service to enable persistence units
-
+            // Enable services for conditional beans
+            "services.rest.enabled=false",
+            "services.thrift.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
@@ -76,9 +76,17 @@ public abstract class ServiceIntegrationTestBase {
 
     protected AuthzToken testAuthzToken;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    protected org.apache.airavata.config.AiravataServerProperties properties;
+
     @BeforeEach
     public void setUpBase() {
         testAuthzToken = createTestAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
+        
+        // Apply test properties for messaging services (Kafka, RabbitMQ, Zookeeper)
+        if (properties != null) {
+            org.apache.airavata.config.TestPropertiesHelper.applyTestProperties(properties);
+        }
     }
 
     /**
@@ -137,9 +145,6 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security"
             })
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
     static class TestConfiguration {
         @Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(

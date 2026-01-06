@@ -60,11 +60,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentInputRepositoryTest extends TestBase {
 
@@ -132,7 +132,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentInputRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating experiment inputs
+
         InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
         inputDataObjectTypeExp.setName("inputE");
         inputDataObjectTypeExp.setType(DataType.STRING);
@@ -151,7 +151,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
                         .size(),
                 "Experiment should have one input");
 
-        // Update input value
+
         inputDataObjectTypeExp.setValue("iValueE");
         experimentInputService.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
 
@@ -164,7 +164,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
 
     @Test
     public void testExperimentInputRepository_MultipleInputs() throws RegistryException {
-        // Test that an experiment can have multiple inputs (important for complex workflows)
+
         InputDataObjectType input1 = new InputDataObjectType();
         input1.setName("input1");
         input1.setType(DataType.STRING);
@@ -184,7 +184,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
         List<InputDataObjectType> retrievedInputs = experimentInputService.getExperimentInputs(experimentId);
         assertEquals(2, retrievedInputs.size(), "Experiment should have 2 inputs");
 
-        // Verify all inputs are present
+
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input2")), "Input 2 should be present");
     }

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.EntityType;
-// Entity classes are checked by name in tests, imports not needed
+
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +38,14 @@ import org.springframework.test.context.TestPropertySource;
  * through their respective EntityManagerFactories.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class EntityLoadingTest {
 
     @Autowired(required = false)
@@ -78,7 +79,7 @@ public class EntityLoadingTest {
     @Test
     public void testProfileServiceEntitiesAreLoaded() {
         if (profileServiceEntityManagerFactory == null) {
-            // Profile service database not configured, skip this test
+
             return;
         }
         EntityManager em = profileServiceEntityManagerFactory.createEntityManager();
@@ -86,10 +87,10 @@ public class EntityLoadingTest {
             Set<EntityType<?>> entities = em.getMetamodel().getEntities();
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
 
-            // Check for specific entities
-            // Check that entities are loaded
+
+
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
-            // Verify by checking entity names rather than exact class matches
+
             boolean hasUserProfile = entities.stream()
                     .anyMatch(e -> e.getJavaType().getSimpleName().equals("UserProfileEntity"));
             assertTrue(hasUserProfile, "UserProfileEntity should be loaded");
@@ -217,7 +218,7 @@ public class EntityLoadingTest {
 
         for (EntityManagerFactory factory : factories) {
             if (factory == null) {
-                // Skip if factory is not configured (e.g., profile service)
+
                 continue;
             }
             EntityManager em = factory.createEntityManager();

@@ -131,21 +131,21 @@ public class GroupComputeResourcePreferenceUtilTest {
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 10000,
                 System.currentTimeMillis() + 10000);
-        // expired
+
         final ComputeResourceReservation res2 = new ComputeResourceReservation(
                 "id2",
                 "res2",
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() - 20000,
                 System.currentTimeMillis() - 10000);
-        // future
+
         final ComputeResourceReservation res3 = new ComputeResourceReservation(
                 "id3",
                 "res3",
                 Arrays.asList("cpu", "gpu"),
                 System.currentTimeMillis() + 10000,
                 System.currentTimeMillis() + 20000);
-        // wrong queue
+
         final ComputeResourceReservation res4 = new ComputeResourceReservation(
                 "id3",
                 "res3",

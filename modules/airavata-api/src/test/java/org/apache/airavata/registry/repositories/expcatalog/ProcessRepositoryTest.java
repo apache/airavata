@@ -67,11 +67,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessRepositoryTest extends TestBase {
 
@@ -135,7 +135,7 @@ public class ProcessRepositoryTest extends TestBase {
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
 
-        // Initialize tasks list if null
+
         if (processModel.getTasks() == null) {
             processModel.setTasks(new java.util.ArrayList<>());
         }
@@ -145,7 +145,7 @@ public class ProcessRepositoryTest extends TestBase {
         task.setTaskType(TaskTypes.ENV_SETUP);
         processModel.getTasks().add(task);
 
-        // Initialize taskStatuses if null
+
         if (task.getTaskStatuses() == null) {
             task.setTaskStatuses(new java.util.ArrayList<>());
         }
@@ -160,7 +160,7 @@ public class ProcessRepositoryTest extends TestBase {
 
         processModel.setProcessDetail("detail");
         processModel.setUseUserCRPref(true);
-        // Initialize emailAddresses if null
+
         if (processModel.getEmailAddresses() == null) {
             processModel.setEmailAddresses(new java.util.ArrayList<>());
         }
@@ -174,14 +174,14 @@ public class ProcessRepositoryTest extends TestBase {
         job.setProcessId(processId);
         job.setJobId("job-id");
         job.setJobDescription("job-description");
-        // Initialize jobStatuses if null
+
         if (job.getJobStatuses() == null) {
             job.setJobStatuses(new java.util.ArrayList<>());
         }
         JobStatus jobStatus = new JobStatus(JobState.SUBMITTED);
         jobStatus.setStatusId("submitted-job-status-id");
         job.getJobStatuses().add(jobStatus);
-        // Initialize jobs if null
+
         if (jobSubmissionTask.getJobs() == null) {
             jobSubmissionTask.setJobs(new java.util.ArrayList<>());
         }

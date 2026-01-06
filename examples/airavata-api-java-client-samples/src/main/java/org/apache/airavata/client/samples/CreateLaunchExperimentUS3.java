@@ -47,7 +47,7 @@ public class CreateLaunchExperimentUS3 {
     public static final int THRIFT_SERVER_PORT = 8930;
     private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "airavata.defaults.user";
-    private static final String DEFAULT_GATEWAY = "airavata.defaults.gateway";
+    private static final String DEFAULT_GATEWAY = "airavata.default-gateway";
 
     public static void main(String[] args) {
         try {

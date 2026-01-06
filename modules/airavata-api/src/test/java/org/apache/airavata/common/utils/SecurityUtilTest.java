@@ -56,7 +56,8 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SecurityUtilTest {
 
     private static final char[] STORE_PASSWORD = "airavata".toCharArray();
@@ -86,7 +87,7 @@ public class SecurityUtilTest {
     }
 
     public SecurityUtilTest() {
-        // Spring Boot test - no dependencies to inject for this utility test
+
     }
 
     @Test
@@ -138,6 +139,5 @@ public class SecurityUtilTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

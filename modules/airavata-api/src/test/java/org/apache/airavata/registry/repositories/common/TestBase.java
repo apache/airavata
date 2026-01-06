@@ -32,10 +32,18 @@ import org.springframework.transaction.annotation.Transactional;
  * All tests use @Transactional for automatic rollback.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class},
-        properties = {"flyway.enabled=false"})
-@TestPropertySource(locations = "classpath:airavata.properties")
+        classes = {
+            JpaConfig.class,
+            TestcontainersConfig.class
+        },
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "flyway.enabled=false"
+        })
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @ActiveProfiles("test")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @Transactional
 public class TestBase {
 

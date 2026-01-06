@@ -31,10 +31,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-/**
- * Integration tests for UserProfileService.
- */
-@DisplayName("UserProfileService Integration Tests")
+@DisplayName("UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation")
 @org.springframework.test.context.TestPropertySource(
         properties = {
             "security.iam.server-url=http://localhost:18080",
@@ -54,37 +51,35 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
     class UserProfileCRUDTests {
 
         @Test
-        @DisplayName("Should add user profile successfully")
+        @DisplayName("Should add user profile with all required fields and persist successfully")
         void shouldAddUserProfile() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-add-user", TEST_GATEWAY_ID);
 
-            // Act
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-
-            // Assert
+            commitTransaction();
             assertThat(userId).isNotNull().isEqualTo("test-add-user");
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();
             assertThat(retrieved.getUserId()).isEqualTo(userId);
             assertThat(retrieved.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
+            assertThat(retrieved.getAiravataInternalUserId()).isEqualTo(userId + "@" + TEST_GATEWAY_ID);
+            assertThat(retrieved.getFirstName()).isEqualTo("Test");
+            assertThat(retrieved.getLastName()).isEqualTo("User");
+            assertThat(retrieved.getEmails()).isNotEmpty();
+            assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
         }
 
         @Test
-        @DisplayName("Should update user profile successfully")
+        @DisplayName("Should update user profile first and last name and persist changes successfully")
         void shouldUpdateUserProfile() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-update-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction(); // Commit to ensure user profile is fully persisted
+            commitTransaction();
 
-            // Act
             UserProfile toUpdate = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             toUpdate.setFirstName("Updated");
             toUpdate.setLastName("Name");
             boolean updated = userProfileService.updateUserProfile(testAuthzToken, toUpdate);
-
-            // Assert
             assertThat(updated).isTrue();
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved.getFirstName()).isEqualTo("Updated");
@@ -92,43 +87,45 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         }
 
         @Test
-        @DisplayName("Should get user profile by ID and gateway")
+        @DisplayName("Should get user profile by ID and gateway with all fields including creation time")
         void shouldGetUserProfileById() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-get-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
+            commitTransaction();
 
-            // Act
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
-
-            // Assert
             assertThat(retrieved).isNotNull();
             assertThat(retrieved.getUserId()).isEqualTo(userId);
             assertThat(retrieved.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
             assertThat(retrieved.getAiravataInternalUserId()).isEqualTo(userId + "@" + TEST_GATEWAY_ID);
+            assertThat(retrieved.getFirstName()).isEqualTo("Test");
+            assertThat(retrieved.getLastName()).isEqualTo("User");
+            assertThat(retrieved.getEmails()).isNotEmpty();
+            assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
+            assertThat(retrieved.getCreationTime()).isGreaterThan(0);
         }
 
         @Test
         @DisplayName("Should throw exception when getting non-existent user profile")
         void shouldThrowExceptionForNonExistentUser() {
-            // Act & Assert
             assertThatThrownBy(() ->
                             userProfileService.getUserProfileById(testAuthzToken, "non-existent-user", TEST_GATEWAY_ID))
                     .isInstanceOf(UserProfileServiceException.class);
         }
 
         @Test
-        @DisplayName("Should delete user profile successfully")
+        @DisplayName("Should delete user profile and verify it no longer exists")
         void shouldDeleteUserProfile() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-delete-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
+            commitTransaction();
+            
+            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID)).isTrue();
 
-            // Act
             boolean deleted = userProfileService.deleteUserProfile(testAuthzToken, userId, TEST_GATEWAY_ID);
-
-            // Assert
+            commitTransaction();
             assertThat(deleted).isTrue();
+            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID)).isFalse();
             assertThatThrownBy(() -> userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID))
                     .isInstanceOf(UserProfileServiceException.class);
         }
@@ -139,26 +136,25 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
     class UserExistenceTests {
 
         @Test
-        @DisplayName("Should return true when user exists")
+        @DisplayName("Should return true when user exists and verify user can be retrieved")
         void shouldReturnTrueWhenUserExists() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-exists-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
+            commitTransaction();
 
-            // Act
             boolean exists = userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID);
 
-            // Assert
             assertThat(exists).isTrue();
+            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
+            assertThat(retrieved).isNotNull();
+            assertThat(retrieved.getUserId()).isEqualTo(userId);
         }
 
         @Test
         @DisplayName("Should return false when user does not exist")
         void shouldReturnFalseWhenUserDoesNotExist() throws UserProfileServiceException {
-            // Act
             boolean exists = userProfileService.doesUserExist(testAuthzToken, "non-existent-user", TEST_GATEWAY_ID);
 
-            // Assert
             assertThat(exists).isFalse();
         }
     }
@@ -168,37 +164,39 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
     class UserProfileListingTests {
 
         @Test
-        @DisplayName("Should get all user profiles in gateway with pagination")
+        @DisplayName("Should get all user profiles in gateway with pagination and verify created users are included")
         void shouldGetAllUserProfilesInGateway() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile user1 = TestDataFactory.createTestUserProfile("test-list-user1", TEST_GATEWAY_ID);
             UserProfile user2 = TestDataFactory.createTestUserProfile("test-list-user2", TEST_GATEWAY_ID);
-            userProfileService.addUserProfile(testAuthzToken, user1);
-            userProfileService.addUserProfile(testAuthzToken, user2);
+            String userId1 = userProfileService.addUserProfile(testAuthzToken, user1);
+            String userId2 = userProfileService.addUserProfile(testAuthzToken, user2);
+            commitTransaction();
 
-            // Act
             var users = userProfileService.getAllUserProfilesInGateway(testAuthzToken, TEST_GATEWAY_ID, 0, 10);
 
-            // Assert
-            assertThat(users).isNotNull();
+            assertThat(users).isNotNull().isNotEmpty();
             assertThat(users.size()).isGreaterThanOrEqualTo(2);
+            assertThat(users.stream().anyMatch(u -> userId1.equals(u.getUserId()))).isTrue();
+            assertThat(users.stream().anyMatch(u -> userId2.equals(u.getUserId()))).isTrue();
+            assertThat(users.stream().allMatch(u -> TEST_GATEWAY_ID.equals(u.getGatewayId()))).isTrue();
         }
 
         @Test
-        @DisplayName("Should respect pagination limits")
+        @DisplayName("Should respect pagination limits and offset for retrieving user profiles")
         void shouldRespectPaginationLimits() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             for (int i = 0; i < 5; i++) {
                 UserProfile user = TestDataFactory.createTestUserProfile("test-pag-user" + i, TEST_GATEWAY_ID);
                 userProfileService.addUserProfile(testAuthzToken, user);
             }
+            commitTransaction();
 
-            // Act
             var users = userProfileService.getAllUserProfilesInGateway(testAuthzToken, TEST_GATEWAY_ID, 0, 2);
 
-            // Assert
             assertThat(users).isNotNull();
             assertThat(users.size()).isLessThanOrEqualTo(2);
+            var nextPage = userProfileService.getAllUserProfilesInGateway(testAuthzToken, TEST_GATEWAY_ID, 2, 2);
+            assertThat(nextPage).isNotNull();
+            assertThat(nextPage.size()).isLessThanOrEqualTo(2);
         }
     }
 
@@ -207,24 +205,23 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
     class UserProfileValidationTests {
 
         @Test
-        @DisplayName("Should preserve user profile state")
+        @DisplayName("Should preserve user profile state when creating and retrieving")
         void shouldPreserveUserProfileState() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-state-user", TEST_GATEWAY_ID);
             userProfile.setState(Status.ACTIVE);
 
-            // Act
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
+            commitTransaction();
 
-            // Assert
+            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
+            assertThat(retrieved).isNotNull();
             assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
+            assertThat(retrieved.getUserId()).isEqualTo(userId);
         }
 
         @Test
-        @DisplayName("Should preserve email addresses")
+        @DisplayName("Should preserve multiple email addresses when creating and retrieving user profile")
         void shouldPreserveEmailAddresses() throws UserProfileServiceException, IamAdminServicesException {
-            // Arrange
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-email-user", TEST_GATEWAY_ID);
             if (userProfile.getEmails() == null) {
                 userProfile.setEmails(new java.util.ArrayList<>());
@@ -232,13 +229,14 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             userProfile.getEmails().add("email1@example.com");
             userProfile.getEmails().add("email2@example.com");
 
-            // Act
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
+            commitTransaction();
 
-            // Assert
-            assertThat(retrieved.getEmails()).isNotNull();
-            assertThat(retrieved.getEmails().size()).isGreaterThanOrEqualTo(1);
+            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
+            assertThat(retrieved).isNotNull();
+            assertThat(retrieved.getEmails()).isNotNull().isNotEmpty();
+            assertThat(retrieved.getEmails().size()).isGreaterThanOrEqualTo(2);
+            assertThat(retrieved.getEmails()).contains("email1@example.com", "email2@example.com");
         }
     }
 }

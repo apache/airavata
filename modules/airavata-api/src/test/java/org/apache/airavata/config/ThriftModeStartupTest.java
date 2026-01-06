@@ -52,14 +52,15 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Background/infrastructure services - keep property flags (truly optional)
+
             "services.thrift.enabled=true",
             "flyway.enabled=false",
 
-            // Core services (RegistryService, CredentialStoreService) are always available via DI - no flags needed
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class ThriftModeStartupTest {
 
     @Configuration
@@ -96,17 +97,17 @@ public class ThriftModeStartupTest {
 
     @Test
     public void testDBEventDispatcherIsEnabled() {
-        // Dispatcher replaces DBEventManagerRunner and is always available as a @Component
-        // Use getBeanNamesForType to check for bean existence without reflection
+
+
         String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
         int dispatcherCount = beanNames.length;
-        // Dispatcher should always be available as it's a core component
+
         assertTrue(dispatcherCount > 0, "Dispatcher should be available (replaces DBEventManagerRunner)");
     }
 
     @Test
     public void testCoreServicesAreAvailable() {
-        // Core services should be available in thrift mode
+
         assertTrue(
                 applicationContext
                                 .getBeansOfType(org.apache.airavata.service.registry.RegistryService.class)

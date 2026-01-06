@@ -29,5 +29,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource(
         value = "classpath:conf/airavata.properties",
-        factory = AiravataServerProperties.AiravataPropertySourceFactory.class)
+        factory = AiravataPropertySourceFactory.class,
+        ignoreResourceNotFound = false)
 public class AiravataPropertySourceConfiguration {}

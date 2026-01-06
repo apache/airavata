@@ -41,13 +41,14 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class NameValidatorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(NameValidatorTest.class);
 
     public NameValidatorTest() {
-        // Spring Boot test - no dependencies to inject for this utility test
+
     }
 
     @Test
@@ -65,6 +66,5 @@ public class NameValidatorTest {
 
     @Configuration
     @ComponentScan(basePackages = {"org.apache.airavata.common", "org.apache.airavata.config"})
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

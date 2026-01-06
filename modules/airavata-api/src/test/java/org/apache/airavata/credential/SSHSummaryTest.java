@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             SSHSummaryTest.TestConfiguration.class
         },
         properties = {
@@ -53,7 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @Transactional
 public class SSHSummaryTest {
     private static final Logger logger = LoggerFactory.getLogger(SSHSummaryTest.class);
@@ -61,18 +61,18 @@ public class SSHSummaryTest {
     @Autowired
     private SSHCredentialWriter sshCredentialWriter;
 
-    // Removed keystore initialization - not needed for SSH credential test
+
 
     @Test
     public void testSSHSummary() throws Exception {
         String gatewayId = "test-gateway";
 
-        // Generate RSA key pair for testing
+
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(2048);
         KeyPair keyPair = keyGen.generateKeyPair();
 
-        // Convert to PEM-like format (simplified for testing)
+
         String privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n"
                 + java.util.Base64.getMimeEncoder(64, "\n".getBytes())
                         .encodeToString(keyPair.getPrivate().getEncoded())
@@ -102,6 +102,5 @@ public class SSHSummaryTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

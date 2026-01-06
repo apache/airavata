@@ -37,21 +37,22 @@ import org.springframework.test.context.TestPropertySource;
  * configuration is correct. Actual migration testing requires a real database.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class, FlywayConfig.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class, FlywayConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "flyway.enabled=false", // Disable FlywayConfig since TestcontainersConfig handles migrations
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class FlywayLocalStartupTest {
 
     @Test
     public void testFlywayConfigLoaded() {
-        // This test verifies that FlywayConfig is loaded and beans are created
-        // The actual migration will run via initMethod="migrate" when beans are created
-        // If this test passes, it means FlywayConfig is properly configured
+
+
+
         assertTrue(true, "FlywayConfig should be loaded");
     }
 
@@ -64,11 +65,11 @@ public class FlywayLocalStartupTest {
             @Autowired(required = false) @Qualifier("workflowCatalogFlyway") Flyway workflowCatalogFlyway,
             @Autowired(required = false) @Qualifier("sharingRegistryFlyway") Flyway sharingRegistryFlyway,
             @Autowired(required = false) @Qualifier("credentialStoreFlyway") Flyway credentialStoreFlyway) {
-        // Note: When flyway.enabled=false, Flyway beans are not created.
-        // This test verifies the configuration, but beans will be null when disabled.
-        // In production (flyway.enabled=true), all Flyway beans should be created.
-        // For this test with flyway.enabled=false, we skip the assertions.
-        // To test Flyway beans, run with flyway.enabled=true.
-        // All beans are optional - test passes when flyway is disabled (expected behavior)
+
+
+
+
+
+
     }
 }

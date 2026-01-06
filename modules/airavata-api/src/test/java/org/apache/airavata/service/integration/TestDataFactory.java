@@ -275,4 +275,48 @@ public class TestDataFactory {
         // Note: In real tests, you would generate actual key pairs
         return sshCredential;
     }
+
+    /**
+     * Creates a test Gateway with all required fields.
+     */
+    public static Gateway createTestGatewayWithDefaults() {
+        return createTestGateway("test-gateway-" + UUID.randomUUID().toString());
+    }
+
+    /**
+     * Creates a test UserProfile with defaults.
+     */
+    public static UserProfile createTestUserProfileWithDefaults() {
+        String userId = "test-user-" + UUID.randomUUID().toString();
+        String gatewayId = "test-gateway";
+        return createTestUserProfile(userId, gatewayId);
+    }
+
+    /**
+     * Creates a test Project with defaults.
+     */
+    public static Project createTestProjectWithDefaults(String gatewayId) {
+        return createTestProject("test-project-" + UUID.randomUUID().toString(), gatewayId);
+    }
+
+    /**
+     * Creates a test ExperimentModel with defaults.
+     */
+    public static ExperimentModel createTestExperimentWithDefaults(String projectId, String gatewayId) {
+        return createTestExperiment("test-experiment-" + UUID.randomUUID().toString(), projectId, gatewayId);
+    }
+
+    /**
+     * Creates a minimal test ComputeResourceDescription (no job submission or data movement).
+     */
+    public static ComputeResourceDescription createMinimalComputeResource(String hostName) {
+        ComputeResourceDescription computeResource = new ComputeResourceDescription();
+        computeResource.setComputeResourceId(UUID.randomUUID().toString());
+        computeResource.setHostName(hostName);
+        computeResource.setResourceDescription("Test Compute Resource");
+        computeResource.setEnabled(true);
+        // Note: ComputeResourceType.LOCAL doesn't exist - using SLURM as default
+        // The compute resource type is determined by job submission interfaces, not this field
+        return computeResource;
+    }
 }

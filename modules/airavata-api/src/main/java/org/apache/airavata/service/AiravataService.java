@@ -351,7 +351,7 @@ public class AiravataService {
 
     private void postInitDefaultGateway()
             throws RegistryServiceException, CredentialStoreException, AiravataSystemException {
-        String defaultGateway = properties.services.defaults.gateway;
+        String defaultGateway = properties.airavata.defaultGateway;
         if (defaultGateway == null || defaultGateway.isEmpty()) {
             logger.debug("No default gateway configured. Skipping gateway initialization.");
             return;
@@ -367,10 +367,10 @@ public class AiravataService {
 
             logger.debug("Starting to add password credential to default gateway={}", defaultGateway);
             var passwordCredential = new PasswordCredential();
-            passwordCredential.setPortalUserName(properties.services.defaults.user);
+            passwordCredential.setPortalUserName(properties.security.iam.superAdmin.username);
             passwordCredential.setGatewayId(defaultGateway);
-            passwordCredential.setLoginUserName(properties.services.defaults.user);
-            passwordCredential.setPassword(properties.services.defaults.password);
+            passwordCredential.setLoginUserName(properties.security.iam.superAdmin.username);
+            passwordCredential.setPassword(properties.security.iam.superAdmin.password);
             passwordCredential.setDescription("Credentials for default gateway=" + defaultGateway);
             String token = null;
             logger.info("Creating password credential for default gateway={}", defaultGateway);
@@ -385,7 +385,7 @@ public class AiravataService {
     }
 
     private void initSharingRegistry() throws SharingRegistryException, DuplicateEntryException {
-        String defaultGateway = properties.services.defaults.gateway;
+        String defaultGateway = properties.airavata.defaultGateway;
         if (!isDomainExists(defaultGateway)) {
             var domain = new Domain();
             domain.setDomainId(defaultGateway);
@@ -395,8 +395,8 @@ public class AiravataService {
 
             var user = new User();
             user.setDomainId(domain.getDomainId());
-            user.setUserId(properties.services.defaults.user + "@" + defaultGateway);
-            user.setUserName(properties.services.defaults.user);
+            user.setUserId(properties.security.iam.superAdmin.username + "@" + defaultGateway);
+            user.setUserName(properties.security.iam.superAdmin.username);
             createUser(user);
 
             // Creating Entity Types for each domain

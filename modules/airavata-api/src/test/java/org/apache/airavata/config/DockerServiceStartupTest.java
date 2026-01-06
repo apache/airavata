@@ -46,7 +46,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataServerProperties.class,
             ServiceStartupTestBase.TestConfiguration.class
         },
         properties = {
@@ -58,7 +57,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class DockerServiceStartupTest extends ServiceStartupTestBase {
 
     /**
@@ -72,7 +71,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         if (scriptPath == null) {
             return false;
         }
-        // Look for docker-startup.sh in dev-tools/deployment-scripts
+
         Path script = Paths.get(scriptPath)
                 .getParent()
                 .getParent()
@@ -88,7 +87,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testDockerEnvironmentVariables() {
         assertNotNull(applicationContext, "Application context should load with Docker environment variables");
-        // Check that Docker-specific environment variables are handled
+
         String dbHost = System.getenv("DB_HOST");
         String rabbitmqHost = System.getenv("RABBITMQ_HOST");
         String zookeeperHost = System.getenv("ZOOKEEPER_HOST");
@@ -97,7 +96,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
                 dbHost,
                 rabbitmqHost,
                 zookeeperHost);
-        // System should handle both cases (set and unset) gracefully
+
     }
 
     /**
@@ -108,7 +107,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         assertNotNull(applicationContext, "Application context should load");
         boolean available = isDockerStartupScriptAvailable();
         logger.info("Docker startup script available: {}", available);
-        // Script may not be available in test environment, which is OK
+
     }
 
     /**
@@ -126,7 +125,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         @Test
         public void testDockerServiceConfiguration() {
             assertNotNull(applicationContext, "Application context should load with Docker service configuration");
-            // Verify that services can be configured for Docker environment
+
         }
     }
 
@@ -136,7 +135,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testMissingDockerDependencies() {
         assertNotNull(applicationContext, "Application context should load even if Docker dependencies are missing");
-        // System should handle cases where DB_HOST, RABBITMQ_HOST, etc. are not set
+
     }
 
     /**
@@ -145,7 +144,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testAiravataConfigDir() {
         assertNotNull(applicationContext, "Application context should load");
-        // Get airavata.home from property or env var, then resolve configDir
+
         String airavataHome = System.getProperty("airavata.home");
         if (airavataHome == null || airavataHome.isEmpty()) {
             airavataHome = System.getenv("AIRAVATA_HOME");
@@ -155,8 +154,8 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
             configDir = new java.io.File(airavataHome, "conf").getAbsolutePath();
         }
         logger.info("Airavata home: {}, config directory: {}", airavataHome, configDir);
-        // In Docker, this should be /opt/airavata/vault
-        // In test environment, it may be different, which is OK
+
+
     }
 
     /**
@@ -175,7 +174,7 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
                 agentHome,
                 researchHome,
                 fileHome);
-        // In Docker, these should be set to /opt/airavata/...
-        // In test environment, they may not be set, which is OK
+
+
     }
 }

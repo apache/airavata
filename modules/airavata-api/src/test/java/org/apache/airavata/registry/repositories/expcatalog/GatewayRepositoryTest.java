@@ -53,11 +53,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class GatewayRepositoryTest extends TestBase {
 
@@ -88,8 +88,8 @@ public class GatewayRepositoryTest extends TestBase {
 
     @Test
     public void gatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
-        // Create default gateway if it doesn't exist
-        String defaultGatewayId = properties.services.defaults.gateway;
+
+        String defaultGatewayId = properties.airavata.defaultGateway;
         if (!gatewayService.isGatewayExist(defaultGatewayId)) {
             Gateway defaultGateway = new Gateway();
             defaultGateway.setGatewayId(defaultGatewayId);
@@ -99,13 +99,13 @@ public class GatewayRepositoryTest extends TestBase {
             gatewayService.addGateway(defaultGateway);
         }
 
-        // Verify that default Gateway is already created
+
         List<Gateway> defaultGatewayList = gatewayService.getAllGateways();
         assertEquals(1, defaultGatewayList.size());
         assertEquals(
-                properties.services.defaults.gateway, defaultGatewayList.get(0).getGatewayId());
+                properties.airavata.defaultGateway, defaultGatewayList.get(0).getGatewayId());
 
-        // Generate unique test gateway ID for this test run
+
         String testGatewayId = "testGateway-" + UUID.randomUUID().toString().substring(0, 8);
 
         Gateway gateway = new Gateway();

@@ -71,7 +71,7 @@ public class CredentialEntityService {
     @jakarta.annotation.PostConstruct
     public void init() {
         String configDir =
-                org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
+                org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
         String credentialStoreKeyStorePath = properties.security.vault.keystore.url;
         if (credentialStoreKeyStorePath == null) {
             throw new IllegalStateException(

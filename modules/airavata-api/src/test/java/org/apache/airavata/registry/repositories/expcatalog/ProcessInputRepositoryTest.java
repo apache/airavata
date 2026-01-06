@@ -62,11 +62,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessInputRepositoryTest extends TestBase {
 
@@ -141,7 +141,7 @@ public class ProcessInputRepositoryTest extends TestBase {
 
     @Test
     public void testProcessInputRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating process inputs
+
         InputDataObjectType inputDataObjectProType = new InputDataObjectType();
         inputDataObjectProType.setName("inputP");
         inputDataObjectProType.setType(DataType.STDOUT);
@@ -154,7 +154,7 @@ public class ProcessInputRepositoryTest extends TestBase {
         assertEquals(
                 1, processService.getProcess(processId).getProcessInputs().size(), "Process should have one input");
 
-        // Update input value
+
         inputDataObjectProType.setValue("iValueP");
         processInputService.updateProcessInputs(inputDataObjectTypeProList, processId);
 
@@ -167,7 +167,7 @@ public class ProcessInputRepositoryTest extends TestBase {
 
     @Test
     public void testProcessInputRepository_MultipleInputs() throws RegistryException {
-        // Test that a process can have multiple inputs (important for complex workflows)
+
         InputDataObjectType input1 = new InputDataObjectType();
         input1.setName("input1");
         input1.setType(DataType.STDOUT);
@@ -193,7 +193,7 @@ public class ProcessInputRepositoryTest extends TestBase {
         List<InputDataObjectType> retrievedInputs = processInputService.getProcessInputs(processId);
         assertEquals(3, retrievedInputs.size(), "Process should have 3 inputs");
 
-        // Verify all inputs are present
+
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input2")), "Input 2 should be present");
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input3")), "Input 3 should be present");

@@ -46,12 +46,12 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SSHAccountProvisionerFactoryTest {
 
     public SSHAccountProvisionerFactoryTest() {
-        // Spring Boot test - no dependencies to inject for this utility test
+
     }
 
     @Test
@@ -99,7 +99,7 @@ public class SSHAccountProvisionerFactoryTest {
         config.put(test3, "value3");
         TestSSHAccountProvisioner sshAccountProvisioner = (TestSSHAccountProvisioner)
                 SSHAccountProvisionerFactory.createSSHAccountProvisioner("TestSSHAccountProvisioner", config);
-        // Make sure all of the config params and values were passed to SSHAccountProvisioner
+
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test1));
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test2));
         Assertions.assertTrue(sshAccountProvisioner.getConfig().containsKey(test3));
@@ -107,6 +107,5 @@ public class SSHAccountProvisionerFactoryTest {
 
     @Configuration
     @ComponentScan(basePackages = {"org.apache.airavata.accountprovisioning", "org.apache.airavata.config"})
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
 }

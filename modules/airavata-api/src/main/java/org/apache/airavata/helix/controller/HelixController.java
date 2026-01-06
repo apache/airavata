@@ -58,9 +58,9 @@ public class HelixController extends ServerLifecycle {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        this.clusterName = properties.services.helix.clusterName;
-        this.controllerName = properties.services.helix.controllerName;
-        this.zkAddress = properties.zookeeper.serverConnection;
+        this.clusterName = properties.helix.cluster.name;
+        this.controllerName = properties.helix.controller.name;
+        this.zkAddress = properties.zookeeper.server.connection;
     }
 
     @Override

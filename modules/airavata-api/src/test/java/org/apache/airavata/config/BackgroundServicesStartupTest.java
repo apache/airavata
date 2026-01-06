@@ -60,9 +60,9 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Background/infrastructure services - keep property flags (truly optional)
+
             "services.thrift.enabled=false",
-            // Core services (RegistryService, CredentialStoreService) are always available via DI - no flags needed
+
             "services.controller.enabled=true",
             "services.participant.enabled=true",
             "services.prewm.enabled=true",
@@ -73,7 +73,8 @@ import org.springframework.test.context.TestPropertySource;
             "services.monitor.email.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class BackgroundServicesStartupTest {
 
     @Configuration
@@ -109,19 +110,19 @@ public class BackgroundServicesStartupTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    // BackgroundServicesLauncher has been removed - services are now managed via SmartLifecycle
+
 
     @Test
     public void testHelixComponentsAreAvailable() {
-        // Helix components have @Profile("!test") so they won't be available in test profile
-        // This is expected behavior - these components are excluded from tests
-        // In production (non-test profile), they would be available when enabled
+
+
+
         int controllerCount =
                 applicationContext.getBeansOfType(HelixController.class).size();
         int participantCount =
                 applicationContext.getBeansOfType(GlobalParticipant.class).size();
-        // In test profile, components are excluded, so counts will be 0 (expected)
-        // In production profile, counts should be > 0
+
+
         assertTrue(
                 controllerCount >= 0 && participantCount >= 0,
                 "Helix components configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
@@ -129,17 +130,17 @@ public class BackgroundServicesStartupTest {
 
     @Test
     public void testWorkflowManagersAreAvailable() {
-        // Workflow managers have @Profile("!test") so they won't be available in test profile
-        // This is expected behavior - these managers are excluded from tests
-        // In production (non-test profile), they would be available when enabled
+
+
+
         int preWmCount =
                 applicationContext.getBeansOfType(PreWorkflowManager.class).size();
         int postWmCount =
                 applicationContext.getBeansOfType(PostWorkflowManager.class).size();
         int parserWmCount =
                 applicationContext.getBeansOfType(ParserWorkflowManager.class).size();
-        // In test profile, managers are excluded, so counts will be 0 (expected)
-        // In production profile, counts should be > 0
+
+
         assertTrue(
                 preWmCount >= 0 && postWmCount >= 0 && parserWmCount >= 0,
                 "Workflow managers configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
@@ -147,18 +148,18 @@ public class BackgroundServicesStartupTest {
 
     @Test
     public void testMonitorsAreAvailable() {
-        // RealtimeMonitor has @Profile("!test") so it won't be available in test profile
-        // This is expected behavior - RealtimeMonitor is excluded from tests
-        // In production (non-test profile), it would be available when services.monitor.realtime.enabled=true
+
+
+
         int monitorCount =
                 applicationContext.getBeansOfType(RealtimeMonitor.class).size();
-        // In test profile, monitor is excluded, so count will be 0 (expected)
-        // In production profile, count should be > 0
+
+
         assertTrue(
                 monitorCount >= 0,
                 "RealtimeMonitor configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
-        // EmailBasedMonitor also has @Profile("!test") so it won't be available in test profile
-        // This is expected behavior - EmailBasedMonitor is excluded from tests
+
+
     }
 
     @Test

@@ -59,11 +59,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full expcatalog; skipped in offline test runs")
 public class ProcessStatusRepositoryTest extends TestBase {
@@ -133,7 +133,7 @@ public class ProcessStatusRepositoryTest extends TestBase {
         String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
 
-        // addProcess automatically adds the CREATED ProcessStatus
+
         assertTrue(processService.getProcess(processId).getProcessStatuses().size() == 1);
         ProcessStatus processStatus =
                 processService.getProcess(processId).getProcessStatuses().get(0);
@@ -146,15 +146,15 @@ public class ProcessStatusRepositoryTest extends TestBase {
         assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
 
         ProcessStatus updatedStatus = new ProcessStatus(ProcessState.MONITORING);
-        // Verify that ProcessStatus without id can be added with updateProcessStatus
+
         processStatusService.updateProcessStatus(updatedStatus, processId);
         retrievedStatus = processStatusService.getProcessStatus(processId);
         assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
         assertTrue(retrievedStatus.getStatusId() != null);
         assertNull(retrievedStatus.getReason());
 
-        // Verify that updating status with same ProcessState as most recent ProcessStatus will update the most recent
-        // ProcessStatus
+
+
         ProcessStatus updatedStatusWithReason = new ProcessStatus(ProcessState.MONITORING);
         updatedStatusWithReason.setReason("test-reason");
         processStatusService.updateProcessStatus(updatedStatusWithReason, processId);

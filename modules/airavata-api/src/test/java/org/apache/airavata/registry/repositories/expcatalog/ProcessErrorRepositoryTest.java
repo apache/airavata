@@ -63,7 +63,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessErrorRepositoryTest extends TestBase {
 
@@ -138,7 +138,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
 
     @Test
     public void testProcessErrorRepository_Create_MultipleErrorsPerProcess() throws RegistryException {
-        // Create multiple errors for the same process
+ // multiple errors for the same process
         ErrorModel error1 = createErrorModel("error-1", "First error message", "User friendly message 1");
         ErrorModel error2 = createErrorModel("error-2", "Second error message", "User friendly message 2");
         ErrorModel error3 = createErrorModel("error-3", "Third error message", "User friendly message 3");
@@ -167,14 +167,14 @@ public class ProcessErrorRepositoryTest extends TestBase {
 
     @Test
     public void testProcessErrorRepository_Get_NonExistentProcessId() throws RegistryException {
-        // Test that getting errors for non-existent process returns empty list without exception
+
         String nonExistentProcessId =
                 "non-existent-process-" + java.util.UUID.randomUUID().toString();
         List<ErrorModel> errors = processErrorService.getProcessError(nonExistentProcessId);
         assertNotNull(errors, "Should return non-null list");
         assertTrue(errors.isEmpty(), "Non-existent process should return empty error list");
 
-        // Verify this doesn't affect existing process errors
+
         ErrorModel error = createErrorModel("error-verify", "Test error", "User message");
         String errorId = processErrorService.addProcessError(error, processId);
         assertNotNull(errorId, "Error should be created for existing process");
@@ -192,7 +192,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
         assertEquals(1, errors.size(), "Should have one error");
         ErrorModel originalError = errors.get(0);
 
-        // Update all fields
+
         originalError.setActualErrorMessage("Updated actual error message");
         originalError.setUserFriendlyMessage("Updated user friendly message");
         originalError.setTransientOrPersistent(true);
@@ -224,8 +224,8 @@ public class ProcessErrorRepositoryTest extends TestBase {
 
     @Test
     public void testProcessErrorRepository_TransientVsPersistentErrors() throws RegistryException {
-        // Test that transient and persistent errors are properly stored and retrieved
-        // This is important for error handling and debugging
+
+
         ErrorModel transientError = new ErrorModel();
         transientError.setErrorId("error-transient");
         transientError.setActualErrorMessage("Transient error occurred");
@@ -262,7 +262,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
 
     @Test
     public void testProcessErrorRepository_CascadingDelete() throws RegistryException {
-        // Create errors for the process
+ // errors for the process
         ErrorModel error1 = createErrorModel("error-cascade-1", "Error 1", "User message 1");
         ErrorModel error2 = createErrorModel("error-cascade-2", "Error 2", "User message 2");
 
@@ -272,23 +272,23 @@ public class ProcessErrorRepositoryTest extends TestBase {
         ProcessModel process = processService.getProcess(processId);
         assertEquals(2, process.getProcessErrors().size(), "Process should have 2 errors before deletion");
 
-        // Delete the process - errors should be cascaded
+
         processService.removeProcess(processId);
         assertFalse(processService.isProcessExist(processId), "Process should be deleted");
 
-        // Verify errors are no longer accessible
+
         List<ErrorModel> errors = processErrorService.getProcessError(processId);
         assertTrue(errors.isEmpty(), "Errors should be deleted with process");
     }
 
     @Test
     public void testProcessErrorRepository_AutomaticCreationTime() throws RegistryException {
-        // Test that creation time is automatically set if not provided
+
         ErrorModel error = new ErrorModel();
         error.setErrorId("error-auto-time");
         error.setActualErrorMessage("Error with automatic creation time");
         error.setUserFriendlyMessage("User-friendly message");
-        // Don't set creation time - service should set it automatically
+
 
         long beforeCreation = System.currentTimeMillis();
         String errorId = processErrorService.addProcessError(error, processId);
@@ -306,7 +306,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
 
     @Test
     public void testProcessErrorRepository_ErrorRetrievalOrdering() throws RegistryException {
-        // Test that errors are retrieved in a consistent order (important for error history)
+
         ErrorModel error1 = createErrorModel("error-1", "First error", "First user message");
         ErrorModel error2 = createErrorModel("error-2", "Second error", "Second user message");
         ErrorModel error3 = createErrorModel("error-3", "Third error", "Third user message");
@@ -318,12 +318,12 @@ public class ProcessErrorRepositoryTest extends TestBase {
         List<ErrorModel> errors = processErrorService.getProcessError(processId);
         assertEquals(3, errors.size(), "Should retrieve all 3 errors");
 
-        // Verify all errors are present
+
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId3)), "Error 3 should be present");
 
-        // Verify errors have creation times set
+
         errors.forEach(e ->
                 assertTrue(e.getCreationTime() > 0, "Each error should have creation time set: " + e.getErrorId()));
     }
@@ -335,7 +335,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
         error.setActualErrorMessage("Error with multiple root causes");
         error.setUserFriendlyMessage("User message");
 
-        // Create a large list of root causes
+ // a large list of root causes
         List<String> rootCauses = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             rootCauses.add("root-cause-" + i);
@@ -353,7 +353,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
         assertTrue(retrieved.getRootCauseErrorIdList().contains("root-cause-10"), "Root cause 10 should be present");
     }
 
-    // Helper method to create error models
+
     private ErrorModel createErrorModel(String errorId, String actualMessage, String userFriendlyMessage) {
         ErrorModel error = new ErrorModel();
         error.setErrorId(errorId);

@@ -32,7 +32,6 @@ import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.model.SummaryType;
 import org.apache.airavata.credential.services.CertificateCredentialWriter;
 import org.apache.airavata.credential.services.CredentialReaderImpl;
-import org.apache.airavata.credential.services.CredentialStoreDBInitConfig;
 import org.apache.airavata.credential.services.SSHCredentialWriter;
 import org.apache.airavata.credential.utils.TokenGenerator;
 import org.apache.airavata.credential.utils.Utility;
@@ -50,7 +49,6 @@ public class CredentialStoreService {
     private final SSHCredentialWriter sshCredentialWriter;
     private final CertificateCredentialWriter certificateCredentialWriter;
     private final CredentialReaderImpl credentialReader;
-    private final CredentialStoreDBInitConfig dbInitConfig;
     private final org.apache.airavata.credential.services.CredentialEntityService credentialEntityService;
     private final java.util.Set<String> deletedTokens =
             java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
@@ -60,13 +58,11 @@ public class CredentialStoreService {
             SSHCredentialWriter sshCredentialWriter,
             CertificateCredentialWriter certificateCredentialWriter,
             CredentialReaderImpl credentialReader,
-            CredentialStoreDBInitConfig dbInitConfig,
             org.apache.airavata.credential.services.CredentialEntityService credentialEntityService) {
         this.properties = properties;
         this.sshCredentialWriter = sshCredentialWriter;
         this.certificateCredentialWriter = certificateCredentialWriter;
         this.credentialReader = credentialReader;
-        this.dbInitConfig = dbInitConfig;
         this.credentialEntityService = credentialEntityService;
     }
 

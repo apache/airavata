@@ -62,11 +62,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ProcessOutputRepositoryTest extends TestBase {
 
@@ -141,7 +141,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
 
     @Test
     public void testProcessOutputRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating process outputs
+
         OutputDataObjectType outputDataObjectProType = new OutputDataObjectType();
         outputDataObjectProType.setName("outputP");
         outputDataObjectProType.setType(DataType.STDERR);
@@ -153,7 +153,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
         assertEquals(
                 1, processService.getProcess(processId).getProcessOutputs().size(), "Process should have one output");
 
-        // Update output value
+
         outputDataObjectProType.setValue("oValueP");
         processOutputService.updateProcessOutputs(outputDataObjectTypeProList, processId);
 
@@ -166,7 +166,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
 
     @Test
     public void testProcessOutputRepository_MultipleOutputs() throws RegistryException {
-        // Test that a process can have multiple outputs (important for complex workflows)
+
         OutputDataObjectType output1 = new OutputDataObjectType();
         output1.setName("output1");
         output1.setType(DataType.STDERR);
@@ -192,7 +192,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
         List<OutputDataObjectType> retrievedOutputs = processOutputService.getProcessOutputs(processId);
         assertEquals(3, retrievedOutputs.size(), "Process should have 3 outputs");
 
-        // Verify all outputs are present
+
         assertTrue(
                 retrievedOutputs.stream().anyMatch(o -> o.getName().equals("output1")), "Output 1 should be present");
         assertTrue(

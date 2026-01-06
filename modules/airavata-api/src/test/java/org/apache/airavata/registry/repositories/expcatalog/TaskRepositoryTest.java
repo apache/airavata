@@ -66,11 +66,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TaskRepositoryTest extends TestBase {
 
@@ -143,7 +143,7 @@ public class TaskRepositoryTest extends TestBase {
         taskModel.setParentProcessId(processId);
         taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
 
-        // Initialize taskStatuses if null
+
         if (taskModel.getTaskStatuses() == null) {
             taskModel.setTaskStatuses(new java.util.ArrayList<>());
         }
@@ -162,7 +162,7 @@ public class TaskRepositoryTest extends TestBase {
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
         assertEquals(1, retrievedTask.getTaskStatuses().size());
         assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
-        // Verify the subtask model bytes match
+
         assertNotNull(retrievedTask.getSubTaskModel(), "SubTask model should not be null");
         assertTrue(retrievedTask.getSubTaskModel() instanceof byte[], "SubTask model should be byte array");
         assertEquals(

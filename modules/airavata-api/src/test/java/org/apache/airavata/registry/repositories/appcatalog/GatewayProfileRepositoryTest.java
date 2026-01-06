@@ -53,7 +53,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             GatewayProfileRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -69,7 +68,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class GatewayProfileRepositoryTest extends TestBase {
@@ -109,12 +108,12 @@ public class GatewayProfileRepositoryTest extends TestBase {
     @Test
     public void gatewayProfileRepositorytest() throws AppCatalogException, ApplicationSettingsException {
 
-        // Verify that the default Gateway Resource Profile exists already
+
         List<GatewayResourceProfile> defaultGatewayResourceProfileList =
                 this.gwyResourceProfileService.getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(
-                properties.services.defaults.gateway,
+                properties.airavata.defaultGateway,
                 defaultGatewayResourceProfileList.get(0).getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();

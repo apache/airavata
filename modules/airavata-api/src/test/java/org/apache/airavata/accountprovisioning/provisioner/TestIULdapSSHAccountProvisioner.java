@@ -28,6 +28,7 @@ import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +36,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled("Requires external LDAP server and SSH tunnel setup")
+@Disabled("Requires external LDAP server and SSH tunnel setup. " +
+          "To run: Set up SSH tunnel and configure LDAP_PASSWORD environment variable. " +
+          "This test requires infrastructure that cannot be easily containerized.")
+@EnabledIfEnvironmentVariable(named = "LDAP_PASSWORD", matches = ".*")
 public class TestIULdapSSHAccountProvisioner {
     private static final Logger logger = LoggerFactory.getLogger(TestIULdapSSHAccountProvisioner.class);
     private IULdapSSHAccountProvisioner sshAccountProvisioner;

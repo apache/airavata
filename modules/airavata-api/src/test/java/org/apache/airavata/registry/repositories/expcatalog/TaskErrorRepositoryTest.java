@@ -63,11 +63,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TaskErrorRepositoryTest extends TestBase {
 
@@ -151,7 +151,7 @@ public class TaskErrorRepositoryTest extends TestBase {
 
     @Test
     public void testTaskErrorRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating task errors
+
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error-1");
         errorModel.setActualErrorMessage("Initial error message");
@@ -161,15 +161,15 @@ public class TaskErrorRepositoryTest extends TestBase {
         assertNotNull(taskErrorId, "Task error ID should not be null");
         assertEquals("error-1", taskErrorId, "Error ID should match");
 
-        // Verify error is associated with task
+
         assertTrue(taskService.getTask(taskId).getTaskErrors().size() == 1, "Task should have one error");
 
-        // Update error message
+
         errorModel.setActualErrorMessage("Updated error message");
         errorModel.setUserFriendlyMessage("Updated user-friendly message");
         taskErrorService.updateTaskError(errorModel, taskId);
 
-        // Verify update
+
         List<ErrorModel> retrievedErrorList = taskErrorService.getTaskError(taskId);
         assertEquals(1, retrievedErrorList.size(), "Should have one error");
         assertEquals(
@@ -184,7 +184,7 @@ public class TaskErrorRepositoryTest extends TestBase {
 
     @Test
     public void testTaskErrorRepository_MultipleErrorsPerTask() throws RegistryException {
-        // Test that a task can have multiple errors (important for error history)
+
         ErrorModel error1 = new ErrorModel();
         error1.setErrorId("error-1");
         error1.setActualErrorMessage("First error");
@@ -200,11 +200,11 @@ public class TaskErrorRepositoryTest extends TestBase {
         error3.setActualErrorMessage("Third error");
         String errorId3 = taskErrorService.addTaskError(error3, taskId);
 
-        // Verify all errors are associated with the task
+
         List<ErrorModel> errors = taskErrorService.getTaskError(taskId);
         assertEquals(3, errors.size(), "Task should have 3 errors");
 
-        // Verify all error IDs are present
+
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId3)), "Error 3 should be present");

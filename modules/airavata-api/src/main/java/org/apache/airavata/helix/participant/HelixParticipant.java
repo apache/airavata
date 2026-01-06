@@ -96,8 +96,8 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
      */
     protected void initialize() {
         if (properties != null) {
-            this.zkAddress = properties.zookeeper.serverConnection;
-            this.clusterName = properties.services.helix.clusterName;
+            this.zkAddress = properties.zookeeper.server.connection;
+            this.clusterName = properties.helix.cluster.name;
             this.participantName = getParticipantName();
 
             logger.info("Zookeeper connection URL " + zkAddress);
@@ -281,7 +281,7 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
     }
 
     public String getParticipantName() {
-        return properties.services.helix.participantName;
+        return properties.helix.participant.name;
     }
 
     @Override

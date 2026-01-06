@@ -112,6 +112,16 @@ public class JpaConfig {
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
+        // Explicitly set Hibernate dialect to avoid JDBC metadata lookup
+        // MariaDB is compatible with MySQL dialect, but we use MariaDBDialect for better compatibility
+        String dialect = environment != null ? environment.getProperty("hibernate.dialect") : null;
+        if (dialect == null) {
+            // Default to MariaDB dialect (compatible with MySQL)
+            props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+        } else {
+            props.put("hibernate.dialect", dialect);
+        }
+
         // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)
         // Can be overridden via hibernate.hbm2ddl.auto property

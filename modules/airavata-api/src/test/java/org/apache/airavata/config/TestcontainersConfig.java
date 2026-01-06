@@ -21,6 +21,8 @@ package org.apache.airavata.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.net.Socket;
+import java.time.Duration;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
@@ -29,13 +31,18 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 /**
- * Test configuration using Testcontainers to provide MariaDB databases for testing.
+ * Test configuration using Testcontainers to provide infrastructure services for testing.
+ * Supports MariaDB databases, Kafka, RabbitMQ, and Zookeeper.
  * Each persistence unit gets its own database container.
  * Flyway migrations are applied automatically to each database.
+ * Messaging services (Kafka, RabbitMQ) are shared across tests for performance.
  */
 @TestConfiguration
 @Profile("test")
@@ -43,17 +50,44 @@ public class TestcontainersConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(TestcontainersConfig.class);
     private static final String MARIADB_VERSION = "10.4.13";
+    private static final String KAFKA_VERSION = "7.6.0";
+    private static final String RABBITMQ_VERSION = "3.13-management";
+    private static final String ZOOKEEPER_VERSION = "3.9";
     private static final String TEST_DATABASE_PREFIX = "test_";
 
-    // Connection details for existing MariaDB containers (from docker-compose.yml)
+    // Connection details for existing containers (from docker-compose.yml)
     private static final String DB_HOST = System.getProperty("test.db.host", "localhost");
     private static final int DB_PORT = Integer.parseInt(System.getProperty("test.db.port", "13306"));
     private static final String DB_USER = System.getProperty("test.db.user", "airavata");
     private static final String DB_PASSWORD = System.getProperty("test.db.password", "123456");
     private static final String DB_ROOT_PASSWORD = System.getProperty("test.db.root.password", "123456");
+    
+    private static final String KAFKA_HOST = System.getProperty("test.kafka.host", "localhost");
+    private static final int KAFKA_PORT = Integer.parseInt(System.getProperty("test.kafka.port", "9092"));
+    
+    private static final String RABBITMQ_HOST = System.getProperty("test.rabbitmq.host", "localhost");
+    private static final int RABBITMQ_PORT = Integer.parseInt(System.getProperty("test.rabbitmq.port", "5672"));
+    private static final String RABBITMQ_USER = System.getProperty("test.rabbitmq.user", "guest");
+    private static final String RABBITMQ_PASSWORD = System.getProperty("test.rabbitmq.password", "guest");
+    
+    private static final String ZOOKEEPER_HOST = System.getProperty("test.zookeeper.host", "localhost");
+    private static final int ZOOKEEPER_PORT = Integer.parseInt(System.getProperty("test.zookeeper.port", "2181"));
 
     // Flag to use existing containers - auto-detected or explicitly set
     private static volatile Boolean useExistingContainers = null;
+
+    /**
+     * Check if a service is accessible at the configured host and port.
+     * This auto-detects if services from docker-compose are running.
+     */
+    private static boolean isServiceAccessible(String host, int port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new java.net.InetSocketAddress(host, port), 2000);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     /**
      * Check if MariaDB is accessible at the configured host and port.
@@ -69,6 +103,27 @@ public class TestcontainersConfig {
                     "MariaDB not accessible at {}:{}, will use Testcontainers: {}", DB_HOST, DB_PORT, e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Check if Kafka is accessible at the configured host and port.
+     */
+    private static boolean isKafkaAccessible() {
+        return isServiceAccessible(KAFKA_HOST, KAFKA_PORT);
+    }
+
+    /**
+     * Check if RabbitMQ is accessible at the configured host and port.
+     */
+    private static boolean isRabbitMQAccessible() {
+        return isServiceAccessible(RABBITMQ_HOST, RABBITMQ_PORT);
+    }
+
+    /**
+     * Check if Zookeeper is accessible at the configured host and port.
+     */
+    private static boolean isZookeeperAccessible() {
+        return isServiceAccessible(ZOOKEEPER_HOST, ZOOKEEPER_PORT);
     }
 
     /**
@@ -112,6 +167,12 @@ public class TestcontainersConfig {
     private static MariaDBContainer<?> workflowCatalogContainer;
     private static MariaDBContainer<?> sharingRegistryContainer;
     private static MariaDBContainer<?> credentialStoreContainer;
+    private static MariaDBContainer<?> researchCatalogContainer;
+    
+    // Messaging service containers - shared across all tests
+    private static KafkaContainer kafkaContainer;
+    private static RabbitMQContainer rabbitMQContainer;
+    private static org.testcontainers.containers.GenericContainer<?> zookeeperContainer;
 
     private static synchronized MariaDBContainer<?> getOrCreateContainer(String databaseName) {
         // If using existing containers, return null (we'll create DataSource directly)
@@ -143,6 +204,9 @@ public class TestcontainersConfig {
             case "credential_store":
                 container = credentialStoreContainer;
                 break;
+            case "research_catalog":
+                container = researchCatalogContainer;
+                break;
         }
 
         if (container == null || !container.isRunning()) {
@@ -163,7 +227,7 @@ public class TestcontainersConfig {
                 @SuppressWarnings("resource") // Flyway doesn't implement AutoCloseable and doesn't need to be closed
                 Flyway flyway = Flyway.configure()
                         .dataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword())
-                        .locations("classpath:db/migration/" + databaseName)
+                        .locations("classpath:conf/db/migration/" + databaseName)
                         .baselineOnMigrate(true)
                         .validateOnMigrate(true)
                         .load();
@@ -190,13 +254,92 @@ public class TestcontainersConfig {
                 case "sharing_registry":
                     sharingRegistryContainer = container;
                     break;
-                case "credential_store":
-                    credentialStoreContainer = container;
-                    break;
+            case "credential_store":
+                credentialStoreContainer = container;
+                break;
+            case "research_catalog":
+                researchCatalogContainer = container;
+                break;
             }
         }
 
         return container;
+    }
+
+    /**
+     * Get or create Kafka container. Reuses existing container if available.
+     */
+    public static synchronized String getKafkaBootstrapServers() {
+        if (shouldUseExistingContainers() && isKafkaAccessible()) {
+            logger.info("Using existing Kafka at {}:{}", KAFKA_HOST, KAFKA_PORT);
+            return KAFKA_HOST + ":" + KAFKA_PORT;
+        }
+
+        if (kafkaContainer == null || !kafkaContainer.isRunning()) {
+            logger.info("Creating new Kafka container");
+            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:" + KAFKA_VERSION))
+                    .withReuse(true);
+            kafkaContainer.start();
+            logger.info("Kafka container started at {}", kafkaContainer.getBootstrapServers());
+        }
+        return kafkaContainer.getBootstrapServers();
+    }
+
+    /**
+     * Get or create RabbitMQ container. Reuses existing container if available.
+     */
+    public static synchronized String getRabbitMQUrl() {
+        if (shouldUseExistingContainers() && isRabbitMQAccessible()) {
+            logger.info("Using existing RabbitMQ at {}:{}", RABBITMQ_HOST, RABBITMQ_PORT);
+            return String.format("amqp://%s:%s@%s:%d/", RABBITMQ_USER, RABBITMQ_PASSWORD, RABBITMQ_HOST, RABBITMQ_PORT);
+        }
+
+        if (rabbitMQContainer == null || !rabbitMQContainer.isRunning()) {
+            logger.info("Creating new RabbitMQ container");
+            rabbitMQContainer = new RabbitMQContainer(DockerImageName.parse("rabbitmq:" + RABBITMQ_VERSION))
+                    .withReuse(true)
+                    .waitingFor(Wait.forLogMessage(".*Server startup complete.*", 1)
+                            .withStartupTimeout(Duration.ofMinutes(2)));
+            rabbitMQContainer.start();
+            logger.info("RabbitMQ container started at {}", rabbitMQContainer.getAmqpUrl());
+        }
+        return rabbitMQContainer.getAmqpUrl();
+    }
+
+    /**
+     * Get or create Zookeeper container. Reuses existing container if available.
+     */
+    public static synchronized String getZookeeperConnectionString() {
+        if (shouldUseExistingContainers() && isZookeeperAccessible()) {
+            logger.info("Using existing Zookeeper at {}:{}", ZOOKEEPER_HOST, ZOOKEEPER_PORT);
+            return ZOOKEEPER_HOST + ":" + ZOOKEEPER_PORT;
+        }
+
+        if (zookeeperContainer == null || !zookeeperContainer.isRunning()) {
+            logger.info("Creating new Zookeeper container");
+            zookeeperContainer = new org.testcontainers.containers.GenericContainer<>(
+                            DockerImageName.parse("zookeeper:" + ZOOKEEPER_VERSION))
+                    .withExposedPorts(2181)
+                    .withReuse(true)
+                    .waitingFor(Wait.forLogMessage(".*binding to port.*", 1)
+                            .withStartupTimeout(Duration.ofMinutes(2)));
+            zookeeperContainer.start();
+            logger.info("Zookeeper container started at {}:{}", zookeeperContainer.getHost(),
+                    zookeeperContainer.getMappedPort(2181));
+        }
+        return zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181);
+    }
+
+    /**
+     * Health check utility to verify all services are accessible.
+     */
+    public static boolean areAllServicesHealthy() {
+        boolean dbHealthy = shouldUseExistingContainers() ? isMariaDBAccessible() : true;
+        boolean kafkaHealthy = shouldUseExistingContainers() ? isKafkaAccessible() : (kafkaContainer != null && kafkaContainer.isRunning());
+        boolean rabbitMQHealthy = shouldUseExistingContainers() ? isRabbitMQAccessible() : (rabbitMQContainer != null && rabbitMQContainer.isRunning());
+        boolean zookeeperHealthy = shouldUseExistingContainers() ? isZookeeperAccessible() : (zookeeperContainer != null && zookeeperContainer.isRunning());
+        
+        return dbHealthy && kafkaHealthy && rabbitMQHealthy && zookeeperHealthy;
     }
 
     private static DataSource createDataSource(MariaDBContainer<?> container, String dbName) {
@@ -228,7 +371,7 @@ public class TestcontainersConfig {
                 @SuppressWarnings("resource")
                 Flyway flyway = Flyway.configure()
                         .dataSource(jdbcUrl, DB_USER, DB_PASSWORD)
-                        .locations("classpath:db/migration/" + dbName)
+                        .locations("classpath:conf/db/migration/" + dbName)
                         .baselineOnMigrate(true)
                         .validateOnMigrate(false)
                         .cleanDisabled(false)
@@ -326,7 +469,7 @@ public class TestcontainersConfig {
                     @SuppressWarnings("resource")
                     Flyway flyway2 = Flyway.configure()
                             .dataSource(jdbcUrl, DB_USER, DB_PASSWORD)
-                            .locations("classpath:db/migration/" + dbName)
+                            .locations("classpath:conf/db/migration/" + dbName)
                             .baselineOnMigrate(true)
                             .validateOnMigrate(false)
                             .load();
@@ -387,5 +530,37 @@ public class TestcontainersConfig {
     @Bean
     public DataSource credentialStoreDataSource() {
         return createDataSource(getOrCreateContainer("credential_store"), "credential_store");
+    }
+
+    @Bean
+    public DataSource researchCatalogDataSource() {
+        return createDataSource(getOrCreateContainer("research_catalog"), "research_catalog");
+    }
+
+    /**
+     * Bean to provide Kafka bootstrap servers configuration.
+     * Can be injected into tests that need Kafka connectivity.
+     */
+    @Bean(name = "kafkaBootstrapServers")
+    public String kafkaBootstrapServers() {
+        return getKafkaBootstrapServers();
+    }
+
+    /**
+     * Bean to provide RabbitMQ connection URL.
+     * Can be injected into tests that need RabbitMQ connectivity.
+     */
+    @Bean(name = "rabbitMQUrl")
+    public String rabbitMQUrl() {
+        return getRabbitMQUrl();
+    }
+
+    /**
+     * Bean to provide Zookeeper connection string.
+     * Can be injected into tests that need Zookeeper connectivity.
+     */
+    @Bean(name = "zookeeperConnectionString")
+    public String zookeeperConnectionString() {
+        return getZookeeperConnectionString();
     }
 }

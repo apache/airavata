@@ -60,11 +60,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
 public class ExperimentRepositoryTest extends TestBase {
@@ -130,11 +130,11 @@ public class ExperimentRepositoryTest extends TestBase {
 
         String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId != null);
-        // Initialize emailAddresses if null
+
         if (experimentModel.getEmailAddresses() == null) {
             experimentModel.setEmailAddresses(new java.util.ArrayList<>());
         }
-        // Handle null emailAddresses from retrieved experiment
+
         ExperimentModel retrievedExperiment = experimentService.getExperiment(experimentId);
         int emailCount = retrievedExperiment.getEmailAddresses() != null
                 ? retrievedExperiment.getEmailAddresses().size()
@@ -240,7 +240,7 @@ public class ExperimentRepositoryTest extends TestBase {
         input1.setUserFriendlyDescription("First argument");
         input1.setValue("value1");
         input1.setOverrideFilename("gaussian.com");
-        // Initialize experimentInputs if null
+
         if (experimentModel.getExperimentInputs() == null) {
             experimentModel.setExperimentInputs(new java.util.ArrayList<>());
         }
@@ -268,7 +268,7 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("value1", retrievedInput1.getValue());
         assertEquals("gaussian.com", retrievedInput1.getOverrideFilename());
 
-        // Update values of the input
+
         retrievedInput1.setIsRequired(false);
         retrievedInput1.setType(DataType.URI);
         retrievedInput1.setInputOrder(1);
@@ -312,7 +312,7 @@ public class ExperimentRepositoryTest extends TestBase {
     @Test
     public void testSlashesInExperimentName() throws RegistryException {
 
-        // Forward slashes
+
         ExperimentModel experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);
@@ -323,7 +323,7 @@ public class ExperimentRepositoryTest extends TestBase {
         String experimentId = experimentService.addExperiment(experimentModel);
         assertTrue(experimentId.startsWith("name_forward-slash__a"));
 
-        // Backward slashes
+
         experimentModel = new ExperimentModel();
         experimentModel.setProjectId(projectId);
         experimentModel.setGatewayId(gatewayId);

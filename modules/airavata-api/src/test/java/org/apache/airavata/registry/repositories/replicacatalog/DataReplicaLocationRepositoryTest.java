@@ -57,11 +57,11 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public class DataReplicaLocationRepositoryTest extends TestBase {
@@ -139,7 +139,7 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
         assertEquals(
                 retrievedDataReplicaLocationModel.getReplicaPersistentType(),
                 testDataReplicaLocationModel1.getReplicaPersistentType());
-        // validUntilTime has a default value
+
         assertEquals(0, retrievedDataReplicaLocationModel.getValidUntilTime());
 
         testDataProductModel.setReplicaLocations(

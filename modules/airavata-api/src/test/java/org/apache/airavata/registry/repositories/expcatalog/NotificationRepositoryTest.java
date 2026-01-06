@@ -54,7 +54,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class NotificationRepositoryTest extends TestBase {
 
@@ -123,7 +123,7 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_Create_MultipleNotificationsPerGateway() throws RegistryException {
-        // Create multiple notifications for the same gateway
+ // multiple notifications for the same gateway
         String notificationId1 = createTestNotification("notif-1", "Title 1", NotificationPriority.LOW);
         String notificationId2 = createTestNotification("notif-2", "Title 2", NotificationPriority.NORMAL);
         String notificationId3 = createTestNotification("notif-3", "Title 3", NotificationPriority.HIGH);
@@ -131,7 +131,7 @@ public class NotificationRepositoryTest extends TestBase {
         List<Notification> allNotifications = notificationService.getAllGatewayNotifications(testGatewayId);
         assertEquals(3, allNotifications.size(), "Should have 3 notifications for the gateway");
 
-        // Verify all notifications are present
+ // all notifications are present
         assertTrue(
                 allNotifications.stream().anyMatch(n -> n.getNotificationId().equals(notificationId1)),
                 "Notification 1 should be present");
@@ -142,7 +142,7 @@ public class NotificationRepositoryTest extends TestBase {
                 allNotifications.stream().anyMatch(n -> n.getNotificationId().equals(notificationId3)),
                 "Notification 3 should be present");
 
-        // Cleanup
+
         notificationService.deleteNotification(notificationId1);
         notificationService.deleteNotification(notificationId2);
         notificationService.deleteNotification(notificationId3);
@@ -150,12 +150,11 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_Get_NonExistentId() throws RegistryException {
-        // Test that getting non-existent notification returns null without throwing exception
+ // that getting non-existent notification returns null without throwing exception
         Notification retrieved = notificationService.getNotification(
                 "non-existent-id-" + java.util.UUID.randomUUID().toString());
         assertNull(retrieved, "Non-existent notification should return null");
 
-        // Verify this doesn't affect other operations
         String existingId = createTestNotification("notif-exists", "Existing", NotificationPriority.NORMAL);
         Notification existing = notificationService.getNotification(existingId);
         assertNotNull(existing, "Existing notification should be retrievable");
@@ -164,7 +163,7 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_Update_PreservesCreationTime() throws RegistryException {
-        // Test that update preserves creation time (important business rule)
+ // that update preserves creation time (important business rule)
         String notificationId =
                 createTestNotification("notif-update-preserve", "Original Title", NotificationPriority.LOW);
 
@@ -173,7 +172,7 @@ public class NotificationRepositoryTest extends TestBase {
         long originalCreationTime = original.getCreationTime();
         assertTrue(originalCreationTime > 0, "Original creation time should be set");
 
-        // Update notification
+ // notification
         original.setTitle("Updated Title");
         original.setNotificationMessage("Updated message content");
         original.setPriority(NotificationPriority.HIGH);
@@ -189,7 +188,7 @@ public class NotificationRepositoryTest extends TestBase {
         assertEquals(NotificationPriority.HIGH, updated.getPriority(), "Priority should be updated");
         assertTrue(updated.getExpirationTime() >= newExpirationTime, "Expiration time should be updated");
 
-        // Verify creation time is preserved (business rule)
+ // creation time is preserved (business rule)
         assertEquals(
                 originalCreationTime, updated.getCreationTime(), "Creation time should be preserved during update");
 
@@ -198,7 +197,6 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_Delete_VerifiesDeletion() throws RegistryException {
-        // Create and then delete a notification, verify it's actually deleted
         String notificationId = createTestNotification("notif-delete", "To Be Deleted", NotificationPriority.NORMAL);
 
         Notification beforeDelete = notificationService.getNotification(notificationId);
@@ -209,7 +207,6 @@ public class NotificationRepositoryTest extends TestBase {
         Notification afterDelete = notificationService.getNotification(notificationId);
         assertNull(afterDelete, "Notification should be null after deletion");
 
-        // Verify it's removed from gateway notifications list
         List<Notification> gatewayNotifications = notificationService.getAllGatewayNotifications(testGatewayId);
         assertTrue(
                 gatewayNotifications.stream()
@@ -219,11 +216,10 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_GetAllGatewayNotifications_GatewayIsolation() throws RegistryException {
-        // Test that notifications are properly isolated by gateway
+ // that notifications are properly isolated by gateway
         String gateway1 = "gateway-1-" + java.util.UUID.randomUUID().toString();
         String gateway2 = "gateway-2-" + java.util.UUID.randomUUID().toString();
 
-        // Create notifications for gateway1
         Notification notif1 = new Notification();
         notif1.setNotificationId("notif-g1-1");
         notif1.setGatewayId(gateway1);
@@ -238,7 +234,6 @@ public class NotificationRepositoryTest extends TestBase {
         notif2.setNotificationMessage("Another message for gateway 1");
         String id2 = notificationService.createNotification(notif2);
 
-        // Create notification for gateway2
         Notification notif3 = new Notification();
         notif3.setNotificationId("notif-g2-1");
         notif3.setGatewayId(gateway2);
@@ -246,7 +241,7 @@ public class NotificationRepositoryTest extends TestBase {
         notif3.setNotificationMessage("Message for gateway 2");
         String id3 = notificationService.createNotification(notif3);
 
-        // Verify gateway isolation
+ // gateway isolation
         List<Notification> gateway1Notifications = notificationService.getAllGatewayNotifications(gateway1);
         assertEquals(2, gateway1Notifications.size(), "Gateway 1 should have 2 notifications");
         assertTrue(
@@ -259,13 +254,13 @@ public class NotificationRepositoryTest extends TestBase {
                 gateway2Notifications.stream().allMatch(n -> n.getGatewayId().equals(gateway2)),
                 "All notifications should belong to gateway 2");
 
-        // Empty gateway should return empty list
+
         String emptyGateway = "empty-gateway-" + java.util.UUID.randomUUID().toString();
         List<Notification> emptyList = notificationService.getAllGatewayNotifications(emptyGateway);
         assertNotNull(emptyList, "Should return non-null list");
         assertTrue(emptyList.isEmpty(), "Empty gateway should return empty list");
 
-        // Cleanup
+
         notificationService.deleteNotification(id1);
         notificationService.deleteNotification(id2);
         notificationService.deleteNotification(id3);
@@ -273,7 +268,7 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_PriorityHandling() throws RegistryException {
-        // Test all priority levels
+ // all priority levels
         String lowId = createTestNotification("notif-low", "Low Priority", NotificationPriority.LOW);
         String normalId = createTestNotification("notif-normal", "Normal Priority", NotificationPriority.NORMAL);
         String highId = createTestNotification("notif-high", "High Priority", NotificationPriority.HIGH);
@@ -286,7 +281,7 @@ public class NotificationRepositoryTest extends TestBase {
         assertEquals(NotificationPriority.NORMAL, normal.getPriority(), "Normal priority should be set correctly");
         assertEquals(NotificationPriority.HIGH, high.getPriority(), "High priority should be set correctly");
 
-        // Cleanup
+
         notificationService.deleteNotification(lowId);
         notificationService.deleteNotification(normalId);
         notificationService.deleteNotification(highId);
@@ -299,7 +294,7 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setGatewayId(testGatewayId);
         notification.setTitle("Timestamp Test");
         notification.setNotificationMessage("Testing timestamp handling");
-        // Don't set timestamps - service should set them automatically
+
 
         String notificationId = notificationService.createNotification(notification);
         Notification retrieved = notificationService.getNotification(notificationId);
@@ -315,13 +310,12 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_AutomaticExpirationDefault() throws RegistryException {
-        // Test that expiration time is automatically set to 1 year from now if not provided
         Notification notification = new Notification();
         notification.setNotificationId("notif-auto-expire");
         notification.setGatewayId(testGatewayId);
         notification.setTitle("Auto Expiration Test");
         notification.setNotificationMessage("Testing automatic expiration time setting");
-        // Don't set expiration time - service should set it automatically
+
 
         long beforeCreation = System.currentTimeMillis();
         String notificationId = notificationService.createNotification(notification);
@@ -331,7 +325,6 @@ public class NotificationRepositoryTest extends TestBase {
         assertNotNull(retrieved, "Notification should be created");
         assertTrue(retrieved.getExpirationTime() > 0, "Expiration time should be automatically set");
 
-        // Verify expiration is approximately 1 year from creation (within reasonable margin)
         long expectedExpiration = beforeCreation + (365L * 24 * 60 * 60 * 1000);
         long actualExpiration = retrieved.getExpirationTime();
         long oneDayInMs = 24L * 60 * 60 * 1000;
@@ -344,11 +337,8 @@ public class NotificationRepositoryTest extends TestBase {
 
     @Test
     public void testNotificationRepository_MessageLengthLimit() throws RegistryException {
-        // Test that messages at the database limit (4096 chars) are handled correctly
-        // This tests an important boundary condition for the NOTIFICATION_MESSAGE column
         StringBuilder maxLengthMessage = new StringBuilder();
-        // Create a message close to the 4096 char limit
-        String baseMessage = "A"; // Single char to maximize length
+        String baseMessage = "A";
         for (int i = 0; i < 4090; i++) {
             maxLengthMessage.append(baseMessage);
         }
@@ -372,7 +362,7 @@ public class NotificationRepositoryTest extends TestBase {
         notificationService.deleteNotification(notificationId);
     }
 
-    // Helper method to create test notifications
+
     private String createTestNotification(String id, String title, NotificationPriority priority)
             throws RegistryException {
         Notification notification = new Notification();

@@ -69,40 +69,31 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should check if username is available")
         void shouldCheckUsernameAvailability() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             // For now, we test the method signature and error handling
             String username = "new-user-" + System.currentTimeMillis();
 
-            // Act
             boolean available = iamAdminService.isUsernameAvailable(testAuthzToken, username);
 
-            // Assert - result depends on Keycloak state
             assertThat(available).isNotNull();
         }
 
         @Test
         @DisplayName("Should check if user exists")
         void shouldCheckUserExists() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             String username = "test-user-check";
 
-            // Act
             boolean exists = iamAdminService.isUserExist(testAuthzToken, username);
 
-            // Assert - result depends on Keycloak state
             assertThat(exists).isNotNull();
         }
 
         @Test
         @DisplayName("Should check if user is enabled")
         void shouldCheckUserEnabled() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             String username = "test-user-enabled";
 
-            // Act
             boolean enabled = iamAdminService.isUserEnabled(testAuthzToken, username);
 
-            // Assert - result depends on Keycloak state
             assertThat(enabled).isNotNull();
         }
     }
@@ -114,29 +105,22 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should register new user")
         void shouldRegisterUser() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             String username = "new-user-" + System.currentTimeMillis();
             String email = username + "@example.com";
 
-            // Act
             boolean registered =
                     iamAdminService.registerUser(testAuthzToken, username, email, "Test", "User", "password123");
 
-            // Assert - result depends on Keycloak state
             assertThat(registered).isNotNull();
         }
 
         @Test
         @DisplayName("Should enable user account")
         void shouldEnableUser() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
-            // and a user to exist
             String username = "test-enable-user";
 
-            // Act
             boolean enabled = iamAdminService.enableUser(testAuthzToken, username);
 
-            // Assert - result depends on Keycloak state
             assertThat(enabled).isNotNull();
         }
     }
@@ -148,37 +132,26 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should get user from Keycloak")
         void shouldGetUser() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             String username = "test-get-user";
 
-            // Act
             UserProfile user = iamAdminService.getUser(testAuthzToken, username);
 
-            // Assert - result depends on Keycloak state
             // If user exists, profile should not be null
         }
 
         @Test
         @DisplayName("Should get users with pagination")
         void shouldGetUsers() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
-
-            // Act
             List<UserProfile> users = iamAdminService.getUsers(testAuthzToken, 0, 10, "");
 
-            // Assert
             assertThat(users).isNotNull();
         }
 
         @Test
         @DisplayName("Should find users by email or userId")
         void shouldFindUsers() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
-
-            // Act
             List<UserProfile> users = iamAdminService.findUsers(testAuthzToken, "test@example.com", null);
 
-            // Assert
             assertThat(users).isNotNull();
         }
     }
@@ -190,13 +163,10 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should reset user password")
         void shouldResetUserPassword() throws IamAdminServicesException {
-            // Note: This test requires Keycloak to be running or properly mocked
             String username = "test-reset-password";
 
-            // Act
             boolean reset = iamAdminService.resetUserPassword(testAuthzToken, username, "newPassword123");
 
-            // Assert - result depends on Keycloak state
             assertThat(reset).isNotNull();
         }
     }
@@ -208,12 +178,9 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should add role to user")
         void shouldAddRoleToUser() throws IamAdminServicesException, RegistryServiceException {
-            // Note: This test requires Keycloak to be running, gateway setup, and proper credentials
             String username = "test-role-user";
             String roleName = "test-role";
 
-            // This test may fail if gateway is not properly set up
-            // Act & Assert
             try {
                 boolean added = iamAdminService.addRoleToUser(testAuthzToken, username, roleName);
                 assertThat(added).isNotNull();
@@ -226,12 +193,9 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should remove role from user")
         void shouldRemoveRoleFromUser() throws IamAdminServicesException, RegistryServiceException {
-            // Note: This test requires Keycloak to be running, gateway setup, and proper credentials
             String username = "test-role-user";
             String roleName = "test-role";
 
-            // This test may fail if gateway is not properly set up
-            // Act & Assert
             try {
                 boolean removed = iamAdminService.removeRoleFromUser(testAuthzToken, username, roleName);
                 assertThat(removed).isNotNull();
@@ -244,11 +208,8 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should get users with role")
         void shouldGetUsersWithRole() throws IamAdminServicesException, RegistryServiceException {
-            // Note: This test requires Keycloak to be running, gateway setup, and proper credentials
             String roleName = "test-role";
 
-            // This test may fail if gateway is not properly set up
-            // Act & Assert
             try {
                 List<UserProfile> users = iamAdminService.getUsersWithRole(testAuthzToken, roleName);
                 assertThat(users).isNotNull();
@@ -266,10 +227,8 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should set up gateway with Keycloak tenant")
         void shouldSetUpGateway() throws Exception {
-            // Note: This test requires Keycloak to be running and super admin credentials
             Gateway gateway = TestDataFactory.createTestGateway("test-gateway-setup");
 
-            // Create a password credential token for the gateway admin
             PasswordCredential adminCredential = new PasswordCredential();
             adminCredential.setGatewayId(gateway.getGatewayId());
             adminCredential.setPortalUserName("admin");
@@ -278,8 +237,6 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
             String adminToken = credentialStoreService.addPasswordCredential(adminCredential);
             gateway.setIdentityServerPasswordToken(adminToken);
 
-            // This test may fail if Keycloak is not properly configured
-            // Act & Assert
             try {
                 Gateway result = iamAdminService.setUpGateway(testAuthzToken, gateway);
                 assertThat(result).isNotNull();

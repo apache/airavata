@@ -30,6 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * Unit tests for ServiceStatusVerifier.
  * These tests verify the verifier logic with mock ApplicationContext.
  */
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class ServiceStatusVerifierTest {
 
     private ApplicationContext applicationContext;
@@ -38,7 +39,7 @@ public class ServiceStatusVerifierTest {
 
     @BeforeEach
     public void setUp() {
-        // Create a minimal Spring context for testing
+
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(AiravataServerProperties.class);
         ctx.refresh();
@@ -50,7 +51,7 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsServiceEnabled_ThriftApi() {
-        // Default configuration has thrift enabled
+
         properties.services.thrift.enabled = true;
         assertTrue(verifier.isServiceEnabled("thrift-api"));
 
@@ -60,7 +61,7 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsServiceEnabled_RestApi() {
-        // Default configuration has rest disabled
+
         properties.services.rest.enabled = false;
         assertFalse(verifier.isServiceEnabled("rest-api"));
 
@@ -114,7 +115,7 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsServiceRunning() {
-        // In test context, isServiceRunning checks if enabled
+
         properties.services.thrift.enabled = true;
         assertTrue(verifier.isServiceRunning("thrift-api"));
 
@@ -124,8 +125,8 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsPortListening_UnusedPort() {
-        // Test with a port that's unlikely to be listening (should return false)
-        // Using a high port number that's valid but typically unused
+
+
         assertFalse(verifier.isPortListening(65534));
     }
 

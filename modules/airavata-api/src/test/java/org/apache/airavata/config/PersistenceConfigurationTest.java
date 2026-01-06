@@ -34,13 +34,14 @@ import org.springframework.test.context.TestPropertySource;
  * and all EntityManagerFactory beans can be created without errors.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class PersistenceConfigurationTest {
 
     @Autowired
@@ -73,8 +74,8 @@ public class PersistenceConfigurationTest {
 
     @Test
     public void testPersistenceUnitsCanBeCreated() {
-        // This test verifies that all persistence units can be initialized
-        // without class loading or persistence.xml errors
+
+
         assertNotNull(profileServiceEntityManagerFactory, "Profile service EntityManagerFactory should be created");
         assertNotNull(appCatalogEntityManagerFactory, "App catalog EntityManagerFactory should be created");
         assertNotNull(expCatalogEntityManagerFactory, "Exp catalog EntityManagerFactory should be created");

@@ -70,7 +70,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class JobStatusRepositoryTest extends TestBase {
 
@@ -169,7 +169,7 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_Create_MultipleStatuses() throws RegistryException {
-        // Create a status history for the job
+
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Job submitted to queue");
         jobStatusService.addJobStatus(status1, jobPK);
@@ -186,7 +186,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
         assertTrue(job.getJobStatuses().size() >= 3, "Job should have at least 3 status entries");
 
-        // Verify latest status
+ // latest status
         JobStatus latestStatus = jobStatusService.getJobStatus(jobPK);
         assertNotNull(latestStatus, "Latest status should not be null");
         assertEquals(JobState.ACTIVE, latestStatus.getJobState(), "Latest status should be ACTIVE");
@@ -194,7 +194,7 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_StateTransitions() throws RegistryException {
-        // Test a complete state transition flow
+ // a complete state transition flow
         JobStatus submitted = new JobStatus(JobState.SUBMITTED);
         submitted.setReason("Initial submission");
         jobStatusService.addJobStatus(submitted, jobPK);
@@ -216,7 +216,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertEquals(JobState.COMPLETE, latest.getJobState(), "Final state should be COMPLETE");
         assertEquals("Job completed successfully", latest.getReason(), "Reason should match");
 
-        // Test failure transition - use a separate job to avoid interference
+ // failure transition - use a separate job to avoid interference
         JobModel failedJobModel = new JobModel();
         failedJobModel.setJobId("failed-job-" + java.util.UUID.randomUUID().toString());
         failedJobModel.setTaskId(taskId);
@@ -234,7 +234,7 @@ public class JobStatusRepositoryTest extends TestBase {
         failed.setReason("Job execution failed");
         jobStatusService.addJobStatus(failed, failedJobPK);
 
-        // Verify the job has the failed status
+ // the job has the failed status
         JobModel failedJob = jobService.getJob(failedJobPK);
         assertNotNull(failedJob.getJobStatuses(), "Failed job should have statuses");
         assertTrue(failedJob.getJobStatuses().size() >= 2, "Failed job should have at least 2 statuses");
@@ -246,7 +246,6 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_Get_NonExistentJob() throws RegistryException {
-        // Test that getting status for non-existent job returns null without exception
         JobPK nonExistentPK = new JobPK();
         nonExistentPK.setJobId("non-existent-job-" + java.util.UUID.randomUUID().toString());
         nonExistentPK.setTaskId(
@@ -255,7 +254,6 @@ public class JobStatusRepositoryTest extends TestBase {
         JobStatus status = jobStatusService.getJobStatus(nonExistentPK);
         assertNull(status, "Non-existent job should return null status");
 
-        // Verify this doesn't affect existing job status
         JobStatus existingStatus = new JobStatus(JobState.SUBMITTED);
         existingStatus.setReason("Existing job status");
         jobStatusService.addJobStatus(existingStatus, jobPK);
@@ -271,7 +269,7 @@ public class JobStatusRepositoryTest extends TestBase {
         status.setReason("Initial queued state");
         jobStatusService.addJobStatus(status, jobPK);
 
-        // Update status with all fields
+
         JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
         updatedStatus.setReason("Updated: Job is now active");
         updatedStatus.setTimeOfStateChange(System.currentTimeMillis());
@@ -286,8 +284,6 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_UpdateAddsNewStatusEntry() throws RegistryException {
-        // Test that updateJobStatus creates a new status entry rather than modifying existing
-        // This is important for maintaining complete audit trail
         JobStatus initialStatus = new JobStatus(JobState.SUBMITTED);
         initialStatus.setReason("Initial submission");
         jobStatusService.addJobStatus(initialStatus, jobPK);
@@ -296,23 +292,20 @@ public class JobStatusRepositoryTest extends TestBase {
         int statusCountBefore = jobBeforeUpdate.getJobStatuses().size();
         assertTrue(statusCountBefore >= 1, "Should have at least 1 status before update");
 
-        // Update to new state - this should add a new status entry
+
         JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
         updatedStatus.setReason("Updated to active");
         jobStatusService.updateJobStatus(updatedStatus, jobPK);
 
-        // Verify update worked and latest status is correct
         JobStatus latest = jobStatusService.getJobStatus(jobPK);
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
         assertEquals("Updated to active", latest.getReason(), "Latest reason should match");
 
-        // Verify a new status entry was added (history preserved)
         JobModel jobAfterUpdate = jobService.getJob(jobPK);
         assertTrue(
                 jobAfterUpdate.getJobStatuses().size() > statusCountBefore,
                 "Update should add a new status entry, not replace existing");
 
-        // Verify both statuses exist in history
         List<JobStatus> allStatuses = jobAfterUpdate.getJobStatuses();
         assertTrue(
                 allStatuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
@@ -328,7 +321,7 @@ public class JobStatusRepositoryTest extends TestBase {
 
         JobStatus status = new JobStatus(JobState.SUBMITTED);
         status.setReason("Test time handling");
-        // Don't set timeOfStateChange - service should set it automatically
+
         jobStatusService.addJobStatus(status, jobPK);
 
         long afterTime = System.currentTimeMillis();
@@ -338,7 +331,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertTrue(retrieved.getTimeOfStateChange() >= beforeTime, "Time should be set to current or later");
         assertTrue(retrieved.getTimeOfStateChange() <= afterTime, "Time should be set to current or earlier");
 
-        // Update with explicit time
+
         long explicitTime = System.currentTimeMillis() + 1000;
         JobStatus updated = new JobStatus(JobState.ACTIVE);
         updated.setTimeOfStateChange(explicitTime);
@@ -350,7 +343,7 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_StatusOrdering() throws RegistryException {
-        // Create multiple statuses with slight delays to ensure different timestamps
+
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         jobStatusService.addJobStatus(status1, jobPK);
 
@@ -360,13 +353,12 @@ public class JobStatusRepositoryTest extends TestBase {
         JobStatus status3 = new JobStatus(JobState.ACTIVE);
         jobStatusService.addJobStatus(status3, jobPK);
 
-        // Get all statuses from the job
+
         JobModel job = jobService.getJob(jobPK);
         List<JobStatus> statuses = job.getJobStatuses();
         assertNotNull(statuses, "Statuses list should not be null");
         assertTrue(statuses.size() >= 3, "Should have at least 3 statuses");
 
-        // Verify ordering - latest should be first (service returns ordered by time desc)
         JobStatus latest = jobStatusService.getJobStatus(jobPK);
         assertNotNull(latest, "Latest status should exist");
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
@@ -374,10 +366,9 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_AutomaticStatusIdGeneration() throws RegistryException {
-        // Test that statusId is automatically generated if not provided
         JobStatus status = new JobStatus(JobState.SUBMITTED);
         status.setReason("Testing automatic status ID generation");
-        // Don't set statusId - service should generate it automatically
+
 
         jobStatusService.addJobStatus(status, jobPK);
 
@@ -390,8 +381,6 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_StatusHistoryCompleteness() throws RegistryException {
-        // Test that status history is complete and all statuses are preserved (important for audit trail)
-        // Create statuses with explicit time gaps to ensure distinct timestamps
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Job submitted");
         jobStatusService.addJobStatus(status1, jobPK);
@@ -404,13 +393,11 @@ public class JobStatusRepositoryTest extends TestBase {
         status3.setReason("Job active");
         jobStatusService.addJobStatus(status3, jobPK);
 
-        // Verify all statuses are preserved in history
         JobModel job = jobService.getJob(jobPK);
         List<JobStatus> statuses = job.getJobStatuses();
         assertNotNull(statuses, "Statuses list should not be null");
         assertTrue(statuses.size() >= 3, "Should have at least 3 statuses in history");
 
-        // Verify all expected states are present
         assertTrue(
                 statuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
                 "SUBMITTED status should be in history");
@@ -421,12 +408,10 @@ public class JobStatusRepositoryTest extends TestBase {
                 statuses.stream().anyMatch(s -> s.getJobState() == JobState.ACTIVE),
                 "ACTIVE status should be in history");
 
-        // Verify latest status is returned by getJobStatus (should be most recent)
         JobStatus latest = jobStatusService.getJobStatus(jobPK);
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
         assertTrue(latest.getTimeOfStateChange() > 0, "Latest status should have timestamp");
 
-        // Verify all statuses have proper timestamps (critical for audit trail)
         statuses.forEach(s -> {
             assertTrue(
                     s.getTimeOfStateChange() > 0, "Each status should have timeOfStateChange set: " + s.getJobState());
@@ -436,11 +421,11 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_AllJobStates() throws RegistryException {
-        // Test all possible job states
+ // all possible job states
         JobState[] allStates = JobState.values();
         JobPK[] jobPKs = new JobPK[allStates.length];
 
-        // Create a job for each state
+
         for (int i = 0; i < allStates.length; i++) {
             jobPKs[i] = createNewJob("job-state-" + allStates[i].name());
             JobStatus status = new JobStatus(allStates[i]);
@@ -455,8 +440,6 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_RapidStatusUpdates() throws RegistryException {
-        // Test handling of rapid sequential status updates - important for real-world scenarios
-        // where job status can change quickly (e.g., SUBMITTED -> QUEUED -> ACTIVE in quick succession)
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Rapid update 1");
         jobStatusService.addJobStatus(status1, jobPK);
@@ -469,16 +452,13 @@ public class JobStatusRepositoryTest extends TestBase {
         status3.setReason("Rapid update 3");
         jobStatusService.addJobStatus(status3, jobPK);
 
-        // Verify all statuses are recorded (no data loss)
         JobModel job = jobService.getJob(jobPK);
         assertTrue(job.getJobStatuses().size() >= 3, "All rapid status updates should be recorded without loss");
 
-        // Verify latest status reflects the most recent update
         JobStatus latest = jobStatusService.getJobStatus(jobPK);
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should reflect the most recent update");
         assertEquals("Rapid update 3", latest.getReason(), "Latest reason should match the most recent update");
 
-        // Verify all statuses have proper timestamps
         List<JobStatus> statuses = job.getJobStatuses();
         statuses.forEach(s -> {
             assertTrue(s.getTimeOfStateChange() > 0, "All statuses should have timestamps set: " + s.getJobState());
@@ -486,7 +466,7 @@ public class JobStatusRepositoryTest extends TestBase {
         });
     }
 
-    // Helper method to create a new job for testing
+
     private JobPK createNewJob(String jobIdPrefix) throws RegistryException {
         JobModel jobModel = new JobModel();
         jobModel.setJobId(jobIdPrefix + "-" + java.util.UUID.randomUUID().toString());

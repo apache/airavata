@@ -73,11 +73,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ComputeResourceRepositoryTest extends TestBase {
 
@@ -133,7 +133,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
 
-        // Handle null case - if no batch queues are returned, it means they were all removed
+
         if (updatedBatchQueues == null) {
             updatedBatchQueues = new java.util.ArrayList<>();
         }
@@ -174,7 +174,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
 
-        // Handle null case - if no data movement interfaces are returned, it means they were all removed
+
         if (updatedDataMovementInterfaces == null) {
             updatedDataMovementInterfaces = new java.util.ArrayList<>();
         }
@@ -217,7 +217,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
                 updatedComputeResource.getJobSubmissionInterfaces();
 
-        // Handle null case - if no job submission interfaces are returned, it means they were all removed
+
         if (updatedJobSubmissionInterfaces == null) {
             updatedJobSubmissionInterfaces = new java.util.ArrayList<>();
         }
@@ -259,18 +259,18 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<ComputeResourceDescription> allSavedComputeResources = computeResourceService.getAllComputeResourceList();
 
-        // Verify that all 5 created resources are in the list (there may be more from other tests)
+
         Assertions.assertTrue(
                 allSavedComputeResources.size() >= 5,
                 "Expected at least 5 resources, but got " + allSavedComputeResources.size());
 
-        // Create a map of saved resources by ID for easier lookup
+
         Map<String, ComputeResourceDescription> savedMap = new HashMap<>();
         for (ComputeResourceDescription saved : allSavedComputeResources) {
             savedMap.put(saved.getComputeResourceId(), saved);
         }
 
-        // Verify each created resource is in the saved list and matches
+
         for (int i = 0; i < 5; i++) {
             ComputeResourceDescription saved = savedMap.get(allIds.get(i));
             Assertions.assertNotNull(saved, "Resource " + allIds.get(i) + " not found in saved list");
@@ -281,7 +281,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         var allSavedComputeResourceIds = computeResourceService.getAllComputeResourceIdList();
 
-        // Verify that all 5 created resource IDs are in the map (there may be more from other tests)
+
         Assertions.assertTrue(
                 allSavedComputeResourceIds.size() >= 5,
                 "Expected at least 5 resource IDs, but got " + allSavedComputeResourceIds.size());
@@ -294,7 +294,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         var allAvailableIds = computeResourceService.getAvailableComputeResourceIdList();
 
-        // Verify that the 3 enabled resources (indices 0, 2, 4) are in the available list
+
         Assertions.assertTrue(
                 allAvailableIds.size() >= 3,
                 "Expected at least 3 available resources, but got " + allAvailableIds.size());
@@ -341,7 +341,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
             computeResourceService.getComputeResourceList(cfilters);
             Assertions.fail();
         } catch (Exception e) {
-            // ignore
+
         }
     }
 
@@ -460,7 +460,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     @Test
     public void addCloudJobSubmissionTest() throws AppCatalogException {
-        // Test AWS CloudJobSubmission (EC2)
+
         CloudJobSubmission cloudJobSubmission = prepareCloudJobSubmission();
         String savedSubmissionId = computeResourceService.addCloudJobSubmission(cloudJobSubmission);
         CloudJobSubmission savedSubmission = computeResourceService.getCloudJobSubmission(savedSubmissionId);
@@ -584,7 +584,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     private ResourceJobManager prepareResourceJobManager() {
         ResourceJobManager jobManager = new ResourceJobManager();
-        // Changed from PBS to SLURM as per requirements
+
         jobManager.setResourceJobManagerType(ResourceJobManagerType.SLURM);
         jobManager.setPushMonitoringEndpoint("monitor ep");
         jobManager.setJobManagerBinPath("/usr/bin");
@@ -671,7 +671,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
             if (actual == null || expected.size() != actual.size()) {
                 return false;
             }
-            // For String lists, compare as sets to ignore order
+
             return new java.util.HashSet<>(expected).equals(new java.util.HashSet<>(actual));
         }
         return false;
@@ -687,7 +687,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 return false;
             }
 
-            // Determine which fields to exclude based on the type of objects in the list
+
             String[] excludeFields =
                     new String[] {"__isset_bitfield", "creationTime", "updateTime", "storageResourceId"};
 
@@ -696,18 +696,18 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 for (int i = 0; i < expected.size(); i++) {
                     Object expectedItem = expected.get(i);
                     Object actualItem = actual.get(i);
-                    // Use equals() method if available (e.g., BatchQueue has custom equals)
+
                     if (expectedItem instanceof org.apache.airavata.common.model.BatchQueue) {
-                        // BatchQueue.equals() compares all fields including maxRunTime
-                        // If mapping isn't working, maxRunTime might be 0 in actual
-                        // So we do a more lenient comparison
+
+
+
                         org.apache.airavata.common.model.BatchQueue expectedBq =
                                 (org.apache.airavata.common.model.BatchQueue) expectedItem;
                         org.apache.airavata.common.model.BatchQueue actualBq =
                                 (org.apache.airavata.common.model.BatchQueue) actualItem;
-                        // Compare all fields except maxRunTime (which has a mapping issue: maxRuntime vs
-                        // maxRunTime)
-                        // The Dozer mapping might not be working correctly, so we exclude maxRunTime from comparison
+
+
+
                         boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                 && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
                                 && Objects.equals(expectedBq.getMaxNodes(), actualBq.getMaxNodes())
@@ -721,12 +721,12 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                 && Objects.equals(
                                         expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                 && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-                        // Note: maxRunTime is excluded from comparison due to Dozer mapping issue (maxRuntime vs
-                        // maxRunTime)
+
+
                         equals = equals & bqEquals;
                     } else if (expectedItem instanceof org.apache.airavata.common.model.JobSubmissionInterface
                             && actualItem instanceof org.apache.airavata.common.model.JobSubmissionInterface) {
-                        // Handle polymorphic JobSubmissionInterface - compare only common fields
+
                         org.apache.airavata.common.model.JobSubmissionInterface expectedJsi =
                                 (org.apache.airavata.common.model.JobSubmissionInterface) expectedItem;
                         org.apache.airavata.common.model.JobSubmissionInterface actualJsi =
@@ -740,7 +740,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                         equals = equals & jsiEquals;
                     } else if (expectedItem instanceof org.apache.airavata.common.model.DataMovementInterface
                             && actualItem instanceof org.apache.airavata.common.model.DataMovementInterface) {
-                        // Handle polymorphic DataMovementInterface - compare only common fields
+
                         org.apache.airavata.common.model.DataMovementInterface expectedDmi =
                                 (org.apache.airavata.common.model.DataMovementInterface) expectedItem;
                         org.apache.airavata.common.model.DataMovementInterface actualDmi =
@@ -766,19 +766,19 @@ public class ComputeResourceRepositoryTest extends TestBase {
                             continue;
                         }
                         Object actualItem = actual.get(j);
-                        // Use equals() method if available (e.g., BatchQueue has custom equals)
+
                         if (expectedItem instanceof org.apache.airavata.common.model.BatchQueue) {
-                            // BatchQueue.equals() compares all fields including maxRunTime
-                            // If mapping isn't working, maxRunTime might be 0 in actual
-                            // So we do a more lenient comparison
+
+
+
                             org.apache.airavata.common.model.BatchQueue expectedBq =
                                     (org.apache.airavata.common.model.BatchQueue) expectedItem;
                             org.apache.airavata.common.model.BatchQueue actualBq =
                                     (org.apache.airavata.common.model.BatchQueue) actualItem;
-                            // Compare all fields except maxRunTime (which has a mapping issue: maxRuntime vs
-                            // maxRunTime)
-                            // The mapping might not be working correctly, so we exclude maxRunTime from
-                            // comparison
+
+
+
+
                             boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                     && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
                                     && Objects.equals(expectedBq.getMaxNodes(), actualBq.getMaxNodes())
@@ -792,12 +792,12 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                     && Objects.equals(
                                             expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                     && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-                            // Note: maxRunTime is excluded from comparison due to mapping issue (maxRuntime vs
-                            // maxRunTime)
+
+
                             equals = bqEquals;
                         } else if (expectedItem instanceof org.apache.airavata.common.model.JobSubmissionInterface
                                 && actualItem instanceof org.apache.airavata.common.model.JobSubmissionInterface) {
-                            // Handle polymorphic JobSubmissionInterface - compare only common fields
+
                             org.apache.airavata.common.model.JobSubmissionInterface expectedJsi =
                                     (org.apache.airavata.common.model.JobSubmissionInterface) expectedItem;
                             org.apache.airavata.common.model.JobSubmissionInterface actualJsi =
@@ -811,7 +811,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                             actualJsi.getJobSubmissionProtocol());
                         } else if (expectedItem instanceof org.apache.airavata.common.model.DataMovementInterface
                                 && actualItem instanceof org.apache.airavata.common.model.DataMovementInterface) {
-                            // Handle polymorphic DataMovementInterface - compare only common fields
+
                             org.apache.airavata.common.model.DataMovementInterface expectedDmi =
                                     (org.apache.airavata.common.model.DataMovementInterface) expectedItem;
                             org.apache.airavata.common.model.DataMovementInterface actualDmi =

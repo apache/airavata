@@ -909,7 +909,7 @@ public class OrchestratorService {
     }
 
     private void startCurator() {
-        String connectionSting = properties.zookeeper.serverConnection;
+        String connectionSting = properties.zookeeper.server.connection;
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
         curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
         curatorClient.start();

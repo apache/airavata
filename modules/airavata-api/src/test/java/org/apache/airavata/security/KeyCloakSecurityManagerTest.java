@@ -70,12 +70,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "security.iam.server-url=", // Empty to skip IAM HTTP calls in tests
             "security.manager.enabled=true",
             "security.authzCache.enabled=true", // Enable cache - tests will mock cache behavior
-            // Infrastructure components excluded via component scanning - no property flags needed
+
             "test.keycloak.security.manager=true",
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class KeyCloakSecurityManagerTest {
 
     public static final String TEST_USERNAME = "test-user";
@@ -111,15 +112,14 @@ public class KeyCloakSecurityManagerTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils"
             })
-    @Import(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {
         @Bean
         @Primary
         public AiravataServerProperties airavataServerProperties(org.springframework.core.env.Environment environment) {
             AiravataServerProperties properties = new AiravataServerProperties();
-            // AiravataServerProperties doesn't have setEnvironment - properties are set via Spring binding
+
             properties.security.tls.enabled = true;
-            // Leave IAM server URL empty to skip HTTP calls in tests
+
             properties.security.iam.serverUrl = "";
             properties.security.authzCache.enabled = true; // Enable cache - tests will mock it
             return properties;
@@ -158,17 +158,17 @@ public class KeyCloakSecurityManagerTest {
     @BeforeEach
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
         reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManagerFactory, mockAuthzCacheManager);
-        // Configure the factory to return the mock cache manager
+
         when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
 
-        // Mock GatewayResourceProfile for tests that need it (when token validation is attempted)
+
         GatewayResourceProfile mockGwrp = new GatewayResourceProfile();
         mockGwrp.setGatewayID(TEST_GATEWAY);
         mockGwrp.setIdentityServerTenant("test-realm");
         try {
             when(mockRegistryService.getGatewayResourceProfile(TEST_GATEWAY)).thenReturn(mockGwrp);
         } catch (Exception e) {
-            // Ignore
+
         }
     }
 
@@ -292,13 +292,13 @@ public class KeyCloakSecurityManagerTest {
     }
 
     private void createExpectationsForTokenVerification() throws IOException, ApplicationSettingsException {
-        // Note: URL and HttpURLConnection mocking is complex with Mockito.
-        // This test may need to be refactored to use a different approach for HTTP mocking,
-        // such as WireMock or a custom test configuration that provides mock HTTP connections.
-        // For now, the test structure is preserved but HTTP mocking would need to be implemented
-        // using Mockito or another mocking framework compatible with Spring Boot Test.
-        // The actual HTTP calls in KeyCloakSecurityManager would need to be mocked at a different level
-        // or the class would need to be refactored to use a testable HTTP client abstraction.
+
+
+
+
+
+
+
     }
 
     private void createExpectationsForGatewayGroupsMembership(
@@ -340,7 +340,7 @@ public class KeyCloakSecurityManagerTest {
     private void createExpectationsForAuthzCacheDisabled()
             throws ApplicationSettingsException, AiravataSecurityException {
 
-        // For disabled cache tests, mock cache to return NOT_CACHED so it falls through to group membership check
+
         createExpectationsForAuthzCache(true, null, AuthzCachedStatus.NOT_CACHED);
     }
 
@@ -348,23 +348,23 @@ public class KeyCloakSecurityManagerTest {
             boolean cacheEnabled, String apiMethod, AuthzCachedStatus authzCachedStatus)
             throws ApplicationSettingsException, AiravataSecurityException {
 
-        // Configure the factory to return the mock cache manager
+
         when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
 
         if (cacheEnabled && apiMethod != null && authzCachedStatus != null) {
             when(mockAuthzCacheManager.getAuthzCachedStatus(any(AuthzCacheIndex.class)))
                     .thenReturn(authzCachedStatus);
-            // Mock addToAuthzCache for cache updates (needed for NOT_CACHED status)
+
             doNothing().when(mockAuthzCacheManager).addToAuthzCache(any(AuthzCacheIndex.class), any());
 
-            // For NOT_CACHED status, gateway groups should already be set up by the test
-            // Don't overwrite them here
+
+
         } else if (cacheEnabled && authzCachedStatus != null) {
-            // Cache enabled but no specific method - return NOT_CACHED for all
+
             when(mockAuthzCacheManager.getAuthzCachedStatus(any(AuthzCacheIndex.class)))
                     .thenReturn(authzCachedStatus);
             doNothing().when(mockAuthzCacheManager).addToAuthzCache(any(AuthzCacheIndex.class), any());
-            // For NOT_CACHED status, set up default gateway groups if not already set up
+
             if (authzCachedStatus == AuthzCachedStatus.NOT_CACHED) {
                 createExpectationsForGatewayGroupsMembership(false, false);
             }

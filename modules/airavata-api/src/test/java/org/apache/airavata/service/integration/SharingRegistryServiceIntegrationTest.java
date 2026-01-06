@@ -41,11 +41,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-@org.junit.jupiter.api.Disabled("Requires external sharing registry; skipped in offline test runs")
-@SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
+@SpringBootTest(
+        classes = {
+            org.apache.airavata.config.JpaConfig.class,
+            org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.AiravataServerProperties.class
+        },
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "flyway.enabled=false"
+        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
-public class SharingRegistryServiceIntegrationTest {
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.junit.jupiter.api.DisplayName("SharingRegistryService Integration Tests")
+public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final SharingRegistryService sharingService;
 
@@ -54,153 +63,155 @@ public class SharingRegistryServiceIntegrationTest {
     }
 
     @Test
-    public void test()
+    @org.junit.jupiter.api.DisplayName("Should perform complete sharing registry operations including domain, users, groups, permissions, entities, and access control")
+    void shouldPerformCompleteSharingRegistryOperations()
             throws InterruptedException, ApplicationSettingsException, SharingRegistryException,
                     DuplicateEntryException {
         Domain domain = new Domain();
-        // has to be one word
         domain.setName("test-domain" + Math.random());
-        // optional
         domain.setDescription("test domain description");
 
         String domainId = sharingService.createDomain(domain);
-        Assertions.assertTrue(sharingService.isDomainExists(domainId));
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isDomainExists(domainId), "Domain should exist after creation");
+        
+        Domain retrievedDomain = sharingService.getDomain(domainId);
+        Assertions.assertNotNull(retrievedDomain, "Retrieved domain should not be null");
+        Assertions.assertEquals(domain.getName(), retrievedDomain.getName(), "Domain name should match");
 
         User user1 = new User();
-        // required
         user1.setUserId("test-user-1");
-        // required
         user1.setUserName("test-user-1");
-        // required
         user1.setDomainId(domainId);
-        // required
         user1.setFirstName("John");
-        // required
         user1.setLastName("Doe");
-        // required
         user1.setEmail("john.doe@abc.com");
-        // optional - this should be bytes of the users image icon
-        // byte[] icon1 = new byte[10];
-        // user1.setIcon(icon1);
 
-        sharingService.createUser(user1);
-        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-1"));
+        String userId1 = sharingService.createUser(user1);
+        commitTransaction();
+        Assertions.assertNotNull(userId1, "User ID should be returned");
+        Assertions.assertEquals("test-user-1", userId1, "User ID should match the input");
+        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-1"), "User should exist after creation");
+        
+        User retrievedUser1 = sharingService.getUser(domainId, "test-user-1");
+        Assertions.assertNotNull(retrievedUser1, "Retrieved user should not be null");
+        Assertions.assertEquals("test-user-1", retrievedUser1.getUserId(), "User ID should match");
+        Assertions.assertEquals("test-user-1", retrievedUser1.getUserName(), "User name should match");
+        Assertions.assertEquals("John", retrievedUser1.getFirstName(), "First name should match");
+        Assertions.assertEquals("Doe", retrievedUser1.getLastName(), "Last name should match");
+        Assertions.assertEquals("john.doe@abc.com", retrievedUser1.getEmail(), "Email should match");
+        Assertions.assertEquals(domainId, retrievedUser1.getDomainId(), "Domain ID should match");
 
         User user2 = new User();
-        // required
         user2.setUserId("test-user-2");
-        // required
         user2.setUserName("test-user-2");
-        // required
         user2.setDomainId(domainId);
-        // required
         user2.setFirstName("John");
-        // required
         user2.setLastName("Doe");
-        // required
         user2.setEmail("john.doe@abc.com");
-        // optional - this should be bytes of the users image icon
-        // byte[] icon2 = new byte[10];
-        // user2.setIcon(icon2);
 
-        sharingService.createUser(user2);
+        String userId2 = sharingService.createUser(user2);
+        commitTransaction();
+        Assertions.assertNotNull(userId2, "User 2 ID should be returned");
+        Assertions.assertEquals("test-user-2", userId2, "User 2 ID should match");
+        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-2"), "User 2 should exist after creation");
 
         User user3 = new User();
-        // required
         user3.setUserId("test-user-3");
-        // required
         user3.setUserName("test-user-3");
-        // required
         user3.setDomainId(domainId);
-        // required
         user3.setFirstName("John");
-        // required
         user3.setLastName("Doe");
-        // required
         user3.setEmail("john.doe@abc.com");
-        // optional - this should be bytes of the users image icon
-        // byte[] icon3 = new byte[10];
-        // user3.setIcon(icon3);
 
-        sharingService.createUser(user3);
+        String userId3 = sharingService.createUser(user3);
+        commitTransaction();
+        Assertions.assertNotNull(userId3, "User 3 ID should be returned");
+        Assertions.assertEquals("test-user-3", userId3, "User 3 ID should match");
+        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-3"), "User 3 should exist after creation");
 
         User user7 = new User();
-        // required
         user7.setUserId("test-user-7");
-        // required
         user7.setUserName("test-user-7");
-        // required
         user7.setDomainId(domainId);
-        // required
         user7.setFirstName("John");
-        // required
         user7.setLastName("Doe");
-        // required
         user7.setEmail("john.doe@abc.com");
-        // optional - this should be bytes of the users image icon
-        // byte[] icon3 = new byte[10];
-        // user3.setIcon(icon3);
 
-        sharingService.createUser(user7);
+        String userId7 = sharingService.createUser(user7);
+        commitTransaction();
+        Assertions.assertNotNull(userId7, "User 7 ID should be returned");
+        Assertions.assertEquals("test-user-7", userId7, "User 7 ID should match");
+        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-7"), "User 7 should exist after creation");
 
-        // Test updates to user and how it affects the user's SINGLE_USER group
         UserGroup singleUserGroupUser7 = sharingService.getGroup(domainId, user7.getUserId());
         Assertions.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
         user7.setFirstName("Johnny");
-        sharingService.updatedUser(user7);
+        boolean userUpdated = sharingService.updatedUser(user7);
+        commitTransaction();
+        Assertions.assertTrue(userUpdated, "User update should succeed");
         User updatedUser7 = sharingService.getUser(domainId, user7.getUserId());
-        Assertions.assertEquals("Johnny", updatedUser7.getFirstName());
+        Assertions.assertNotNull(updatedUser7, "Updated user should not be null");
+        Assertions.assertEquals("Johnny", updatedUser7.getFirstName(), "First name should be updated");
+        Assertions.assertEquals("Doe", updatedUser7.getLastName(), "Last name should remain unchanged");
         singleUserGroupUser7 = sharingService.getGroup(domainId, user7.getUserId());
+        Assertions.assertNotNull(singleUserGroupUser7, "Single user group should exist");
         Assertions.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
 
         UserGroup userGroup1 = new UserGroup();
-        // required
         userGroup1.setGroupId("test-group-1");
-        // required
         userGroup1.setDomainId(domainId);
-        // required
         userGroup1.setName("test-group-1");
-        // optional
         userGroup1.setDescription("test group description");
-        // required
         userGroup1.setOwnerId("test-user-1");
-        // required
         userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
 
-        sharingService.createGroup(userGroup1);
+        String groupId1 = sharingService.createGroup(userGroup1);
+        commitTransaction();
+        Assertions.assertNotNull(groupId1, "Group ID should be returned");
+        Assertions.assertTrue(sharingService.isGroupExists(domainId, "test-group-1"), "Group should exist after creation");
+        
+        UserGroup retrievedGroup1 = sharingService.getGroup(domainId, "test-group-1");
+        Assertions.assertNotNull(retrievedGroup1, "Retrieved group should not be null");
+        Assertions.assertEquals("test-group-1", retrievedGroup1.getGroupId(), "Group ID should match");
+        
         userGroup1.setDescription("updated description");
-        sharingService.updateGroup(userGroup1);
+        boolean updated = sharingService.updateGroup(userGroup1);
+        commitTransaction();
+        Assertions.assertTrue(updated, "Group update should succeed");
         Assertions.assertEquals(
                 "updated description",
-                sharingService.getGroup(domainId, userGroup1.getGroupId()).getDescription());
-        Assertions.assertTrue(sharingService.isGroupExists(domainId, "test-group-1"));
+                sharingService.getGroup(domainId, userGroup1.getGroupId()).getDescription(),
+                "Group description should be updated");
 
         UserGroup userGroup2 = new UserGroup();
-        // required
         userGroup2.setGroupId("test-group-2");
-        // required
         userGroup2.setDomainId(domainId);
-        // required
         userGroup2.setName("test-group-2");
-        // optional
         userGroup2.setDescription("test group description");
-        // required
         userGroup2.setOwnerId("test-user-2");
-        // required
         userGroup2.setGroupType(GroupType.USER_LEVEL_GROUP);
 
-        sharingService.createGroup(userGroup2);
+        String groupId2 = sharingService.createGroup(userGroup2);
+        commitTransaction();
+        Assertions.assertNotNull(groupId2, "Group 2 ID should be returned");
+        Assertions.assertEquals("test-group-2", groupId2, "Group 2 ID should match");
+        Assertions.assertTrue(sharingService.isGroupExists(domainId, "test-group-2"), "Group 2 should exist after creation");
 
-        sharingService.addUsersToGroup(domainId, List.of("test-user-3"), "test-group-2");
+        boolean usersAdded = sharingService.addUsersToGroup(domainId, List.of("test-user-3"), "test-group-2");
+        commitTransaction();
+        Assertions.assertTrue(usersAdded, "Users should be added to group");
 
-        sharingService.addUsersToGroup(domainId, List.of("test-user-7"), "test-group-1");
+        boolean usersAddedToGroup1 = sharingService.addUsersToGroup(domainId, List.of("test-user-7"), "test-group-1");
+        commitTransaction();
+        Assertions.assertTrue(usersAddedToGroup1, "User 7 should be added to group 1");
 
-        sharingService.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
+        boolean childGroupsAdded = sharingService.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
+        commitTransaction();
+        Assertions.assertTrue(childGroupsAdded, "Child groups should be added to parent group");
 
-        // Group roles
         Assertions.assertTrue(sharingService.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
 
-        // user has admin access
         Assertions.assertTrue(sharingService.addGroupAdmins(domainId, "test-group-1", List.of("test-user-7")));
         Assertions.assertTrue(sharingService.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
@@ -210,7 +221,6 @@ public class SharingRegistryServiceIntegrationTest {
         Assertions.assertTrue(sharingService.removeGroupAdmins(domainId, "test-group-1", List.of("test-user-7")));
         Assertions.assertFalse(sharingService.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
-        // transfer group ownership
         sharingService.addUsersToGroup(domainId, List.of("test-user-2"), "test-group-1");
         Assertions.assertTrue(sharingService.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
         Assertions.assertTrue(sharingService.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
@@ -218,16 +228,13 @@ public class SharingRegistryServiceIntegrationTest {
         Assertions.assertFalse(sharingService.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
 
         PermissionType permissionType1 = new PermissionType();
-        // required
         permissionType1.setPermissionTypeId("READ");
-        // required
         permissionType1.setDomainId(domainId);
-        // required
         permissionType1.setName("READ");
-        // optional
         permissionType1.setDescription("READ description");
         sharingService.createPermissionType(permissionType1);
-        Assertions.assertTrue(sharingService.isPermissionExists(domainId, "READ"));
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isPermissionExists(domainId, "READ"), "READ permission should exist");
 
         PermissionType permissionType2 = new PermissionType();
         permissionType2.setPermissionTypeId("WRITE");
@@ -235,6 +242,8 @@ public class SharingRegistryServiceIntegrationTest {
         permissionType2.setName("WRITE");
         permissionType2.setDescription("WRITE description");
         sharingService.createPermissionType(permissionType2);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isPermissionExists(domainId, "WRITE"), "WRITE permission should exist");
 
         PermissionType permissionType3 = new PermissionType();
         permissionType3.setPermissionTypeId("CLONE");
@@ -242,18 +251,17 @@ public class SharingRegistryServiceIntegrationTest {
         permissionType3.setName("CLONE");
         permissionType3.setDescription("CLONE description");
         sharingService.createPermissionType(permissionType3);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isPermissionExists(domainId, "CLONE"), "CLONE permission should exist");
 
         EntityType entityType1 = new EntityType();
-        // required
         entityType1.setEntityTypeId("PROJECT");
-        // required
         entityType1.setDomainId(domainId);
-        // required
         entityType1.setName("PROJECT");
-        // optional
         entityType1.setDescription("PROJECT entity type description");
         sharingService.createEntityType(entityType1);
-        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "PROJECT"));
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "PROJECT"), "PROJECT entity type should exist");
 
         EntityType entityType2 = new EntityType();
         entityType2.setEntityTypeId("EXPERIMENT");
@@ -261,6 +269,8 @@ public class SharingRegistryServiceIntegrationTest {
         entityType2.setName("EXPERIMENT");
         entityType2.setDescription("EXPERIMENT entity type");
         sharingService.createEntityType(entityType2);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "EXPERIMENT"), "EXPERIMENT entity type should exist");
 
         EntityType entityType3 = new EntityType();
         entityType3.setEntityTypeId("FILE");
@@ -268,27 +278,25 @@ public class SharingRegistryServiceIntegrationTest {
         entityType3.setName("FILE");
         entityType3.setDescription("FILE entity type");
         sharingService.createEntityType(entityType3);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "FILE"), "FILE entity type should exist");
 
-        // Creating entities
         Entity entity1 = new Entity();
-        // required
         entity1.setEntityId("test-project-1");
-        // required
         entity1.setDomainId(domainId);
-        // required
         entity1.setEntityTypeId("PROJECT");
-        // required
         entity1.setOwnerId("test-user-1");
-        // required
         entity1.setName("test-project-1");
-        // optional
         entity1.setDescription("test project 1 description");
-        // optional
         entity1.setFullText("test project 1 stampede gaussian seagrid");
-        // optional - If not set this will be default to current system time
         entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
         sharingService.createEntity(entity1);
-        Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-project-1"));
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-project-1"), "Entity 1 should exist");
+        Entity retrievedEntity1 = sharingService.getEntity(domainId, "test-project-1");
+        Assertions.assertNotNull(retrievedEntity1, "Retrieved entity 1 should not be null");
+        Assertions.assertEquals("test-project-1", retrievedEntity1.getEntityId(), "Entity ID should match");
+        Assertions.assertEquals("test-project-1", retrievedEntity1.getName(), "Entity name should match");
 
         Entity entity2 = new Entity();
         entity2.setEntityId("test-experiment-1");
@@ -300,6 +308,8 @@ public class SharingRegistryServiceIntegrationTest {
         entity2.setParentEntityId("test-project-1");
         entity2.setFullText("test experiment 1 benzene");
         sharingService.createEntity(entity2);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-experiment-1"), "Entity 2 should exist");
 
         Entity entity3 = new Entity();
         entity3.setEntityId("test-experiment-2");
@@ -311,6 +321,8 @@ public class SharingRegistryServiceIntegrationTest {
         entity3.setParentEntityId("test-project-1");
         entity3.setFullText("test experiment 1 3-methyl 1-butanol stampede");
         sharingService.createEntity(entity3);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-experiment-2"), "Entity 3 should exist");
 
         Entity entity4 = new Entity();
         entity4.setEntityId("test-file-1");
@@ -322,12 +334,16 @@ public class SharingRegistryServiceIntegrationTest {
         entity4.setParentEntityId("test-experiment-2");
         entity4.setFullText("test input file 1 for experiment 2");
         sharingService.createEntity(entity4);
+        commitTransaction();
+        Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-file-1"), "Entity 4 should exist");
 
         Assertions.assertEquals(
                 0, sharingService.getEntity(domainId, "test-project-1").getSharedCount());
-        sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
+        boolean sharedWithUsers = sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
+        commitTransaction();
+        Assertions.assertTrue(sharedWithUsers, "Entity should be shared with users");
         Assertions.assertEquals(
-                1, sharingService.getEntity(domainId, "test-project-1").getSharedCount());
+                1, sharingService.getEntity(domainId, "test-project-1").getSharedCount(), "Shared count should be 1");
         ArrayList<SearchCriteria> filters = new ArrayList<>();
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchField(EntitySearchField.SHARED_COUNT);
@@ -340,36 +356,33 @@ public class SharingRegistryServiceIntegrationTest {
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
                         .size());
 
-        sharingService.revokeEntitySharingFromUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE");
+        boolean revoked = sharingService.revokeEntitySharingFromUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE");
+        commitTransaction();
+        Assertions.assertTrue(revoked, "Sharing should be revoked");
         Assertions.assertEquals(
-                0, sharingService.getEntity(domainId, "test-project-1").getSharedCount());
+                0, sharingService.getEntity(domainId, "test-project-1").getSharedCount(), "Shared count should be 0 after revocation");
         sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
+        commitTransaction();
 
-        sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
-        sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
+        boolean sharedWithGroups1 = sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
+        commitTransaction();
+        Assertions.assertTrue(sharedWithGroups1, "Entity should be shared with groups (READ)");
+        boolean sharedWithGroups2 = sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
+        commitTransaction();
+        Assertions.assertTrue(sharedWithGroups2, "Entity should be shared with groups (CLONE)");
 
-        // true
         Assertions.assertTrue(sharingService.userHasAccess(domainId, "test-user-2", "test-project-1", "WRITE"));
-        // true
         Assertions.assertTrue(sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-1", "WRITE"));
-        // true
         Assertions.assertTrue(sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-2", "WRITE"));
 
-        // false
         Assertions.assertFalse(sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-1", "READ"));
-        // true
         Assertions.assertTrue(sharingService.userHasAccess(domainId, "test-user-2", "test-experiment-2", "READ"));
 
-        // false
         Assertions.assertFalse(sharingService.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
-        // true
         Assertions.assertTrue(sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "READ"));
-        // false
         Assertions.assertFalse(sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "WRITE"));
 
-        // true
         Assertions.assertTrue((sharingService.userHasAccess(domainId, "test-user-3", "test-experiment-2", "CLONE")));
-        // false
         Assertions.assertFalse((sharingService.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 
         filters = new ArrayList<>();

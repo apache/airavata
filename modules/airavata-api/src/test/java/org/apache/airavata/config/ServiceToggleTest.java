@@ -52,7 +52,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class ServiceToggleTest extends ServiceStartupTestBase {
 
     /**
@@ -69,7 +69,7 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         public void testThriftApiEnabled() {
             assertNotNull(applicationContext, "Application context should load with Thrift API enabled");
             assertNotNull(properties, "Properties should be loaded");
-            // In test profile, Thrift API may not actually start, but configuration should be valid
+
         }
     }
 
@@ -286,7 +286,7 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         @Test
         public void testBackgroundServicesDisabledGlobally() {
             assertNotNull(applicationContext, "Application context should load with background services disabled");
-            // When background services are disabled globally, individual service flags should be ignored
+
         }
     }
 
@@ -324,8 +324,8 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         @Test
         public void testPropertyPrecedence() {
             assertNotNull(applicationContext, "Application context should load");
-            // Test properties should override defaults from airavata.properties
-            // This is verified by the fact that context loads with different values
+
+
         }
     }
 }

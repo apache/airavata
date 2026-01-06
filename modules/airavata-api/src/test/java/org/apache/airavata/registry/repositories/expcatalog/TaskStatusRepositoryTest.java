@@ -63,11 +63,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TaskStatusRepositoryTest extends TestBase {
 
@@ -151,13 +151,13 @@ public class TaskStatusRepositoryTest extends TestBase {
 
     @Test
     public void testTaskStatusRepository_StateTransitions() throws RegistryException {
-        // Test task status state transitions (important for workflow tracking)
+
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.EXECUTING);
         taskStatusService.addTaskStatus(taskStatus, taskId);
         assertEquals(1, taskService.getTask(taskId).getTaskStatuses().size(), "Task should have one status");
 
-        // Update to different state
+
         taskStatus.setState(TaskState.CREATED);
         taskStatusService.updateTaskStatus(taskStatus, taskId);
 
@@ -168,7 +168,7 @@ public class TaskStatusRepositoryTest extends TestBase {
 
     @Test
     public void testTaskStatusRepository_MultipleStatusHistory() throws RegistryException {
-        // Test that task status history is preserved (important for audit trail)
+
         TaskStatus status1 = new TaskStatus();
         status1.setState(TaskState.CREATED);
         taskStatusService.addTaskStatus(status1, taskId);
@@ -181,12 +181,12 @@ public class TaskStatusRepositoryTest extends TestBase {
         status3.setState(TaskState.COMPLETED);
         taskStatusService.addTaskStatus(status3, taskId);
 
-        // Verify all statuses are preserved
+
         assertTrue(
                 taskService.getTask(taskId).getTaskStatuses().size() >= 3,
                 "Task should have at least 3 statuses in history");
 
-        // Verify latest status is correct
+
         TaskStatus latest = taskStatusService.getTaskStatus(taskId);
         assertEquals(TaskState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
     }

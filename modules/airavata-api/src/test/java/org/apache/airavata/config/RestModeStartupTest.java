@@ -52,17 +52,18 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // REST mode configuration
+
             "services.rest.enabled=true",
-            // Disable thrift to prevent DBEventManager from being created via @ConditionalOnProperty
+
             "services.thrift.enabled=false",
             "flyway.enabled=false",
 
-            // Infrastructure components excluded via @ComponentScan excludeFilters - no property flags needed
-            // Core services (RegistryService, CredentialStoreService) are always available via DI
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class RestModeStartupTest {
 
     @Configuration
@@ -97,11 +98,11 @@ public class RestModeStartupTest {
 
     @Test
     public void testDBEventDispatcherIsAvailable() {
-        // Dispatcher replaces DBEventManagerRunner and is always available as a @Component
-        // Use getBeanNamesForType to check for bean existence without reflection
+
+
         String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
         int count = beanNames.length;
-        // Dispatcher should always be available in both REST and Thrift modes
+
         assertTrue(count > 0, "Dispatcher should be available in REST mode (replaces DBEventManagerRunner)");
     }
 
@@ -112,7 +113,7 @@ public class RestModeStartupTest {
 
     @Test
     public void testCoreServicesStillAvailable() {
-        // Core services should still be available in REST mode
+
         assertTrue(
                 applicationContext
                                 .getBeansOfType(org.apache.airavata.service.registry.RegistryService.class)

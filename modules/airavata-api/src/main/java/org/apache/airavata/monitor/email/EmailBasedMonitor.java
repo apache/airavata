@@ -38,6 +38,7 @@ import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.ShutdownFlag;
+import org.apache.airavata.config.AiravataConfigUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.AbstractMonitor;
@@ -121,7 +122,7 @@ public class EmailBasedMonitor extends ServerLifecycle {
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
         // loadFile() will throw IllegalStateException if configDir is not found or file is missing
-        java.net.URL emailConfigUrl = AiravataServerProperties.loadFile("email-config.yml");
+        java.net.URL emailConfigUrl = AiravataConfigUtils.loadFile("email-config.yml");
         InputStream emailConfigStream = emailConfigUrl.openStream();
         Object load = yaml.load(emailConfigStream);
 

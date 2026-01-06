@@ -344,8 +344,8 @@ public class IamAdminService {
 
     private PasswordCredential getSuperAdminPasswordCredential() throws IamAdminServicesException {
         PasswordCredential isSuperAdminCredentials = new PasswordCredential();
-        isSuperAdminCredentials.setLoginUserName(properties.security.iam.superAdminUsername);
-        isSuperAdminCredentials.setPassword(properties.security.iam.superAdminPassword);
+        isSuperAdminCredentials.setLoginUserName(properties.security.iam.superAdmin.username);
+        isSuperAdminCredentials.setPassword(properties.security.iam.superAdmin.password);
         return isSuperAdminCredentials;
     }
 

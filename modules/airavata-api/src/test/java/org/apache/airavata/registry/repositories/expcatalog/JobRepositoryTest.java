@@ -68,11 +68,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
 
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
+
+
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class JobRepositoryTest extends TestBase {
 
@@ -156,13 +156,13 @@ public class JobRepositoryTest extends TestBase {
 
     @Test
     public void testJobRepository_CreateAndUpdate() throws RegistryException {
-        // Test creating and updating jobs
+
         JobModel jobModel = new JobModel();
         jobModel.setJobId("job-" + java.util.UUID.randomUUID().toString());
         jobModel.setTaskId(taskId);
         jobModel.setJobDescription("Test job description");
 
-        // Initialize jobStatuses if null
+
         if (jobModel.getJobStatuses() == null) {
             jobModel.setJobStatuses(new java.util.ArrayList<>());
         }
@@ -177,7 +177,7 @@ public class JobRepositoryTest extends TestBase {
         jobPK.setJobId(jobId);
         jobPK.setTaskId(taskId);
 
-        // Update job
+
         jobModel.setJobName("Updated job name");
         jobService.updateJob(jobModel, jobPK);
 
@@ -193,7 +193,7 @@ public class JobRepositoryTest extends TestBase {
 
     @Test
     public void testJobRepository_GetJobIdsByTaskId() throws RegistryException {
-        // Test retrieving job IDs by task ID (important for job lookup)
+
         JobModel jobModel = new JobModel();
         jobModel.setJobId("job-" + java.util.UUID.randomUUID().toString());
         jobModel.setTaskId(taskId);
@@ -215,7 +215,7 @@ public class JobRepositoryTest extends TestBase {
 
     @Test
     public void testJobRepository_JobDeletion() throws RegistryException {
-        // Test that job deletion works correctly
+
         JobModel jobModel = new JobModel();
         jobModel.setJobId("job-" + java.util.UUID.randomUUID().toString());
         jobModel.setTaskId(taskId);
@@ -232,13 +232,13 @@ public class JobRepositoryTest extends TestBase {
         jobPK.setJobId(jobId);
         jobPK.setTaskId(taskId);
 
-        // Verify job exists
+
         assertTrue(jobService.isJobExist(jobPK), "Job should exist before deletion");
 
-        // Delete job
+
         jobService.removeJob(jobPK);
 
-        // Verify job no longer exists
+
         assertFalse(jobService.isJobExist(jobPK), "Job should not exist after deletion");
     }
 }

@@ -71,7 +71,7 @@ public class ClusterStatusMonitorJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             // Super-tenant gateway is now derived from the default gateway config.
-            String superTenantGatewayId = properties.services.defaults.gateway;
+            String superTenantGatewayId = properties.airavata.defaultGateway;
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {

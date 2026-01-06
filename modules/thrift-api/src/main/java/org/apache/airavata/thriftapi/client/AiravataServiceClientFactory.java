@@ -46,7 +46,7 @@ public class AiravataServiceClientFactory {
                 // TLS enabled client
                 var params = new TSSLTransportFactory.TSSLTransportParameters();
                 String configDir =
-                        org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
+                        org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
                 if (properties.security == null
                         || properties.security.tls == null
                         || properties.security.tls.keystore == null

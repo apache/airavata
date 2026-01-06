@@ -59,7 +59,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class ServiceDependencyTest extends ServiceStartupTestBase {
 
     /**
@@ -80,7 +80,7 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testHelixControllerIndependent() {
             assertNotNull(applicationContext, "Application context should load with Controller only");
-            // Controller should be able to start without Participant
+
         }
     }
 
@@ -101,7 +101,7 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
     class ParticipantWithoutControllerTest {
         @Test
         public void testParticipantWithoutController() {
-            // Participant without Controller may not work correctly, but should not crash
+
             assertNotNull(applicationContext, "Application context should load even with invalid dependency");
         }
     }
@@ -165,7 +165,7 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
     class WorkflowManagersWithoutHelixTest {
         @Test
         public void testWorkflowManagersWithoutHelix() {
-            // This may not work correctly, but should not crash
+
             assertNotNull(applicationContext, "Application context should load even with missing Helix dependency");
         }
     }
@@ -188,7 +188,7 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testMonitorsIndependent() {
             assertNotNull(applicationContext, "Application context should load with Monitors only");
-            // Monitors may require messaging infrastructure, but should handle gracefully if missing
+
         }
     }
 
@@ -224,8 +224,8 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testStartupOrder() {
             assertNotNull(applicationContext, "Application context should load");
-            // Services use SmartLifecycle with getPhase() to ensure Controller starts before Participant
-            // This is verified by the configuration, not runtime behavior in test profile
+
+
         }
     }
 
@@ -247,7 +247,7 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testGracefulDegradation() {
             assertNotNull(applicationContext, "Application context should load even if some services fail to start");
-            // System should handle missing infrastructure gracefully
+
         }
     }
 }

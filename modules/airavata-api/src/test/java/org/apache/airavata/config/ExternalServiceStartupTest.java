@@ -58,7 +58,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class ExternalServiceStartupTest extends ServiceStartupTestBase {
 
     /**
@@ -135,7 +135,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
         assertNotNull(applicationContext, "Application context should load regardless of Agent Service availability");
         boolean available = isAgentServiceAvailable();
         logger.info("Agent Service available: {}", available);
-        // System should handle both cases gracefully
+
     }
 
     /**
@@ -147,7 +147,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
                 applicationContext, "Application context should load regardless of Research Service availability");
         boolean available = isResearchServiceAvailable();
         logger.info("Research Service available: {}", available);
-        // System should handle both cases gracefully
+
     }
 
     /**
@@ -158,7 +158,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
         assertNotNull(applicationContext, "Application context should load regardless of File Service availability");
         boolean available = isFileServiceAvailable();
         logger.info("File Service available: {}", available);
-        // System should handle both cases gracefully
+
     }
 
     /**
@@ -167,7 +167,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testMissingExternalServices() {
         assertNotNull(applicationContext, "Application context should load even when external services are missing");
-        // All external services are optional, so system should work without them
+
     }
 
     /**
@@ -177,8 +177,8 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testAgentServicePort() {
         assertNotNull(applicationContext, "Application context should load");
-        // In test environment, port may not be listening, but that's OK
-        // This test verifies the configuration is valid
+
+
     }
 
     /**
@@ -188,8 +188,8 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testResearchServicePort() {
         assertNotNull(applicationContext, "Application context should load");
-        // In test environment, port may not be listening, but that's OK
-        // This test verifies the configuration is valid
+
+
     }
 
     /**
@@ -199,8 +199,8 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testFileServicePort() {
         assertNotNull(applicationContext, "Application context should load");
-        // In test environment, port may not be listening, but that's OK
-        // This test verifies the configuration is valid
+
+
     }
 
     /**
@@ -209,11 +209,11 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testExternalServiceEnvironmentVariables() {
         assertNotNull(applicationContext, "Application context should load");
-        // Check that environment variables are read correctly
+
         String agentHome = System.getenv("AIRAVATA_AGENT_HOME");
         String researchHome = System.getenv("AIRAVATA_RESEARCH_HOME");
         String fileHome = System.getenv("AIRAVATA_FILE_HOME");
         logger.info("External service homes - Agent: {}, Research: {}, File: {}", agentHome, researchHome, fileHome);
-        // System should handle missing environment variables gracefully
+
     }
 }

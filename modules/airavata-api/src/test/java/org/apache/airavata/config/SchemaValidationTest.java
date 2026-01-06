@@ -45,7 +45,7 @@ import org.springframework.test.context.TestPropertySource;
  * This test validates entity structure and mapping correctness.
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, AiravataServerProperties.class},
+        classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
@@ -53,9 +53,10 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 @TestPropertySource(
         properties = {
-            // Configure all persistence units to use H2 in-memory database
+
             "database.profile.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
             "database.profile.driver=org.h2.Driver",
             "database.profile.user=sa",
@@ -90,7 +91,7 @@ public class SchemaValidationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaValidationTest.class);
 
-    // Map persistence unit names to EntityManagerFactory beans
+
     private final Map<String, EntityManagerFactory> emfMap;
 
     @Autowired
@@ -189,7 +190,7 @@ public class SchemaValidationTest {
             assertNotNull(emf, "EntityManagerFactory should be created");
             assertNotNull(emf.getMetamodel(), "Metamodel should be available");
 
-            // Try to access the metamodel to ensure it's fully initialized
+
             var entities = emf.getMetamodel().getEntities();
             assertNotNull(entities, "Entities should be available in metamodel");
 
@@ -199,7 +200,7 @@ public class SchemaValidationTest {
                     entities.size());
 
         } catch (jakarta.persistence.PersistenceException e) {
-            // Hibernate validation errors are wrapped in PersistenceException
+
             String errorMsg = String.format(
                     "Schema validation failed for persistence unit '%s': %s", persistenceUnitName, e.getMessage());
             if (e.getCause() != null) {
@@ -213,6 +214,6 @@ public class SchemaValidationTest {
             logger.error(errorMsg, e);
             fail(errorMsg, e);
         }
-        // Note: We don't close the EntityManagerFactory here as it's managed by Spring
+
     }
 }

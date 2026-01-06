@@ -73,7 +73,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class ApplicationInterfaceRepositoryTest extends TestBase {
@@ -493,7 +493,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
             applicationInterfaceService.getApplicationModules(filters).get(0).getAppModuleName();
             Assertions.fail("Expected to throw an exception");
         } catch (IllegalArgumentException e) {
-            // ignore
+
         }
     }
 
@@ -511,7 +511,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
             applicationInterfaceService.getApplicationInterfaces(filters).get(0).getApplicationName();
             Assertions.fail("Expected to throw an exception");
         } catch (IllegalArgumentException e) {
-            // ignore
+
         }
     }
 

@@ -52,7 +52,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class GatewayGroupsRepositoryTest extends TestBase {
 

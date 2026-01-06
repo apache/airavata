@@ -163,6 +163,16 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>kafka</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>rabbitmq</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <scope>test</scope>
@@ -178,8 +188,13 @@ under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jmockit</groupId>
-      <artifactId>jmockit</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -523,6 +538,10 @@ under the License.
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
             <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
+            <!-- Configure Testcontainers to use nerdctl/containerd socket -->
+            <TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>${user.home}/.rd/docker.sock</TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>
+            <!-- Disable Ryuk as it may not work with containerd -->
+            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
           </systemPropertyVariables>
           <argLine>@{argLine} -Xmx2048m --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
           <includes>
@@ -616,6 +635,13 @@ under the License.
         <targetPath>keystores</targetPath>
         <includes>
           <include>*.jks</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../distribution/src/main/resources/conf</directory>
+        <targetPath>conf</targetPath>
+        <includes>
+          <include>db/migration/**/*.sql</include>
         </includes>
       </testResource>
     </testResources>

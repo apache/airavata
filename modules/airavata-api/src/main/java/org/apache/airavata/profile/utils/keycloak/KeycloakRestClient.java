@@ -88,7 +88,7 @@ public class KeycloakRestClient {
                 // Configure SSL with keystore
                 SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
                 String configDir =
-                        org.apache.airavata.config.AiravataServerProperties.getConfigDir(); // Will throw if not found
+                        org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
                 String keystorePath = properties.security.tls.keystore.path;
                 if (keystorePath == null) {
                     throw new IllegalStateException(
@@ -547,8 +547,8 @@ public class KeycloakRestClient {
             throw new IamAdminServicesException("IAM configuration not available");
         }
         PasswordCredential creds = new PasswordCredential();
-        creds.setLoginUserName(properties.security.iam.superAdminUsername);
-        creds.setPassword(properties.security.iam.superAdminPassword);
+        creds.setLoginUserName(properties.security.iam.superAdmin.username);
+        creds.setPassword(properties.security.iam.superAdmin.password);
         return creds;
     }
 

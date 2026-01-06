@@ -88,17 +88,14 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should create group successfully")
         void shouldCreateGroup() throws GroupManagerServiceException, SharingRegistryException {
-            // Arrange
             GroupModel group = new GroupModel();
             group.setName("New Test Group");
             group.setDescription("A new test group");
             group.setMembers(new ArrayList<>());
             group.setAdmins(new ArrayList<>());
 
-            // Act
             String groupId = groupManagerService.createGroup(testAuthzToken, group);
 
-            // Assert
             assertThat(groupId).isNotNull();
             GroupModel retrieved = groupManagerService.getGroup(testAuthzToken, groupId);
             assertThat(retrieved).isNotNull();
@@ -108,10 +105,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should get group by ID")
         void shouldGetGroup() throws GroupManagerServiceException, SharingRegistryException {
-            // Act
             GroupModel group = groupManagerService.getGroup(testAuthzToken, testGroupId);
 
-            // Assert
             assertThat(group).isNotNull();
             assertThat(group.getId()).isEqualTo(testGroupId);
             assertThat(group.getName()).isEqualTo("Test Group");
@@ -120,10 +115,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should get all groups")
         void shouldGetAllGroups() throws GroupManagerServiceException, SharingRegistryException {
-            // Act
             List<GroupModel> groups = groupManagerService.getGroups(testAuthzToken);
 
-            // Assert
             assertThat(groups).isNotNull();
             assertThat(groups.size()).isGreaterThanOrEqualTo(1);
         }
@@ -131,14 +124,11 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should update group")
         void shouldUpdateGroup() throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
             GroupModel group = groupManagerService.getGroup(testAuthzToken, testGroupId);
             group.setDescription("Updated description");
 
-            // Act
             boolean updated = groupManagerService.updateGroup(testAuthzToken, group);
 
-            // Assert
             assertThat(updated).isTrue();
             GroupModel retrieved = groupManagerService.getGroup(testAuthzToken, testGroupId);
             assertThat(retrieved.getDescription()).isEqualTo("Updated description");
@@ -147,14 +137,11 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should delete group")
         void shouldDeleteGroup() throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
-            // Arrange
             String ownerId = testAuthzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
                     + "@" + TEST_GATEWAY_ID;
 
-            // Act
             boolean deleted = groupManagerService.deleteGroup(testAuthzToken, testGroupId, ownerId);
 
-            // Assert
             assertThat(deleted).isTrue();
         }
     }
@@ -168,7 +155,6 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         void shouldAddUsersToGroup()
                 throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
                         UserProfileServiceException, IamAdminServicesException {
-            // Arrange - create user profiles and commit transaction to avoid rollback issues
             UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, user1Profile);
             commitTransaction();
@@ -180,10 +166,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             userIds.add("user1@" + TEST_GATEWAY_ID);
             userIds.add("user2@" + TEST_GATEWAY_ID);
 
-            // Act
             boolean added = groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
 
-            // Assert
             assertThat(added).isTrue();
         }
 
@@ -192,7 +176,6 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         void shouldRemoveUsersFromGroup()
                 throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
                         UserProfileServiceException, IamAdminServicesException {
-            // Arrange - create user profile and commit transaction to avoid rollback issues
             UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, user1Profile);
             commitTransaction();
@@ -202,10 +185,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
             commitTransaction();
 
-            // Act
             boolean removed = groupManagerService.removeUsersFromGroup(testAuthzToken, userIds, testGroupId);
 
-            // Assert
             assertThat(removed).isTrue();
         }
     }
@@ -219,7 +200,6 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         void shouldAddGroupAdmins()
                 throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
                         UserProfileServiceException, IamAdminServicesException {
-            // Arrange - create user profile for admin and add to group first, commit to avoid rollback issues
             UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, adminProfile);
             commitTransaction();
@@ -232,10 +212,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
 
-            // Act
             boolean added = groupManagerService.addGroupAdmins(testAuthzToken, testGroupId, adminIds);
 
-            // Assert
             assertThat(added).isTrue();
         }
 
@@ -244,7 +222,6 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         void shouldRemoveGroupAdmins()
                 throws GroupManagerServiceException, SharingRegistryException, AuthorizationException,
                         UserProfileServiceException, IamAdminServicesException {
-            // Arrange - create user profile for admin and add to group first, commit to avoid rollback issues
             UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, adminProfile);
             commitTransaction();
@@ -259,10 +236,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             groupManagerService.addGroupAdmins(testAuthzToken, testGroupId, adminIds);
             commitTransaction();
 
-            // Act
             boolean removed = groupManagerService.removeGroupAdmins(testAuthzToken, testGroupId, adminIds);
 
-            // Assert
             assertThat(removed).isTrue();
         }
     }
@@ -274,25 +249,20 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
         @Test
         @DisplayName("Should check admin access")
         void shouldCheckAdminAccess() throws GroupManagerServiceException, SharingRegistryException {
-            // Act
             boolean hasAccess =
                     groupManagerService.hasAdminAccess(testAuthzToken, testGroupId, "admin@" + TEST_GATEWAY_ID);
 
-            // Assert
             assertThat(hasAccess).isNotNull();
         }
 
         @Test
         @DisplayName("Should check owner access")
         void shouldCheckOwnerAccess() throws GroupManagerServiceException, SharingRegistryException {
-            // Arrange
             String ownerId = testAuthzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME)
                     + "@" + TEST_GATEWAY_ID;
 
-            // Act
             boolean hasAccess = groupManagerService.hasOwnerAccess(testAuthzToken, testGroupId, ownerId);
 
-            // Assert
             assertThat(hasAccess).isNotNull();
         }
     }

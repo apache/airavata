@@ -46,7 +46,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             JpaConfig.class,
             TestcontainersConfig.class,
-            AiravataServerProperties.class,
             ServiceStartupTestBase.TestConfiguration.class
         },
         properties = {
@@ -58,7 +57,8 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public abstract class ServiceStartupTestBase {
 
     protected static final Logger logger = LoggerFactory.getLogger(ServiceStartupTestBase.class);
