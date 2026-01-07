@@ -80,7 +80,6 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testHelixControllerIndependent() {
             assertNotNull(applicationContext, "Application context should load with Controller only");
-
         }
     }
 
@@ -188,7 +187,6 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testMonitorsIndependent() {
             assertNotNull(applicationContext, "Application context should load with Monitors only");
-
         }
     }
 
@@ -224,8 +222,6 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testStartupOrder() {
             assertNotNull(applicationContext, "Application context should load");
-
-
         }
     }
 
@@ -247,7 +243,6 @@ public class ServiceDependencyTest extends ServiceStartupTestBase {
         @Test
         public void testGracefulDegradation() {
             assertNotNull(applicationContext, "Application context should load even if some services fail to start");
-
         }
     }
 }

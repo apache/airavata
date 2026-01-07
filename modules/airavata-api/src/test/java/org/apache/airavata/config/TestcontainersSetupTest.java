@@ -111,20 +111,25 @@ public class TestcontainersSetupTest {
             // Ignore
         }
 
-        System.out.println("Migration check: currentVersion=" + currentVersion + ", tablesExist=" + tablesExist + ", tableCount=" + tableCount + ", profileTablesExist=" + profileTablesExist + ", allMigrations.length=" + allMigrations.length);
+        System.out.println("Migration check: currentVersion=" + currentVersion + ", tablesExist=" + tablesExist
+                + ", tableCount=" + tableCount + ", profileTablesExist=" + profileTablesExist
+                + ", allMigrations.length=" + allMigrations.length);
 
         // If Flyway says migrations are applied but profile tables don't exist, clean and re-apply
         if (currentVersion != null && !profileTablesExist && allMigrations.length > 0) {
             try {
-                System.out.println("Detected mismatch: Flyway version " + currentVersion + " but no profile tables exist. Cleaning and re-applying migrations.");
+                System.out.println("Detected mismatch: Flyway version " + currentVersion
+                        + " but no profile tables exist. Cleaning and re-applying migrations.");
                 flyway.clean();
                 System.out.println("Database cleaned successfully");
                 // Don't call baseline() - let migrate() apply migrations from scratch
                 var migrateResult = flyway.migrate();
-                System.out.println("Migration completed. Migrations applied: " + migrateResult.migrationsExecuted + ", success: " + migrateResult.success);
+                System.out.println("Migration completed. Migrations applied: " + migrateResult.migrationsExecuted
+                        + ", success: " + migrateResult.success);
                 if (migrateResult.migrationsExecuted > 0 && !migrateResult.migrations.isEmpty()) {
                     var firstMigration = migrateResult.migrations.get(0);
-                    System.out.println("Applied migration: " + firstMigration.version + " - " + firstMigration.description);
+                    System.out.println(
+                            "Applied migration: " + firstMigration.version + " - " + firstMigration.description);
                 }
                 // Verify tables exist after migration - check multiple ways
                 try (var conn = dataSource.getConnection()) {
@@ -146,7 +151,8 @@ public class TestcontainersSetupTest {
                         tables.add(rs.getString("TABLE_NAME"));
                     }
                     rs.close();
-                    System.out.println("After migration, USER_PROFILE exists: " + userProfileExists + ". Total tables: " + tables.size());
+                    System.out.println("After migration, USER_PROFILE exists: " + userProfileExists + ". Total tables: "
+                            + tables.size());
                     if (tables.size() < 10) {
                         System.out.println("Tables found: " + tables);
                     }
@@ -228,7 +234,6 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "App catalog DataSource should be created");
 
-
         ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/app_catalog");
 
         try (Connection conn = dataSource.getConnection()) {
@@ -241,7 +246,6 @@ public class TestcontainersSetupTest {
     public void testExperimentCatalogContainerAndSchema(@Qualifier("registryDataSource") DataSource dataSource)
             throws Exception {
         assertNotNull(dataSource, "Experiment catalog DataSource should be created");
-
 
         ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/experiment_catalog");
 
@@ -256,7 +260,6 @@ public class TestcontainersSetupTest {
             throws Exception {
         assertNotNull(dataSource, "Profile service DataSource should be created");
 
-
         ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/profile_service");
 
         try (Connection conn = dataSource.getConnection()) {
@@ -269,7 +272,6 @@ public class TestcontainersSetupTest {
     public void testReplicaCatalogContainerAndSchema(@Qualifier("replicaDataSource") DataSource dataSource)
             throws Exception {
         assertNotNull(dataSource, "Replica catalog DataSource should be created");
-
 
         ensureMigrationsApplied(dataSource, "classpath:conf/db/migration/replica_catalog");
 

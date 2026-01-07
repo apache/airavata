@@ -25,22 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
-import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.Subscriber;
 import org.apache.airavata.messaging.Type;
@@ -49,7 +44,6 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.airavata.util.ExperimentModelUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,11 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
@@ -74,7 +65,6 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             org.apache.airavata.config.TestcontainersConfig.class,
             OrchestratorServiceIntegrationTest.TestConfiguration.class
         },
@@ -101,9 +91,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorServiceIntegrationTest.class);
 
     public OrchestratorServiceIntegrationTest(
-            RegistryService registryService,
-            AiravataServerProperties properties,
-            MessagingFactory messagingFactory) {
+            RegistryService registryService, AiravataServerProperties properties, MessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.properties = properties;
         this.messagingFactory = messagingFactory;
@@ -136,7 +124,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
         output.setValue("");
         exOut.add(output);
 
-        ExperimentModel experiment = TestDataFactory.createTestExperiment("Orchestrator Test Experiment", projectId, TEST_GATEWAY_ID);
+        ExperimentModel experiment =
+                TestDataFactory.createTestExperiment("Orchestrator Test Experiment", projectId, TEST_GATEWAY_ID);
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experiment.setExperimentInputs(exInputs);
         experiment.setExperimentOutputs(exOut);
@@ -163,7 +152,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
         commitTransaction();
 
-        ExperimentModel experiment = TestDataFactory.createTestExperiment("Status Test Experiment", projectId, TEST_GATEWAY_ID);
+        ExperimentModel experiment =
+                TestDataFactory.createTestExperiment("Status Test Experiment", projectId, TEST_GATEWAY_ID);
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
         commitTransaction();
@@ -204,7 +194,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             commitTransaction();
 
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Message Test Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Message Test Experiment", projectId, TEST_GATEWAY_ID);
             experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
@@ -237,6 +228,5 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
                 "org.apache.airavata.metascheduler"
             })
     @Profile("test")
-    static class TestConfiguration {
-    }
+    static class TestConfiguration {}
 }

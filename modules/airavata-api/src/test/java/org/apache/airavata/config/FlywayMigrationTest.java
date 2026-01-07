@@ -56,7 +56,6 @@ public class FlywayMigrationTest {
         MigrationInfo[] migrations = flyway.info().all();
         assertTrue(migrations.length > 0, "Should have migration scripts");
 
-
         for (MigrationInfo info : migrations) {
             assertNotNull(info.getVersion(), "Migration should have version");
             assertTrue(

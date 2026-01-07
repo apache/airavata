@@ -22,11 +22,10 @@ package org.apache.airavata.service.integration;
 import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
-import org.apache.airavata.registry.exception.RegistryException;
 
 /**
  * Test fixtures for common test scenarios.
@@ -44,9 +43,7 @@ public class TestFixtures {
      * @param projectService Project service
      * @return TestGatewaySetup containing all created entity IDs
      */
-    public static TestGatewaySetup createGatewaySetup(
-            GatewayService gatewayService,
-            ProjectService projectService)
+    public static TestGatewaySetup createGatewaySetup(GatewayService gatewayService, ProjectService projectService)
             throws RegistryException {
         TestGatewaySetup setup = new TestGatewaySetup();
 
@@ -79,9 +76,7 @@ public class TestFixtures {
      * @return TestExperimentSetup containing all created entity IDs
      */
     public static TestExperimentSetup createExperimentSetup(
-            GatewayService gatewayService,
-            ProjectService projectService,
-            ExperimentService experimentService)
+            GatewayService gatewayService, ProjectService projectService, ExperimentService experimentService)
             throws RegistryException {
         TestExperimentSetup setup = new TestExperimentSetup();
 
@@ -123,4 +118,3 @@ public class TestFixtures {
         return generateTestId(null);
     }
 }
-

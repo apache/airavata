@@ -28,14 +28,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             SSHUtilTest.TestConfiguration.class
         },
         properties = {
@@ -50,26 +48,20 @@ public class SSHUtilTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHUtilTest.class);
 
-    public SSHUtilTest() {
-
-    }
+    public SSHUtilTest() {}
 
     @Test
     public void testValidate() throws JSchException {
 
-
-
         String username = "testuser";
         String passphrase = "";
         String hostname = "localhost"; // Will fail connection but tests the method
-
 
         java.security.KeyPairGenerator keyGen;
         try {
             keyGen = java.security.KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             java.security.KeyPair keyPair = keyGen.generateKeyPair();
-
 
             String privateKeyPEM = "-----BEGIN PRIVATE KEY-----\n"
                     + java.util.Base64.getMimeEncoder(64, "\n".getBytes())
@@ -83,7 +75,6 @@ public class SSHUtilTest {
             sshCredential.setPassphrase(passphrase);
             sshCredential.setPublicKey(publicKeyPEM);
             sshCredential.setPrivateKey(privateKeyPEM);
-
 
             try {
                 boolean result = SSHUtil.validate(hostname, 22, username, sshCredential);

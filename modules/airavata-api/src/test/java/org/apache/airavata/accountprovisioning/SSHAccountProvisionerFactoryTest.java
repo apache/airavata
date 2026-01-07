@@ -30,14 +30,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             SSHAccountProvisionerFactoryTest.TestConfiguration.class
         },
         properties = {
@@ -50,9 +48,7 @@ import org.springframework.test.context.TestPropertySource;
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SSHAccountProvisionerFactoryTest {
 
-    public SSHAccountProvisionerFactoryTest() {
-
-    }
+    public SSHAccountProvisionerFactoryTest() {}
 
     @Test
     public void testGetSSHAccountProvisionerImplementationNames() {

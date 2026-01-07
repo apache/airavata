@@ -25,14 +25,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             NameValidatorTest.TestConfiguration.class
         },
         properties = {
@@ -42,14 +40,13 @@ import org.springframework.test.context.TestPropertySource;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class NameValidatorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(NameValidatorTest.class);
 
-    public NameValidatorTest() {
-
-    }
+    public NameValidatorTest() {}
 
     @Test
     public void testValidate() {

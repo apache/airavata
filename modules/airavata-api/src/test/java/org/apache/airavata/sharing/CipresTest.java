@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.JpaConfig;
 import org.apache.airavata.config.TestcontainersConfig;
-import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.Entity;
@@ -47,14 +47,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = {
-    JpaConfig.class,
-    TestcontainersConfig.class
-}, properties = {
-    "spring.main.allow-bean-definition-overriding=true",
-    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-    "flyway.enabled=false"
-})
+@SpringBootTest(
+        classes = {
+            JpaConfig.class,
+            TestcontainersConfig.class,
+            org.apache.airavata.service.integration.ServiceIntegrationTestBase.TestConfiguration.class
+        },
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
+            "flyway.enabled=false",
+            "services.rest.enabled=false",
+            "services.thrift.enabled=true"
+        })
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
@@ -101,8 +106,6 @@ public class CipresTest {
 
             user1.setEmail("john.doe@abc.com");
 
-
-
             sharingService.createUser(user1);
             User user2 = new User();
             String userName2 = "test-user-2";
@@ -119,8 +122,6 @@ public class CipresTest {
             user2.setLastName("Doe");
 
             user2.setEmail("john.doe@abc.com");
-
-
 
             sharingService.createUser(user2);
             User user3 = new User();
@@ -139,8 +140,6 @@ public class CipresTest {
 
             user3.setEmail("john.doe@abc.com");
 
-
-
             sharingService.createUser(user3);
             logger.info("After user creation...");
 
@@ -151,8 +150,6 @@ public class CipresTest {
             userGroup1.setDomainId(domainId);
 
             userGroup1.setName("test-group-1");
-
-
 
             userGroup1.setOwnerId("test-user-1");
 
@@ -166,8 +163,6 @@ public class CipresTest {
             userGroup2.setDomainId(domainId);
 
             userGroup2.setName("test-group-2");
-
-
 
             userGroup2.setOwnerId("test-user-2");
 
@@ -283,10 +278,6 @@ public class CipresTest {
             logger.info("After sharingServiceClient.createEntity entity4...");
             logger.info("After test entity creation...");
 
-
-
-
-
             logger.info("Before shareEntityWithGroups READ...");
             long time = System.currentTimeMillis();
             sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
@@ -297,7 +288,6 @@ public class CipresTest {
             sharingService.shareEntityWithGroups(
                     domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
             logger.info("Time for sharing " + (System.currentTimeMillis() - time));
-
 
             logger.info("Before userHasAccess 1...");
             logger.info(
@@ -326,7 +316,6 @@ public class CipresTest {
                     "userHasAccess 6: {}",
                     sharingService.userHasAccess(domainId, "test-user-3", "test-project-1", "READ"));
 
-
             logger.info("Before userHasAccess 7...");
             logger.info(
                     "userHasAccess 7: {}",
@@ -353,7 +342,6 @@ public class CipresTest {
             SearchCriteria searchCriteria = new SearchCriteria();
             searchCriteria.setSearchCondition(SearchCondition.LIKE);
             searchCriteria.setValue("experiment stampede methyl");
-
 
             searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
             filters.add(searchCriteria);
@@ -388,8 +376,6 @@ public class CipresTest {
 
             userA.setEmail("user.a@example.com");
 
-
-
             sharingService.createUser(userA);
             User userB = new User();
             String userNameB = "UserB";
@@ -406,8 +392,6 @@ public class CipresTest {
             userB.setLastName("B");
 
             userB.setEmail("user.b@example.com");
-
-
 
             sharingService.createUser(userB);
             User userC = new User();
@@ -426,8 +410,6 @@ public class CipresTest {
 
             userC.setEmail("user.c@example.com");
 
-
-
             sharingService.createUser(userC);
             User userD = new User();
             String userNameD = "UserD";
@@ -445,8 +427,6 @@ public class CipresTest {
 
             userD.setEmail("user.d@example.com");
 
-
-
             sharingService.createUser(userD);
             logger.info("After user creation...");
 
@@ -457,8 +437,6 @@ public class CipresTest {
             Group1.setDomainId(domainId);
 
             Group1.setName("Group1");
-
-
 
             Group1.setOwnerId("UserA");
 
@@ -480,7 +458,6 @@ public class CipresTest {
 
             entityTypeFolder.setName("FOLDER");
 
-
             sharingService.createEntityType(entityTypeFolder);
             logger.info("After creating FOLDER entity type...");
 
@@ -491,7 +468,6 @@ public class CipresTest {
             entityTypeInputData.setDomainId(domainId);
 
             entityTypeInputData.setName("INPUTDATA");
-
 
             sharingService.createEntityType(entityTypeInputData);
             logger.info("After creating INPUTDATA entity type...");
@@ -584,14 +560,10 @@ public class CipresTest {
             sharingService.createEntity(entityD2);
             logger.info("After creating Data2 ...");
 
-
-
             time = System.currentTimeMillis();
             sharingService.shareEntityWithGroups(domainId, "Folder1", List.of("Group1"), "READ", true);
             logger.info("Time for sharing " + (System.currentTimeMillis() - time));
             logger.info("After READ sharing UserBFolder1 with Group1 ...");
-
-
 
             Entity entityD3 = new Entity();
             entityD3.setEntityId("Data3");

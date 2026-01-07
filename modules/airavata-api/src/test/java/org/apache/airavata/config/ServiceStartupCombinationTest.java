@@ -67,7 +67,8 @@ import org.springframework.test.context.TestPropertySource;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class ServiceStartupCombinationTest extends ServiceStartupTestBase {
 
     /**
@@ -75,7 +76,6 @@ public class ServiceStartupCombinationTest extends ServiceStartupTestBase {
      */
     @Test
     public void testAllServicesEnabled() {
-
 
         assertNotNull(applicationContext, "Application context should load with all services enabled");
         assertNotNull(properties, "Properties should be loaded");
@@ -103,7 +103,6 @@ public class ServiceStartupCombinationTest extends ServiceStartupTestBase {
         @Test
         public void testThriftApiOnly() {
             assertNotNull(applicationContext, "Application context should load with Thrift API only");
-
         }
     }
 
@@ -120,7 +119,6 @@ public class ServiceStartupCombinationTest extends ServiceStartupTestBase {
         @Test
         public void testRestApiOnly() {
             assertNotNull(applicationContext, "Application context should load with REST API only");
-
         }
     }
 

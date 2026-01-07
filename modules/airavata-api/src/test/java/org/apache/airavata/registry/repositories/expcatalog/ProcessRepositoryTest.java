@@ -58,7 +58,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ProcessRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -66,9 +65,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -86,9 +82,7 @@ public class ProcessRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -135,7 +129,6 @@ public class ProcessRepositoryTest extends TestBase {
         ProcessModel processModel = new ProcessModel();
         processModel.setExperimentId(experimentId);
 
-
         if (processModel.getTasks() == null) {
             processModel.setTasks(new java.util.ArrayList<>());
         }
@@ -144,7 +137,6 @@ public class ProcessRepositoryTest extends TestBase {
         task.setTaskId("task-id");
         task.setTaskType(TaskTypes.ENV_SETUP);
         processModel.getTasks().add(task);
-
 
         if (task.getTaskStatuses() == null) {
             task.setTaskStatuses(new java.util.ArrayList<>());

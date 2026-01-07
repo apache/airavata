@@ -28,16 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessIdentifier;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.MessageVerificationUtils;
 import org.apache.airavata.messaging.Publisher;
@@ -59,7 +58,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +70,6 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ProcessExecutionStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -134,6 +131,9 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
     @BeforeEach
     public void setUp() throws RegistryException {
+        // Ensure base setup runs first to apply test properties (especially RabbitMQ URL)
+        super.setUpBase();
+
         testHierarchy = StateMachineTestUtils.createTestHierarchy(
                 gatewayService,
                 projectService,
@@ -156,11 +156,11 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             processStatusService.addProcessStatus(status, testHierarchy.processId);
         }
 
- // state transitions
+        // state transitions
         StateMachineTestUtils.verifyProcessStateTransition(
                 processService, processStatusService, testHierarchy.processId, expectedStates);
 
- // latest status
+        // latest status
         ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
         assertNotNull(latest, "Latest status should exist");
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
@@ -187,7 +187,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
- // queuing states are in history
+        // queuing states are in history
         var process = processService.getProcess(testHierarchy.processId);
         assertTrue(
                 process.getProcessStatuses().stream().anyMatch(s -> s.getState() == ProcessState.QUEUED),
@@ -261,7 +261,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
- // requeue states are in history
+        // requeue states are in history
         var process = processService.getProcess(testHierarchy.processId);
         assertTrue(
                 process.getProcessStatuses().stream().anyMatch(s -> s.getState() == ProcessState.REQUEUED),
@@ -298,20 +298,20 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             processStatusService.addProcessStatus(status, testHierarchy.processId);
         }
 
- // all states are in history
+        // all states are in history
         var process = processService.getProcess(testHierarchy.processId);
         assertNotNull(process.getProcessStatuses(), "Process should have status history");
         assertTrue(
                 process.getProcessStatuses().size() >= states.size(),
                 "Process should have at least " + states.size() + " status entries");
 
- // all expected states are present
+        // all expected states are present
         for (ProcessState expectedState : states) {
             boolean found = process.getProcessStatuses().stream().anyMatch(s -> s.getState() == expectedState);
             assertTrue(found, "Process state history should contain " + expectedState);
         }
 
- // timestamps are in order
+        // timestamps are in order
         StateMachineTestUtils.verifyProcessStateTimestamps(new ArrayList<ProcessStatus>(process.getProcessStatuses()));
     }
 
@@ -325,8 +325,8 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(2); // Expect 2 messages
 
-        MessageHandler handler = MessageVerificationUtils.createCapturingHandlerWithLatch(
-                capturedMessages, messageReceived, 2);
+        MessageHandler handler =
+                MessageVerificationUtils.createCapturingHandlerWithLatch(capturedMessages, messageReceived, 2);
 
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(testHierarchy.processId);
@@ -344,22 +344,29 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             commitTransaction();
 
             // Publish message (as would happen in real flow via AiravataTask or WorkflowManager)
-            ProcessIdentifier identifier = new ProcessIdentifier(
-                    testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
+            ProcessIdentifier identifier =
+                    new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
             ProcessStatusChangeEvent event1 = new ProcessStatusChangeEvent(ProcessState.STARTED, identifier);
             MessageContext msgCtx1 = new MessageContext(
-                    event1, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    event1,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             msgCtx1.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx1);
 
             // Add another status and publish
-            ProcessStatus status2 = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Process executing");
+            ProcessStatus status2 =
+                    StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Process executing");
             processStatusService.addProcessStatus(status2, testHierarchy.processId);
             commitTransaction();
 
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
-                    event2, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    event2,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             msgCtx2.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx2);
 
@@ -411,8 +418,8 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
             publisher = messagingFactory.getPublisher(Type.STATUS);
 
-            ProcessIdentifier identifier = new ProcessIdentifier(
-                    testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
+            ProcessIdentifier identifier =
+                    new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
 
             for (ProcessState state : expectedStates) {
                 ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
@@ -420,7 +427,10 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
                 ProcessStatusChangeEvent event = new ProcessStatusChangeEvent(state, identifier);
                 MessageContext msgCtx = new MessageContext(
-                        event, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                        event,
+                        MessageType.PROCESS,
+                        AiravataUtils.getId(MessageType.PROCESS.name()),
+                        testHierarchy.gatewayId);
                 msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 publisher.publish(msgCtx);
             }

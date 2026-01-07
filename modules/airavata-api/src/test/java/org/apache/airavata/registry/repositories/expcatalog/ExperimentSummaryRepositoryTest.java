@@ -59,7 +59,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ExperimentSummaryRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -67,9 +66,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -87,9 +83,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -115,13 +109,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         this.experimentSummaryRepository = experimentSummaryRepository;
     }
 
-    private void saveExperimentSummary(ExperimentModel experimentModel, String status) {
-
-
-
-
-
-    }
+    private void saveExperimentSummary(ExperimentModel experimentModel, String status) {}
 
     @Test
     public void testExperimentSummaryRepository() throws RegistryException {
@@ -236,7 +224,6 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         assertTrue(experimentSummaryModelList.size() == 1);
         assertEquals(experimentIdOne, experimentSummaryModelList.get(0).getExperimentId());
 
-
         experimentSummaryModelList = experimentSummaryService.searchAllAccessibleExperiments(
                 Collections.emptyList(),
                 Collections.singletonMap(DBConstants.Experiment.GATEWAY_ID, gatewayId),
@@ -246,7 +233,6 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
                 ResultOrderType.ASC);
         assertEquals(0, experimentSummaryModelList.size(), "should return no experiments since none are accessible");
 
-
         filters.clear();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.Experiment.USER_NAME, "userOne");
@@ -254,7 +240,6 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
                 allExperimentIds, filters, -1, 0, DBConstants.Experiment.CREATION_TIME, ResultOrderType.ASC);
         assertEquals(1, experimentSummaryModelList.size(), "should return only userOne's exp");
         assertEquals("userOne", experimentSummaryModelList.get(0).getUserName());
-
 
         filters.clear();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
@@ -344,8 +329,6 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 1);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
 
-
-
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);
         filters.put(DBConstants.ExperimentSummary.EXPERIMENT_STATUS, ExperimentState.CREATED.name());
@@ -360,13 +343,11 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         assertEquals(1, experimentSummaryModelList.size(), "should return only one EXECUTING exp");
         assertEquals(experimentIdTwo, experimentSummaryModelList.get(0).getExperimentId());
 
-
         experimentStatistics = experimentSummaryService.getAccessibleExperimentStatistics(
                 Collections.singletonList(experimentIdTwo), filters, 10, 0);
         assertTrue(experimentStatistics.getAllExperimentCount() == 1);
         assertTrue(experimentStatistics.getCreatedExperimentCount() == 0);
         assertTrue(experimentStatistics.getRunningExperimentCount() == 1);
-
 
         filters = new HashMap<>();
         filters.put(DBConstants.Experiment.GATEWAY_ID, gatewayId);

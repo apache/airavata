@@ -116,7 +116,7 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
         @DisplayName("Should configure cloud job submission interface")
         void shouldConfigureCloudJobSubmissionInterface() throws AppCatalogException {
             ComputeResourceDescription computeResource = TestDataFactory.createAwsComputeResource("us-east-1");
-            
+
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
@@ -131,17 +131,17 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
         void shouldSupportMultipleAwsRegions() throws AppCatalogException {
             String region1 = "us-east-1";
             String region2 = "us-west-2";
-            
+
             ComputeResourceDescription resource1 = TestDataFactory.createAwsComputeResource(region1);
             ComputeResourceDescription resource2 = TestDataFactory.createAwsComputeResource(region2);
-            
+
             String id1 = computeResourceService.addComputeResource(resource1);
             String id2 = computeResourceService.addComputeResource(resource2);
 
             assertThat(id1).isNotEqualTo(id2);
             ComputeResourceDescription retrieved1 = computeResourceService.getComputeResource(id1);
             ComputeResourceDescription retrieved2 = computeResourceService.getComputeResource(id2);
-            
+
             assertThat(retrieved1.getHostName()).contains(region1);
             assertThat(retrieved2.getHostName()).contains(region2);
         }
@@ -152,7 +152,7 @@ public class AwsComputeResourceIntegrationTest extends ServiceIntegrationTestBas
      * 1. Valid AWS credentials
      * 2. AWS account with EC2 permissions
      * 3. Proper AWS SDK configuration
-     * 
+     *
      * For now, these tests verify configuration and registration only.
      * To add real AWS tests, consider:
      * - Using LocalStack for local AWS service emulation

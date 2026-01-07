@@ -164,6 +164,13 @@ public class JpaConfig {
         Properties jpaProps = createJpaProperties(url);
         // Disable JDBC metadata usage to avoid connection attempts during startup
         jpaProps.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
+        // Use physical naming strategy to ensure column names are used as-is
+        jpaProps.put(
+                "hibernate.physical_naming_strategy",
+                "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
+        jpaProps.put(
+                "hibernate.implicit_naming_strategy",
+                "org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl");
         emf.setJpaProperties(jpaProps);
 
         return emf;

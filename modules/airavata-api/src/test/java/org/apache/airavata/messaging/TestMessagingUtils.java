@@ -20,8 +20,8 @@
 package org.apache.airavata.messaging;
 
 import java.util.UUID;
-import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentState;
+import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
 
 /**
@@ -59,13 +59,15 @@ public class TestMessagingUtils {
      * Creates a test MessageContext for a process status change event.
      */
     public static MessageContext createProcessStatusChangeMessage(
-            String processId, String experimentId, String gatewayId, 
+            String processId,
+            String experimentId,
+            String gatewayId,
             org.apache.airavata.common.model.ProcessState state) {
         org.apache.airavata.common.model.ProcessStatusChangeEvent event =
                 new org.apache.airavata.common.model.ProcessStatusChangeEvent();
         event.setState(state);
-        
-        org.apache.airavata.common.model.ProcessIdentifier processIdentity = 
+
+        org.apache.airavata.common.model.ProcessIdentifier processIdentity =
                 new org.apache.airavata.common.model.ProcessIdentifier();
         processIdentity.setProcessId(processId);
         processIdentity.setExperimentId(experimentId);
@@ -76,4 +78,3 @@ public class TestMessagingUtils {
         return new MessageContext(event, MessageType.PROCESS, messageId, gatewayId);
     }
 }
-

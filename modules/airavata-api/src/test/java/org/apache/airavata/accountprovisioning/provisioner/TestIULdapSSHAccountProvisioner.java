@@ -36,9 +36,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled("Requires external LDAP server and SSH tunnel setup. " +
-          "To run: Set up SSH tunnel and configure LDAP_PASSWORD environment variable. " +
-          "This test requires infrastructure that cannot be easily containerized.")
+@Disabled("Requires external LDAP server and SSH tunnel setup. "
+        + "To run: Set up SSH tunnel and configure LDAP_PASSWORD environment variable. "
+        + "This test requires infrastructure that cannot be easily containerized.")
 @EnabledIfEnvironmentVariable(named = "LDAP_PASSWORD", matches = ".*")
 public class TestIULdapSSHAccountProvisioner {
     private static final Logger logger = LoggerFactory.getLogger(TestIULdapSSHAccountProvisioner.class);

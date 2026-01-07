@@ -43,11 +43,7 @@ import org.springframework.test.context.TestPropertySource;
  * and override {@link #getTestProperties()} to provide service-specific properties.
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            ServiceStartupTestBase.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, ServiceStartupTestBase.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",

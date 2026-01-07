@@ -50,7 +50,6 @@ public class ServiceStartupRangeTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.minimal();
         Map<String, String> props = builder.build();
 
-
         assertEquals("false", props.get("services.thrift.enabled"));
         assertEquals("false", props.get("services.rest.enabled"));
         assertEquals("false", props.get("services.controller.enabled"));
@@ -60,7 +59,6 @@ public class ServiceStartupRangeTest {
         assertEquals("false", props.get("services.parser.enabled"));
         assertEquals("false", props.get("services.monitor.realtime.enabled"));
         assertEquals("false", props.get("services.monitor.email.enabled"));
-
 
         assertNotNull(props.get("services.thrift.server.port"));
         assertNotNull(props.get("services.rest.server.port"));
@@ -74,7 +72,6 @@ public class ServiceStartupRangeTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.allEnabled();
         Map<String, String> props = builder.build();
 
-
         assertEquals("true", props.get("services.thrift.enabled"));
         assertEquals("true", props.get("services.rest.enabled"));
         assertEquals("true", props.get("services.controller.enabled"));
@@ -84,9 +81,6 @@ public class ServiceStartupRangeTest {
         assertEquals("true", props.get("services.parser.enabled"));
         assertEquals("true", props.get("services.monitor.realtime.enabled"));
         assertEquals("true", props.get("services.monitor.email.enabled"));
-
-
-
 
         assertNotNull(props.get("services.thrift.server.port"));
         assertNotNull(props.get("services.rest.server.port"));
@@ -100,7 +94,6 @@ public class ServiceStartupRangeTest {
     public void testSingleServiceEnabled(String serviceName, ServiceConfigurationBuilder builder) {
         Map<String, String> props = builder.build();
 
-
         boolean foundEnabled = false;
         for (Map.Entry<String, String> entry : props.entrySet()) {
             if (entry.getKey().contains("enabled") && "true".equals(entry.getValue())) {
@@ -108,7 +101,6 @@ public class ServiceStartupRangeTest {
                 break;
             }
         }
-
 
         assertTrue(foundEnabled, "At least one service should be enabled for: " + serviceName);
     }
@@ -217,9 +209,6 @@ public class ServiceStartupRangeTest {
             String description, int expectedEnabledCount, ServiceConfigurationBuilder builder) {
         Map<String, String> props = builder.build();
 
-
-
-
         long enabledCount = props.entrySet().stream()
                 .filter(e -> {
                     String key = e.getKey();
@@ -247,13 +236,10 @@ public class ServiceStartupRangeTest {
 
     static Stream<Arguments> progressiveServiceCombinations() {
         return Stream.of(
-
                 Arguments.of(
                         "1 service: Thrift only",
                         1,
                         ServiceConfigurationBuilder.minimal().enableThriftApi()),
-
-
                 Arguments.of(
                         "2 services: Thrift + REST",
                         2,
@@ -264,8 +250,6 @@ public class ServiceStartupRangeTest {
                         ServiceConfigurationBuilder.minimal()
                                 .enableHelixController()
                                 .enableHelixParticipant()),
-
-
                 Arguments.of(
                         "3 services: Thrift + Controller + Participant",
                         3,
@@ -273,8 +257,6 @@ public class ServiceStartupRangeTest {
                                 .enableThriftApi()
                                 .enableHelixController()
                                 .enableHelixParticipant()),
-
-
                 Arguments.of(
                         "4 services: Thrift + Helix + Pre-WM",
                         4,
@@ -283,8 +265,6 @@ public class ServiceStartupRangeTest {
                                 .enableHelixController()
                                 .enableHelixParticipant()
                                 .enablePreWorkflowManager()),
-
-
                 Arguments.of(
                         "5 services: Thrift + Helix + Pre-WM + Post-WM",
                         5,
@@ -294,8 +274,6 @@ public class ServiceStartupRangeTest {
                                 .enableHelixParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()),
-
-
                 Arguments.of(
                         "6 services: Thrift + Helix + All Workflow Managers",
                         6,
@@ -306,8 +284,6 @@ public class ServiceStartupRangeTest {
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()),
-
-
                 Arguments.of(
                         "7 services: Thrift + Helix + Workflow Managers + Realtime Monitor",
                         7,
@@ -319,8 +295,6 @@ public class ServiceStartupRangeTest {
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()
                                 .enableRealtimeMonitor()),
-
-
                 Arguments.of(
                         "8 services: Thrift + Helix + Workflow Managers + Realtime + Email",
                         8,
@@ -333,8 +307,6 @@ public class ServiceStartupRangeTest {
                                 .enableParserWorkflowManager()
                                 .enableRealtimeMonitor()
                                 .enableEmailMonitor()),
-
-
                 Arguments.of(
                         "9 services: Thrift + REST + Helix + Workflow Managers + Monitors",
                         9,
@@ -348,8 +320,6 @@ public class ServiceStartupRangeTest {
                                 .enableParserWorkflowManager()
                                 .enableRealtimeMonitor()
                                 .enableEmailMonitor()),
-
-
                 Arguments.of("9 services: All enabled", 9, ServiceConfigurationBuilder.allEnabled()));
     }
 
@@ -362,8 +332,6 @@ public class ServiceStartupRangeTest {
 
         Map<String, String> props = builder.build();
 
-
-
         assertEquals("8931", props.get("services.thrift.server.port"));
     }
 
@@ -374,8 +342,6 @@ public class ServiceStartupRangeTest {
     public void testDefaultPortValues() {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.defaults();
         Map<String, String> props = builder.build();
-
-
 
         assertEquals("8930", props.get("services.thrift.server.port"));
         assertEquals("8082", props.get("services.rest.server.port"));
@@ -392,10 +358,7 @@ public class ServiceStartupRangeTest {
 
         Map<String, String> props = builder.build();
 
-
         assertEquals("false", props.get("services.thrift.enabled"));
-
-
 
         assertEquals("9999", props.get("services.thrift.server.port"));
     }
@@ -408,10 +371,8 @@ public class ServiceStartupRangeTest {
     public void testKeyServiceCombinations(String description, ServiceConfigurationBuilder builder) {
         Map<String, String> props = builder.build();
 
-
         assertNotNull(props);
         assertFalse(props.isEmpty());
-
 
         props.entrySet().stream().filter(e -> e.getKey().contains("enabled")).forEach(e -> {
             String value = e.getValue();
@@ -419,7 +380,6 @@ public class ServiceStartupRangeTest {
                     "true".equals(value) || "false".equals(value),
                     "Invalid boolean value for " + e.getKey() + ": " + value);
         });
-
 
         props.entrySet().stream()
                 .filter(e -> e.getKey().contains("port") || e.getKey().contains("Port"))

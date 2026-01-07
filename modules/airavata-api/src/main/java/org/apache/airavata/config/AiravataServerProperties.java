@@ -80,6 +80,7 @@ public class AiravataServerProperties {
             public String user;
             public String password;
             public String validationQuery = "SELECT 1";
+
             @NestedConfigurationProperty
             public Hikari hikari = new Hikari();
 
@@ -166,6 +167,7 @@ public class AiravataServerProperties {
             public String serverUrl;
             public String oauthClientId;
             public String oauthClientSecret;
+
             @NestedConfigurationProperty
             public Super superAdmin = new Super();
 
@@ -297,6 +299,7 @@ public class AiravataServerProperties {
             public Server server = new Server();
             public Spring spring = new Spring();
             public Springdoc springdoc = new Springdoc();
+
             @NestedConfigurationProperty
             public Openid openid = new Openid();
 
@@ -364,8 +367,10 @@ public class AiravataServerProperties {
 
         public static class Agent {
             public boolean enabled = true;
+
             @NestedConfigurationProperty
             public Appinterface appinterface = new Appinterface();
+
             public Grpc grpc = new Grpc();
             public Server server = new Server();
             public Spring spring = new Spring();
@@ -454,7 +459,6 @@ public class AiravataServerProperties {
                 public int port = 9090;
             }
         }
-
 
         public static class Api {
             // Note: Api service is controlled by services.thrift.enabled, not a separate services.api.enabled
@@ -655,5 +659,4 @@ public class AiravataServerProperties {
             public boolean enabled = false;
         }
     }
-
 }

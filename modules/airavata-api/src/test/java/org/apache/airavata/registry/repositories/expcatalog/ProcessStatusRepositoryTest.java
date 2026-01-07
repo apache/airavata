@@ -50,7 +50,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ProcessStatusRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -58,9 +57,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -79,9 +75,7 @@ public class ProcessStatusRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -133,7 +127,6 @@ public class ProcessStatusRepositoryTest extends TestBase {
         String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
 
-
         assertTrue(processService.getProcess(processId).getProcessStatuses().size() == 1);
         ProcessStatus processStatus =
                 processService.getProcess(processId).getProcessStatuses().get(0);
@@ -152,8 +145,6 @@ public class ProcessStatusRepositoryTest extends TestBase {
         assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
         assertTrue(retrievedStatus.getStatusId() != null);
         assertNull(retrievedStatus.getReason());
-
-
 
         ProcessStatus updatedStatusWithReason = new ProcessStatus(ProcessState.MONITORING);
         updatedStatusWithReason.setReason("test-reason");

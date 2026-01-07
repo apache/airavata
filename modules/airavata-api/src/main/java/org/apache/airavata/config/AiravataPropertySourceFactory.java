@@ -33,13 +33,13 @@ import org.springframework.core.io.support.PropertySourceFactory;
 
 /**
  * Custom PropertySourceFactory that loads airavata.properties from configDir.
- * 
+ *
  * <p>Resolution precedence for airavataHome:
  * <ol>
  *   <li>System property -Dairavata.home=XXX (highest priority)</li>
  *   <li>Resources root (IDE mode: modules/distribution/src/main/resources)</li>
  * </ol>
- * 
+ *
  * <p>Fails immediately if configDir is not set or airavata.properties is not found.
  */
 public class AiravataPropertySourceFactory implements PropertySourceFactory {
@@ -52,7 +52,7 @@ public class AiravataPropertySourceFactory implements PropertySourceFactory {
 
         // Resolve airavataHome (system property → IDE mode)
         String airavataHome = resolveAiravataHome();
-        
+
         // Validate that {airavataHome}/conf exists
         File confDir = new File(airavataHome, "conf");
         if (!confDir.exists() || !confDir.isDirectory()) {
@@ -141,4 +141,3 @@ public class AiravataPropertySourceFactory implements PropertySourceFactory {
         return null;
     }
 }
-

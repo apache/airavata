@@ -43,11 +43,7 @@ import org.springframework.test.context.TestPropertySource;
  * in the test environment.
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            ServiceStartupTestBase.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, ServiceStartupTestBase.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
@@ -96,7 +92,6 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
                 dbHost,
                 rabbitmqHost,
                 zookeeperHost);
-
     }
 
     /**
@@ -107,7 +102,6 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         assertNotNull(applicationContext, "Application context should load");
         boolean available = isDockerStartupScriptAvailable();
         logger.info("Docker startup script available: {}", available);
-
     }
 
     /**
@@ -125,7 +119,6 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         @Test
         public void testDockerServiceConfiguration() {
             assertNotNull(applicationContext, "Application context should load with Docker service configuration");
-
         }
     }
 
@@ -135,7 +128,6 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
     @Test
     public void testMissingDockerDependencies() {
         assertNotNull(applicationContext, "Application context should load even if Docker dependencies are missing");
-
     }
 
     /**
@@ -154,8 +146,6 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
             configDir = new java.io.File(airavataHome, "conf").getAbsolutePath();
         }
         logger.info("Airavata home: {}, config directory: {}", airavataHome, configDir);
-
-
     }
 
     /**
@@ -174,7 +164,5 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
                 agentHome,
                 researchHome,
                 fileHome);
-
-
     }
 }

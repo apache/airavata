@@ -34,13 +34,12 @@ import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.JobIdentifier;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatusChangeEvent;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
-import org.apache.airavata.common.model.ProcessIdentifier;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.TestcontainersConfig;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.TestMessagingUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -55,25 +54,19 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(classes = {
-    org.apache.airavata.config.JpaConfig.class,
-    TestcontainersConfig.class
-}, properties = {
-    "spring.main.allow-bean-definition-overriding=true",
-    "flyway.enabled=false"
-})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
 @ActiveProfiles("test")
 @TestPropertySource(
-        properties = {
-            "kafka.broker-url=${kafkaBootstrapServers}"
-        },
+        properties = {"kafka.broker-url=${kafkaBootstrapServers}"},
         locations = "classpath:conf/airavata.properties")
 public class KafkaIntegrationTest {
 
@@ -137,8 +130,11 @@ public class KafkaIntegrationTest {
                 try {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
                     for (ConsumerRecord<String, String> record : records) {
-                        logger.info("Received message: key={}, value={}, offset={}", 
-                                record.key(), record.value(), record.offset());
+                        logger.info(
+                                "Received message: key={}, value={}, offset={}",
+                                record.key(),
+                                record.value(),
+                                record.offset());
                         receivedMessage[0] = record.value();
                         messageReceived.countDown();
                     }
@@ -156,8 +152,11 @@ public class KafkaIntegrationTest {
             RecordMetadata metadata = producer.send(record).get();
 
             assertNotNull(metadata, "Message should be sent successfully");
-            logger.info("Message sent to topic: {}, partition: {}, offset: {}", 
-                    metadata.topic(), metadata.partition(), metadata.offset());
+            logger.info(
+                    "Message sent to topic: {}, partition: {}, offset: {}",
+                    metadata.topic(),
+                    metadata.partition(),
+                    metadata.offset());
 
             // Wait for message to be received
             boolean received = messageReceived.await(10, TimeUnit.SECONDS);
@@ -217,8 +216,7 @@ public class KafkaIntegrationTest {
 
             // Publish multiple messages
             for (int i = 0; i < messageCount; i++) {
-                ProducerRecord<String, String> record = new ProducerRecord<>(
-                        topicName, "key-" + i, "message-" + i);
+                ProducerRecord<String, String> record = new ProducerRecord<>(topicName, "key-" + i, "message-" + i);
                 producer.send(record);
             }
 
@@ -249,12 +247,14 @@ public class KafkaIntegrationTest {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
             // Publishing to a non-existent topic will auto-create it
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, "key", "value");
-            
-            assertDoesNotThrow(() -> {
-                RecordMetadata metadata = producer.send(record).get();
-                assertNotNull(metadata, "Topic should be auto-created and message sent");
-                logger.info("Topic {} auto-created successfully", topicName);
-            }, "Topic creation and message publishing should not throw exception");
+
+            assertDoesNotThrow(
+                    () -> {
+                        RecordMetadata metadata = producer.send(record).get();
+                        assertNotNull(metadata, "Topic should be auto-created and message sent");
+                        logger.info("Topic {} auto-created successfully", topicName);
+                    },
+                    "Topic creation and message publishing should not throw exception");
         }
 
         logger.info("Topic creation test passed");
@@ -292,12 +292,15 @@ public class KafkaIntegrationTest {
                 try {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
                     for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper = objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
+                        MessageContext.Wrapper wrapper =
+                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
                         MessageContext messageContext = wrapper.toMessageContext();
                         if (messageContext.getType() == MessageType.EXPERIMENT) {
                             receivedEvent[0] = (ExperimentStatusChangeEvent) messageContext.getEvent();
-                            logger.info("Received ExperimentStatusChangeEvent: experimentId={}, state={}",
-                                    receivedEvent[0].getExperimentId(), receivedEvent[0].getState());
+                            logger.info(
+                                    "Received ExperimentStatusChangeEvent: experimentId={}, state={}",
+                                    receivedEvent[0].getExperimentId(),
+                                    receivedEvent[0].getState());
                             messageReceived.countDown();
                         }
                     }
@@ -356,12 +359,15 @@ public class KafkaIntegrationTest {
                 try {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
                     for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper = objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
+                        MessageContext.Wrapper wrapper =
+                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
                         MessageContext messageContext = wrapper.toMessageContext();
                         if (messageContext.getType() == MessageType.PROCESS) {
                             receivedEvent[0] = (ProcessStatusChangeEvent) messageContext.getEvent();
-                            logger.info("Received ProcessStatusChangeEvent: processId={}, state={}",
-                                    receivedEvent[0].getProcessIdentity().getProcessId(), receivedEvent[0].getState());
+                            logger.info(
+                                    "Received ProcessStatusChangeEvent: processId={}, state={}",
+                                    receivedEvent[0].getProcessIdentity().getProcessId(),
+                                    receivedEvent[0].getState());
                             messageReceived.countDown();
                         }
                     }
@@ -422,12 +428,15 @@ public class KafkaIntegrationTest {
                 try {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
                     for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper = objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
+                        MessageContext.Wrapper wrapper =
+                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
                         MessageContext messageContext = wrapper.toMessageContext();
                         if (messageContext.getType() == MessageType.JOB) {
                             receivedEvent[0] = (JobStatusChangeEvent) messageContext.getEvent();
-                            logger.info("Received JobStatusChangeEvent: jobId={}, state={}",
-                                    receivedEvent[0].getJobIdentity().getJobId(), receivedEvent[0].getState());
+                            logger.info(
+                                    "Received JobStatusChangeEvent: jobId={}, state={}",
+                                    receivedEvent[0].getJobIdentity().getJobId(),
+                                    receivedEvent[0].getState());
                             messageReceived.countDown();
                         }
                     }
@@ -492,10 +501,12 @@ public class KafkaIntegrationTest {
                     while (receivedStates.size() < expectedStates.size()) {
                         ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
                         for (ConsumerRecord<String, String> record : records) {
-                            MessageContext.Wrapper wrapper = objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
+                            MessageContext.Wrapper wrapper =
+                                    objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
                             MessageContext messageContext = wrapper.toMessageContext();
                             if (messageContext.getType() == MessageType.EXPERIMENT) {
-                                ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) messageContext.getEvent();
+                                ExperimentStatusChangeEvent event =
+                                        (ExperimentStatusChangeEvent) messageContext.getEvent();
                                 receivedStates.add(event.getState());
                                 messagesReceived.countDown();
                             }
@@ -510,8 +521,8 @@ public class KafkaIntegrationTest {
             Thread.sleep(1000);
 
             for (ExperimentState state : expectedStates) {
-                MessageContext messageContext = TestMessagingUtils.createExperimentStatusChangeMessage(
-                        experimentId, gatewayId, state);
+                MessageContext messageContext =
+                        TestMessagingUtils.createExperimentStatusChangeMessage(experimentId, gatewayId, state);
                 String messageValue = objectMapper.writeValueAsString(new MessageContext.Wrapper(messageContext));
                 ProducerRecord<String, String> record = new ProducerRecord<>(topicName, experimentId, messageValue);
                 producer.send(record).get();
@@ -529,4 +540,3 @@ public class KafkaIntegrationTest {
         }
     }
 }
-

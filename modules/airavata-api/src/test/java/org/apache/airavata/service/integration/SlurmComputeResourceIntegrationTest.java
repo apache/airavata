@@ -179,9 +179,9 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @DisplayName("Should configure SSH job submission interface")
         void shouldConfigureSSHJobSubmissionInterface() throws AppCatalogException {
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
-            
+
             assertThat(computeResource.getJobSubmissionInterfaces()).isNotEmpty();
-            
+
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
@@ -194,7 +194,7 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
         @DisplayName("Should configure data movement interface")
         void shouldConfigureDataMovementInterface() throws AppCatalogException {
             ComputeResourceDescription computeResource = createSlurmComputeResourceWithQueues();
-            
+
             String resourceId = computeResourceService.addComputeResource(computeResource);
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
 
@@ -209,14 +209,13 @@ public class SlurmComputeResourceIntegrationTest extends ServiceIntegrationTestB
      * 1. A test SSH server (can use Testcontainers with an SSH server image)
      * 2. Valid SSH credentials
      * 3. A SLURM installation on the test server
-     * 
+     *
      * For now, these tests verify configuration only.
      * To add real SSH tests, consider using:
      * - Testcontainers with an SSH server container
      * - Mock SSH server library
      * - Integration test environment with real compute resources
      */
-
     private ComputeResourceDescription createSlurmComputeResourceWithQueues() {
         ComputeResourceDescription computeResource = TestDataFactory.createSlurmComputeResource("slurm-host");
         // TestDataFactory already creates a "normal" queue, so we just use it

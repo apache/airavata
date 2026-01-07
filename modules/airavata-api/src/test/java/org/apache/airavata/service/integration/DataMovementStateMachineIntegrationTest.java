@@ -26,13 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessIdentifier;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.MessageVerificationUtils;
 import org.apache.airavata.messaging.Publisher;
@@ -54,7 +54,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +67,6 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             DataMovementStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -160,7 +158,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         assertEquals(
                 ProcessState.INPUT_DATA_STAGING, latest.getState(), "Process should be in INPUT_DATA_STAGING state");
 
- // state is in history
+        // state is in history
         var process = processService.getProcess(testHierarchy.processId);
         assertTrue(
                 process.getProcessStatuses().stream().anyMatch(s -> s.getState() == ProcessState.INPUT_DATA_STAGING),
@@ -188,7 +186,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         assertEquals(
                 ProcessState.OUTPUT_DATA_STAGING, latest.getState(), "Process should be in OUTPUT_DATA_STAGING state");
 
- // state is in history
+        // state is in history
         var process = processService.getProcess(testHierarchy.processId);
         assertTrue(
                 process.getProcessStatuses().stream().anyMatch(s -> s.getState() == ProcessState.OUTPUT_DATA_STAGING),
@@ -220,7 +218,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
- // data staging states are in history
+        // data staging states are in history
         var process = processService.getProcess(testHierarchy.processId);
         assertTrue(
                 process.getProcessStatuses().stream().anyMatch(s -> s.getState() == ProcessState.INPUT_DATA_STAGING),
@@ -324,8 +322,8 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(3); // Expect 3 messages for data staging states
 
-        MessageHandler handler = MessageVerificationUtils.createCapturingHandlerWithLatch(
-                capturedMessages, messageReceived, 3);
+        MessageHandler handler =
+                MessageVerificationUtils.createCapturingHandlerWithLatch(capturedMessages, messageReceived, 3);
 
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(testHierarchy.processId);
@@ -338,15 +336,18 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
             publisher = messagingFactory.getPublisher(Type.STATUS);
 
-            ProcessIdentifier identifier = new ProcessIdentifier(
-                    testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
+            ProcessIdentifier identifier =
+                    new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
 
-            ProcessStatus inputStaging = StateMachineTestUtils.createProcessStatus(
-                    ProcessState.INPUT_DATA_STAGING, "Input data staging");
+            ProcessStatus inputStaging =
+                    StateMachineTestUtils.createProcessStatus(ProcessState.INPUT_DATA_STAGING, "Input data staging");
             processStatusService.addProcessStatus(inputStaging, testHierarchy.processId);
             ProcessStatusChangeEvent event1 = new ProcessStatusChangeEvent(ProcessState.INPUT_DATA_STAGING, identifier);
             MessageContext msgCtx1 = new MessageContext(
-                    event1, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    event1,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             msgCtx1.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx1);
 
@@ -354,16 +355,23 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             processStatusService.addProcessStatus(executing, testHierarchy.processId);
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
-                    event2, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    event2,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             msgCtx2.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx2);
 
-            ProcessStatus outputStaging = StateMachineTestUtils.createProcessStatus(
-                    ProcessState.OUTPUT_DATA_STAGING, "Output data staging");
+            ProcessStatus outputStaging =
+                    StateMachineTestUtils.createProcessStatus(ProcessState.OUTPUT_DATA_STAGING, "Output data staging");
             processStatusService.addProcessStatus(outputStaging, testHierarchy.processId);
-            ProcessStatusChangeEvent event3 = new ProcessStatusChangeEvent(ProcessState.OUTPUT_DATA_STAGING, identifier);
+            ProcessStatusChangeEvent event3 =
+                    new ProcessStatusChangeEvent(ProcessState.OUTPUT_DATA_STAGING, identifier);
             MessageContext msgCtx3 = new MessageContext(
-                    event3, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    event3,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             msgCtx3.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx3);
 

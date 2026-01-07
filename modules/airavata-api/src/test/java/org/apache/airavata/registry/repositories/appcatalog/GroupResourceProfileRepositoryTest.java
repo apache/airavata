@@ -53,7 +53,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             GroupResourceProfileRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -78,9 +77,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
@@ -192,9 +189,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
 
-
-
-
         GroupComputeResourcePreference groupComputeResourcePreference2 = new GroupComputeResourcePreference();
         groupComputeResourcePreference2.setComputeResourceId(resourceId2);
 
@@ -299,7 +293,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
                         .size()
                 == 2);
 
-
         GroupResourceProfile retrievedGroupResourceProfile =
                 groupResourceProfileService.getGroupResourceProfile(groupResourceProfileId);
         GroupComputeResourcePreference retrievedGroupComputeResourcePreference =
@@ -332,7 +325,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
                         .get();
         assertNull(retrievedGroupComputeResourcePreference3.getResourceSpecificCredentialStoreToken());
 
-
         assertEquals(2, retrievedGroupResourceProfile3.getComputePreferences().size());
         retrievedGroupResourceProfile3.setComputePreferences(
                 retrievedGroupResourceProfile3.getComputePreferences().subList(0, 1));
@@ -351,9 +343,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
         groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
-
-
-
 
         GroupResourceProfile cloneGroupResourceProfile = new GroupResourceProfile();
         cloneGroupResourceProfile.setGatewayId(groupResourceProfile.getGatewayId());
@@ -397,11 +386,9 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
 
-
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
-
 
         {
             GroupResourceProfile retrievedGroupResourceProfile =
@@ -440,7 +427,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
-
 
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
@@ -489,13 +475,6 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         {
             groupResourceProfileService.getGroupResourceProfile(groupResourceProfileId);
-
-
-
-
-
-
-
         }
     }
 

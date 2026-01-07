@@ -63,8 +63,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
             ComputeResourceRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -72,9 +70,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -92,9 +87,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
@@ -132,7 +125,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 computeResourceService.getComputeResource(savedComputeResourceId);
 
         List<BatchQueue> updatedBatchQueues = updatedComputeResource.getBatchQueues();
-
 
         if (updatedBatchQueues == null) {
             updatedBatchQueues = new java.util.ArrayList<>();
@@ -173,7 +165,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 computeResourceService.getComputeResource(savedComputeResourceId);
 
         List<DataMovementInterface> updatedDataMovementInterfaces = updatedComputeResource.getDataMovementInterfaces();
-
 
         if (updatedDataMovementInterfaces == null) {
             updatedDataMovementInterfaces = new java.util.ArrayList<>();
@@ -217,7 +208,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         List<JobSubmissionInterface> updatedJobSubmissionInterfaces =
                 updatedComputeResource.getJobSubmissionInterfaces();
 
-
         if (updatedJobSubmissionInterfaces == null) {
             updatedJobSubmissionInterfaces = new java.util.ArrayList<>();
         }
@@ -259,17 +249,14 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         List<ComputeResourceDescription> allSavedComputeResources = computeResourceService.getAllComputeResourceList();
 
-
         Assertions.assertTrue(
                 allSavedComputeResources.size() >= 5,
                 "Expected at least 5 resources, but got " + allSavedComputeResources.size());
-
 
         Map<String, ComputeResourceDescription> savedMap = new HashMap<>();
         for (ComputeResourceDescription saved : allSavedComputeResources) {
             savedMap.put(saved.getComputeResourceId(), saved);
         }
-
 
         for (int i = 0; i < 5; i++) {
             ComputeResourceDescription saved = savedMap.get(allIds.get(i));
@@ -280,7 +267,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         }
 
         var allSavedComputeResourceIds = computeResourceService.getAllComputeResourceIdList();
-
 
         Assertions.assertTrue(
                 allSavedComputeResourceIds.size() >= 5,
@@ -293,7 +279,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         }
 
         var allAvailableIds = computeResourceService.getAvailableComputeResourceIdList();
-
 
         Assertions.assertTrue(
                 allAvailableIds.size() >= 3,
@@ -687,7 +672,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 return false;
             }
 
-
             String[] excludeFields =
                     new String[] {"__isset_bitfield", "creationTime", "updateTime", "storageResourceId"};
 
@@ -699,14 +683,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
                     if (expectedItem instanceof org.apache.airavata.common.model.BatchQueue) {
 
-
-
                         org.apache.airavata.common.model.BatchQueue expectedBq =
                                 (org.apache.airavata.common.model.BatchQueue) expectedItem;
                         org.apache.airavata.common.model.BatchQueue actualBq =
                                 (org.apache.airavata.common.model.BatchQueue) actualItem;
-
-
 
                         boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                 && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
@@ -721,7 +701,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                 && Objects.equals(
                                         expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                 && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-
 
                         equals = equals & bqEquals;
                     } else if (expectedItem instanceof org.apache.airavata.common.model.JobSubmissionInterface
@@ -769,15 +748,10 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
                         if (expectedItem instanceof org.apache.airavata.common.model.BatchQueue) {
 
-
-
                             org.apache.airavata.common.model.BatchQueue expectedBq =
                                     (org.apache.airavata.common.model.BatchQueue) expectedItem;
                             org.apache.airavata.common.model.BatchQueue actualBq =
                                     (org.apache.airavata.common.model.BatchQueue) actualItem;
-
-
-
 
                             boolean bqEquals = Objects.equals(expectedBq.getQueueName(), actualBq.getQueueName())
                                     && Objects.equals(expectedBq.getQueueDescription(), actualBq.getQueueDescription())
@@ -792,7 +766,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                     && Objects.equals(
                                             expectedBq.getQueueSpecificMacros(), actualBq.getQueueSpecificMacros())
                                     && Objects.equals(expectedBq.getIsDefaultQueue(), actualBq.getIsDefaultQueue());
-
 
                             equals = bqEquals;
                         } else if (expectedItem instanceof org.apache.airavata.common.model.JobSubmissionInterface

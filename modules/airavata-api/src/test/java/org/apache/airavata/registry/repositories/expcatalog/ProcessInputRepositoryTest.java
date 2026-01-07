@@ -53,7 +53,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ProcessInputRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -61,9 +60,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -81,9 +77,7 @@ public class ProcessInputRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -154,7 +148,6 @@ public class ProcessInputRepositoryTest extends TestBase {
         assertEquals(
                 1, processService.getProcess(processId).getProcessInputs().size(), "Process should have one input");
 
-
         inputDataObjectProType.setValue("iValueP");
         processInputService.updateProcessInputs(inputDataObjectTypeProList, processId);
 
@@ -192,7 +185,6 @@ public class ProcessInputRepositoryTest extends TestBase {
 
         List<InputDataObjectType> retrievedInputs = processInputService.getProcessInputs(processId);
         assertEquals(3, retrievedInputs.size(), "Process should have 3 inputs");
-
 
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input2")), "Input 2 should be present");

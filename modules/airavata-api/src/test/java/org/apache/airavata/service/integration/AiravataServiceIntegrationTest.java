@@ -43,7 +43,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@DisplayName("AiravataService Integration Tests - Main service operations with database persistence and full functionality")
+@DisplayName(
+        "AiravataService Integration Tests - Main service operations with database persistence and full functionality")
 public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     @Autowired(required = false)
@@ -156,7 +157,8 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             commitTransaction();
 
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Search Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Search Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
 
@@ -179,7 +181,8 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             commitTransaction();
 
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
 

@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.EntityType;
-
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +85,6 @@ public class EntityLoadingTest {
         try {
             Set<EntityType<?>> entities = em.getMetamodel().getEntities();
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
-
-
 
             assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
 

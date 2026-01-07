@@ -81,15 +81,21 @@ services:
       - zookeeper
 
   sshd:
-    image: panubo/sshd
+    image: lscr.io/linuxserver/openssh-server:latest
     container_name: sshd
-    restart: always
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+      USER_NAME: root
+      PASSWORD_ACCESS: "true"
     volumes:
-      - /tmp:/tmp
+      - ./authorized_keys:/config/.ssh/authorized_keys:ro
     networks:
       - airavata-network
     ports:
-      - "22222:22"
+      - "22222:2222"
 
   adminer:
     image: adminer:latest

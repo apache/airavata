@@ -55,11 +55,7 @@ import org.springframework.test.context.TestPropertySource;
  * - Different startup modes work correctly
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            UnifiedApplicationStartupTest.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, UnifiedApplicationStartupTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
@@ -67,12 +63,11 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class UnifiedApplicationStartupTest {
 
     @Configuration
@@ -180,7 +175,6 @@ public class UnifiedApplicationStartupTest {
     @Test
     public void testAdaptorSupportBeanIsPrimary() {
 
-
         if (applicationContext.getBeansOfType(AdaptorSupport.class).size() > 0) {
             AdaptorSupport adaptorSupport = applicationContext.getBean(AdaptorSupport.class);
             assertNotNull(adaptorSupport, "AdaptorSupport bean should be available");
@@ -208,9 +202,6 @@ public class UnifiedApplicationStartupTest {
 
     @Test
     public void testAiravataServiceIsNotInitializedWhenThriftDisabled() {
-
-
-
 
         assertTrue(
                 applicationContext.getBeansOfType(RegistryService.class).size() > 0,

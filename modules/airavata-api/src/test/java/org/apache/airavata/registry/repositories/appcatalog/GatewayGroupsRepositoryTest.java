@@ -36,7 +36,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             GatewayGroupsRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -44,7 +43,7 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-            "services.thrift.enabled=false",
+            "services.thrift.enabled=true",
             "services.helix.enabled=false",
             "services.userprofile.enabled=false",
             "services.groupmanager.enabled=false",
@@ -67,9 +66,7 @@ public class GatewayGroupsRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private static final String GATEWAY_ID = "gateway-id";

@@ -19,17 +19,19 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the PROCESS_WORKFLOW database table.
+ */
 public class ProcessWorkflowPK implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private String processId;
     private String workflowId;
 
-    @Id
-    @Column(name = "PROCESS_ID")
+    public ProcessWorkflowPK() {}
+
     public String getProcessId() {
         return processId;
     }
@@ -38,8 +40,6 @@ public class ProcessWorkflowPK implements Serializable {
         this.processId = processId;
     }
 
-    @Id
-    @Column(name = "WORKFLOW_ID")
     public String getWorkflowId() {
         return workflowId;
     }

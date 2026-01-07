@@ -22,10 +22,7 @@ package org.apache.airavata.orchestrator.core;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
-
-
 
 @SpringBootTest(
         classes = {
@@ -43,9 +40,7 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class BaseOrchestratorTest {
 
-    public BaseOrchestratorTest() {
-
-    }
+    public BaseOrchestratorTest() {}
 
     @Configuration
     @ComponentScan(

@@ -61,15 +61,15 @@ public class TestcontainersConfig {
     private static final String DB_USER = System.getProperty("test.db.user", "airavata");
     private static final String DB_PASSWORD = System.getProperty("test.db.password", "123456");
     private static final String DB_ROOT_PASSWORD = System.getProperty("test.db.root.password", "123456");
-    
+
     private static final String KAFKA_HOST = System.getProperty("test.kafka.host", "localhost");
     private static final int KAFKA_PORT = Integer.parseInt(System.getProperty("test.kafka.port", "9092"));
-    
+
     private static final String RABBITMQ_HOST = System.getProperty("test.rabbitmq.host", "localhost");
     private static final int RABBITMQ_PORT = Integer.parseInt(System.getProperty("test.rabbitmq.port", "5672"));
     private static final String RABBITMQ_USER = System.getProperty("test.rabbitmq.user", "guest");
     private static final String RABBITMQ_PASSWORD = System.getProperty("test.rabbitmq.password", "guest");
-    
+
     private static final String ZOOKEEPER_HOST = System.getProperty("test.zookeeper.host", "localhost");
     private static final int ZOOKEEPER_PORT = Integer.parseInt(System.getProperty("test.zookeeper.port", "2181"));
 
@@ -168,7 +168,7 @@ public class TestcontainersConfig {
     private static MariaDBContainer<?> sharingRegistryContainer;
     private static MariaDBContainer<?> credentialStoreContainer;
     private static MariaDBContainer<?> researchCatalogContainer;
-    
+
     // Messaging service containers - shared across all tests
     private static KafkaContainer kafkaContainer;
     private static RabbitMQContainer rabbitMQContainer;
@@ -254,12 +254,12 @@ public class TestcontainersConfig {
                 case "sharing_registry":
                     sharingRegistryContainer = container;
                     break;
-            case "credential_store":
-                credentialStoreContainer = container;
-                break;
-            case "research_catalog":
-                researchCatalogContainer = container;
-                break;
+                case "credential_store":
+                    credentialStoreContainer = container;
+                    break;
+                case "research_catalog":
+                    researchCatalogContainer = container;
+                    break;
             }
         }
 
@@ -277,8 +277,8 @@ public class TestcontainersConfig {
 
         if (kafkaContainer == null || !kafkaContainer.isRunning()) {
             logger.info("Creating new Kafka container");
-            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:" + KAFKA_VERSION))
-                    .withReuse(true);
+            kafkaContainer =
+                    new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:" + KAFKA_VERSION)).withReuse(true);
             kafkaContainer.start();
             logger.info("Kafka container started at {}", kafkaContainer.getBootstrapServers());
         }
@@ -321,10 +321,11 @@ public class TestcontainersConfig {
                             DockerImageName.parse("zookeeper:" + ZOOKEEPER_VERSION))
                     .withExposedPorts(2181)
                     .withReuse(true)
-                    .waitingFor(Wait.forLogMessage(".*binding to port.*", 1)
-                            .withStartupTimeout(Duration.ofMinutes(2)));
+                    .waitingFor(Wait.forLogMessage(".*binding to port.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
             zookeeperContainer.start();
-            logger.info("Zookeeper container started at {}:{}", zookeeperContainer.getHost(),
+            logger.info(
+                    "Zookeeper container started at {}:{}",
+                    zookeeperContainer.getHost(),
                     zookeeperContainer.getMappedPort(2181));
         }
         return zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181);
@@ -335,10 +336,16 @@ public class TestcontainersConfig {
      */
     public static boolean areAllServicesHealthy() {
         boolean dbHealthy = shouldUseExistingContainers() ? isMariaDBAccessible() : true;
-        boolean kafkaHealthy = shouldUseExistingContainers() ? isKafkaAccessible() : (kafkaContainer != null && kafkaContainer.isRunning());
-        boolean rabbitMQHealthy = shouldUseExistingContainers() ? isRabbitMQAccessible() : (rabbitMQContainer != null && rabbitMQContainer.isRunning());
-        boolean zookeeperHealthy = shouldUseExistingContainers() ? isZookeeperAccessible() : (zookeeperContainer != null && zookeeperContainer.isRunning());
-        
+        boolean kafkaHealthy = shouldUseExistingContainers()
+                ? isKafkaAccessible()
+                : (kafkaContainer != null && kafkaContainer.isRunning());
+        boolean rabbitMQHealthy = shouldUseExistingContainers()
+                ? isRabbitMQAccessible()
+                : (rabbitMQContainer != null && rabbitMQContainer.isRunning());
+        boolean zookeeperHealthy = shouldUseExistingContainers()
+                ? isZookeeperAccessible()
+                : (zookeeperContainer != null && zookeeperContainer.isRunning());
+
         return dbHealthy && kafkaHealthy && rabbitMQHealthy && zookeeperHealthy;
     }
 
@@ -393,9 +400,91 @@ public class TestcontainersConfig {
                     logger.debug("Could not check schema existence: {}", e.getMessage());
                 }
 
-                // If schema doesn't exist or is empty (only flyway_schema_history), migrate directly
-                if (!schemaExists || (currentVersion == null && pendingMigrations.length > 0)) {
-                    logger.info("Schema {} is empty or doesn't exist, running migrations from scratch", dbName);
+                // Check if expected tables exist (not just any tables)
+                boolean expectedTablesExist = false;
+                if (schemaExists) {
+                    try (var conn = java.sql.DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASSWORD)) {
+                        var rs = conn.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+                        java.util.Set<String> tableNames = new java.util.HashSet<>();
+                        while (rs.next()) {
+                            String tableName = rs.getString("TABLE_NAME");
+                            if (!tableName.equals("flyway_schema_history")) {
+                                tableNames.add(tableName);
+                            }
+                        }
+                        rs.close();
+                        // Check for expected tables based on database name
+                        if (dbName.equals("credential_store")) {
+                            expectedTablesExist = tableNames.contains("CREDENTIALS");
+                            if (!expectedTablesExist) {
+                                logger.debug(
+                                        "credential_store missing CREDENTIALS table. Found tables: {}", tableNames);
+                            }
+                        } else if (dbName.equals("profile_service")) {
+                            expectedTablesExist =
+                                    tableNames.contains("USER_PROFILE") || tableNames.contains("NSF_DEMOGRAPHIC");
+                            if (!expectedTablesExist) {
+                                logger.debug("profile_service missing expected tables. Found tables: {}", tableNames);
+                            }
+                        } else if (dbName.equals("experiment_catalog")) {
+                            // Check for key tables - all must exist
+                            boolean hasExperiment = tableNames.contains("EXPERIMENT");
+                            boolean hasJobStatus = tableNames.contains("JOB_STATUS");
+                            boolean hasProcessStatus = tableNames.contains("PROCESS_STATUS");
+                            expectedTablesExist = hasExperiment && hasJobStatus && hasProcessStatus;
+                            if (!expectedTablesExist) {
+                                logger.warn(
+                                        "experiment_catalog missing expected tables. EXPERIMENT: {}, JOB_STATUS: {}, PROCESS_STATUS: {}. Found tables: {}",
+                                        hasExperiment,
+                                        hasJobStatus,
+                                        hasProcessStatus,
+                                        tableNames.size() > 20 ? tableNames.size() + " tables" : tableNames);
+                            }
+                        } else if (dbName.equals("app_catalog")) {
+                            // Check for key tables - COMPUTE_RESOURCE and BATCH_QUEUE must exist
+                            boolean hasComputeResource = tableNames.contains("COMPUTE_RESOURCE");
+                            boolean hasBatchQueue = tableNames.contains("BATCH_QUEUE");
+                            expectedTablesExist = hasComputeResource && hasBatchQueue;
+                            if (!expectedTablesExist) {
+                                logger.warn(
+                                        "app_catalog missing expected tables. COMPUTE_RESOURCE: {}, BATCH_QUEUE: {}. Found tables: {}",
+                                        hasComputeResource,
+                                        hasBatchQueue,
+                                        tableNames.size() > 20 ? tableNames.size() + " tables" : tableNames);
+                            }
+                        } else if (dbName.equals("replica_catalog")) {
+                            expectedTablesExist =
+                                    tableNames.contains("DATA_PRODUCT") && tableNames.contains("DATA_PRODUCT_METADATA");
+                        } else if (dbName.equals("workflow_catalog")) {
+                            expectedTablesExist = tableNames.contains("AIRAVATA_WORKFLOW");
+                            if (!expectedTablesExist) {
+                                logger.debug(
+                                        "replica_catalog missing DATA_PRODUCT table. Found tables: {}", tableNames);
+                            }
+                        } else {
+                            // For other databases, if we have any tables, assume they're correct
+                            expectedTablesExist = !tableNames.isEmpty();
+                        }
+                    } catch (Exception e) {
+                        logger.debug("Could not check expected tables: {}", e.getMessage());
+                    }
+                }
+
+                // If schema doesn't exist, expected tables don't exist, or no current version with pending migrations,
+                // migrate
+                if (!schemaExists || !expectedTablesExist || (currentVersion == null && pendingMigrations.length > 0)) {
+                    if (!expectedTablesExist && currentVersion != null) {
+                        logger.warn(
+                                "Schema {} has migration history but expected tables are missing. Cleaning and re-applying migrations.",
+                                dbName);
+                        try {
+                            flyway.clean();
+                        } catch (Exception cleanEx) {
+                            logger.debug("Clean failed, will try manual cleanup: {}", cleanEx.getMessage());
+                        }
+                    }
+                    logger.info(
+                            "Schema {} is empty or missing expected tables, running migrations from scratch", dbName);
                     flyway.migrate();
                     logger.info("Applied Flyway migrations to {}", dbName);
                 } else if (pendingMigrations.length > 0) {

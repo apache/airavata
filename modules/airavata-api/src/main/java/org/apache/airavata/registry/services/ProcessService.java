@@ -51,16 +51,19 @@ public class ProcessService {
     private final ExperimentRepository experimentRepository;
     private final TaskService taskService;
     private final ProcessMapper processMapper;
+    private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
 
     public ProcessService(
             ProcessRepository processRepository,
             ExperimentRepository experimentRepository,
             TaskService taskService,
-            ProcessMapper processMapper) {
+            ProcessMapper processMapper,
+            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
         this.processMapper = processMapper;
+        this.processWorkflowMapper = processWorkflowMapper;
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
@@ -137,9 +140,28 @@ public class ProcessService {
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
-
         ProcessModel model = processMapper.toModel(entity);
-
+        // Manually map processWorkflows after mapping to avoid LazyInitializationException
+        // Access the collection to force initialization within the transaction
+        try {
+            java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity> workflows =
+                    entity.getProcessWorkflows();
+            if (workflows != null) {
+                // Force initialization by accessing size
+                int size = workflows.size();
+                if (size > 0) {
+                    model.setProcessWorkflows(processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                } else {
+                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                }
+            } else {
+                model.setProcessWorkflows(new java.util.ArrayList<>());
+            }
+        } catch (org.hibernate.LazyInitializationException e) {
+            // If lazy initialization fails, just set empty list
+            logger.debug("Could not initialize processWorkflows for process {}: {}", processId, e.getMessage());
+            model.setProcessWorkflows(new java.util.ArrayList<>());
+        }
         // Manually convert emailAddresses from String (CSV) to List<String>
         String emailAddressesStr = entity.getEmailAddresses();
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
@@ -181,6 +203,32 @@ public class ProcessService {
             logger.debug("Search criteria is ExperimentId");
             List<ProcessEntity> entities = processRepository.findByExperimentId((String) value);
             processModelList = processMapper.toModelList(entities);
+            // Manually map processWorkflows after mapping to avoid LazyInitializationException
+            for (int i = 0; i < processModelList.size(); i++) {
+                ProcessEntity entity = entities.get(i);
+                ProcessModel model = processModelList.get(i);
+                try {
+                    java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity>
+                            workflows = entity.getProcessWorkflows();
+                    if (workflows != null) {
+                        int size = workflows.size(); // Force initialization
+                        if (size > 0) {
+                            model.setProcessWorkflows(
+                                    processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                        } else {
+                            model.setProcessWorkflows(new java.util.ArrayList<>());
+                        }
+                    } else {
+                        model.setProcessWorkflows(new java.util.ArrayList<>());
+                    }
+                } catch (org.hibernate.LazyInitializationException e) {
+                    logger.debug(
+                            "Could not initialize processWorkflows for process {}: {}",
+                            entity.getProcessId(),
+                            e.getMessage());
+                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                }
+            }
             // Manually convert emailAddresses from String (CSV) to List<String> for each model
             for (int i = 0; i < processModelList.size(); i++) {
                 ProcessEntity entity = entities.get(i);
@@ -223,7 +271,34 @@ public class ProcessService {
     @Transactional(readOnly = true)
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
         List<ProcessEntity> entities = processRepository.findAll();
-        return processMapper.toModelList(entities);
+        List<ProcessModel> models = processMapper.toModelList(entities);
+        // Manually map processWorkflows after mapping to avoid LazyInitializationException
+        for (int i = 0; i < models.size(); i++) {
+            ProcessEntity entity = entities.get(i);
+            ProcessModel model = models.get(i);
+            try {
+                java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity> workflows =
+                        entity.getProcessWorkflows();
+                if (workflows != null) {
+                    int size = workflows.size(); // Force initialization
+                    if (size > 0) {
+                        model.setProcessWorkflows(
+                                processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                    } else {
+                        model.setProcessWorkflows(new java.util.ArrayList<>());
+                    }
+                } else {
+                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                }
+            } catch (org.hibernate.LazyInitializationException e) {
+                logger.debug(
+                        "Could not initialize processWorkflows for process {}: {}",
+                        entity.getProcessId(),
+                        e.getMessage());
+                model.setProcessWorkflows(new java.util.ArrayList<>());
+            }
+        }
+        return models;
     }
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {

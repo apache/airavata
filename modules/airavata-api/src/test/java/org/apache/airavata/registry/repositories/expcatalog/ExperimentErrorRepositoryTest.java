@@ -49,7 +49,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ExperimentErrorRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -57,9 +56,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -77,9 +73,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -139,17 +133,14 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         assertNotNull(experimentErrorId, "Experiment error ID should not be null");
         assertEquals("error-1", experimentErrorId, "Error ID should match");
 
-
         assertEquals(
                 1,
                 experimentService.getExperiment(experimentId).getErrors().size(),
                 "Experiment should have one error");
 
-
         errorModel.setActualErrorMessage("Updated error message");
         errorModel.setUserFriendlyMessage("Updated user-friendly message");
         experimentErrorService.updateExperimentError(errorModel, experimentId);
-
 
         List<ErrorModel> retrievedErrorList = experimentErrorService.getExperimentErrors(experimentId);
         assertEquals(1, retrievedErrorList.size(), "Should have one error");
@@ -181,10 +172,8 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         error3.setActualErrorMessage("Third error");
         String errorId3 = experimentErrorService.addExperimentError(error3, experimentId);
 
-
         List<ErrorModel> errors = experimentErrorService.getExperimentErrors(experimentId);
         assertEquals(3, errors.size(), "Experiment should have 3 errors");
-
 
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");

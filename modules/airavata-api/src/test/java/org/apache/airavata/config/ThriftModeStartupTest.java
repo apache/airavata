@@ -40,27 +40,20 @@ import org.springframework.test.context.TestPropertySource;
  * - Background services can be enabled/disabled
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            AiravataServerProperties.class,
-            ThriftModeStartupTest.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, ThriftModeStartupTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-
             "services.thrift.enabled=true",
             "flyway.enabled=false",
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class ThriftModeStartupTest {
 
     @Configuration
@@ -97,7 +90,6 @@ public class ThriftModeStartupTest {
 
     @Test
     public void testDBEventDispatcherIsEnabled() {
-
 
         String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
         int dispatcherCount = beanNames.length;

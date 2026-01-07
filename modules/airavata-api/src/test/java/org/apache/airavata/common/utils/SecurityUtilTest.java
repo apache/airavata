@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -46,7 +45,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             SecurityUtilTest.TestConfiguration.class
         },
         properties = {
@@ -57,7 +55,8 @@ import org.springframework.test.context.TestPropertySource;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class SecurityUtilTest {
 
     private static final char[] STORE_PASSWORD = "airavata".toCharArray();
@@ -86,9 +85,7 @@ public class SecurityUtilTest {
         keyStorePath = tempKeystore.toString();
     }
 
-    public SecurityUtilTest() {
-
-    }
+    public SecurityUtilTest() {}
 
     @Test
     public void testEncryptString() throws Exception {

@@ -56,7 +56,6 @@ import org.springframework.test.context.TestPropertySource;
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 @TestPropertySource(
         properties = {
-
             "database.profile.url=jdbc:h2:mem:schema_validation_test;DB_CLOSE_DELAY=-1;MODE=MySQL",
             "database.profile.driver=org.h2.Driver",
             "database.profile.user=sa",
@@ -90,7 +89,6 @@ import org.springframework.test.context.TestPropertySource;
 public class SchemaValidationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaValidationTest.class);
-
 
     private final Map<String, EntityManagerFactory> emfMap;
 
@@ -190,7 +188,6 @@ public class SchemaValidationTest {
             assertNotNull(emf, "EntityManagerFactory should be created");
             assertNotNull(emf.getMetamodel(), "Metamodel should be available");
 
-
             var entities = emf.getMetamodel().getEntities();
             assertNotNull(entities, "Entities should be available in metamodel");
 
@@ -214,6 +211,5 @@ public class SchemaValidationTest {
             logger.error(errorMsg, e);
             fail(errorMsg, e);
         }
-
     }
 }

@@ -25,14 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.JobIdentifier;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
-import org.apache.airavata.common.model.ProcessIdentifier;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -42,24 +40,19 @@ import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.Subscriber;
 import org.apache.airavata.messaging.TestMessagingUtils;
 import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(classes = {
-    org.apache.airavata.config.JpaConfig.class,
-    TestcontainersConfig.class
-}, properties = {
-    "spring.main.allow-bean-definition-overriding=true",
-    "flyway.enabled=false"
-})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
 @ActiveProfiles("test")
 @TestPropertySource(
         properties = {
@@ -115,8 +108,8 @@ public class RabbitMQIntegrationTest {
         // Create test message
         ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
         event.setState(org.apache.airavata.common.model.ExperimentState.CREATED);
-        MessageContext messageContext = new MessageContext(
-                event, MessageType.EXPERIMENT, "test-message-id", "test-gateway");
+        MessageContext messageContext =
+                new MessageContext(event, MessageType.EXPERIMENT, "test-message-id", "test-gateway");
 
         // Setup consumer with latch to verify message received
         CountDownLatch messageReceived = new CountDownLatch(1);
@@ -159,16 +152,16 @@ public class RabbitMQIntegrationTest {
         properties.setDurable(false);
 
         RabbitMQPublisher publisher = new RabbitMQPublisher(properties);
-        
+
         // Publishing a message will create exchange and queue
         ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
         event.setState(org.apache.airavata.common.model.ExperimentState.CREATED);
-        MessageContext messageContext = new MessageContext(
-                event, MessageType.EXPERIMENT, "test-create-id", "test-gateway");
+        MessageContext messageContext =
+                new MessageContext(event, MessageType.EXPERIMENT, "test-create-id", "test-gateway");
 
         // This should create the exchange and queue
-        assertDoesNotThrow(() -> publisher.publish(messageContext), 
-                "Publishing should create exchange and queue without errors");
+        assertDoesNotThrow(
+                () -> publisher.publish(messageContext), "Publishing should create exchange and queue without errors");
 
         publisher.close();
         logger.info("Exchange and queue creation test passed");
@@ -195,11 +188,11 @@ public class RabbitMQIntegrationTest {
         for (int i = 0; i < messageCount; i++) {
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
             event.setState(org.apache.airavata.common.model.ExperimentState.CREATED);
-            MessageContext messageContext = new MessageContext(
-                    event, MessageType.EXPERIMENT, "message-" + i, "test-gateway");
-            
-            assertDoesNotThrow(() -> publisher.publish(messageContext),
-                    "Publishing message " + i + " should not throw exception");
+            MessageContext messageContext =
+                    new MessageContext(event, MessageType.EXPERIMENT, "message-" + i, "test-gateway");
+
+            assertDoesNotThrow(
+                    () -> publisher.publish(messageContext), "Publishing message " + i + " should not throw exception");
         }
 
         publisher.close();
@@ -210,12 +203,11 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive ExperimentStatusChangeEvent")
     void shouldPublishAndReceiveExperimentStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(
-                new RabbitMQProperties()
-                        .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                        .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                        .setDurable(properties.rabbitmq.durableQueue)
-                        .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
+                .setBrokerUrl(properties.rabbitmq.brokerUrl)
+                .setExchangeName(properties.rabbitmq.experimentExchangeName)
+                .setDurable(properties.rabbitmq.durableQueue)
+                .setPrefetchCount(properties.rabbitmq.prefetchCount));
 
         String experimentId = "test-exp-" + System.currentTimeMillis();
         String gatewayId = "test-gateway";
@@ -229,8 +221,10 @@ public class RabbitMQIntegrationTest {
         MessageHandler handler = message -> {
             if (message.getType().equals(MessageType.EXPERIMENT)) {
                 ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) message.getEvent();
-                logger.info("Received ExperimentStatusChangeEvent: experimentId={}, state={}",
-                        event.getExperimentId(), event.getState());
+                logger.info(
+                        "Received ExperimentStatusChangeEvent: experimentId={}, state={}",
+                        event.getExperimentId(),
+                        event.getState());
                 capturedMessages.add(message);
                 messageReceived.countDown();
             }
@@ -246,7 +240,8 @@ public class RabbitMQIntegrationTest {
 
             assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
             assertEquals(1, capturedMessages.size(), "Should receive exactly one message");
-            ExperimentStatusChangeEvent receivedEvent = (ExperimentStatusChangeEvent) capturedMessages.get(0).getEvent();
+            ExperimentStatusChangeEvent receivedEvent =
+                    (ExperimentStatusChangeEvent) capturedMessages.get(0).getEvent();
             assertEquals(experimentId, receivedEvent.getExperimentId(), "Experiment ID should match");
             assertEquals(ExperimentState.LAUNCHED, receivedEvent.getState(), "State should match");
         } finally {
@@ -260,12 +255,11 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive ProcessStatusChangeEvent")
     void shouldPublishAndReceiveProcessStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(
-                new RabbitMQProperties()
-                        .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                        .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                        .setDurable(properties.rabbitmq.durableQueue)
-                        .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
+                .setBrokerUrl(properties.rabbitmq.brokerUrl)
+                .setExchangeName(properties.rabbitmq.experimentExchangeName)
+                .setDurable(properties.rabbitmq.durableQueue)
+                .setPrefetchCount(properties.rabbitmq.prefetchCount));
 
         String processId = "test-process-" + System.currentTimeMillis();
         String experimentId = "test-exp-" + System.currentTimeMillis();
@@ -280,8 +274,10 @@ public class RabbitMQIntegrationTest {
         MessageHandler handler = message -> {
             if (message.getType().equals(MessageType.PROCESS)) {
                 ProcessStatusChangeEvent event = (ProcessStatusChangeEvent) message.getEvent();
-                logger.info("Received ProcessStatusChangeEvent: processId={}, state={}",
-                        event.getProcessIdentity().getProcessId(), event.getState());
+                logger.info(
+                        "Received ProcessStatusChangeEvent: processId={}, state={}",
+                        event.getProcessIdentity().getProcessId(),
+                        event.getState());
                 capturedMessages.add(message);
                 messageReceived.countDown();
             }
@@ -297,7 +293,8 @@ public class RabbitMQIntegrationTest {
 
             assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
             assertEquals(1, capturedMessages.size(), "Should receive exactly one message");
-            ProcessStatusChangeEvent receivedEvent = (ProcessStatusChangeEvent) capturedMessages.get(0).getEvent();
+            ProcessStatusChangeEvent receivedEvent =
+                    (ProcessStatusChangeEvent) capturedMessages.get(0).getEvent();
             assertEquals(processId, receivedEvent.getProcessIdentity().getProcessId(), "Process ID should match");
             assertEquals(ProcessState.STARTED, receivedEvent.getState(), "State should match");
         } finally {
@@ -311,12 +308,11 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive JobStatusChangeEvent")
     void shouldPublishAndReceiveJobStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(
-                new RabbitMQProperties()
-                        .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                        .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                        .setDurable(properties.rabbitmq.durableQueue)
-                        .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
+                .setBrokerUrl(properties.rabbitmq.brokerUrl)
+                .setExchangeName(properties.rabbitmq.experimentExchangeName)
+                .setDurable(properties.rabbitmq.durableQueue)
+                .setPrefetchCount(properties.rabbitmq.prefetchCount));
 
         String jobId = "test-job-" + System.currentTimeMillis();
         String taskId = "test-task";
@@ -333,8 +329,10 @@ public class RabbitMQIntegrationTest {
         MessageHandler handler = message -> {
             if (message.getType().equals(MessageType.JOB)) {
                 JobStatusChangeEvent event = (JobStatusChangeEvent) message.getEvent();
-                logger.info("Received JobStatusChangeEvent: jobId={}, state={}",
-                        event.getJobIdentity().getJobId(), event.getState());
+                logger.info(
+                        "Received JobStatusChangeEvent: jobId={}, state={}",
+                        event.getJobIdentity().getJobId(),
+                        event.getState());
                 capturedMessages.add(message);
                 messageReceived.countDown();
             }
@@ -346,13 +344,13 @@ public class RabbitMQIntegrationTest {
         try {
             JobIdentifier jobIdentifier = new JobIdentifier(jobId, taskId, processId, experimentId, gatewayId);
             JobStatusChangeEvent event = new JobStatusChangeEvent(JobState.SUBMITTED, jobIdentifier);
-            MessageContext messageContext = new MessageContext(
-                    event, MessageType.JOB, "test-job-msg-id", gatewayId);
+            MessageContext messageContext = new MessageContext(event, MessageType.JOB, "test-job-msg-id", gatewayId);
             publisher.publish(messageContext);
 
             assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
             assertEquals(1, capturedMessages.size(), "Should receive exactly one message");
-            JobStatusChangeEvent receivedEvent = (JobStatusChangeEvent) capturedMessages.get(0).getEvent();
+            JobStatusChangeEvent receivedEvent =
+                    (JobStatusChangeEvent) capturedMessages.get(0).getEvent();
             assertEquals(jobId, receivedEvent.getJobIdentity().getJobId(), "Job ID should match");
             assertEquals(JobState.SUBMITTED, receivedEvent.getState(), "State should match");
         } finally {
@@ -366,12 +364,11 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should verify message routing with routing keys")
     void shouldVerifyMessageRoutingWithRoutingKeys() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(
-                new RabbitMQProperties()
-                        .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                        .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                        .setDurable(properties.rabbitmq.durableQueue)
-                        .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
+                .setBrokerUrl(properties.rabbitmq.brokerUrl)
+                .setExchangeName(properties.rabbitmq.experimentExchangeName)
+                .setDurable(properties.rabbitmq.durableQueue)
+                .setPrefetchCount(properties.rabbitmq.prefetchCount));
 
         String experimentId = "test-exp-routing";
         String gatewayId = "test-gateway";
@@ -394,7 +391,8 @@ public class RabbitMQIntegrationTest {
                     experimentId, gatewayId, ExperimentState.COMPLETED);
             publisher.publish(messageContext);
 
-            assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received with routing key match");
+            assertTrue(
+                    messageReceived.await(10, TimeUnit.SECONDS), "Message should be received with routing key match");
         } finally {
             if (subscriberId != null) {
                 subscriber.stopListen(subscriberId);
@@ -406,12 +404,11 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should verify message serialization and deserialization")
     void shouldVerifyMessageSerializationAndDeserialization() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(
-                new RabbitMQProperties()
-                        .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                        .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                        .setDurable(properties.rabbitmq.durableQueue)
-                        .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
+                .setBrokerUrl(properties.rabbitmq.brokerUrl)
+                .setExchangeName(properties.rabbitmq.experimentExchangeName)
+                .setDurable(properties.rabbitmq.durableQueue)
+                .setPrefetchCount(properties.rabbitmq.prefetchCount));
 
         String experimentId = "test-exp-serialization";
         String gatewayId = "test-gateway";
@@ -437,8 +434,8 @@ public class RabbitMQIntegrationTest {
             originalEvent.setGatewayId(gatewayId);
             originalEvent.setState(ExperimentState.EXECUTING);
 
-            MessageContext messageContext = new MessageContext(
-                    originalEvent, MessageType.EXPERIMENT, "test-serialization-id", gatewayId);
+            MessageContext messageContext =
+                    new MessageContext(originalEvent, MessageType.EXPERIMENT, "test-serialization-id", gatewayId);
             publisher.publish(messageContext);
 
             assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
@@ -453,4 +450,3 @@ public class RabbitMQIntegrationTest {
         }
     }
 }
-

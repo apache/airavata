@@ -59,7 +59,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             JobRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -67,9 +66,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -87,9 +83,7 @@ public class JobRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -162,7 +156,6 @@ public class JobRepositoryTest extends TestBase {
         jobModel.setTaskId(taskId);
         jobModel.setJobDescription("Test job description");
 
-
         if (jobModel.getJobStatuses() == null) {
             jobModel.setJobStatuses(new java.util.ArrayList<>());
         }
@@ -176,7 +169,6 @@ public class JobRepositoryTest extends TestBase {
         JobPK jobPK = new JobPK();
         jobPK.setJobId(jobId);
         jobPK.setTaskId(taskId);
-
 
         jobModel.setJobName("Updated job name");
         jobService.updateJob(jobModel, jobPK);
@@ -232,12 +224,9 @@ public class JobRepositoryTest extends TestBase {
         jobPK.setJobId(jobId);
         jobPK.setTaskId(taskId);
 
-
         assertTrue(jobService.isJobExist(jobPK), "Job should exist before deletion");
 
-
         jobService.removeJob(jobPK);
-
 
         assertFalse(jobService.isJobExist(jobPK), "Job should not exist after deletion");
     }

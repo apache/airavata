@@ -51,7 +51,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ExperimentInputRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -59,9 +58,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -80,9 +76,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -151,7 +145,6 @@ public class ExperimentInputRepositoryTest extends TestBase {
                         .size(),
                 "Experiment should have one input");
 
-
         inputDataObjectTypeExp.setValue("iValueE");
         experimentInputService.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
 
@@ -183,7 +176,6 @@ public class ExperimentInputRepositoryTest extends TestBase {
 
         List<InputDataObjectType> retrievedInputs = experimentInputService.getExperimentInputs(experimentId);
         assertEquals(2, retrievedInputs.size(), "Experiment should have 2 inputs");
-
 
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input2")), "Input 2 should be present");

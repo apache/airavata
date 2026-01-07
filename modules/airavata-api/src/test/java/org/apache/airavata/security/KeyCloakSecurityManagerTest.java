@@ -52,7 +52,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -61,7 +60,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             KeyCloakSecurityManagerTest.TestConfiguration.class
         },
         properties = {
@@ -70,13 +68,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "security.iam.server-url=", // Empty to skip IAM HTTP calls in tests
             "security.manager.enabled=true",
             "security.authzCache.enabled=true", // Enable cache - tests will mock cache behavior
-
             "test.keycloak.security.manager=true",
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class KeyCloakSecurityManagerTest {
 
     public static final String TEST_USERNAME = "test-user";
@@ -160,7 +158,6 @@ public class KeyCloakSecurityManagerTest {
         reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManagerFactory, mockAuthzCacheManager);
 
         when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
-
 
         GatewayResourceProfile mockGwrp = new GatewayResourceProfile();
         mockGwrp.setGatewayID(TEST_GATEWAY);
@@ -291,15 +288,7 @@ public class KeyCloakSecurityManagerTest {
         }
     }
 
-    private void createExpectationsForTokenVerification() throws IOException, ApplicationSettingsException {
-
-
-
-
-
-
-
-    }
+    private void createExpectationsForTokenVerification() throws IOException, ApplicationSettingsException {}
 
     private void createExpectationsForGatewayGroupsMembership(
             boolean isInAdminsGroup, boolean isInReadOnlyAdminsGroup) {
@@ -340,14 +329,12 @@ public class KeyCloakSecurityManagerTest {
     private void createExpectationsForAuthzCacheDisabled()
             throws ApplicationSettingsException, AiravataSecurityException {
 
-
         createExpectationsForAuthzCache(true, null, AuthzCachedStatus.NOT_CACHED);
     }
 
     private void createExpectationsForAuthzCache(
             boolean cacheEnabled, String apiMethod, AuthzCachedStatus authzCachedStatus)
             throws ApplicationSettingsException, AiravataSecurityException {
-
 
         when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
 
@@ -356,8 +343,6 @@ public class KeyCloakSecurityManagerTest {
                     .thenReturn(authzCachedStatus);
 
             doNothing().when(mockAuthzCacheManager).addToAuthzCache(any(AuthzCacheIndex.class), any());
-
-
 
         } else if (cacheEnabled && authzCachedStatus != null) {
 

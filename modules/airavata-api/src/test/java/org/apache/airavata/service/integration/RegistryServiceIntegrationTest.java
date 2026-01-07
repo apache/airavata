@@ -34,9 +34,6 @@ import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.exception.RegistryServiceException;
@@ -46,16 +43,40 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("RegistryService Integration Tests - Full-stack functionality including database persistence, transactions, and search")
+@DisplayName(
+        "RegistryService Integration Tests - Full-stack functionality including database persistence, transactions, and search")
 public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final RegistryService registryService;
     private final ComputeResourceService computeResourceService;
+    private final org.apache.airavata.registry.services.UserService userService;
 
     public RegistryServiceIntegrationTest(
-            RegistryService registryService, ComputeResourceService computeResourceService) {
+            RegistryService registryService,
+            ComputeResourceService computeResourceService,
+            org.apache.airavata.registry.services.UserService userService) {
         this.registryService = registryService;
         this.computeResourceService = computeResourceService;
+        this.userService = userService;
+    }
+
+    @org.junit.jupiter.api.BeforeEach
+    public void setUpRegistryTest()
+            throws RegistryServiceException, org.apache.airavata.registry.exception.RegistryException {
+        // Ensure gateway exists
+        if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
+            org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
+            registryService.addGateway(gateway);
+            commitTransaction();
+        }
+
+        // Ensure user exists in expcatalog (required for search operations)
+        if (!userService.isUserExists(TEST_GATEWAY_ID, TEST_USERNAME)) {
+            org.apache.airavata.common.model.UserProfile userProfile =
+                    TestDataFactory.createTestUserProfile(TEST_USERNAME, TEST_GATEWAY_ID);
+            userService.addUser(userProfile);
+            commitTransaction();
+        }
     }
 
     @Nested
@@ -213,7 +234,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         }
 
         @Test
-        @DisplayName("Should create experiment with full hierarchy including gateway, project, status and persist all relationships")
+        @DisplayName(
+                "Should create experiment with full hierarchy including gateway, project, status and persist all relationships")
         void shouldCreateExperimentWithFullHierarchy() throws RegistryServiceException {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
@@ -254,7 +276,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldUpdateExperiment() throws RegistryServiceException {
             Project project = TestDataFactory.createTestProject("Update Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Original Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Original Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
 
@@ -272,7 +295,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldSearchExperimentsByName() throws RegistryServiceException {
             Project project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Searchable Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Searchable Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
 
@@ -290,7 +314,8 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldSearchExperimentsByProject() throws RegistryServiceException {
             Project project = TestDataFactory.createTestProject("Search Project 2", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            ExperimentModel experiment = TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
+            ExperimentModel experiment =
+                    TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
             commitTransaction();
 
@@ -425,13 +450,17 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should handle transaction rollback scenarios and maintain data integrity")
-        void shouldRollbackOnError() throws RegistryServiceException {
+        void shouldRollbackOnError()
+                throws RegistryServiceException, org.apache.airavata.common.exception.ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Rollback Test", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             commitTransaction();
 
-            Project duplicate = TestDataFactory.createTestProject("Rollback Test", TEST_GATEWAY_ID);
             assertThat(projectId).isNotNull();
+            // Verify project was created
+            Project retrieved = registryService.getProject(projectId);
+            assertThat(retrieved).isNotNull();
+            assertThat(retrieved.getName()).isEqualTo("Rollback Test");
         }
     }
 

@@ -44,7 +44,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             WorkflowRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -52,9 +51,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -72,9 +68,7 @@ public class WorkflowRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final WorkflowService workflowService;
@@ -84,10 +78,8 @@ public class WorkflowRepositoryTest extends TestBase {
         this.workflowService = workflowService;
     }
 
-
     private String EXPERIMENT_ID = "sample_exp_id";
     private String SAMPLE_DESCRIPTION = "Sample description about the application";
-
 
     private String APPLICATION_PREFIX = "app_";
     private String SAMPLE_APPLICATION_INTERFACE_ID = "app_interface_1";
@@ -101,16 +93,13 @@ public class WorkflowRepositoryTest extends TestBase {
     private String SAMPLE_APP_INPUT_NAME = "app_input";
     private String SAMPLE_APP_OUTPUT_NAME = "app_output";
 
-
     private String HANDLER_PREFIX = "handler_";
 
     private String SAMPLE_HANDLER_INPUT_NAME = "handler_input";
     private String SAMPLE_HANDLER_OUTPUT_NAME = "handler_output";
 
     @org.junit.jupiter.api.BeforeEach
-    public void setUp() throws Exception {
-
-    }
+    public void setUp() throws Exception {}
 
     @Test
     public void SubmitWorkflowTest() throws WorkflowCatalogException {
@@ -119,14 +108,12 @@ public class WorkflowRepositoryTest extends TestBase {
 
         AiravataWorkflow workflow = workflowService.getWorkflow(workflowService.getWorkflowId(EXPERIMENT_ID));
 
-
         assertEquals(SAMPLE_DESCRIPTION, workflow.getDescription());
 
         assertNotNull(workflow.getApplications());
         assertEquals(2, workflow.getApplications().size());
         assertEquals(2, workflow.getHandlers().size());
         assertEquals(3, workflow.getConnections().size());
-
 
         for (WorkflowApplication app : workflow.getApplications()) {
             assertEquals(SAMPLE_APPLICATION_INTERFACE_ID, app.getApplicationInterfaceId());
@@ -143,7 +130,6 @@ public class WorkflowRepositoryTest extends TestBase {
 
         AiravataWorkflow workflow = new AiravataWorkflow();
 
-
         if (workflow.getApplications() == null) {
             workflow.setApplications(new java.util.ArrayList<>());
         }
@@ -154,9 +140,7 @@ public class WorkflowRepositoryTest extends TestBase {
             workflow.setConnections(new java.util.ArrayList<>());
         }
 
-
         workflow.setDescription(SAMPLE_DESCRIPTION);
-
 
         WorkflowApplication application1 = new WorkflowApplication();
         application1.setId(APPLICATION_PREFIX + 1);
@@ -181,8 +165,6 @@ public class WorkflowRepositoryTest extends TestBase {
         workflow.getApplications().add(application1);
         workflow.getApplications().add(application2);
 
-
-
         WorkflowHandler handler1 = new WorkflowHandler();
         handler1.setId(HANDLER_PREFIX + 1);
         handler1.setType(HandlerType.FLOW_STARTER);
@@ -193,7 +175,6 @@ public class WorkflowRepositoryTest extends TestBase {
 
         workflow.getHandlers().add(handler1);
         workflow.getHandlers().add(handler2);
-
 
         WorkflowConnection connection1 = new WorkflowConnection();
         connection1.setFromType(ComponentType.HANDLER);

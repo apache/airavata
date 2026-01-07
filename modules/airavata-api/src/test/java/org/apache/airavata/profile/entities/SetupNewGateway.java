@@ -37,9 +37,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled("Requires external Keycloak infrastructure. " +
-          "This test needs a running Keycloak instance with proper configuration. " +
-          "Consider using Testcontainers Keycloak in the future for automated testing.")
+@Disabled("Requires external Keycloak infrastructure. "
+        + "This test needs a running Keycloak instance with proper configuration. "
+        + "Consider using Testcontainers Keycloak in the future for automated testing.")
 public class SetupNewGateway {
 
     private static final Logger logger = LoggerFactory.getLogger(SetupNewGateway.class);
@@ -74,8 +74,8 @@ public class SetupNewGateway {
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. " +
-              "This test needs Keycloak super admin credentials and proper gateway configuration.")
+    @Disabled("Requires Keycloak setup and admin credentials. "
+            + "This test needs Keycloak super admin credentials and proper gateway configuration.")
     public void testSetUpGateway() {
         Gateway testGateway = new Gateway();
         testGateway.setGatewayId("maven.test.gateway");
@@ -107,8 +107,8 @@ public class SetupNewGateway {
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. " +
-              "This test needs Keycloak tenant admin credentials and proper user configuration.")
+    @Disabled("Requires Keycloak setup and admin credentials. "
+            + "This test needs Keycloak tenant admin credentials and proper user configuration.")
     public void testUserRegistration() {
         UserProfile user = new UserProfile();
         user.setUserId("testuser");
@@ -145,8 +145,8 @@ public class SetupNewGateway {
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. " +
-              "This test needs Keycloak tenant admin credentials to retrieve user roles.")
+    @Disabled("Requires Keycloak setup and admin credentials. "
+            + "This test needs Keycloak tenant admin credentials to retrieve user roles.")
     public void testGetUserRoles() {
         PasswordCredential tenantAdminCreds = new PasswordCredential();
         tenantAdminCreds.setGatewayId("maven.test.gateway");

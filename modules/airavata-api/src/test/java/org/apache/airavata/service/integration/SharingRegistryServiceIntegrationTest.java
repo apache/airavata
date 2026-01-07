@@ -38,21 +38,7 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "flyway.enabled=false"
-        })
-@org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @org.junit.jupiter.api.DisplayName("SharingRegistryService Integration Tests")
 public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
@@ -63,7 +49,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
     }
 
     @Test
-    @org.junit.jupiter.api.DisplayName("Should perform complete sharing registry operations including domain, users, groups, permissions, entities, and access control")
+    @org.junit.jupiter.api.DisplayName(
+            "Should perform complete sharing registry operations including domain, users, groups, permissions, entities, and access control")
     void shouldPerformCompleteSharingRegistryOperations()
             throws InterruptedException, ApplicationSettingsException, SharingRegistryException,
                     DuplicateEntryException {
@@ -74,7 +61,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         String domainId = sharingService.createDomain(domain);
         commitTransaction();
         Assertions.assertTrue(sharingService.isDomainExists(domainId), "Domain should exist after creation");
-        
+
         Domain retrievedDomain = sharingService.getDomain(domainId);
         Assertions.assertNotNull(retrievedDomain, "Retrieved domain should not be null");
         Assertions.assertEquals(domain.getName(), retrievedDomain.getName(), "Domain name should match");
@@ -92,7 +79,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         Assertions.assertNotNull(userId1, "User ID should be returned");
         Assertions.assertEquals("test-user-1", userId1, "User ID should match the input");
         Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-1"), "User should exist after creation");
-        
+
         User retrievedUser1 = sharingService.getUser(domainId, "test-user-1");
         Assertions.assertNotNull(retrievedUser1, "Retrieved user should not be null");
         Assertions.assertEquals("test-user-1", retrievedUser1.getUserId(), "User ID should match");
@@ -114,7 +101,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         commitTransaction();
         Assertions.assertNotNull(userId2, "User 2 ID should be returned");
         Assertions.assertEquals("test-user-2", userId2, "User 2 ID should match");
-        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-2"), "User 2 should exist after creation");
+        Assertions.assertTrue(
+                sharingService.isUserExists(domainId, "test-user-2"), "User 2 should exist after creation");
 
         User user3 = new User();
         user3.setUserId("test-user-3");
@@ -128,7 +116,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         commitTransaction();
         Assertions.assertNotNull(userId3, "User 3 ID should be returned");
         Assertions.assertEquals("test-user-3", userId3, "User 3 ID should match");
-        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-3"), "User 3 should exist after creation");
+        Assertions.assertTrue(
+                sharingService.isUserExists(domainId, "test-user-3"), "User 3 should exist after creation");
 
         User user7 = new User();
         user7.setUserId("test-user-7");
@@ -142,7 +131,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         commitTransaction();
         Assertions.assertNotNull(userId7, "User 7 ID should be returned");
         Assertions.assertEquals("test-user-7", userId7, "User 7 ID should match");
-        Assertions.assertTrue(sharingService.isUserExists(domainId, "test-user-7"), "User 7 should exist after creation");
+        Assertions.assertTrue(
+                sharingService.isUserExists(domainId, "test-user-7"), "User 7 should exist after creation");
 
         UserGroup singleUserGroupUser7 = sharingService.getGroup(domainId, user7.getUserId());
         Assertions.assertEquals(GroupCardinality.SINGLE_USER, singleUserGroupUser7.getGroupCardinality());
@@ -169,12 +159,13 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         String groupId1 = sharingService.createGroup(userGroup1);
         commitTransaction();
         Assertions.assertNotNull(groupId1, "Group ID should be returned");
-        Assertions.assertTrue(sharingService.isGroupExists(domainId, "test-group-1"), "Group should exist after creation");
-        
+        Assertions.assertTrue(
+                sharingService.isGroupExists(domainId, "test-group-1"), "Group should exist after creation");
+
         UserGroup retrievedGroup1 = sharingService.getGroup(domainId, "test-group-1");
         Assertions.assertNotNull(retrievedGroup1, "Retrieved group should not be null");
         Assertions.assertEquals("test-group-1", retrievedGroup1.getGroupId(), "Group ID should match");
-        
+
         userGroup1.setDescription("updated description");
         boolean updated = sharingService.updateGroup(userGroup1);
         commitTransaction();
@@ -196,7 +187,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         commitTransaction();
         Assertions.assertNotNull(groupId2, "Group 2 ID should be returned");
         Assertions.assertEquals("test-group-2", groupId2, "Group 2 ID should match");
-        Assertions.assertTrue(sharingService.isGroupExists(domainId, "test-group-2"), "Group 2 should exist after creation");
+        Assertions.assertTrue(
+                sharingService.isGroupExists(domainId, "test-group-2"), "Group 2 should exist after creation");
 
         boolean usersAdded = sharingService.addUsersToGroup(domainId, List.of("test-user-3"), "test-group-2");
         commitTransaction();
@@ -206,7 +198,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         commitTransaction();
         Assertions.assertTrue(usersAddedToGroup1, "User 7 should be added to group 1");
 
-        boolean childGroupsAdded = sharingService.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
+        boolean childGroupsAdded =
+                sharingService.addChildGroupsToParentGroup(domainId, List.of("test-group-2"), "test-group-1");
         commitTransaction();
         Assertions.assertTrue(childGroupsAdded, "Child groups should be added to parent group");
 
@@ -261,7 +254,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entityType1.setDescription("PROJECT entity type description");
         sharingService.createEntityType(entityType1);
         commitTransaction();
-        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "PROJECT"), "PROJECT entity type should exist");
+        Assertions.assertTrue(
+                sharingService.isEntityTypeExists(domainId, "PROJECT"), "PROJECT entity type should exist");
 
         EntityType entityType2 = new EntityType();
         entityType2.setEntityTypeId("EXPERIMENT");
@@ -270,7 +264,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entityType2.setDescription("EXPERIMENT entity type");
         sharingService.createEntityType(entityType2);
         commitTransaction();
-        Assertions.assertTrue(sharingService.isEntityTypeExists(domainId, "EXPERIMENT"), "EXPERIMENT entity type should exist");
+        Assertions.assertTrue(
+                sharingService.isEntityTypeExists(domainId, "EXPERIMENT"), "EXPERIMENT entity type should exist");
 
         EntityType entityType3 = new EntityType();
         entityType3.setEntityTypeId("FILE");
@@ -339,7 +334,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
 
         Assertions.assertEquals(
                 0, sharingService.getEntity(domainId, "test-project-1").getSharedCount());
-        boolean sharedWithUsers = sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
+        boolean sharedWithUsers =
+                sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
         commitTransaction();
         Assertions.assertTrue(sharedWithUsers, "Entity should be shared with users");
         Assertions.assertEquals(
@@ -356,18 +352,23 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
                         .size());
 
-        boolean revoked = sharingService.revokeEntitySharingFromUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE");
+        boolean revoked = sharingService.revokeEntitySharingFromUsers(
+                domainId, "test-project-1", List.of("test-user-2"), "WRITE");
         commitTransaction();
         Assertions.assertTrue(revoked, "Sharing should be revoked");
         Assertions.assertEquals(
-                0, sharingService.getEntity(domainId, "test-project-1").getSharedCount(), "Shared count should be 0 after revocation");
+                0,
+                sharingService.getEntity(domainId, "test-project-1").getSharedCount(),
+                "Shared count should be 0 after revocation");
         sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
         commitTransaction();
 
-        boolean sharedWithGroups1 = sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
+        boolean sharedWithGroups1 = sharingService.shareEntityWithGroups(
+                domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
         commitTransaction();
         Assertions.assertTrue(sharedWithGroups1, "Entity should be shared with groups (READ)");
-        boolean sharedWithGroups2 = sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
+        boolean sharedWithGroups2 = sharingService.shareEntityWithGroups(
+                domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
         commitTransaction();
         Assertions.assertTrue(sharedWithGroups2, "Entity should be shared with groups (CLONE)");
 

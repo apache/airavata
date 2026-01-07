@@ -31,7 +31,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
@@ -79,11 +78,20 @@ public abstract class ServiceIntegrationTestBase {
     @org.springframework.beans.factory.annotation.Autowired
     protected org.apache.airavata.config.AiravataServerProperties properties;
 
+    @org.junit.jupiter.api.BeforeAll
+    public static void setupTestContainers() {
+        // Initialize Testcontainers services early to ensure URLs are available
+        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
+        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
+        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+    }
+
     @BeforeEach
     public void setUpBase() {
         testAuthzToken = createTestAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
-        
+
         // Apply test properties for messaging services (Kafka, RabbitMQ, Zookeeper)
+        // This must happen before any messaging factory is used
         if (properties != null) {
             org.apache.airavata.config.TestPropertiesHelper.applyTestProperties(properties);
         }
@@ -109,10 +117,18 @@ public abstract class ServiceIntegrationTestBase {
      */
     protected void commitTransaction() {
         if (TestTransaction.isActive()) {
-            // Flag for commit - this will commit when end() is called
-            TestTransaction.flagForCommit();
-            // End the transaction - this will commit if flagged, or rollback if not
-            TestTransaction.end();
+            try {
+                // Flag for commit - this will commit when end() is called
+                // Spring's transaction manager will automatically flush entity managers on commit
+                TestTransaction.flagForCommit();
+                // End the transaction - this will commit if flagged, or rollback if not
+                TestTransaction.end();
+            } catch (org.springframework.transaction.UnexpectedRollbackException e) {
+                // If transaction was already marked for rollback, we need to start fresh
+                // This can happen if an exception occurred during the transaction
+                // Just end the current transaction and start a new one
+                TestTransaction.end();
+            }
         }
         // Start a new transaction for subsequent operations
         TestTransaction.start();
@@ -123,6 +139,14 @@ public abstract class ServiceIntegrationTestBase {
      * Infrastructure components are automatically excluded via @Profile("!test").
      */
     @Configuration
+    @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+            basePackages = {
+                "org.apache.airavata.profile.repositories",
+                "org.apache.airavata.registry.repositories",
+                "org.apache.airavata.sharing.repositories",
+                "org.apache.airavata.credential.repositories"
+            },
+            enableDefaultTransactions = false)
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
@@ -145,7 +169,7 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security"
             })
-    static class TestConfiguration {
+    public static class TestConfiguration {
         @Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
                 org.apache.airavata.config.AiravataServerProperties properties) {

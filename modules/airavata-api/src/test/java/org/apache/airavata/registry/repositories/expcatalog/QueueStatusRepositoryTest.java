@@ -42,7 +42,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             QueueStatusRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -50,9 +49,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -70,9 +66,7 @@ public class QueueStatusRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final QueueStatusService queueStatusService;
@@ -98,7 +92,6 @@ public class QueueStatusRepositoryTest extends TestBase {
 
         boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queueStatusModel));
         assertTrue(returnValue, "Queue status creation should succeed");
-
 
         QueueStatusModel retrieved = queueStatusService.getQueueStatus(uniqueHostName, uniqueQueueName);
 
@@ -140,7 +133,6 @@ public class QueueStatusRepositoryTest extends TestBase {
 
         List<QueueStatusModel> queueStatusModelList = queueStatusService.getLatestQueueStatuses();
         assertTrue(queueStatusModelList.size() >= 2, "Should have at least 2 queue statuses");
-
 
         assertTrue(
                 queueStatusModelList.stream().anyMatch(q -> q.getHostName().equals(uniqueHost1)),

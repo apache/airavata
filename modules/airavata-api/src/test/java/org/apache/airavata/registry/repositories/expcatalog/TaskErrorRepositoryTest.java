@@ -54,7 +54,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             TaskErrorRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -62,9 +61,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -82,9 +78,7 @@ public class TaskErrorRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -161,14 +155,11 @@ public class TaskErrorRepositoryTest extends TestBase {
         assertNotNull(taskErrorId, "Task error ID should not be null");
         assertEquals("error-1", taskErrorId, "Error ID should match");
 
-
         assertTrue(taskService.getTask(taskId).getTaskErrors().size() == 1, "Task should have one error");
-
 
         errorModel.setActualErrorMessage("Updated error message");
         errorModel.setUserFriendlyMessage("Updated user-friendly message");
         taskErrorService.updateTaskError(errorModel, taskId);
-
 
         List<ErrorModel> retrievedErrorList = taskErrorService.getTaskError(taskId);
         assertEquals(1, retrievedErrorList.size(), "Should have one error");
@@ -200,10 +191,8 @@ public class TaskErrorRepositoryTest extends TestBase {
         error3.setActualErrorMessage("Third error");
         String errorId3 = taskErrorService.addTaskError(error3, taskId);
 
-
         List<ErrorModel> errors = taskErrorService.getTaskError(taskId);
         assertEquals(3, errors.size(), "Task should have 3 errors");
-
 
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId1)), "Error 1 should be present");
         assertTrue(errors.stream().anyMatch(e -> e.getErrorId().equals(errorId2)), "Error 2 should be present");

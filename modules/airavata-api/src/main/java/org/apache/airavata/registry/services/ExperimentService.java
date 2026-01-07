@@ -24,6 +24,7 @@ import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
@@ -53,14 +54,17 @@ public class ExperimentService {
     private final ExperimentRepository experimentRepository;
     private final ProcessService processService;
     private final ExperimentMapper experimentMapper;
+    private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
 
     public ExperimentService(
             ExperimentRepository experimentRepository,
             ProcessService processService,
-            ExperimentMapper experimentMapper) {
+            ExperimentMapper experimentMapper,
+            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper) {
         this.experimentRepository = experimentRepository;
         this.processService = processService;
         this.experimentMapper = experimentMapper;
+        this.processWorkflowMapper = processWorkflowMapper;
     }
 
     @Transactional("expCatalogTransactionManager")
@@ -89,8 +93,37 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
-
         ExperimentModel model = experimentMapper.toModel(entity);
+        // Manually map processWorkflows for each process after mapping to avoid LazyInitializationException
+        if (entity.getProcesses() != null && model.getProcesses() != null) {
+            for (int i = 0;
+                    i < entity.getProcesses().size() && i < model.getProcesses().size();
+                    i++) {
+                ProcessEntity processEntity = entity.getProcesses().get(i);
+                ProcessModel processModel = model.getProcesses().get(i);
+                try {
+                    java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity>
+                            workflows = processEntity.getProcessWorkflows();
+                    if (workflows != null) {
+                        int size = workflows.size(); // Force initialization
+                        if (size > 0) {
+                            processModel.setProcessWorkflows(
+                                    processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                        } else {
+                            processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                        }
+                    } else {
+                        processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                    }
+                } catch (org.hibernate.LazyInitializationException e) {
+                    logger.debug(
+                            "Could not initialize processWorkflows for process {}: {}",
+                            processEntity.getProcessId(),
+                            e.getMessage());
+                    processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                }
+            }
+        }
 
         // Manually convert emailAddresses from String (CSV) to List<String>
         String emailAddressesStr = entity.getEmailAddresses();
@@ -392,6 +425,9 @@ public class ExperimentService {
             });
         }
 
-        return experimentRepository.save(experimentEntity);
+        ExperimentEntity saved = experimentRepository.save(experimentEntity);
+        // Flush to ensure experiment is persisted before any child entities are added
+        experimentRepository.flush();
+        return saved;
     }
 }

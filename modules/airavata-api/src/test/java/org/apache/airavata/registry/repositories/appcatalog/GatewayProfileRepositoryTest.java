@@ -84,9 +84,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
@@ -107,7 +105,6 @@ public class GatewayProfileRepositoryTest extends TestBase {
 
     @Test
     public void gatewayProfileRepositorytest() throws AppCatalogException, ApplicationSettingsException {
-
 
         List<GatewayResourceProfile> defaultGatewayResourceProfileList =
                 this.gwyResourceProfileService.getAllGatewayProfiles();

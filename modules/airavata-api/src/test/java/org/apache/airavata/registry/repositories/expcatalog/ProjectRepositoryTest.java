@@ -47,7 +47,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             ProjectRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -55,9 +54,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
@@ -75,9 +71,7 @@ public class ProjectRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -109,7 +103,6 @@ public class ProjectRepositoryTest extends TestBase {
 
         Project updatedProject = new Project();
 
-
         updatedProject.setProjectID(null);
         updatedProject.setName("updated projectName");
         updatedProject.setDescription("projectDescription");
@@ -119,9 +112,6 @@ public class ProjectRepositoryTest extends TestBase {
         assertEquals(gatewayId, retrievedProject.getGatewayId());
         assertEquals("updated projectName", retrievedProject.getName());
         assertEquals("projectDescription", retrievedProject.getDescription());
-
-
-
 
         List<String> accessibleProjectIds = new ArrayList<>();
         accessibleProjectIds.add(projectId);

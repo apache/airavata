@@ -69,7 +69,6 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         public void testThriftApiEnabled() {
             assertNotNull(applicationContext, "Application context should load with Thrift API enabled");
             assertNotNull(properties, "Properties should be loaded");
-
         }
     }
 
@@ -286,7 +285,6 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         @Test
         public void testBackgroundServicesDisabledGlobally() {
             assertNotNull(applicationContext, "Application context should load with background services disabled");
-
         }
     }
 
@@ -324,8 +322,6 @@ public class ServiceToggleTest extends ServiceStartupTestBase {
         @Test
         public void testPropertyPrecedence() {
             assertNotNull(applicationContext, "Application context should load");
-
-
         }
     }
 }

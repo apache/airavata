@@ -30,7 +30,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * Unit tests for ServiceStatusVerifier.
  * These tests verify the verifier logic with mock ApplicationContext.
  */
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class ServiceStatusVerifierTest {
 
     private ApplicationContext applicationContext;
@@ -125,7 +126,6 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsPortListening_UnusedPort() {
-
 
         assertFalse(verifier.isPortListening(65534));
     }

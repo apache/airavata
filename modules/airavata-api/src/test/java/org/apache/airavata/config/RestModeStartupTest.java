@@ -40,30 +40,21 @@ import org.springframework.test.context.TestPropertySource;
  * - Background services should still work
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            AiravataServerProperties.class,
-            RestModeStartupTest.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, RestModeStartupTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-
             "services.rest.enabled=true",
-
             "services.thrift.enabled=false",
             "flyway.enabled=false",
-
-
-
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class RestModeStartupTest {
 
     @Configuration
@@ -98,7 +89,6 @@ public class RestModeStartupTest {
 
     @Test
     public void testDBEventDispatcherIsAvailable() {
-
 
         String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
         int count = beanNames.length;

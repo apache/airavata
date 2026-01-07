@@ -22,7 +22,6 @@ package org.apache.airavata.orchestrator.core;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,81 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @Transactional
 public class NewOrchestratorTest extends BaseOrchestratorTest {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public NewOrchestratorTest() {
         super();

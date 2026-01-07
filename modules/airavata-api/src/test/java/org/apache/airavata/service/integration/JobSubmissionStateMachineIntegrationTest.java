@@ -28,14 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.JobIdentifier;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.JobStatusChangeEvent;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.MessageVerificationUtils;
 import org.apache.airavata.messaging.Publisher;
@@ -60,7 +59,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +72,6 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             JobSubmissionStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -169,11 +166,11 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         JobStatus complete = StateMachineTestUtils.createJobStatus(JobState.COMPLETE, "Job completed successfully");
         jobStatusService.addJobStatus(complete, testHierarchy.jobPK);
 
- // state transitions
+        // state transitions
         StateMachineTestUtils.verifyJobStateTransition(
                 jobService, jobStatusService, testHierarchy.jobPK, expectedStates);
 
- // latest status
+        // latest status
         JobStatus latest = jobStatusService.getJobStatus(testHierarchy.jobPK);
         assertNotNull(latest, "Latest status should exist");
         assertEquals(JobState.COMPLETE, latest.getJobState(), "Final state should be COMPLETE");
@@ -188,12 +185,12 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         JobStatus failed = StateMachineTestUtils.createJobStatus(JobState.FAILED, "Job execution failed");
         jobStatusService.addJobStatus(failed, testHierarchy.jobPK);
 
- // state
+        // state
         JobStatus latest = jobStatusService.getJobStatus(testHierarchy.jobPK);
         assertNotNull(latest, "Latest status should exist");
         assertEquals(JobState.FAILED, latest.getJobState(), "Final state should be FAILED");
 
- // state validator allows this transition
+        // state validator allows this transition
         assertTrue(
                 JobStateValidator.isValid(JobState.SUBMITTED, JobState.FAILED),
                 "SUBMITTED -> FAILED should be a valid transition");
@@ -279,20 +276,20 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
             jobStatusService.addJobStatus(status, testHierarchy.jobPK);
         }
 
- // all states are in history
+        // all states are in history
         var job = jobService.getJob(testHierarchy.jobPK);
         assertNotNull(job.getJobStatuses(), "Job should have status history");
         assertTrue(
                 job.getJobStatuses().size() >= states.size(),
                 "Job should have at least " + states.size() + " status entries");
 
- // all expected states are present
+        // all expected states are present
         for (JobState expectedState : states) {
             boolean found = job.getJobStatuses().stream().anyMatch(s -> s.getJobState() == expectedState);
             assertTrue(found, "Job state history should contain " + expectedState);
         }
 
- // timestamps are in order
+        // timestamps are in order
         StateMachineTestUtils.verifyJobStateTimestamps(new ArrayList<JobStatus>(job.getJobStatuses()));
     }
 
@@ -306,8 +303,8 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(2);
 
-        MessageHandler handler = MessageVerificationUtils.createCapturingHandlerWithLatch(
-                capturedMessages, messageReceived, 2);
+        MessageHandler handler =
+                MessageVerificationUtils.createCapturingHandlerWithLatch(capturedMessages, messageReceived, 2);
 
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(testHierarchy.jobId);
@@ -326,8 +323,11 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
             // Publish message (as would happen in real flow via AiravataTask)
             JobIdentifier identifier = new JobIdentifier(
-                    testHierarchy.jobId, testHierarchy.taskId, testHierarchy.processId,
-                    testHierarchy.experimentId, testHierarchy.gatewayId);
+                    testHierarchy.jobId,
+                    testHierarchy.taskId,
+                    testHierarchy.processId,
+                    testHierarchy.experimentId,
+                    testHierarchy.gatewayId);
             JobStatusChangeEvent event1 = new JobStatusChangeEvent(JobState.SUBMITTED, identifier);
             MessageContext msgCtx1 = new MessageContext(
                     event1, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), testHierarchy.gatewayId);
@@ -350,7 +350,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
             assertTrue(received, "Messages should be received within timeout");
             assertTrue(capturedMessages.size() >= 2, "Should capture at least 2 messages");
- // messages contain correct job states
+            // messages contain correct job states
             assertTrue(
                     capturedMessages.stream().anyMatch(msg -> {
                         if (msg.getType() == MessageType.JOB) {

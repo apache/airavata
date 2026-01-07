@@ -50,6 +50,7 @@ public interface ProcessMapper {
             target = "lastUpdateTime",
             expression = "java(entity.getLastUpdateTime() != null ? entity.getLastUpdateTime().getTime() : 0L)")
     @Mapping(target = "emailAddresses", ignore = true) // Handled separately
+    @Mapping(target = "processWorkflows", ignore = true) // Handled separately to avoid LazyInitializationException
     ProcessModel toModel(ProcessEntity entity);
 
     @Mapping(

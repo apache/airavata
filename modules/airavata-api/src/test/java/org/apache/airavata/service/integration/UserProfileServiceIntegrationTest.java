@@ -31,7 +31,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation")
+@DisplayName(
+        "UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation")
 @org.springframework.test.context.TestPropertySource(
         properties = {
             "security.iam.server-url=http://localhost:18080",
@@ -119,13 +120,15 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-delete-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
             commitTransaction();
-            
-            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID)).isTrue();
+
+            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID))
+                    .isTrue();
 
             boolean deleted = userProfileService.deleteUserProfile(testAuthzToken, userId, TEST_GATEWAY_ID);
             commitTransaction();
             assertThat(deleted).isTrue();
-            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID)).isFalse();
+            assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID))
+                    .isFalse();
             assertThatThrownBy(() -> userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID))
                     .isInstanceOf(UserProfileServiceException.class);
         }
@@ -176,9 +179,12 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
 
             assertThat(users).isNotNull().isNotEmpty();
             assertThat(users.size()).isGreaterThanOrEqualTo(2);
-            assertThat(users.stream().anyMatch(u -> userId1.equals(u.getUserId()))).isTrue();
-            assertThat(users.stream().anyMatch(u -> userId2.equals(u.getUserId()))).isTrue();
-            assertThat(users.stream().allMatch(u -> TEST_GATEWAY_ID.equals(u.getGatewayId()))).isTrue();
+            assertThat(users.stream().anyMatch(u -> userId1.equals(u.getUserId())))
+                    .isTrue();
+            assertThat(users.stream().anyMatch(u -> userId2.equals(u.getUserId())))
+                    .isTrue();
+            assertThat(users.stream().allMatch(u -> TEST_GATEWAY_ID.equals(u.getGatewayId())))
+                    .isTrue();
         }
 
         @Test

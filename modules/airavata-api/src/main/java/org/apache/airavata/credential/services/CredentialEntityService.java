@@ -40,6 +40,7 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,7 @@ public class CredentialEntityService {
     private final CredentialRepository credentialRepository;
     private final AiravataServerProperties properties;
     private final DefaultKeyStorePasswordCallback keyStorePasswordCallback;
+    private final Environment environment;
 
     private String keyStorePath;
     private String secretKeyAlias;
@@ -62,24 +64,62 @@ public class CredentialEntityService {
     public CredentialEntityService(
             CredentialRepository credentialRepository,
             AiravataServerProperties properties,
-            DefaultKeyStorePasswordCallback keyStorePasswordCallback) {
+            DefaultKeyStorePasswordCallback keyStorePasswordCallback,
+            Environment environment) {
         this.credentialRepository = credentialRepository;
         this.properties = properties;
         this.keyStorePasswordCallback = keyStorePasswordCallback;
+        this.environment = environment;
     }
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        String configDir =
-                org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
+        String configDir = org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
         String credentialStoreKeyStorePath = properties.security.vault.keystore.url;
-        if (credentialStoreKeyStorePath == null) {
-            throw new IllegalStateException(
-                    "Keystore configuration is missing: security.vault.keystore.url is not set in airavata.properties");
+        if (credentialStoreKeyStorePath == null || credentialStoreKeyStorePath.isEmpty()) {
+            // In test profile, use default keystore location
+            boolean isTestProfile = environment != null
+                    && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+            if (isTestProfile) {
+                credentialStoreKeyStorePath = "keystores/airavata.sym.p12";
+                logger.debug("Test profile detected, using default keystore path: {}", credentialStoreKeyStorePath);
+            } else {
+                throw new IllegalStateException(
+                        "Keystore configuration is missing: security.vault.keystore.url is not set in airavata.properties");
+            }
         }
         // Keystore path is relative to configDir (e.g., "keystores/airavata.sym.p12")
         this.keyStorePath = new java.io.File(configDir, credentialStoreKeyStorePath).getAbsolutePath();
-        this.secretKeyAlias = properties.security.vault.keystore.alias;
+        this.secretKeyAlias = properties.security.vault.keystore.alias != null
+                ? properties.security.vault.keystore.alias
+                : "airavata";
+
+        // Verify keystore password is set (required for encryption/decryption)
+        boolean isTestProfile = environment != null
+                && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+        if (properties.security.vault.keystore.password == null
+                || properties.security.vault.keystore.password.isEmpty()) {
+            if (isTestProfile) {
+                // In test profile, use default password if not set
+                if (properties.security.vault.keystore == null) {
+                    properties.security.vault.keystore =
+                            new org.apache.airavata.config.AiravataServerProperties.Security.Vault.Keystore();
+                }
+                properties.security.vault.keystore.password = "airavata";
+                logger.debug("Test profile detected, using default keystore password");
+            } else {
+                throw new IllegalStateException(
+                        "Keystore password is missing: security.vault.keystore.password is not set in airavata.properties");
+            }
+        }
+
+        // Verify keystore file exists
+        java.io.File keystoreFile = new java.io.File(this.keyStorePath);
+        if (!keystoreFile.exists()) {
+            logger.warn(
+                    "Keystore file does not exist at: {}. Credential encryption/decryption may fail.",
+                    this.keyStorePath);
+        }
     }
 
     /**

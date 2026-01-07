@@ -46,7 +46,8 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
     class GatewayCRUDTests {
 
         @Test
-        @DisplayName("Should create gateway with unique ID, name, URL, and approval status, then retrieve it successfully")
+        @DisplayName(
+                "Should create gateway with unique ID, name, URL, and approval status, then retrieve it successfully")
         void shouldCreateGateway() throws TenantProfileServiceException, CredentialStoreException {
             String uniqueId = "test-gateway-create-" + System.currentTimeMillis();
             String gatewayName = "Test Gateway " + uniqueId;
@@ -122,13 +123,15 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
             commitTransaction();
-            
-            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId())).isTrue();
+
+            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId()))
+                    .isTrue();
 
             boolean deleted = tenantProfileService.deleteGateway(testAuthzToken, internalId, gateway.getGatewayId());
             commitTransaction();
             assertThat(deleted).isTrue();
-            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId())).isFalse();
+            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId()))
+                    .isFalse();
             assertThatThrownBy(() -> tenantProfileService.getGateway(testAuthzToken, internalId))
                     .isInstanceOf(TenantProfileServiceException.class);
         }
@@ -152,7 +155,8 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             List<Gateway> gateways = tenantProfileService.getAllGateways(testAuthzToken);
 
             assertThat(gateways).isNotNull().isNotEmpty();
-            assertThat(gateways.stream().anyMatch(g -> uniqueId.equals(g.getGatewayId()))).isTrue();
+            assertThat(gateways.stream().anyMatch(g -> uniqueId.equals(g.getGatewayId())))
+                    .isTrue();
             Gateway retrieved = tenantProfileService.getGateway(testAuthzToken, internalId);
             assertThat(retrieved).isNotNull();
             assertThat(retrieved.getGatewayId()).isEqualTo(uniqueId);
@@ -174,8 +178,10 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             List<Gateway> gateways = tenantProfileService.getAllGatewaysForUser(testAuthzToken, requesterUsername);
 
             assertThat(gateways).isNotNull().isNotEmpty();
-            assertThat(gateways.stream().anyMatch(g -> uniqueId.equals(g.getGatewayId()))).isTrue();
-            assertThat(gateways.stream().allMatch(g -> requesterUsername.equals(g.getRequesterUsername()))).isTrue();
+            assertThat(gateways.stream().anyMatch(g -> uniqueId.equals(g.getGatewayId())))
+                    .isTrue();
+            assertThat(gateways.stream().allMatch(g -> requesterUsername.equals(g.getRequesterUsername())))
+                    .isTrue();
         }
     }
 
@@ -210,8 +216,9 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
             commitTransaction();
-            
-            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, duplicateId)).isTrue();
+
+            assertThat(tenantProfileService.isGatewayExist(testAuthzToken, duplicateId))
+                    .isTrue();
 
             Gateway duplicate = TestDataFactory.createTestGateway(duplicateId);
             duplicate.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);

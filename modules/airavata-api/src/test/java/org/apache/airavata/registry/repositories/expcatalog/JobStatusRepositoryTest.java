@@ -60,7 +60,6 @@ import org.springframework.test.context.TestPropertySource;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             JobStatusRepositoryTest.TestConfiguration.class
         },
         properties = {
@@ -85,9 +84,7 @@ public class JobStatusRepositoryTest extends TestBase {
                 "org.apache.airavata.common.utils"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({
-        org.apache.airavata.config.AiravataServerProperties.class,
-    })
+    @Import({})
     static class TestConfiguration {}
 
     private final GatewayService gatewayService;
@@ -186,7 +183,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
         assertTrue(job.getJobStatuses().size() >= 3, "Job should have at least 3 status entries");
 
- // latest status
+        // latest status
         JobStatus latestStatus = jobStatusService.getJobStatus(jobPK);
         assertNotNull(latestStatus, "Latest status should not be null");
         assertEquals(JobState.ACTIVE, latestStatus.getJobState(), "Latest status should be ACTIVE");
@@ -194,7 +191,7 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_StateTransitions() throws RegistryException {
- // a complete state transition flow
+        // a complete state transition flow
         JobStatus submitted = new JobStatus(JobState.SUBMITTED);
         submitted.setReason("Initial submission");
         jobStatusService.addJobStatus(submitted, jobPK);
@@ -216,7 +213,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertEquals(JobState.COMPLETE, latest.getJobState(), "Final state should be COMPLETE");
         assertEquals("Job completed successfully", latest.getReason(), "Reason should match");
 
- // failure transition - use a separate job to avoid interference
+        // failure transition - use a separate job to avoid interference
         JobModel failedJobModel = new JobModel();
         failedJobModel.setJobId("failed-job-" + java.util.UUID.randomUUID().toString());
         failedJobModel.setTaskId(taskId);
@@ -234,7 +231,7 @@ public class JobStatusRepositoryTest extends TestBase {
         failed.setReason("Job execution failed");
         jobStatusService.addJobStatus(failed, failedJobPK);
 
- // the job has the failed status
+        // the job has the failed status
         JobModel failedJob = jobService.getJob(failedJobPK);
         assertNotNull(failedJob.getJobStatuses(), "Failed job should have statuses");
         assertTrue(failedJob.getJobStatuses().size() >= 2, "Failed job should have at least 2 statuses");
@@ -269,7 +266,6 @@ public class JobStatusRepositoryTest extends TestBase {
         status.setReason("Initial queued state");
         jobStatusService.addJobStatus(status, jobPK);
 
-
         JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
         updatedStatus.setReason("Updated: Job is now active");
         updatedStatus.setTimeOfStateChange(System.currentTimeMillis());
@@ -291,7 +287,6 @@ public class JobStatusRepositoryTest extends TestBase {
         JobModel jobBeforeUpdate = jobService.getJob(jobPK);
         int statusCountBefore = jobBeforeUpdate.getJobStatuses().size();
         assertTrue(statusCountBefore >= 1, "Should have at least 1 status before update");
-
 
         JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
         updatedStatus.setReason("Updated to active");
@@ -331,7 +326,6 @@ public class JobStatusRepositoryTest extends TestBase {
         assertTrue(retrieved.getTimeOfStateChange() >= beforeTime, "Time should be set to current or later");
         assertTrue(retrieved.getTimeOfStateChange() <= afterTime, "Time should be set to current or earlier");
 
-
         long explicitTime = System.currentTimeMillis() + 1000;
         JobStatus updated = new JobStatus(JobState.ACTIVE);
         updated.setTimeOfStateChange(explicitTime);
@@ -353,7 +347,6 @@ public class JobStatusRepositoryTest extends TestBase {
         JobStatus status3 = new JobStatus(JobState.ACTIVE);
         jobStatusService.addJobStatus(status3, jobPK);
 
-
         JobModel job = jobService.getJob(jobPK);
         List<JobStatus> statuses = job.getJobStatuses();
         assertNotNull(statuses, "Statuses list should not be null");
@@ -368,7 +361,6 @@ public class JobStatusRepositoryTest extends TestBase {
     public void testJobStatusRepository_AutomaticStatusIdGeneration() throws RegistryException {
         JobStatus status = new JobStatus(JobState.SUBMITTED);
         status.setReason("Testing automatic status ID generation");
-
 
         jobStatusService.addJobStatus(status, jobPK);
 
@@ -421,10 +413,9 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_AllJobStates() throws RegistryException {
- // all possible job states
+        // all possible job states
         JobState[] allStates = JobState.values();
         JobPK[] jobPKs = new JobPK[allStates.length];
-
 
         for (int i = 0; i < allStates.length; i++) {
             jobPKs[i] = createNewJob("job-state-" + allStates[i].name());
@@ -465,7 +456,6 @@ public class JobStatusRepositoryTest extends TestBase {
             assertNotNull(s.getStatusId(), "All statuses should have status IDs: " + s.getJobState());
         });
     }
-
 
     private JobPK createNewJob(String jobIdPrefix) throws RegistryException {
         JobModel jobModel = new JobModel();

@@ -32,6 +32,6 @@ import org.springframework.stereotype.Repository;
 @Primary
 public interface UserRepository extends JpaRepository<UserEntity, UserPK> {
 
-    @Query("SELECT u FROM UserEntity u WHERE u.gatewayId = :gatewayId")
+    @Query("SELECT u FROM ExpCatalogUserEntity u WHERE u.gatewayId = :gatewayId")
     List<UserEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
 }

@@ -162,7 +162,7 @@ public class ProcessEntity implements Serializable {
             targetEntity = ProcessWorkflowEntity.class,
             cascade = CascadeType.ALL,
             mappedBy = "process",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private Collection<ProcessWorkflowEntity> processWorkflows;
 
     public ProcessEntity() {}

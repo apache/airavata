@@ -40,13 +40,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(classes = {
-    org.apache.airavata.config.JpaConfig.class,
-    TestcontainersConfig.class
-}, properties = {
-    "spring.main.allow-bean-definition-overriding=true",
-    "flyway.enabled=false"
-})
+@SpringBootTest(
+        classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 public class TestClient {

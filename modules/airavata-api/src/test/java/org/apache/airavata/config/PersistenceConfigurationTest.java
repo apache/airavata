@@ -75,7 +75,6 @@ public class PersistenceConfigurationTest {
     @Test
     public void testPersistenceUnitsCanBeCreated() {
 
-
         assertNotNull(profileServiceEntityManagerFactory, "Profile service EntityManagerFactory should be created");
         assertNotNull(appCatalogEntityManagerFactory, "App catalog EntityManagerFactory should be created");
         assertNotNull(expCatalogEntityManagerFactory, "Exp catalog EntityManagerFactory should be created");

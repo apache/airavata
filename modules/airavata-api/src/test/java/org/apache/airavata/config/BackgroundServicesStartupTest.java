@@ -48,21 +48,14 @@ import org.springframework.test.context.TestPropertySource;
  * - Email Monitor
  */
 @SpringBootTest(
-        classes = {
-            JpaConfig.class,
-            TestcontainersConfig.class,
-            AiravataServerProperties.class,
-            BackgroundServicesStartupTest.TestConfiguration.class
-        },
+        classes = {JpaConfig.class, TestcontainersConfig.class, BackgroundServicesStartupTest.TestConfiguration.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-
-            "services.thrift.enabled=false",
-
+            "services.thrift.enabled=true",
             "services.controller.enabled=true",
             "services.participant.enabled=true",
             "services.prewm.enabled=true",
@@ -74,7 +67,8 @@ import org.springframework.test.context.TestPropertySource;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.boot.context.properties.EnableConfigurationProperties(
+        org.apache.airavata.config.AiravataServerProperties.class)
 public class BackgroundServicesStartupTest {
 
     @Configuration
@@ -110,18 +104,13 @@ public class BackgroundServicesStartupTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-
-
     @Test
     public void testHelixComponentsAreAvailable() {
-
-
 
         int controllerCount =
                 applicationContext.getBeansOfType(HelixController.class).size();
         int participantCount =
                 applicationContext.getBeansOfType(GlobalParticipant.class).size();
-
 
         assertTrue(
                 controllerCount >= 0 && participantCount >= 0,
@@ -131,15 +120,12 @@ public class BackgroundServicesStartupTest {
     @Test
     public void testWorkflowManagersAreAvailable() {
 
-
-
         int preWmCount =
                 applicationContext.getBeansOfType(PreWorkflowManager.class).size();
         int postWmCount =
                 applicationContext.getBeansOfType(PostWorkflowManager.class).size();
         int parserWmCount =
                 applicationContext.getBeansOfType(ParserWorkflowManager.class).size();
-
 
         assertTrue(
                 preWmCount >= 0 && postWmCount >= 0 && parserWmCount >= 0,
@@ -149,17 +135,12 @@ public class BackgroundServicesStartupTest {
     @Test
     public void testMonitorsAreAvailable() {
 
-
-
         int monitorCount =
                 applicationContext.getBeansOfType(RealtimeMonitor.class).size();
-
 
         assertTrue(
                 monitorCount >= 0,
                 "RealtimeMonitor configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
-
-
     }
 
     @Test

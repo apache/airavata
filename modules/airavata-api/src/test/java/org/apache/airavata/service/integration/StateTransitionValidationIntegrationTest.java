@@ -34,13 +34,13 @@ import org.apache.airavata.common.model.JobIdentifier;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.JobStatusChangeEvent;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessIdentifier;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.messaging.MessageVerificationUtils;
 import org.apache.airavata.messaging.Publisher;
@@ -66,7 +66,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +79,6 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
-            org.apache.airavata.config.AiravataServerProperties.class,
             StateTransitionValidationIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -152,6 +150,9 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
 
     @BeforeEach
     public void setUp() throws RegistryException {
+        // Ensure base setup runs first to apply test properties (especially RabbitMQ URL)
+        super.setUpBase();
+
         testHierarchy = StateMachineTestUtils.createTestHierarchy(
                 gatewayService, projectService, experimentService, processService, taskService, jobService);
     }
@@ -224,14 +225,14 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             processStatusService.addProcessStatus(status, testHierarchy.processId);
         }
 
- // all states are in correct order
+        // all states are in correct order
         var process = processService.getProcess(testHierarchy.processId);
         List<ProcessStatus> statuses = process.getProcessStatuses();
 
- // timestamps are in increasing order
+        // timestamps are in increasing order
         StateMachineTestUtils.verifyProcessStateTimestamps(new ArrayList<ProcessStatus>(statuses));
 
- // states appear in expected sequence
+        // states appear in expected sequence
         int lastIndex = -1;
         for (ProcessState expectedState : sequentialStates) {
             int currentIndex = -1;
@@ -272,7 +273,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         JobStatus status3 = StateMachineTestUtils.createJobStatus(JobState.ACTIVE, "Active");
         jobStatusService.addJobStatus(status3, testHierarchy.jobPK);
 
- // timestamps
+        // timestamps
         var job = jobService.getJob(testHierarchy.jobPK);
         StateMachineTestUtils.verifyJobStateTimestamps(new ArrayList<JobStatus>(job.getJobStatuses()));
 
@@ -286,7 +287,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         ProcessStatus pStatus3 = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
         processStatusService.addProcessStatus(pStatus3, testHierarchy.processId);
 
- // timestamps
+        // timestamps
         var process = processService.getProcess(testHierarchy.processId);
         StateMachineTestUtils.verifyProcessStateTimestamps(new ArrayList<ProcessStatus>(process.getProcessStatuses()));
     }
@@ -306,19 +307,19 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             jobStatusService.addJobStatus(status, testHierarchy.jobPK);
         }
 
- // all states are recorded
+        // all states are recorded
         var job = jobService.getJob(testHierarchy.jobPK);
         assertNotNull(job.getJobStatuses(), "Job should have status history");
         assertTrue(job.getJobStatuses().size() >= rapidStates.size(), "All rapid state transitions should be recorded");
 
- // latest state is correct
+        // latest state is correct
         JobStatus latest = jobStatusService.getJobStatus(testHierarchy.jobPK);
         assertEquals(
                 rapidStates.get(rapidStates.size() - 1),
                 latest.getJobState(),
                 "Latest state should match the last transition");
 
- // timestamps are still in order despite rapid updates
+        // timestamps are still in order despite rapid updates
         StateMachineTestUtils.verifyJobStateTimestamps(new ArrayList<JobStatus>(job.getJobStatuses()));
     }
 
@@ -347,8 +348,8 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(2);
 
-        MessageHandler handler = MessageVerificationUtils.createCapturingHandlerWithLatch(
-                capturedMessages, messageReceived, 2);
+        MessageHandler handler =
+                MessageVerificationUtils.createCapturingHandlerWithLatch(capturedMessages, messageReceived, 2);
 
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(testHierarchy.processId);
@@ -364,11 +365,15 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             // Valid process transition: CREATED -> VALIDATED
             ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
             processStatusService.addProcessStatus(validated, testHierarchy.processId);
-            ProcessIdentifier processIdentifier = new ProcessIdentifier(
-                    testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
-            ProcessStatusChangeEvent processEvent = new ProcessStatusChangeEvent(ProcessState.VALIDATED, processIdentifier);
+            ProcessIdentifier processIdentifier =
+                    new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
+            ProcessStatusChangeEvent processEvent =
+                    new ProcessStatusChangeEvent(ProcessState.VALIDATED, processIdentifier);
             MessageContext processMsg = new MessageContext(
-                    processEvent, MessageType.PROCESS, AiravataUtils.getId(MessageType.PROCESS.name()), testHierarchy.gatewayId);
+                    processEvent,
+                    MessageType.PROCESS,
+                    AiravataUtils.getId(MessageType.PROCESS.name()),
+                    testHierarchy.gatewayId);
             processMsg.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(processMsg);
 
@@ -376,8 +381,11 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             JobStatus queued = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Queued");
             jobStatusService.addJobStatus(queued, testHierarchy.jobPK);
             JobIdentifier jobIdentifier = new JobIdentifier(
-                    testHierarchy.jobId, testHierarchy.taskId, testHierarchy.processId,
-                    testHierarchy.experimentId, testHierarchy.gatewayId);
+                    testHierarchy.jobId,
+                    testHierarchy.taskId,
+                    testHierarchy.processId,
+                    testHierarchy.experimentId,
+                    testHierarchy.gatewayId);
             JobStatusChangeEvent jobEvent = new JobStatusChangeEvent(JobState.QUEUED, jobIdentifier);
             MessageContext jobMsg = new MessageContext(
                     jobEvent, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), testHierarchy.gatewayId);
@@ -391,7 +399,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
 
             assertTrue(received, "Messages should be received within timeout");
             assertTrue(capturedMessages.size() >= 2, "Should capture at least 2 messages");
- // both process and job messages were received
+            // both process and job messages were received
             assertTrue(
                     capturedMessages.stream().anyMatch(msg -> msg.getType() == MessageType.PROCESS),
                     "Should have process status message");

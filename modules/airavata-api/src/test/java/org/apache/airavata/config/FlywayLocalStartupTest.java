@@ -51,8 +51,6 @@ public class FlywayLocalStartupTest {
     @Test
     public void testFlywayConfigLoaded() {
 
-
-
         assertTrue(true, "FlywayConfig should be loaded");
     }
 
@@ -64,12 +62,5 @@ public class FlywayLocalStartupTest {
             @Autowired(required = false) @Qualifier("replicaCatalogFlyway") Flyway replicaCatalogFlyway,
             @Autowired(required = false) @Qualifier("workflowCatalogFlyway") Flyway workflowCatalogFlyway,
             @Autowired(required = false) @Qualifier("sharingRegistryFlyway") Flyway sharingRegistryFlyway,
-            @Autowired(required = false) @Qualifier("credentialStoreFlyway") Flyway credentialStoreFlyway) {
-
-
-
-
-
-
-    }
+            @Autowired(required = false) @Qualifier("credentialStoreFlyway") Flyway credentialStoreFlyway) {}
 }

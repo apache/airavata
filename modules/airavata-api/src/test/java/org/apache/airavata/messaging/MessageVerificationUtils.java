@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.messaging;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +26,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
-import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
-import org.apache.airavata.messaging.MessageHandler;
-import org.apache.airavata.messaging.Subscriber;
-import org.apache.airavata.messaging.Type;
 import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,10 +52,7 @@ public class MessageVerificationUtils {
      * @return List of captured message contexts
      */
     public static List<MessageContext> capturePublishedMessages(
-            MessagingFactory messagingFactory,
-            Type type,
-            List<String> routingKeys,
-            Duration timeout) {
+            MessagingFactory messagingFactory, Type type, List<String> routingKeys, Duration timeout) {
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(1);
 
@@ -95,7 +86,8 @@ public class MessageVerificationUtils {
      * @param capturedMessages List of captured messages
      * @return true if the message was found
      */
-    public static boolean verifyMessagePublished(MessageContext expectedMessage, List<MessageContext> capturedMessages) {
+    public static boolean verifyMessagePublished(
+            MessageContext expectedMessage, List<MessageContext> capturedMessages) {
         return capturedMessages.stream().anyMatch(msg -> {
             if (!msg.getMessageId().equals(expectedMessage.getMessageId())) {
                 return false;
@@ -182,8 +174,7 @@ public class MessageVerificationUtils {
                 return false;
             }
             ProcessStatusChangeEvent event = (ProcessStatusChangeEvent) msg.getEvent();
-            return event.getProcessIdentity().getProcessId().equals(processId)
-                    && event.getState() == expectedState;
+            return event.getProcessIdentity().getProcessId().equals(processId) && event.getState() == expectedState;
         });
     }
 
@@ -220,4 +211,3 @@ public class MessageVerificationUtils {
         };
     }
 }
-
